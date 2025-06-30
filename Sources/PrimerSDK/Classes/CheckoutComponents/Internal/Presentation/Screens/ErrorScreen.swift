@@ -30,20 +30,19 @@ internal struct ErrorScreen: View {
 
             // Error title
             Text(CheckoutComponentsStrings.somethingWentWrong)
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(tokens != nil ? PrimerFont.titleLarge(tokens: tokens!) : .title2)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
 
             // Error message
             Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
-                .font(.body)
+                .font(tokens != nil ? PrimerFont.bodyMedium(tokens: tokens!) : .body)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
 
             // Auto-dismiss message
             Text(CheckoutComponentsStrings.autoDismissMessage)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
                 .padding(.top, 16)

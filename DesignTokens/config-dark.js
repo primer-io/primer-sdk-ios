@@ -91,7 +91,7 @@ export default {
   platforms: {
     swift: {
       transformGroup: 'primer-ios-swiftui',
-      buildPath: '../Sources/PrimerSDK/Classes/Components/Design/',
+      buildPath: '../Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/',
       files: [
         {
           destination: 'DesignTokensDark.swift',

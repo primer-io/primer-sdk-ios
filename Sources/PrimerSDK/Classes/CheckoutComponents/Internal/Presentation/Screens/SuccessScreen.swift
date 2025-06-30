@@ -30,8 +30,7 @@ internal struct SuccessScreen: View {
 
             // Success title
             Text(CheckoutComponentsStrings.paymentSuccessful)
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(tokens != nil ? PrimerFont.titleLarge(tokens: tokens!) : .title2)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
 
             // Payment details
@@ -70,11 +69,11 @@ internal struct SuccessScreen: View {
                 }
             }
             .padding(.horizontal, 32)
-            .font(.body)
+            .font(tokens != nil ? PrimerFont.bodyMedium(tokens: tokens!) : .body)
 
             // Auto-dismiss message
             Text(CheckoutComponentsStrings.autoDismissMessage)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
                 .padding(.top, 16)

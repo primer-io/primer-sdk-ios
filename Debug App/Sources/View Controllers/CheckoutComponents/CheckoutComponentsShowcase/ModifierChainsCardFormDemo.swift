@@ -11,49 +11,53 @@ import PrimerSDK
 /// PrimerModifier chains demo with complex styling combinations
 @available(iOS 15.0, *)
 struct ModifierChainsCardFormDemo: View {
-    let clientToken: String
     let settings: PrimerSettings
+    let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
+    @State private var clientToken: String?
+    @State private var isLoading = true
+    @State private var error: String?
     var body: some View {
         VStack {
-            Text("Modifier Chains Demo")
-                .font(.headline)
-                .padding()
-            
-            Text("Complex styling combinations")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom)
-            
-            Button("Show Modifier Chains Checkout") {
-                presentCheckout(title: "ModifierChainsCardFormDemo")
-            }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
-        }
-        .frame(height: 200)
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-    }
-    
-    private func presentCheckout(title: String) {
-        // Find the current view controller to present from
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = findTopViewController(from: window.rootViewController) else {
-            print("❌ [\(title)] Could not find view controller to present from")
-            return
-        }
-
-        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
-        
-        // Present using CheckoutComponentsPrimer with custom modifier chains content
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
-            from: rootViewController,
-            customContent: { checkoutScope in
-                return AnyView(
+            if isLoading {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Creating session...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(height: 200)
+            } else if let error = error {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                    Text("Session Failed")
+                        .font(.headline)
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        Task { await createSession() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 200)
+            } else if let clientToken = clientToken {
+                VStack {
+                    Text("Modifier Chains Demo")
+                        .font(.headline)
+                        .padding()
+                    
+                    Text("Complex styling combinations")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom)
+                    
+                    // Pure SwiftUI PrimerCheckout with complex modifier chains
                     PrimerCheckout(
                         clientToken: clientToken,
                         settings: settings,
@@ -71,8 +75,8 @@ struct ModifierChainsCardFormDemo: View {
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.purple)
                                             
-                                            Text("Complex PrimerModifier styling combinations")
-                                                .font(.caption)
+                                            Text("Complex PrimerModifier styling")
+                                                .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
 
@@ -131,6 +135,20 @@ struct ModifierChainsCardFormDemo: View {
                                                 )
                                             }
                                         }
+                                        
+                                        // Chain examples info
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text("Modifier Chain Examples:")
+                                                .font(.caption)
+                                                .fontWeight(.semibold)
+                                            Text("• Multi-layer shadows with different colors")
+                                            Text("• Complex border and corner radius combinations")
+                                            Text("• Varied padding and spacing configurations")
+                                            Text("• Gradient backgrounds with transparent overlays")
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     }
                                     .padding(20)
                                     .background(
@@ -145,33 +163,79 @@ struct ModifierChainsCardFormDemo: View {
                                             endPoint: .bottomTrailing
                                         )
                                     )
+                                    .cornerRadius(16)
                                 )
                             }
                         }
                     )
-                )
-            },
-            completion: {
-                print("✅ [\(title)] CheckoutComponents presentation completed")
+                }
             }
-        )
-        
-        print("✅ [\(title)] CheckoutComponents presentation initiated")
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+        .task {
+            await createSession()
+        }
     }
-
-    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
-        if let presented = rootViewController?.presentedViewController {
-            return findTopViewController(from: presented)
-        }
+    
+    /// Creates a session for this demo with modifier chains support
+    private func createSession() async {
+        isLoading = true
+        error = nil
         
-        if let navigationController = rootViewController as? UINavigationController {
-            return findTopViewController(from: navigationController.visibleViewController)
+        do {
+            // Create session with surcharge support, supporting session type variations
+            let surchargeAmount = extractSurchargeAmount(from: clientSession)
+            let sessionBody = createSessionBody(surchargeAmount: surchargeAmount)
+            
+            // Request client token using the session configuration
+            await withCheckedContinuation { continuation in
+                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
+                    Task { @MainActor in
+                        if let error = error {
+                            self.error = error.localizedDescription
+                            self.isLoading = false
+                        } else if let clientToken = clientToken {
+                            self.clientToken = clientToken
+                            self.isLoading = false
+                        } else {
+                            self.error = "Unknown error occurred"
+                            self.isLoading = false
+                        }
+                        continuation.resume()
+                    }
+                }
+            }
         }
-        
-        if let tabBarController = rootViewController as? UITabBarController {
-            return findTopViewController(from: tabBarController.selectedViewController)
-        }
-        
-        return rootViewController
     }
+    
+    /// Creates session body supporting different session types
+    private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
+        // Support session type variations - default to card only with surcharge for demos
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+    }
+    
+    /// Extracts surcharge amount from the configured client session
+    private func extractSurchargeAmount(from clientSession: ClientSessionRequestBody?) -> Int {
+        guard let session = clientSession,
+              let paymentCardOptions = session.paymentMethod?.options?.PAYMENT_CARD,
+              let networks = paymentCardOptions.networks else {
+            return 50 // Default fallback
+        }
+        
+        // Try to get surcharge amount from any of the configured networks
+        if let visaSurcharge = networks.VISA?.surcharge.amount {
+            return visaSurcharge
+        }
+        if let mastercardSurcharge = networks.MASTERCARD?.surcharge.amount {
+            return mastercardSurcharge
+        }
+        if let jcbSurcharge = networks.JCB?.surcharge.amount {
+            return jcbSurcharge
+        }
+        
+        return 50 // Default fallback
+    }
+    
 }

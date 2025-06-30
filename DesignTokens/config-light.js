@@ -104,7 +104,7 @@ export default {
     swift: {
       transformGroup: 'primer-ios-swiftui',
       // Build path for the generated Swift file.
-      buildPath: '../Sources/PrimerSDK/Classes/Components/Design/',
+      buildPath: '../Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/',
       files: [
         {
           destination: 'DesignTokens.swift',

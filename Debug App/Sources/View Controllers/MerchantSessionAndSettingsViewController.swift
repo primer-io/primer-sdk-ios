@@ -1120,6 +1120,8 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
 struct InlineSwiftUICheckoutTestView: View {
     let clientToken: String
     let settings: PrimerSettings
+    let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
     @State private var showingCheckout = false
     @State private var showingShowcase = false
@@ -1232,7 +1234,7 @@ struct InlineSwiftUICheckoutTestView: View {
         .navigationTitle("SwiftUI Test")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingShowcase) {
-            CheckoutComponentsShowcaseView(clientToken: clientToken, settings: settings)
+            CheckoutComponentsShowcaseView(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
         }
     }
     

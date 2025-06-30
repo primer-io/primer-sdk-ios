@@ -48,7 +48,7 @@ public struct PrimerCheckout: View {
 
     /// Optional custom content builder for complete UI replacement
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    
+
     /// Optional completion callback for dismissal handling
     private let onCompletion: (() -> Void)?
 
@@ -305,9 +305,12 @@ internal struct PaymentMethodScreen: View {
             ) {
                 // Check if this is a card form scope specifically
                 if let cardFormScope = paymentMethodScope as? any PrimerCardFormScope {
-                    // Use the default CardFormScreen for now
-                    // Custom screen support can be added later through a different mechanism
-                    AnyView(CardFormScreen(scope: cardFormScope))
+                    // Check for custom screen first, fallback to default
+                    if let customScreen = checkoutScope.getPaymentMethodScreen(.paymentCard) {
+                        customScreen(cardFormScope)
+                    } else {
+                        AnyView(CardFormScreen(scope: cardFormScope))
+                    }
                 } else {
                     // For other payment method scopes in the future, we'll add similar type checks here
                     // For now, show placeholder for non-card payment methods

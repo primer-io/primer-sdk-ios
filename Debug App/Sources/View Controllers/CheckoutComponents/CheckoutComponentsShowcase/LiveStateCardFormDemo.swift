@@ -11,49 +11,53 @@ import PrimerSDK
 /// Live state demo with real-time state updates and debugging
 @available(iOS 15.0, *)
 struct LiveStateCardFormDemo: View {
-    let clientToken: String
     let settings: PrimerSettings
+    let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
+    @State private var clientToken: String?
+    @State private var isLoading = true
+    @State private var error: String?
     var body: some View {
         VStack {
-            Text("Live State Demo")
-                .font(.headline)
-                .padding()
-            
-            Text("Real-time state updates and debugging")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom)
-            
-            Button("Show Live State Checkout") {
-                presentCheckout(title: "LiveStateCardFormDemo")
-            }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
-        }
-        .frame(height: 200)
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-    }
-    
-    private func presentCheckout(title: String) {
-        // Find the current view controller to present from
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = findTopViewController(from: window.rootViewController) else {
-            print("❌ [\(title)] Could not find view controller to present from")
-            return
-        }
-        
-        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
-        
-        // Present using CheckoutComponentsPrimer with custom live state content
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
-            from: rootViewController,
-            customContent: { checkoutScope in
-                return AnyView(
+            if isLoading {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Creating session...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(height: 200)
+            } else if let error = error {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                    Text("Session Failed")
+                        .font(.headline)
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        Task { await createSession() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 200)
+            } else if let clientToken = clientToken {
+                VStack {
+                    Text("Live State Demo")
+                        .font(.headline)
+                        .padding()
+                    
+                    Text("Real-time state updates and debugging")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom)
+                    
+                    // Pure SwiftUI PrimerCheckout with live state styling
                     PrimerCheckout(
                         clientToken: clientToken,
                         settings: settings,
@@ -67,14 +71,16 @@ struct LiveStateCardFormDemo: View {
                                         // Live state header with indicators
                                         VStack(spacing: 8) {
                                             HStack {
-                                                Text("Live State Demo")
-                                                    .font(.title2.weight(.semibold))
+                                                Text("📊 Live State Monitor")
+                                                    .font(.title2)
+                                                    .fontWeight(.semibold)
                                                 Spacer()
                                                 Circle()
                                                     .fill(.green)
-                                                    .frame(width: 8, height: 8)
+                                                    .frame(width: 10, height: 10)
                                                 Text("LIVE")
-                                                    .font(.caption.weight(.bold))
+                                                    .font(.caption)
+                                                    .fontWeight(.bold)
                                                     .foregroundColor(.green)
                                             }
                                             Text("Real-time validation and state updates")
@@ -89,7 +95,8 @@ struct LiveStateCardFormDemo: View {
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     HStack {
                                                         Text("Card Number")
-                                                            .font(.subheadline.weight(.medium))
+                                                            .font(.subheadline)
+                                                            .fontWeight(.medium)
                                                         Spacer()
                                                         Text("🟢 Validating...")
                                                             .font(.caption)
@@ -101,10 +108,9 @@ struct LiveStateCardFormDemo: View {
                                                         .padding(.horizontal, 16)
                                                         .background(.blue.opacity(0.05))
                                                         .cornerRadius(10)
-                                                        .border(.blue.opacity(0.3), width: 2)
+                                                        .border(.blue.opacity(0.4), width: 2)
                                                     )
                                                 }
-                                                .padding(.horizontal, 4)
                                             }
                                             
                                             // Expiry and CVV with state indicators
@@ -113,7 +119,8 @@ struct LiveStateCardFormDemo: View {
                                                     VStack(alignment: .leading, spacing: 6) {
                                                         HStack {
                                                             Text("Expiry")
-                                                                .font(.subheadline.weight(.medium))
+                                                                .font(.subheadline)
+                                                                .fontWeight(.medium)
                                                             Spacer()
                                                             Text("⚙️")
                                                                 .font(.caption)
@@ -124,17 +131,17 @@ struct LiveStateCardFormDemo: View {
                                                             .padding(.horizontal, 16)
                                                             .background(.green.opacity(0.05))
                                                             .cornerRadius(10)
-                                                            .border(.green.opacity(0.3), width: 2)
+                                                            .border(.green.opacity(0.4), width: 2)
                                                         )
                                                     }
-                                                    .padding(.horizontal, 4)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
                                                     VStack(alignment: .leading, spacing: 6) {
                                                         HStack {
                                                             Text("CVV")
-                                                                .font(.subheadline.weight(.medium))
+                                                                .font(.subheadline)
+                                                                .fontWeight(.medium)
                                                             Spacer()
                                                             Text("🔒")
                                                                 .font(.caption)
@@ -145,10 +152,9 @@ struct LiveStateCardFormDemo: View {
                                                             .padding(.horizontal, 16)
                                                             .background(.purple.opacity(0.05))
                                                             .cornerRadius(10)
-                                                            .border(.purple.opacity(0.3), width: 2)
+                                                            .border(.purple.opacity(0.4), width: 2)
                                                         )
                                                     }
-                                                    .padding(.horizontal, 4)
                                                 }
                                             }
                                             
@@ -157,9 +163,10 @@ struct LiveStateCardFormDemo: View {
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     HStack {
                                                         Text("Name on Card")
-                                                            .font(.subheadline.weight(.medium))
+                                                            .font(.subheadline)
+                                                            .fontWeight(.medium)
                                                         Spacer()
-                                                        Text("👤 Input Active")
+                                                        Text("👤 Active")
                                                             .font(.caption)
                                                             .foregroundColor(.blue)
                                                     }
@@ -169,55 +176,101 @@ struct LiveStateCardFormDemo: View {
                                                         .padding(.horizontal, 16)
                                                         .background(.orange.opacity(0.05))
                                                         .cornerRadius(10)
-                                                        .border(.orange.opacity(0.3), width: 2)
+                                                        .border(.orange.opacity(0.4), width: 2)
                                                     )
                                                 }
-                                                .padding(.horizontal, 4)
                                             }
                                         }
                                         
-                                        // Live state footer
+                                        // Live state indicators
                                         VStack(spacing: 4) {
-                                            Text("• Fields validate in real-time")
-                                            Text("• State changes are immediately visible")
-                                            Text("• Live feedback provides instant validation")
+                                            Text("• Real-time field validation")
+                                            Text("• Live state change indicators")
+                                            Text("• Instant feedback on input")
                                         }
                                         .font(.caption)
                                         .foregroundColor(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     }
                                     .padding(20)
                                     .background(.white)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(.blue.opacity(0.2), lineWidth: 1)
+                                            .stroke(.blue.opacity(0.2), lineWidth: 2)
                                     )
+                                    .cornerRadius(12)
                                 )
                             }
                         }
                     )
-                )
-            },
-            completion: {
-                print("✅ [\(title)] CheckoutComponents presentation completed")
+                }
             }
-        )
-        
-        print("✅ [\(title)] CheckoutComponents presentation initiated")
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+        .task {
+            await createSession()
+        }
     }
-
-    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
-        if let presented = rootViewController?.presentedViewController {
-            return findTopViewController(from: presented)
-        }
+    
+    /// Creates a session for this demo with live state support
+    private func createSession() async {
+        isLoading = true
+        error = nil
         
-        if let navigationController = rootViewController as? UINavigationController {
-            return findTopViewController(from: navigationController.visibleViewController)
+        do {
+            // Create session with surcharge support, supporting session type variations
+            let surchargeAmount = extractSurchargeAmount(from: clientSession)
+            let sessionBody = createSessionBody(surchargeAmount: surchargeAmount)
+            
+            // Request client token using the session configuration
+            await withCheckedContinuation { continuation in
+                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
+                    Task { @MainActor in
+                        if let error = error {
+                            self.error = error.localizedDescription
+                            self.isLoading = false
+                        } else if let clientToken = clientToken {
+                            self.clientToken = clientToken
+                            self.isLoading = false
+                        } else {
+                            self.error = "Unknown error occurred"
+                            self.isLoading = false
+                        }
+                        continuation.resume()
+                    }
+                }
+            }
         }
-        
-        if let tabBarController = rootViewController as? UITabBarController {
-            return findTopViewController(from: tabBarController.selectedViewController)
-        }
-        
-        return rootViewController
     }
+    
+    /// Creates session body supporting different session types
+    private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
+        // Support session type variations - default to card only with surcharge for demos
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+    }
+    
+    /// Extracts surcharge amount from the configured client session
+    private func extractSurchargeAmount(from clientSession: ClientSessionRequestBody?) -> Int {
+        guard let session = clientSession,
+              let paymentCardOptions = session.paymentMethod?.options?.PAYMENT_CARD,
+              let networks = paymentCardOptions.networks else {
+            return 50 // Default fallback
+        }
+        
+        // Try to get surcharge amount from any of the configured networks
+        if let visaSurcharge = networks.VISA?.surcharge.amount {
+            return visaSurcharge
+        }
+        if let mastercardSurcharge = networks.MASTERCARD?.surcharge.amount {
+            return mastercardSurcharge
+        }
+        if let jcbSurcharge = networks.JCB?.surcharge.amount {
+            return jcbSurcharge
+        }
+        
+        return 50 // Default fallback
+    }
+    
 }

@@ -11,59 +11,58 @@ import PrimerSDK
 /// Validation showcase with error states and feedback
 @available(iOS 15.0, *)
 struct ValidationCardFormDemo: View {
-    let clientToken: String
     let settings: PrimerSettings
+    let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
+    @State private var clientToken: String?
+    @State private var isLoading = true
+    @State private var error: String?
     var body: some View {
         VStack {
-            Text("Validation Showcase Demo")
-                .font(.headline)
-                .padding()
-            
-            Text("Error states and validation feedback")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom)
-            
-            Button("Show Validation Showcase Checkout") {
-                presentCheckout(title: "ValidationCardFormDemo")
-            }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
-        }
-        .frame(height: 200)
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-    }
-    
-    private func presentCheckout(title: String) {
-        // Find the current view controller to present from
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = findTopViewController(from: window.rootViewController) else {
-            print("❌ [\(title)] Could not find view controller to present from")
-            return
-        }
-        
-        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
-        print("🔍 [\(title)] About to present CheckoutComponents for validation demo")
-        print("🔍 [\(title)] Expected behavior: Should skip payment method selection and show custom validation form directly")
-        
-        // Present using CheckoutComponentsPrimer with custom validation showcase content
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
-            from: rootViewController,
-            customContent: { checkoutScope in
-                print("📱 [\(title)] CustomContent closure called - creating PrimerCheckout")
-                return AnyView(
+            if isLoading {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Creating session...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(height: 200)
+            } else if let error = error {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                    Text("Session Failed")
+                        .font(.headline)
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        Task { await createSession() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 200)
+            } else if let clientToken = clientToken {
+                VStack {
+                    Text("Validation Showcase Demo")
+                        .font(.headline)
+                        .padding()
+                    
+                    Text("Error states and validation feedback")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom)
+                    
+                    // Pure SwiftUI PrimerCheckout with validation styling
                     PrimerCheckout(
                         clientToken: clientToken,
                         settings: settings,
                         scope: { checkoutScope in
-                            print("🔧 [\(title)] PrimerCheckout scope closure called - setting custom payment method screen")
                             checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
-                                print("🎨 [\(title)] Custom validation form screen builder called - this should be the custom UI")
                                 guard let cardScope = scope as? any PrimerCardFormScope else {
                                     return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
                                 }
@@ -72,8 +71,9 @@ struct ValidationCardFormDemo: View {
                                         // Validation showcase header
                                         VStack(spacing: 8) {
                                             HStack {
-                                                Text("Validation Showcase")
-                                                    .font(.title2.weight(.semibold))
+                                                Text("✅ Validation Showcase")
+                                                    .font(.title2)
+                                                    .fontWeight(.semibold)
                                                 Spacer()
                                                 Image(systemName: "checkmark.shield")
                                                     .foregroundColor(.green)
@@ -89,9 +89,10 @@ struct ValidationCardFormDemo: View {
                                             Image(systemName: "info.circle.fill")
                                                 .foregroundColor(.blue)
                                             VStack(alignment: .leading, spacing: 2) {
-                                                Text("Validation Examples")
-                                                    .font(.caption.weight(.semibold))
-                                                Text("Try: 1234 (invalid), 4242424242424242 (valid)")
+                                                Text("Test Examples")
+                                                    .font(.caption)
+                                                    .fontWeight(.semibold)
+                                                Text("Valid: 4242424242424242 | Invalid: 1234")
                                                     .font(.caption)
                                                     .foregroundColor(.secondary)
                                             }
@@ -108,7 +109,8 @@ struct ValidationCardFormDemo: View {
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     HStack {
                                                         Text("Card Number")
-                                                            .font(.subheadline.weight(.medium))
+                                                            .font(.subheadline)
+                                                            .fontWeight(.medium)
                                                         Spacer()
                                                         Text("Required")
                                                             .font(.caption)
@@ -120,7 +122,7 @@ struct ValidationCardFormDemo: View {
                                                         .padding(.horizontal, 16)
                                                         .background(.white)
                                                         .cornerRadius(8)
-                                                        .border(.red.opacity(0.3), width: 2)
+                                                        .border(.red.opacity(0.4), width: 2)
                                                     )
                                                     Text("16-digit card number")
                                                         .font(.caption)
@@ -134,7 +136,8 @@ struct ValidationCardFormDemo: View {
                                                     VStack(alignment: .leading, spacing: 6) {
                                                         HStack {
                                                             Text("Expiry")
-                                                                .font(.subheadline.weight(.medium))
+                                                                .font(.subheadline)
+                                                                .fontWeight(.medium)
                                                             Spacer()
                                                             Text("MM/YY")
                                                                 .font(.caption)
@@ -146,9 +149,9 @@ struct ValidationCardFormDemo: View {
                                                             .padding(.horizontal, 16)
                                                             .background(.white)
                                                             .cornerRadius(8)
-                                                            .border(.orange.opacity(0.3), width: 2)
+                                                            .border(.orange.opacity(0.4), width: 2)
                                                         )
-                                                        Text("Must be future date")
+                                                        Text("Future date")
                                                             .font(.caption)
                                                             .foregroundColor(.secondary)
                                                     }
@@ -158,7 +161,8 @@ struct ValidationCardFormDemo: View {
                                                     VStack(alignment: .leading, spacing: 6) {
                                                         HStack {
                                                             Text("CVV")
-                                                                .font(.subheadline.weight(.medium))
+                                                                .font(.subheadline)
+                                                                .fontWeight(.medium)
                                                             Spacer()
                                                             Text("3-4 digits")
                                                                 .font(.caption)
@@ -170,7 +174,7 @@ struct ValidationCardFormDemo: View {
                                                             .padding(.horizontal, 16)
                                                             .background(.white)
                                                             .cornerRadius(8)
-                                                            .border(.purple.opacity(0.3), width: 2)
+                                                            .border(.purple.opacity(0.4), width: 2)
                                                         )
                                                         Text("Security code")
                                                             .font(.caption)
@@ -184,7 +188,8 @@ struct ValidationCardFormDemo: View {
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     HStack {
                                                         Text("Cardholder Name")
-                                                            .font(.subheadline.weight(.medium))
+                                                            .font(.subheadline)
+                                                            .fontWeight(.medium)
                                                         Spacer()
                                                         Text("Full name")
                                                             .font(.caption)
@@ -196,9 +201,9 @@ struct ValidationCardFormDemo: View {
                                                         .padding(.horizontal, 16)
                                                         .background(.white)
                                                         .cornerRadius(8)
-                                                        .border(.green.opacity(0.3), width: 2)
+                                                        .border(.green.opacity(0.4), width: 2)
                                                     )
-                                                    Text("As shown on your card")
+                                                    Text("As shown on card")
                                                         .font(.caption)
                                                         .foregroundColor(.secondary)
                                                 }
@@ -208,7 +213,8 @@ struct ValidationCardFormDemo: View {
                                         // Validation rules footer
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text("Validation Rules:")
-                                                .font(.caption.weight(.semibold))
+                                                .font(.caption)
+                                                .fontWeight(.semibold)
                                             Text("• Card numbers must pass Luhn algorithm")
                                             Text("• Expiry dates must be in the future")
                                             Text("• CVV must be 3-4 digits depending on card type")
@@ -220,33 +226,80 @@ struct ValidationCardFormDemo: View {
                                     }
                                     .padding(20)
                                     .background(.gray.opacity(0.02))
+                                    .cornerRadius(12)
                                 )
                             }
                         }
                     )
-                )
-            },
-            completion: {
-                print("✅ [\(title)] CheckoutComponents presentation completed")
+                }
             }
-        )
-        
-        print("✅ [\(title)] CheckoutComponents presentation initiated")
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+        .task {
+            await createSession()
+        }
     }
-
-    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
-        if let presented = rootViewController?.presentedViewController {
-            return findTopViewController(from: presented)
-        }
+    
+    /// Creates a session for this demo with validation showcase support
+    private func createSession() async {
+        isLoading = true
+        error = nil
         
-        if let navigationController = rootViewController as? UINavigationController {
-            return findTopViewController(from: navigationController.visibleViewController)
+        do {
+            // Create session with surcharge support, supporting session type variations
+            let surchargeAmount = extractSurchargeAmount(from: clientSession)
+            let sessionBody = createSessionBody(surchargeAmount: surchargeAmount)
+            
+            // Request client token using the session configuration
+            await withCheckedContinuation { continuation in
+                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
+                    Task { @MainActor in
+                        if let error = error {
+                            self.error = error.localizedDescription
+                            self.isLoading = false
+                        } else if let clientToken = clientToken {
+                            self.clientToken = clientToken
+                            self.isLoading = false
+                        } else {
+                            self.error = "Unknown error occurred"
+                            self.isLoading = false
+                        }
+                        continuation.resume()
+                    }
+                }
+            }
         }
-        
-        if let tabBarController = rootViewController as? UITabBarController {
-            return findTopViewController(from: tabBarController.selectedViewController)
-        }
-        
-        return rootViewController
     }
+    
+    /// Creates session body supporting different session types
+    private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
+        // Support session type variations - default to card only with surcharge for demos
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+    }
+    
+    /// Extracts surcharge amount from the configured client session
+    private func extractSurchargeAmount(from clientSession: ClientSessionRequestBody?) -> Int {
+        guard let session = clientSession,
+              let paymentCardOptions = session.paymentMethod?.options?.PAYMENT_CARD,
+              let networks = paymentCardOptions.networks else {
+            return 50 // Default fallback
+        }
+        
+        // Try to get surcharge amount from any of the configured networks
+        if let visaSurcharge = networks.VISA?.surcharge.amount {
+            return visaSurcharge
+        }
+        if let mastercardSurcharge = networks.MASTERCARD?.surcharge.amount {
+            return mastercardSurcharge
+        }
+        if let jcbSurcharge = networks.JCB?.surcharge.amount {
+            return jcbSurcharge
+        }
+        
+        return 50 // Default fallback
+    }
+    
 }
+

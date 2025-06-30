@@ -47,7 +47,7 @@ internal struct CardDetailsView: View {
             // Card Number
             CardNumberInputField(
                 label: "Card Number",
-                placeholder: "1234 5678 9012 3456",
+                placeholder: "1234 1234 1234 1234",
                 onCardNumberChange: { number in
                     cardFormScope.updateCardNumber(number)
                 },

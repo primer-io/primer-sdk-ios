@@ -78,20 +78,11 @@ public extension CheckoutComponentsDelegate {
     /// Logger for debugging
     private let logger = PrimerLogging.shared.logger
 
-    /// The DI container
-    private var diContainer: DIContainer?
-
-    /// The navigator
-    private var navigator: CheckoutNavigator?
-
     /// Delegate for handling checkout results
     public weak var delegate: CheckoutComponentsDelegate?
 
     /// Store the latest payment result for delegate callbacks
     private var lastPaymentResult: PaymentResult?
-
-    /// API configuration module for SDK initialization
-    private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
 
     // MARK: - Private Init
 
@@ -168,16 +159,12 @@ public extension CheckoutComponentsDelegate {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: animated) { [weak self] in
                 self?.activeCheckoutController = nil
-                self?.diContainer = nil
-                self?.navigator = nil
                 self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Modal checkout dismissed (without delegate)")
                 completion?()
             }
         } else {
             // Clean up references if controller is nil
             activeCheckoutController = nil
-            diContainer = nil
-            navigator = nil
             logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
             completion?()
         }
@@ -248,13 +235,12 @@ public extension CheckoutComponentsDelegate {
         lastPaymentResult = result
     }
 
-    // swiftlint:disable:next function_body_length
     private func presentCheckout(
         with clientToken: String,
         from viewController: UIViewController,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout through traditional UI system")
+        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout through UIKit Integration")
 
         // Check if already presenting
         guard !isPresentingCheckout else {
@@ -266,151 +252,67 @@ public extension CheckoutComponentsDelegate {
         isPresentingCheckout = true
 
         Task { @MainActor in
-            do {
-                // Initialize SDK configuration directly using proper SDK modules
-                logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration...")
+            // SDK initialization is now handled automatically by PrimerCheckout
+            // Create the bridge controller that embeds SwiftUI with automatic SDK initialization
+            let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
+                clientToken: clientToken,
+                settings: PrimerSettings.current,
+                diContainer: DIContainer.shared,
+                navigator: CheckoutNavigator(),
+                onCompletion: { [weak self] in
+                    // Handle checkout completion (success or dismissal)
+                    self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Checkout completion callback triggered")
 
-                // Set up SDK integration type and intent
-                PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
-                PrimerInternal.shared.intent = .checkout
-                PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-
-                // Use settings as configured by the calling application (Debug App)
-                // This preserves all 3DS, debug, and payment method configurations
-                let settings = PrimerSettings.current
-
-                // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
-                // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
-                // If settings have default values, apply the same debug-friendly configuration
-                let finalSettings: PrimerSettings
-                if settings.debugOptions.is3DSSanityCheckEnabled {
-                    // Default settings detected - apply debug-friendly configuration to match Drop-in
-                    let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-                    finalSettings = PrimerSettings(
-                        paymentHandling: settings.paymentHandling,
-                        localeData: settings.localeData,
-                        paymentMethodOptions: settings.paymentMethodOptions,
-                        uiOptions: settings.uiOptions,
-                        debugOptions: debugOptions,
-                        clientSessionCachingEnabled: settings.clientSessionCachingEnabled,
-                        apiVersion: settings.apiVersion
-                    )
-                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Applied debug-friendly 3DS configuration: false (matching Drop-in behavior)")
-                } else {
-                    // Pre-configured settings - use as-is
-                    finalSettings = settings
-                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
-                }
-
-                // Register final settings in dependency container
-                DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
-
-                // Initialize SDK session using configuration module
-                try await withCheckedThrowingContinuation { continuation in
-                    firstly {
-                        apiConfigurationModule.setupSession(
-                            forClientToken: clientToken,
-                            requestDisplayMetadata: true,
-                            requestClientTokenValidation: false,
-                            requestVaultedPaymentMethods: false
-                        )
-                    }
-                    .done {
-                        continuation.resume()
-                    }
-                    .catch { error in
-                        continuation.resume(throwing: error)
-                    }
-                }
-
-                logger.info(message: "✅ [CheckoutComponentsPrimer] SDK configuration ready")
-
-                // Initialize the DI container and navigator
-                let container = await setupDependencies()
-                let nav = CheckoutNavigator()
-
-                // Store references
-                diContainer = container
-                navigator = nav
-
-                // Create the bridge controller that embeds SwiftUI in traditional system
-                let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
-                    clientToken: clientToken,
-                    settings: finalSettings,
-                    diContainer: container,
-                    navigator: nav,
-                    onCompletion: { [weak self] in
-                        // Handle checkout completion (success or dismissal)
-                        self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Checkout completion callback triggered")
-                        
-                        // Check if we have a payment result from the success flow
-                        if let paymentResult = self?.lastPaymentResult {
-                            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
-                            self?.handlePaymentSuccess(paymentResult)
-                        } else {
-                            // No payment result means user dismissed or cancelled
-                            self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
-                            self?.dismissDirectly()
-                            self?.handleCheckoutDismiss()
-                        }
-                    }
-                )
-
-                // Store reference to bridge controller
-                activeCheckoutController = bridgeController
-
-                // Present CheckoutComponents modally to keep separate from traditional navigation stack
-                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting CheckoutComponents modally")
-
-                // Create modal presentation with dynamic sizing
-                bridgeController.modalPresentationStyle = .pageSheet
-                if let sheet = bridgeController.sheetPresentationController {
-                    // Use custom detent for dynamic sizing based on content
-                    if #available(iOS 16.0, *) {
-                        let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
-                            guard let bridgeController = bridgeController else { return context.maximumDetentValue }
-                            let contentHeight = bridgeController.preferredContentSize.height
-                            let maxHeight = context.maximumDetentValue
-                            // Allow content to determine height, but cap at maximum
-                            return min(max(contentHeight, 200), maxHeight * 0.9)
-                        }
-                        sheet.detents = [customDetent, .large()]
-                        sheet.selectedDetentIdentifier = customDetent.identifier
+                    // Check if we have a payment result from the success flow
+                    if let paymentResult = self?.lastPaymentResult {
+                        self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                        self?.handlePaymentSuccess(paymentResult)
                     } else {
-                        // Fallback for iOS 15: use standard detents
-                        sheet.detents = [.medium(), .large()]
+                        // No payment result means user dismissed or cancelled
+                        self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                        self?.dismissDirectly()
+                        self?.handleCheckoutDismiss()
                     }
-                    sheet.prefersGrabberVisible = true
-                    sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                    sheet.largestUndimmedDetentIdentifier = .medium
                 }
+            )
 
-                // Present modally from the provided view controller
-                viewController.present(bridgeController, animated: true)
+            // Store reference to bridge controller
+            activeCheckoutController = bridgeController
 
-                // Reset presenting flag after successful integration
-                isPresentingCheckout = false
+            // Present CheckoutComponents modally
+            logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting CheckoutComponents modally")
 
-                logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents presented successfully")
-                completion?()
-
-            } catch {
-                logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to present checkout: \(error)")
-
-                // Reset presenting flag
-                isPresentingCheckout = false
-
-                // Call error delegate
-                let primerError = PrimerError.underlyingErrors(
-                    errors: [error],
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-
-                PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { _ in
-                    // Error handled by delegate
+            // Create modal presentation with dynamic sizing
+            bridgeController.modalPresentationStyle = .pageSheet
+            if let sheet = bridgeController.sheetPresentationController {
+                // Use custom detent for dynamic sizing based on content
+                if #available(iOS 16.0, *) {
+                    let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
+                        guard let bridgeController = bridgeController else { return context.maximumDetentValue }
+                        let contentHeight = bridgeController.preferredContentSize.height
+                        let maxHeight = context.maximumDetentValue
+                        // Allow content to determine height, but cap at maximum
+                        return min(max(contentHeight, 200), maxHeight * 0.9)
+                    }
+                    sheet.detents = [customDetent, .large()]
+                    sheet.selectedDetentIdentifier = customDetent.identifier
+                } else {
+                    // Fallback for iOS 15: use standard detents
+                    sheet.detents = [.medium(), .large()]
                 }
+                sheet.prefersGrabberVisible = true
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                sheet.largestUndimmedDetentIdentifier = .medium
             }
+
+            // Present modally from the provided view controller
+            viewController.present(bridgeController, animated: true)
+
+            // Reset presenting flag after successful presentation
+            isPresentingCheckout = false
+
+            logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents presented successfully")
+            completion?()
         }
     }
 
@@ -420,127 +322,60 @@ public extension CheckoutComponentsDelegate {
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with custom content through traditional UI")
+        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with custom content through UIKit Integration")
+
+        // Check if already presenting
+        guard !isPresentingCheckout else {
+            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Already presenting checkout. Ignoring duplicate request.")
+            completion?()
+            return
+        }
+
+        isPresentingCheckout = true
 
         Task { @MainActor in
-            do {
-                // Initialize SDK configuration directly using proper SDK modules
-                logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration for custom content...")
-
-                // Set up SDK integration type and intent
-                PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
-                PrimerInternal.shared.intent = .checkout
-                PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-
-                // Use settings as configured by the calling application (Debug App)
-                // This preserves all 3DS, debug, and payment method configurations
-                let settings = PrimerSettings.current
-
-                // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
-                // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
-                // If settings have default values, apply the same debug-friendly configuration
-                let finalSettings: PrimerSettings
-                if settings.debugOptions.is3DSSanityCheckEnabled {
-                    // Default settings detected - apply debug-friendly configuration to match Drop-in
-                    let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-                    finalSettings = PrimerSettings(
-                        paymentHandling: settings.paymentHandling,
-                        localeData: settings.localeData,
-                        paymentMethodOptions: settings.paymentMethodOptions,
-                        uiOptions: settings.uiOptions,
-                        debugOptions: debugOptions,
-                        clientSessionCachingEnabled: settings.clientSessionCachingEnabled,
-                        apiVersion: settings.apiVersion
-                    )
-                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Applied debug-friendly 3DS configuration: false (matching Drop-in behavior)")
-                } else {
-                    // Pre-configured settings - use as-is
-                    finalSettings = settings
-                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
-                }
-
-                // Register final settings in dependency container
-                DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
-
-                // Initialize SDK session using configuration module
-                try await withCheckedThrowingContinuation { continuation in
-                    firstly {
-                        apiConfigurationModule.setupSession(
-                            forClientToken: clientToken,
-                            requestDisplayMetadata: true,
-                            requestClientTokenValidation: false,
-                            requestVaultedPaymentMethods: false
-                        )
-                    }
-                    .done {
-                        continuation.resume()
-                    }
-                    .catch { error in
-                        continuation.resume(throwing: error)
-                    }
-                }
-
-                // Initialize the DI container and navigator
-                let container = await setupDependencies()
-                let nav = CheckoutNavigator()
-
-                // Store references
-                diContainer = container
-                navigator = nav
-
-                // Create custom content wrapper
-                let customContentWrapper: (PrimerCheckoutScope) -> AnyView = { scope in
-                    AnyView(customContent(scope))
-                }
-
-                // Create the bridge controller with custom content
-                let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
-                    clientToken: clientToken,
-                    settings: finalSettings,
-                    diContainer: container,
-                    navigator: nav,
-                    customContent: customContentWrapper,
-                    onCompletion: { [weak self] in
-                        // Handle checkout completion (success or dismissal)
-                        self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Custom content completion callback triggered")
-                        
-                        // Check if we have a payment result from the success flow
-                        if let paymentResult = self?.lastPaymentResult {
-                            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
-                            self?.handlePaymentSuccess(paymentResult)
-                        } else {
-                            // No payment result means user dismissed or cancelled
-                            self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
-                            self?.dismissDirectly()
-                            self?.handleCheckoutDismiss()
-                        }
-                    }
-                )
-
-                // Store reference
-                activeCheckoutController = bridgeController
-
-                // Present modally from the provided view controller
-                logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting custom content modally")
-                viewController.present(bridgeController, animated: true)
-
-                logger.info(message: "✅ [CheckoutComponentsPrimer] Custom CheckoutComponents presented successfully")
-                completion?()
-
-            } catch {
-                logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to present custom checkout: \(error)")
-
-                // Call error delegate
-                let primerError = PrimerError.underlyingErrors(
-                    errors: [error],
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-
-                PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { _ in
-                    // Error handled by delegate
-                }
+            // SDK initialization is now handled automatically by PrimerCheckout
+            // Create custom content wrapper
+            let customContentWrapper: (PrimerCheckoutScope) -> AnyView = { scope in
+                AnyView(customContent(scope))
             }
+
+            // Create the bridge controller with custom content and automatic SDK initialization
+            let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
+                clientToken: clientToken,
+                settings: PrimerSettings.current,
+                diContainer: DIContainer.shared,
+                navigator: CheckoutNavigator(),
+                customContent: customContentWrapper,
+                onCompletion: { [weak self] in
+                    // Handle checkout completion (success or dismissal)
+                    self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Custom content completion callback triggered")
+
+                    // Check if we have a payment result from the success flow
+                    if let paymentResult = self?.lastPaymentResult {
+                        self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                        self?.handlePaymentSuccess(paymentResult)
+                    } else {
+                        // No payment result means user dismissed or cancelled
+                        self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                        self?.dismissDirectly()
+                        self?.handleCheckoutDismiss()
+                    }
+                }
+            )
+
+            // Store reference
+            activeCheckoutController = bridgeController
+
+            // Present modally from the provided view controller
+            logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting custom content modally")
+            viewController.present(bridgeController, animated: true)
+
+            // Reset presenting flag after successful presentation
+            isPresentingCheckout = false
+
+            logger.info(message: "✅ [CheckoutComponentsPrimer] Custom CheckoutComponents presented successfully")
+            completion?()
         }
     }
 
@@ -554,8 +389,6 @@ public extension CheckoutComponentsDelegate {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
                 self?.activeCheckoutController = nil
-                self?.diContainer = nil
-                self?.navigator = nil
                 self?.logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
             }
         }
@@ -578,8 +411,6 @@ public extension CheckoutComponentsDelegate {
 
         // Clean up references
         activeCheckoutController = nil
-        diContainer = nil
-        navigator = nil
 
         logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
 
@@ -589,13 +420,6 @@ public extension CheckoutComponentsDelegate {
         completion?()
     }
 
-    // MARK: - Setup
-
-    private func setupDependencies() async -> DIContainer {
-        let composableContainer = ComposableContainer()
-        await composableContainer.configure()
-        return DIContainer.shared
-    }
 }
 
 // MARK: - Convenience Methods
@@ -661,8 +485,6 @@ extension CheckoutComponentsPrimer {
         shared.logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Resetting presentation state")
         shared.isPresentingCheckout = false
         shared.activeCheckoutController = nil
-        shared.diContainer = nil
-        shared.navigator = nil
     }
 
     private func findPresentingViewController() -> UIViewController? {

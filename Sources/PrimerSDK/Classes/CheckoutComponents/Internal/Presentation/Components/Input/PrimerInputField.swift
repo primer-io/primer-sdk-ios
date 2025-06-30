@@ -101,13 +101,8 @@ struct PrimerInputField: View {
 
     /// Determines the label font using design tokens.
     private var labelFont: Font {
-        if let fontName = tokens?.primerTypographyBodyMediumFont,
-           let fontSize = tokens?.primerTypographyBodyMediumSize,
-           let fontWeight = tokens?.primerTypographyBodyMediumWeight {
-            return Font.custom(fontName, size: fontSize)
-                .weight(mapCGFloatToFontWeight(fontWeight))
-        }
-        return .caption
+        guard let tokens = tokens else { return .caption }
+        return PrimerFont.bodyMedium(tokens: tokens)
     }
 
     /// Determines the color for the leading icon.
@@ -216,7 +211,7 @@ struct PrimerInputField: View {
             // Error text or supporting text below the input field
             if isError, let errorMessage = resolveErrorMessage() {
                 Text(errorMessage)
-                    .font(.caption)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
                     .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
                     .transition(.asymmetric(
                         insertion: .move(edge: .leading).combined(with: .opacity),
@@ -224,7 +219,7 @@ struct PrimerInputField: View {
                     ))
             } else if let supportingText = supportingText {
                 Text(supportingText)
-                    .font(.caption)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     .transition(.opacity)
             }
@@ -246,20 +241,6 @@ struct PrimerInputField: View {
         return validationError as? String
     }
 
-    /// Maps CGFloat font weight values to SwiftUI Font.Weight enum cases
-    private func mapCGFloatToFontWeight(_ weight: CGFloat) -> Font.Weight {
-        switch weight {
-        case ...200: return .ultraLight
-        case 200..<300: return .thin
-        case 300..<400: return .light
-        case 400..<500: return .regular
-        case 500..<600: return .medium
-        case 600..<700: return .semibold
-        case 700..<800: return .bold
-        case 800..<900: return .heavy
-        default: return .black
-        }
-    }
 }
 
 // MARK: - Configuration Helpers

@@ -32,6 +32,9 @@ internal struct CardNumberInputField: View, LogReporter {
     /// Callback when available networks are detected for co-badged cards
     let onNetworksDetected: (([CardNetwork]) -> Void)?
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -53,78 +56,154 @@ internal struct CardNumberInputField: View, LogReporter {
     /// Surcharge amount for the detected network
     @State private var surchargeAmount: String?
 
+    /// Focus state for input field styling
+    @FocusState private var isFocused: Bool
+
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
+
+    /// Creates a new CardNumberInputField with comprehensive customization support
+    internal init(
+        label: String,
+        placeholder: String,
+        modifier: PrimerModifier = PrimerModifier(),
+        onCardNumberChange: ((String) -> Void)? = nil,
+        onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil,
+        onNetworksDetected: (([CardNetwork]) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.modifier = modifier
+        self.onCardNumberChange = onCardNumberChange
+        self.onCardNetworkChange = onCardNetworkChange
+        self.onValidationChange = onValidationChange
+        self.onNetworksDetected = onNetworksDetected
+    }
+
+    // MARK: - Computed Properties
+
+    /// Dynamic border color based on field state
+    private var borderColor: Color {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return tokens?.primerColorBorderOutlinedError ?? .red
+        } else if isFocused {
+            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+        } else {
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+        }
+    }
 
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
             // Label
             Text(label)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Card input field with network icon and surcharge
-            HStack(spacing: 8) {
-                if let validationService = validationService {
-                    CardNumberTextField(
-                        cardNumber: $cardNumber,
-                        isValid: $isValid,
-                        cardNetwork: $cardNetwork,
-                        errorMessage: $errorMessage,
-                        placeholder: placeholder,
-                        validationService: validationService,
-                        onCardNumberChange: onCardNumberChange,
-                        onCardNetworkChange: { network in
-                            onCardNetworkChange?(network)
-                            updateSurchargeAmount(for: network)
-                        },
-                        onValidationChange: onValidationChange,
-                        onNetworksDetected: onNetworksDetected
+            // Card input field with integrated network icon
+            ZStack {
+                // Background and border styling
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    .fill(tokens?.primerColorBackground ?? Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                            .stroke(borderColor, lineWidth: 1)
+                            .animation(.easeInOut(duration: 0.2), value: borderColor)
                     )
-                    .padding()
-                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                    .cornerRadius(8)
-                } else {
-                    // Fallback view while loading validation service
-                    TextField(placeholder, text: .constant(""))
-                        .disabled(true)
-                        .padding()
-                        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                        .cornerRadius(8)
+                    .shadow(
+                        color: Color.black.opacity(0.04),
+                        radius: tokens?.primerSpaceXsmall ?? 2,
+                        x: 0,
+                        y: 1
+                    )
+
+                // Input field content
+                HStack {
+                    if let validationService = validationService {
+                        CardNumberTextField(
+                            cardNumber: $cardNumber,
+                            isValid: $isValid,
+                            cardNetwork: $cardNetwork,
+                            errorMessage: $errorMessage,
+                            isFocused: $isFocused,
+                            placeholder: placeholder,
+                            validationService: validationService,
+                            onCardNumberChange: onCardNumberChange,
+                            onCardNetworkChange: { network in
+                                onCardNetworkChange?(network)
+                                updateSurchargeAmount(for: network)
+                            },
+                            onValidationChange: onValidationChange,
+                            onNetworksDetected: onNetworksDetected
+                        )
+                        .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                        .padding(.trailing, cardNetwork != .unknown ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
+                        .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    } else {
+                        // Fallback view while loading validation service
+                        TextField(placeholder, text: .constant(""))
+                            .disabled(true)
+                            .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.trailing, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    }
+
+                    Spacer()
                 }
 
-                // Card network icon and surcharge display
-                if cardNetwork != .unknown {
-                    HStack(spacing: 4) {
-                        if let icon = cardNetwork.icon {
-                            Image(uiImage: icon)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 36, height: 24)
-                        }
+                // Right side overlay (error icon, card network icon, or surcharge)
+                HStack {
+                    Spacer()
 
-                        // Surcharge amount display (similar to Drop-in design)
-                        if let surchargeAmount = surchargeAmount {
-                            Text(surchargeAmount)
-                                .font(.caption)
-                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(tokens?.primerColorGray200 ?? Color(.systemGray5))
-                                .cornerRadius(4)
+                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                        // Error icon when validation fails
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    } else if cardNetwork != .unknown {
+                        // Card network icon and surcharge when no error
+                        VStack(spacing: 2) {
+                            // Card network icon
+                            if let icon = cardNetwork.icon {
+                                Image(uiImage: icon)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: tokens?.primerSizeLarge ?? 28, height: tokens?.primerSizeMedium ?? 20)
+                            }
+
+                            // Surcharge amount display
+                            if let surchargeAmount = surchargeAmount {
+                                Text(surchargeAmount)
+                                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption2)
+                                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                                    .padding(.horizontal, 4)
+                                    .padding(.vertical, 1)
+                                    .background(tokens?.primerColorGray200 ?? Color(.systemGray5))
+                                    .cornerRadius(3)
+                            }
                         }
+                        .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
                     }
                 }
             }
+            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
-                .font(.caption)
-                .foregroundColor(.red)
-                .padding(.top, 2)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
+                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
+        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
         }
@@ -164,6 +243,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var isValid: Bool?
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
+    @FocusState.Binding var isFocused: Bool
     let placeholder: String
     let validationService: ValidationService
     let onCardNumberChange: ((String) -> Void)?
@@ -177,7 +257,8 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         textField.keyboardType = .numberPad
         textField.placeholder = placeholder
         textField.borderStyle = .none
-        textField.font = UIFont.preferredFont(forTextStyle: .body)
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.backgroundColor = .clear
 
         // Add a "Done" button to the keyboard
         let toolbar = UIToolbar()
@@ -204,6 +285,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             cardNetwork: $cardNetwork,
             isValid: $isValid,
             errorMessage: $errorMessage,
+            isFocused: $isFocused,
             onCardNumberChange: onCardNumberChange,
             onCardNetworkChange: onCardNetworkChange,
             onValidationChange: onValidationChange,
@@ -231,6 +313,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         @Binding private var cardNetwork: CardNetwork
         @Binding private var isValid: Bool?
         @Binding private var errorMessage: String?
+        @FocusState.Binding private var isFocused: Bool
         private let onCardNumberChange: ((String) -> Void)?
         private let onCardNetworkChange: ((CardNetwork) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
@@ -248,6 +331,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             cardNetwork: Binding<CardNetwork>,
             isValid: Binding<Bool?>,
             errorMessage: Binding<String?>,
+            isFocused: FocusState<Bool>.Binding,
             onCardNumberChange: ((String) -> Void)?,
             onCardNetworkChange: ((CardNetwork) -> Void)?,
             onValidationChange: ((Bool) -> Void)?,
@@ -258,6 +342,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             self._cardNetwork = cardNetwork
             self._isValid = isValid
             self._errorMessage = errorMessage
+            self._isFocused = isFocused
             self.onCardNumberChange = onCardNumberChange
             self.onCardNetworkChange = onCardNetworkChange
             self.onValidationChange = onValidationChange
@@ -269,10 +354,12 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
+            isFocused = true
             errorMessage = nil
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
+            isFocused = false
             // Use full validation when field loses focus
             validateCardNumberFully(cardNumber)
         }
