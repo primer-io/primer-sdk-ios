@@ -28,6 +28,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
         batches.append(body)
+        self.onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
         } else {
