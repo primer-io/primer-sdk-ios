@@ -48,7 +48,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
         url: URL,
         scheme: String
     ) async throws -> URL {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             let webAuthSession = ASWebAuthenticationSession(
                 url: url,
                 callbackURLScheme: scheme,
@@ -73,9 +73,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
     }
 }
 
-@available(iOS 11.0, *)
 extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContextProviding {
-    @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
