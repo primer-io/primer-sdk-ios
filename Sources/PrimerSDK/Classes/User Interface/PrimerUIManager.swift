@@ -165,8 +165,7 @@ final class PrimerUIManager: PrimerUIManaging {
 
         if PrimerUIManager.primerWindow == nil {
             if let windowScene = UIApplication.shared.connectedScenes
-                .filter({ $0.activationState == .foregroundActive })
-                .first as? UIWindowScene {
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 primerWindow = UIWindow(windowScene: windowScene)
             } else {
                 // Not opted-in in UISceneDelegate
