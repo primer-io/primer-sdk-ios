@@ -797,7 +797,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     // MARK: - Screen Customization
 
-    public var screen: ((_ scope: PrimerCardFormScope) -> AnyView)?
+    public var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)?
     public var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)?
     public var cardDetails: ((_ modifier: PrimerModifier) -> AnyView)?
     public var billingAddress: ((_ modifier: PrimerModifier) -> AnyView)?

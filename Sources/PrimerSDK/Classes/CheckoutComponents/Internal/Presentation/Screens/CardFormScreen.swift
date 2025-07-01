@@ -10,7 +10,7 @@ import SwiftUI
 /// Default card form screen for CheckoutComponents
 @available(iOS 15.0, *)
 internal struct CardFormScreen: View {
-    let scope: PrimerCardFormScope
+    let scope: any PrimerCardFormScope
 
     @Environment(\.designTokens) private var tokens
     @State private var cardFormState: PrimerCardFormState = .init()

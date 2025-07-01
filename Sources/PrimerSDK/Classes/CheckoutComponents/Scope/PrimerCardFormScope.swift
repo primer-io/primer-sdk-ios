@@ -117,7 +117,7 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
 
     /// The entire card form screen.
     /// Default implementation provides standard card form layout.
-    var screen: ((_ scope: PrimerCardFormScope) -> AnyView)? { get set }
+    var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)? { get set }
 
     /// Submit button component.
     var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)? { get set }

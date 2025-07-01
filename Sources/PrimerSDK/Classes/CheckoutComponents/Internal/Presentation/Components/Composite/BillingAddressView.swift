@@ -67,7 +67,7 @@ internal struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
     /// The card form scope for handling updates
-    let cardFormScope: PrimerCardFormScope
+    let cardFormScope: any PrimerCardFormScope
 
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration

@@ -21,7 +21,7 @@ internal struct CardDetailsView: View {
     // MARK: - Properties
 
     /// The card form scope for handling updates
-    let cardFormScope: PrimerCardFormScope
+    let cardFormScope: any PrimerCardFormScope
 
     /// Currently detected card network
     @State private var cardNetwork: CardNetwork = .unknown

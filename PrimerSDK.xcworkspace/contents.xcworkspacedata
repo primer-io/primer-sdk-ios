@@ -538,9 +538,6 @@
                   </FileRef>
                </Group>
                <FileRef
-                  location = "group:_PaymentAPIModel.swift">
-               </FileRef>
-               <FileRef
                   location = "group:VoucherValue.swift">
                </FileRef>
                <FileRef
@@ -824,9 +821,6 @@
                </FileRef>
                <FileRef
                   location = "group:UIDeviceExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerImage.swift">
                </FileRef>
                <FileRef
                   location = "group:ApplePayUtils.swift">
