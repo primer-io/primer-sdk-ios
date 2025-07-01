@@ -614,7 +614,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             if let urlStr = PrimerSettings.current.paymentMethodOptions.threeDsOptions?.threeDsAppRequestorUrl,
                urlStr.hasPrefix("https"),
                let url = URL(string: urlStr) {
-                // All good, url value is valid and https
                 threeDsAppRequestorUrl = url
             } else {
                 let message =
@@ -649,7 +648,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                     switch beginAuthResponse.authentication.responseCode {
                     case .authSuccess,
                          .authFailed,
-                         .METHOD, // Only applies on Web
+                         .METHOD,
                          .notPerformed,
                          .skipped:
                         self.resumePaymentToken = beginAuthResponse.resumeToken
@@ -802,7 +801,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
             threeDSSDKWindow = UIWindow(windowScene: windowScene)
         } else {
-            // Not opted-in in UISceneDelegate
             threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
         }
 
@@ -1065,7 +1063,7 @@ private extension ThreeDSService {
                                 paymentMethodType: paymentMethodType,
                                 userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString,
-                                initProtocolVersion: initProtocolVersion?.rawValue,
+                                initProtocolVersion: self.initProtocolVersion?.rawValue,
                                 errorInfo: Primer3DSErrorInfo(primer3DSError)
                             )
                         )
