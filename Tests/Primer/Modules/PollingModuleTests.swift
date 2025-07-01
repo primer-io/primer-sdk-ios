@@ -140,7 +140,7 @@ class PollingModuleTests: XCTestCase {
         wait(for: [expectation], timeout: 30.0)
     }
 
-    func test_polling_failure_due_to_client_token_async()async throws {
+    func test_polling_failure_due_to_client_token_async() async throws {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
@@ -155,12 +155,10 @@ class PollingModuleTests: XCTestCase {
 
         do {
             _ = try await pollingModule.start()
-            XCTAssert(false, "Polling succeeded, but it should fail with error .invalidClientToken")
+            XCTFail("Polling succeeded, but it should fail with error .invalidClientToken")
         } catch {
-            if let primerErr = error as? PrimerError, case .invalidClientToken = primerErr {
-
-            } else {
-                XCTAssert(false, "Polling failed with error \(error.localizedDescription), but it should fail with error .invalidClientToken")
+            guard let primerErr = error as? PrimerError, case .invalidClientToken = primerErr else {
+                return XCTFail("Polling failed with error \(error.localizedDescription), but it should fail with error .invalidClientToken")
             }
         }
     }
