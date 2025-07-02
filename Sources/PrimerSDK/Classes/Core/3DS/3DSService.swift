@@ -737,7 +737,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 from: Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
             ))
         }
-        
+
         let rootViewController = ClearViewController()
         let window: UIWindow
         if let windowScene = UIApplication.shared.connectedScenes
@@ -751,7 +751,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         window.backgroundColor = UIColor.clear
         window.windowLevel = UIWindow.Level.normal
         window.makeKeyAndVisible()
-        
+
         threeDSSDKWindow = window
 
         let present3DSUIEvent = Analytics.Event.ui(
@@ -765,6 +765,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         )
 
         // MARK: REVIEW_CHECK - Should this be fire and forget?
+
         try await Analytics.Service.record(events: [present3DSUIEvent])
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -775,7 +776,9 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             ) { [weak self] primer3DSCompletion, err in
                 guard let self else { return }
                 if let primer3DSError = err as? Primer3DSError {
-                    continuation.resume(throwing: InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(from: primer3DSError)))
+                    continuation.resume(
+                        throwing: InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(from: primer3DSError))
+                    )
                 } else if let primer3DSCompletion {
                     continuation.resume(returning: primer3DSCompletion)
                 } else {
