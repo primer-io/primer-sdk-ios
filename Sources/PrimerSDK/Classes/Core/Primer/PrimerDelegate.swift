@@ -56,6 +56,14 @@ final class PrimerDelegateProxy: LogReporter {
         }
     }
 
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerResumeDecisionProtocol {
+        await withCheckedContinuation { continuation in
+            PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
+                continuation.resume(returning: resumeDecision)
+            }
+        }
+    }
+
     static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
@@ -65,6 +73,14 @@ final class PrimerDelegateProxy: LogReporter {
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            }
+        }
+    }
+
+    static func primerDidResumeWith(_ resumeToken: String) async throws -> PrimerResumeDecisionProtocol {
+        await withCheckedContinuation { continuation in
+            PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
+                continuation.resume(returning: resumeDecision)
             }
         }
     }
@@ -87,6 +103,14 @@ final class PrimerDelegateProxy: LogReporter {
                     decisionHandler(.continuePaymentCreation())
                 }
             }
+        }
+    }
+
+    static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData) async throws -> PrimerPaymentCreationDecision {
+        await withCheckedContinuation { continuation in
+            PrimerDelegateProxy.primerWillCreatePaymentWithData(data, decisionHandler: { paymentCreationDecision in
+                continuation.resume(returning: paymentCreationDecision)
+            })
         }
     }
 
@@ -208,6 +232,19 @@ No custom error message will be displayed on the error screen.
                     switch errorDecision.type {
                     case .fail(let message):
                         seal.fulfill(message)
+                    }
+                }
+            }
+        }
+    }
+
+    static func raisePrimerDidFailWithError(_ primerError: PrimerError, data: PrimerCheckoutData?) async throws -> String? {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        continuation.resume(returning: message)
                     }
                 }
             }
