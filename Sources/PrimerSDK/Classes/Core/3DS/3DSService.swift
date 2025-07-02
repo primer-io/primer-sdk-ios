@@ -482,24 +482,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             guard let primer3DSError = error as? Primer3DSError else {
                 throw InternalError.failedToPerform3dsAndShouldBreak(error: error)
             }
-            let err = Primer3DSErrorContainer.primer3DSSdkError(
-                paymentMethodType: paymentMethodType,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString,
-                initProtocolVersion: initProtocolVersion?.rawValue,
-                errorInfo: Primer3DSErrorInfo(
-                    errorId: primer3DSError.errorId,
-                    errorDescription: primer3DSError.errorDescription,
-                    recoverySuggestion: primer3DSError.recoverySuggestion,
-                    threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                    threeDsErrorType: primer3DSError.threeDsErrorType,
-                    threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                    threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                    threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                    threeDsErrorDetail: primer3DSError.threeDsErrorDetail
-                )
-            )
-            throw InternalError.failedToPerform3dsButShouldContinue(error: err)
+            throw InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(from: primer3DSError))
         }
     }
 
@@ -750,38 +733,26 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         threeDsAppRequestorUrl: URL?
     ) async throws -> Primer3DSCompletion {
         guard let primer3DS else {
-            let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
-            let err = Primer3DSErrorContainer.primer3DSSdkError(
-                paymentMethodType: paymentMethodType,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString,
-                initProtocolVersion: initProtocolVersion?.rawValue,
-                errorInfo: Primer3DSErrorInfo(
-                    errorId: primer3DSError.errorId,
-                    errorDescription: primer3DSError.errorDescription,
-                    recoverySuggestion: primer3DSError.recoverySuggestion,
-                    threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                    threeDsErrorType: primer3DSError.threeDsErrorType,
-                    threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                    threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                    threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                    threeDsErrorDetail: primer3DSError.threeDsErrorDetail
-                )
-            )
-            throw InternalError.failedToPerform3dsButShouldContinue(error: err)
+            throw InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(
+                from: Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
+            ))
         }
-
+        
+        let rootViewController = ClearViewController()
+        let window: UIWindow
         if let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            threeDSSDKWindow = UIWindow(windowScene: windowScene)
+            window = UIWindow(windowScene: windowScene)
         } else {
-            threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            window = UIWindow(frame: UIScreen.main.bounds)
         }
 
-        threeDSSDKWindow!.rootViewController = ClearViewController()
-        threeDSSDKWindow!.backgroundColor = UIColor.clear
-        threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
-        threeDSSDKWindow!.makeKeyAndVisible()
+        window.rootViewController = rootViewController
+        window.backgroundColor = UIColor.clear
+        window.windowLevel = UIWindow.Level.normal
+        window.makeKeyAndVisible()
+        
+        threeDSSDKWindow = window
 
         let present3DSUIEvent = Analytics.Event.ui(
             action: Analytics.Event.Property.Action.present,
@@ -800,27 +771,11 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             primer3DS.performChallenge(
                 threeDSAuthData: threeDSAuthData,
                 threeDsAppRequestorUrl: threeDsAppRequestorUrl,
-                presentOn: threeDSSDKWindow!.rootViewController!
+                presentOn: rootViewController
             ) { [weak self] primer3DSCompletion, err in
+                guard let self else { return }
                 if let primer3DSError = err as? Primer3DSError {
-                    let err = Primer3DSErrorContainer.primer3DSSdkError(
-                        paymentMethodType: self?.paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString,
-                        initProtocolVersion: self?.initProtocolVersion?.rawValue,
-                        errorInfo: Primer3DSErrorInfo(
-                            errorId: primer3DSError.errorId,
-                            errorDescription: primer3DSError.errorDescription,
-                            recoverySuggestion: primer3DSError.recoverySuggestion,
-                            threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                            threeDsErrorType: primer3DSError.threeDsErrorType,
-                            threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                            threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                            threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                            threeDsErrorDetail: primer3DSError.threeDsErrorDetail
-                        )
-                    )
-                    continuation.resume(throwing: InternalError.failedToPerform3dsButShouldContinue(error: err))
+                    continuation.resume(throwing: InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(from: primer3DSError)))
                 } else if let primer3DSCompletion {
                     continuation.resume(returning: primer3DSCompletion)
                 } else {
@@ -1060,17 +1015,7 @@ private extension ThreeDSService {
 
             } catch {
                 if let primer3DSError = error as? Primer3DSError {
-                    throw(
-                        InternalError.failedToPerform3dsButShouldContinue(
-                            error: Primer3DSErrorContainer.primer3DSSdkError(
-                                paymentMethodType: paymentMethodType,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString,
-                                initProtocolVersion: self.initProtocolVersion?.rawValue,
-                                errorInfo: Primer3DSErrorInfo(primer3DSError)
-                            )
-                        )
-                    )
+                    throw (InternalError.failedToPerform3dsButShouldContinue(error: createPrimer3DSError(from: primer3DSError)))
                 } else {
                     throw(InternalError.failedToPerform3dsAndShouldBreak(error: error))
                 }
@@ -1089,19 +1034,29 @@ private extension ThreeDSService {
             )
         }
     }
+
+    private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
+        return Primer3DSErrorContainer.primer3DSSdkError(
+            paymentMethodType: self.paymentMethodType,
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString,
+            initProtocolVersion: self.initProtocolVersion?.rawValue,
+            errorInfo: Primer3DSErrorInfo(primer3DSError)
+        )
+    }
 }
 
 private extension Primer3DSErrorInfo {
-    init(_ error: Primer3DSError) {
-        errorId = error.errorId
-        errorDescription = error.errorDescription
-        recoverySuggestion = error.recoverySuggestion
-        threeDsErrorCode = error.threeDsErrorCode
-        threeDsErrorType = error.threeDsErrorType
-        threeDsErrorComponent = error.threeDsErrorComponent
-        threeDsSdkTranscationId = error.threeDsSdkTranscationId
-        threeDsSErrorVersion = error.threeDsSErrorVersion
-        threeDsErrorDetail = error.threeDsErrorDetail
+    init(_ primer3DSError: Primer3DSError) {
+        errorId = primer3DSError.errorId
+        errorDescription = primer3DSError.errorDescription
+        recoverySuggestion = primer3DSError.recoverySuggestion
+        threeDsErrorCode = primer3DSError.threeDsErrorCode
+        threeDsErrorType = primer3DSError.threeDsErrorType
+        threeDsErrorComponent = primer3DSError.threeDsErrorComponent
+        threeDsSdkTranscationId = primer3DSError.threeDsSdkTranscationId
+        threeDsSErrorVersion = primer3DSError.threeDsSErrorVersion
+        threeDsErrorDetail = primer3DSError.threeDsErrorDetail
     }
 }
 #endif
