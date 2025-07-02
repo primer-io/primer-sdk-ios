@@ -272,7 +272,6 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     }
 
     #if canImport(Primer3DS)
-    
     private func cleanup() {
         let dismiss3DSUIEvent = Analytics.Event.ui(
             action: .dismiss,
@@ -372,7 +371,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             throw error.primerError
         }
     }
-    
+
     private func initializePrimer3DSSdk() -> Promise<Void> {
         Promise { seal in
             do {
@@ -880,7 +879,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         }
     }
     #else
-    
     private func handleMissingSDK(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String {
         let missingSdkErr = Primer3DSErrorContainer.missingSdkDependency(
             userInfo: .errorUserInfoDictionary(),
@@ -909,7 +907,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             throw error.primerError
         }
     }
-    
     #endif
 
     private func finalize3DSAuthorization(
