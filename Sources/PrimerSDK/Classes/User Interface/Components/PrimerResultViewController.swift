@@ -24,18 +24,7 @@ final class PrimerResultViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: nil,
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .errorScreen
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        postUIEvent(.view, type: .view, in: .errorScreen)
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
 
         let successImage: UIImage? = .checkCircle

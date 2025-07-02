@@ -25,21 +25,10 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
     private var cardButtonViewModel: CardButtonViewModel?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: nil,
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .universalCheckout
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        postUIEvent(.view, type: .view, in: .universalCheckout)
         title = Strings.CheckoutView.navBarTitle
         view.backgroundColor = theme.view.backgroundColor
 
@@ -257,17 +246,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     @objc
     func seeAllButtonTapped(_ sender: Any) {
-        let uiEvent = Analytics.Event.ui(
-            action: .click,
-            context: nil,
-            extra: nil,
-            objectType: .button,
-            objectId: .seeAll,
-            objectClass: "\(Self.self)",
-            place: .universalCheckout
-        )
-        Analytics.Service.record(event: uiEvent)
-
+        postUIEvent(.click, type: .button, in: .universalCheckout, id: .seeAll)
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -282,60 +261,21 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type == selectedPaymentMethodType }).first else {
             return
         }
-
-        let viewEvent = Analytics.Event.ui(
-            action: .click,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: config.type,
-                url: nil),
-            extra: nil,
-            objectType: .button,
-            objectId: .pay,
-            objectClass: "\(Self.self)",
-            place: .universalCheckout
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        let context = AnalyticsContext(paymentMethodType: config.type)
+        postUIEvent(.click, context: context, type: .button, in: .universalCheckout, id: .pay)
         if let captureVaultedCardCvv = (config.options as? CardOptions)?.captureVaultedCardCvv,
            captureVaultedCardCvv == true,
            config.internalPaymentMethodType == .paymentCard {
             let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
             cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
-            cvvViewController.viewModel.didSubmitCvv = { cvv in
+            cvvViewController.viewModel.didSubmitCvv = { [weak self] cvv in
                 let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
                 startCheckout(withAdditionalData: cvvData)
-
-                let submitEvent = Analytics.Event.ui(
-                    action: .click,
-                    context: Analytics.Event.Property.Context(
-                        issuerId: nil,
-                        paymentMethodType: config.type,
-                        url: nil),
-                    extra: nil,
-                    objectType: .button,
-                    objectId: .submit,
-                    objectClass: "\(Self.self)",
-                    place: .cvvRecapture
-                )
-                Analytics.Service.record(event: submitEvent)
+                self?.postUIEvent(.click, context: context, type: .button, in: .cvvRecapture, id: .submit)
             }
 
             PrimerUIManager.primerRootViewController?.show(viewController: cvvViewController, animated: true)
-
-            let viewEvent = Analytics.Event.ui(
-                action: .present,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .cvvRecapture
-            )
-            Analytics.Service.record(event: viewEvent)
+            postUIEvent(.present, context: context, type: .view, in: .cvvRecapture)
         } else {
             startCheckout(withAdditionalData: nil)
         }

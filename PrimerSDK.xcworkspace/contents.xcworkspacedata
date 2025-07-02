@@ -1000,6 +1000,9 @@
                      location = "group:AnalyticsEvent.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:Analytics+UIViewController.swift">
+                  </FileRef>
+                  <FileRef
                      location = "group:AnalyticsService.swift">
                   </FileRef>
                   <FileRef
