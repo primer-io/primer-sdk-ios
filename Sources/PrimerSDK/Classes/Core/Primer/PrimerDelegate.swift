@@ -57,7 +57,7 @@ final class PrimerDelegateProxy: LogReporter {
     }
 
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerResumeDecisionProtocol {
-        return try await withCheckedThrowingContinuation { continuation in
+        await withCheckedContinuation { continuation in
             PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
                 continuation.resume(returning: resumeDecision)
             }
@@ -78,7 +78,7 @@ final class PrimerDelegateProxy: LogReporter {
     }
 
     static func primerDidResumeWith(_ resumeToken: String) async throws -> PrimerResumeDecisionProtocol {
-        return try await withCheckedThrowingContinuation { continuation in
+        await withCheckedContinuation { continuation in
             PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
                 continuation.resume(returning: resumeDecision)
             }
@@ -107,7 +107,7 @@ final class PrimerDelegateProxy: LogReporter {
     }
 
     static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData) async throws -> PrimerPaymentCreationDecision {
-        return try await withCheckedThrowingContinuation { continuation in
+        await withCheckedContinuation { continuation in
             PrimerDelegateProxy.primerWillCreatePaymentWithData(data, decisionHandler: { paymentCreationDecision in
                 continuation.resume(returning: paymentCreationDecision)
             })

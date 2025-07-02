@@ -507,12 +507,11 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func startPaymentFlowAndFetchDecodedClientToken(
             withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
-        ) async throws
-            -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
+        ) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
             if PrimerSettings.current.paymentHandling == .manual {
-                return try await startManualPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
+                try await startManualPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
             } else {
-                return try await startAutomaticPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
+                try await startAutomaticPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
             }
         }
 
@@ -541,7 +540,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 case .fail(let message):
                     var merchantErr: Error!
-                    if let message = message {
+                    if let message {
                         let err = PrimerError.merchantError(message: message,
                                                             userInfo: .errorUserInfoDictionary(),
                                                             diagnosticsId: UUID().uuidString)
@@ -839,8 +838,7 @@ extension PrimerHeadlessUniversalCheckout {
             _ decodedJWTToken: DecodedJWTToken,
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> String? {
-            let threeDSService = ThreeDSService()
-            return try await threeDSService.perform3DS(
+            try await ThreeDSService().perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil
             )
@@ -870,8 +868,8 @@ extension PrimerHeadlessUniversalCheckout {
 
                     self?.webViewCompletion = nil
                     self?.webViewController?.dismiss(animated: true, completion: { [weak self] in
-                        guard let strongSelf = self else { return }
-                        strongSelf.webViewController = nil
+                        guard let self else { return }
+                        webViewController = nil
                     })
                 }
             }
@@ -1020,9 +1018,9 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
             if PrimerSettings.current.paymentHandling == .manual {
-                return try await handleManualResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                try await handleManualResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
             } else {
-                return try await handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                try await handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
             }
         }
 
@@ -1048,8 +1046,7 @@ extension PrimerHeadlessUniversalCheckout {
                 case .continueWithNewClientToken:
                     return nil
                 }
-            } else if let _ = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                // No need to continue if manually handling resume
+            } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                 self.paymentCheckoutData = nil
                 // TODO: REVIEW_CHECK - What should we return here?
                 return nil
@@ -1061,7 +1058,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-            guard let resumePaymentId = resumePaymentId else {
+            guard let resumePaymentId else {
                 let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
                                                                     value: "Resume Payment ID not valid",
                                                                     userInfo: .errorUserInfoDictionary(),
@@ -1082,8 +1079,9 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
-            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-            return try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+            try await createResumePaymentService.createPayment(
+                paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)
+            )
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
@@ -1093,9 +1091,10 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
-            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-            return try await createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                                   paymentResumeRequest: resumeRequest)
+            try await createResumePaymentService.resumePaymentWithPaymentId(
+                resumePaymentId,
+                paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)
+            )
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
@@ -1152,7 +1151,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         @MainActor
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
-            return try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self
 
@@ -1178,10 +1177,7 @@ extension PrimerHeadlessUniversalCheckout {
                     if PrimerUIManager.primerRootViewController == nil {
                         do {
                             try await PrimerUIManager.prepareRootViewController()
-                        } catch {
-                            // MARK: REVIEW_CHECK - What should we do here?
-                            // continuation.resume(throwing: error)
-                        }
+                        } catch {}
                     }
 
                     PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
