@@ -88,7 +88,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         headlessCheckoutDelegate.onDidFail = { error in
@@ -138,7 +138,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         headlessCheckoutDelegate.onDidFail = { error in
@@ -184,7 +184,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectResumePayment = self.expectation(description: "On resume payment")
@@ -221,7 +221,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Result.success(self.primerPaymentMethodTokenData)
+            return .success(self.primerPaymentMethodTokenData)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -396,6 +396,14 @@ private class MockVaultService: VaultServiceProtocol {
         return Promise.value
     }
 
+    func fetchVaultedPaymentMethods() async throws {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        let paymentMethod = Mocks.primerPaymentMethodTokenData
+        paymentMethod.paymentInstrumentData = Mocks.primerPaymentMethodInstrumentationData
+        appState.paymentMethods = [paymentMethod]
+        appState.selectedPaymentMethodId = Mocks.primerPaymentMethodTokenData.id
+    }
+
     func deleteVaultedPaymentMethod(with id: String) -> PrimerSDK.Promise<Void> {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         if Mocks.primerPaymentMethodTokenData.id == id {
@@ -406,4 +414,11 @@ private class MockVaultService: VaultServiceProtocol {
         return Promise.value
     }
 
+    func deleteVaultedPaymentMethod(with id: String) async throws {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        if Mocks.primerPaymentMethodTokenData.id == id {
+            appState.paymentMethods = []
+            appState.selectedPaymentMethodId = nil
+        }
+    }
 }
