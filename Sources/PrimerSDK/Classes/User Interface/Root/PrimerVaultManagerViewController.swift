@@ -20,18 +20,7 @@ final class PrimerVaultManagerViewController: PrimerFormViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: nil,
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .vaultManager
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        postUIEvent(.view, type: .view, in: .vaultManager)
         title = Strings.CardFormView.vaultNavBarTitle
 
         view.backgroundColor = theme.view.backgroundColor

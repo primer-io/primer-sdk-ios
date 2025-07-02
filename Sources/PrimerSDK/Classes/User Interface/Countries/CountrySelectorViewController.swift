@@ -20,20 +20,8 @@ final class CountrySelectorViewController: PrimerFormViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
-                url: nil),
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .countrySelectionList
-        )
-        Analytics.Service.record(event: viewEvent)
+        let context = AnalyticsContext(paymentMethodType: viewModel.config.type)
+        postUIEvent(.view, context: context, type: .view, in: .countrySelectionList)
 
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false

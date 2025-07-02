@@ -17,6 +17,9 @@ final class CVVRecaptureViewController: UIViewController {
     private var cvvField: PrimerCVVFieldView!
     private var cvvContainerView: PrimerCustomFieldView!
     private let continueButton = PrimerButton()
+    
+    private var paymentMethodType: String { viewModel.cardButtonViewModel.paymentMethodType.rawValue }
+    private var analyticsContext: AnalyticsContext { AnalyticsContext(paymentMethodType: paymentMethodType) }
 
     // Designated initializer
     init(viewModel: CVVRecaptureViewModel) {
@@ -42,37 +45,12 @@ final class CVVRecaptureViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let didAppearEvent = Analytics.Event.ui(
-            action: .present,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: viewModel.cardButtonViewModel.paymentMethodType.rawValue,
-                url: nil),
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .cvvRecapture
-        )
-        Analytics.Service.record(event: didAppearEvent)
+        postUIEvent(.present, context: analyticsContext, type: .view, in: .cvvRecapture)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        let dismissEvent = Analytics.Event.ui(
-            action: .dismiss,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: viewModel.cardButtonViewModel.paymentMethodType.rawValue,
-                url: nil),
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .cvvRecapture
-        )
-        Analytics.Service.record(event: dismissEvent)
+        postUIEvent(.dismiss, context: analyticsContext, type: .view, in: .cvvRecapture)
     }
 
     private func bindViewModel() {

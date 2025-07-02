@@ -25,21 +25,8 @@ final class PrimerTestPaymentMethodViewController: PrimerFormViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
-                url: nil),
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .bankSelectionList
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        let context = AnalyticsContext(paymentMethodType: viewModel.config.type)
+        postUIEvent(.view, context: context, type: .view, in: .bankSelectionList)
         setupView()
     }
 }
