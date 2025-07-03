@@ -859,11 +859,11 @@ extension PrimerHeadlessUniversalCheckout {
             // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
             defer {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
-                    self?.webViewCompletion = nil
-                    self?.webViewController?.dismiss(animated: true, completion: { [weak self] in
+                    self.webViewCompletion = nil
+                    self.webViewController?.dismiss(animated: true, completion: { [weak self] in
                         guard let self else { return }
                         webViewController = nil
                     })
@@ -1141,8 +1141,9 @@ extension PrimerHeadlessUniversalCheckout {
         @MainActor
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                self.webViewController = SFSafariViewController(url: redirectUrl)
-                self.webViewController!.delegate = self
+                let safariViewController = SFSafariViewController(url: redirectUrl)
+                safariViewController.delegate = self
+                self.webViewController = safariViewController
 
                 self.webViewCompletion = { _, err in
                     if let err {
@@ -1153,7 +1154,7 @@ extension PrimerHeadlessUniversalCheckout {
                 #if DEBUG
                 if TEST {
                     // This ensures that the presentation completion is correctly handled in headless unit tests
-                    guard UIApplication.shared.windows.count > 0 else {
+                    guard !UIApplication.shared.windows.isEmpty else {
                         DispatchQueue.main.async {
                             continuation.resume()
                         }
@@ -1164,12 +1165,10 @@ extension PrimerHeadlessUniversalCheckout {
 
                 Task { @MainActor in
                     if PrimerUIManager.primerRootViewController == nil {
-                        do {
-                            try await PrimerUIManager.prepareRootViewController()
-                        } catch {}
+                        try? await PrimerUIManager.prepareRootViewController()
                     }
 
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                    PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
                         continuation.resume()
                     })
                 }

@@ -194,9 +194,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             request: actionsRequest
         )
 
-        do {
-            _ = try await ImageFileProcessor().process(configuration: configuration)
-        } catch {}
+        try? await ImageFileProcessor().process(configuration: configuration)
+        
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
         let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
@@ -478,22 +477,21 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     )
 
                     let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-                    let (config, responseHeaders) = try await apiClient.fetchConfiguration(
+                    let (configuration, responseHeaders) = try await apiClient.fetchConfiguration(
                         clientToken: clientToken,
                         requestParameters: requestParameters
                     )
-                    do {
-                        try await ImageFileProcessor().process(configuration: config)
-                    } catch {}
+                        
+                    try? await ImageFileProcessor().process(configuration: configuration)
 
                     // Cache the result
                     if self.cachingEnabled {
-                        let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
+                        let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
                         ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
                     }
 
                     self.recordLoadedEvent(start, source: .network)
-                    return config
+                    return configuration
                 }
 
                 PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] = task
@@ -553,8 +551,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         if requestVaultedPaymentMethods {
             let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
             try await vaultService.fetchVaultedPaymentMethods()
-            let apiConfiguration = try await fetchConfiguration(requestDisplayMetadata: true)
-            return apiConfiguration
+            return try await fetchConfiguration(requestDisplayMetadata: true)
         } else {
             return try await fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }

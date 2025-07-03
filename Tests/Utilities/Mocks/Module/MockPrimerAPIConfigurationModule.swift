@@ -5,15 +5,15 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
     static var apiClient: PrimerAPIClientProtocol?
 
     static var clientToken: JWTToken? {
-        return PrimerAPIConfigurationModule.clientToken
+        PrimerAPIConfigurationModule.clientToken
     }
 
     static var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
+        PrimerAPIConfigurationModule.decodedJWTToken
     }
 
     static var apiConfiguration: PrimerAPIConfiguration? {
-        return PrimerAPIConfigurationModule.apiConfiguration
+        PrimerAPIConfigurationModule.apiConfiguration
     }
 
     static func resetSession() {
