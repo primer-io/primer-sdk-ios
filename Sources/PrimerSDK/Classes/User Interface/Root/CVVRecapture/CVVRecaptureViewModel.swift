@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CVVRecaptureViewModel {
+final class CVVRecaptureViewModel {
 
     var didSubmitCvv: ((String) -> Void)?
     var cardButtonViewModel: CardButtonViewModelProtocol!

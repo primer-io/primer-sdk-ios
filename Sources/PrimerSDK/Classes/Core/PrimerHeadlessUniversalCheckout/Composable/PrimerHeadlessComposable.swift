@@ -53,6 +53,7 @@ public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessSt
     func submit()
     func start()
     func makeAndHandleInvalidValueError(forKey key: String)
+    func makeAndHandleNolPayInitializationError()
 }
 
 extension PrimerHeadlessCollectDataComponent {
@@ -70,6 +71,16 @@ extension PrimerHeadlessCollectDataComponent {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in }
         self.errorDelegate?.didReceiveError(error: error)
     }
+
+    public func makeAndHandleNolPayInitializationError() {
+        let error = PrimerError.nolSdkInitError(
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString
+        )
+        ErrorHandler.handle(error: error)
+        self.errorDelegate?.didReceiveError(error: error)
+    }
+
 }
 
 extension PrimerHeadlessAnalyticsRecordable {

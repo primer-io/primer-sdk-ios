@@ -87,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@354a1ad156761f5ee2b7b13fa8e09943a5e8d252  # v1.229.0
+      - uses: ruby/setup-ruby@13e7a03dc3ac6c3798f4570bfead2aed4d96abfb  # v1.244.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -131,7 +131,7 @@ jobs:
           if-no-files-found: error
       - name: Save App Artifact
         id: save_app_artifact_step
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: app_artifact_id
           retention-days: 1

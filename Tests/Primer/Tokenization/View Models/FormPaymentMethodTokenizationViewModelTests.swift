@@ -48,7 +48,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
+            return .success(())
         }
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
@@ -101,7 +101,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
+            return .success(())
         }
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
@@ -130,7 +130,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         //        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
@@ -203,12 +203,8 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
 }

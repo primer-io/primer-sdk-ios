@@ -56,7 +56,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -104,7 +104,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -182,7 +182,7 @@ final class RawDataManagerTests: XCTestCase {
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
-                            with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
+                with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
             )
             expectDidValidate.fulfill()
         }
@@ -190,6 +190,73 @@ final class RawDataManagerTests: XCTestCase {
         sut.submit()
 
         waitForExpectations(timeout: 5.0)
+    }
+
+    func testDelegateNotifiedOnValidation() {
+        // Arrange
+        let expectDidValidate = self.expectation(description: "Delegate was notified")
+        var didCallDelegate = false
+
+        rawDataManagerDelegate.onDataIsValid = { _, _, _ in
+            // Only fulfill the expectation once
+            if !didCallDelegate {
+                didCallDelegate = true
+                expectDidValidate.fulfill()
+            }
+        }
+
+        // Act
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Assert
+        waitForExpectations(timeout: 3.0)
+        XCTAssertTrue(didCallDelegate, "Delegate should have been notified")
+    }
+
+    func testDelegateNotifiedOnConsecutiveValidations() {
+        // Arrange
+        let expectFirstValidation = self.expectation(description: "First validation notification")
+        let expectSecondValidation = self.expectation(description: "Second validation notification")
+        var validationCount = 0
+        var fulfilledFirst = false
+        var fulfilledSecond = false
+
+        rawDataManagerDelegate.onDataIsValid = { _, _, _ in
+            validationCount += 1
+
+            // For the first set of validation callbacks
+            if !fulfilledFirst {
+                fulfilledFirst = true
+                expectFirstValidation.fulfill()
+            }
+            // Only after setting data the second time and not having fulfilled second expectation yet
+            else if validationCount > 1 && !fulfilledSecond {
+                fulfilledSecond = true
+                expectSecondValidation.fulfill()
+            }
+        }
+
+        // Act - First set valid data
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Wait for first validation
+        wait(for: [expectFirstValidation], timeout: 3.0)
+
+        // Act - Then set identical data to ensure delegate is still called
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Assert
+        wait(for: [expectSecondValidation], timeout: 3.0)
+        XCTAssertTrue(validationCount > 1, "Delegate should be notified at least twice")
     }
 
     // MARK: Helpers
@@ -234,12 +301,8 @@ final class RawDataManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
@@ -268,14 +331,11 @@ final class RawDataManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                            name: .checkout,
                                            description: "description"),
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseAfterResume: Response.Body.Payment {
@@ -283,26 +343,8 @@ final class RawDataManagerTests: XCTestCase {
               paymentId: "payment_id",
               amount: 1234,
               currencyCode: "GBP",
-              customer: nil,
               customerId: "customer_id",
-              dateStr: nil,
-              order: nil,
               orderId: "order_id",
-              requiredAction: nil,
-              status: .success,
-              paymentFailureReason: nil)
-    }
-}
-
-private class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
-
-    var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
-
-    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {
-        if let onListRetailOutlets = onListRetailOutlets {
-            completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
+              status: .success)
     }
 }

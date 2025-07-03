@@ -19,9 +19,4 @@ public struct Currency: Codable {
     internal var isZeroDecimal: Bool {
         decimalDigits == 0
     }
-
-    internal init(code: String, decimalDigits: Int) {
-        self.code = code
-        self.decimalDigits = decimalDigits
-    }
 }

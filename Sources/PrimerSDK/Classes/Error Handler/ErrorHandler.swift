@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ErrorHandler: LogReporter {
+final class ErrorHandler: LogReporter {
 
     // Call this function to log any error to Analytics
     static func handle(error: Error) {
@@ -16,7 +16,6 @@ internal class ErrorHandler: LogReporter {
 
     static var shared = ErrorHandler()
 
-    @discardableResult
     func handle(error: Error) {
         self.logger.error(message: error.localizedDescription)
 

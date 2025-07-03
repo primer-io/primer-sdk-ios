@@ -1,9 +1,9 @@
 extension Request.Body {
-    public class PayPal {}
+    public final class PayPal {}
 }
 
 extension Response.Body {
-    public class PayPal {}
+    public final class PayPal {}
 }
 
 extension Request.Body.PayPal {
@@ -66,7 +66,7 @@ extension Response.Body.PayPal {
 
 extension Response.Body.Tokenization {
 
-    public class PayPal {
+    public final class PayPal {
 
         // swiftlint:disable:next nesting
         public struct ShippingAddress: Codable {

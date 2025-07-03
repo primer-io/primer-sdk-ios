@@ -7,10 +7,9 @@
 
 import UIKit
 
-class PrimerNavigationBar: PrimerView {
-
+final class PrimerNavigationBar: PrimerView {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    internal var hidesBackButton: Bool = false {
+    var hidesBackButton: Bool = false {
         didSet {
             backButton.isHidden = hidesBackButton
         }
@@ -142,7 +141,7 @@ class PrimerNavigationBar: PrimerView {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
-        let image = UILocalizableUtil.isRightToLeftLocale ? PrimerImage.backIconRTL.image : PrimerImage.backIcon.image
+        let image: UIImage? = UILocalizableUtil.isRightToLeftLocale ? .backRTL : .back
         let customColorImage = image?.withRenderingMode(.alwaysTemplate)
         backButton.setImage(customColorImage, for: .normal)
         backButton.tintColor = theme.colors.primary

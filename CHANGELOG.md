@@ -1,3 +1,84 @@
+## 2.38.3 (2025-07-02)
+
+### Fix
+
+- Update Primer3DS version (#1215)
+- Fix non-deprecation warnings (#1190)
+
+### Refactor
+
+- Migrate ThreeDSService (#1203)
+- Migrate PollingModule (#1202)
+- Migrate CreateResumePaymentService (#1201)
+- Migrate PrimerUIManager (#1208)
+- Migrate WebAuthenticationService (#1207)
+- Migrate AnalyticsService (#1199)
+- Migrate CheckoutEventsNotifierModule (#1200)
+- Migrate TokenizationService and related files (#1197)
+- Migrate ImageManager and related files (#1198)
+- Migrate PrimerAPIClient and NetworkService (#1196)
+- Remove redundant OS checks (#1189)
+- Reduce hardcoded image usage (#1186)
+
+## 2.38.2 (2025-06-11)
+
+### Fix
+
+- Fix memory crash in validateRawData with weak self capture (#1185)
+
+### Refactor
+
+- Consolidate `PrimerClientSession` (#1187)
+- Consolidate PrimerClientSession
+
+## 2.38.1 (2025-06-04)
+
+### Refactor
+
+- **UIColor**: add 'primer' prefix to gray color (#1182)
+
+## 2.38.0 (2025-05-30)
+
+### Feat
+
+- **Klarna**: auto continue when single payment option (#1176)
+- Implement Co-badged Cards on Drop-in  (#1050)
+
+### Fix
+
+- Start listening for Keyboard Notifications (#1180)
+- compile error fixes (#1171)
+
+### Refactor
+
+- Reduce `init(coder:)` boilerplate (#1163)
+- Remove unused code from Networking (#1170)
+- Finalise classes where appropriate (#1164)
+
+## 2.37.0 (2025-05-12)
+
+### Feat
+
+- **Payment**: added new payment result property (checkoutOutcome) (#1161)
+- Support Add New Card in card form flow (#1154)
+
+### Fix
+
+- **NolPay**: added null check for PrimerNolPayProtocol (#1155)
+
+### Refactor
+
+- Remove unused code from Data Models (#1158)
+- Modularise Primer3DS initialisation (#1160)
+- Remove Unused Code from Extensions (#1157)
+
+## 2.36.1 (2025-04-24)
+
+### Fix
+
+- Klarna Popup Dismissal Triggering authorizationFailed (#1147)
+- Fix RawDataManager Callback Triggering  (#1145)
+
 ## 2.36.0 (2025-03-24)
 
 ### Feat

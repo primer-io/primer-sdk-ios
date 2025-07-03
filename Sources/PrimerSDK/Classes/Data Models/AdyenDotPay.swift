@@ -10,11 +10,11 @@ import Foundation
 typealias AdyenBank = Response.Body.Adyen.Bank
 
 extension Request.Body {
-    class Adyen {}
+    final class Adyen {}
 }
 
 extension Response.Body {
-    class Adyen {}
+    final class Adyen {}
 }
 
 extension Request.Body.Adyen {

@@ -24,4 +24,13 @@ extension PrimerAPIClient {
             }
         }
     }
+
+    func tokenizePaymentMethod(
+        clientToken: DecodedJWTToken,
+        tokenizationRequestBody: Request.Body.Tokenization
+    ) async throws -> PrimerPaymentMethodTokenData {
+        let endpoint = PrimerAPI.tokenizePaymentMethod(clientToken: clientToken,
+                                                       tokenizationRequestBody: tokenizationRequestBody)
+        return try await networkService.request(endpoint)
+    }
 }

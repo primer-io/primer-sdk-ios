@@ -8,7 +8,7 @@
 import Foundation
 import SystemConfiguration
 
-internal class Connectivity {
+final class Connectivity {
 
     enum NetworkType: String, Codable {
         case wifi = "WIFI"

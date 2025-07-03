@@ -24,7 +24,7 @@ protocol UserInterfaceModuleProtocol {
 
 import UIKit
 
-class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
+final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     // MARK: - PROPERTIES
 
@@ -45,17 +45,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return logo
         }
 
-        switch internaPaymentMethodType {
-        case .adyenBlik:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light",
-                                                               in: Bundle.primerResources,
-                                                               compatibleWith: nil)
-        case .adyenMultibanco:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light",
-                                                               in: Bundle.primerResources,
-                                                               compatibleWith: nil)
-        default:
-            return logo
+        return switch internaPaymentMethodType {
+            case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
+            case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
+            default: logo
         }
     }
 
@@ -74,7 +67,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             fileName += "-colored"
         }
 
-        return UIImage(named: fileName, in: Bundle.primerResources, compatibleWith: nil)
+        return UIImage(primerResource: fileName)
     }
 
     var themeMode: PrimerTheme.Mode {
@@ -971,16 +964,24 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     lazy var submitButton: PrimerButton? = {
         var buttonTitle: String = ""
 
+        // Determine once whether merchant wants “Add new card” for checkout
+        let shouldShowAddNewCard = PrimerSettings
+            .current
+            .uiOptions
+            .cardFormUIOptions?
+            .payButtonAddNewCard == true
+
         switch self.paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
              PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch PrimerInternal.shared.intent {
             case .checkout:
-                let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
-                buttonTitle = Strings.PaymentButton.pay
-                if let amountStr = universalCheckoutViewModel.amountStr {
-                    buttonTitle += " \(amountStr)"
-                }
+                let universalCheckoutVM: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
+                let amountSuffix = universalCheckoutVM.amountStr.map { " \($0)" } ?? ""
+
+                buttonTitle = shouldShowAddNewCard
+                    ? Strings.VaultPaymentMethodViewContent.addCard
+                    : Strings.PaymentButton.pay + amountSuffix
 
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle

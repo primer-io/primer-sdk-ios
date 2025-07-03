@@ -43,7 +43,7 @@ protocol PrimerThemeProtocol {
  - Version:
  1.2.2
  */
-public class PrimerTheme: PrimerThemeProtocol {
+public final class PrimerTheme: PrimerThemeProtocol {
 
     private let data: PrimerThemeData
 
@@ -69,8 +69,6 @@ public class PrimerTheme: PrimerThemeProtocol {
     internal lazy var mainButton = data.buttons.theme(for: .main, with: data)
 
     internal lazy var input = data.input.theme(with: data)
-
-    internal var types = (amount: 1, label: 2, foo: "hello")
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
         self.data = data

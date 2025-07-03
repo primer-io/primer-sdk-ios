@@ -1,7 +1,7 @@
 // swiftlint:disable type_body_length
 import UIKit
 
-public class PrimerThemeData {
+public final class PrimerThemeData {
     public var colors: ColorSwatch
     public var dimensions: Dimensions
     public var blurView: View
@@ -28,7 +28,7 @@ public class PrimerThemeData {
         self.input = input
     }
 
-    public class ButtonStyle {
+    public final class ButtonStyle {
         public var main: Button
         public var paymentMethod: Button
 
@@ -90,7 +90,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class Button {
+    public final class Button {
         public var defaultColor: UIColor?
         public var disabledColor: UIColor?
         public var selectedColor: UIColor?
@@ -121,7 +121,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class View {
+    public final class View {
         public var backgroundColor: UIColor?
         public var cornerRadius: CGFloat?
         public var safeMargin: CGFloat?
@@ -154,7 +154,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class TextStyle {
+    public final class TextStyle {
         public var body: Text
         public var title: Text
         public var subtitle: Text
@@ -214,7 +214,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class Text {
+    public final class Text {
         public var defaultColor: UIColor?
         public var fontSize: Int?
 
@@ -224,7 +224,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class Border {
+    public final class Border {
         public var defaultColor: UIColor?
         public var selectedColor: UIColor?
         public var errorColor: UIColor?
@@ -243,7 +243,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class Input {
+    public final class Input {
         public var backgroundColor: UIColor?
         public var text: Text
         public var border: Border
@@ -290,7 +290,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class ColorSwatch {
+    public final class ColorSwatch {
         public var primary: UIColor
         public var error: UIColor
         public var dark: UIColor
@@ -315,7 +315,7 @@ public class PrimerThemeData {
         }
     }
 
-    public class Dimensions {
+    public final class Dimensions {
         public var cornerRadius: CGFloat
         public var safeArea: CGFloat
 

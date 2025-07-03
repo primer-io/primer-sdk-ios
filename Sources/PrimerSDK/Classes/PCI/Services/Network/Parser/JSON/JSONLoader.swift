@@ -7,7 +7,7 @@
 
 import Foundation
 
-class JSONLoader {
+final class JSONLoader {
 
     static func loadJsonData(fileName: String) -> Data? {
 

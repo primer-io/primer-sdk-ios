@@ -4,7 +4,7 @@ internal enum TextType {
     case body, title, subtitle, amountLabel, system, error
 }
 
-internal class TextStyle {
+final class TextStyle {
     let body, title, subtitle, amountLabel, system, error: TextTheme
 
     internal init(
@@ -24,7 +24,7 @@ internal class TextStyle {
     }
 }
 
-internal class TextTheme {
+final class TextTheme {
     let color: UIColor
     let fontSize: Int
 

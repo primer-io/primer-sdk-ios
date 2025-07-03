@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-internal class PrimerView: UIView {
+class PrimerView: UIView {
     func pin(to superView: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         topAnchor.constraint(equalTo: superView.topAnchor).isActive = true

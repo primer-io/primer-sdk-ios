@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PrimerIntegrationOptions: NSObject {
+public final class PrimerIntegrationOptions: NSObject {
 
     var reactNativeVersion: String?
 

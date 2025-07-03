@@ -47,7 +47,7 @@ enum NetworkError: Error {
 
 private let logger = PrimerLogging.shared.logger
 
-class Networking {
+final class Networking {
 
     var endpoint: String {
         if environment == .local {

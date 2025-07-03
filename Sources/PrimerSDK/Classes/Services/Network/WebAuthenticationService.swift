@@ -12,9 +12,10 @@ import SafariServices
 protocol WebAuthenticationService {
     var session: ASWebAuthenticationSession? { get }
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
+    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
-
-class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
+// MARK: MISSING_TESTS
+final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
     var session: ASWebAuthenticationSession?
 
@@ -41,18 +42,45 @@ class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
         webAuthSession.presentationContextProvider = self
         webAuthSession.start()
     }
+
+    func connect(
+        paymentMethodType: String,
+        url: URL,
+        scheme: String
+    ) async throws -> URL {
+        try await withCheckedThrowingContinuation { continuation in
+            let webAuthSession = ASWebAuthenticationSession(
+                url: url,
+                callbackURLScheme: scheme,
+                completionHandler: { url, error in
+                    if let url {
+                        continuation.resume(returning: url)
+                    } else if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        let additionalInfo = ["message": "Failed to create web authentication session"]
+                        continuation.resume(throwing: PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
+                                                                          diagnosticsId: UUID().uuidString))
+                    }
+                }
+            )
+
+            self.session = webAuthSession
+
+            webAuthSession.presentationContextProvider = self
+            webAuthSession.start()
+        }
+    }
 }
 
-@available(iOS 11.0, *)
 extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContextProviding {
-    @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
 
 }
 
-fileprivate extension UIApplication {
+extension UIApplication {
     var windows: [UIWindow] {
         let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {

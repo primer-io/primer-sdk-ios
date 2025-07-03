@@ -1,5 +1,5 @@
 //
-//  PrimerAssetsManager.swift
+//  AssetsManager.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 26/9/22.
@@ -9,13 +9,13 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class AssetsManager {
+    public final class AssetsManager {
 
         @available(*, deprecated, message: "Use getSupportCardNetworkAssets() or getCardNetworkAssets(for:) instead")
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
             try verifyAPIConfig()
 
-            return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(primerResource: "\(cardNetwork.rawValue)-logo-colored")
         }
 
         public static func getCardNetworkAsset(cardNetworkString: String?) -> PrimerCardNetworkAsset? {
@@ -24,9 +24,8 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) -> PrimerCardNetworkAsset? {
-
             let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
-            let cardImage = UIImage(named: assetName, in: Bundle.primerResources, compatibleWith: nil)
+            let cardImage = UIImage(primerResource: assetName)
 
             let event = Analytics.Event.message(
                 message: "Providing single asset for card network: \(cardNetwork.rawValue)",
@@ -130,7 +129,7 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
-public class PrimerCardNetworkAsset {
+public final class PrimerCardNetworkAsset {
     public let cardNetwork: CardNetwork
     public let cardImage: UIImage?
 
@@ -144,7 +143,7 @@ public class PrimerCardNetworkAsset {
     }
 }
 
-public class PrimerPaymentMethodAsset {
+public final class PrimerPaymentMethodAsset {
 
     public let paymentMethodType: String
     public let paymentMethodName: String
@@ -174,7 +173,7 @@ public protocol PrimerAsset {
     var dark: UIImage? { get }
 }
 
-class PrimerInternalAsset: PrimerAsset {
+final class PrimerInternalAsset: PrimerAsset {
 
     public private(set) var colored: UIImage?
     public private(set) var light: UIImage?
@@ -192,7 +191,7 @@ class PrimerInternalAsset: PrimerAsset {
 }
 
 @available(*, deprecated, message: "Use PrimerAsset instead")
-public class PrimerPaymentMethodLogo: PrimerAsset {
+public final class PrimerPaymentMethodLogo: PrimerAsset {
 
     public private(set) var colored: UIImage?
     public private(set) var light: UIImage?
@@ -209,7 +208,7 @@ public class PrimerPaymentMethodLogo: PrimerAsset {
     }
 }
 
-public class PrimerPaymentMethodBackgroundColor {
+public final class PrimerPaymentMethodBackgroundColor {
 
     public private(set) var colored: UIColor?
     public private(set) var light: UIColor?

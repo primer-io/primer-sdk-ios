@@ -20,7 +20,7 @@ struct Dependency<T> {
 private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
-final internal class DependencyContainer {
+final class DependencyContainer {
 
     private static let queue: DispatchQueue = DispatchQueue(label: "primer.dependencycontainer")
 

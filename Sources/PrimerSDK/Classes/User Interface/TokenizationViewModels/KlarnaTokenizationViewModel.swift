@@ -10,7 +10,7 @@ import UIKit
 import PrimerKlarnaSDK
 #endif
 
-class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
+final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?

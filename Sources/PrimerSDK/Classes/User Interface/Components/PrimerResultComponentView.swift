@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerResultComponentView: PrimerView {
+final class PrimerResultComponentView: PrimerView {
 
     private(set) internal var verticalStackView = UIStackView()
     private(set) internal var imageView: UIImageView?

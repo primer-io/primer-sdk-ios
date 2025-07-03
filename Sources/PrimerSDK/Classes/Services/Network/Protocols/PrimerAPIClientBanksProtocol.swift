@@ -12,4 +12,9 @@ protocol PrimerAPIClientBanksProtocol {
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
         completion: @escaping APICompletion<BanksListSessionResponse>)
+    
+    func listAdyenBanks(
+        clientToken: DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList
+    ) async throws -> BanksListSessionResponse
 }

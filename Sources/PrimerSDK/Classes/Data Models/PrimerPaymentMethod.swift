@@ -15,7 +15,7 @@ extension PrimerTheme {
 }
 
 // swiftlint:disable type_body_length
-class PrimerPaymentMethod: Codable, LogReporter {
+final class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
         return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
@@ -93,9 +93,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 return ApplePayTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.klarna:
-                if #available(iOS 13.0, *) {
-                    return KlarnaTokenizationViewModel(config: self, apiClient: apiClient)
-                }
+                return KlarnaTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.paymentCard,
                  PrimerPaymentMethodType.adyenBancontactCard:

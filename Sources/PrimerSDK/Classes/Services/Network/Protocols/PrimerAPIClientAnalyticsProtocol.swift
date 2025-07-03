@@ -16,4 +16,8 @@ protocol PrimerAPIClientAnalyticsProtocol {
                              body: [Analytics.Event]?,
                              completion: @escaping ResponseHandler)
 
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
+                             url: URL,
+                             body: [Analytics.Event]?) async throws -> Analytics.Service.Response
+
 }

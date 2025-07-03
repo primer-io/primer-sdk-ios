@@ -7,7 +7,8 @@
 
 import Foundation
 
-class CheckoutEventsNotifierModule {
+// MARK: MISSING_TESTS
+final class CheckoutEventsNotifierModule {
 
     var didStartTokenization: (() -> Void)?
     var didFinishTokenization: (() -> Void)?
@@ -22,6 +23,12 @@ class CheckoutEventsNotifierModule {
         }
     }
 
+    func fireDidStartTokenizationEvent() async throws {
+        if let didStartTokenization {
+            didStartTokenization()
+        }
+    }
+
     func fireDidFinishTokenizationEvent() -> Promise<Void> {
         return Promise { seal in
             if self.didFinishTokenization != nil {
@@ -29,6 +36,12 @@ class CheckoutEventsNotifierModule {
             }
 
             seal.fulfill()
+        }
+    }
+
+    func fireDidFinishTokenizationEvent() async throws {
+        if let didFinishTokenization {
+            didFinishTokenization()
         }
     }
 }

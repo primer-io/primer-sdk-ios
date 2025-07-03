@@ -142,28 +142,3 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
     }
 
 }
-
-private class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
-
-    var onFetchVaultedPaymentMethods: ((DecodedJWTToken) -> Response.Body.VaultedPaymentMethods)?
-
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken, completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>) {
-        if let result = onFetchVaultedPaymentMethods?(clientToken) {
-            completion(.success(result))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    var onDeleteVaultedPaymentMethods: ((DecodedJWTToken, String) -> Void)?
-
-    func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
-            onDeleteVaultedPaymentMethods(clientToken, id)
-            completion(.success(()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-}

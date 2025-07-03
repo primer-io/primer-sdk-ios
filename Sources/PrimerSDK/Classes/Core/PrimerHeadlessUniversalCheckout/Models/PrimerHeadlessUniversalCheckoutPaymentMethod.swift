@@ -14,7 +14,7 @@ protocol PrimerPaymentMethodProviding {
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class PaymentMethod: NSObject {
+    public final class PaymentMethod: NSObject {
 
         static var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] {
             var availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
@@ -68,7 +68,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         // swiftlint:disable nesting
-        private class DefaultPaymentMethodProvider: PrimerPaymentMethodProviding {
+        private final class DefaultPaymentMethodProvider: PrimerPaymentMethodProviding {
             func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod? {
                 PrimerAPIConfiguration.paymentMethodConfigs?
                     .first(where: { $0.type == paymentMethodType })

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PrimerOTPData: PrimerRawData {
+public final class PrimerOTPData: PrimerRawData {
 
     public var otp: String {
         didSet {

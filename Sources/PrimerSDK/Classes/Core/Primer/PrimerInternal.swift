@@ -15,7 +15,7 @@ import Primer3DS
 private let _PrimerInternal = PrimerInternal()
 // swiftlint:enable identifier_name
 
-internal class PrimerInternal: LogReporter {
+final class PrimerInternal: LogReporter {
 
     // MARK: - PROPERTIES
 

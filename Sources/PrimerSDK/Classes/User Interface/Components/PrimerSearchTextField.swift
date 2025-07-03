@@ -7,12 +7,12 @@
 
 import UIKit
 
-internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
-
-    struct Padding {
+final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
+    enum Padding {
         static let horizontal: CGFloat = 6
         static let vertical: CGFloat = 3
     }
+
     let spacing: CGFloat = 6
 
     private var _delegate: UITextFieldDelegate?
@@ -24,8 +24,9 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
             _delegate = newValue
         }
     }
-    private let searchImage = UIImage(named: "search-icon", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-    private let clearImage = UIImage(named: "error", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+
+    private let searchImage = UIImage.search?.withRenderingMode(.alwaysTemplate)
+    private let clearImage = UIImage.error?.withRenderingMode(.alwaysTemplate)
     private var rightImageView = UIImageView()
 
     override var placeholder: String? {

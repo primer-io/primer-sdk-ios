@@ -16,4 +16,10 @@ protocol PrimerAPIClientAchProtocol {
         url: URL,
         paymentRequest: Request.Body.Payment.Complete,
         completion: @escaping APICompletion<Response.Body.Complete>)
+
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        url: URL,
+        paymentRequest: Request.Body.Payment.Complete
+    ) async throws -> Response.Body.Complete
 }

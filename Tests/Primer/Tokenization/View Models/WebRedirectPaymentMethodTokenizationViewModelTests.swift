@@ -130,17 +130,21 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(.init(analyticsId: "analytics_id",
-                                           id: "id",
-                                           isVaulted: false,
-                                           isAlreadyVaulted: false,
-                                           paymentInstrumentType: .offSession,
-                                           paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-                                           paymentInstrumentData: nil,
-                                           threeDSecureAuthentication: nil,
-                                           token: "token",
-                                           tokenType: .singleUse,
-                                           vaultData: nil))
+            return Result.success(
+                PrimerPaymentMethodTokenData(
+                    analyticsId: "analytics_id",
+                    id: "id",
+                    isVaulted: false,
+                    isAlreadyVaulted: false,
+                    paymentInstrumentType: .offSession,
+                    paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+                    paymentInstrumentData: nil,
+                    threeDSecureAuthentication: nil,
+                    token: "token",
+                    tokenType: .singleUse,
+                    vaultData: nil
+                )
+            )
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
@@ -150,16 +154,12 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          paymentId: "payment_id",
                          amount: 123,
                          currencyCode: "GBP",
-                         customer: nil,
                          customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
                          orderId: "order_id",
                          requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                                name: .checkout,
                                                description: "description"),
-                         status: .success,
-                         paymentFailureReason: nil)
+                         status: .success)
         }
 
         let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
@@ -177,14 +177,9 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          paymentId: "payment_id",
                          amount: 1234,
                          currencyCode: "GBP",
-                         customer: nil,
                          customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
                          orderId: "order_id",
-                         requiredAction: nil,
-                         status: .success,
-                         paymentFailureReason: nil)
+                         status: .success)
         }
 
         let expectCheckoutDidCompletewithData = self.expectation(description: "")

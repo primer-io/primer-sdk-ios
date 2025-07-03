@@ -8,11 +8,11 @@
 import Foundation
 
 extension Request.Body {
-    public class StripeAch {}
+    public final class StripeAch {}
 }
 
 extension Response.Body {
-    public class StripeAch {}
+    public final class StripeAch {}
 }
 
 extension Request.Body.StripeAch {

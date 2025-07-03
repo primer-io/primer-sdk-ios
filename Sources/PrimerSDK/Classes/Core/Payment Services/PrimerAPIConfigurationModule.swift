@@ -22,7 +22,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 // swiftlint:disable type_body_length
-internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
+final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
@@ -329,7 +329,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                     seal.reject(error)
                 }
 
-                promise.ensure {
+                _ = promise.ensure {
                     PrimerAPIConfigurationModule.queue.async {
                         PrimerAPIConfigurationModule.pendingPromises.removeValue(forKey: cacheKey as String)
                     }

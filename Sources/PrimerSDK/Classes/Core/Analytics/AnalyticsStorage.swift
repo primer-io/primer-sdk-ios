@@ -29,7 +29,7 @@ extension Analytics {
 
     static let storage: Storage = DefaultStorage()
 
-    class DefaultStorage: AnalyticsStorage, LogReporter {
+    final class DefaultStorage: AnalyticsStorage, LogReporter {
 
         let fileURL: URL
 

@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController {
+final class PrimerWebViewController: PrimerViewController {
 
     private let webView: WKWebView! = WKWebView()
     internal private(set) var url: URL
@@ -24,11 +24,7 @@ internal class PrimerWebViewController: PrimerViewController {
 
     init(with url: URL) {
         self.url = url
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init()
     }
 
     override func viewDidLoad() {

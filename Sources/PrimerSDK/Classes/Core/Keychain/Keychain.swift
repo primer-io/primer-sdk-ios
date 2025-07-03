@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Keychain {
+final class Keychain {
 
     enum KeychainError: Error {
         // Attempted read for an item that does not exist.

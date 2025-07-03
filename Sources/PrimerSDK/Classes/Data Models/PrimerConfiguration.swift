@@ -11,12 +11,11 @@ import Foundation
 import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
-typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
 // swiftlint:disable file_length
 extension Request.URLParameters {
 
-    class Configuration: Codable {
+    final class Configuration: Codable {
 
         let skipPaymentMethodTypes: [String]?
         let requestDisplayMetadata: Bool?
@@ -247,12 +246,6 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let primerAccountId: String?
         let keys: ThreeDS.Keys?
         var checkoutModules: [Response.Body.Configuration.CheckoutModule]?
-
-        var isSetByClientSession: Bool {
-            return clientSession != nil
-        }
-
-        internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)

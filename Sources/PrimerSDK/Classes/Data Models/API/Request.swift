@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Request {
-    public class Body {}
-    internal class URLParameters {}
+public final class Request {
+    public final class Body {}
+    final class URLParameters {}
 }

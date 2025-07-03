@@ -1,6 +1,6 @@
 import Foundation
 
-internal class Mask {
+final class Mask {
 
     enum CharType {
         case digit, any

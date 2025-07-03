@@ -15,7 +15,7 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class VaultManager: NSObject {
+    public final class VaultManager: NSObject {
 
         var vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
 
@@ -712,7 +712,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 seal.fulfill(nil)
                             }
 
-                        } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             // No need to continue if manually handling resume
                             self.paymentCheckoutData = nil
                         } else {
@@ -835,7 +835,7 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class VaultedPaymentMethod: Codable {
+    public final class VaultedPaymentMethod: Codable {
 
         public let id: String
         public let paymentMethodType: String

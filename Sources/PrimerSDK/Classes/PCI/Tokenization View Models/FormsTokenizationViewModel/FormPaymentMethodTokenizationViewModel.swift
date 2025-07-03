@@ -14,7 +14,7 @@
 import Foundation
 import UIKit
 
-internal class Input {
+class Input {
     var name: String?
     var topPlaceholder: String?
     var textFieldPlaceholder: String?
@@ -29,7 +29,7 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     // MARK: - Properties
 
@@ -204,12 +204,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         textField.rightViewMode = .always
         return textField
     }()
-
-    var cardNetwork: CardNetwork? {
-        didSet {
-            cvvField.cardNetwork = cardNetwork ?? .unknown
-        }
-    }
 
     var isShowingBillingAddressFieldsRequired: Bool {
         let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?

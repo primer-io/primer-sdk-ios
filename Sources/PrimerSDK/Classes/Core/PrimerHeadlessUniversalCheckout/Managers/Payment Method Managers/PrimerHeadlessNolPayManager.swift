@@ -9,7 +9,7 @@ import Foundation
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class PrimerHeadlessNolPayManager: NSObject {
+    public final class PrimerHeadlessNolPayManager: NSObject {
 
         // Components for linking and unlinking cards
         var linkCardComponent: NolPayLinkCardComponent

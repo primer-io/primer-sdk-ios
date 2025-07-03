@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Debouncer {
+final class Debouncer {
     private var workItem: DispatchWorkItem?
     private let queue: DispatchQueue
     private let delay: TimeInterval

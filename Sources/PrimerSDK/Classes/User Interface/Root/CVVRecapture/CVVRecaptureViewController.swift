@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CVVRecaptureViewController: UIViewController {
+final class CVVRecaptureViewController: UIViewController {
 
     var viewModel: CVVRecaptureViewModel
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()

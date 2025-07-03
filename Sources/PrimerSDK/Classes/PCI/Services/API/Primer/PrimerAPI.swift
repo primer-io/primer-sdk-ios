@@ -326,12 +326,6 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: - Port (not needed)
-
-    var port: Int? {
-        return nil
-    }
-
     // MARK: - HTTP Method
 
     var method: HTTPMethod {
@@ -440,18 +434,6 @@ internal extension PrimerAPI {
             return nil
         case .completePayment(_, _, let paymentRequest):
             return try? JSONEncoder().encode(paymentRequest)
-        }
-    }
-
-    // MARK: - Should Return Response Body
-
-    var shouldParseResponseBody: Bool {
-        switch self {
-        case .redirect,
-             .deleteVaultedPaymentMethod:
-            return false
-        default:
-            return true
         }
     }
 

@@ -17,6 +17,7 @@ extension PrimerHeadlessKlarnaComponent {
 }
 
 // MARK: - PrimerKlarnaProviderFinalizationDelegate
+
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
     /**
      * Finalizes the Klarna payment session based on the approval status and authentication token.
@@ -25,22 +26,25 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
      *  - `authToken` - An optional `String` containing the authorization token, which is returned only if `approved` is `true`.
      */
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
-        if approved == false {
-            createSessionError(.klarnaFinalizationFailed)
+        guard approved else {
+            createSessionError(.klarnaUserNotApproved)
+            return
         }
+
         if let authToken = authToken, approved == true {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: false)
             } else {
                 let checkoutData = PrimerCheckoutData(payment: nil)
                 let step = KlarnaStep.paymentSessionFinalized(authToken: authToken, checkoutData: checkoutData)
-                self.stepDelegate?.didReceiveStep(step: step)
+                stepDelegate?.didReceiveStep(step: step)
             }
         }
     }
 }
 
 // MARK: - Finalization
+
 extension PrimerHeadlessKlarnaComponent {
     func finalizePayment(jsonData: String? = nil) {
         klarnaProvider?.finalise(jsonData: jsonData)

@@ -9,11 +9,10 @@ import Foundation
 
 extension Response.Body {
 
-    public class Tokenization: NSObject, Codable {
+    public final class Tokenization: NSObject, Codable {
 
         public var analyticsId: String?
         public var id: String?
-        internal var isAlreadyVaulted: Bool?
         public var isVaulted: Bool?
         public var paymentMethodType: String?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
@@ -39,7 +38,6 @@ extension Response.Body {
             self.analyticsId = analyticsId
             self.id = id
             self.isVaulted = isVaulted
-            self.isAlreadyVaulted = isAlreadyVaulted
             self.paymentMethodType = paymentMethodType
             self.paymentInstrumentType = paymentInstrumentType
             self.paymentInstrumentData = paymentInstrumentData

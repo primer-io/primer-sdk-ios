@@ -13,7 +13,7 @@ protocol ConfigurationCaching {
     func data(forKey key: String) -> ConfigurationCachedData?
 }
 
-class ConfigurationCache: ConfigurationCaching {
+final class ConfigurationCache: ConfigurationCaching {
     static let shared = ConfigurationCache()
     private var cache = Cache<String, ConfigurationCachedData>()
 
@@ -69,7 +69,7 @@ class ConfigurationCache: ConfigurationCaching {
     private static let queue: DispatchQueue = DispatchQueue(label: "primer.configurationCache", qos: .default)
 }
 
-class ConfigurationCachedData {
+final class ConfigurationCachedData {
 
     let config: PrimerAPIConfiguration
     let timestamp: TimeInterval

@@ -10,12 +10,13 @@
 
 import Foundation
 
-class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
+final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = self.rawData as? PrimerCardData {
-                rawCardData.onDataDidChange = {
+                rawCardData.onDataDidChange = { [weak self] in
+                    guard let self else { return }
                     _ = self.validateRawData(rawCardData)
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
@@ -44,8 +45,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
     var cardValidationService: CardValidationService?
-
-    private var lastValidationErrors: [PrimerValidationError] = []
 
     var isDataValid: Bool = false
     var paymentMethodType: String
@@ -143,7 +142,19 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async { [self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+                guard let self else {
+                    // If self is deallocated, reject the promise gracefully
+                    DispatchQueue.main.async {
+                        let err = PrimerError.unknown(
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString
+                        )
+                        seal.reject(err)
+                    }
+                    return
+                }
+
                 var errors: [PrimerValidationError] = []
 
                 // Invalid raw data error
@@ -154,17 +165,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     errors.append(err)
                     ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
+
                     return
                 }
 
@@ -174,7 +180,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 // Remotely validated card network
                 if let cardNetworksMetadata = cardNetworksMetadata {
                     let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                        cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+                    cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                        let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
@@ -239,24 +245,16 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name cannot be blank.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                            message: "Cardholder name cannot be blank.",
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString))
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name is not valid.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                            message: "Cardholder name is not valid.",
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString))
                     }
                 }
-
-                if !errors.isEmpty {
-                    let newValidationErrorsPresent = errors.map { $0.errorDescription } != lastValidationErrors.map { $0.errorDescription }
-                    guard newValidationErrorsPresent else {
-                        return
-                    }
-                }
-                self.lastValidationErrors = errors
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
@@ -265,32 +263,33 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
-
                 } else {
-                    self.isDataValid = true
+                    self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.fulfill()
                     }
                 }
             }
+        }
+    }
+
+    private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
+        self.isDataValid = isValid
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+
+            rawDataManager.delegate?.primerRawDataManager?(
+                rawDataManager,
+                dataIsValid: isValid,
+                errors: errors
+            )
         }
     }
 }

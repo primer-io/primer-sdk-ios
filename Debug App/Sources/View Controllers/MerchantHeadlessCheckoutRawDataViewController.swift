@@ -215,7 +215,6 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
         let text = textField.text
 
         var newText: String = ""
@@ -326,6 +325,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
                 let tapGestureRecognizer = TapGestureRecognizer {
                     self.selectedCardIndex = index
+                    self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
                     self.updateCardImages()
                 }
                 imageView.addGestureRecognizer(tapGestureRecognizer)
@@ -339,7 +339,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
             self.updateCardImages()
 
-            self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
+            self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
         }
     }
 

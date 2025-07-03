@@ -122,7 +122,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
@@ -198,6 +198,84 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
         let error2 = PrimerError.cancelled(paymentMethodType: "PMT", userInfo: nil, diagnosticsId: "id")
         XCTAssertNil(error2.checkoutData)
+    }
+
+    func testSubmitButtonDisabledWithInvalidFields() throws {
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
+
+        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
+        uiDelegate.onUIDidShowPaymentMethod = { type in
+            // Fill in fields with invalid data
+            self.sut.cardNumberField.textField.internalText = "4111"  // Incomplete number
+            self.sut.expiryDateField.expiryYear = "30"
+            self.sut.expiryDateField.expiryMonth = "03"
+            self.sut.cvvField.textField.internalText = "12"  // Invalid CVV
+            
+            // Simulate validation of each field
+            self.sut.primerTextFieldView(self.sut.cardNumberField, isValid: false)
+            self.sut.primerTextFieldView(self.sut.expiryDateField, isValid: true)
+            self.sut.primerTextFieldView(self.sut.cvvField, isValid: false)
+            
+            expectWillShowPaymentMethod.fulfill()
+        }
+
+        sut.start()
+
+        waitForExpectations(timeout: 10.0)
+        
+        XCTAssertFalse(self.sut.uiModule.submitButton?.isEnabled == true)
+    }
+
+    func testConfigurePayButton_defaultShowsPayAmount() throws {
+        // Arrange: set up AppState with amount & currency
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 2500               // $25.00
+            mockAppState.currency = Currency(code: "USD", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register default settings (no cardFormUIOptions)
+        DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
+
+        // Act: call configurePayButton
+        sut.configurePayButton(amount: 2500)
+
+        // Assert: should use "Pay $25.00"
+        let expectedCurrency = Currency(code: "USD", decimalDigits: 2)
+        let expectedTitle = "\(Strings.PaymentButton.pay) \(2500.toCurrencyString(currency: expectedCurrency))"
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            expectedTitle,
+            "Default behavior should show formatted pay amount"
+        )
+    }
+
+    func testConfigurePayButton_showsAddNewCard_whenFlagTrue() throws {
+        // Arrange: set up AppState
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 500                // €5.00
+            mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register settings with payButtonAddNewCard = true
+        let uiOptions = PrimerUIOptions(
+            cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: true)
+        )
+        DependencyContainer.register(PrimerSettings(uiOptions: uiOptions) as PrimerSettingsProtocol)
+
+        // Act
+        sut.configurePayButton(amount: 500)
+
+        // Assert: should use the localized "Add new card" text
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            Strings.VaultPaymentMethodViewContent.addCard,
+            "When payButtonAddNewCard=true, the button should read 'Add new card'"
+        )
     }
 
     // MARK: Helpers
