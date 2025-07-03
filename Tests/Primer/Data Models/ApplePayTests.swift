@@ -194,7 +194,7 @@ class ApplePayTests: XCTestCase {
                 testId: nil)
 
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
-
+            
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             XCTAssert(orderItems.count == 1, "Apple Pay order items should be 1, the summary order item")
 
