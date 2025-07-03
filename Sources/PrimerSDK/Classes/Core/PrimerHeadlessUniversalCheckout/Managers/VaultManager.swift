@@ -861,11 +861,9 @@ extension PrimerHeadlessUniversalCheckout {
             defer {
                 DispatchQueue.main.async {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-
                     self.webViewCompletion = nil
                     self.webViewController?.dismiss(animated: true, completion: { [weak self] in
-                        guard let self else { return }
-                        webViewController = nil
+                        self?.webViewController = nil
                     })
                 }
             }
