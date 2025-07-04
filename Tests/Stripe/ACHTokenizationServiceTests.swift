@@ -1,17 +1,10 @@
-//
-//  ACHTokenizationServiceTests.swift
-//
-//
-//  Created by Stefan Vrancianu on 16.05.2024.
-//
-
 import Foundation
 import XCTest
 @testable import PrimerSDK
 
 final class ACHTokenizationServiceTests: XCTestCase {
 
-    var achTokenizationService: ACHTokenizationService!
+    var sut: ACHTokenizationService!
     var mockApiClient: MockPrimerAPIClient!
 
     override func tearDown() {
@@ -25,7 +18,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful Tokenize StripeACH Payment Session")
 
         firstly {
-            achTokenizationService.tokenize()
+            sut.tokenize()
         }
         .done { tokenData in
             XCTAssertNotNil(tokenData, "Result should not be nil")
@@ -39,6 +32,18 @@ final class ACHTokenizationServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_tokenizeHeadless_success_async() async {
+        prepareConfigurations()
+        mockApiClient.tokenizePaymentMethodResult = (ACHMocks.primerPaymentMethodTokenData, nil)
+
+        do {
+            let tokenData = try await sut.tokenize()
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+        } catch {
+            XCTFail("Error should not be thrown")
+        }
+    }
+
     func test_tokenizeHeadless_failure() {
         prepareConfigurations()
         let error = getInvalidTokenError()
@@ -46,7 +51,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Failure Tokenize StripeACH Payment Session")
 
         firstly {
-            achTokenizationService.tokenize()
+            sut.tokenize()
         }
         .done { _ in
             XCTFail("Result should be nil")
@@ -60,28 +65,42 @@ final class ACHTokenizationServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_tokenizeHeadless_failure_async() async {
+        prepareConfigurations()
+        let error = getInvalidTokenError()
+        mockApiClient.tokenizePaymentMethodResult = (nil, error)
+
+        do {
+            _ = try await sut.tokenize()
+            XCTFail("Result should fail")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
     func test_tokenization_validation_success() {
         prepareConfigurations()
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
         } catch {
-            XCTFail("Result should not fail with error")
+            XCTFail("Error should not be thrown")
         }
     }
 
     func test_tokenization_validation_decodedToken_failure() {
         prepareConfigurations(isClientSessionEmpty: false, hasDecodedToken: false)
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
+            XCTFail("Error should be thrown")
         } catch {
-            // XCTFail("Result should not fail with error")
+            // Expecting an error to be thrown
         }
     }
 
     func test_tokenization_validation_amount_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyMerchantAmmount: true, emptyTotalOrderAmmount: true)
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -100,7 +119,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_currency_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyCurrencyCode: true)
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -119,7 +138,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_lineItems_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyLineItems: true)
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -138,7 +157,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_lineItems_total_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyOrderAmount: true)
         do {
-            try achTokenizationService.validate()
+            try sut.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -176,7 +195,7 @@ extension ACHTokenizationServiceTests {
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
         let tokenizationService = TokenizationService(apiClient: mockApiClient)
 
-        achTokenizationService = ACHTokenizationService(paymentMethod: paymentMethod, tokenizationService: tokenizationService)
+        sut = ACHTokenizationService(paymentMethod: paymentMethod, tokenizationService: tokenizationService)
     }
 
     private func prepareConfigurations(isClientSessionEmpty: Bool = false,
@@ -223,7 +242,7 @@ extension ACHTokenizationServiceTests {
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
 
-        achTokenizationService = nil
+        sut = nil
     }
 
     private func getInvalidTokenError() -> PrimerError {
