@@ -89,13 +89,13 @@ final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
             return String(data: body, encoding: .utf8) ?? "N/A"
         }()
 
-        logger.debug(message: """
-
-🌎 [Request: \(method)] 👉 \(url)
-Headers:
-\(headersDescription.joined(separator: "\n"))
-Body:
-\(body)
-""")
+        //        logger.debug(message: """
+        //
+        // 🌎 [Request: \(method)] 👉 \(url)
+        // Headers:
+        // \(headersDescription.joined(separator: "\n"))
+        // Body:
+        // \(body)
+        // """)
     }
 }
