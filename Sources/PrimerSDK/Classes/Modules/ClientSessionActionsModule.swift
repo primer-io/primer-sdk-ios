@@ -9,11 +9,11 @@ import Foundation
 
 protocol ClientSessionActionsProtocol {
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) -> Promise<Void>
-    func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws -> Void
+    func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws
     func unselectPaymentMethodIfNeeded() -> Promise<Void>
-    func unselectPaymentMethodIfNeeded() async throws -> Void
+    func unselectPaymentMethodIfNeeded() async throws
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void>
-    func dispatch(actions: [ClientSession.Action]) async throws -> Void
+    func dispatch(actions: [ClientSession.Action]) async throws
 }
 
 // MARK: MISSING_TESTS
@@ -62,30 +62,25 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
     }
 
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {
-        guard PrimerInternal.shared.intent == .checkout else {
-            return
-        }
-
-        if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
-            return
-        }
+        guard PrimerInternal.shared.intent == .checkout else { return }
+        guard PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == true else { return }
 
         var params: [String: Any] = ["paymentMethodType": paymentMethodType]
 
-        if let cardNetwork = cardNetwork {
-            params["binData"] = [
-                "network": cardNetwork
-            ]
+        if let cardNetwork {
+            params["binData"] = ["network": cardNetwork]
         }
-
-        let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
-        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
 
         PrimerDelegateProxy.primerClientSessionWillUpdate()
 
         let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-        try await apiConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
+        try await apiConfigurationModule.updateSession(
+            withActions: ClientSessionUpdateRequest(
+                actions: ClientSessionAction(
+                    actions: [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+                )
+            )
+        )
 
         if PrimerAPIConfigurationModule.apiConfiguration != nil {
             PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
@@ -127,21 +122,17 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
     }
 
     func unselectPaymentMethodIfNeeded() async throws {
-        guard PrimerInternal.shared.intent == .checkout else {
-            return
-        }
-
-        if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
-            return
-        }
-
-        let unselectPaymentMethodAction = ClientSession.Action(type: .unselectPaymentMethod, params: nil)
-        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [unselectPaymentMethodAction]))
+        guard PrimerInternal.shared.intent == .checkout else { return }
+        guard PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == true else { return }
 
         PrimerDelegateProxy.primerClientSessionWillUpdate()
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        try await apiConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+        try await apiConfigurationModule
+            .updateSession(withActions: ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(
+                type: .unselectPaymentMethod,
+                params: nil
+            )])))
 
         if PrimerAPIConfigurationModule.apiConfiguration != nil {
             PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
@@ -173,16 +164,11 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
     }
 
     static func selectShippingMethodIfNeeded(_ shippingMethodId: String) async throws {
-        guard PrimerInternal.shared.intent == .checkout else {
-            return
-        }
+        guard PrimerInternal.shared.intent == .checkout else { return }
 
-        let params: [String: Any] = ["shipping_method_id": shippingMethodId]
-
-        let actions = [ClientSession.Action.selectShippingMethodActionWithParameters(params)]
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-        try await clientSessionActionsModule.dispatch(actions: actions)
+        try await clientSessionActionsModule
+            .dispatch(actions: [ClientSession.Action.selectShippingMethodActionWithParameters(["shipping_method_id": shippingMethodId])])
     }
 
     static func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
