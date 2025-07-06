@@ -1,17 +1,10 @@
-//
-//  ACHClientSessionServiceTests.swift
-//
-//
-//  Created by Stefan Vrancianu on 16.05.2024.
-//
-
 import Foundation
 import XCTest
 @testable import PrimerSDK
 
 final class ACHClientSessionServiceTests: XCTestCase {
 
-    var clientSessionService: ACHClientSessionService!
+    var sut: ACHClientSessionService!
     var mockApiClient: MockPrimerAPIClient!
 
     override func tearDown() {
@@ -33,7 +26,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
                               email: expectedUserDetails.emailAddress)
 
         firstly {
-            clientSessionService.getClientSessionUserDetails()
+            sut.getClientSessionUserDetails()
         }
         .done { userDetails in
             XCTAssertNotNil(userDetails, "Result should not be nil")
@@ -46,6 +39,25 @@ final class ACHClientSessionServiceTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 10.0)
+    }
+
+    func test_getClientSession_userDetails_async() async {
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                 lastName: "lastname-test",
+                                                 emailAddress: "test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: expectedUserDetails.firstName,
+                              lastName: expectedUserDetails.lastName,
+                              email: expectedUserDetails.emailAddress)
+        do {
+            let userDetails = try await sut.getClientSessionUserDetails()
+            XCTAssertNotNil(userDetails, "Result should not be nil")
+            XCTAssertTrue(ACHUserDetails.compare(lhs: expectedUserDetails, rhs: userDetails).areEqual)
+        } catch {
+            XCTFail("Error should not be thrown")
+        }
     }
 
     func test_patchClientSession_userDetails_success() {
@@ -78,7 +90,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
 
         firstly {
-            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
+            sut.patchClientSession(with: clientSessionActionsRequest)
         }
         .done { _ in
             let updatedCustomer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
@@ -95,6 +107,50 @@ final class ACHClientSessionServiceTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 10.0)
+    }
+
+    func test_patchClientSession_userDetails_success_async() async {
+        // The user details that are already in the client session
+        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                lastName: "lastname-test",
+                                                emailAddress: "test@mail.com")
+
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
+                                                 lastName: "updated_lastname-test",
+                                                 emailAddress: "updated_test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: currentUserDetails.firstName,
+                              lastName: currentUserDetails.lastName,
+                              email: currentUserDetails.emailAddress)
+
+        let configurationsFetchWithActions = getFetchConfiguration(
+            firstName: expectedUserDetails.firstName,
+            lastName: expectedUserDetails.lastName,
+            email: expectedUserDetails.emailAddress
+        )
+
+        mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
+
+        // Creating the actions for the patch request with the updated new user details
+        let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
+                            ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
+                            ClientSession.Action.setCustomerEmailAddress(expectedUserDetails.emailAddress)]
+
+        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
+
+        do {
+            try await sut.patchClientSession(with: clientSessionActionsRequest)
+            let updatedCustomer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
+            let updatedUserDetails = ACHUserDetails(firstName: updatedCustomer?.firstName ?? "",
+                                                    lastName: updatedCustomer?.lastName ?? "",
+                                                    emailAddress: updatedCustomer?.emailAddress ?? "")
+
+            XCTAssertTrue(ACHUserDetails.compare(lhs: expectedUserDetails, rhs: updatedUserDetails).areEqual)
+        } catch {
+            XCTFail("Error should not be thrown")
+        }
     }
 
     func test_patchClientSession_userDetails_failure() {
@@ -126,7 +182,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
 
         firstly {
-            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
+            sut.patchClientSession(with: clientSessionActionsRequest)
         }
         .done { _ in
             XCTFail("Result should be nil")
@@ -140,6 +196,40 @@ final class ACHClientSessionServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_patchClientSession_userDetails_failure_async() async {
+        let error = getInvalidTokenError()
+
+        // The user details that are already in the client session
+        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                lastName: "lastname-test",
+                                                emailAddress: "test@mail.com")
+
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
+                                                 lastName: "updated_lastname-test",
+                                                 emailAddress: "updated_test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: currentUserDetails.firstName,
+                              lastName: currentUserDetails.lastName,
+                              email: currentUserDetails.emailAddress)
+
+        mockApiClient.fetchConfigurationWithActionsResult = (nil, error)
+
+        // Creating the actions for the patch request with the updated new user details
+        let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
+                            ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
+                            ClientSession.Action.setCustomerEmailAddress(expectedUserDetails.emailAddress)]
+
+        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
+
+        do {
+            try await sut.patchClientSession(with: clientSessionActionsRequest)
+            XCTFail("Error should be thrown")
+        } catch {
+            // Expecting an error to be thrown
+        }
+    }
 }
 
 extension ACHClientSessionServiceTests {
@@ -154,7 +244,7 @@ extension ACHClientSessionServiceTests {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
 
-        clientSessionService = ACHClientSessionService()
+        sut = ACHClientSessionService()
     }
 
     private func prepareConfigurations(firstName: String = "", lastName: String = "", email: String = "") {
@@ -183,7 +273,7 @@ extension ACHClientSessionServiceTests {
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
 
-        clientSessionService = nil
+        sut = nil
     }
 
     private func getInvalidTokenError() -> PrimerError {
