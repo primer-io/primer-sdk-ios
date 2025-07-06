@@ -14,7 +14,7 @@ import Foundation
 
 // MARK: MISSING_TESTS
 final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
-    
+
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = self.rawData as? PrimerCardData {
