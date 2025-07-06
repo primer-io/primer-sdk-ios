@@ -126,9 +126,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         let paymentMethodRequestValue = switch config.type {
         case PrimerPaymentMethodType.adyenDotPay.rawValue:
             "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue: 
+        case PrimerPaymentMethodType.adyenIDeal.rawValue:
             "ideal"
-        default: 
+        default:
             ""
         }
 
@@ -327,7 +327,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 throw error
             }
         }
-        
+
         let checkoutData = try await startPaymentFlowTask?.value
         startPaymentFlowTask = nil
         return checkoutData
