@@ -1401,6 +1401,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
         var decisionHandlerHasBeenCalled = false
 
+        // MARK: Check this cancellation (5 seconds?)
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             if !decisionHandlerHasBeenCalled {
                 let message =
