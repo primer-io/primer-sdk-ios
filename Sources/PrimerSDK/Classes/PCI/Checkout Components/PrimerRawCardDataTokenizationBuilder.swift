@@ -7,12 +7,14 @@
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import Foundation
 
 // MARK: MISSING_TESTS
 final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
-
+    
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = self.rawData as? PrimerCardData {
@@ -312,8 +314,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             }
         }
     }
-    
-    
+
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws {
         try await Task(priority: .userInitiated) {
             var errors: [PrimerValidationError] = []
@@ -445,3 +446,5 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 }
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length
