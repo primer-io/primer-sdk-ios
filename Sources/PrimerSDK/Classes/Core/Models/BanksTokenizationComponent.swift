@@ -40,7 +40,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     var paymentCheckoutData: PrimerCheckoutData?
     var didCancel: (() -> Void)?
     var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
-    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
+    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData, Error>?
     var awaitUserInputTask: Task<String, Error>?
     var isCancelled: Bool = false
     var successMessage: String?
@@ -123,10 +123,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             throw err
         }
 
-        var paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
-        default: ""
+        let paymentMethodRequestValue = switch config.type {
+        case PrimerPaymentMethodType.adyenDotPay.rawValue:
+            "dotpay"
+        case PrimerPaymentMethodType.adyenIDeal.rawValue: 
+            "ideal"
+        default: 
+            ""
         }
 
         let request = Request.Body.Adyen.BanksList(
@@ -500,8 +503,8 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 return decodedJWTToken
 
             case .fail(let message):
-                var merchantErr: Error!
-                if let message = message {
+                let merchantErr: Error
+                if let message {
                     let err = PrimerError.merchantError(message: message,
                                                         userInfo: .errorUserInfoDictionary(),
                                                         diagnosticsId: UUID().uuidString)
@@ -1418,7 +1421,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                                                   userInfo: .errorUserInfoDictionary(),
                                                   diagnosticsId: UUID().uuidString)
             throw error
-            
         case .continue:
             return
         }
@@ -1503,44 +1505,44 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        startTokenizationFlowTask = Task {
-            do {
-                try Task.checkCancellation()
+        let task = Task {
+            try Task.checkCancellation()
 
-                try await self.performPreTokenizationSteps()
-                try Task.checkCancellation()
+            try await self.performPreTokenizationSteps()
+            try Task.checkCancellation()
 
-                try await self.performTokenizationStep()
-                try Task.checkCancellation()
+            try await self.performTokenizationStep()
+            try Task.checkCancellation()
 
-                try await self.performPostTokenizationSteps()
-                try Task.checkCancellation()
+            try await self.performPostTokenizationSteps()
+            try Task.checkCancellation()
 
-                return self.paymentMethodTokenData
-            } catch is CancellationError {
-                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: cancelledError)
-                throw cancelledError
-            } catch {
-                throw error
+            guard let paymentMethodTokenData else {
+                throw PrimerError.invalidValue(
+                    key: "paymentMethodTokenData",
+                    value: "Payment method token data is not valid",
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString
+                )
             }
+
+            return paymentMethodTokenData
         }
+        startTokenizationFlowTask = task
 
-        let paymentMethodTokenData = try await startTokenizationFlowTask?.value
-        startTokenizationFlowTask = nil
+        defer { startTokenizationFlowTask = nil }
 
-        guard let paymentMethodTokenData else {
-            throw PrimerError.invalidValue(
-                key: "paymentMethodTokenData",
-                value: "Payment method token data is not valid",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+        do {
+            return try await task.value
+        } catch is CancellationError {
+            let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                       userInfo: .errorUserInfoDictionary(),
+                                                       diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: cancelledError)
+            throw cancelledError
+        } catch {
+            throw error
         }
-
-        return paymentMethodTokenData
     }
 
     func awaitUserInput() -> Promise<Void> {
