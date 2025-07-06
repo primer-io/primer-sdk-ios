@@ -446,7 +446,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
             guard PrimerInternal.shared.intent != .vault else { return }
-            
+
             let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
             let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
             var decisionHandlerHasBeenCalled = false
