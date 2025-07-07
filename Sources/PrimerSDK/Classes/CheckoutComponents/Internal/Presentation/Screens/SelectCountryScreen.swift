@@ -15,7 +15,6 @@ internal struct SelectCountryScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @State private var countryState: PrimerSelectCountryState = .init()
-    @State private var searchText = ""
 
     var body: some View {
         NavigationView {
@@ -45,7 +44,7 @@ internal struct SelectCountryScreen: View {
     private var searchBarSection: some View {
         Group {
             if let customSearchBar = scope.searchBar {
-                customSearchBar(searchText, { query in
+                customSearchBar(countryState.searchQuery, { query in
                     scope.onSearch(query: query)
                 }, "Search countries...")
             } else {
@@ -59,15 +58,14 @@ internal struct SelectCountryScreen: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            TextField("Search countries...", text: $searchText)
+            TextField("Search countries...", text: Binding(
+                get: { countryState.searchQuery },
+                set: { scope.onSearch(query: $0) }
+            ))
                 .textFieldStyle(PlainTextFieldStyle())
-                .onChange(of: searchText) { newValue in
-                    scope.onSearch(query: newValue)
-                }
 
-            if !searchText.isEmpty {
+            if !countryState.searchQuery.isEmpty {
                 Button(action: {
-                    searchText = ""
                     scope.onSearch(query: "")
                 }) {
                     Image(systemName: "xmark.circle.fill")
