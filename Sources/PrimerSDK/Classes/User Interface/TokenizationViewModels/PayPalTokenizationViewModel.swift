@@ -218,10 +218,10 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() async throws {
         let url = try await fetchOAuthURL()
         willPresentExternalView?()
-        let _ = try await createOAuthSession(url)
+        _ = try await createOAuthSession(url)
         didPresentExternalView?()
     }
-    
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             firstly {
