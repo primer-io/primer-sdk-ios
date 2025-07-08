@@ -433,7 +433,10 @@ final class PayPalService: PayPalServiceProtocol {
 
         return try await apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
-            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)
+            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(
+                paymentMethodConfigId: configId,
+                orderId: orderId
+            )
         )
     }
 }
