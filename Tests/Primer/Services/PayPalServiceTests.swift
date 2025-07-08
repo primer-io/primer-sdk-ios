@@ -1,244 +1,910 @@
-//
-//  PayPalServiceTests.swift
-//  PrimerSDKTests
-//
-//  Created by Carl Eriksson on 17/01/2021.
-//
-
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
-class PayPalServiceTests: XCTestCase {
+final class PayPalServiceTests: XCTestCase {
+    var sut: PayPalService!
+    private var mockApiClient: MockPrimerAPIClient!
 
-    func test_startOrderSession_fails_if_client_token_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal payment sesion | Failure: No client token")
+    override func setUp() {
+        super.setUp()
+        mockApiClient = MockPrimerAPIClient()
+        sut = PayPalService(apiClient: mockApiClient)
+    }
 
+    override func tearDown() {
+        mockApiClient = nil
+        sut = nil
+        super.tearDown()
+    }
+
+    func test_startOrderSession_ShouldFailWhenClientTokenIsNil() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No client token")
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startOrderSession { result in
+            switch result {
+            case .failure:
+                expectationStartOrderSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
+    }
+
+    func test_startOrderSession_ShouldFailWhenClientTokenIsNil_async() async throws {
+        // Given
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startOrderSession_ShouldFailWhenConfigIdIsNil() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No config ID")
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startOrderSession { result in
+            switch result {
+            case .failure:
+                expectationStartOrderSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
+    }
+
+    func test_startOrderSession_ShouldFailWhenConfigIdIsNil_async() async throws {
+        // Given
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startOrderSession_ShouldFailWhenAmountIsNil() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No amount")
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-        state.clientToken = nil
 
-        let service = PayPalService()
-
-        service.startOrderSession({ result in
+        // When
+        sut.startOrderSession { result in
             switch result {
             case .failure:
-                break
+                expectationStartOrderSession.fulfill()
             case .success:
                 XCTFail("Test should not get into the success case.")
             }
+        }
 
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
     }
 
-    func test_startOrderSession_fails_if_configId_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal payment sesion | Failure: No config ID")
-
-        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "primer.io")
-        let data = try JSONEncoder().encode(response)
-        //        let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState(apiConfiguration: nil)
-
+    func test_startOrderSession_ShouldFailWhenAmountIsNil_async() async throws {
+        // Given
+        let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
 
-        let service = PayPalService()
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
 
-        service.startOrderSession({ result in
+    func test_startOrderSession_ShouldFailWhenCurrencyIsNil() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No currency")
+        let state = MockAppState()
+        state.amount = 123
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startOrderSession { result in
             switch result {
             case .failure:
-                break
+                expectationStartOrderSession.fulfill()
             case .success:
                 XCTFail("Test should not get into the success case.")
             }
+        }
 
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
     }
 
-    func test_startBillingAgreementSession_fails_if_client_token_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal billing agreement | Failure: No client token")
+    func test_startOrderSession_ShouldFailWhenCurrencyIsNil_async() async throws {
+        // Given
+        let state = MockAppState()
+        state.amount = 123
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startOrderSession_ShouldFailWhenInvalidScheme() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: Invalid URL scheme")
+        let state = MockAppState()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startOrderSession { result in
+            switch result {
+            case .failure:
+                expectationStartOrderSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
+    }
+
+    func test_startOrderSession_ShouldFailWhenInvalidScheme_async() async throws {
+        // Given
+        let state = MockAppState()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startOrderSession_ShouldFailWhenReceiveError() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Failure: Error from API")
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         let state = MockAppState()
-
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
         DependencyContainer.register(state as AppStateProtocol)
-        state.clientToken = nil
 
-        let service = PayPalService()
+        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
 
-        service.startOrderSession({ result in
+        // When
+        sut.startOrderSession { result in
             switch result {
             case .failure:
-                break
+                expectationStartOrderSession.fulfill()
             case .success:
                 XCTFail("Test should not get into the success case.")
             }
+        }
 
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
+        // Then
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
     }
 
-    func test_startBillingAgreementSession_fails_if_configId_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal billing agreement | Failure: No config ID")
+    func test_startOrderSession_ShouldFailWhenReceiveError_async() async throws {
+        // Given
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let response = Response.Body.PayPal.CreateBillingAgreement(
-            tokenId: "tid",
-            approvalUrl: "https://primer.io")
-        let data = try JSONEncoder().encode(response)
-        //        let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState(apiConfiguration: nil)
-
-        DependencyContainer.register(state as AppStateProtocol)
-
-        let service = PayPalService()
-
-        service.startOrderSession({ result in
-            switch result {
-            case .failure:
-                break
-            case .success:
-                XCTFail("Test should not get into the success case.")
-            }
-
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
-    }
-
-    func test_confirmBillingAgreement_fails_if_client_token_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal billing agreement | Failure: No client token")
-
-        let response = mockPayPalBillingAgreement
-        let data = try JSONEncoder().encode(response)
-        //        let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
-
-        DependencyContainer.register(state as AppStateProtocol)
-        state.clientToken = nil
-
-        let service = PayPalService()
-
-        service.startOrderSession({ result in
-            switch result {
-            case .failure:
-                break
-            case .success:
-                XCTFail("Test should not get into the success case.")
-            }
-
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
-    }
-
-    func test_confirmBillingAgreement_fails_if_configId_nil() throws {
-        let expectation = self.expectation(description: "Create PayPal billing agreement | Failure: No config ID")
-
-        let state = MockAppState(apiConfiguration: nil)
-
-        MockLocator.registerDependencies()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
         DependencyContainer.register(state as AppStateProtocol)
 
-        let service = PayPalService()
+        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
 
-        service.startOrderSession({ result in
-            switch result {
-            case .failure:
-                break
-            case .success:
-                XCTFail("Test should not get into the success case.")
-            }
-
-            expectation.fulfill()
-        })
-
-        wait(for: [expectation], timeout: 2.0)
+        // When
+        do {
+            _ = try await sut.startOrderSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
     }
 
-    func testStartOrderSession() throws {
-        let apiClient = MockPayPalAPIClient()
-        let service = PayPalService(apiClient: apiClient)
-
+    func test_startOrderSession_ShouldSucceed() throws {
+        // Given
+        let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         MockLocator.registerDependencies()
         let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
 
         let state = MockAppState()
-        DependencyContainer.register(state as AppStateProtocol)
         state.amount = 123
         state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
 
-        apiClient.onCreateOrderSession = { _, _ in
-            return .init(orderId: "order_id", approvalUrl: "scheme://approve")
-        }
+        mockApiClient.createPayPalOrderSessionResult = .success(.init(orderId: "order_id", approvalUrl: "scheme://approve"))
 
-        let startOrderSessionExpectation = self.expectation(description: "Billing agreement started")
-        service.startOrderSession { result in
+        // When
+        sut.startOrderSession { result in
             switch result {
             case .success(let model):
                 XCTAssertEqual(model.orderId, "order_id")
                 XCTAssertEqual(model.approvalUrl, "scheme://approve")
-            case .failure:
-                XCTFail()
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
             }
-            startOrderSessionExpectation.fulfill()
+            expectationStartOrderSession.fulfill()
         }
-        waitForExpectations(timeout: 2.0)
+
+        // When
+        wait(for: [expectationStartOrderSession], timeout: 2.0)
     }
 
-    func testCreateBillingAgreement() throws {
-        let apiClient = MockPayPalAPIClient()
-        let service = PayPalService(apiClient: apiClient)
-
+    func test_startOrderSession_ShouldSucceed_async() async throws {
+        // Given
         MockLocator.registerDependencies()
         let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
 
-        apiClient.onCreateBillingAgreementSession = { _, _ in
-            return .init(tokenId: "my_token", approvalUrl: "scheme://approve")
+        let state = MockAppState()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalOrderSessionResult = .success(.init(orderId: "order_id", approvalUrl: "scheme://approve"))
+
+        // When
+        do {
+            let model = try await sut.startOrderSession()
+            XCTAssertEqual(model.orderId, "order_id")
+            XCTAssertEqual(model.approvalUrl, "scheme://approve")
+        } catch {
+            XCTFail("Test should not get into the success case.")
+        }
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenClientTokenIsNil() throws {
+        // Given
+        let expectationStartBillingAgreementSession =
+            XCTestExpectation(description: "Create PayPal billing agreement sesion | Failure: No client token")
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .failure:
+                expectationStartBillingAgreementSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
         }
 
-        let startBillingAgreementExpectation = self.expectation(description: "Billing agreement started")
-        service.startBillingAgreementSession { result in
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenConfigIdIsNil() throws {
+        // Given
+        let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement sesion | Failure: No config ID")
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .failure:
+                expectationStartBillingAgreementSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenConfigIdIsNil_async() async throws {
+        // Given
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startBillingAgreementSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenInvalidScheme() throws {
+        // Given
+        let expectationStartBillingAgreementSession =
+            XCTestExpectation(description: "Create PayPal billing agreement sesion | Failure: Invalid URL scheme")
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .failure:
+                expectationStartBillingAgreementSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenInvalidScheme_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.startBillingAgreementSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenReceiveError() throws {
+        // Given
+        let expectationStartBillingAgreementSession =
+            XCTestExpectation(description: "Create PayPal billing agreement sesion | Failure: Error from API")
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .failure:
+                expectationStartBillingAgreementSession.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+    }
+
+    func test_startBillingAgreementSession_ShouldFailWhenReceiveError_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        do {
+            _ = try await sut.startBillingAgreementSession()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_startBillingAgreementSession_ShouldSucceed() throws {
+        // Given
+        let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement sesion | Success")
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+
+        let state = MockAppState()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+
+        // When
+        sut.startBillingAgreementSession { result in
             switch result {
             case .success(let approvalUrl):
                 XCTAssertEqual(approvalUrl, "scheme://approve")
-            case .failure:
-                XCTFail()
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
             }
-            startBillingAgreementExpectation.fulfill()
-        }
-        wait(for: [startBillingAgreementExpectation], timeout: 2.0)
-
-        apiClient.onConfirmBillingAgreement = { _, _ in
-            return .init(billingAgreementId: "agreement_id",
-                         externalPayerInfo: .init(externalPayerId: "external_payer_id",
-                                                  email: "email@email.com",
-                                                  firstName: "first_name",
-                                                  lastName: "last_name"),
-                         shippingAddress: nil)
+            expectationStartBillingAgreementSession.fulfill()
         }
 
-        let expectation = self.expectation(description: "Billing agreement is confirmed")
-        service.confirmBillingAgreement { result in
+        // When
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+    }
+
+    func test_startBillingAgreementSession_ShouldSucceed_async() async throws {
+        // Given
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+
+        let state = MockAppState()
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+
+        // When
+        do {
+            let approvalUrl = try await sut.startBillingAgreementSession()
+            XCTAssertEqual(approvalUrl, "scheme://approve")
+        } catch {
+            XCTFail("Test should not get into the success case.")
+        }
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenClientTokenIsNil() throws {
+        // Given
+        let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No client token")
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.confirmBillingAgreement { result in
+            switch result {
+            case .failure:
+                expectationConfirmBillingAgreement.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationConfirmBillingAgreement], timeout: 2.0)
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenClientTokenIsNil_async() async throws {
+        // Given
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.confirmBillingAgreement()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenConfigIdIsNil() throws {
+        // Given
+        let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No config ID")
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.confirmBillingAgreement { result in
+            switch result {
+            case .failure:
+                expectationConfirmBillingAgreement.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationConfirmBillingAgreement], timeout: 2.0)
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenConfigIdIsNil_async() async throws {
+        // Given
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.confirmBillingAgreement()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenTokenIdIsNil() throws {
+        // Given
+        let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No token ID")
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.confirmBillingAgreement { result in
+            switch result {
+            case .failure:
+                expectationConfirmBillingAgreement.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationConfirmBillingAgreement], timeout: 2.0)
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenTokenIdIsNil_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.confirmBillingAgreement()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenReceiveError() throws {
+        // Given
+        let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement sesion | Success")
+        let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: Error from API")
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .success(let approvalUrl):
+                XCTAssertEqual(approvalUrl, "scheme://approve")
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
+            }
+            expectationStartBillingAgreementSession.fulfill()
+        }
+
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+
+        sut.confirmBillingAgreement { result in
+            switch result {
+            case .failure:
+                expectationConfirmBillingAgreement.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationConfirmBillingAgreement], timeout: 2.0)
+    }
+
+    func test_confirmBillingAgreement_ShouldFailWhenReceiveError_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        do {
+            _ = try await sut.startBillingAgreementSession()
+            _ = try await sut.confirmBillingAgreement()
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_confirmBillingAgreement_ShouldSucceed() throws {
+        // Given
+        let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement sesion | Success")
+        let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Success")
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+        mockApiClient.confirmPayPalBillingAgreementResult = .success(
+            .init(billingAgreementId: "agreement_id",
+                  externalPayerInfo: .init(
+                    externalPayerId: "external_payer_id",
+                    email: "email@email.com",
+                    firstName: "first_name",
+                    lastName: "last_name"
+                  ),
+                  shippingAddress: nil)
+        )
+
+        // When
+        sut.startBillingAgreementSession { result in
+            switch result {
+            case .success(let approvalUrl):
+                XCTAssertEqual(approvalUrl, "scheme://approve")
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
+            }
+            expectationStartBillingAgreementSession.fulfill()
+        }
+
+        // Then
+        wait(for: [expectationStartBillingAgreementSession], timeout: 2.0)
+
+        sut.confirmBillingAgreement { result in
             switch result {
             case .success(let model):
                 XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
-            case .failure:
-                XCTFail()
+                XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
+                XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
+                XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
+                expectationConfirmBillingAgreement.fulfill()
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
             }
-            expectation.fulfill()
         }
 
-        waitForExpectations(timeout: 2.0)
+        // Then
+        wait(for: [expectationConfirmBillingAgreement], timeout: 2.0)
+    }
+
+    func test_confirmBillingAgreement_ShouldSucceed_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+        mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
+        mockApiClient.confirmPayPalBillingAgreementResult = .success(
+            .init(billingAgreementId: "agreement_id",
+                  externalPayerInfo: .init(
+                    externalPayerId: "external_payer_id",
+                    email: "email@email.com",
+                    firstName: "first_name",
+                    lastName: "last_name"
+                  ),
+                  shippingAddress: nil)
+        )
+
+        // When
+        do {
+            let approvalUrl = try await sut.startBillingAgreementSession()
+            XCTAssertEqual(approvalUrl, "scheme://approve")
+
+            let model = try await sut.confirmBillingAgreement()
+            XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
+            XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
+            XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
+            XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
+        } catch {
+            XCTFail("Test should not get into the success case.")
+        }
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenClientTokenIsNil() throws {
+        // Given
+        let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: No client token")
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
+            switch result {
+            case .failure:
+                expectationFetchPayPalExternalPayerInfo.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationFetchPayPalExternalPayerInfo], timeout: 2.0)
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenClientTokenIsNil_async() async throws {
+        // Given
+        let state = MockAppState(clientToken: nil, apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.fetchPayPalExternalPayerInfo(orderId: "order_id")
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenConfigIdIsNil() throws {
+        // Given
+        let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: No config ID")
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
+            switch result {
+            case .failure:
+                expectationFetchPayPalExternalPayerInfo.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationFetchPayPalExternalPayerInfo], timeout: 2.0)
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenConfigIdIsNil_async() async throws {
+        // Given
+        let state = MockAppState(apiConfiguration: nil)
+        DependencyContainer.register(state as AppStateProtocol)
+
+        // When
+        do {
+            _ = try await sut.fetchPayPalExternalPayerInfo(orderId: "order_id")
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenReceiveError() throws {
+        // Given
+        let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: Error from API")
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
+            switch result {
+            case .failure:
+                expectationFetchPayPalExternalPayerInfo.fulfill()
+            case .success:
+                XCTFail("Test should not get into the success case.")
+            }
+        }
+
+        // Then
+        wait(for: [expectationFetchPayPalExternalPayerInfo], timeout: 2.0)
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenReceiveError_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+
+        // When
+        do {
+            _ = try await sut.fetchPayPalExternalPayerInfo(orderId: "order_id")
+            XCTFail("Test should not get into the success case.")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldSucceed() throws {
+        // Given
+        let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Success")
+        MockLocator.registerDependencies()
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .success(.init(
+            orderId: "order_id",
+            externalPayerInfo: .init(
+                externalPayerId: "external_payer_id",
+                email: "email@email.com",
+                firstName: "first_name",
+                lastName: "last_name"
+            )
+        ))
+
+        // When
+        sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
+            switch result {
+            case .success(let model):
+                XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
+                XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
+                XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
+                XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
+                XCTAssertEqual(model.orderId, "order_id")
+            case .failure(let error):
+                XCTFail("Expected success but got error: \(error)")
+            }
+            expectationFetchPayPalExternalPayerInfo.fulfill()
+        }
+
+        // Then
+        wait(for: [expectationFetchPayPalExternalPayerInfo], timeout: 2.0)
+    }
+
+    func test_fetchPayPalExternalPayerInfo_ShouldSucceed_async() async throws {
+        // Given
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        MockLocator.registerDependencies()
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .success(.init(
+            orderId: "order_id",
+            externalPayerInfo: .init(
+                externalPayerId: "external_payer_id",
+                email: "email@email.com",
+                firstName: "first_name",
+                lastName: "last_name"
+            )
+        ))
+
+        // When
+        do {
+            let model = try await sut.fetchPayPalExternalPayerInfo(orderId: "order_id")
+            XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
+            XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
+            XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
+            XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
+            XCTAssertEqual(model.orderId, "order_id")
+        } catch {
+            XCTFail("Test should not get into the success case.")
+        }
     }
 }
