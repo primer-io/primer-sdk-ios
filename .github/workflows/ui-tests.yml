@@ -165,6 +165,7 @@ jobs:
           slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           ui-tests-secrets-api-key: ${{ secrets.UI_TESTS_SECRETS_API_KEY }}
+          test-app-artifact-url: ${{ needs.build-and-upload-to-firebase-and-lambdatest.outputs.artifact-url }}
 
   test-via-lambdatest-manual:
     runs-on: ubuntu-latest
@@ -189,3 +190,4 @@ jobs:
           slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           ui-tests-secrets-api-key: ${{ secrets.UI_TESTS_SECRETS_API_KEY }}
+          test-app-artifact-url: ${{ needs.build-and-upload-to-firebase-and-lambdatest.outputs.artifact-url }}
