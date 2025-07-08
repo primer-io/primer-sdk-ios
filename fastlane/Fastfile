@@ -91,7 +91,7 @@ platform :ios do
       podfile: podfile_path
     )
 
-    # Build for browserstack
+    # Build for lambdatest
     build_app(
       scheme: app_scheme,
       workspace: app_workspace,
@@ -99,11 +99,6 @@ platform :ios do
       include_bitcode: false,
       export_method: "development",
       xcargs: "-allowProvisioningUpdates"
-    )
-
-    # Upload to Browserstack
-    upload_to_browserstack_and_save_id(
-      file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
     # Upload to LambdaTest
@@ -257,19 +252,6 @@ platform :ios do
 
   end
 
-  desc 'This action uploads the .ipa to Browserstack and save its ID into a file'
-  private_lane :upload_to_browserstack_and_save_id do |options|
-
-    upload_to_browserstack_app_automate(
-      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
-      file_path: options[:file_path]
-    )
-
-    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
-
-  end
-
   desc 'This action uploads the .ipa to LambdaTest and save its ID into a file'
   private_lane :upload_to_lambdatest_and_save_id do |options|
 
@@ -344,18 +326,6 @@ platform :ios do
     sh("echo LIVEDEMOSTORE_URL=#{url} >> $GITHUB_ENV")
   end
 
-  desc 'Store the Browserstack ID into a file'
-  private_lane :save_browserstack_id do |options|
-
-    browserstack_id_to_save = options[:browserstack_id]
-    browserstack_id_file = "/var/tmp/browserstack_id.txt"
-
-    UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
-
-    File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
-
-  end
-
   desc 'Store the LambdaTest ID into a file'
   private_lane :save_lambdatest_id do |options|
 
@@ -366,7 +336,7 @@ platform :ios do
 
     File.open(lambdatest_id_file, 'w') { |file| file.write(options[:lambdatest_id]) }
 
-  end 
+  end
 
   ################## END PRIVATE LANES ######################
 
