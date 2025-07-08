@@ -155,7 +155,7 @@ jobs:
           sparse-checkout: .github
       - name: Run UI Tests via LambdaTest [${{ inputs.testType }}] 🧪
         id: ui-tests-test-via-lambdatest
-        uses: ./.github/actions/ui-tests-lambdatest
+        uses: ./.github/actions/ui-tests
         with:
           appium-tests-branch: ${{ inputs.appiumTestsBranch }}
           test-type: ${{ inputs.testType }}
