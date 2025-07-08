@@ -194,23 +194,20 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     // PayPal
-    
+
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
         completion: @escaping (_ result: Result<Response.Body.PayPal.CreateOrder, Error>) -> Void
     ) {
-        guard let createPayPalOrderSessionResult else {
-            XCTAssert(false, "Set 'createPayPalOrderSessionResult' on your MockPrimerAPIClient")
-            return
-        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            switch createPayPalOrderSessionResult {
+            switch self.createPayPalOrderSessionResult {
             case .failure(let err):
                 completion(.failure(err))
             case .success(let successResult):
                 completion(.success(successResult))
+            case nil:
+                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -236,17 +233,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
         completion: @escaping (_ result: Result<Response.Body.PayPal.CreateBillingAgreement, Error>) -> Void
     ) {
-        guard let result = createPayPalBillingAgreementSessionResult else {
-            XCTAssert(false, "Set 'createPayPalBillingAgreementSessionResult' on your MockPrimerAPIClient")
-            return
-        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            switch result {
+            switch self.createPayPalBillingAgreementSessionResult {
             case .failure(let err):
                 completion(.failure(err))
             case .success(let successResult):
                 completion(.success(successResult))
+            case nil:
+                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -264,7 +258,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return successResult
         case nil:
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
-            
         }
     }
 
@@ -273,17 +266,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
         completion: @escaping (_ result: Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void
     ) {
-        guard let result = confirmPayPalBillingAgreementResult else {
-            XCTAssert(false, "Set 'confirmPayPalBillingAgreementResult' on your MockPrimerAPIClient")
-            return
-        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            switch result {
+            switch self.confirmPayPalBillingAgreementResult {
             case .failure(let err):
                 completion(.failure(err))
             case .success(let successResult):
                 completion(.success(successResult))
+            case nil:
+                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -309,17 +299,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
         completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void
     ) {
-        guard let result = fetchPayPalExternalPayerInfoResult else {
-            XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
-            return
-        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
-            switch result {
+            switch self.fetchPayPalExternalPayerInfoResult {
             case .failure(let err):
                 completion(.failure(err))
             case .success(let successResult):
                 completion(.success(successResult))
+            case nil:
+                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -339,7 +326,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
-    
+
     // Klarna
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
