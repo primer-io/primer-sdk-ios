@@ -453,7 +453,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     
     @MainActor
     private func notifyDelegateOfValidationResult_async(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         guard let rawDataManager else { return }
         rawDataManager.delegate?.primerRawDataManager?(
