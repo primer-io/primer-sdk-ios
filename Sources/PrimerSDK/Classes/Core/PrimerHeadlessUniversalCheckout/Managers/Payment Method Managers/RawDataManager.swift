@@ -345,17 +345,17 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                     // Store the latest data
-                    self.latestDataForValidation = data
+                    latestDataForValidation = data
 
                     // If validation is already running, mark for re-validation
-                    if self.isValidationInProgress {
-                        self.pendingValidation = true
-                        self.logger.debug(message: "Marking for validation after current one completes")
+                    if isValidationInProgress {
+                        pendingValidation = true
+                        logger.debug(message: "Marking for validation after current one completes")
                         return continuation.resume()
                     }
 
                     // Mark validation as started
-                    self.isValidationInProgress = true
+                    isValidationInProgress = true
 
                     Task {
                         defer {
@@ -393,7 +393,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws -> Void? {
-            guard let rawData = rawData else {
+            guard let rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
                 return nil
             }
