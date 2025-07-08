@@ -163,7 +163,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
-                    ErrorHandler.handle(error: err)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
@@ -261,7 +260,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                         errors: errors,
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
