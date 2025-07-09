@@ -332,7 +332,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 errors.append(err)
                 ErrorHandler.handle(error: err)
 
-                await self.notifyDelegateOfValidationResult_async(isValid: false, errors: errors)
+                notifyDelegateOfValidationResult(isValid: false, errors: errors)
                 throw err
             }
 
@@ -429,19 +429,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 )
                 ErrorHandler.handle(error: err)
 
-                await self.notifyDelegateOfValidationResult_async(isValid: false, errors: errors)
+                notifyDelegateOfValidationResult(isValid: false, errors: errors)
                 throw err
             }
 
-            await self.notifyDelegateOfValidationResult_async(isValid: true, errors: nil)
+            notifyDelegateOfValidationResult(isValid: true, errors: nil)
         }.value
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+            guard let self, let rawDataManager else { return }
 
             rawDataManager.delegate?.primerRawDataManager?(
                 rawDataManager,
@@ -449,18 +449,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 errors: errors
             )
         }
-    }
-    
-    @MainActor
-    private func notifyDelegateOfValidationResult_async(isValid: Bool, errors: [Error]?) {
-        isDataValid = isValid
-
-        guard let rawDataManager else { return }
-        rawDataManager.delegate?.primerRawDataManager?(
-            rawDataManager,
-            dataIsValid: isValid,
-            errors: errors
-        )
     }
 }
 // swiftlint:enable cyclomatic_complexity

@@ -338,49 +338,32 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         func validateRawData(_ data: PrimerRawData) async throws {
-            try await withCheckedThrowingContinuation { continuation in
-                validationQueue.async { [weak self] in
-                    guard let self else {
-                        return continuation.resume()
-                    }
+            // Store the latest data
+            latestDataForValidation = data
 
-                    // Store the latest data
-                    latestDataForValidation = data
+            // If validation is already running, mark for re-validation
+            if isValidationInProgress {
+                pendingValidation = true
+                logger.debug(message: "Marking for validation after current one completes")
+                return
+            }
 
-                    // If validation is already running, mark for re-validation
-                    if isValidationInProgress {
-                        pendingValidation = true
-                        logger.debug(message: "Marking for validation after current one completes")
-                        return continuation.resume()
-                    }
+            // Mark validation as started
+            isValidationInProgress = true
 
-                    // Mark validation as started
-                    isValidationInProgress = true
+            defer {
+                // Check if we need to validate again with newer data
+                let needsRevalidation = self.pendingValidation
+                self.isValidationInProgress = false
+                self.pendingValidation = false
 
-                    Task {
-                        defer {
-                            // Check if we need to validate again with newer data
-                            let needsRevalidation = self.pendingValidation
-                            self.isValidationInProgress = false
-                            self.pendingValidation = false
-
-                            if needsRevalidation, let latestData = self.latestDataForValidation {
-                                Task {
-                                    try? await self.validateRawData(latestData)
-                                }
-                            }
-                        }
-
-                        do {
-                            try await self.rawDataTokenizationBuilder.validateRawData(data)
-                            self.isDataValid = self.rawDataTokenizationBuilder.isDataValid
-                            continuation.resume()
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    }
+                if needsRevalidation, let latestData = self.latestDataForValidation {
+                    Task { try? await self.validateRawData(latestData) }
                 }
             }
+
+            try await self.rawDataTokenizationBuilder.validateRawData(data)
+            self.isDataValid = self.rawDataTokenizationBuilder.isDataValid
         }
 
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
