@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "2.0.0",
+  "validationStrategy": "none",
+  "initialState": {
+    "payment": {
+      "qrCodeData": "primer://payment?amount=89.99&currency=USD&merchantId=12345",
+      "amount": 89.99,
+      "currency": "USD",
+      "merchantName": "Premium Store",
+      "paymentId": "pay_abc123xyz"
+    },
+    "qr": {
+      "size": 300,
+      "title": "Scan to Pay",
+      "subtitle": "Point your camera at the QR code"
+    }
+  },
+  "workflows": {},
+  "inputs": {},
+  "ui": {
+    "type": "Column",
+    "props": {
+      "spacing": "primerSpaceMedium",
+      "padding": "large",
+      "alignItems": "center",
+      "width": "fill"
+    },
+    "children": [
+      {
+        "type": "Text",
+        "props": {
+          "text": "qr.title",
+          "textStyle": "headingLarge",
+          "textAlign": "center"
+        }
+      },
+      {
+        "type": "Text",
+        "props": {
+          "text": "qr.subtitle",
+          "textStyle": "bodyMedium",
+          "textAlign": "center",
+          "margin": "small"
+        }
+      },
+      {
+        "type": "Column",
+        "props": {
+          "spacing": "primerSpaceMedium",
+          "alignItems": "center",
+          "padding": "large",
+          "backgroundColor": "#ffffff",
+          "borderRadius": 16,
+          "margin": "medium"
+        },
+        "children": [
+          {
+            "type": "Image",
+            "props": {
+              "source": "concat('https://api.qrserver.com/v1/create-qr-code/?size=', string(qr.size), 'x', string(qr.size), '&data=', payment.qrCodeData)",
+              "width": "qr.size",
+              "height": "qr.size",
+              "contentMode": "scaleAspectFit"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "concat('Pay ', payment.currency, ' ', string(payment.amount))",
+              "textStyle": "bodyLarge",
+              "textAlign": "center"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "payment.merchantName",
+              "textStyle": "bodyMedium",
+              "textAlign": "center"
+            }
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "props": {
+          "spacing": "primerSpaceSmall",
+          "width": "fill"
+        },
+        "children": [
+          {
+            "type": "Button",
+            "id": "shareQr",
+            "props": {
+              "text": "Share QR Code",
+              "variant": "secondary",
+              "width": "fill"
+            }
+          },
+          {
+            "type": "Button",
+            "id": "done",
+            "props": {
+              "text": "Done",
+              "variant": "primary",
+              "width": "fill"
+            }
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "props": {
+          "spacing": "primerSpaceSmall",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "margin": "small"
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "🔒",
+              "textStyle": "bodySmall",
+              "textAlign": "center"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "concat('Payment ID: ', payment.paymentId)",
+              "textStyle": "caption",
+              "textAlign": "center"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

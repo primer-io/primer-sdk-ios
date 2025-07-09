@@ -225,40 +225,40 @@ private struct CheckoutContentView: View {
     @ViewBuilder
     private var customizedSwiftUIContent: some View {
         // Route to the actual showcase demo files for customized examples
-        switch example.name {
-        case "Single Field Customisation":
-            SingleFieldCustomisationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Step-by-Step Navigation":
-            SingleInputFieldDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Mixed Components":
-            MixedComponentsDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Dynamic Layouts":
-            CustomCardFormLayoutDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Property Reassignment":
-            PropertyReassignmentDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Conditional Customization":
-            RuntimeCustomizationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Custom Payment Selection Screen":
-            CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        default:
-            // Fallback to default implementation
-            VStack {
-                Text("\(example.name) Demo")
-                    .font(.headline)
-                    .padding()
-                
-                Text("Custom demo implementation")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .padding(.bottom)
-                
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    settings: settings,
-                    onCompletion: onCompletion
-                )
-            }
-        }
+//        switch example.name {
+//        case "Single Field Customisation":
+//            SingleFieldCustomisationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Step-by-Step Navigation":
+//            SingleInputFieldDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Mixed Components":
+//            MixedComponentsDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Dynamic Layouts":
+//            CustomCardFormLayoutDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Property Reassignment":
+//            PropertyReassignmentDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Conditional Customization":
+//            RuntimeCustomizationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        case "Custom Payment Selection Screen":
+//            CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+//        default:
+//            // Fallback to default implementation
+//            VStack {
+//                Text("\(example.name) Demo")
+//                    .font(.headline)
+//                    .padding()
+//                
+//                Text("Custom demo implementation")
+//                    .font(.subheadline)
+//                    .foregroundColor(.secondary)
+//                    .padding(.bottom)
+//                
+//                PrimerCheckout(
+//                    clientToken: clientToken,
+//                    settings: settings,
+//                    onCompletion: onCompletion
+//                )
+//            }
+//        }
     }
     
     // MARK: - Example Info Header

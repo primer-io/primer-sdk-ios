@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+import PrimerUI
 
 // swiftlint:disable identifier_name
 #if DEBUG
@@ -52,7 +53,24 @@ public final class Primer {
         return _Primer
     }
 
-    fileprivate init() {}
+    fileprivate init() {
+        resolveColor = { DesignTokens[dynamicMember: $0]! }
+        resolveSpacing = { DesignTokens[dynamicMember: $0]! }
+        if #available(iOS 15.0, *) {
+            resolveFont = { font in
+                let tokens = DesignTokensManager().tokens ?? DesignTokens() //hack
+                return switch font {
+                case "bodySmall": PrimerFont.bodySmall(tokens: tokens)
+                case "bodyMedium": PrimerFont.bodyMedium(tokens: tokens)
+                case "bodyLarge": PrimerFont.bodyLarge(tokens: tokens)
+                case "headingLarge": PrimerFont.titleLarge(tokens: tokens)
+                case "headingMedium": PrimerFont.bodyMedium(tokens: tokens)
+                case "caption": .caption
+                default: fatalError()
+                }
+            }
+        }
+    }
 
     public func application(_ app: UIApplication,
                             open url: URL,

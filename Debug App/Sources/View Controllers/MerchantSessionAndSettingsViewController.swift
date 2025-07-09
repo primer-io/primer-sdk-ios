@@ -7,7 +7,7 @@
 import PrimerSDK
 import UIKit
 import SwiftUI
-
+import PrimerUI
 var environment: Environment = .sandbox
 var apiVersion: PrimerApiVersion = .V2_4
 var customDefinedApiKey: String?
@@ -996,6 +996,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     // MARK: - CheckoutComponents Actions
     
     @objc private func checkoutComponentsButtonTapped() {
+//        let view = UIHostingController(rootView: ContainerView(schema(resource: "simple")))
+//        return present(view, animated: true)
         print("CheckoutComponents button tapped - navigating to menu")
         
         // Set up API key and settings to pass to the menu
@@ -1011,6 +1013,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         // Navigate to CheckoutComponents menu screen
         presentCheckoutComponentsMenu(settings: settings)
     }
+    
+    private func schema(resource: String) -> String {
+        let url = Bundle.main.url(forResource: resource, withExtension: "json")
+        let encoded = try! Data(contentsOf: url!)
+        return String(data: encoded, encoding: .utf8)!
+    }
+
     
     private func presentCheckoutComponentsMenu(settings: PrimerSettings) {
         let menuViewController = CheckoutComponentsMenuViewController()

@@ -1,0 +1,356 @@
+{
+    "schemaVersion": "2.0.0",
+    "validationStrategy": "onChange",
+    "initialState": {
+        "verification": {
+            "phoneNumber": "+1 (555) 123-4567",
+            "email": "user@example.com",
+            "method": "sms",
+            "selectedOption": "option2"
+        }
+    },
+    "workflows": {
+        "submitPayment": {
+            "description": "Submit OTP payment when verify button clicked",
+            "triggers": [
+                {
+                    "type": "element",
+                    "element": "submitButton",
+                    "event": "onClick",
+                    "condition": "true"
+                }
+            ],
+            "steps": [
+                {
+                    "type": "NAVIGATE",
+                    "stepId": "navigate",
+                    "targetContainer": "mainFlow",
+                    "targetId": "second",
+                    "args": {}
+                }
+            ]
+        }
+    },
+    "inputs": {
+        "otpCode": {
+            "binding": "verification.otpCode",
+            "transformations": [
+                "value.replace(/[^0-9]/g, '')"
+            ],
+            "validators": [
+                {
+                    "validate": "size(value) > 0",
+                    "errorMessage": "Verification code is required"
+                },
+                {
+                    "validate": "size(value) == 6",
+                    "errorMessage": "Verification code must be exactly 6 digits"
+                },
+                {
+                    "validate": "value.matches('^[0-9]{6}$')",
+                    "errorMessage": "Verification code must contain only numbers"
+                }
+            ]
+        },
+        "radioGroup1": {
+            "binding": "verification.selectedOption",
+            "validators": [
+                {
+                    "validate": "has(value)",
+                    "errorMessage": "Selection is required"
+                }
+            ]
+        },
+        "checkboxGroup1": {
+            "binding": "verification.checkboxOption",
+            "validators": [
+                {
+                    "validate": "has(value)",
+                    "errorMessage": "Selection is required"
+                }
+            ]
+        }
+    },
+    "ui": {
+        "type": "NavigationContainer",
+        "id": "mainFlow",
+        "props": {
+            "initialScreenId": "first",
+            "screenIds": ["first", "second"]
+        },
+        "screens": [
+            {
+                "id": "first",
+                "type": "Column",
+                "props": {
+                    "spacing": "primerSpaceMedium",
+                    "justifyContent": "flex-start",
+                    "padding": "large",
+                    "width": "fill",
+                    "backgroundColor": "#ffffff",
+                    "borderRadius": 16
+                },
+                "children": [
+                    {
+                        "type": "Column",
+                        "props": {
+                            "spacing": "primerSpaceSmall",
+                            "width": "fill",
+                            "alignItems": "center"
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "🔐",
+                                    "textStyle": "headingLarge",
+                                    "textAlign": "center"
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "Enter Verification Code",
+                                    "textStyle": "headingLarge",
+                                    "textAlign": "center"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Column",
+                        "props": {
+                            "spacing": "primerSpaceSmall",
+                            "width": "fill",
+                            "alignItems": "flex-start"
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "Enter the code below to continue",
+                                    "textStyle": "bodySmall",
+                                    "textAlign": "center"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                       "type":"SelectionGroup",
+                       "id":"radioGroup1",
+                       "props":{
+                          "distribution":"vertical",
+                          "width":"fill",
+                          "mode": "SINGLE",
+                          "enableHapticFeedback":true
+                       },
+                       "children":[
+                          {
+                             "type":"SelectionOption",
+                             "props":{ "value":"option1" },
+                             "children":[
+                                {
+                                   "type":"RadioButton"
+                                },
+                                {
+                                   "type":"Text",
+                                   "props":{
+                                      "text":"Option 1",
+                                      "textStyle":"bodySmall",
+                                      "textAlign":"center"
+                                   }
+                                }
+                             ]
+                          },
+                          {
+                             "type":"SelectionOption",
+                             "props":{ "value":"option2" },
+                             "children":[
+                                {
+                                   "type":"RadioButton"
+                                },
+                                {
+                                   "type":"Text",
+                                   "props":{
+                                      "text":"Option 2",
+                                      "textStyle":"bodySmall",
+                                      "textAlign":"center"
+                                   }
+                                }
+                             ]
+                          }
+                       ]
+                    },
+                    {
+                       "type":"SelectionGroup",
+                       "id":"checkboxGroup1",
+                       "props":{
+                          "distribution":"vertical",
+                          "mode": "MULTI",
+                          "width":"fill",
+                          "enableHapticFeedback":true
+                       },
+                       "children":[
+                          {
+                             "type":"SelectionOption",
+                             "props":{ "value":"checkbox1" },
+                             "children":[
+                                {
+                                   "type":"Checkbox"
+                                },
+                                {
+                                   "type":"Text",
+                                   "props":{
+                                      "text":"Option 1",
+                                      "textStyle":"bodySmall",
+                                      "textAlign":"center"
+                                   }
+                                }
+                             ]
+                          },
+                          {
+                             "type":"SelectionOption",
+                             "props":{ "value":"checkbox2" },
+                             "children":[
+                                {
+                                   "type":"Checkbox"
+                                },
+                                {
+                                   "type":"Text",
+                                   "props":{
+                                      "text":"Option 2",
+                                      "textStyle":"bodySmall",
+                                      "textAlign":"center"
+                                   }
+                                }
+                             ]
+                          }
+                       ]
+                    },
+                    {
+                        "type": "Column",
+                        "props": {
+                            "spacing": "primerSpaceSmall",
+                            "alignItems": "flex-start"
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "We've sent a 6-digit verification code to",
+                                    "textStyle": "bodyMedium",
+                                    "textAlign": "center"
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "verification.phoneNumber",
+                                    "textStyle": "bodyMedium",
+                                    "textAlign": "center"
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "Enter the code below to continue",
+                                    "textStyle": "bodySmall",
+                                    "textAlign": "center"
+                                }
+                            }
+                        ]
+                    },
+                    
+                    {
+                        "type": "TextField",
+                        "id": "otpCode",
+                        "props": {
+                            "label": "Verification Code",
+                            "placeholder": "'123456'",
+                            "keyboardType": "number",
+                            "maxLength": 6,
+                            "textStyle": "headingMedium",
+                            "textAlign": "center",
+                            "variant": "outlined",
+                            "width": "fill"
+                        }
+                    },
+                    {
+                        "type": "Row",
+                        "props": {
+                            "spacing": "primerSpaceMedium",
+                            "justifyContent": "center",
+                            "alignItems": "center",
+                            "margin": "small"
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "🔒",
+                                    "textStyle": "bodySmall",
+                                    "textAlign": "center"
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "props": {
+                                    "text": "This verification ensures your account security",
+                                    "textStyle": "caption",
+                                    "textAlign": "center"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Button",
+                        "id": "submitButton",
+                        "props": {
+                            "text": "Verify Code",
+                            "variant": "primerColorTextPrimary",
+                            "size": "large",
+                            "enabled": "size(errors.otpCode) == 0 && workflows.submitPayment.state != 'executing'",
+                            "width": "fill",
+                            "margin": "medium"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "second",
+                "type": "Column",
+                "props": {
+                    "spacing": "primerSpaceMedium",
+                    "padding": "large",
+                    "alignItems": "center"
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "props": {
+                            "text": "✅",
+                            "textStyle": "headingLarge",
+                            "textAlign": "center"
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "props": {
+                            "text": "Payment Successful!",
+                            "textStyle": "headingLarge",
+                            "textAlign": "center"
+                        }
+                    },
+                    {
+                        "type": "Button",
+                        "props": {
+                            "text": "Done",
+                            "variant": "primerColorTextPrimary",
+                            "width": "fill"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

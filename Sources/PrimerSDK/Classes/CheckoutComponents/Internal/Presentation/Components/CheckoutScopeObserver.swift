@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PrimerUI
 
 // MARK: - Checkout Scope Observer
 
@@ -164,39 +165,46 @@ internal struct CheckoutScopeObserver: View, LogReporter {
 
     // MARK: - View Builder
 
-    private func getCurrentView() -> AnyView {
+    @ViewBuilder
+    private func getCurrentView() -> some View {
         switch scope.navigationState {
+        case .serverDrivenUI(let schema):
+            if #available(iOS 16.0, *) {
+                ContainerView(schema)
+            } else {
+                // Fallback on earlier versions
+            }
         case .loading:
             // Check if init screen is enabled in settings (UI Options integration)
             if scope.isInitScreenEnabled {
                 if let customLoading = scope.loadingScreen {
-                    return AnyView(customLoading())
+                    AnyView(customLoading())
                 } else {
-                    return AnyView(LoadingScreen())
+                    AnyView(LoadingScreen())
                 }
             } else {
                 // Skip loading screen, show empty view or proceed to next state
-                logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
-                return AnyView(EmptyView())
+//                logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+                AnyView(EmptyView())
             }
 
         case .paymentMethodSelection:
             // First check if the payment method selection scope itself has a custom screen
             if let customScreen = scope.paymentMethodSelection.screen {
-                return AnyView(customScreen())
+                AnyView(customScreen())
             }
             // Then check if the checkout scope has a custom payment selection screen
             else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-                return AnyView(customPaymentSelection(scope.paymentMethodSelection))
+                AnyView(customPaymentSelection(scope.paymentMethodSelection))
             } else {
-                return AnyView(PaymentMethodSelectionScreen(
+                AnyView(PaymentMethodSelectionScreen(
                     scope: scope.paymentMethodSelection
                 ))
             }
 
         case .paymentMethod(let paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach
-            return AnyView(PaymentMethodScreen(
+            AnyView(PaymentMethodScreen(
                 paymentMethodType: paymentMethodType,
                 checkoutScope: scope
             ))
@@ -206,31 +214,31 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             if let previousState = previousNavigationState {
                 switch previousState {
                 case .paymentMethod(let paymentMethodType):
-                    return AnyView(PaymentMethodScreen(
+                    AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
                         checkoutScope: scope
                     ))
                 case .paymentMethodSelection:
-                    return AnyView(PaymentMethodSelectionScreen(
+                    AnyView(PaymentMethodSelectionScreen(
                         scope: scope.paymentMethodSelection
                     ))
                 case .loading:
-                    return AnyView(LoadingScreen())
+                    AnyView(LoadingScreen())
                 default:
-                    return AnyView(LoadingScreen())
+                    AnyView(LoadingScreen())
                 }
             } else {
                 // Fallback to loading if we can't determine the previous state
-                return AnyView(LoadingScreen())
+                AnyView(LoadingScreen())
             }
 
         case .success(let result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
                 if let customSuccess = scope.successScreen {
-                    return AnyView(customSuccess(result))
+                    AnyView(customSuccess(result))
                 } else {
-                    return AnyView(SuccessScreen(result: result) {
+                    AnyView(SuccessScreen(result: result) {
                         // Handle auto-dismiss with completion callback
                         logger.info(message: "Success screen auto-dismiss, calling completion callback")
                         onCompletion?()
@@ -238,8 +246,8 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 }
             } else {
                 // Skip success screen, immediately call completion (UI Options integration)
-                logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
-                return AnyView(EmptyView().onAppear {
+//                logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
+                AnyView(EmptyView().onAppear {
                     DispatchQueue.main.async {
                         onCompletion?()
                     }
@@ -250,9 +258,9 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             // Check if error screen is enabled in settings (UI Options integration)
             if scope.isErrorScreenEnabled {
                 if let customError = scope.errorScreen {
-                    return AnyView(customError(error.localizedDescription))
+                    AnyView(customError(error.localizedDescription))
                 } else {
-                    return AnyView(ErrorScreen(error: error) {
+                    AnyView(ErrorScreen(error: error) {
                         // Handle auto-dismiss with completion callback
                         logger.info(message: "Error screen auto-dismiss, calling completion callback")
                         onCompletion?()
@@ -260,8 +268,8 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 }
             } else {
                 // Skip error screen, immediately call completion (UI Options integration)
-                logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
-                return AnyView(EmptyView().onAppear {
+//                logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+                AnyView(EmptyView().onAppear {
                     DispatchQueue.main.async {
                         onCompletion?()
                     }
@@ -270,7 +278,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
 
         case .dismissed:
             // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
-            return AnyView(VStack {
+            AnyView(VStack {
                 Text("Dismissing...")
                     .font(.caption)
                     .foregroundColor(.secondary)
