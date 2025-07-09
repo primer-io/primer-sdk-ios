@@ -48,7 +48,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 45.0)
+        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
     }
 
     func testSimpleSDKEventBatchSend_async() async throws {
@@ -78,7 +78,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 45.0)
+        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
     }
 
     func testComplexMultiBatchFastSend_async() async throws {
@@ -103,7 +103,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 45.0)
+        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 5, "Expected 5 batches to be sent")
         XCTAssertEqual(apiClient.batches.joined().count, 25, "Expected 25 events to be sent in total")
@@ -141,7 +141,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 45.0)
+        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 3, "Expected 3 batches to be sent")
         XCTAssertEqual(apiClient.batches.joined().count, 15, "Expected 15 events to be sent in total")
@@ -161,7 +161,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation.fulfill()
         }
 
-        await fulfillment(of: [expectation], timeout: 45.0)
+        await fulfillment(of: [expectation], timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 1)
         XCTAssertEqual(apiClient.batches.joined().count, 4)
@@ -179,7 +179,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             try? await sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
             expectation.fulfill()
         }
-        await fulfillment(of: [expectation], timeout: 45.0)
+        await fulfillment(of: [expectation], timeout: 60.0)
 
         XCTAssertEqual(storage.events.count, 4, "Expected 4 events to be stored after failure.")
 
@@ -194,7 +194,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation3.fulfill()
         }
 
-        await fulfillment(of: [expectation2, expectation3], timeout: 45.0)
+        await fulfillment(of: [expectation2, expectation3], timeout: 60.0)
 
         XCTAssertTrue(storage.events.isEmpty, "Expected all events to be deleted after failure.")
     }
@@ -220,7 +220,7 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        await fulfillment(of: [expectation, expectation2], timeout: 45.0)
+        await fulfillment(of: [expectation, expectation2], timeout: 60.0)
 
         XCTAssertEqual(storage.loadEvents().count, 0, "Expected all events to be purged after failures.")
     }

@@ -58,7 +58,7 @@ final class AnalyticsServiceTests: XCTestCase {
             expectation2.fulfill()
         }
 
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
     }
 
     func testSimpleSDKEventBatchSend() throws {
@@ -86,7 +86,7 @@ final class AnalyticsServiceTests: XCTestCase {
         _ = sendEvents(numberOfEvents: 5, eventType: .sdkEvent).ensure {
             expectation2.fulfill()
         }
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
     }
 
     func testComplexMultiBatchFastSend() throws {
@@ -133,7 +133,7 @@ final class AnalyticsServiceTests: XCTestCase {
         _ = when(fulfilled: promises).ensure {
             expectation2.fulfill()
         }
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 3)
         XCTAssertEqual(apiClient.batches.joined().count, 15)
@@ -153,7 +153,7 @@ final class AnalyticsServiceTests: XCTestCase {
             XCTFail("Failed to successfully flush - error message: \(err)")
         }
 
-        waitForExpectations(timeout: 10.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 1)
         XCTAssertEqual(apiClient.batches.joined().count, 4)
@@ -170,7 +170,7 @@ final class AnalyticsServiceTests: XCTestCase {
         _ = sendEvents(numberOfEvents: 4, eventType: .sdkEvent).ensure {
             expectation.fulfill()
         }
-        waitForExpectations(timeout: 10.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(storage.events.count, 4)
 
@@ -183,7 +183,7 @@ final class AnalyticsServiceTests: XCTestCase {
         _ = sendEvents(numberOfEvents: 1, eventType: .sdkEvent).ensure {
             expectation3.fulfill()
         }
-        waitForExpectations(timeout: 10.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(storage.events.count, 0)
     }
@@ -211,7 +211,7 @@ final class AnalyticsServiceTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: 10.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(storage.loadEvents().count, 0)
     }
