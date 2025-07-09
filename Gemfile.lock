@@ -159,11 +159,11 @@ GEM
       xcodeproj (>= 1.13.0, < 2.0.0)
       xcpretty (~> 0.3.0)
       xcpretty-travis-formatter (>= 0.0.3, < 2.0.0)
-    fastlane-plugin-browserstack (0.3.2)
-      rest-client (~> 2.0, >= 2.0.2)
     fastlane-plugin-firebase_app_distribution (0.9.1)
       google-apis-firebaseappdistribution_v1 (~> 0.3.0)
       google-apis-firebaseappdistribution_v1alpha (~> 0.2.0)
+    fastlane-plugin-lambdatest (0.1.5)
+      rest-client (~> 2.0, >= 2.0.2)
     fastlane-plugin-versioning (0.5.2)
     fastlane-sirp (1.0.0)
       sysrandom (~> 1.0)
@@ -300,8 +300,8 @@ DEPENDENCIES
   activesupport (~> 7.0, <= 7.0.8)
   cocoapods (~> 1.15.0)
   fastlane
-  fastlane-plugin-browserstack
   fastlane-plugin-firebase_app_distribution
+  fastlane-plugin-lambdatest
   fastlane-plugin-versioning
 
 BUNDLED WITH
