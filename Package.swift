@@ -6,7 +6,7 @@ let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
     platforms: [
-        .iOS("13.1")
+        .iOS("16")
     ],
     products: [
         .library(
@@ -15,13 +15,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4")
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4"),
+        .package(path: "../partners-tech-poc/apps/ios/PrimerUI")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios")
+                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
+                .product(name: "PrimerUI", package: "primerui")
             ],
             path: "Sources/PrimerSDK",
             resources: [
