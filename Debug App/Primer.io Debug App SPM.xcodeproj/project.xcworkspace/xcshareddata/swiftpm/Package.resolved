@@ -11,7 +11,7 @@
         }
       },
       {
-        "package": "PrimerNolPaySDK",
+        "package": "primer-nol-pay-sdk-ios",
         "repositoryURL": "https://github.com/primer-io/primer-nol-pay-sdk-ios",
         "state": {
           "branch": null,
@@ -29,12 +29,21 @@
         }
       },
       {
-        "package": "PrimerStripeSDK",
+        "package": "primer-stripe-sdk-ios",
         "repositoryURL": "https://github.com/primer-io/primer-stripe-sdk-ios",
         "state": {
           "branch": null,
           "revision": "257fd44196a4f0e8a99110bae654ae5d46e3fd43",
           "version": "1.0.1"
+        }
+      },
+      {
+        "package": "SVGView",
+        "repositoryURL": "https://github.com/exyte/SVGView.git",
+        "state": {
+          "branch": null,
+          "revision": "6465962facdd25cb96eaebc35603afa2f15d2c0d",
+          "version": "1.0.6"
         }
       }
     ]
