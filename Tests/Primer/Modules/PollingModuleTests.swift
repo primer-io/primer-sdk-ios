@@ -50,6 +50,9 @@ class PollingModuleTests: XCTestCase {
             _ = try await pollingModule.start()
             XCTAssert(true)
         } catch {
+            if PrimerAPIConfigurationModule.clientToken != MockAppState.mockClientToken {
+                XCTAssert(false, "Client token is incorrect - \(PrimerAPIConfigurationModule.clientToken ?? "N/A")")
+            }
             XCTAssert(false, "Polling failed with error: \(error.localizedDescription)")
         }
     }
