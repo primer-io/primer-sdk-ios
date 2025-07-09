@@ -295,14 +295,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateExpiryMonth(_ month: String) {
         logger.debug(message: "Updating expiry month: \(month)")
-        structuredState.data[.expiryMonth] = month
+//        structuredState.data[.expiryMonth] = month
         updateExpiryDateFromComponents()
         updateCardData()
     }
 
     public func updateExpiryYear(_ year: String) {
         logger.debug(message: "Updating expiry year: \(year)")
-        structuredState.data[.expiryYear] = year
+//        structuredState.data[.expiryYear] = year
         updateExpiryDateFromComponents()
         updateCardData()
     }

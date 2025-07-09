@@ -1,0 +1,248 @@
+{
+    "schemaVersion": "1.0.0",
+    "validationStrategy": "onChange",
+    "declarations": {
+        "fields": {
+            "cardNumber": {
+                "path": "payment.cardNumber",
+                "interceptors": [
+                    "value.replace(/[^0-9]/g, '')"
+                ],
+                "validators": [
+                    {
+                        "validate": "size(value) > 0",
+                        "errorMessage": "Card number is required"
+                    },
+                    {
+                        "validate": "size(value) >= 13 && size(value) <= 19",
+                        "errorMessage": "Card number must be 13-19 digits"
+                    },
+                    {
+                        "validate": "value.isCardNumber()",
+                        "errorMessage": "Invalid card number"
+                    },
+                    {
+                        "validate": "!has(actions.cardNumber.cardValidation.detectedNetwork) || actions.cardNumber.cardValidation.detectedNetwork in ['visa', 'mastercard']",
+                        "errorMessage": "This card network is not supported"
+                    }
+                ],
+                "actions": {
+                         "cardValidation": {
+                           "trigger": {
+                             "condition": "size(value) >= 8 && (size(value) == 8 || value.substring(0, 8) != self.validatedPrefix)",
+                             "debounce": 300
+                           },
+                           "steps": [
+                             {
+                               "stepId": "validatePrefix",
+                               "description": "Validate card prefix and detect network",
+                               "condition": "size(payment.cardNumber) >= 8",
+                               "operationPath": "/api/validate-card-prefix",
+                               "method": "POST",
+                               "requestBody": {
+                                 "contentType": "application/json",
+                                 "payload": {
+                                   "cardPrefix": "payment.cardNumber.substring(0, 8)",
+                                   "fullLength": "size(payment.cardNumber)",
+                                   "requestId": "'req-' + string(timestamp())"
+                                 }
+                               },
+                               "parameters": [
+                                 {
+                                   "name": "X-Request-ID",
+                                   "in": "header",
+                                   "value": "'req-' + string(timestamp())"
+                                 },
+                                 {
+                                   "name": "Content-Type",
+                                   "in": "header",
+                                   "value": "'application/json'"
+                                 }
+                               ],
+                               "successCriteria": [
+                                 {
+                                   "condition": "statusCode == 200"
+                                 }
+                               ],
+                               "outputs": {
+                                 "supportedNetworks": "response.body.supportedNetworks",
+                                 "issuerInfo": "response.body.issuer",
+                                 "detectedNetwork": "response.body.detectedNetwork",
+                                 "validatedPrefix": "payment.cardNumber.substring(0, 8)",
+                                 "cardLengthValid": "response.body.expectedLength == size(payment.cardNumber)"
+                               },
+                               "onFailure": [
+                                 {
+                                   "name": "retryValidation",
+                                   "type": "retry",
+                                   "retryAfter": 1,
+                                   "retryLimit": 2,
+                                   "criteria": [
+                                     {
+                                       "condition": "statusCode >= 500"
+                                     }
+                                   ]
+                                 }
+                               ]
+                             }
+                           ]
+                         }
+                       }
+            },
+            "expiryDate": {
+                "path": "payment.expiryDate",
+                "interceptors": [
+                    "value.replace(/[^0-9]/g, '')",
+                    "size(value) >= 2 ? string(value).substring(0,2) + '/' + string(value).substring(2) : string(value)"
+                ],
+                "validators": [
+                    {
+                        "validate": "size(value) > 0",
+                        "errorMessage": "Expiry date is required"
+                    },
+                    {
+                        "validate": "value.matches('^[0-1][0-9]/[0-9]{2}$')",
+                        "errorMessage": "Enter date as MM/YY"
+                    },
+                    {
+                        "validate": "int(value.substring(0,2)) >= 1 && int(value.substring(0,2)) <= 12",
+                        "errorMessage": "Month must be between 01 and 12"
+                    },
+                    {
+                        "validate": "int('20' + value.substring(3,5)) > 2024 || (int('20' + value.substring(3,5)) == 2025 && int(value.substring(0,2)) >= 5)",
+                        "errorMessage": "Card has expired"
+                    }
+                ]
+            },
+            "cvv": {
+                "path": "payment.cvv",
+                "interceptors": [
+                    "value.replace(/[^0-9]/g, '')"
+                ],
+                "validators": [
+                    {
+                        "validate": "size(value) == (actions.cardNumber.cardValidation.detectedNetwork == 'amex' ? 4 : 3)",
+                        "errorMessage": "CVV must be 3-4 digits"
+                    }
+                ]
+            },
+            "cardholderName": {
+                "path": "payment.cardholderName",
+                "interceptors": [
+                    "value.trim()"
+                ],
+                "validators": [
+                    {
+                        "validate": "size(value.trim()) >= 2",
+                        "errorMessage": "Cardholder name is required"
+                    },
+                    {
+                        "validate": "value.matches(\"^[A-Za-z ' -]+$\")",
+                        "errorMessage": "Name can only contain letters, spaces, hyphens, and apostrophes"
+                    }
+                ]
+            }
+        }
+    },
+    "ui": {
+        "type": "Container",
+        "props": {
+            "spacing": 8,
+            "padding": 16,
+            "backgroundColor": "'#ffffff'",
+            "borderRadius": 8
+        },
+        "children": [
+            {
+                "type": "Text",
+                "props": {
+                    "text": "'Payment Information'",
+                    "variant": "'heading'",
+                    "fontSize": "24",
+                    "color": "#000000",
+                    "fontWeight": "'bold'",
+                    "marginBottom": "16"
+                }
+            },
+            {
+                "type": "TextField",
+                "fieldId": "cardNumber",
+                "props": {
+                    "label": "'Card Number'",
+                    "placeholder": "'1234 5678 9012 3456'",
+                    "inputType": "'number'",
+                    "maxLength": "19",
+                    "suffix": "has(actions.cardNumber.cardValidation.detectedNetwork) ? actions.cardNumber.cardValidation.detectedNetwork.toUpperCase() : ''",
+                    "loading": "has(actions.cardNumber.cardValidation) && actions.cardNumber.cardValidation.loading == true"
+                }
+            },
+            {
+                "type": "TextField",
+                "fieldId": "cardholderName",
+                "props": {
+                    "label": "'Cardholder Name'",
+                    "placeholder": "'John Doe'",
+                    "textTransform": "'uppercase'"
+                }
+            },
+            {
+                "type": "Row",
+                "props": {
+                    "spacing": 12
+                },
+                "children": [
+                    {
+                        "type": "TextField",
+                        "fieldId": "expiryDate",
+                        "props": {
+                            "label": "'Expiry Date'",
+                            "placeholder": "'MM/YY'",
+                            "inputType": "'number'",
+                            "maxLength": "5"
+                        }
+                    },
+                    {
+                        "type": "TextField",
+                        "fieldId": "cvv",
+                        "props": {
+                            "label": "'CVV'",
+                            "placeholder": "'123'",
+                            "inputType": "'number'",
+                            "maxLength": "4"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Button",
+                "props": {
+                    "text": "'Submit Payment'",
+                    "variant": "'primerColorTextPrimary'",
+                    "enabled": "(has(__errors.cardNumber) && size(__errors.cardNumber) == 0) && (has(__errors.expiryDate) && size(__errors.expiryDate) == 0) && (has(__errors.cvv) && size(__errors.cvv) == 0) && (has(__errors.cardholderName) && size(__errors.cardholderName) == 0)",
+                    "marginTop": "24"
+                }
+            },
+            {
+                "type": "Text",
+                "props": {
+                    "text": "'🔒 Your payment information is encrypted and secure'",
+                    "variant": "'caption'",
+                    "textAlign": "'center'",
+                    "color": "'#6b7280'",
+                    "marginTop": "16"
+                }
+            },
+            {
+                "type": "Text",
+                "visible": "has(actions.cardNumber.cardValidation.issuerInfo)",
+                "props": {
+                    "text": "actions.cardNumber.cardValidation.detectedNetwork",
+                    "variant": "'caption'",
+                    "textAlign": "'center'",
+                    "color": "'#059669'",
+                    "marginTop": "8"
+                }
+            }
+        ]
+    }
+}

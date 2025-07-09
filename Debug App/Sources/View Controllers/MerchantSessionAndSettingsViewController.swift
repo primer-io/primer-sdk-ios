@@ -1219,7 +1219,7 @@ struct InlineSwiftUICheckoutTestView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Test Configuration:")
                         .font(.headline)
-                    Text("Environment: \(Debug_App.environment.rawValue)")
+//                    Text("Environment: \(Debug_App.environment.rawValue)")
                     Text("API Version: \(settings.apiVersion.rawValue)")
                     Text("Client Token: \(String(clientToken.prefix(20)))...")
                         .font(.caption)
@@ -1234,7 +1234,7 @@ struct InlineSwiftUICheckoutTestView: View {
         .navigationTitle("SwiftUI Test")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingShowcase) {
-            CheckoutComponentsShowcaseView(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
+            Text("Hello")
         }
     }
     
