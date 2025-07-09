@@ -1,10 +1,8 @@
 @testable import PrimerSDK
 import XCTest
 
-class PollingModuleTests: XCTestCase {
-    func test_successful_polling() throws {
-        let expectation = XCTestExpectation(description: "Poll URL | Success")
-
+class PollingModuleAsyncTests: XCTestCase {
+    func test_successful_polling_async() async throws {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
         let mockApiClient = MockPrimerAPIClient()
@@ -17,24 +15,15 @@ class PollingModuleTests: XCTestCase {
         PollingModule.apiClient = mockApiClient
         let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
 
-        firstly {
-            pollingModule.start()
-        }
-        .done { _ in
+        do {
+            _ = try await pollingModule.start()
             XCTAssert(true)
-            expectation.fulfill()
+        } catch {
+            XCTAssert(false, "Polling failed with error: \(error.localizedDescription)")
         }
-        .catch { _ in
-            XCTAssert(false)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 30.0)
     }
 
-    func test_successful_polling_with_network_error() throws {
-        let expectation = XCTestExpectation(description: "Poll URL | Success")
-
+    func test_successful_polling_with_network_error_async() async throws {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
         let mockApiClient = MockPrimerAPIClient()
@@ -47,24 +36,15 @@ class PollingModuleTests: XCTestCase {
         PollingModule.apiClient = mockApiClient
         let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
 
-        firstly {
-            pollingModule.start()
-        }
-        .done { _ in
+        do {
+            _ = try await pollingModule.start()
             XCTAssert(true)
-            expectation.fulfill()
+        } catch {
+            XCTAssert(false, "Polling failed with error: \(error.localizedDescription)")
         }
-        .catch { _ in
-            XCTAssert(false)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 30.0)
     }
 
-    func test_polling_failure_due_to_client_token() throws {
-        let expectation = XCTestExpectation(description: "Poll URL | Failure")
-
+    func test_polling_failure_due_to_client_token_async() async throws {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
@@ -77,22 +57,13 @@ class PollingModuleTests: XCTestCase {
 
         let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
 
-        firstly {
-            pollingModule.start()
-        }
-        .done { _ in
-            XCTAssert(false, "Polling succeeded, but it should fail with error .invalidClientToken")
-            expectation.fulfill()
-        }
-        .catch { err in
-            if let primerErr = err as? PrimerError, case .invalidClientToken = primerErr {
-            } else {
-                XCTAssert(false, "Polling failed with error \(err.localizedDescription), but it should fail with error .invalidClientToken")
+        do {
+            _ = try await pollingModule.start()
+            XCTFail("Polling succeeded, but it should fail with error .invalidClientToken")
+        } catch {
+            guard let primerErr = error as? PrimerError, case .invalidClientToken = primerErr else {
+                return XCTFail("Polling failed with error \(error.localizedDescription), but it should fail with error .invalidClientToken")
             }
-
-            expectation.fulfill()
         }
-
-        wait(for: [expectation], timeout: 30.0)
     }
 }
