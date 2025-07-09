@@ -1,3 +1,4 @@
+// RandomText
 extension Promise {
     func async() async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
