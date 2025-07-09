@@ -1,7 +1,16 @@
-@testable import PrimerSDK
+//
+//  AnalyticsServiceTests.swift
+//  Debug App Tests
+//
+//  Created by Jack Newcombe on 04/12/2023.
+//  Copyright © 2023 Primer API Ltd. All rights reserved.
+//
+
 import XCTest
+@testable import PrimerSDK
 
 final class AnalyticsServiceTests: XCTestCase {
+
     var apiClient: MockPrimerAPIAnalyticsClient!
 
     var storage: MockAnalyticsStorage!
@@ -18,9 +27,6 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     override func tearDown() {
-        // Wait for all pending Analytics operations to complete before proceeding to next test
-        Analytics.queue.sync(flags: .barrier) {}
-
         service = nil
         storage = nil
         apiClient = nil
@@ -29,16 +35,17 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testSimpleMessageEventBatchSend() throws {
+
         // Setup API Client
 
-        let expectation = XCTestExpectation(description: "Batch of five events are sent")
+        let expectation = self.expectation(description: "Batch of five events are sent")
 
         apiClient.onSendAnalyticsEvent = { events in
             XCTAssertNotNil(events)
             XCTAssertEqual(events?.count, 5)
 
-            let messages = events!.enumerated().compactMap { _, event in
-                (event.properties as? MessageEventProperties)?.message
+            let messages = events!.enumerated().compactMap { (_, event) in
+                return (event.properties as? MessageEventProperties)?.message
             }.sorted()
             XCTAssertEqual(messages, ["Test #1", "Test #2", "Test #3", "Test #4", "Test #5"])
             expectation.fulfill()
@@ -46,18 +53,19 @@ final class AnalyticsServiceTests: XCTestCase {
 
         // Send Events
 
-        let expectation2 = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation2 = self.expectation(description: "Wait for all events to be sent")
         _ = sendEvents(numberOfEvents: 5).ensure {
             expectation2.fulfill()
         }
 
-        wait(for: [expectation, expectation2], timeout: 30.0)
+        waitForExpectations(timeout: 30.0)
     }
 
     func testSimpleSDKEventBatchSend() throws {
+
         // Setup API Client
 
-        let expectation = XCTestExpectation(description: "Batch of five events are sent")
+        let expectation = self.expectation(description: "Batch of five events are sent")
 
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
 
@@ -65,8 +73,8 @@ final class AnalyticsServiceTests: XCTestCase {
             XCTAssertNotNil(events)
             XCTAssertEqual(events?.count, 5)
 
-            let messages = events!.enumerated().compactMap { _, event in
-                (event.properties as? SDKEventProperties)?.name
+            let messages = events!.enumerated().compactMap { (_, event) in
+                return (event.properties as? SDKEventProperties)?.name
             }.sorted()
             XCTAssertEqual(messages, ["Test #1", "Test #2", "Test #3", "Test #4", "Test #5"])
             expectation.fulfill()
@@ -74,15 +82,16 @@ final class AnalyticsServiceTests: XCTestCase {
 
         // Send Events
 
-        let expectation2 = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation2 = self.expectation(description: "Wait for all events to be sent")
         _ = sendEvents(numberOfEvents: 5, eventType: .sdkEvent).ensure {
             expectation2.fulfill()
         }
-        wait(for: [expectation, expectation2], timeout: 30.0)
+        waitForExpectations(timeout: 30.0)
     }
 
     func testComplexMultiBatchFastSend() throws {
-        let expectation = XCTestExpectation(description: "Called expected number of times")
+
+        let expectation = self.expectation(description: "Called expected number of times")
         expectation.expectedFulfillmentCount = 5
 
         apiClient.onSendAnalyticsEvent = { _ in
@@ -90,16 +99,16 @@ final class AnalyticsServiceTests: XCTestCase {
         }
 
         var promises: [Promise<Void>] = []
-        for _ in 0 ..< 5 {
+        (0..<5).forEach { _ in
             promises.append(sendEvents(numberOfEvents: 5, after: 0.1))
         }
         promises.append(sendEvents(numberOfEvents: 4, after: 0.5))
 
-        let expectation2 = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation2 = self.expectation(description: "Wait for all events to be sent")
         _ = when(fulfilled: promises).ensure {
             expectation2.fulfill()
         }
-        wait(for: [expectation, expectation2], timeout: 60.0)
+        waitForExpectations(timeout: 60.0)
 
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
@@ -107,23 +116,24 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testComplexMultiBatchSlowSend() throws {
-        let expectation = XCTestExpectation(description: "Events sent to API client expected number of times")
+
+        let expectation = self.expectation(description: "Events sent to API client expected number of times")
         expectation.expectedFulfillmentCount = 3
         apiClient.onSendAnalyticsEvent = { _ in
             expectation.fulfill()
         }
 
         var promises: [Promise<Void>] = []
-        for _ in 0 ..< 3 {
+        (0..<3).forEach { _ in
             promises.append(sendEvents(numberOfEvents: 5, after: 0.5))
         }
         promises.append(sendEvents(numberOfEvents: 4, after: 0.5))
 
-        let expectation2 = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation2 = self.expectation(description: "Wait for all events to be sent")
         _ = when(fulfilled: promises).ensure {
             expectation2.fulfill()
         }
-        wait(for: [expectation, expectation2], timeout: 30.0)
+        waitForExpectations(timeout: 30.0)
 
         XCTAssertEqual(apiClient.batches.count, 3)
         XCTAssertEqual(apiClient.batches.joined().count, 15)
@@ -131,18 +141,19 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testFlush() throws {
-        let expectation = XCTestExpectation(description: "All events flushed")
+
+        let flushExpectation = self.expectation(description: "All events flushed")
         firstly {
             sendEvents(numberOfEvents: 4, after: 0.5)
         }.then {
             self.service.flush()
         }.done { _ in
-            expectation.fulfill()
+            flushExpectation.fulfill()
         }.catch { err in
             XCTFail("Failed to successfully flush - error message: \(err)")
         }
 
-        wait(for: [expectation], timeout: 30.0)
+        waitForExpectations(timeout: 10.0)
 
         XCTAssertEqual(apiClient.batches.count, 1)
         XCTAssertEqual(apiClient.batches.joined().count, 4)
@@ -155,25 +166,24 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation = self.expectation(description: "Wait for all events to be sent")
         _ = sendEvents(numberOfEvents: 4, eventType: .sdkEvent).ensure {
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 30.0)
+        waitForExpectations(timeout: 10.0)
 
         XCTAssertEqual(storage.events.count, 4)
 
-        let expectation2 = XCTestExpectation(description: "Expect event deletion on failure")
+        let expectation2 = self.expectation(description: "Expect event deletion on failure")
         storage.onDeleteEventsWithUrl = { _ in
             expectation2.fulfill()
         }
 
-        let expectation3 = XCTestExpectation(description: "Wait for all events to be sent")
+        let expectation3 = self.expectation(description: "Wait for all events to be sent")
         _ = sendEvents(numberOfEvents: 1, eventType: .sdkEvent).ensure {
             expectation3.fulfill()
         }
-
-        wait(for: [expectation2, expectation3], timeout: 30.0)
+        waitForExpectations(timeout: 10.0)
 
         XCTAssertEqual(storage.events.count, 0)
     }
@@ -184,12 +194,12 @@ final class AnalyticsServiceTests: XCTestCase {
 
         apiClient.shouldSucceed = false
 
-        let expectation2 = XCTestExpectation(description: "Full event purge triggered")
+        let expectation2 = self.expectation(description: "Full event purge triggered")
         self.storage.onDeleteAnalyticsFile = {
             expectation2.fulfill()
         }
 
-        let expectation = XCTestExpectation(description: "Did complete")
+        let expectation = self.expectation(description: "Did complete")
 
         _ = firstly {
             self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
@@ -201,7 +211,7 @@ final class AnalyticsServiceTests: XCTestCase {
             expectation.fulfill()
         }
 
-        wait(for: [expectation, expectation2], timeout: 30.0)
+        waitForExpectations(timeout: 10.0)
 
         XCTAssertEqual(storage.loadEvents().count, 0)
     }
@@ -217,7 +227,7 @@ final class AnalyticsServiceTests: XCTestCase {
                     eventType: Analytics.Event.EventType = .message,
                     after delay: TimeInterval? = nil,
                     onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) -> Promise<Void> {
-        let events = (0 ..< numberOfEvents).compactMap { num in
+        let events = (0..<numberOfEvents).compactMap { num in
             switch eventType {
             case .message:
                 return messageEvent(withMessage: "Test #\(num + 1)")
@@ -230,8 +240,8 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         let promises = events.map { (event: Analytics.Event) in
             Promise { seal in
-                let _callback = { [self] in
-                    _ = self.service.record(event: event).ensure {
+                let _callback = { [weak self] in
+                    _ = self?.service.record(event: event).ensure {
                         seal.fulfill()
                     }
                 }
@@ -243,31 +253,6 @@ final class AnalyticsServiceTests: XCTestCase {
             }
         }
         return when(fulfilled: promises)
-    }
-
-    func sendEvents(
-        numberOfEvents: Int,
-        eventType: Analytics.Event.EventType = .message,
-        after delay: TimeInterval? = nil
-    ) async throws {
-        let events = (0 ..< numberOfEvents).compactMap { num in
-            switch eventType {
-            case .message:
-                return messageEvent(withMessage: "Test #\(num + 1)")
-            case .sdkEvent:
-                return sdkEvent(name: "Test #\(num + 1)")
-            default:
-                XCTFail()
-                return nil
-            }
-        }
-
-        for event in events {
-            if let delay {
-                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            }
-            try await service.record(event: event)
-        }
     }
 
     func messageEvent(withMessage message: String) -> Analytics.Event {
