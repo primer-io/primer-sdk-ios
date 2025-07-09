@@ -1,0 +1,293 @@
+{
+  "schemaVersion": "2.0.0",
+  "validationStrategy": "none",
+  "initialState": {
+    "voucher": {
+      "code": "GIFT2024XYZ",
+      "issuerName": "Premium Store",
+      "currency": "USD",
+      "balance": 125.50,
+      "originalAmount": 150.00,
+      "expiryDate": "2025-12-31T23:59:59Z",
+      "voucherType": "Gift Card",
+      "status": "active"
+    },
+    "payment": {
+      "amount": 89.99,
+      "description": "Wireless Headphones"
+    }
+  },
+  "workflows": {},
+  "inputs": {},
+  "ui": {
+    "type": "Column",
+    "props": {
+      "spacing": "primerSpaceLarge",
+      "padding": "large",
+      "backgroundColor": "#ffffff",
+      "borderRadius": 16,
+      "width": "fill",
+      "justifyContent": "flex-start"
+    },
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "spacing": "primerSpaceSmall",
+          "width": "fill",
+          "justifyContent": "flex-start",
+          "alignItems": "center",
+          "margin": "medium"
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "🎁",
+              "textStyle": "headingLarge",
+              "textAlign": "center"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Gift Voucher Payment",
+              "textStyle": "headingMedium",
+              "textAlign": "center"
+            }
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "props": {
+          "width": "fill",
+          "padding": "large",
+          "backgroundColor": "#667eea",
+          "borderRadius": 16,
+          "justifyContent": "flex-start",
+          "alignItems": "stretch",
+          "spacing": "primerSpaceMedium"
+        },
+        "children": [
+          {
+            "type": "Row",
+            "props": {
+              "padding": "small",
+              "width": "fill",
+              "justifyContent": "space-between",
+              "alignItems": "center"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "voucher.issuerName",
+                  "textStyle": "bodyLarge",
+                  "textAlign": "start"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "voucher.voucherType",
+                  "textStyle": "caption",
+                  "textAlign": "end"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": "primerSpaceSmall",
+              "justifyContent": "flex-start",
+              "width": "fill",
+              "alignItems": "center"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "voucher.code",
+                  "textStyle": "headingMedium",
+                  "textAlign": "center"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "concat('Balance: ', voucher.currency, ' ', string(voucher.balance))",
+                  "textStyle": "bodyLarge",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "width": "fill",
+              "justifyContent": "space-between",
+              "alignItems": "center",
+              "padding": "small"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "concat('Original: ', voucher.currency, ' ', string(voucher.originalAmount))",
+                  "textStyle": "caption",
+                  "textAlign": "start"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "concat('Expires: ', string(timestamp(voucher.expiryDate).getFullYear()))",
+                  "textStyle": "caption",
+                  "textAlign": "end"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "props": {
+          "width": "fill",
+          "padding": "medium",
+          "backgroundColor": "#f8fafc",
+          "borderRadius": 12,
+          "justifyContent": "flex-start",
+          "spacing": "primerSpaceMedium"
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Payment Details",
+              "textStyle": "bodyLarge",
+              "textAlign": "start"
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": "primerSpaceSmall",
+              "justifyContent": "flex-start",
+              "alignItems": "stretch"
+            },
+            "children": [
+              {
+                "type": "Row",
+                "props": {
+                  "width": "fill",
+                  "justifyContent": "space-between",
+                  "alignItems": "center"
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Item",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "start"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "payment.description",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "end"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "width": "fill",
+                  "justifyContent": "space-between",
+                  "alignItems": "center"
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Amount",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "start"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "concat(voucher.currency, ' ', string(payment.amount))",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "end"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "width": "fill",
+                  "justifyContent": "space-between",
+                  "alignItems": "center"
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Remaining Balance",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "start"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "concat(voucher.currency, ' ', string(int(voucher.balance - payment.amount)))",
+                      "textStyle": "bodyMedium",
+                      "textAlign": "end"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Row",
+        "props": {
+          "spacing": "primerSpaceSmall",
+          "justifyContent": "center",
+          "alignItems": "center"
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "🔒",
+              "textStyle": "bodySmall",
+              "textAlign": "center"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Secure payment with gift voucher",
+              "textStyle": "caption",
+              "textAlign": "center"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
