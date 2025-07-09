@@ -3,65 +3,88 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		040F19982CC69BE0005C9707 /* secrets.defaults.properties in Resources */ = {isa = PBXBuildFile; fileRef = 040F19972CC69BE0005C9707 /* secrets.defaults.properties */; };
-		040F199A2CC7A186005C9707 /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040F19992CC7A186005C9707 /* SecretsManager.swift */; };
-		041CD2FF2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
-		043C7FA22C49749E0018929E /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C7FA12C49749E0018929E /* TestHelper.swift */; };
-		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
-		044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80552C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift */; };
-		044F805B2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80562C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
-		044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80572C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift */; };
-		044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
 		0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */; };
-		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
-		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
-		8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */; };
-		8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE02B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
-		8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
-		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
-		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
-		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
-		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
-		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
-		E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */; };
-		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
-		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
-		F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
-		F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
-		F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */; };
-		F00C65FD2ACC67FA00187028 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */; };
-		F00C65FE2ACC67FA00187028 /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
-		F00C65FF2ACC67FA00187028 /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */; };
-		F00C66002ACC67FA00187028 /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */; };
-		F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
-		F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEF11B151368BF993C3EA9 /* TestScenario.swift */; };
-		F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
-		F00C66052ACC67FA00187028 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
-		F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
-		F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */; };
-		F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
-		F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
-		F00C660C2ACC67FA00187028 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */; };
-		F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */; };
-		F00C660F2ACC67FA00187028 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
-		F00C66112ACC67FA00187028 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
+		BAD6800C2E1BEABC00C15F77 /* PrimerUI in Frameworks */ = {isa = PBXBuildFile; productRef = BAD6800B2E1BEABC00C15F77 /* PrimerUI */; };
+		BAD680672E1BF6DD00C15F77 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680232E1BF6D900C15F77 /* TestSettings.swift */; };
+		BAD680682E1BF6DD00C15F77 /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680242E1BF6D900C15F77 /* UIApplication+Extensions.swift */; };
+		BAD680692E1BF6DD00C15F77 /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680252E1BF6D900C15F77 /* ImageViewWithUrl.swift */; };
+		BAD6806A2E1BF6DD00C15F77 /* ExpandedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680262E1BF6DA00C15F77 /* ExpandedCardFormDemo.swift */; };
+		BAD6806B2E1BF6DD00C15F77 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680272E1BF6DA00C15F77 /* Networking.swift */; };
+		BAD6806C2E1BF6DD00C15F77 /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680282E1BF6DA00C15F77 /* BanksListView.swift */; };
+		BAD6806D2E1BF6DD00C15F77 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680292E1BF6DA00C15F77 /* MerchantHeadlessCheckoutBankViewController.swift */; };
+		BAD6806E2E1BF6DD00C15F77 /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802A2E1BF6DA00C15F77 /* ShowcaseDemo.swift */; };
+		BAD6806F2E1BF6DD00C15F77 /* AnimatedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802B2E1BF6DA00C15F77 /* AnimatedCardFormDemo.swift */; };
+		BAD680702E1BF6DD00C15F77 /* ExampleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802C2E1BF6DA00C15F77 /* ExampleConfig.swift */; };
+		BAD680712E1BF6DD00C15F77 /* CheckoutExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802D2E1BF6DA00C15F77 /* CheckoutExampleView.swift */; };
+		BAD680722E1BF6DD00C15F77 /* LiveStateCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802E2E1BF6DA00C15F77 /* LiveStateCardFormDemo.swift */; };
+		BAD680732E1BF6DD00C15F77 /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6802F2E1BF6DA00C15F77 /* CheckoutComponentsMenuViewController.swift */; };
+		BAD680742E1BF6DD00C15F77 /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680302E1BF6DA00C15F77 /* TestHelper.swift */; };
+		BAD680752E1BF6DD00C15F77 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680312E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
+		BAD680762E1BF6DD00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680322E1BF6DA00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
+		BAD680772E1BF6DD00C15F77 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680332E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsView.swift */; };
+		BAD680782E1BF6DD00C15F77 /* ModernThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680342E1BF6DA00C15F77 /* ModernThemedCardFormDemo.swift */; };
+		BAD680792E1BF6DD00C15F77 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680352E1BF6DA00C15F77 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
+		BAD6807A2E1BF6DD00C15F77 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680362E1BF6DA00C15F77 /* MerchantHelpers.swift */; };
+		BAD6807B2E1BF6DD00C15F77 /* ColorfulThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680372E1BF6DA00C15F77 /* ColorfulThemedCardFormDemo.swift */; };
+		BAD6807C2E1BF6DD00C15F77 /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680382E1BF6DA00C15F77 /* ViewController+PrimerUIHelpers.swift */; };
+		BAD6807D2E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680392E1BF6DA00C15F77 /* MerchantHeadlessKlarnaInitializationView.swift */; };
+		BAD6807E2E1BF6DD00C15F77 /* ShowcaseSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803A2E1BF6DA00C15F77 /* ShowcaseSection.swift */; };
+		BAD6807F2E1BF6DD00C15F77 /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803B2E1BF6DA00C15F77 /* BanksListModel.swift */; };
+		BAD680802E1BF6DD00C15F77 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803C2E1BF6DA00C15F77 /* PaymentMethodCell.swift */; };
+		BAD680812E1BF6DD00C15F77 /* MerchantSessionAndSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803D2E1BF6DB00C15F77 /* MerchantSessionAndSettingsViewController.swift */; };
+		BAD680822E1BF6DD00C15F77 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803E2E1BF6DB00C15F77 /* TransactionResponse.swift */; };
+		BAD680832E1BF6DD00C15F77 /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6803F2E1BF6DB00C15F77 /* ViewController+Primer.swift */; };
+		BAD680842E1BF6DD00C15F77 /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680402E1BF6DB00C15F77 /* AppLinkConfigProvider.swift */; };
+		BAD680852E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680412E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
+		BAD680862E1BF6DD00C15F77 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680422E1BF6DB00C15F77 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */; };
+		BAD680872E1BF6DD00C15F77 /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680432E1BF6DB00C15F77 /* MerchantHeadlessVaultManagerViewController.swift */; };
+		BAD680882E1BF6DD00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680442E1BF6DB00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
+		BAD680892E1BF6DD00C15F77 /* CheckoutComponentsExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680452E1BF6DB00C15F77 /* CheckoutComponentsExamplesView.swift */; };
+		BAD6808A2E1BF6DD00C15F77 /* CustomScreenCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680462E1BF6DB00C15F77 /* CustomScreenCardFormDemo.swift */; };
+		BAD6808B2E1BF6DD00C15F77 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680472E1BF6DB00C15F77 /* MerchantNewLineItemViewController.swift */; };
+		BAD6808C2E1BF6DD00C15F77 /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680482E1BF6DB00C15F77 /* SecretsManager.swift */; };
+		BAD6808D2E1BF6DD00C15F77 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680492E1BF6DB00C15F77 /* UIViewController+API.swift */; };
+		BAD6808E2E1BF6DD00C15F77 /* CompactCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804A2E1BF6DB00C15F77 /* CompactCardFormDemo.swift */; };
+		BAD6808F2E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804B2E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
+		BAD680902E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804C2E1BF6DB00C15F77 /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
+		BAD680912E1BF6DD00C15F77 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804D2E1BF6DB00C15F77 /* TapGestureRecognizer.swift */; };
+		BAD680922E1BF6DD00C15F77 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804E2E1BF6DB00C15F77 /* TestScenario.swift */; };
+		BAD680932E1BF6DD00C15F77 /* DarkThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6804F2E1BF6DB00C15F77 /* DarkThemedCardFormDemo.swift */; };
+		BAD680942E1BF6DD00C15F77 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680502E1BF6DC00C15F77 /* Range+Extensions.swift */; };
+		BAD680952E1BF6DD00C15F77 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680512E1BF6DC00C15F77 /* Data+Extensions.swift */; };
+		BAD680962E1BF6DD00C15F77 /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680522E1BF6DC00C15F77 /* CreateClientToken.swift */; };
+		BAD680972E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680532E1BF6DC00C15F77 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
+		BAD680982E1BF6DD00C15F77 /* CorporateThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680542E1BF6DC00C15F77 /* CorporateThemedCardFormDemo.swift */; };
+		BAD680992E1BF6DD00C15F77 /* ModifierChainsCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680552E1BF6DC00C15F77 /* ModifierChainsCardFormDemo.swift */; };
+		BAD6809A2E1BF6DD00C15F77 /* GridCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680562E1BF6DC00C15F77 /* GridCardFormDemo.swift */; };
+		BAD6809B2E1BF6DD00C15F77 /* ShowcaseEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680572E1BF6DC00C15F77 /* ShowcaseEnums.swift */; };
+		BAD6809C2E1BF6DD00C15F77 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680582E1BF6DC00C15F77 /* String+Extensions.swift */; };
+		BAD6809D2E1BF6DD00C15F77 /* CheckoutComponentsShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680592E1BF6DC00C15F77 /* CheckoutComponentsShowcaseView.swift */; };
+		BAD6809E2E1BF6DD00C15F77 /* ValidationCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805A2E1BF6DC00C15F77 /* ValidationCardFormDemo.swift */; };
+		BAD6809F2E1BF6DD00C15F77 /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805B2E1BF6DC00C15F77 /* MerchantResultViewController.swift */; };
+		BAD680A02E1BF6DD00C15F77 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805C2E1BF6DC00C15F77 /* Metadata.swift */; };
+		BAD680A12E1BF6DD00C15F77 /* TestSettings+PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805D2E1BF6DC00C15F77 /* TestSettings+PrimerSettings.swift */; };
+		BAD680A22E1BF6DD00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805E2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController.swift */; };
+		BAD680A32E1BF6DD00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD6805F2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
+		BAD680A42E1BF6DD00C15F77 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680602E1BF6DC00C15F77 /* AppDelegate.swift */; };
+		BAD680A52E1BF6DD00C15F77 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680612E1BF6DC00C15F77 /* UIStackViewExtensions.swift */; };
+		BAD680A62E1BF6DD00C15F77 /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680622E1BF6DD00C15F77 /* CheckoutTheme.swift */; };
+		BAD680A72E1BF6DD00C15F77 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680632E1BF6DD00C15F77 /* MerchantDropInUIViewController.swift */; };
+		BAD680A82E1BF6DD00C15F77 /* CoBadgedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680642E1BF6DD00C15F77 /* CoBadgedCardFormDemo.swift */; };
+		BAD680A92E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680652E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */; };
+		BAD680AA2E1BF6DD00C15F77 /* InlineCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD680662E1BF6DD00C15F77 /* InlineCardFormDemo.swift */; };
 		F00C66132ACC67FA00187028 /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		F00C66142ACC67FA00187028 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F00C66152ACC67FA00187028 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
-		F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */; };
-		F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */; };
-		F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */; };
-		F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */; };
-		F09978842D0326860058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978832D0326860058E4B5 /* Metadata.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -136,6 +159,75 @@
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
+		BAD680222E1BF60300C15F77 /* container1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = container1.json; sourceTree = "<group>"; };
+		BAD680232E1BF6D900C15F77 /* TestSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TestSettings.swift; path = Sources/Model/TestSettings.swift; sourceTree = "<group>"; };
+		BAD680242E1BF6D900C15F77 /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIApplication+Extensions.swift"; path = "Sources/Extension/UIApplication+Extensions.swift"; sourceTree = "<group>"; };
+		BAD680252E1BF6D900C15F77 /* ImageViewWithUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ImageViewWithUrl.swift; path = "Sources/View Controllers/New UI/FormWithRedirect/ImageViewWithUrl.swift"; sourceTree = "<group>"; };
+		BAD680262E1BF6DA00C15F77 /* ExpandedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExpandedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ExpandedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680272E1BF6DA00C15F77 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Networking.swift; path = Sources/Network/Networking.swift; sourceTree = "<group>"; };
+		BAD680282E1BF6DA00C15F77 /* BanksListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BanksListView.swift; path = "Sources/View Controllers/New UI/FormWithRedirect/BanksListView.swift"; sourceTree = "<group>"; };
+		BAD680292E1BF6DA00C15F77 /* MerchantHeadlessCheckoutBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutBankViewController.swift; path = "Sources/View Controllers/New UI/FormWithRedirect/MerchantHeadlessCheckoutBankViewController.swift"; sourceTree = "<group>"; };
+		BAD6802A2E1BF6DA00C15F77 /* ShowcaseDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseDemo.swift"; sourceTree = "<group>"; };
+		BAD6802B2E1BF6DA00C15F77 /* AnimatedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AnimatedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/AnimatedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD6802C2E1BF6DA00C15F77 /* ExampleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExampleConfig.swift; path = "Sources/View Controllers/CheckoutComponents/ExampleConfig.swift"; sourceTree = "<group>"; };
+		BAD6802D2E1BF6DA00C15F77 /* CheckoutExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutExampleView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutExampleView.swift"; sourceTree = "<group>"; };
+		BAD6802E2E1BF6DA00C15F77 /* LiveStateCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LiveStateCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/LiveStateCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD6802F2E1BF6DA00C15F77 /* CheckoutComponentsMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsMenuViewController.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsMenuViewController.swift"; sourceTree = "<group>"; };
+		BAD680302E1BF6DA00C15F77 /* TestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TestHelper.swift; path = Sources/Utilities/TestHelper.swift; sourceTree = "<group>"; };
+		BAD680312E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessStripeAchFieldsViewModel.swift; path = "Sources/View Controllers/New UI/StripeAchHeadless/MerchantHeadlessStripeAchFieldsViewModel.swift"; sourceTree = "<group>"; };
+		BAD680322E1BF6DA00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift"; path = "Sources/View Controllers/New UI/StripeAchHeadless/MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift"; sourceTree = "<group>"; };
+		BAD680332E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessStripeAchFieldsView.swift; path = "Sources/View Controllers/New UI/StripeAchHeadless/MerchantHeadlessStripeAchFieldsView.swift"; sourceTree = "<group>"; };
+		BAD680342E1BF6DA00C15F77 /* ModernThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ModernThemedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ModernThemedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680352E1BF6DA00C15F77 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutNolPayViewController.swift; path = "Sources/View Controllers/New UI/NolPayHeadless/MerchantHeadlessCheckoutNolPayViewController.swift"; sourceTree = "<group>"; };
+		BAD680362E1BF6DA00C15F77 /* MerchantHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHelpers.swift; path = "Sources/View Controllers/Merchant Helpers/MerchantHelpers.swift"; sourceTree = "<group>"; };
+		BAD680372E1BF6DA00C15F77 /* ColorfulThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ColorfulThemedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ColorfulThemedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680382E1BF6DA00C15F77 /* ViewController+PrimerUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ViewController+PrimerUIHelpers.swift"; path = "Sources/Extension/ViewController+PrimerUIHelpers.swift"; sourceTree = "<group>"; };
+		BAD680392E1BF6DA00C15F77 /* MerchantHeadlessKlarnaInitializationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessKlarnaInitializationView.swift; path = "Sources/View Controllers/New UI/KlarnaHeadless/MerchantHeadlessKlarnaInitializationView.swift"; sourceTree = "<group>"; };
+		BAD6803A2E1BF6DA00C15F77 /* ShowcaseSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseSection.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseSection.swift"; sourceTree = "<group>"; };
+		BAD6803B2E1BF6DA00C15F77 /* BanksListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BanksListModel.swift; path = "Sources/View Controllers/New UI/FormWithRedirect/BanksListModel.swift"; sourceTree = "<group>"; };
+		BAD6803C2E1BF6DA00C15F77 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PaymentMethodCell.swift; path = Sources/View/PaymentMethodCell.swift; sourceTree = "<group>"; };
+		BAD6803D2E1BF6DB00C15F77 /* MerchantSessionAndSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantSessionAndSettingsViewController.swift; path = "Sources/View Controllers/MerchantSessionAndSettingsViewController.swift"; sourceTree = "<group>"; };
+		BAD6803E2E1BF6DB00C15F77 /* TransactionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TransactionResponse.swift; path = Sources/Model/TransactionResponse.swift; sourceTree = "<group>"; };
+		BAD6803F2E1BF6DB00C15F77 /* ViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ViewController+Primer.swift"; path = "Sources/Extension/ViewController+Primer.swift"; sourceTree = "<group>"; };
+		BAD680402E1BF6DB00C15F77 /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLinkConfigProvider.swift; path = Sources/Utilities/AppLinkConfigProvider.swift; sourceTree = "<group>"; };
+		BAD680412E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; path = "Sources/View Controllers/MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift"; sourceTree = "<group>"; };
+		BAD680422E1BF6DB00C15F77 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift; path = "Sources/View Controllers/MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift"; sourceTree = "<group>"; };
+		BAD680432E1BF6DB00C15F77 /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessVaultManagerViewController.swift; path = "Sources/View Controllers/MerchantHeadlessVaultManagerViewController.swift"; sourceTree = "<group>"; };
+		BAD680442E1BF6DB00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutKlarnaViewController.swift; path = "Sources/View Controllers/New UI/KlarnaHeadless/MerchantHeadlessCheckoutKlarnaViewController.swift"; sourceTree = "<group>"; };
+		BAD680452E1BF6DB00C15F77 /* CheckoutComponentsExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsExamplesView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsExamplesView.swift"; sourceTree = "<group>"; };
+		BAD680462E1BF6DB00C15F77 /* CustomScreenCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomScreenCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CustomScreenCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680472E1BF6DB00C15F77 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantNewLineItemViewController.swift; path = "Sources/View Controllers/New UI/MerchantNewLineItemViewController.swift"; sourceTree = "<group>"; };
+		BAD680482E1BF6DB00C15F77 /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SecretsManager.swift; path = Sources/Utilities/SecretsManager.swift; sourceTree = "<group>"; };
+		BAD680492E1BF6DB00C15F77 /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIViewController+API.swift"; path = "Sources/Extension/UIViewController+API.swift"; sourceTree = "<group>"; };
+		BAD6804A2E1BF6DB00C15F77 /* CompactCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CompactCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CompactCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD6804B2E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutRawDataViewController.swift; path = "Sources/View Controllers/MerchantHeadlessCheckoutRawDataViewController.swift"; sourceTree = "<group>"; };
+		BAD6804C2E1BF6DB00C15F77 /* MerchantHeadlessKlarnaInitializationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessKlarnaInitializationViewModel.swift; path = "Sources/View Controllers/New UI/KlarnaHeadless/MerchantHeadlessKlarnaInitializationViewModel.swift"; sourceTree = "<group>"; };
+		BAD6804D2E1BF6DB00C15F77 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TapGestureRecognizer.swift; path = Sources/Utilities/TapGestureRecognizer.swift; sourceTree = "<group>"; };
+		BAD6804E2E1BF6DB00C15F77 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TestScenario.swift; path = Sources/Model/TestScenario.swift; sourceTree = "<group>"; };
+		BAD6804F2E1BF6DB00C15F77 /* DarkThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DarkThemedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/DarkThemedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680502E1BF6DC00C15F77 /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Range+Extensions.swift"; path = "Sources/Extension/Range+Extensions.swift"; sourceTree = "<group>"; };
+		BAD680512E1BF6DC00C15F77 /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Data+Extensions.swift"; path = "Sources/Extension/Data+Extensions.swift"; sourceTree = "<group>"; };
+		BAD680522E1BF6DC00C15F77 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CreateClientToken.swift; path = Sources/Model/CreateClientToken.swift; sourceTree = "<group>"; };
+		BAD680532E1BF6DC00C15F77 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MerchantHeadlessKlarnaInitializationView+Elements.swift"; path = "Sources/View Controllers/New UI/KlarnaHeadless/MerchantHeadlessKlarnaInitializationView+Elements.swift"; sourceTree = "<group>"; };
+		BAD680542E1BF6DC00C15F77 /* CorporateThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CorporateThemedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CorporateThemedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680552E1BF6DC00C15F77 /* ModifierChainsCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ModifierChainsCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ModifierChainsCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680562E1BF6DC00C15F77 /* GridCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GridCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/GridCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680572E1BF6DC00C15F77 /* ShowcaseEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseEnums.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseEnums.swift"; sourceTree = "<group>"; };
+		BAD680582E1BF6DC00C15F77 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "String+Extensions.swift"; path = "Sources/Extension/String+Extensions.swift"; sourceTree = "<group>"; };
+		BAD680592E1BF6DC00C15F77 /* CheckoutComponentsShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsShowcaseView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CheckoutComponentsShowcaseView.swift"; sourceTree = "<group>"; };
+		BAD6805A2E1BF6DC00C15F77 /* ValidationCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ValidationCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ValidationCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD6805B2E1BF6DC00C15F77 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantResultViewController.swift; path = "Sources/View Controllers/MerchantResultViewController.swift"; sourceTree = "<group>"; };
+		BAD6805C2E1BF6DC00C15F77 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = Sources/Model/Metadata.swift; sourceTree = "<group>"; };
+		BAD6805D2E1BF6DC00C15F77 /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TestSettings+PrimerSettings.swift"; path = "Sources/Model/TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
+		BAD6805E2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutStripeAchViewController.swift; path = "Sources/View Controllers/New UI/StripeAchHeadless/MerchantHeadlessCheckoutStripeAchViewController.swift"; sourceTree = "<group>"; };
+		BAD6805F2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift"; path = "Sources/View Controllers/New UI/KlarnaHeadless/MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift"; sourceTree = "<group>"; };
+		BAD680602E1BF6DC00C15F77 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Sources/AppDelegate.swift; sourceTree = "<group>"; };
+		BAD680612E1BF6DC00C15F77 /* UIStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIStackViewExtensions.swift; path = Sources/Extension/UIStackViewExtensions.swift; sourceTree = "<group>"; };
+		BAD680622E1BF6DD00C15F77 /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutTheme.swift; path = Sources/Model/CheckoutTheme.swift; sourceTree = "<group>"; };
+		BAD680632E1BF6DD00C15F77 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantDropInUIViewController.swift; path = "Sources/View Controllers/MerchantDropInUIViewController.swift"; sourceTree = "<group>"; };
+		BAD680642E1BF6DD00C15F77 /* CoBadgedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoBadgedCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CoBadgedCardFormDemo.swift"; sourceTree = "<group>"; };
+		BAD680652E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MerchantHeadlessCheckoutRawRetailDataViewController.swift; path = "Sources/View Controllers/MerchantHeadlessCheckoutRawRetailDataViewController.swift"; sourceTree = "<group>"; };
+		BAD680662E1BF6DD00C15F77 /* InlineCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InlineCardFormDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/InlineCardFormDemo.swift"; sourceTree = "<group>"; };
 		C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantSessionAndSettingsViewController.swift; sourceTree = "<group>"; };
 		C4DFE77F28AB538220A0F6EE /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Main.strings; sourceTree = "<group>"; };
 		C7EB86C62BA46BF51C64ABC2 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -155,11 +247,9 @@
 		EB6C18F747AEC20B8C63164C /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00C661E2ACC67FA00187028 /* Debug App SPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "primer-sdk-ios"; path = ..; sourceTree = "<group>"; };
-		F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLinkConfigProvider.swift; path = Sources/Utilities/AppLinkConfigProvider.swift; sourceTree = "<group>"; };
 		F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProvider.swift; sourceTree = "<group>"; };
 		F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSettings.swift; sourceTree = "<group>"; };
 		F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
-		F09978832D0326860058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = Sources/Model/Metadata.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		FB1F71737862EF5D0F4FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -176,6 +266,7 @@
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
 				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
 				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
+				BAD6800C2E1BEABC00C15F77 /* PrimerUI in Frameworks */,
 				87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,12 +334,79 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
-				F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */,
-				F09978832D0326860058E4B5 /* Metadata.swift */,
+				BAD6802B2E1BF6DA00C15F77 /* AnimatedCardFormDemo.swift */,
+				BAD680602E1BF6DC00C15F77 /* AppDelegate.swift */,
+				BAD680402E1BF6DB00C15F77 /* AppLinkConfigProvider.swift */,
+				BAD6803B2E1BF6DA00C15F77 /* BanksListModel.swift */,
+				BAD680282E1BF6DA00C15F77 /* BanksListView.swift */,
+				BAD680452E1BF6DB00C15F77 /* CheckoutComponentsExamplesView.swift */,
+				BAD6802F2E1BF6DA00C15F77 /* CheckoutComponentsMenuViewController.swift */,
+				BAD680592E1BF6DC00C15F77 /* CheckoutComponentsShowcaseView.swift */,
+				BAD6802D2E1BF6DA00C15F77 /* CheckoutExampleView.swift */,
+				BAD680622E1BF6DD00C15F77 /* CheckoutTheme.swift */,
+				BAD680642E1BF6DD00C15F77 /* CoBadgedCardFormDemo.swift */,
+				BAD680372E1BF6DA00C15F77 /* ColorfulThemedCardFormDemo.swift */,
+				BAD6804A2E1BF6DB00C15F77 /* CompactCardFormDemo.swift */,
+				BAD680542E1BF6DC00C15F77 /* CorporateThemedCardFormDemo.swift */,
+				BAD680522E1BF6DC00C15F77 /* CreateClientToken.swift */,
+				BAD680462E1BF6DB00C15F77 /* CustomScreenCardFormDemo.swift */,
+				BAD6804F2E1BF6DB00C15F77 /* DarkThemedCardFormDemo.swift */,
+				BAD680512E1BF6DC00C15F77 /* Data+Extensions.swift */,
+				BAD6802C2E1BF6DA00C15F77 /* ExampleConfig.swift */,
+				BAD680262E1BF6DA00C15F77 /* ExpandedCardFormDemo.swift */,
+				BAD680562E1BF6DC00C15F77 /* GridCardFormDemo.swift */,
+				BAD680252E1BF6D900C15F77 /* ImageViewWithUrl.swift */,
+				BAD680662E1BF6DD00C15F77 /* InlineCardFormDemo.swift */,
+				BAD6802E2E1BF6DA00C15F77 /* LiveStateCardFormDemo.swift */,
+				BAD680632E1BF6DD00C15F77 /* MerchantDropInUIViewController.swift */,
+				BAD680422E1BF6DB00C15F77 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */,
+				BAD680292E1BF6DA00C15F77 /* MerchantHeadlessCheckoutBankViewController.swift */,
+				BAD680442E1BF6DB00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController.swift */,
+				BAD6805F2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */,
+				BAD680352E1BF6DA00C15F77 /* MerchantHeadlessCheckoutNolPayViewController.swift */,
+				BAD6804B2E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawDataViewController.swift */,
+				BAD680412E1BF6DB00C15F77 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */,
+				BAD680652E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */,
+				BAD6805E2E1BF6DC00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController.swift */,
+				BAD680322E1BF6DA00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */,
+				BAD680392E1BF6DA00C15F77 /* MerchantHeadlessKlarnaInitializationView.swift */,
+				BAD680532E1BF6DC00C15F77 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */,
+				BAD6804C2E1BF6DB00C15F77 /* MerchantHeadlessKlarnaInitializationViewModel.swift */,
+				BAD680332E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsView.swift */,
+				BAD680312E1BF6DA00C15F77 /* MerchantHeadlessStripeAchFieldsViewModel.swift */,
+				BAD680432E1BF6DB00C15F77 /* MerchantHeadlessVaultManagerViewController.swift */,
+				BAD680362E1BF6DA00C15F77 /* MerchantHelpers.swift */,
+				BAD680472E1BF6DB00C15F77 /* MerchantNewLineItemViewController.swift */,
+				BAD6805B2E1BF6DC00C15F77 /* MerchantResultViewController.swift */,
+				BAD6803D2E1BF6DB00C15F77 /* MerchantSessionAndSettingsViewController.swift */,
+				BAD6805C2E1BF6DC00C15F77 /* Metadata.swift */,
+				BAD680342E1BF6DA00C15F77 /* ModernThemedCardFormDemo.swift */,
+				BAD680552E1BF6DC00C15F77 /* ModifierChainsCardFormDemo.swift */,
+				BAD680272E1BF6DA00C15F77 /* Networking.swift */,
+				BAD6803C2E1BF6DA00C15F77 /* PaymentMethodCell.swift */,
+				BAD680502E1BF6DC00C15F77 /* Range+Extensions.swift */,
+				BAD680482E1BF6DB00C15F77 /* SecretsManager.swift */,
+				BAD6802A2E1BF6DA00C15F77 /* ShowcaseDemo.swift */,
+				BAD680572E1BF6DC00C15F77 /* ShowcaseEnums.swift */,
+				BAD6803A2E1BF6DA00C15F77 /* ShowcaseSection.swift */,
+				BAD680582E1BF6DC00C15F77 /* String+Extensions.swift */,
+				BAD6804D2E1BF6DB00C15F77 /* TapGestureRecognizer.swift */,
+				BAD680302E1BF6DA00C15F77 /* TestHelper.swift */,
+				BAD6804E2E1BF6DB00C15F77 /* TestScenario.swift */,
+				BAD680232E1BF6D900C15F77 /* TestSettings.swift */,
+				BAD6805D2E1BF6DC00C15F77 /* TestSettings+PrimerSettings.swift */,
+				BAD6803E2E1BF6DB00C15F77 /* TransactionResponse.swift */,
+				BAD680242E1BF6D900C15F77 /* UIApplication+Extensions.swift */,
+				BAD680612E1BF6DC00C15F77 /* UIStackViewExtensions.swift */,
+				BAD680492E1BF6DB00C15F77 /* UIViewController+API.swift */,
+				BAD6805A2E1BF6DC00C15F77 /* ValidationCardFormDemo.swift */,
+				BAD6803F2E1BF6DB00C15F77 /* ViewController+Primer.swift */,
+				BAD680382E1BF6DA00C15F77 /* ViewController+PrimerUIHelpers.swift */,
 				F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				5FC43BEC92F0ADB9085F0668 /* Frameworks */,
+				BAD680222E1BF60300C15F77 /* container1.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -423,6 +581,7 @@
 				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
 				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
 				87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */,
+				BAD6800B2E1BEABC00C15F77 /* PrimerUI */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -464,6 +623,7 @@
 				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
 				0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */,
 				87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */,
+				BAD6800A2E1BEABC00C15F77 /* XCLocalSwiftPackageReference "../../partners-tech-poc/apps/ios/PrimerUI" */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -494,52 +654,74 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */,
-				F09978842D0326860058E4B5 /* Metadata.swift in Sources */,
-				F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */,
-				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
-				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
-				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
-				F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */,
-				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
-				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
-				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
-				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
-				040F199A2CC7A186005C9707 /* SecretsManager.swift in Sources */,
-				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
-				049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
-				F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */,
-				F00C65FD2ACC67FA00187028 /* UIViewController+API.swift in Sources */,
-				043C7FA22C49749E0018929E /* TestHelper.swift in Sources */,
-				F00C65FE2ACC67FA00187028 /* ViewController+Primer.swift in Sources */,
-				F00C65FF2ACC67FA00187028 /* ViewController+PrimerUIHelpers.swift in Sources */,
-				F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */,
-				F00C66002ACC67FA00187028 /* CheckoutTheme.swift in Sources */,
-				F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */,
-				8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */,
-				F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */,
-				F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */,
-				E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */,
-				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
-				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
-				0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */,
-				8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
-				8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
-				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
-				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
-				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
-				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
-				044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,
-				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
-				E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */,
-				8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
-				F00C660C2ACC67FA00187028 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
-				041CD2FF2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
-				F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */,
-				F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */,
-				F00C660F2ACC67FA00187028 /* MerchantNewLineItemViewController.swift in Sources */,
-				F00C66112ACC67FA00187028 /* PaymentMethodCell.swift in Sources */,
-				044F805B2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
+				BAD680672E1BF6DD00C15F77 /* TestSettings.swift in Sources */,
+				BAD680682E1BF6DD00C15F77 /* UIApplication+Extensions.swift in Sources */,
+				BAD680692E1BF6DD00C15F77 /* ImageViewWithUrl.swift in Sources */,
+				BAD6806A2E1BF6DD00C15F77 /* ExpandedCardFormDemo.swift in Sources */,
+				BAD6806B2E1BF6DD00C15F77 /* Networking.swift in Sources */,
+				BAD6806C2E1BF6DD00C15F77 /* BanksListView.swift in Sources */,
+				BAD6806D2E1BF6DD00C15F77 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
+				BAD6806E2E1BF6DD00C15F77 /* ShowcaseDemo.swift in Sources */,
+				BAD6806F2E1BF6DD00C15F77 /* AnimatedCardFormDemo.swift in Sources */,
+				BAD680702E1BF6DD00C15F77 /* ExampleConfig.swift in Sources */,
+				BAD680712E1BF6DD00C15F77 /* CheckoutExampleView.swift in Sources */,
+				BAD680722E1BF6DD00C15F77 /* LiveStateCardFormDemo.swift in Sources */,
+				BAD680732E1BF6DD00C15F77 /* CheckoutComponentsMenuViewController.swift in Sources */,
+				BAD680742E1BF6DD00C15F77 /* TestHelper.swift in Sources */,
+				BAD680752E1BF6DD00C15F77 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
+				BAD680762E1BF6DD00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
+				BAD680772E1BF6DD00C15F77 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,
+				BAD680782E1BF6DD00C15F77 /* ModernThemedCardFormDemo.swift in Sources */,
+				BAD680792E1BF6DD00C15F77 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
+				BAD6807A2E1BF6DD00C15F77 /* MerchantHelpers.swift in Sources */,
+				BAD6807B2E1BF6DD00C15F77 /* ColorfulThemedCardFormDemo.swift in Sources */,
+				BAD6807C2E1BF6DD00C15F77 /* ViewController+PrimerUIHelpers.swift in Sources */,
+				BAD6807D2E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
+				BAD6807E2E1BF6DD00C15F77 /* ShowcaseSection.swift in Sources */,
+				BAD6807F2E1BF6DD00C15F77 /* BanksListModel.swift in Sources */,
+				BAD680802E1BF6DD00C15F77 /* PaymentMethodCell.swift in Sources */,
+				BAD680812E1BF6DD00C15F77 /* MerchantSessionAndSettingsViewController.swift in Sources */,
+				BAD680822E1BF6DD00C15F77 /* TransactionResponse.swift in Sources */,
+				BAD680832E1BF6DD00C15F77 /* ViewController+Primer.swift in Sources */,
+				BAD680842E1BF6DD00C15F77 /* AppLinkConfigProvider.swift in Sources */,
+				BAD680852E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
+				BAD680862E1BF6DD00C15F77 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
+				BAD680872E1BF6DD00C15F77 /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
+				BAD680882E1BF6DD00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
+				BAD680892E1BF6DD00C15F77 /* CheckoutComponentsExamplesView.swift in Sources */,
+				BAD6808A2E1BF6DD00C15F77 /* CustomScreenCardFormDemo.swift in Sources */,
+				BAD6808B2E1BF6DD00C15F77 /* MerchantNewLineItemViewController.swift in Sources */,
+				BAD6808C2E1BF6DD00C15F77 /* SecretsManager.swift in Sources */,
+				BAD6808D2E1BF6DD00C15F77 /* UIViewController+API.swift in Sources */,
+				BAD6808E2E1BF6DD00C15F77 /* CompactCardFormDemo.swift in Sources */,
+				BAD6808F2E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
+				BAD680902E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
+				BAD680912E1BF6DD00C15F77 /* TapGestureRecognizer.swift in Sources */,
+				BAD680922E1BF6DD00C15F77 /* TestScenario.swift in Sources */,
+				BAD680932E1BF6DD00C15F77 /* DarkThemedCardFormDemo.swift in Sources */,
+				BAD680942E1BF6DD00C15F77 /* Range+Extensions.swift in Sources */,
+				BAD680952E1BF6DD00C15F77 /* Data+Extensions.swift in Sources */,
+				BAD680962E1BF6DD00C15F77 /* CreateClientToken.swift in Sources */,
+				BAD680972E1BF6DD00C15F77 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
+				BAD680982E1BF6DD00C15F77 /* CorporateThemedCardFormDemo.swift in Sources */,
+				BAD680992E1BF6DD00C15F77 /* ModifierChainsCardFormDemo.swift in Sources */,
+				BAD6809A2E1BF6DD00C15F77 /* GridCardFormDemo.swift in Sources */,
+				BAD6809B2E1BF6DD00C15F77 /* ShowcaseEnums.swift in Sources */,
+				BAD6809C2E1BF6DD00C15F77 /* String+Extensions.swift in Sources */,
+				BAD6809D2E1BF6DD00C15F77 /* CheckoutComponentsShowcaseView.swift in Sources */,
+				BAD6809E2E1BF6DD00C15F77 /* ValidationCardFormDemo.swift in Sources */,
+				BAD6809F2E1BF6DD00C15F77 /* MerchantResultViewController.swift in Sources */,
+				BAD680A02E1BF6DD00C15F77 /* Metadata.swift in Sources */,
+				BAD680A12E1BF6DD00C15F77 /* TestSettings+PrimerSettings.swift in Sources */,
+				BAD680A22E1BF6DD00C15F77 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
+				BAD680A32E1BF6DD00C15F77 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
+				BAD680A42E1BF6DD00C15F77 /* AppDelegate.swift in Sources */,
+				BAD680A52E1BF6DD00C15F77 /* UIStackViewExtensions.swift in Sources */,
+				BAD680A62E1BF6DD00C15F77 /* CheckoutTheme.swift in Sources */,
+				BAD680A72E1BF6DD00C15F77 /* MerchantDropInUIViewController.swift in Sources */,
+				BAD680A82E1BF6DD00C15F77 /* CoBadgedCardFormDemo.swift in Sources */,
+				BAD680A92E1BF6DD00C15F77 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
+				BAD680AA2E1BF6DD00C15F77 /* InlineCardFormDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,6 +978,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		BAD6800A2E1BEABC00C15F77 /* XCLocalSwiftPackageReference "../../partners-tech-poc/apps/ios/PrimerUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../partners-tech-poc/apps/ios/PrimerUI";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -833,6 +1022,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */;
 			productName = PrimerStripeSDK;
+		};
+		BAD6800B2E1BEABC00C15F77 /* PrimerUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PrimerUI;
 		};
 		F04510E22ACD98E100A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;

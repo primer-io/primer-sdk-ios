@@ -1,0 +1,217 @@
+{
+   "schemaVersion":"2.0.0",
+   "validationStrategy":"onChange",
+   "initialState":{
+      "verification":{
+         "phoneNumber":"+1 (555) 123-4567",
+         "email":"user@example.com",
+         "method":"sms"
+      }
+   },
+   "workflows":{
+      "submitPayment":{
+         "description":"Submit OTP payment when verify button clicked",
+         "triggers":[
+            {
+               "type":"element",
+               "element":"submitButton",
+               "event":"onClick",
+               "condition":"size(errors.otpCode) == 0"
+            }
+         ],
+         "steps":[
+            {
+               "type":"HTTP_CALL",
+               "stepId":"sendData",
+               "description":"Tokenize payment instrument with OTP",
+               "operationPath":"/workflow/1234",
+               "method":"POST",
+               "requestBody":{
+                  "payload":{
+                     "data":{
+                        "otpCode":"verification.otpCode"
+                     }
+                  }
+               },
+               "parameters":[
+                  {
+                     "name":"Content-Type",
+                     "in":"header",
+                     "value":"'application/json; charset=utf-8'"
+                  }
+               ],
+               "successCriteria":[
+                  {
+                     "condition":"statusCode == 202"
+                  }
+               ]
+            }
+         ]
+      }
+   },
+   "inputs":{
+      "otpCode":{
+         "binding":"verification.otpCode",
+         "transformations":[
+            "value.replace(/[^0-9]/g, '')"
+         ],
+         "validators":[
+            {
+               "validate":"size(value) > 0",
+               "errorMessage":"Verification code is required"
+            },
+            {
+               "validate":"size(value) == 6",
+               "errorMessage":"Verification code must be exactly 6 digits"
+            },
+            {
+               "validate":"value.matches('^[0-9]{6}$')",
+               "errorMessage":"Verification code must contain only numbers"
+            }
+         ]
+      }
+   },
+   "ui":{
+      "type":"Column",
+      "props":{
+         "spacing":"medium",
+         "justifyContent":"flex-start",
+         "padding":"large",
+         "width":"fill",
+         "backgroundColor":"#ffffff",
+         "borderRadius":16
+      },
+      "children":[
+         {
+            "type":"Column",
+            "props":{
+               "spacing":"small",
+               "width":"fill",
+               "alignItems":"center"
+            },
+            "children":[
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"🔐",
+                     "textStyle":"headingLarge",
+                     "textAlign":"center"
+                  }
+               },
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"Enter Verification Code",
+                     "textStyle":"headingLarge",
+                     "textAlign":"center"
+                  }
+               }
+            ]
+         },
+         {
+            "type":"Column",
+            "props":{
+               "spacing":"small",
+               "width":"fill",
+               "alignItems":"flex-start"
+            },
+            "children":[
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"Enter the code below to continue",
+                     "textStyle":"bodySmall",
+                     "textAlign":"center"
+                  }
+               }
+            ]
+         },
+         {
+            "type":"Column",
+            "props":{
+               "spacing":"small",
+               "alignItems":"flex-start"
+            },
+            "children":[
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"We've sent a 6-digit verification code to",
+                     "textStyle":"bodyMedium",
+                     "textAlign":"center"
+                  }
+               },
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"verification.phoneNumber",
+                     "textStyle":"bodyMedium",
+                     "textAlign":"center"
+                  }
+               },
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"Enter the code below to continue",
+                     "textStyle":"bodySmall",
+                     "textAlign":"center"
+                  }
+               }
+            ]
+         },
+         {
+            "type":"TextField",
+            "id":"otpCode",
+            "props":{
+               "label":"Verification Code",
+               "placeholder":"'123456'",
+               "keyboardType":"number",
+               "maxLength":6,
+               "textStyle":"headingMedium",
+               "textAlign":"center",
+               "variant":"outlined",
+               "width":"fill"
+            }
+         },
+         {
+            "type":"Row",
+            "props":{
+               "spacing":"small",
+               "justifyContent":"center",
+               "alignItems":"center",
+               "margin":"small"
+            },
+            "children":[
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"🔒",
+                     "textStyle":"bodySmall",
+                     "textAlign":"center"
+                  }
+               },
+               {
+                  "type":"Text",
+                  "props":{
+                     "text":"This verification ensures your account security",
+                     "textStyle":"caption",
+                     "textAlign":"center"
+                  }
+               }
+            ]
+         },
+         {
+            "type":"Button",
+            "id":"submitButton",
+            "props":{
+               "text":"Verify Code",
+               "variant":"primary",
+               "size":"large",
+               "enabled":"size(errors.otpCode) == 0 && workflows.submitPayment.state != 'executing'",
+               "width":"fill",
+               "margin":"medium"
+            }
+         }
+      ]
+   }
+}

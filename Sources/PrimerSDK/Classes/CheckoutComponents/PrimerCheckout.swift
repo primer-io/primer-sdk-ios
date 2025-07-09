@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PrimerUI
 
 /// The main entry point for CheckoutComponents, providing a SwiftUI view for payment checkout.
 /// This API matches the Android Composable API exactly for cross-platform consistency.
@@ -456,6 +457,9 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                         } else {
                             AnyView(LoadingScreen())
                         }
+                        
+                    case .serverDrivenUI(let schema):
+                        ContainerView(schema)
 
                     case .paymentMethodSelection:
                         if let customPaymentSelection = scope.paymentMethodSelectionScreen {

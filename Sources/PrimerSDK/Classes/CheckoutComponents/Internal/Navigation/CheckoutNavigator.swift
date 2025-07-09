@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PrimerUI
 
 /// Simple navigation wrapper that delegates to CheckoutCoordinator
 /// This provides a simpler API for basic navigation needs while the coordinator handles complex state
@@ -74,6 +75,10 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     /// Navigate to country selection
     func navigateToCountrySelection() {
         coordinator.navigate(to: .selectCountry)
+    }
+    
+    func loadServerDrivenUI(schema: String) {
+        coordinator.navigate(to: .serverDrivenUI(schema: schema))
     }
 
     /// Navigate to success screen with payment result

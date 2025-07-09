@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
           "branch": null,
-          "revision": "37aa7ea8f67ab6aabaeff25f64ce006b4dc53533",
-          "version": "2.4.2"
+          "revision": "5af78e1f7b3a5913a410d5d5c429b5eda0891f20",
+          "version": "2.4.4"
         }
       },
       {
@@ -35,6 +35,24 @@
           "branch": null,
           "revision": "257fd44196a4f0e8a99110bae654ae5d46e3fd43",
           "version": "1.0.1"
+        }
+      },
+      {
+        "package": "SVGView",
+        "repositoryURL": "https://github.com/exyte/SVGView.git",
+        "state": {
+          "branch": null,
+          "revision": "6465962facdd25cb96eaebc35603afa2f15d2c0d",
+          "version": "1.0.6"
+        }
+      },
+      {
+        "package": "swift-syntax",
+        "repositoryURL": "https://github.com/swiftlang/swift-syntax.git",
+        "state": {
+          "branch": null,
+          "revision": "0687f71944021d616d34d922343dcef086855920",
+          "version": "600.0.1"
         }
       }
     ]

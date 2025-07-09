@@ -82,6 +82,7 @@ enum CheckoutRoute: NavigationRoute {
     case loading
     case paymentMethodSelection
     case selectCountry
+    case serverDrivenUI(schema: String)
     case success(CheckoutPaymentResult)
     case failure(CheckoutPaymentError)
     case paymentMethod(String, PresentationContext) // Payment method type with presentation context
@@ -92,6 +93,7 @@ enum CheckoutRoute: NavigationRoute {
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
         case .selectCountry: return "select-country"
+        case .serverDrivenUI: return "server-driven-ui"
         case .paymentMethod(let type, let context): return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
         case .success: return "success"
         case .failure: return "failure"
@@ -114,6 +116,7 @@ enum CheckoutRoute: NavigationRoute {
         case .loading: return "Loading Screen"
         case .paymentMethodSelection: return "Payment Method Selection"
         case .selectCountry: return "Select Country"
+        case .serverDrivenUI: return "Server Driven UI"
         case .paymentMethod(let type, let context): return "Payment Method: \(type) (\(context == .direct ? "Direct" : "From Selection"))"
         case .success: return "Payment Success"
         case .failure: return "Payment Error"
@@ -128,7 +131,7 @@ enum CheckoutRoute: NavigationRoute {
             return .replace // Replace splash with loading
         case .paymentMethodSelection:
             return .reset  // Always reset to payment methods as root
-        case .selectCountry, .paymentMethod:
+        case .selectCountry, .paymentMethod, .serverDrivenUI:
             return .push   // Standard forward navigation
         case .success, .failure:
             return .replace // Replace current screen with result
