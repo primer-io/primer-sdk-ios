@@ -13,6 +13,7 @@ let defaultNetworkService = DefaultNetworkService(
     reportingService: DefaultNetworkReportingService()
 )
 
+// swiftlint:disable:next type_body_length
 final class PrimerAPIClient: PrimerAPIClientProtocol {
 
     internal let networkService: NetworkServiceProtocol
