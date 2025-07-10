@@ -7,6 +7,7 @@
 
 import Foundation
 
+// TODO: FINAL_MIGRATION
 final class DefaultBanksComponent: BanksComponent {
 
     let paymentMethodType: PrimerPaymentMethodType
