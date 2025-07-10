@@ -634,7 +634,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.userInputCompletion = {
-                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+                DispatchQueue.main.async { [weak self] in
+                    self?.uiManager.primerRootViewController?.enableUserInteraction(false)
+                }
                 continuation.resume()
             }
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
