@@ -890,19 +890,21 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    @MainActor
     func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.webViewController = SFSafariViewController(url: redirectUrl)
-            self.webViewController!.delegate = self
-
+        let safariViewController = SFSafariViewController(url: redirectUrl)
+        safariViewController.delegate = self
+        self.webViewController = safariViewController
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.webViewCompletion = { _, err in
-                if let err = err {
+                if let err {
                     continuation.resume(throwing: err)
                 }
             }
 
             DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                self.uiManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
                     DispatchQueue.main.async {
                         continuation.resume()
                     }
@@ -996,7 +998,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             ]
 
             var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
-
+            
             if isShowingBillingAddressFieldsRequired {
                 let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
                                                                   lastName: lastNameFieldView.lastName,
@@ -1041,14 +1043,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
         var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
         if isShowingBillingAddressFieldsRequired {
-            let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
-                                                              lastName: lastNameFieldView.lastName,
-                                                              addressLine1: addressLine1FieldView.addressLine1,
-                                                              addressLine2: addressLine2FieldView.addressLine2,
-                                                              city: cityFieldView.city,
-                                                              postalCode: postalCodeFieldView.postalCode,
-                                                              state: stateFieldView.state,
-                                                              countryCode: countryFieldView.countryCode)
+            let updatedBillingAddress = await ClientSession.Address(firstName: firstNameFieldView.firstName,
+                                                                    lastName: lastNameFieldView.lastName,
+                                                                    addressLine1: addressLine1FieldView.addressLine1,
+                                                                    addressLine2: addressLine2FieldView.addressLine2,
+                                                                    city: cityFieldView.city,
+                                                                    postalCode: postalCodeFieldView.postalCode,
+                                                                    state: stateFieldView.state,
+                                                                    countryCode: countryFieldView.countryCode)
             if let billingAddress = try? updatedBillingAddress.asDictionary() {
                 let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
                 actions.append(billingAddressAction)
