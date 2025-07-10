@@ -1,9 +1,8 @@
-import XCTest
 import PassKit
 @testable import PrimerSDK
+import XCTest
 
-final class ApplePayTokenizationViewModelTests: XCTestCase {
-
+final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -24,10 +23,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                             createResumePaymentService: createResumePaymentService)
 
         let settings = PrimerSettings(paymentMethodOptions:
-                                        PrimerPaymentMethodOptions(applePayOptions:
-                                                                    PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
-                                        )
-        )
+            PrimerPaymentMethodOptions(applePayOptions:
+                PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")))
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         appState = MockAppState()
@@ -68,10 +65,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
             XCTAssertThrowsError(try sut.validate())
             let resetSettings = PrimerSettings(paymentMethodOptions:
-                                                PrimerPaymentMethodOptions(applePayOptions:
-                                                                            PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
-                                                )
-            )
+                PrimerPaymentMethodOptions(applePayOptions:
+                    PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")))
             DependencyContainer.register(resetSettings as PrimerSettingsProtocol)
         }
 
@@ -81,19 +76,19 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         }
     }
 
-    func testStartWithPreTokenizationAndAbort() throws {
+    func test_start_pre_tokenization_and_abort_async() throws {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectOnDidFail = self.expectation(description: "onDidFail is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -101,12 +96,15 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectWillAbort.fulfill()
+            expectOnDidFail.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
-        waitForExpectations(timeout: 2.0)
+        wait(for: [
+            expectOnWillCreatePaymentWithData,
+            expectOnDidFail
+        ], timeout: 2.0, enforceOrder: true)
     }
 
     func testWithShippingModules() throws {
@@ -138,21 +136,14 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let applePayPresentationManager = MockApplePayPresentationManager()
         sut.applePayPresentationManager = applePayPresentationManager
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        let expectDidPresent = self.expectation(description: "Did present ApplePay")
+        let expectOnPresent = self.expectation(description: "onPresent is called")
         applePayPresentationManager.onPresent = { _, delegate in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 let dummyController = PKPaymentAuthorizationController()
@@ -161,35 +152,41 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                                          handler: { _ in })
                 delegate.paymentAuthorizationControllerDidFinish(dummyController)
             }
-            expectDidPresent.fulfill()
+            expectOnPresent.fulfill()
             return .success(())
         }
 
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectOnTokenize = self.expectation(description: "onTokenize is called")
         tokenizationService.onTokenize = { _ in
-            expectDidTokenize.fulfill()
+            expectOnTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectOnCreatePayment = self.expectation(description: "onCreatePayment is called")
         createResumePaymentService.onCreatePayment = { _ in
-            expectDidCreatePayment.fulfill()
+            expectOnCreatePayment.fulfill()
             return self.paymentResponseBody
+        }
 
+        let expectOnDidCompleteCheckoutWithData = self.expectation(description: "onDidCompleteCheckoutWithData is called")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectOnDidCompleteCheckoutWithData.fulfill()
         }
 
         delegate.onDidFail = { error in
             print(error)
         }
 
-        sut.start()
+        sut.start_async()
 
         wait(for: [
-            expectWillCreatePaymentData,
-            expectDidPresent,
-            expectDidTokenize,
-            expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
+            expectOnWillCreatePaymentWithData,
+            expectOnPresent,
+            expectOnTokenize,
+            expectOnCreatePayment,
+            expectOnDidCompleteCheckoutWithData
         ], timeout: 10.0, enforceOrder: true)
     }
 
@@ -215,7 +212,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
     }
 
     func testCreateOrderItemsWithFees() throws {
-
         let itemName = "Fancy Shoes"
         let itemDescription = "Some nice shoes"
         let itemAmount = 1000
@@ -237,20 +233,20 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                          currencyCode: .init(code: "GBP", decimalDigits: 2),
                          fees: fees,
                          lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: itemAmount,
-                                  discountAmount: nil,
-                                  name: itemName,
-                                  description: itemDescription,
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
+                             .init(itemId: "123",
+                                   quantity: 1,
+                                   amount: itemAmount,
+                                   discountAmount: nil,
+                                   name: itemName,
+                                   description: itemDescription,
+                                   taxAmount: nil,
+                                   taxCode: nil,
+                                   productType: nil)
                          ],
-                         shippingMethod: nil
-            ),
+                         shippingMethod: nil),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         do {
             let orderItems = try sut.createOrderItemsFromClientSession(apiResponse,
@@ -305,24 +301,23 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                          currencyCode: .init(code: "GBP", decimalDigits: 2),
                          fees: fees,
                          lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: itemAmount,
-                                  discountAmount: nil,
-                                  name: itemName,
-                                  description: itemDescription,
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
+                             .init(itemId: "123",
+                                   quantity: 1,
+                                   amount: itemAmount,
+                                   discountAmount: nil,
+                                   name: itemName,
+                                   description: itemDescription,
+                                   taxAmount: nil,
+                                   taxCode: nil,
+                                   productType: nil)
                          ],
-                         shippingMethod: nil
-            ),
+                         shippingMethod: nil),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
     }
 
     func testCreateOrderItemsWithShipping() throws {
-
         let itemName = "Fancy Shoes"
         let itemDescription = "Some nice shoes"
         let itemAmount = 1000
@@ -355,24 +350,24 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                          currencyCode: .init(code: "GBP", decimalDigits: 2),
                          fees: nil,
                          lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: itemAmount,
-                                  discountAmount: nil,
-                                  name: itemName,
-                                  description: itemDescription,
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
+                             .init(itemId: "123",
+                                   quantity: 1,
+                                   amount: itemAmount,
+                                   discountAmount: nil,
+                                   name: itemName,
+                                   description: itemDescription,
+                                   taxAmount: nil,
+                                   taxCode: nil,
+                                   productType: nil)
                          ],
                          shippingMethod:
-                            ClientSession.Order.ShippingMethod(amount: 100,
-                                                               methodId: shippingMethodId,
-                                                               methodName: shippingMethodName,
-                                                               methodDescription: shippingMethodDescription)
-            ),
+                         ClientSession.Order.ShippingMethod(amount: 100,
+                                                            methodId: shippingMethodId,
+                                                            methodName: shippingMethodName,
+                                                            methodDescription: shippingMethodDescription)),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         do {
             let orderItems = try sut.createOrderItemsFromClientSession(apiResponse,
@@ -445,24 +440,24 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                          currencyCode: .init(code: "GBP", decimalDigits: 2),
                          fees: nil,
                          lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: 1000,
-                                  discountAmount: nil,
-                                  name: "Fancy Shoes",
-                                  description: "Some nice shoes",
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
+                             .init(itemId: "123",
+                                   quantity: 1,
+                                   amount: 1000,
+                                   discountAmount: nil,
+                                   name: "Fancy Shoes",
+                                   description: "Some nice shoes",
+                                   taxAmount: nil,
+                                   taxCode: nil,
+                                   productType: nil)
                          ],
                          shippingMethod:
-                            ClientSession.Order.ShippingMethod(amount: 200,
-                                                               methodId: "Shipping",
-                                                               methodName: "Shipping",
-                                                               methodDescription: "Description")
-            ),
+                         ClientSession.Order.ShippingMethod(amount: 200,
+                                                            methodId: "Shipping",
+                                                            methodName: "Shipping",
+                                                            methodDescription: "Description")),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
                                                                             implementationType: .nativeSdk,
@@ -489,12 +484,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 
         // Test Error when no shipping methods and Settings requireShippingMethod
         let settings = PrimerSettings(paymentMethodOptions:
-                                        PrimerPaymentMethodOptions(applePayOptions:
-                                                                    PrimerApplePayOptions(merchantIdentifier: "merchant_id",
-                                                                                          merchantName: "merchant_name",
-                                                                                          shippingOptions: .init(requireShippingMethod: true))
-                                        )
-        )
+            PrimerPaymentMethodOptions(applePayOptions:
+                PrimerApplePayOptions(merchantIdentifier: "merchant_id",
+                                      merchantName: "merchant_name",
+                                      shippingOptions: .init(requireShippingMethod: true))))
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         contact.postalAddress = address
@@ -551,24 +544,24 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                          currencyCode: .init(code: "GBP", decimalDigits: 2),
                          fees: nil,
                          lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: 1000,
-                                  discountAmount: nil,
-                                  name: "Fancy Shoes",
-                                  description: "Some nice shoes",
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
+                             .init(itemId: "123",
+                                   quantity: 1,
+                                   amount: 1000,
+                                   discountAmount: nil,
+                                   name: "Fancy Shoes",
+                                   description: "Some nice shoes",
+                                   taxAmount: nil,
+                                   taxCode: nil,
+                                   productType: nil)
                          ],
                          shippingMethod:
-                            ClientSession.Order.ShippingMethod(amount: 200,
-                                                               methodId: "Shipping",
-                                                               methodName: "Shipping",
-                                                               methodDescription: "Description")
-            ),
+                         ClientSession.Order.ShippingMethod(amount: 200,
+                                                            methodId: "Shipping",
+                                                            methodName: "Shipping",
+                                                            methodDescription: "Description")),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
@@ -576,16 +569,16 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         config.checkoutModules = [Response.Body.Configuration.CheckoutModule(type: "SHIPPING",
                                                                              requestUrlStr: nil,
                                                                              options: ShippingMethodOptions(shippingMethods: [
-                                                                                                                ShippingMethod(name: "Default",
-                                                                                                                               description: "The default method",
-                                                                                                                               amount: 100,
-                                                                                                                               id: "default"),
-                                                                                                                ShippingMethod(name: "Next Day",
-                                                                                                                               description: "Get your stuff next day",
-                                                                                                                               amount: 200,
-                                                                                                                               id: "nextDay")],
-                                                                                                            selectedShippingMethod: "nextDay")
-        )]
+                                                                                 ShippingMethod(name: "Default",
+                                                                                                description: "The default method",
+                                                                                                amount: 100,
+                                                                                                id: "default"),
+                                                                                 ShippingMethod(name: "Next Day",
+                                                                                                description: "Get your stuff next day",
+                                                                                                amount: 200,
+                                                                                                id: "nextDay")
+                                                                             ],
+                                                                             selectedShippingMethod: "nextDay"))]
         apiClient.fetchConfigurationWithActionsResult = (config, nil)
         PrimerAPIConfigurationModule.apiConfiguration = config
 
@@ -610,15 +603,15 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
               currencyCode: Currency(code: "GBP", decimalDigits: 2),
               fees: nil,
               lineItems: [
-                .init(itemId: "item_id",
-                      quantity: 1,
-                      amount: 1234,
-                      discountAmount: nil,
-                      name: "my_item",
-                      description: "item_description",
-                      taxAmount: nil,
-                      taxCode: nil,
-                      productType: nil)
+                  .init(itemId: "item_id",
+                        quantity: 1,
+                        amount: 1234,
+                        discountAmount: nil,
+                        name: "my_item",
+                        description: "item_description",
+                        taxAmount: nil,
+                        taxCode: nil,
+                        productType: nil)
               ])
     }
 
@@ -670,18 +663,17 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         Response.Body.Configuration.CheckoutModule(type: "SHIPPING",
                                                    requestUrlStr: nil,
                                                    options: ShippingMethodOptions(shippingMethods: [
-                                                                                    ShippingMethod(name: "Default",
-                                                                                                   description: "The default method",
-                                                                                                   amount: 100,
-                                                                                                   id: "default"),
-                                                                                    ShippingMethod(name: "Next Day",
-                                                                                                   description: "Get your stuff next day",
-                                                                                                   amount: 200,
-                                                                                                   id: "nextDay")],
-                                                                                  selectedShippingMethod: "default")
-        )
+                                                       ShippingMethod(name: "Default",
+                                                                      description: "The default method",
+                                                                      amount: 100,
+                                                                      id: "default"),
+                                                       ShippingMethod(name: "Next Day",
+                                                                      description: "Get your stuff next day",
+                                                                      amount: 200,
+                                                                      id: "nextDay")
+                                                   ],
+                                                   selectedShippingMethod: "default"))
     ]
-
 }
 
 private class MockApplePayPresentationManager: ApplePayPresenting {

@@ -13,6 +13,8 @@ protocol ApplePayPresenting {
     var errorForDisplay: Error { get }
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws
 }
 
 final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
@@ -67,6 +69,27 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                 } else {
                     PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
                     seal.fulfill()
+                }
+            }
+        }
+    }
+
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws {
+        let request = try createRequest(for: applePayRequest)
+        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+        paymentController.delegate = delegate
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            paymentController.present { success in
+                if success == false {
+                    let err = PrimerError.unableToPresentApplePay()
+                    self.logger.error(message: "APPLE PAY")
+                    self.logger.error(message: err.recoverySuggestion ?? "")
+                    continuation.resume(throwing: handled(primerError: err))
+                } else {
+                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
+                    continuation.resume()
                 }
             }
         }
