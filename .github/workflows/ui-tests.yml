@@ -158,7 +158,7 @@ jobs:
         uses: ./.github/actions/ui-tests
         with:
           appium-tests-branch: ${{ inputs.appiumTestsBranch }}
-          test-type: ${{ inputs.testType }}
+          test-type: ${{ matrix.test-type }}
           gitlab-appium-pull-key: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
           lambdatest-user-name: ${{ secrets.LAMBDATEST_USERNAME }}
           lambdatest-access-key: ${{ secrets.LAMBDATEST_ACCESS_KEY }}
