@@ -343,6 +343,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
 
+    // TODO: FINAL MIGRATION
     override func start() {
         let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
         let isMerchantAmountNil
@@ -521,6 +522,30 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        try await Analytics.Service.record(
+            event: Analytics.Event.ui(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type,
+                    url: nil
+                ),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .cardForm
+            )
+        )
+
+        try validate()
+        try await presentPaymentMethodUserInterface()
+        try await awaitUserInput()
+        try await dispatchActions()
+        return try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -544,11 +569,22 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    override func performTokenizationStep() async throws {
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
+
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        let paymentMethodTokenData = try await tokenize()
+        self.paymentMethodTokenData = paymentMethodTokenData
+        return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+
+    override func performPostTokenizationSteps() async throws {}
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
@@ -569,11 +605,37 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    @MainActor
+    override func presentPaymentMethodUserInterface() async throws {
+        switch self.config.type {
+        case PrimerPaymentMethodType.paymentCard.rawValue:
+            uiManager.primerRootViewController?.show(
+                viewController: PrimerCardFormViewController(viewModel: self)
+            )
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+            uiManager.primerRootViewController?.show(
+                viewController: PrimerCardFormViewController(navigationBarLogo: uiModule.logo, viewModel: self)
+            )
+        default:
+            assertionFailure("Failed to present card form payment method - \(self.config.type) is not a valid payment method type for this payment flow.")
+        }
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 self.uiManager.primerRootViewController?.enableUserInteraction(false)
                 seal.fulfill()
+            }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+        }
+    }
+
+    override func awaitUserInput() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.userInputCompletion = {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+                continuation.resume()
             }
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
@@ -586,6 +648,20 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {
                     seal.fulfill(paymentMethodTokenData)
+                }
+            }
+
+            self.cardComponentsManager.tokenize()
+        }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        try await withCheckedThrowingContinuation { continuation in
+            self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
+                if let err {
+                    continuation.resume(throwing: err)
+                } else if let paymentMethodTokenData {
+                    continuation.resume(returning: paymentMethodTokenData)
                 }
             }
 
@@ -697,6 +773,102 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
+        } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+        } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
+            return try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
+        } else {
+            let err = PrimerError.invalidValue(key: "resumeToken",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
+
+    private func handleRedirectionForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken) async throws -> String? {
+        guard let redirectUrlStr = decodedJWTToken.redirectUrl,
+              let redirectUrl = URL(string: redirectUrlStr),
+              let statusUrlStr = decodedJWTToken.statusUrl,
+              let statusUrl = URL(string: statusUrlStr),
+              decodedJWTToken.intent != nil else {
+            throw PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                 diagnosticsId: UUID().uuidString)
+        }
+
+        DispatchQueue.main.async {
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+        }
+
+        try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+        return try await PollingModule(url: statusUrl).start()
+    }
+
+    private func handle3DSAuthenticationForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken,
+                                                              paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        #if DEBUG
+        let threeDSService: ThreeDSServiceProtocol =
+            PrimerAPIConfiguration.current?.clientSession?.testId != nil ? Mock3DSService() : ThreeDSService()
+        #else
+        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+        #endif
+
+        // MARK: REVIEW_CHECK - This is to ensure the 3DS service is executed on the detached task.
+
+        // And the result is returned on the main thread.
+        let resumeTokenResult = await Task {
+            try await threeDSService.perform3DS(
+                paymentMethodTokenData: paymentMethodTokenData,
+                sdkDismissed: nil
+            )
+        }.result
+
+        return try await MainActor.run {
+            switch resumeTokenResult {
+            case .success(let resumeToken):
+                return resumeToken
+            case .failure(let err):
+                throw err
+            }
+        }
+    }
+
+    private func handleProcessor3DSForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken) async throws -> String? {
+        guard let redirectUrlStr = decodedJWTToken.redirectUrl,
+              let redirectUrl = URL(string: redirectUrlStr),
+              let statusUrlStr = decodedJWTToken.statusUrl,
+              let statusUrl = URL(string: statusUrlStr),
+              decodedJWTToken.intent != nil else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        DispatchQueue.main.async {
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+        }
+
+        try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+
+        let pollingModule = PollingModule(url: statusUrl)
+        self.didCancel = {
+            let err = PrimerError.cancelled(
+                paymentMethodType: self.config.type,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            pollingModule.cancel(withError: err)
+        }
+        return try await pollingModule.start()
+    }
+
     private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
         return Promise { seal in
             self.webViewController = SFSafariViewController(url: redirectUrl)
@@ -712,6 +884,27 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                 self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
                         seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+
+    func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.webViewController = SFSafariViewController(url: redirectUrl)
+            self.webViewController!.delegate = self
+
+            self.webViewCompletion = { _, err in
+                if let err = err {
+                    continuation.resume(throwing: err)
+                }
+            }
+
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        continuation.resume()
                     }
                 })
             }
@@ -831,6 +1024,39 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 seal.reject(error)
             }
         }
+    }
+
+    private func dispatchActions() async throws {
+        var network = self.alternativelySelectedCardNetwork?.rawValue.uppercased() ?? self.defaultCardNetwork?.rawValue.uppercased()
+        if network == nil || network == "UNKNOWN" {
+            network = "OTHER"
+        }
+
+        let params: [String: Any] = [
+            "paymentMethodType": config.type,
+            "binData": [
+                "network": network
+            ]
+        ]
+
+        var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+        if isShowingBillingAddressFieldsRequired {
+            let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
+                                                              lastName: lastNameFieldView.lastName,
+                                                              addressLine1: addressLine1FieldView.addressLine1,
+                                                              addressLine2: addressLine2FieldView.addressLine2,
+                                                              city: cityFieldView.city,
+                                                              postalCode: postalCodeFieldView.postalCode,
+                                                              state: stateFieldView.state,
+                                                              countryCode: countryFieldView.countryCode)
+            if let billingAddress = try? updatedBillingAddress.asDictionary() {
+                let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
+                actions.append(billingAddressAction)
+            }
+        }
+
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        try await clientSessionActionsModule.dispatch(actions: actions)
     }
 
     private func unselectPaymentMethodSilently() {
