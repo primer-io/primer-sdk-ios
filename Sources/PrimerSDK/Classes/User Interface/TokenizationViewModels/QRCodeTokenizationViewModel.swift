@@ -73,7 +73,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             place: .bankSelectionList
         ))
 
-        try self.validate()
+        try validate()
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
