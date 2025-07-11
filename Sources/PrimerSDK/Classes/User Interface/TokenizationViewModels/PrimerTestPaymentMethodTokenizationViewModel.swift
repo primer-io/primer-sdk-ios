@@ -115,6 +115,44 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        try await Analytics.Service.record(event: Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .bankSelectionList
+        ))
+
+        defer {
+            DispatchQueue.main.async {
+                self.didDismissPaymentMethodUI?()
+                self.didFinishPayment?(nil)
+            }
+        }
+
+        do {
+            try validate()
+            willPresentPaymentMethodUI?()
+            try await presentPaymentMethodUserInterface()
+            try await awaitUserInput()
+            didStartPayment?()
+            try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+            willDismissPaymentMethodUI?()
+        } catch {
+            DispatchQueue.main.async {
+                self.didFinishPayment?(error)
+            }
+            throw error
+        }
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -136,10 +174,20 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         }
     }
 
+    override func performTokenizationStep() async throws {
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        self.paymentMethodTokenData = try await tokenize()
+        try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -153,6 +201,14 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
                 seal.fulfill()
             }
         }
+    }
+    
+    @MainActor
+    override func presentPaymentMethodUserInterface() async throws {
+        let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
+        self.willPresentPaymentMethodUI?()
+        PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
+        self.didPresentPaymentMethodUI?()
     }
 
     override func awaitUserInput() -> Promise<Void> {
@@ -174,6 +230,12 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         }
     }
 
+    override func awaitUserInput() async throws {
+        self.didPresentPaymentMethodUI?()
+        try await awaitUserSelection()
+        try await awaitPayButtonTappedUponDecisionSelection()
+    }
+
     override func validate() throws {
 
     }
@@ -187,6 +249,29 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {
                     seal.fulfill(paymentMethodTokenData)
+                } else {
+                    assert(true, "Should always receive a payment method or an error")
+                }
+            }
+        }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let selectedDecision else {
+            let err = PrimerError.invalidValue(key: "amount",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenize(decision: selectedDecision) { paymentMethodTokenData, err in
+                if let err {
+                    continuation.resume(throwing: err)
+                } else if let paymentMethodTokenData {
+                    continuation.resume(returning: paymentMethodTokenData)
                 } else {
                     assert(true, "Should always receive a payment method or an error")
                 }
@@ -259,10 +344,27 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
         }
     }
 
+    private func awaitUserSelection() async throws {
+        await withCheckedContinuation { continuation in
+            self.decisionSelectionCompletion = { decision in
+                self.selectedDecision = decision
+                continuation.resume()
+            }
+        }
+    }
+
     private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
         return Promise { seal in
             self.payButtonTappedCompletion = {
                 seal.fulfill()
+            }
+        }
+    }
+
+    private func awaitPayButtonTappedUponDecisionSelection() async throws {
+        await withCheckedContinuation { continuation in
+            self.payButtonTappedCompletion = {
+                continuation.resume()
             }
         }
     }
