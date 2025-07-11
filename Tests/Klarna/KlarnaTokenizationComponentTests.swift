@@ -1,11 +1,3 @@
-//
-//  KlarnaTokenizationComponentTests.swift
-//  Debug App Tests
-//
-//  Created by Stefan Vrancianu on 05.02.2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
-
 #if canImport(PrimerKlarnaSDK)
 @testable import PrimerSDK
 import XCTest
@@ -114,6 +106,19 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_createPaymentSessionSuccess_async() async throws {
+        let clientSession = KlarnaTestsMocks.getClientSession()
+        let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
+        setupPrimerConfiguration(paymentMethod: paymentMethod, apiConfiguration: successApiConfiguration)
+
+        do {
+            let paymentSession = try await tokenizationComponent.createPaymentSession()
+            XCTAssertNotNil(paymentSession, "Result should not be nil")
+        } catch {
+            XCTFail("Request failed with: \(error)")
+        }
+    }
+
     func test_authorizePaymentSessionSuccess() {
         let clientSession = KlarnaTestsMocks.getClientSession()
         let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
@@ -136,6 +141,21 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 10.0)
+    }
+
+    func test_authorizePaymentSessionSuccess_async() async throws {
+        let clientSession = KlarnaTestsMocks.getClientSession()
+        let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
+        setupPrimerConfiguration(paymentMethod: paymentMethod, apiConfiguration: successApiConfiguration)
+
+        tokenizationComponent.setSessionId(paymentSessionId: "mock-session-id")
+
+        do {
+            let paymentSession = try await tokenizationComponent.authorizePaymentSession(authorizationToken: "")
+            XCTAssertNotNil(paymentSession, "Result should not be nil")
+        } catch {
+            XCTFail("Request failed with: \(error)")
+        }
     }
 }
 
