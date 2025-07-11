@@ -381,29 +381,38 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard let clientSession = AppState.current.apiConfiguration?.clientSession else {
+            let err = PrimerError.invalidValue(key: "ClientSession",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
 
-        let shippingMethodsInfo = self.getShippingMethodsInfo()
+        let shippingMethodsInfo = getShippingMethodsInfo()
+        let orderItems: [ApplePayOrderItem] = try createOrderItemsFromClientSession(
+            clientSession,
+            applePayOptions: getApplePayOptions(),
+            selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
+        )
 
-        let session = AppState.current.apiConfiguration!.clientSession!
-        let orderItems: [ApplePayOrderItem] = try self.createOrderItemsFromClientSession(session,
-                                                                                         applePayOptions: self.getApplePayOptions(),
-                                                                                         selectedShippingItem: shippingMethodsInfo
-                                                                                             .selectedShippingMethodOrderItem)
+        if applePayPresentationManager.isPresentable {
+            willPresentPaymentMethodUI?()
+            isCancelled = true
 
-        let applePayRequest = ApplePayRequest(currency: currency,
-                                              merchantIdentifier: merchantIdentifier,
-                                              countryCode: countryCode,
-                                              items: orderItems,
-                                              shippingMethods: shippingMethodsInfo.shippingMethods)
-
-        if self.applePayPresentationManager.isPresentable {
-            self.willPresentPaymentMethodUI?()
-            self.isCancelled = true
-
-            try await self.applePayPresentationManager.present(withRequest: applePayRequest, delegate: self)
-            self.didPresentPaymentMethodUI?()
+            try await applePayPresentationManager.present(
+                withRequest: ApplePayRequest(currency: currency,
+                                             merchantIdentifier: merchantIdentifier,
+                                             countryCode: countryCode,
+                                             items: orderItems,
+                                             shippingMethods: shippingMethodsInfo.shippingMethods),
+                delegate: self
+            )
+            didPresentPaymentMethodUI?()
         } else {
-            ErrorHandler.handle(error: self.applePayPresentationManager.errorForDisplay)
+            ErrorHandler.handle(error: applePayPresentationManager.errorForDisplay)
         }
     }
 
