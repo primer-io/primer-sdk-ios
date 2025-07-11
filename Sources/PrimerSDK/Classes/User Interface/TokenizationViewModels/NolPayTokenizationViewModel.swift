@@ -70,6 +70,25 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        try await Analytics.Service.record(event: Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .bankSelectionList
+        ))
+
+        try validate()
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -91,6 +110,13 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
         }
+    }
+
+    override func performTokenizationStep() async throws {
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+        try await self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        self.paymentMethodTokenData = try await self.tokenize()
+        try await self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -125,10 +151,42 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let configId = config.id else {
+            let err = PrimerError.invalidValue(key: "configuration.id",
+                                               value: config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let sessionInfo = await NolPaySessionInfo(platform: "IOS",
+                                                  mobileCountryCode: mobileCountryCode,
+                                                  mobileNumber: mobileNumber,
+                                                  nolPayCardNumber: nolPayCardNumber,
+                                                  phoneVendor: "Apple",
+                                                  phoneModel: UIDevice.modelIdentifier ?? "iPhone")
+
+        return try await tokenizationService.tokenize(
+            requestBody: Request.Body.Tokenization(
+                paymentInstrument: OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo
+                )
+            )
+        )
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -167,6 +225,42 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func presentPaymentMethodUserInterface() async throws {
+        guard let transactionNo else {
+            let err = PrimerError.invalidValue(key: "transactionNo",
+                                               value: config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        _ = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                self.triggerAsyncAction(transactionNo) { result in
+                    continuation.resume(with: result)
+                }
+            }
+        }
+
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                       diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            throw error
+        }
+
+        guard let redirectUrl else {
+            let error = PrimerError.invalidUrl(url: self.redirectUrl?.absoluteString,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            throw error
+        }
+
+        _ = try await PrimerAPIClient().genericAPICall(clientToken: decodedJWTToken, url: redirectUrl)
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
 
@@ -196,6 +290,40 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
         }
+    }
+
+    override func awaitUserInput() async throws {
+        guard let statusUrl = self.statusUrl else {
+            let error = PrimerError.invalidUrl(url: self.statusUrl?.absoluteString,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            throw error
+        }
+
+        let pollingModule = PollingModule(url: statusUrl)
+        self.didCancel = {
+            let err = PrimerError.cancelled(
+                paymentMethodType: self.config.type,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            pollingModule.cancel(withError: err)
+        }
+
+        defer {
+            self.didCancel = nil
+        }
+
+        if self.isCancelled {
+            let err = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                            userInfo: .errorUserInfoDictionary(),
+                                            diagnosticsId: UUID().uuidString)
+            throw err
+        }
+
+        self.resumeToken = try await pollingModule.start()
     }
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -236,6 +364,38 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             } else {
                 seal.fulfill(nil)
             }
+        }
+    }
+
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        if decodedJWTToken.intent?.contains("NOL_PAY_REDIRECTION") == true {
+            if let transactionNo = decodedJWTToken.nolPayTransactionNo,
+               let redirectUrlStr = decodedJWTToken.redirectUrl,
+               let redirectUrl = URL(string: redirectUrlStr),
+               let statusUrlStr = decodedJWTToken.statusUrl,
+               let statusUrl = URL(string: statusUrlStr),
+               decodedJWTToken.intent != nil {
+                
+                DispatchQueue.main.async {
+                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                }
+
+                self.transactionNo = transactionNo
+                self.redirectUrl = redirectUrl
+                self.statusUrl = statusUrl
+
+                try await presentPaymentMethodUserInterface()
+                try await awaitUserInput()
+                return self.resumeToken
+            } else {
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                         diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        } else {
+            return nil
         }
     }
 
