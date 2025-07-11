@@ -202,7 +202,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    func performTokenizationStepAsync() async throws {
+    override func performTokenizationStep() async throws {
         guard let authorizationToken else {
             let err = PrimerError.invalidValue(
                 key: "authorizationToken",
@@ -228,7 +228,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    func performPostTokenizationStepsAsync() async throws {
+    override func performPostTokenizationSteps() async throws {
         // Empty implementation
     }
 
@@ -257,7 +257,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     @MainActor
-    func presentPaymentMethodUserInterfaceAsync() async throws {
+    override func presentPaymentMethodUserInterface() async throws {
         #if canImport(PrimerKlarnaSDK)
         _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
         let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: tokenizationComponent, delegate: self)
@@ -282,7 +282,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    func awaitUserInputAsync() async throws {
+    override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.klarnaPaymentSessionCompletion = { authorizationToken, err in
                 if let err {
