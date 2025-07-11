@@ -238,30 +238,38 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
 
+                let amount = AppState.current.amount
+
                 let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                 let orderItems: [ApplePayOrderItem]
+                let session: ClientSession.APIResponse
+
+                let applePayOptions: ApplePayOptions? = self.getApplePayOptions()
 
                 do {
-                    let session = AppState.current.apiConfiguration!.clientSession!
-
+                    session = AppState.current.apiConfiguration!.clientSession!
                     orderItems = try self.createOrderItemsFromClientSession(
                         session,
-                        applePayOptions: self.getApplePayOptions(),
+                        applePayOptions: applePayOptions,
                         selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
                     )
-
                 } catch {
                     seal.reject(error)
                     return
                 }
 
                 let applePayRequest = ApplePayRequest(
+                    amount: amount,
+                    paymentDescriptor: session.paymentMethod?.descriptor,
                     currency: currency,
                     merchantIdentifier: merchantIdentifier,
                     countryCode: countryCode,
                     items: orderItems,
-                    shippingMethods: shippingMethodsInfo.shippingMethods
+                    shippingMethods: shippingMethodsInfo.shippingMethods,
+                    recurringPaymentRequest: applePayOptions?.recurringPaymentRequest,
+                    deferredPaymentRequest: applePayOptions?.deferredPaymentRequest,
+                    automaticReloadRequest: applePayOptions?.automaticReloadRequest
                 )
 
                 if self.applePayPresentationManager.isPresentable {
@@ -671,9 +679,29 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         }
                     }
 
-                    continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
-                                                                                         paymentSummaryItems: orderItems.map { $0.applePayItem },
-                                                                                         shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
+                    let shippingContactUpdate = PKPaymentRequestShippingContactUpdate(errors: nil,
+                                                                                      paymentSummaryItems: orderItems.map { $0.applePayItem },
+                                                                                      shippingMethods: shippingMethodsInfo.shippingMethods ?? [])
+
+                    let orderAmount = AppState.current.amount
+                    let descriptor = clientSession.paymentMethod?.descriptor
+                    guard let currency = AppState.current.currency else {
+                        let err = PrimerError.invalidValue(key: "Currency",
+                                                           value: nil,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        throw err
+                    }
+
+                    try self.getApplePayOptions()?.updatePKPaymentRequestUpdate(
+                        shippingContactUpdate,
+                        orderAmount: orderAmount,
+                        currency: currency,
+                        descriptor: descriptor
+                    )
+
+                    continuation.resume(returning: shippingContactUpdate)
                 }.catch { _ in
                     continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingContactInvalidError))
                 }
@@ -716,7 +744,25 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                             applePayOptions: self.getApplePayOptions(),
                             selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
                         ).map { $0.applePayItem }
+
                         let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: summaryItems)
+                        let orderAmount = AppState.current.amount
+                        let descriptor = clientSession.paymentMethod?.descriptor
+                        guard let currency = AppState.current.currency else {
+                            let err = PrimerError.invalidValue(key: "Currency",
+                                                               value: nil,
+                                                               userInfo: .errorUserInfoDictionary(),
+                                                               diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            throw err
+                        }
+
+                        try self.getApplePayOptions()?.updatePKPaymentRequestUpdate(
+                            update,
+                            orderAmount: orderAmount,
+                            currency: currency,
+                            descriptor: descriptor
+                        )
                         continuation.resume(returning: update)
                     } catch {
                         continuation.resume(throwing: error)
