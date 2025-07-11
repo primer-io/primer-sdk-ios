@@ -313,15 +313,13 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func presentPaymentMethodUserInterface() async throws {
         // Checking if we are running UI(E2E) tests here.
-        var isMockBE = false
-
         #if DEBUG
-        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-            isMockBE = true
-        }
+        let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
+        #else
+        let isMockBE = false
         #endif
 
-        if isMockBE {
+        guard !isMockBE else {
             return
         }
 
@@ -438,13 +436,12 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func awaitUserInput() async throws {
         // Checking if we are running UI(E2E) tests here.
-        var isMockBE = false
-
         #if DEBUG
-        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-            isMockBE = true
-        }
+        let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
+        #else
+        let isMockBE = false
         #endif
+
         guard !isMockBE else {
             return
         }
