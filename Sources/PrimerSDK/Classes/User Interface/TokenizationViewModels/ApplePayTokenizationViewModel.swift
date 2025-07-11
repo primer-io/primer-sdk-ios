@@ -381,7 +381,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let clientSession = AppState.current.apiConfiguration?.clientSession else {
             let err = PrimerError.invalidValue(key: "ClientSession",
                                                value: nil,
