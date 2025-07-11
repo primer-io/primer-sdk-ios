@@ -262,8 +262,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             testId: nil)
 
         do {
-            let orderItems = try sut.createOrderItemsFromClientSession(apiResponse,
-                                                                       applePayOptions: applePayOptions)
+            let orderItems = try apiResponse.applePayOrderItems(selectedOrderItem: nil, applePayOptions: applePayOptions)
 
             let expectedOrderItems = [
                 try! ApplePayOrderItem(name: itemDescription,
@@ -384,9 +383,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
             testId: nil)
 
         do {
-            let orderItems = try sut.createOrderItemsFromClientSession(apiResponse,
-                                                                       applePayOptions: applePayOptions,
-                                                                       selectedShippingItem: selectedShippingMethodItem)
+            let orderItems = try apiResponse.applePayOrderItems(
+                selectedOrderItem: selectedShippingMethodItem,
+                applePayOptions: applePayOptions
+            )
 
             let expectedOrderItems = [
                 try! ApplePayOrderItem(name: itemDescription,

@@ -21,6 +21,24 @@ struct ApplePayPaymentResponse {
     let shippingAddress: ClientSession.Address?
     let mobileNumber: String?
     let emailAddress: String?
+
+    init(payment: PKPayment, tokenPaymentData: ApplePayPaymentResponseTokenPaymentData) {
+        token = ApplePayPaymentInstrument.PaymentResponseToken(token: payment.token, paymentData: tokenPaymentData)
+        billingAddress = payment.billingContact?.clientSessionAddress
+        shippingAddress = payment.shippingContact?.clientSessionAddress
+        mobileNumber = payment.shippingContact?.phoneNumber?.stringValue
+        emailAddress = payment.shippingContact?.emailAddress
+    }
+}
+
+struct ApplePayShippingMethodsInfo {
+    let shippingMethods: [PKShippingMethod]?
+    let selectedShippingMethodOrderItem: ApplePayOrderItem?
+
+    init(shippingMethods: [PKShippingMethod]? = nil, selectedShippingMethodOrderItem: ApplePayOrderItem? = nil) {
+        self.shippingMethods = shippingMethods
+        self.selectedShippingMethodOrderItem = selectedShippingMethodOrderItem
+    }
 }
 
 struct ApplePayPaymentResponsePaymentMethod: Codable {
@@ -34,6 +52,24 @@ struct ApplePayPaymentResponseTokenPaymentData: Codable {
     let signature: String
     let version: String
     let header: ApplePayTokenPaymentDataHeader
+
+    #if DEBUG
+        init(
+            data: String = "apple-pay-payment-response-mock-data",
+            signature: String = "apple-pay-mock-signature",
+            version: String = "apple-pay-mock-version",
+            header: ApplePayTokenPaymentDataHeader = .init(
+                ephemeralPublicKey: "apple-pay-mock-ephemeral-key",
+                publicKeyHash: "apple-pay-mock-public-key-hash",
+                transactionId: "apple-pay-mock--transaction-id"
+            )
+        ) {
+            self.data = data
+            self.signature = signature
+            self.version = version
+            self.header = header
+        }
+    #endif
 }
 
 struct ApplePayTokenPaymentDataHeader: Codable {
