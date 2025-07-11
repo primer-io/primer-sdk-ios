@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
+// swiftlint:disable type_body_length
+
 import Foundation
 
 let defaultNetworkService = DefaultNetworkService(
@@ -595,3 +597,5 @@ private extension PrimerAPIClient {
         }
     }
 }
+
+// swiftlint:enable type_body_length
