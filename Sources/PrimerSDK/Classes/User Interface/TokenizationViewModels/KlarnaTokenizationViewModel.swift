@@ -16,6 +16,7 @@ import UIKit
 import PrimerKlarnaSDK
 #endif
 
+// MARK: MISSING_TESTS
 final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     var willPresentExternalView: (() -> Void)?
@@ -133,6 +134,56 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        guard let authorizationToken else {
+            let err = PrimerError.invalidValue(
+                key: "authorizationToken",
+                value: nil,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        try await Analytics.Service.record(event: Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodPopup
+        ))
+
+        await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+
+        #if canImport(PrimerKlarnaSDK)
+        try validate()
+
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+        self.klarnaPaymentSession = try await tokenizationComponent.createPaymentSession()
+        try await presentPaymentMethodUserInterface()
+        try await awaitUserInput()
+        self.klarnaCustomerTokenAPIResponse = try await tokenizationComponent.authorizePaymentSession(authorizationToken: authorizationToken)
+
+        await MainActor.run {
+            self.willDismissExternalView?()
+        }
+
+        self.willDismissExternalView?()
+        #else
+        let error = KlarnaHelpers.getMissingSDKError()
+        ErrorHandler.handle(error: error)
+        throw error
+        #endif
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -155,10 +206,34 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    func performTokenizationStepAsync() async throws {
+        guard let authorizationToken else {
+            let err = PrimerError.invalidValue(
+                key: "authorizationToken",
+                value: nil,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        self.paymentMethodTokenData = try await tokenizationComponent.tokenizeDropIn(
+            customerToken: klarnaCustomerTokenAPIResponse,
+            offSessionAuthorizationId: authorizationToken
+        )
+        try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    func performPostTokenizationStepsAsync() async throws {
+        // Empty implementation
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -185,6 +260,17 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    @MainActor
+    func presentPaymentMethodUserInterfaceAsync() async throws {
+        #if canImport(PrimerKlarnaSDK)
+        _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+        let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: tokenizationComponent, delegate: self)
+        willPresentExternalView?()
+        PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
+        didPresentExternalView?()
+        #endif
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.klarnaPaymentSessionCompletion = { authorizationToken, err in
@@ -199,6 +285,23 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
+
+    func awaitUserInputAsync() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            self.klarnaPaymentSessionCompletion = { authorizationToken, err in
+                if let err {
+                    continuation.resume(throwing: err)
+                } else if let authorizationToken {
+                    self.authorizationToken = authorizationToken
+                    continuation.resume()
+                } else {
+                    precondition(false, "Should never end up in here")
+                }
+            }
+        }
+    }
+
+
 }
 
 #if canImport(PrimerKlarnaSDK)

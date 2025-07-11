@@ -17,7 +17,9 @@ protocol KlarnaTokenizationManagerProtocol {
      object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
@@ -61,6 +63,18 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?,
+                          offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData {
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
+
+        let requestBody = try await getRequestBody(
+            customerToken: customerToken,
+            offSessionAuthorizationId: offSessionAuthorizationId
+        )
+        let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
+        return try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+    }
+
     // MARK: - Tokenize DropIn
 
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
@@ -78,6 +92,15 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
                 seal.reject(error)
             }
         }
+    }
+
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?,
+                        offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData {
+        let requestBody = try await getRequestBody(
+            customerToken: customerToken,
+            offSessionAuthorizationId: offSessionAuthorizationId
+        )
+        return try await tokenizationService.tokenize(requestBody: requestBody)
     }
 }
 
@@ -119,10 +142,51 @@ extension KlarnaTokenizationManager {
         }
     }
 
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData {
+        if PrimerSettings.current.paymentHandling == .manual {
+            try await startManualPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+        } else {
+            try await startAutomaticPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+        }
+    }
+
+    func startManualPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData {
+        let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+
+        if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+            switch resumeDecisionType {
+            case .continueWithNewClientToken:
+                // TODO: REVIEW_CHECK - What should we return here?
+                preconditionFailure()
+
+            case .complete:
+                return PrimerCheckoutData(payment: nil)
+            }
+        } else {
+            throw KlarnaHelpers.getPaymentFailedError()
+        }
+    }
+
+    func startAutomaticPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData {
+        guard let token = paymentMethodTokenData.token else {
+            throw KlarnaHelpers.getInvalidTokenError()
+        }
+        let paymentResponse = try await createPaymentEvent(token)
+        return PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+    }
+
     // Create payment with Payment method token
     private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    }
+
+    private func createPaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+        try await createResumePaymentService.createPayment(
+            paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)
+        )
     }
 
     private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
@@ -160,5 +224,36 @@ extension KlarnaTokenizationManager {
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
         }
+    }
+
+    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
+                                offSessionAuthorizationId: String?) async throws -> Request.Body
+        .Tokenization {
+        var paymentInstrument: TokenizationRequestBodyPaymentInstrument
+        // Validates the presence of session data.
+        // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
+        guard let sessionData = customerToken?.sessionData else {
+            throw KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData", value: nil)
+        }
+
+        // Checks if the session type is for recurring payments. If so, it attempts to extract the
+        // customer token ID and sets 'KlarnaCustomerTokenPaymentInstrument' as a payment instrument.
+        // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value
+        // which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider
+        // delegate method and sets 'KlarnaAuthorizationPaymentInstrument' as a payment instrument.
+        // If the token ID is not found, it generates an error indicating an invalid value
+        // for `tokenization.customerToken`
+        if KlarnaHelpers.getSessionType() == .recurringPayment {
+            guard let klarnaCustomerToken = customerToken?.customerTokenId else {
+                throw KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken", value: nil)
+            }
+            // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
+            paymentInstrument = KlarnaCustomerTokenPaymentInstrument(klarnaCustomerToken: klarnaCustomerToken, sessionData: sessionData)
+        } else {
+            // Prepares the payment instrument by creating a `KlarnaAuthorizationPaymentInstrument` object
+            paymentInstrument = KlarnaAuthorizationPaymentInstrument(klarnaAuthorizationToken: offSessionAuthorizationId, sessionData: sessionData)
+        }
+        // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
+        return Request.Body.Tokenization(paymentInstrument: paymentInstrument)
     }
 }
