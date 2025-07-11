@@ -20,10 +20,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .cardHolder
-        validationError = .invalidCardholderName(
-            message: "Cardholder name is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidCardholderName(message: "Cardholder name is not valid.")
         isValid = { text in
             return text.isValidNonDecimalString && 2 <= text.count && text.count < 45
         }

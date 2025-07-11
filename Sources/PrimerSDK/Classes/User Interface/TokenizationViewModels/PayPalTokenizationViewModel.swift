@@ -29,37 +29,19 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl))
         }
 
         guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "configuration.id", value: config.id))
         }
 
         guard decodedJWTToken.coreUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.coreUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.coreUrl", value: decodedJWTToken.pciUrl))
         }
     }
 
@@ -195,13 +177,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     switch result {
                     case .success(let res):
                         guard let url = URL(string: res.approvalUrl) else {
-                            let err = PrimerError.invalidValue(key: "res.approvalUrl",
-                                                               value: res.approvalUrl,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            return seal.reject(handled(primerError: .invalidValue(key: "res.approvalUrl", value: res.approvalUrl)))
                         }
 
                         self.orderId = res.orderId
@@ -216,13 +192,8 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
-                            let err = PrimerError.invalidValue(key: "billingAgreement.response.url",
-                                                               value: urlStr,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            let error = handled(primerError: .invalidValue(key: "billingAgreement.response.url", value: urlStr))
+                            return seal.reject(error)
                         }
 
                         seal.fulfill(url)
@@ -291,14 +262,9 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             } else {
-                guard let orderId = orderId else {
-                    let err = PrimerError.invalidValue(key: "orderId",
-                                                       value: orderId,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                guard let orderId else {
+                    return seal.reject(handled(primerError: .invalidValue(key: "orderId", value: orderId)))
+                    
                 }
 
                 firstly {
@@ -341,24 +307,12 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func generatePaypalPaymentInstrument(externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?, completion: @escaping (Result<PayPalPaymentInstrument, Error>) -> Void) {
         switch PrimerInternal.shared.intent {
         case .checkout:
-            guard let orderId = orderId else {
-                let err = PrimerError.invalidValue(key: "orderId",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+            guard let orderId else {
+                return completion(.failure(handled(primerError: .invalidValue(key: "orderId", value: orderId))))
             }
 
-            guard let externalPayerInfo = externalPayerInfo else {
-                let err = PrimerError.invalidValue(key: "externalPayerInfo",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+            guard let externalPayerInfo else {
+                return completion(.failure(handled(primerError: .invalidValue(key: "externalPayerInfo", value: orderId))))
             }
 
             let paymentInstrument = PayPalPaymentInstrument(
@@ -371,13 +325,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         case .vault:
             guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
-                let err = PrimerError.invalidValue(key: "confirmedBillingAgreement",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+                return completion(.failure(handled(primerError: .invalidValue(key: "confirmedBillingAgreement", value: orderId))))
             }
             let paymentInstrument = PayPalPaymentInstrument(
                 paypalOrderId: nil,
@@ -410,11 +358,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         payPalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):
-                let contaiinerErr = PrimerError.failedToCreateSession(error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(nil, contaiinerErr)
+                completion(nil, handled(primerError: .failedToCreateSession(error: err)))
             case .success(let res):
                 self.confirmBillingAgreementResponse = res
                 completion(res, nil)

@@ -421,9 +421,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                         primerErr = error
                     } else {
                         primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                                 userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                    }
+                                                                                          )                    }
 
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
@@ -444,40 +442,16 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else { throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl))
         }
 
         if PrimerInternal.shared.intent == .checkout {
-            if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            if AppState.current.amount == nil { throw handled(primerError: .invalidValue(key: "amount")) }
+            if AppState.current.currency == nil { throw handled(primerError: .invalidValue(key: "currency")) }
         }
     }
 
@@ -621,9 +595,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                         seal.reject(err)
                     }
                 } else {
-                    let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                    seal.reject(error)
+                    seal.reject(PrimerError.invalidClientToken())
                 }
 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -664,12 +636,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                         let pollingModule = PollingModule(url: statusUrl)
 
                         self.didCancel = {
-                            let err = PrimerError.cancelled(
-                                paymentMethodType: self.config.type,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            pollingModule.cancel(withError: err)
+                            pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
                         }
 
                         return pollingModule.start()
@@ -681,18 +648,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidClientToken()))
                 }
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidValue(key: "resumeToken")))
             }
         }
     }
@@ -851,19 +810,12 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         if let clientToken = PrimerAPIConfigurationModule.clientToken {
             completion(clientToken, nil)
         } else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
+            completion(nil, handled(primerError: .invalidClientToken()))
         }
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        let err = PrimerError.underlyingErrors(errors: errors,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: err)
-        self.cardComponentsManagerTokenizationCompletion?(nil, err)
+        self.cardComponentsManagerTokenizationCompletion?(nil, handled(primerError: .underlyingErrors(errors: errors)))
         self.cardComponentsManagerTokenizationCompletion = nil
     }
 
@@ -1034,13 +986,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
 
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if let webViewCompletion = webViewCompletion {
-            // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: config.type,
-                                            userInfo: .errorUserInfoDictionary(),
-                                            diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            webViewCompletion(nil, err)
+        if let webViewCompletion {
+            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: config.type)))
         }
 
         webViewCompletion = nil

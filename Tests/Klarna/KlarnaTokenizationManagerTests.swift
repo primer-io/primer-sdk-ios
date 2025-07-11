@@ -81,9 +81,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.failure(
-                PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
-            )
+            return Result.failure(PrimerError.unknown())
         }
 
         firstly {
@@ -139,7 +137,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return Result.failure(PrimerError.unknown())
         }
 
         firstly {
@@ -271,24 +269,6 @@ extension KlarnaTokenizationManagerTests {
                                                      maskedNumber: nil,
                                                      type: "td_type",
                                                      expiryDate: nil)))
-    }
-
-    private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

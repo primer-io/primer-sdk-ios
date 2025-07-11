@@ -285,10 +285,9 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
         return Promise { seal in
             useSuccess ? seal.fulfill() : seal.reject(PrimerError.failedToCreatePayment(
                 paymentMethodType: paymentMethodType.rawValue,
-                description: "payment_failed",
-                userInfo: nil,
-                diagnosticsId: UUID().uuidString
-            ))
+                description: "payment_failed"
+            )
+                                                      
         }
     }
     func handlePaymentMethodTokenData() -> Promise<Void> {

@@ -51,18 +51,9 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             validation = .valid
         case false:
             if newText.isEmpty {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                validation = .invalid(err)
-
+                validation = .invalid(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
             } else {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                validation = .invalid(err)
+                validation = .invalid(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
             }
 
         default:

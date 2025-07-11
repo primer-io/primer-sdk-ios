@@ -49,21 +49,12 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
         return Promise { seal in
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
+                
             }
 
             guard let rawData = data as? PrimerPhoneNumberData else {
-                let err = PrimerError.invalidValue(key: "rawData",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "rawData", value: nil)))
             }
 
             let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: rawData.phoneNumber)
@@ -115,16 +106,10 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
                 var errors: [PrimerValidationError] = []
 
                 guard let rawData = data as? PrimerPhoneNumberData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        seal.reject(err)
+                        seal.reject(handled(error: PrimerValidationError.invalidRawData()))
                     }
 
                     return
@@ -132,23 +117,14 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
 
                 if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodType),
                    !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
-                    errors.append(PrimerValidationError.invalidPhoneNumber(
-                                    message: "Phone number is not valid.",
-                                    userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
                     }
                 } else {
                     self.notifyDelegateOfValidationResult(isValid: true, errors: nil)

@@ -67,8 +67,7 @@ final class RetryHandler: LogReporter {
         let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .retryFailed, severity: .error)
         Analytics.Service.record(event: retryEvent)
 
-        self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                        diagnosticsId: UUID().uuidString)))
+        self.completion(.failure(PrimerError.missingPrimerConfiguration()))
     }
 
     func attempt() {
@@ -79,10 +78,7 @@ final class RetryHandler: LogReporter {
             let requestDuration = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
 
             guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
-                                                          diagnosticsId: UUID().uuidString)
-                self.completion(.failure(error))
-                return
+                return self.completion(.failure(InternalError.invalidResponse()))
             }
 
             let metadata = ResponseMetadataModel(responseUrl: httpResponse.url?.absoluteString,

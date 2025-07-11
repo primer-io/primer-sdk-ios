@@ -408,10 +408,8 @@ extension Analytics {
                         let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
                         self.logger.error(message: message)
 
-                        // Handle error
-                        ErrorHandler.handle(error: err)
                         self.handleFailedEvents(forUrl: url)
-                        completion(err)
+                        completion(handled(error: err))
                     }
                 }
             }

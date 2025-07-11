@@ -39,7 +39,7 @@ final class PrimerKlarnaCategoriesViewControllerTests: XCTestCase {
     }
 
     func test_sessionFailed() {
-        let error = PrimerError.failedToCreateSession(error: nil, userInfo: [:], diagnosticsId: UUID().uuidString)
+        let error = PrimerError.failedToCreateSession(error: nil)
         sut.didReceiveError(error: error)
 
         let errorReceived = mockDelegate.errorReceived as? PrimerError

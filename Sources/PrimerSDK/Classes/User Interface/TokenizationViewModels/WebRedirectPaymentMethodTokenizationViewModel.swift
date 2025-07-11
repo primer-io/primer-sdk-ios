@@ -72,10 +72,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     override func validate() throws {
         if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
     }
 
@@ -277,21 +274,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         return Promise { seal in
             let pollingModule = PollingModule(url: self.statusUrl)
             self.didCancel = {
-                let err = PrimerError.cancelled(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                pollingModule.cancel(withError: err)
+                pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
                 self.didDismissPaymentMethodUI?()
             }
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                    userInfo: .errorUserInfoDictionary(),
-                                                    diagnosticsId: UUID().uuidString)
-                    throw err
+                    throw PrimerError.cancelled(paymentMethodType: self.config.type)
                 }
                 return pollingModule.start()
             }
@@ -311,13 +300,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id",
-                                                   value: config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "configuration.id", value: config.id)))
             }
 
             let sessionInfo = sessionInfo()
@@ -370,10 +353,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidClientToken()))
                 }
             } else {
                 seal.fulfill(nil)

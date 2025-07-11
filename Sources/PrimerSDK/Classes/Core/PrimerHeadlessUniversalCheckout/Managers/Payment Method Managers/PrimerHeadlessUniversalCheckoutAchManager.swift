@@ -21,24 +21,13 @@ extension PrimerHeadlessUniversalCheckout {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
                     .first(where: { $0.type == paymentMethodType })
             else {
-
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                "message": "Unable to locate a valid payment method configuration"
-                                                               ]),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                let dictionary: Dictionary = .errorUserInfoDictionary(additionalInfo: ["message": "Unable to locate a valid payment method configuration"])
+                throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: dictionary))
             }
 
             guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeAchTokenizationViewModel else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                "message": "Unable to locate a valid payment method view model."
-                                                               ]),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                let dictionary: Dictionary = .errorUserInfoDictionary(additionalInfo: ["message": "Unable to locate a valid payment method view model."])
+                throw handled(primerError:.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,  userInfo: dictionary))
             }
 
             mandateDelegate = tokenizationViewModel

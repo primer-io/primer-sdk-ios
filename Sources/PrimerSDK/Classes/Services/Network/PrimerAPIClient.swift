@@ -93,11 +93,8 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
         networkService.request(endpoint) { (result: Result<DummySuccess, Error>) in
             switch result {
-            case .success:
-                completion(.success(()))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(error))
+            case .success: completion(.success(()))
+            case .failure(let error): completion(.failure(handled(error: error)))
             }
         }
     }
@@ -120,11 +117,8 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         let retryConfig = RetryConfig(enabled: true)
         networkService.request(endpoint, retryConfig: retryConfig) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
             switch result {
-            case .success(let result):
-                completion(.success(result), headers)
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(error), nil)
+            case .success(let result): completion(.success(result), headers)
+            case .failure(let error): completion(.failure(handled(error: error)), nil)
             }
         }
     }
@@ -142,8 +136,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
                 retryConfig: RetryConfig(enabled: true)
             )
         } catch {
-            ErrorHandler.shared.handle(error: error)
-            throw error
+            throw handled(error: error)
         }
     }
 
@@ -352,8 +345,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
                 )
             )
         } catch {
-            ErrorHandler.shared.handle(error: error)
-            throw error
+            throw handled(error: error)
         }
     }
 
@@ -578,11 +570,8 @@ private extension PrimerAPIClient {
     func execute<T>(_ endpoint: Endpoint, completion: @escaping APICompletion<T>) -> PrimerCancellable? where T: Decodable {
         networkService.request(endpoint) { (result: Result<T, Error>) in
             switch result {
-            case .success(let result):
-                completion(.success(result))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(error))
+            case .success(let result): completion(.success(result))
+            case .failure(let error): completion(.failure(handled(error: error)))
             }
         }
     }
@@ -591,8 +580,7 @@ private extension PrimerAPIClient {
         do {
             return try await networkService.request(endpoint)
         } catch {
-            ErrorHandler.shared.handle(error: error)
-            throw error
+            throw handled(error: error)
         }
     }
 }

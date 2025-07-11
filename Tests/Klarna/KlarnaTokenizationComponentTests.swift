@@ -162,51 +162,6 @@ extension KlarnaTokenizationComponentTests {
         PrimerAPIConfigurationModule.apiClient = nil
         tokenizationComponent = nil
     }
-
-    private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    func getInvalidValueError(
-        key: String,
-        value: Any? = nil
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    func getInvalidSettingError(
-        name: String
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: name,
-            value: nil,
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
-    }
 }
 
 #endif

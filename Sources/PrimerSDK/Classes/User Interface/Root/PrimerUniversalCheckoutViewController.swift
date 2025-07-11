@@ -53,9 +53,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 primerErr = error
             } else {
                 primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-            }
+                                                                          )            }
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                 switch errorDecision.type {
@@ -156,11 +154,8 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency
             else {
-                let err = PrimerError.invalidValue(key: "amount or currency", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
                 firstly {
-                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                    PrimerDelegateProxy.raisePrimerDidFailWithError(.invalidValue(key: "amount or currency"), data: nil)
                 }
                 .done { errMessage in
                     PrimerUIManager.dismissOrShowResultScreen(type: .failure,

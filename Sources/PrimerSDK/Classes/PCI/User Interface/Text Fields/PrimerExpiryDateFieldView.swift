@@ -52,11 +52,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 Expiry date is not valid. Valid expiry date format is 2 characters for \
 expiry month and 4 characters for expiry year separated by '/'.
 """
-            let err = PrimerValidationError.invalidExpiryDate(
-                message: message,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            validation = .invalid(err)
+            validation = .invalid(PrimerValidationError.invalidExpiryDate(message: message))
         }
 
         if string != "" {   // Typing

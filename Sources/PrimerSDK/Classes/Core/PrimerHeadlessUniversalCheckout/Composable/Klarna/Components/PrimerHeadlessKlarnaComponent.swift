@@ -83,22 +83,17 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
         switch data {
         case .paymentCategory(_: let category, clientToken: let clientToken):
             guard let clientToken = clientToken else {
-                let error = KlarnaHelpers.getInvalidTokenError()
-                ErrorHandler.handle(error: error)
+                let error = handled(error: KlarnaHelpers.getInvalidTokenError())
                 validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 return
             }
             guard !availableCategories.isEmpty else {
-                let error = PrimerValidationError.sessionNotCreated(userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
+                let error = handled(error: PrimerValidationError.sessionNotCreated())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
             guard availableCategories.contains(where: { $0 == category }) else {
-                let error = PrimerValidationError.invalidPaymentCategory(userInfo: .errorUserInfoDictionary(),
-                                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
+                let error = handled(error: PrimerValidationError.invalidPaymentCategory())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
@@ -107,9 +102,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
             validationDelegate?.didUpdate(validationStatus: .valid, for: data)
         case .finalizePayment:
             guard isFinalizationRequired else {
-                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
+                let error = handled(error: PrimerValidationError.paymentAlreadyFinalized())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }

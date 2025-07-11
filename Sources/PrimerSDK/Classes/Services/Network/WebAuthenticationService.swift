@@ -27,13 +27,10 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
                 if let url = url {
                     completion(.success(url))
                 } else if error != nil {
-                    completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType,
-                                                              userInfo: .errorUserInfoDictionary(),
-                                                              diagnosticsId: UUID().uuidString)))
+                    completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType)))
                 } else {
                     let additionalInfo: [String: String] = [ "message": "Failed to create web authentication session" ]
-                    completion(.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
-                                                            diagnosticsId: UUID().uuidString)))
+                    completion(.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo))))
                 }
             }
         )
@@ -59,8 +56,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
                         continuation.resume(throwing: error)
                     } else {
                         let additionalInfo = ["message": "Failed to create web authentication session"]
-                        continuation.resume(throwing: PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
-                                                                          diagnosticsId: UUID().uuidString))
+                        continuation.resume(throwing: PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo)))
                     }
                 }
             )
