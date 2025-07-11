@@ -148,8 +148,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         do {
             try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            let paymentMethodTokenData = try await achTokenizationService.tokenize()
-            self.paymentMethodTokenData = paymentMethodTokenData
+            self.paymentMethodTokenData = try await achTokenizationService.tokenize()
             try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
         } catch {
             var primerError: PrimerError
@@ -176,7 +175,9 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func performPostTokenizationSteps() async throws {}
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
+    }
 
     /**
      * Handles specific client token intents by orchestrating various operations based on the token content.
@@ -383,8 +384,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             await PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
         }
         #else
-        let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-        throw error
+        throw ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
         #endif
     }
 
