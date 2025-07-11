@@ -29,21 +29,8 @@ final class PrimerCardFormViewController: PrimerFormViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let viewEvent = Analytics.Event.ui(
-            action: .view,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type,
-                url: nil),
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .cardForm
-        )
-        Analytics.Service.record(event: viewEvent)
-
+        let context = AnalyticsContext(paymentMethodType: formPaymentMethodTokenizationViewModel.config.type)
+        postUIEvent(.view, context: context, type: .view, in: .cardForm)
         setupView()
     }
 

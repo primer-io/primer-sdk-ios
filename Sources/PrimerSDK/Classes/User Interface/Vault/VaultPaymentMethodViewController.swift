@@ -171,17 +171,7 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
-
-        let uiEvent = Analytics.Event.ui(
-            action: .view,
-            context: nil,
-            extra: nil,
-            objectType: .view,
-            objectId: nil,
-            objectClass: "\(Self.self)",
-            place: .paymentMethodsList
-        )
-        Analytics.Service.record(event: uiEvent)
+        postUIEvent(.view, type: .view, in: .paymentMethodsList)
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         rightBarButton = UIButton()
@@ -215,31 +205,13 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
     @objc
     func editButtonTapped(_ sender: UIButton) {
         isDeleting = !isDeleting
-
-        if isDeleting {
-            let uiEvent = Analytics.Event.ui(
-                action: .click,
-                context: nil,
-                extra: nil,
-                objectType: .button,
-                objectId: .cancel,
-                objectClass: "\(UIButton.self)",
-                place: .paymentMethodsList
-            )
-            Analytics.Service.record(event: uiEvent)
-        } else {
-            let uiEvent = Analytics.Event.ui(
-                action: .click,
-                context: nil,
-                extra: nil,
-                objectType: .button,
-                objectId: .edit,
-                objectClass: "\(UIButton.self)",
-                place: .paymentMethodsList
-            )
-            Analytics.Service.record(event: uiEvent)
-        }
-
+        postUIEvent(
+            .click,
+            type: .button,
+            objectClass: UIButton.self,
+            in: .paymentMethodsList,
+            id: isDeleting ? .cancel : .edit
+        )
         let title = isDeleting ? Strings.Generic.cancel : Strings.Generic.edit
         rightBarButton.setTitle(title, for: .normal)
     }
@@ -298,38 +270,19 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
         } else {
-            let uiEvent = Analytics.Event.ui(
-                action: .click,
-                context: nil,
-                extra: nil,
-                objectType: .listItem,
-                objectId: .delete,
-                objectClass: "\(UIButton.self)",
-                place: .paymentMethodsList
-            )
-            Analytics.Service.record(event: uiEvent)
-
+            postUIEvent(.click, type: .listItem, objectClass: UIButton.self, in: .paymentMethodsList, id: .delete)
             let alert = AlertController(
                 title: Strings.Alert.deleteConfirmationButtonTitle,
                 message: "",
                 preferredStyle: .alert
             )
 
-            alert.addAction(UIAlertAction(
-                                title: Strings.Generic.cancel,
-                                style: .cancel,
-                                handler: { _ in
-                                    let uiEvent = Analytics.Event.ui(
-                                        action: .click,
-                                        context: nil,
-                                        extra: "alert_button",
-                                        objectType: .button,
-                                        objectId: .cancel,
-                                        objectClass: "\(UIButton.self)",
-                                        place: .paymentMethodsList
-                                    )
-                                    Analytics.Service.record(event: uiEvent)
-                                }))
+            alert.addAction(
+                UIAlertAction(
+                    title: Strings.Generic.cancel,
+                    style: .cancel,
+                    handler: { [weak self] _ in self?.postAlertButtonClickEvent(id: .cancel) }
+            ))
 
             alert.addAction(UIAlertAction(
                                 title: Strings.Generic.delete,
@@ -337,21 +290,22 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                                 handler: { [weak self] _ in
                                     guard let id = paymentMethod.id else { return }
                                     self?.deletePaymentMethod(id)
-                                    let uiEvent = Analytics.Event.ui(
-                                        action: .click,
-                                        context: nil,
-                                        extra: "alert_button",
-                                        objectType: .button,
-                                        objectId: .done,
-                                        objectClass: "\(UIButton.self)",
-                                        place: .paymentMethodsList
-                                    )
-                                    Analytics.Service.record(event: uiEvent)
+                                    self?.postAlertButtonClickEvent(id: .done)
                                 }))
-
             alert.show()
         }
         tableView.reloadData()
+    }
+    
+    private func postAlertButtonClickEvent(id: ObjectId) {
+        postUIEvent(
+            .click,
+            extra: "alert_button",
+            type: .button,
+            objectClass: UIButton.self,
+            in: .paymentMethodsList,
+            id: id
+        )
     }
 }
 // swiftlint:enable function_body_length
