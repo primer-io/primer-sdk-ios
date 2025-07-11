@@ -213,7 +213,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
         self.paymentMethodTokenData = try await tokenizationComponent.tokenizeDropIn(
             customerToken: klarnaCustomerTokenAPIResponse,
@@ -291,12 +291,11 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.authorizationToken = authorizationToken
                     continuation.resume()
                 } else {
-                    precondition(false, "Should never end up in here")
+                    preconditionFailure("Should never end up in here")
                 }
             }
         }
     }
-
 
 }
 
