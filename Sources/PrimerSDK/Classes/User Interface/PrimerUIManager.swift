@@ -95,12 +95,9 @@ final class PrimerUIManager: PrimerUIManaging {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
         } else {
-            let err = PrimerError.invalidValue(key: "paymentMethodType",
-                                               value: nil,
-                                               userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"],
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            PrimerUIManager.handleErrorBasedOnSDKSettings(err)
+            let key = "Make sure you have set a payment method type"
+            let primerError: PrimerError = .invalidValue(key: "paymentMethodType", userInfo: [NSLocalizedDescriptionKey: key])
+            PrimerUIManager.handleErrorBasedOnSDKSettings(handled(primerError: primerError))
         }
     }
 
@@ -112,8 +109,8 @@ final class PrimerUIManager: PrimerUIManaging {
                 paymentMethodType: type,
                 userInfo: .errorUserInfoDictionary(
                     additionalInfo: ["message": "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod"]
-                ),
-                diagnosticsId: UUID().uuidString)
+                )
+            )
             ErrorHandler.handle(error: error)
             return
         }
@@ -201,53 +198,26 @@ final class PrimerUIManager: PrimerUIManaging {
         return Promise { seal in
             if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                    let err = PrimerError.unableToPresentPaymentMethod(
-                        paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)))
                 }
 
                 guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
-                    let err = PrimerError.unableToPresentPaymentMethod(
-                        paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)))
                 }
 
                 if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
-                    let err = PrimerError.unsupportedIntent(
-                        intent: .checkout,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    seal.reject(err)
-                    return
-
+                    return seal.reject(PrimerError.unsupportedIntent(intent: .checkout))
                 } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
-                    let err = PrimerError.unsupportedIntent(
-                        intent: .vault,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    seal.reject(err)
-                    return
+                    return seal.reject(PrimerError.unsupportedIntent(intent: .vault))
                 }
             }
 
             let state: AppStateProtocol = DependencyContainer.resolve()
 
             if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
-                let err = PrimerError.invalidValue(key: "customer.id",
-                                                   value: nil,
-                                                   userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"],
-                                                   diagnosticsId: UUID().uuidString)
-                seal.reject(err)
-                return
-
+                let key = "Make sure you have set a customerId in the client session"
+                let err = PrimerError.invalidValue(key: "customer.id", userInfo: [NSLocalizedDescriptionKey: key])
+                return seal.reject(err)
             }
 
             seal.fulfill()

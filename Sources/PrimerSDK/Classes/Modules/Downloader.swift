@@ -103,11 +103,7 @@ final class Downloader: NSObject, DownloaderModule {
                 }
 
                 if !errors.isEmpty, errors.count == responses.count {
-                    let err = InternalError.underlyingErrors(errors: errors,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(error: InternalError.underlyingErrors(errors: errors))
                 } else {
                     seal.fulfill(files)
                 }
@@ -132,13 +128,7 @@ final class Downloader: NSObject, DownloaderModule {
         }
 
         if !errors.isEmpty && errors.count == files.count {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: primerErr)
-            throw primerErr
+            throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
         return downloadedFiles
@@ -147,23 +137,11 @@ final class Downloader: NSObject, DownloaderModule {
     func download(file: File) -> Promise<File> {
         return Promise { seal in
             guard let fileRemoteUrl = file.remoteUrl else {
-                let err = InternalError.invalidValue(key: "remoteUrl",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(error: InternalError.invalidValue(key: "remoteUrl")))
             }
 
             guard let fileLocalUrl = file.localUrl else {
-                let err = InternalError.invalidValue(key: "localUrl",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(error: InternalError.invalidValue(key: "localUrl")))
             }
 
             firstly {
@@ -192,23 +170,8 @@ final class Downloader: NSObject, DownloaderModule {
     }
 
     func download(file: File) async throws -> File {
-        guard let fileRemoteUrl = file.remoteUrl else {
-            let err = InternalError.invalidValue(key: "remoteUrl",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard let fileLocalUrl = file.localUrl else {
-            let err = InternalError.invalidValue(key: "localUrl",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        guard let fileRemoteUrl = file.remoteUrl else { throw handled(error: InternalError.invalidValue(key: "remoteUrl")) }
+        guard let fileLocalUrl = file.localUrl else { throw handled(error:  InternalError.invalidValue(key: "localUrl")) }
 
         do {
             try await downloadData(from: fileRemoteUrl, to: fileLocalUrl)
@@ -225,104 +188,78 @@ final class Downloader: NSObject, DownloaderModule {
     }
 
     private func downloadData(from url: URL, to localUrl: URL) -> Promise<Void> {
-        return Promise { seal in
-            let session = URLSession.shared
-            session.configuration.urlCache = URLCache.shared
-            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
-            let cache = session.configuration.urlCache
-
-            if let cachedResponse = cache?.cachedResponse(for: request) {
-                if #available(iOS 16.0, *) {
-                    if FileManager.default.fileExists(atPath: localUrl.path()) {
-                        seal.fulfill(())
-                        return
-                    }
-                } else {
-                    if FileManager.default.fileExists(atPath: localUrl.path) {
-                        seal.fulfill(())
-                        return
-                    }
-                }
-
-                let validStatusCodesRange = 200..<300
-
-                if let httpUrlResponse = cachedResponse.response as? HTTPURLResponse,
-                   validStatusCodesRange.contains(httpUrlResponse.statusCode) {
-                    do {
-                        FileManager.default.delegate = self
-                        try cachedResponse.data.write(to: localUrl)
-                        seal.fulfill(())
-                        return
-
-                    } catch {
-                        let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                     userInfo: .errorUserInfoDictionary(),
-                                                                     diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: primerErr)
-                    }
-                }
-            }
-
-            let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
-                if let error = error {
-                    let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                 userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                    seal.reject(primerErr)
-
-                } else if let response = response,
-                          let tempLocalUrl = tempLocalUrl {
-                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
-                        let err = InternalError.invalidValue(key: "URL status code",
-                                                             value: nil,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
-
-                    let validStatusCodeRange = 200..<300
-                    if validStatusCodeRange.contains(statusCode) {
-                        do {
-                            FileManager.default.delegate = self
-                            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
-
-                            if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
-                                cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
-                            }
-
-                            seal.fulfill(())
-
-                        } catch {
-                            let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                         userInfo: .errorUserInfoDictionary(),
-                                                                         diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: primerErr)
-                            seal.reject(primerErr)
-                        }
-                    } else {
-                        let err = InternalError.serverError(status: statusCode,
-                                                            response: nil,
-                                                            userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    }
-
-                } else {
-                    let err = InternalError.invalidValue(key: "Failed to receive both error and response",
-                                                         value: nil,
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                    precondition(true, err.localizedDescription)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            }
-
-            task.resume()
-        }
+//        return Promise { seal in
+//            let session = URLSession.shared
+//            session.configuration.urlCache = URLCache.shared
+//            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
+//            let cache = session.configuration.urlCache
+//
+//            if let cachedResponse = cache?.cachedResponse(for: request) {
+//                if #available(iOS 16.0, *) {
+//                    if FileManager.default.fileExists(atPath: localUrl.path()) {
+//                        seal.fulfill(())
+//                        return
+//                    }
+//                } else {
+//                    if FileManager.default.fileExists(atPath: localUrl.path) {
+//                        seal.fulfill(())
+//                        return
+//                    }
+//                }
+//
+//                let validStatusCodesRange = 200..<300
+//
+//                if let httpUrlResponse = cachedResponse.response as? HTTPURLResponse,
+//                   validStatusCodesRange.contains(httpUrlResponse.statusCode) {
+//                    do {
+//                        FileManager.default.delegate = self
+//                        try cachedResponse.data.write(to: localUrl)
+//                        seal.fulfill(())
+//                        return
+//
+//                    } catch {
+////                        throw handled(primerError: .underlyingErrors(errors: [error]))
+//                    }
+//                }
+//            }
+//
+//            let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+//                if let error  {
+////                    seal.reject(PrimerError.underlyingErrors(errors: [error]))
+//                } else if let response = response,
+//                          let tempLocalUrl = tempLocalUrl {
+//                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
+////                        return seal.reject(handled(error: InternalError.invalidValue(key: "URL status code")))
+//                    }
+//
+//                    let validStatusCodeRange = 200..<300
+//                    if validStatusCodeRange.contains(statusCode) {
+//                        do {
+//                            FileManager.default.delegate = self
+//                            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+//
+//                            if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
+//                                cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
+//                            }
+//
+//                            seal.fulfill(())
+//
+//                        } catch {
+////                            seal.reject(handled(primerError: .underlyingErrors(errors: [error])))
+//                        }
+//                    } else {
+////                        seal.reject(handled(error: InternalError.serverError(status: statusCode, response: nil)))
+//                    }
+//
+//                } else {
+//                    precondition(true, err.localizedDescription)
+////                    seal.reject(handled(primerError: .invalidValue(key: "Failed to receive both error and response")))
+//                }
+//            }
+//
+//            task.resume()
+//        }
+        .value
     }
 
     private func downloadData(from url: URL, to localUrl: URL) async throws {
@@ -343,13 +280,7 @@ final class Downloader: NSObject, DownloaderModule {
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
-                    let primerErr = PrimerError.underlyingErrors(
-                        errors: [error],
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
-                    ErrorHandler.handle(error: primerErr)
-                    throw primerErr
+                    throw handled(primerError: .underlyingErrors(errors: [error]))
                 }
             }
         }
@@ -357,27 +288,13 @@ final class Downloader: NSObject, DownloaderModule {
         do {
             let (tempLocalUrl, response) = try await executeDownloadTask(for: request, on: session)
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
-                let err = InternalError.invalidValue(
-                    key: "URL status code",
-                    value: nil,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(error:  InternalError.invalidValue(key: "URL status code"))
             }
 
             let validStatusCodeRange = 200 ..< 300
 
             guard validStatusCodeRange.contains(statusCode) else {
-                let err = InternalError.serverError(
-                    status: statusCode,
-                    response: nil,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(error: InternalError.serverError(status: statusCode))
             }
 
             FileManager.default.delegate = self
@@ -388,13 +305,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
 
         } catch {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: [error],
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: primerErr)
-            throw primerErr
+            throw handled(primerError: .underlyingErrors(errors: [error]))
         }
     }
 
@@ -409,12 +320,7 @@ final class Downloader: NSObject, DownloaderModule {
                     } else if let tempLocalUrl, let response {
                         continuation.resume(returning: (tempLocalUrl, response))
                     } else {
-                        let err = InternalError.invalidValue(
-                            key: "Failed to receive both error and response",
-                            value: nil,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
+                        let err = InternalError.invalidValue(key: "Failed to receive both error and response", value: nil)
                         precondition(true, err.localizedDescription)
                         continuation.resume(throwing: err)
                     }

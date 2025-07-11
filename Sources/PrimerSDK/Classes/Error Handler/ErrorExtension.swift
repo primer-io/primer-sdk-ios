@@ -40,10 +40,7 @@ extension Error {
             switch primerErr {
             case .underlyingErrors(let errors, _, _):
                 if errors.isEmpty {
-                    let unknownErr = PrimerError.unknown(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    return unknownErr
+                    return PrimerError.unknown()
                 } else if errors.count == 1 {
                     return errors.first!.primerError
                 } else {
@@ -55,11 +52,7 @@ extension Error {
         } else if let validationErr = self as? PrimerValidationError {
             return validationErr
         } else {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: [self],
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            return primerErr
+            return PrimerError.underlyingErrors(errors: [self])
         }
     }
 }

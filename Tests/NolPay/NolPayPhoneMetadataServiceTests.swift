@@ -127,11 +127,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
     func test_getPhoneMetadata_withInvalidPhoneNumber_shouldReturnValidationError() {
         // Given
         let exp = expectation(description: " Wait for getPhoneMetadata to complete")
-        let expectedError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid.")
         mockApiClient.getPhoneMetadataResult = .success(.init(isValid: false, countryCode: nil, nationalNumber: nil))
 
         // When

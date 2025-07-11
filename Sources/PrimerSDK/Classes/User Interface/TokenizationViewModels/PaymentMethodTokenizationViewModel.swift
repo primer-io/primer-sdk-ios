@@ -129,10 +129,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: cancelledError!)
+                cancelledError = handled(primerError: .cancelled(paymentMethodType: self.config.type))
                 seal.reject(cancelledError!)
                 self.isCancelled = false
             }
@@ -187,11 +184,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
                 return self.paymentMethodTokenData
             } catch is CancellationError {
-                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: cancelledError)
-                throw cancelledError
+                throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
             } catch {
                 throw error
             }
@@ -201,12 +194,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         startTokenizationFlowTask = nil
 
         guard let paymentMethodTokenData else {
-            throw PrimerError.invalidValue(
-                key: "paymentMethodTokenData",
-                value: "Payment method token data is not valid",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            throw PrimerError.invalidValue(key: "paymentMethodTokenData", value: "Payment method token data is not valid")
         }
 
         return paymentMethodTokenData

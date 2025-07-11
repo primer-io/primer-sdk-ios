@@ -42,9 +42,7 @@ final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
         guard let url = url(for: endpoint)
         else {
             throw InternalError.invalidUrl(url: "\(endpoint.baseURL ?? "Unknown Host")/\(endpoint.path)",
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+                                              )        }
 
         return URLRequest(url: url)
     }

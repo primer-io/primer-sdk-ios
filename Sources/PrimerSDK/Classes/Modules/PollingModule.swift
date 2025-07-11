@@ -82,12 +82,7 @@ final class PollingModule: Module {
         }
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
-            return
+            return completion(nil, handled(primerError: .invalidClientToken()))
         }
 
         let apiClient: PrimerAPIClientProtocol = PollingModule.apiClient ?? PrimerAPIClient()
@@ -106,7 +101,6 @@ final class PollingModule: Module {
                         userInfo: .errorUserInfoDictionary(additionalInfo: [
                             "message": "Received unexpected polling status for id '\(res.id)'"
                         ]),
-                        diagnosticsId: UUID().uuidString
                     )
                     ErrorHandler.handle(error: err)
                 }

@@ -214,9 +214,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             XCTAssert(false, "Set 'tokenizationResult' on your MockPaymentMethodTokenizationViewModel")
             throw PrimerError.invalidValue(key: "tokenizationResult",
                                            value: nil,
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+                                              )        }
 
         if let err = tokenizationResult.1 {
             throw err
@@ -225,9 +223,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         } else {
             throw PrimerError.invalidValue(key: "tokenizationResult",
                                            value: nil,
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+                                              )        }
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
@@ -289,11 +285,8 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         guard let paymentResult = paymentResult,
               paymentResult.0 != nil || paymentResult.1 != nil else {
             XCTAssert(false, "Set 'paymentResult' on your MockPaymentMethodTokenizationViewModel")
-            throw PrimerError.invalidValue(key: "paymentResult",
-                                           value: nil,
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+            throw PrimerError.invalidValue(key: "paymentResult", value: nil
+                                              )        }
 
         if let err = paymentResult.1 {
             throw err
@@ -302,9 +295,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         } else {
             throw PrimerError.invalidValue(key: "paymentResult",
                                            value: nil,
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+                                              )        }
     }
 
     @MainActor
@@ -345,9 +336,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                 Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                     switch paymentCreationDecision.type {
                     case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil,
-                                                              diagnosticsId: UUID().uuidString)
-                        seal.reject(error)
+                        seal.reject(PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil))
                     case .continue:
                         seal.fulfill()
                     }
@@ -365,17 +354,13 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             XCTAssert(false, "Set 'mockPaymentCreationDecision' on your MockPaymentMethodTokenizationViewModel")
             throw PrimerError.invalidValue(key: "paymentCreationDecision",
                                            value: nil,
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-        }
+                                              )        }
 
         return try await withCheckedThrowingContinuation { continuation in
             Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                 switch paymentCreationDecision.type {
                 case .abort(let errorMessage):
-                    let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil,
-                                                          diagnosticsId: UUID().uuidString)
-                    continuation.resume(throwing: error)
+                    continuation.resume(throwing: PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil))
                 case .continue:
                     continuation.resume()
                 }

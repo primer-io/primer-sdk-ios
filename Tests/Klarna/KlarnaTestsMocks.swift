@@ -22,10 +22,7 @@ class KlarnaTestsMocks {
         paymentCategory: paymentMethod
     )
 
-    static let invalidTokenError = PrimerError.invalidClientToken(
-        userInfo: [:],
-        diagnosticsId: UUID().uuidString
-    )
+    static let invalidTokenError = PrimerError.invalidClientToken(userInfo: [:])
 
     static let primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
         analyticsId: "mock_analytics_id",

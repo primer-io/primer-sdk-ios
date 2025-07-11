@@ -98,22 +98,4 @@ extension ACHHeadlessManagerTests {
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
     }
-
-    private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
-    }
 }
