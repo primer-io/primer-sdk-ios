@@ -319,12 +319,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             return url
         case .none:
-            let err = PrimerError.invalidValue(key: "PrimerInternal.shared.intent",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            assert(true, "Intent should already be set")
         }
     }
 
@@ -445,11 +440,11 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            let res = try await fetchPayPalExternalPayerInfo(orderId: orderId)
+            let response = try await fetchPayPalExternalPayerInfo(orderId: orderId)
 
             // MARK: REVIEW_CHECK: Is this correct? because PromiseKit version is using 'generatePaypalPaymentInstrument' twice
 
-            return try await generatePaypalPaymentInstrument(externalPayerInfo: res.externalPayerInfo)
+            return try await generatePaypalPaymentInstrument(externalPayerInfo: response.externalPayerInfo)
         }
     }
 
@@ -512,12 +507,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
             )
         case .none:
-            let err = PrimerError.invalidValue(key: "PrimerInternal.shared.intent",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            assert(true, "Intent should already be set")
         }
     }
 
