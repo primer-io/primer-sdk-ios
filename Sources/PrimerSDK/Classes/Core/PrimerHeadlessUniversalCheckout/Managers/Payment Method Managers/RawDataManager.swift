@@ -65,8 +65,9 @@ extension PrimerHeadlessUniversalCheckout {
                 rawDataTokenizationBuilder.rawData = rawData
 
                 // Explicitly validate if data exists
-                if let data = rawData {
-                    _ = validateRawData(data)
+                if let rawData {
+//                    _ = validateRawData(data)
+                    Task { try await validateRawData(rawData) }
                 }
             }
         }
@@ -215,7 +216,6 @@ extension PrimerHeadlessUniversalCheckout {
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
 
-        // TODO: FINAL_MIGRATION
         public func submit() {
             let sdkEvent = Analytics.Event.sdk(
                 name: "\(Self.self).\(#function)",
@@ -289,6 +289,69 @@ extension PrimerHeadlessUniversalCheckout {
                                                                   checkoutData: self.paymentCheckoutData)
             }
         }
+        
+        public func submit_async() {
+            Analytics.Service.recordSafely(event: Analytics.Event.sdk(
+                name: "\(Self.self).\(#function)",
+                params: [
+                    "category": "RAW_DATA",
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                    "paymentMethodType": paymentMethodType,
+                    "selectedNetwork": (rawData as? PrimerCardData)?.cardNetwork?.rawValue ?? ""
+                ]
+            ))
+
+            guard let rawData else {
+                let err = PrimerError.invalidValue(key: "rawData", value: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
+                                                   diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+
+                self.isDataValid = false
+
+                DispatchQueue.main.async {
+                    self.delegate?.primerRawDataManager?(self, dataIsValid: self.isDataValid, errors: [err])
+                }
+                let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err,
+                                                                  checkoutData: self.paymentCheckoutData)
+                return
+            }
+
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: self.paymentMethodType)
+            Task {
+                defer {
+                    PrimerUIManager.dismissPrimerUI(animated: true)
+                }
+                do {
+                    try await PrimerHeadlessUniversalCheckout.current.validateSession()
+                    try await validateRawData(rawData)
+
+                    guard self.isDataValid else {
+                        throw PrimerError.invalidValue(key: "rawData", value: nil,
+                                                      userInfo: .errorUserInfoDictionary(),
+                                                      diagnosticsId: UUID().uuidString)
+                    }
+
+                    try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
+                    let requestBody = try await self.makeRequestBody()
+                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
+
+                    let paymentMethodTokenData = try await self.tokenizationService.tokenize(requestBody: requestBody)
+                    self.paymentMethodTokenData = paymentMethodTokenData
+
+                    let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+
+                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                    }
+                } catch {
+                    let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                    delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error,
+                                                                      checkoutData: self.paymentCheckoutData)
+                }
+            }
+        }
 
         func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
             return Promise { seal in
@@ -357,13 +420,13 @@ extension PrimerHeadlessUniversalCheckout {
                 self.isValidationInProgress = false
                 self.pendingValidation = false
 
-                if needsRevalidation, let latestData = self.latestDataForValidation {
-                    Task { try? await self.validateRawData(latestData) }
+                if needsRevalidation, let latestDataForValidation {
+                    Task { try? await self.validateRawData(latestDataForValidation) }
                 }
             }
 
             try await self.rawDataTokenizationBuilder.validateRawData(data)
-            self.isDataValid = self.rawDataTokenizationBuilder.isDataValid
+            self.isDataValid = rawDataTokenizationBuilder.isDataValid
         }
 
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
@@ -454,7 +517,6 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                                       userInfo: .errorUserInfoDictionary(),
                                                       diagnosticsId: UUID().uuidString)
                 throw error
-
             case .continue:
                 return
             }
@@ -483,11 +545,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
         private func makeRequestBody() async throws -> Request.Body.Tokenization {
             guard let rawData else {
-                let err = PrimerValidationError.invalidRawData(
+                throw PrimerValidationError.invalidRawData(
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
-                throw err
             }
 
             return try await rawDataTokenizationBuilder.makeRequestBodyWithRawData(rawData)
@@ -698,7 +759,6 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 switch resumeType {
                 case .succeed:
                     return nil
-
                 case .continueWithNewClientToken(let newClientToken):
                     let apiConfigurationModule = PrimerAPIConfigurationModule()
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -706,11 +766,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                         let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
                         throw err
                     }
 
                     return decodedJWTToken
-
                 case .fail(let message):
                     let err: Error
                     if let message {
@@ -731,6 +791,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                         let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
                         throw err
                     }
 
@@ -1016,10 +1077,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
-        private func handle3DSAuthenticationForDecodedClientToken(
-            _ decodedJWTToken: DecodedJWTToken,
-            paymentMethodTokenData: PrimerPaymentMethodTokenData
-        ) async throws -> String? {
+        private func handle3DSAuthenticationForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken,
+                                                                  paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
             try await ThreeDSService().perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil
@@ -1278,8 +1337,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     } else {
                         err = NSError.emptyDescriptionError
                     }
+                    
                     throw err
-
                 case .succeed, .continueWithNewClientToken:
                     return nil
                 }
@@ -1322,10 +1381,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
-            try await createResumePaymentService.resumePaymentWithPaymentId(
-                resumePaymentId,
-                paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)
-            )
+            try await createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                            paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken))
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
@@ -1377,11 +1434,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
         @MainActor
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
-            return try await withCheckedThrowingContinuation { continuation in
-                let safariViewController = SFSafariViewController(url: redirectUrl)
-                safariViewController.delegate = self
-                self.webViewController = safariViewController
+            let safariViewController = SFSafariViewController(url: redirectUrl)
+            safariViewController.delegate = self
+            self.webViewController = safariViewController
 
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 self.webViewCompletion = { _, err in
                     if let err {
                         continuation.resume(throwing: err)
@@ -1391,7 +1448,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 #if DEBUG
                 if TEST {
                     // This ensures that the presentation completion is correctly handled in headless unit tests
-                    guard UIApplication.shared.windows.count > 0 else {
+                    guard !UIApplication.shared.windows.isEmpty else {
                         DispatchQueue.main.async {
                             continuation.resume()
                         }
@@ -1405,7 +1462,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         try? await PrimerUIManager.prepareRootViewController()
                     }
 
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                    PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
                         continuation.resume()
                     })
                 }

@@ -177,7 +177,7 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
                 throw err
             }
 
-            if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodType),
+            if let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
                !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number is not valid.",
