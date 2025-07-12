@@ -5,11 +5,10 @@
 //  Created by Jack Newcombe on 07/05/2024.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
-
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -60,6 +59,34 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
+    func testStartWithPreTokenizationAndAbort_async() async throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            decision(.abortPaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        delegate.onDidFail = { error in
+            switch error {
+            case PrimerError.merchantError:
+                break
+            default:
+                XCTFail()
+            }
+            expectWillAbort.fulfill()
+        }
+
+        try await sut.start_async()
+
+        await fulfillment(of: [expectWillCreatePaymentData, expectWillAbort], timeout: 5.0)
+    }
+
     func testStartWithFullCheckoutFlow() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
@@ -100,7 +127,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
-
         }
 
         delegate.onDidFail = { error in
@@ -119,6 +145,72 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData,
             expectPromiseResolved
         ], timeout: 10.0, enforceOrder: true)
+    }
+
+    func testStartWithFullCheckoutFlow_async() async throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
+        }
+
+        //        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        //        tokenizationService.onTokenize = { body in
+        //            expectOnTokenize.fulfill()
+        //            return Promise.fulfilled(self.tokenizationResponseBody)
+        //        }
+
+        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
+        tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
+            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
+            expectDidExchangeToken.fulfill()
+            return Result.success(self.tokenizationResponseBody)
+        }
+
+        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectDidCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        delegate.onDidFail = { error in
+            print(error)
+        }
+
+//        let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
+//        Task {
+//            do {
+//                try await sut.start_async()
+//                expectPromiseResolved.fulfill()
+//            } catch {
+//                XCTFail()
+//            }
+//        }
+
+        try await sut.start_async()
+
+        await fulfillment(of: [
+            expectWillCreatePaymentData,
+            expectDidExchangeToken,
+            expectDidCreatePayment,
+            expectCheckoutDidCompletewithData
+        ], timeout: 20.0)
     }
 
     // MARK: Helpers
