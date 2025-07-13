@@ -70,7 +70,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     @objc
     func start_async() {
         Task {
@@ -88,7 +88,6 @@ extension PaymentMethodTokenizationViewModel {
                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                    
                     try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
 
@@ -208,7 +207,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func processCheckoutPaymentMethodTokenData_async() {
         didStartPayment?()
         didStartPayment = nil
