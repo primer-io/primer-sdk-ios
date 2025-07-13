@@ -221,7 +221,9 @@ extension PaymentMethodTokenizationViewModel {
 
         Task {
             defer {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                DispatchQueue.main.async {
+                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                }
             }
             do {
                 guard let paymentMethodTokenData else {
