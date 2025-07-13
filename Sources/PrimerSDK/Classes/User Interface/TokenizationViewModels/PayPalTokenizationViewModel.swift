@@ -319,7 +319,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             return url
         case .none:
-            assert(true, "Intent should already be set")
+            preconditionFailure("Intent should already be set")
         }
     }
 
@@ -507,7 +507,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
             )
         case .none:
-            assert(true, "Intent should already be set")
+            preconditionFailure("Intent should already be set")
         }
     }
 
