@@ -105,7 +105,7 @@ extension PaymentMethodTokenizationViewModel {
                         }
                         showResultScreenIfNeeded(error: primerErr)
 
-                        let merchantErrorMessage = try await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
+                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
                         handleFailureFlow(errorMessage: merchantErrorMessage)
                     } catch {
                         logger.error(message: "Unselection of payment method failed - this should never happen ...")
@@ -284,7 +284,7 @@ extension PaymentMethodTokenizationViewModel {
                 nullifyEventCallbacks()
 
                 if PrimerSettings.current.paymentHandling == .auto, let checkoutData {
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                    await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
 
                 showResultScreenIfNeeded()
@@ -317,7 +317,7 @@ extension PaymentMethodTokenizationViewModel {
                     }
                     setCheckoutDataFromError(primerErr)
                     showResultScreenIfNeeded(error: primerErr)
-                    let merchantErrorMessage = try? await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
+                    let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
                     handleFailureFlow(errorMessage: merchantErrorMessage)
                 }
             }
@@ -662,8 +662,7 @@ extension PaymentMethodTokenizationViewModel {
     func startManualPaymentFlowAndFetchToken(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> DecodedJWTToken? {
-        let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
-
+        let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case .succeed:
@@ -827,7 +826,7 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     private func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        let resumeDecision = try await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
+        let resumeDecision = await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
 
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
@@ -949,7 +948,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             }
         }
 
-        let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+        let paymentCreationDecision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
         decisionHandlerHasBeenCalled = true
 
         switch paymentCreationDecision.type {
