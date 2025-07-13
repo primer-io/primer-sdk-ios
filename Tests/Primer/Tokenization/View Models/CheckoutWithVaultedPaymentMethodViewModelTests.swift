@@ -103,19 +103,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        //        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        //        tokenizationService.onTokenize = { body in
-        //            expectOnTokenize.fulfill()
-        //            return Promise.fulfilled(self.tokenizationResponseBody)
-        //        }
-
         let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
@@ -127,6 +114,13 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
+        }
+
+        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
         }
 
         delegate.onDidFail = { error in
@@ -163,19 +157,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        //        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        //        tokenizationService.onTokenize = { body in
-        //            expectOnTokenize.fulfill()
-        //            return Promise.fulfilled(self.tokenizationResponseBody)
-        //        }
-
         let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
@@ -189,28 +170,34 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             return self.paymentResponseBody
         }
 
+        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
+        }
+
         delegate.onDidFail = { error in
             print(error)
         }
 
-//        let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
-//        Task {
-//            do {
-//                try await sut.start_async()
-//                expectPromiseResolved.fulfill()
-//            } catch {
-//                XCTFail()
-//            }
-//        }
-
-        try await sut.start_async()
+        let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
+        Task {
+            do {
+                try await sut.start_async()
+                expectPromiseResolved.fulfill()
+            } catch {
+                XCTFail()
+            }
+        }
 
         await fulfillment(of: [
             expectWillCreatePaymentData,
             expectDidExchangeToken,
             expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
-        ], timeout: 20.0)
+            expectCheckoutDidCompletewithData,
+            expectPromiseResolved
+        ], timeout: 20.0, enforceOrder: true)
     }
 
     // MARK: Helpers
