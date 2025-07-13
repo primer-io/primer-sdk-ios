@@ -1,14 +1,8 @@
-//
-//  File.swift
-//
-//
-//  Created by Stefan Vrancianu on 29.05.2024.
-//
-
-@testable import PrimerSDK
 import XCTest
+@testable import PrimerSDK
 
-final class StripeAchTokenizationViewModelTests: XCTestCase {
+final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
+
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
     var uiManager: MockPrimerUIManager!
@@ -29,8 +23,8 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         mandateDelegate = sut
 
         let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
-                                       stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
+                                        PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
+                                                                   stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
@@ -52,8 +46,8 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
     func test_tokenization_validation() throws {
         XCTAssertNoThrow(try sut.validate())
     }
-
-    func test_start_pre_tokenization_and_abort() throws {
+    
+    func test_start_pre_tokenization_and_abort_async() throws {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
@@ -75,12 +69,12 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             expectWillAbort.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
         waitForExpectations(timeout: 10.0)
     }
 
-    func test_full_flow_checkout() throws {
+    func test_full_flow_checkout_async() throws {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -98,6 +92,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
+        
 
         let expectDidStartTokenization = self.expectation(description: "didStartTokenization is called")
         delegate.onDidStartTokenization = { paymentType in
@@ -108,10 +103,10 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
+            return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = self.expectation(description: "didCreatePayment is called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -140,7 +135,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             expectCheckoutDidCompleteWithData.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
         wait(for: [
             expectWillCreatePaymentData,
@@ -165,8 +160,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         processorConfigId: "mock_processor_config_id",
         surcharge: 299,
         options: nil,
-        displayMetadata: nil
-    )
+        displayMetadata: nil)
 
     var order: ClientSession.Order {
         .init(id: "order_id",
@@ -177,15 +171,15 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
               currencyCode: Currency(code: "USD", decimalDigits: 2),
               fees: nil,
               lineItems: [
-                  .init(itemId: "item_id",
-                        quantity: 1,
-                        amount: 1234,
-                        discountAmount: nil,
-                        name: "my_item",
-                        description: "item_description",
-                        taxAmount: nil,
-                        taxCode: nil,
-                        productType: nil)
+                .init(itemId: "item_id",
+                      quantity: 1,
+                      amount: 1234,
+                      discountAmount: nil,
+                      name: "my_item",
+                      description: "item_description",
+                      taxAmount: nil,
+                      taxCode: nil,
+                      productType: nil)
               ])
     }
 
