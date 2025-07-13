@@ -1,8 +1,7 @@
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
-
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
     var uiManager: MockPrimerUIManager!
@@ -23,8 +22,8 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         mandateDelegate = sut
 
         let settings = PrimerSettings(paymentMethodOptions:
-                                        PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
-                                                                   stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
+            PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
+                                       stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
 
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
@@ -46,7 +45,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
     func test_tokenization_validation() throws {
         XCTAssertNoThrow(try sut.validate())
     }
-    
+
     func test_start_pre_tokenization_and_abort_async() throws {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -92,7 +91,6 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
-        
 
         let expectDidStartTokenization = self.expectation(description: "didStartTokenization is called")
         delegate.onDidStartTokenization = { paymentType in
@@ -160,7 +158,8 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         processorConfigId: "mock_processor_config_id",
         surcharge: 299,
         options: nil,
-        displayMetadata: nil)
+        displayMetadata: nil
+    )
 
     var order: ClientSession.Order {
         .init(id: "order_id",
@@ -171,15 +170,15 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
               currencyCode: Currency(code: "USD", decimalDigits: 2),
               fees: nil,
               lineItems: [
-                .init(itemId: "item_id",
-                      quantity: 1,
-                      amount: 1234,
-                      discountAmount: nil,
-                      name: "my_item",
-                      description: "item_description",
-                      taxAmount: nil,
-                      taxCode: nil,
-                      productType: nil)
+                  .init(itemId: "item_id",
+                        quantity: 1,
+                        amount: 1234,
+                        discountAmount: nil,
+                        name: "my_item",
+                        description: "item_description",
+                        taxAmount: nil,
+                        taxCode: nil,
+                        productType: nil)
               ])
     }
 
