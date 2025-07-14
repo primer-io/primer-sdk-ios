@@ -208,6 +208,18 @@ final class ImageManager: LogReporter {
 
     func getImage(file: ImageFile) -> Promise<ImageFile> {
         return Promise { seal in
+            // Check if image already exists (cached or bundled)
+            if file.image != nil {
+                seal.fulfill(file)
+                return
+            }
+
+            // Check if remoteUrl is nil (no download possible)
+            guard file.remoteUrl != nil else {
+                seal.fulfill(file)
+                return
+            }
+
             let downloader = Downloader()
 
             let timingEventId = UUID().uuidString
@@ -262,6 +274,16 @@ final class ImageManager: LogReporter {
     }
 
     func getImage(file: ImageFile) async throws -> ImageFile {
+        // Check if image already exists (cached or bundled)
+        if file.image != nil {
+            return file
+        }
+
+        // Check if remoteUrl is nil (no download possible)
+        guard file.remoteUrl != nil else {
+            return file
+        }
+
         let download = Downloader()
         let timingEventId = UUID().uuidString
         let timingEventStart = Analytics.Event.allImagesLoading(
