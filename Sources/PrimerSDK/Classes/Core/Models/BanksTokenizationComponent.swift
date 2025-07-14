@@ -752,7 +752,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             responseCode: nil
         )
 
-        try await Analytics.Service.record(events: [presentEvent, networkEvent])
+        Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
             try await uiManager.prepareRootViewController()
@@ -1341,7 +1341,8 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.closePaymentMethodUI()
         }
 
-        try await Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
+        
         try validate()
 
         let banks = try await fetchBanks()
