@@ -70,7 +70,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     @objc
     func start_async() {
         Task {
@@ -114,7 +114,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
             if config.internalPaymentMethodType != .klarna {
@@ -207,7 +207,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func processCheckoutPaymentMethodTokenData_async() {
         didStartPayment?()
         didStartPayment = nil
