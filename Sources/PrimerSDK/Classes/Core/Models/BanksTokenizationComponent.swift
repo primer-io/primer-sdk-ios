@@ -79,7 +79,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             throw err
         }
     }
-    
+
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -1342,7 +1342,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
 
         Analytics.Service.fire(event: event)
-        
+
         try validate()
 
         let banks = try await fetchBanks()

@@ -288,7 +288,7 @@ extension PrimerHeadlessUniversalCheckout {
                                                                   checkoutData: self.paymentCheckoutData)
             }
         }
-        
+
         public func submit_async() {
             Analytics.Service.fire(event: Analytics.Event.sdk(
                 name: "\(Self.self).\(#function)",
@@ -1336,7 +1336,6 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     } else {
                         err = NSError.emptyDescriptionError
                     }
-                    
                     throw err
                 case .succeed, .continueWithNewClientToken:
                     return nil

@@ -7,6 +7,7 @@
 
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import UIKit
 
@@ -136,8 +137,6 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             }
         }
     }
-    
-    // MARK: REVIEW_CHECK - @MainActor ?
 
     @MainActor
     public func start(
@@ -438,3 +437,4 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
 }
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length
