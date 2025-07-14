@@ -124,12 +124,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
 
         let paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue:
-            "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue:
-            "ideal"
-        default:
-            ""
+        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
+        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
+        default: ""
         }
 
         let request = Request.Body.Adyen.BanksList(
