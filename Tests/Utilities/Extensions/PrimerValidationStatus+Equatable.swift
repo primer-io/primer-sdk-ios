@@ -40,7 +40,6 @@ extension PrimerValidationError: Equatable {
              (.invalidState(let message1, let userInfo1, let id1), .invalidState(let message2, let userInfo2, let id2)),
              (.invalidCountry(let message1, let userInfo1, let id1), .invalidCountry(let message2, let userInfo2, let id2)),
              (.invalidPhoneNumber(let message1, let userInfo1, let id1), .invalidPhoneNumber(let message2, let userInfo2, let id2)),
-             (.invalidRetailer(let message1, let userInfo1, let id1), .invalidRetailer(let message2, let userInfo2, let id2)),
              (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)),
              (.invalidCardType(let message1, let userInfo1, let id1), .invalidCardType(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2

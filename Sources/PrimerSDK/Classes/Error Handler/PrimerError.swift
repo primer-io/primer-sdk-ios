@@ -294,7 +294,7 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var underlyingErrorCode: String? {
         switch self {
-        case .nolError(let code, _, _, _):
+        case let .nolError(code, _, _, _):
             return String(describing: code)
         default:
             return nil
@@ -386,59 +386,59 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Client token is not valid"
         case .missingPrimerConfiguration:
             return "Missing SDK configuration"
-        case .missingPrimerInputElement(let inputElementType, _, _):
+        case let .missingPrimerInputElement(inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
-        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+        case let .missingSDK(paymentMethodType, sdkName, _, _):
             return "\(paymentMethodType) configuration has been found, but dependency \(sdkName) is missing"
         case .misconfiguredPaymentMethods:
             return "Payment methods haven't been set up correctly"
-        case .cancelled(let paymentMethodType, _, _):
+        case let .cancelled(paymentMethodType, _, _):
             return "Payment method \(paymentMethodType) cancelled"
-        case .failedToCreateSession(error: let error, _, _):
+        case let .failedToCreateSession(error: error, _, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
-        case .invalidArchitecture(let description, _, _, _):
+        case let .invalidArchitecture(description, _, _, _):
             return "\(description)"
-        case .invalidClientSessionValue(let name, let value, _, _, _):
+        case let .invalidClientSessionValue(name, value, _, _, _):
             return "Invalid client session value for '\(name)' with value '\(value ?? "nil")'"
-        case .invalidUrl(url: let url, _, _):
+        case let .invalidUrl(url: url, _, _):
             return "Invalid URL: \(url ?? "nil")"
-        case .invalidMerchantIdentifier(let merchantIdentifier, _, _):
+        case let .invalidMerchantIdentifier(merchantIdentifier, _, _):
             return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
-        case .invalidValue(key: let key, value: let value, _, _):
+        case let .invalidValue(key: key, value: value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
             return "Unable to make payments on provided networks"
-        case .unableToPresentPaymentMethod(let paymentMethodType, _, _):
+        case let .unableToPresentPaymentMethod(paymentMethodType, _, _):
             return "Unable to present payment method \(paymentMethodType)"
-        case .unsupportedIntent(let intent, _, _):
+        case let .unsupportedIntent(intent, _, _):
             return "Unsupported session intent \(intent.rawValue)"
-        case .underlyingErrors(let errors, _, _):
+        case let .underlyingErrors(errors, _, _):
             return "Multiple errors occured: \(errors.combinedDescription)"
-        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+        case let .unsupportedPaymentMethod(paymentMethodType, _, _):
             return "Unsupported payment method type \(paymentMethodType)"
-        case .unsupportedPaymentMethodForManager(let paymentMethodType, let category, _, _):
+        case let .unsupportedPaymentMethodForManager(paymentMethodType, category, _, _):
             return "Payment method \(paymentMethodType) is not supported on \(category) manager"
-        case .merchantError(let message, _, _):
+        case let .merchantError(message, _, _):
             return message
-        case .paymentFailed(_, let paymentId, _, let status, _, _):
+        case let .paymentFailed(_, paymentId, _, status, _, _):
             return "The payment with id \(paymentId) was created or resumed but ended up in a \(status) status."
         case .applePayTimedOut:
             return "Apple Pay timed out"
-        case .failedToCreatePayment(_, let description, _, _):
+        case let .failedToCreatePayment(_, description, _, _):
             return "\(description)"
-        case .failedToResumePayment(_, let description, _, _):
+        case let .failedToResumePayment(_, description, _, _):
             return "\(description)"
-        case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
+        case let .invalidVaultedPaymentMethodId(vaultedPaymentMethodId, _, _):
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
-        case .nolError(let code, let message, _, _):
+        case let .nolError(code, message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
         case .nolSdkInitError:
             return "Nol SDK initialization error"
-        case .klarnaError(let message, _, _):
+        case let .klarnaError(message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .klarnaUserNotApproved:
             return "User is not approved to perform Klarna payments"
-        case .stripeError(_, let message, _, _):
+        case let .stripeError(_, message, _, _):
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
@@ -508,7 +508,7 @@ public enum PrimerError: PrimerErrorProtocol {
     public var errorUserInfo: [String: Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
+            "diagnosticsId": diagnosticsId,
         ]
 
         return tmpUserInfo
@@ -522,7 +522,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if the token you have provided is a valid token (not nil and not expired)."
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
-        case .missingPrimerInputElement(let inputElementtype, _, _):
+        case let .missingPrimerInputElement(inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
             let message =
@@ -539,9 +539,9 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalidUrl:
             return nil
-        case .invalidArchitecture(_, let recoverySuggestion, _, _):
+        case let .invalidArchitecture(_, recoverySuggestion, _, _):
             return recoverySuggestion
-        case .invalidClientSessionValue(let name, _, let allowedValue, _, _):
+        case let .invalidClientSessionValue(name, _, allowedValue, _, _):
             var str = "Check if you have provided a valid value for \"\(name)\" in your client session."
             if let allowedValue {
                 str += " Allowed values are [\(allowedValue)]."
@@ -549,7 +549,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return str
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier in the SDK settings."
-        case .invalidValue(let key, let value, _, _):
+        case let .invalidValue(key, value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
@@ -559,7 +559,7 @@ public enum PrimerError: PrimerErrorProtocol {
              You can find the necessary values on our documentation (website).
             """
             return message
-        case .unsupportedIntent(let intent, _, _):
+        case let .unsupportedIntent(intent, _, _):
             if intent == .checkout {
                 return "Change the intent to .vault"
             } else {
@@ -571,7 +571,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Use a method that supports this manager, or use the correct manager for the method. See PrimerPaymentMethodManagerCategory."
         case .underlyingErrors:
             return "Check underlying errors for more information."
-        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+        case let .missingSDK(paymentMethodType, sdkName, _, _):
             return "Add \(sdkName) in your project so you can perform payments with \(paymentMethodType)"
         case .merchantError:
             return nil
@@ -627,13 +627,13 @@ public enum PrimerError: PrimerErrorProtocol {
 
     private var paymentMethodType: String? {
         switch self {
-        case .cancelled(let paymentMethodType, _, _),
-             .unableToPresentPaymentMethod(let paymentMethodType, _, _),
-             .unsupportedPaymentMethod(let paymentMethodType, _, _),
-             .missingSDK(let paymentMethodType, _, _, _),
-             .paymentFailed(let paymentMethodType?, _, _, _, _, _),
-             .failedToCreatePayment(let paymentMethodType, _, _, _),
-             .failedToResumePayment(let paymentMethodType, _, _, _):
+        case let .cancelled(paymentMethodType, _, _),
+             let .unableToPresentPaymentMethod(paymentMethodType, _, _),
+             let .unsupportedPaymentMethod(paymentMethodType, _, _),
+             let .missingSDK(paymentMethodType, _, _, _),
+             let .paymentFailed(paymentMethodType?, _, _, _, _, _),
+             let .failedToCreatePayment(paymentMethodType, _, _, _),
+             let .failedToResumePayment(paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks,

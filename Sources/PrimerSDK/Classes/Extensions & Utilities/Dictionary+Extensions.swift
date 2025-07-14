@@ -12,7 +12,7 @@ public extension [String: String] {
             "file": "\(file)",
             "class": "\(type)",
             "function": "\(function)",
-            "line": "\(line)"
+            "line": "\(line)",
         ]
 
         for (key, value) in additionalInfo {
