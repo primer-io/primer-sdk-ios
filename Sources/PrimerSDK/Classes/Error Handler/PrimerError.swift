@@ -1,5 +1,5 @@
 //
-//  Error.swift
+//  PrimerError.swift
 //  PrimerSDK
 //
 //  Created by Evangelos Pittas on 16/3/21.
@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 
-struct AnalyticsContextKeys {
+enum AnalyticsContextKeys {
     static let createdAt = "createdAt"
     static let paymentMethodType = "paymentMethodType"
     static let reasonCode = "reasonCode"
@@ -30,127 +30,210 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
-    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
-    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerInputElement(inputElementType: PrimerInputElementType,
-                                   userInfo: [String: String]?,
-                                   diagnosticsId: String)
-    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
-    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
-    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedPaymentMethodForManager(paymentMethodType: String,
-                                            category: String,
-                                            userInfo: [String: String]?,
-                                            diagnosticsId: String)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
-    case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
-    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case paymentFailed(paymentMethodType: String?,
-                       paymentId: String,
-                       orderId: String?,
-                       status: String,
-                       userInfo: [String: String]?,
-                       diagnosticsId: String)
-    case failedToCreatePayment(paymentMethodType: String,
-                               description: String,
-                               userInfo: [String: String]?,
-                               diagnosticsId: String)
-    case failedToResumePayment(paymentMethodType: String,
-                               description: String,
-                               userInfo: [String: String]?,
-                               diagnosticsId: String)
-    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
-    case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case nolSdkInitError(userInfo: [String: String]?, diagnosticsId: String)
-    case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case klarnaUserNotApproved(userInfo: [String: String]?, diagnosticsId: String)
-    case stripeError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
-    case unknown(userInfo: [String: String]?, diagnosticsId: String)
+    case uninitializedSDKSession(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidClientToken(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case missingPrimerConfiguration(
+        userInfo: [String: String]?,
+        diagnosticsId: String
+    )
+    case misconfiguredPaymentMethods(
+        userInfo: [String: String]?,
+        diagnosticsId: String
+    )
+    case missingPrimerInputElement(
+        inputElementType: PrimerInputElementType,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case cancelled(
+        paymentMethodType: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case failedToCreateSession(
+        error: Error?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidUrl(
+        url: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidArchitecture(
+        description: String,
+        recoverSuggestion: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidClientSessionValue(
+        name: String,
+        value: String? = nil,
+        allowedValue: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidMerchantIdentifier(
+        merchantIdentifier: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidValue(
+        key: String,
+        value: Any? = nil,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unableToMakePaymentsOnProvidedNetworks(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unableToPresentPaymentMethod(
+        paymentMethodType: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedIntent(
+        intent: PrimerSessionIntent,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedPaymentMethod(
+        paymentMethodType: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedPaymentMethodForManager(
+        paymentMethodType: String,
+        category: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case underlyingErrors(
+        errors: [Error],
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case missingSDK(
+        paymentMethodType: String,
+        sdkName: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case merchantError(
+        message: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case paymentFailed(
+        paymentMethodType: String?,
+        paymentId: String,
+        orderId: String?,
+        status: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case failedToCreatePayment(
+        paymentMethodType: String,
+        description: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case failedToResumePayment(
+        paymentMethodType: String,
+        description: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case applePayTimedOut(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidVaultedPaymentMethodId(
+        vaultedPaymentMethodId: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case nolError(
+        code: String?,
+        message: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case nolSdkInitError(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case klarnaError(
+        message: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case klarnaUserNotApproved(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case stripeError(
+        key: String,
+        message: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unableToPresentApplePay(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unknown(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
 
     public var errorId: String {
         switch self {
-        case .uninitializedSDKSession:
-            return "uninitialized-sdk-session"
-        case .invalidClientToken:
-            return "invalid-client-token"
-        case .missingPrimerConfiguration:
-            return "missing-configuration"
-        case .misconfiguredPaymentMethods:
-            return "misconfigured-payment-methods"
-        case .missingPrimerInputElement:
-            return "missing-primer-input-element"
-        case .cancelled:
-            return "payment-cancelled"
-        case .failedToCreateSession:
-            return "failed-to-create-session"
-        case .invalidArchitecture:
-            return "invalid-architecture"
-        case .invalidClientSessionValue:
-            return "invalid-client-session-value"
-        case .invalidUrl:
-            return "invalid-url"
-        case .invalidMerchantIdentifier:
-            return "invalid-merchant-identifier"
-        case .invalidValue:
-            return "invalid-value"
-        case .unableToMakePaymentsOnProvidedNetworks:
-            return "unable-to-make-payments-on-provided-networks"
-        case .unableToPresentPaymentMethod:
-            return "unable-to-present-payment-method"
-        case .unsupportedIntent:
-            return "unsupported-session-intent"
-        case .unsupportedPaymentMethod:
-            return "unsupported-payment-method-type"
-        case .unsupportedPaymentMethodForManager:
-            return "unsupported-payment-method-for-manager"
-        case .underlyingErrors:
-            return "generic-underlying-errors"
-        case .missingSDK:
-            return "missing-sdk-dependency"
-        case .merchantError:
-            return "merchant-error"
-        case .paymentFailed:
-            return PrimerPaymentErrorCode.failed.rawValue
-        case .applePayTimedOut:
-            return "apple-pay-timed-out"
-        case .failedToCreatePayment:
-            return "failed-to-create-payment"
-        case .failedToResumePayment:
-            return "failed-to-resume-payment"
-        case .invalidVaultedPaymentMethodId:
-            return "invalid-vaulted-payment-method-id"
-        case .nolError:
-            return "nol-pay-sdk-error"
-        case .nolSdkInitError:
-            return "nol-pay-sdk-init-error"
-        case .klarnaError:
-            return "klarna-sdk-error"
-        case .klarnaUserNotApproved:
-            return "klarna-user-not-approved"
-        case .stripeError(let key, _, _, _):
-            return key
-        case .unableToPresentApplePay:
-            return "unable-to-present-apple-pay"
-        case .unknown:
-            return "unknown"
+        case .uninitializedSDKSession: "uninitialized-sdk-session"
+        case .invalidClientToken: "invalid-client-token"
+        case .missingPrimerConfiguration: "missing-configuration"
+        case .misconfiguredPaymentMethods: "misconfigured-payment-methods"
+        case .missingPrimerInputElement: "missing-primer-input-element"
+        case .cancelled: "payment-cancelled"
+        case .failedToCreateSession: "failed-to-create-session"
+        case .invalidArchitecture: "invalid-architecture"
+        case .invalidClientSessionValue: "invalid-client-session-value"
+        case .invalidUrl: "invalid-url"
+        case .invalidMerchantIdentifier: "invalid-merchant-identifier"
+        case .invalidValue: "invalid-value"
+        case .unableToMakePaymentsOnProvidedNetworks: "unable-to-make-payments-on-provided-networks"
+        case .unableToPresentPaymentMethod: "unable-to-present-payment-method"
+        case .unsupportedIntent: "unsupported-session-intent"
+        case .unsupportedPaymentMethod: "unsupported-payment-method-type"
+        case .unsupportedPaymentMethodForManager: "unsupported-payment-method-for-manager"
+        case .underlyingErrors: "generic-underlying-errors"
+        case .missingSDK: "missing-sdk-dependency"
+        case .merchantError: "merchant-error"
+        case .paymentFailed: PrimerPaymentErrorCode.failed.rawValue
+        case .applePayTimedOut: "apple-pay-timed-out"
+        case .failedToCreatePayment: "failed-to-create-payment"
+        case .failedToResumePayment: "failed-to-resume-payment"
+        case .invalidVaultedPaymentMethodId: "invalid-vaulted-payment-method-id"
+        case .nolError: "nol-pay-sdk-error"
+        case .nolSdkInitError: "nol-pay-sdk-init-error"
+        case .klarnaError: "klarna-sdk-error"
+        case .klarnaUserNotApproved: "klarna-user-not-approved"
+        case let .stripeError(key, _, _, _): key
+        case .unableToPresentApplePay: "unable-to-present-apple-pay"
+        case .unknown: "unknown"
         }
     }
 
     public var underlyingErrorCode: String? {
         switch self {
-        case .nolError(let code, _, _, _):
+        case let .nolError(code, _, _, _):
             return String(describing: code)
         default:
             return nil
@@ -159,70 +242,38 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var diagnosticsId: String {
         switch self {
-        case .uninitializedSDKSession(_, let diagnosticsId):
-            return diagnosticsId
-        case .invalidClientToken(_, let diagnosticsId):
-            return diagnosticsId
-        case .missingPrimerConfiguration(_, let diagnosticsId):
-            return diagnosticsId
-        case .misconfiguredPaymentMethods(_, let diagnosticsId):
-            return diagnosticsId
-        case .missingPrimerInputElement(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .cancelled(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .failedToCreateSession(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidArchitecture(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidClientSessionValue(_, _, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidMerchantIdentifier(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidValue(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .unableToMakePaymentsOnProvidedNetworks(_, let diagnosticsId):
-            return diagnosticsId
-        case .unableToPresentPaymentMethod(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .unableToPresentApplePay(_, let diagnosticsId):
-            return diagnosticsId
-        case .unsupportedIntent(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .unsupportedPaymentMethod(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .unsupportedPaymentMethodForManager(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .underlyingErrors(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .missingSDK(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .merchantError(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .paymentFailed(_, _, _, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .applePayTimedOut(_, let diagnosticsId):
-            return diagnosticsId
-        case .failedToCreatePayment(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .failedToResumePayment(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .nolError(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .nolSdkInitError(_, let diagnosticsId):
-            return diagnosticsId
-        case .klarnaError(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .klarnaUserNotApproved(_, let diagnosticsId):
-            return diagnosticsId
-        case .stripeError(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .unknown(_, let diagnosticsId):
-            return diagnosticsId
+        case let .uninitializedSDKSession(_, diagnosticsId): diagnosticsId
+        case let .invalidClientToken(_, diagnosticsId): diagnosticsId
+        case let .missingPrimerConfiguration(_, diagnosticsId): diagnosticsId
+        case let .misconfiguredPaymentMethods(_, diagnosticsId): diagnosticsId
+        case let .missingPrimerInputElement(_, _, diagnosticsId): diagnosticsId
+        case let .cancelled(_, _, diagnosticsId): diagnosticsId
+        case let .failedToCreateSession(_, _, diagnosticsId): diagnosticsId
+        case let .invalidUrl(_, _, diagnosticsId): diagnosticsId
+        case let .invalidArchitecture(_, _, _, diagnosticsId): diagnosticsId
+        case let .invalidClientSessionValue(_, _, _, _, diagnosticsId): diagnosticsId
+        case let .invalidMerchantIdentifier(_, _, diagnosticsId): diagnosticsId
+        case let .invalidValue(_, _, _, diagnosticsId): diagnosticsId
+        case let .unableToMakePaymentsOnProvidedNetworks(_, diagnosticsId): diagnosticsId
+        case let .unableToPresentPaymentMethod(_, _, diagnosticsId): diagnosticsId
+        case let .unableToPresentApplePay(_, diagnosticsId): diagnosticsId
+        case let .unsupportedIntent(_, _, diagnosticsId): diagnosticsId
+        case let .unsupportedPaymentMethod(_, _, diagnosticsId): diagnosticsId
+        case let .unsupportedPaymentMethodForManager(_, _, _, diagnosticsId): diagnosticsId
+        case let .underlyingErrors(_, _, diagnosticsId): diagnosticsId
+        case let .missingSDK(_, _, _, diagnosticsId): diagnosticsId
+        case let .merchantError(_, _, diagnosticsId): diagnosticsId
+        case let .paymentFailed(_, _, _, _, _, diagnosticsId): diagnosticsId
+        case let .applePayTimedOut(_, diagnosticsId): diagnosticsId
+        case let .failedToCreatePayment(_, _, _, diagnosticsId): diagnosticsId
+        case let .failedToResumePayment(_, _, _, diagnosticsId): diagnosticsId
+        case let .invalidVaultedPaymentMethodId(_, _, diagnosticsId): diagnosticsId
+        case let .nolError(_, _, _, diagnosticsId): diagnosticsId
+        case let .nolSdkInitError(_, diagnosticsId): diagnosticsId
+        case let .klarnaError(_, _, diagnosticsId): diagnosticsId
+        case let .klarnaUserNotApproved(_, diagnosticsId): diagnosticsId
+        case let .stripeError(_, _, _, diagnosticsId): diagnosticsId
+        case let .unknown(_, diagnosticsId): diagnosticsId
         }
     }
 
@@ -234,59 +285,59 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Client token is not valid"
         case .missingPrimerConfiguration:
             return "Missing SDK configuration"
-        case .missingPrimerInputElement(let inputElementType, _, _):
+        case let .missingPrimerInputElement(inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
-        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+        case let .missingSDK(paymentMethodType, sdkName, _, _):
             return "\(paymentMethodType) configuration has been found, but dependency \(sdkName) is missing"
         case .misconfiguredPaymentMethods:
             return "Payment methods haven't been set up correctly"
-        case .cancelled(let paymentMethodType, _, _):
+        case let .cancelled(paymentMethodType, _, _):
             return "Payment method \(paymentMethodType) cancelled"
-        case .failedToCreateSession(error: let error, _, _):
+        case let .failedToCreateSession(error: error, _, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
-        case .invalidArchitecture(let description, _, _, _):
+        case let .invalidArchitecture(description, _, _, _):
             return "\(description)"
-        case .invalidClientSessionValue(let name, let value, _, _, _):
+        case let .invalidClientSessionValue(name, value, _, _, _):
             return "Invalid client session value for '\(name)' with value '\(value ?? "nil")'"
-        case .invalidUrl(url: let url, _, _):
+        case let .invalidUrl(url: url, _, _):
             return "Invalid URL: \(url ?? "nil")"
-        case .invalidMerchantIdentifier(let merchantIdentifier, _, _):
+        case let .invalidMerchantIdentifier(merchantIdentifier, _, _):
             return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
-        case .invalidValue(key: let key, value: let value, _, _):
+        case let .invalidValue(key: key, value: value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
             return "Unable to make payments on provided networks"
-        case .unableToPresentPaymentMethod(let paymentMethodType, _, _):
+        case let .unableToPresentPaymentMethod(paymentMethodType, _, _):
             return "Unable to present payment method \(paymentMethodType)"
-        case .unsupportedIntent(let intent, _, _):
+        case let .unsupportedIntent(intent, _, _):
             return "Unsupported session intent \(intent.rawValue)"
-        case .underlyingErrors(let errors, _, _):
+        case let .underlyingErrors(errors, _, _):
             return "Multiple errors occured: \(errors.combinedDescription)"
-        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+        case let .unsupportedPaymentMethod(paymentMethodType, _, _):
             return "Unsupported payment method type \(paymentMethodType)"
-        case .unsupportedPaymentMethodForManager(let paymentMethodType, let category, _, _):
+        case let .unsupportedPaymentMethodForManager(paymentMethodType, category, _, _):
             return "Payment method \(paymentMethodType) is not supported on \(category) manager"
-        case .merchantError(let message, _, _):
+        case let .merchantError(message, _, _):
             return message
-        case .paymentFailed(_, let paymentId, _, let status, _, _):
+        case let .paymentFailed(_, paymentId, _, status, _, _):
             return "The payment with id \(paymentId) was created or resumed but ended up in a \(status) status."
         case .applePayTimedOut:
             return "Apple Pay timed out"
-        case .failedToCreatePayment(_, let description, _, _):
+        case let .failedToCreatePayment(_, description, _, _):
             return "\(description)"
-        case .failedToResumePayment(_, let description, _, _):
+        case let .failedToResumePayment(_, description, _, _):
             return "\(description)"
-        case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
+        case let .invalidVaultedPaymentMethodId(vaultedPaymentMethodId, _, _):
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
-        case .nolError(let code, let message, _, _):
+        case let .nolError(code, message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
         case .nolSdkInitError:
             return "Nol SDK initialization error"
-        case .klarnaError(let message, _, _):
+        case let .klarnaError(message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .klarnaUserNotApproved:
             return "User is not approved to perform Klarna payments"
-        case .stripeError(_, let message, _, _):
+        case let .stripeError(_, message, _, _):
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
@@ -303,38 +354,38 @@ public enum PrimerError: PrimerErrorProtocol {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {
-        case .uninitializedSDKSession(let userInfo, _),
-             .invalidClientToken(let userInfo, _),
-             .missingPrimerConfiguration(let userInfo, _),
-             .missingPrimerInputElement(_, let userInfo, _),
-             .misconfiguredPaymentMethods(let userInfo, _),
-             .cancelled(_, let userInfo, _),
-             .failedToCreateSession(_, let userInfo, _),
-             .invalidUrl(_, let userInfo, _),
-             .invalidArchitecture(_, _, let userInfo, _),
-             .invalidClientSessionValue(_, _, _, let userInfo, _),
-             .invalidMerchantIdentifier(_, let userInfo, _),
-             .invalidValue(_, _, let userInfo, _),
-             .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
-             .unableToPresentPaymentMethod(_, let userInfo, _),
-             .unsupportedIntent(_, let userInfo, _),
-             .unsupportedPaymentMethod(_, let userInfo, _),
-             .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
-             .underlyingErrors(_, let userInfo, _),
-             .missingSDK(_, _, let userInfo, _),
-             .merchantError(_, let userInfo, _),
-             .paymentFailed(_, _, _, _, let userInfo, _),
-             .applePayTimedOut(let userInfo, _),
-             .failedToCreatePayment(_, _, let userInfo, _),
-             .failedToResumePayment(_, _, let userInfo, _),
-             .invalidVaultedPaymentMethodId(_, let userInfo, _),
-             .nolError(_, _, let userInfo, _),
-             .nolSdkInitError(let userInfo, _),
-             .klarnaError(_, let userInfo, _),
-             .klarnaUserNotApproved(let userInfo, _),
-             .stripeError(_, _, let userInfo, _),
-             .unableToPresentApplePay(let userInfo, _),
-             .unknown(let userInfo, _):
+        case let .uninitializedSDKSession(userInfo, _),
+             let .invalidClientToken(userInfo, _),
+             let .missingPrimerConfiguration(userInfo, _),
+             let .missingPrimerInputElement(_, userInfo, _),
+             let .misconfiguredPaymentMethods(userInfo, _),
+             let .cancelled(_, userInfo, _),
+             let .failedToCreateSession(_, userInfo, _),
+             let .invalidUrl(_, userInfo, _),
+             let .invalidArchitecture(_, _, userInfo, _),
+             let .invalidClientSessionValue(_, _, _, userInfo, _),
+             let .invalidMerchantIdentifier(_, userInfo, _),
+             let .invalidValue(_, _, userInfo, _),
+             let .unableToMakePaymentsOnProvidedNetworks(userInfo, _),
+             let .unableToPresentPaymentMethod(_, userInfo, _),
+             let .unsupportedIntent(_, userInfo, _),
+             let .unsupportedPaymentMethod(_, userInfo, _),
+             let .unsupportedPaymentMethodForManager(_, _, userInfo, _),
+             let .underlyingErrors(_, userInfo, _),
+             let .missingSDK(_, _, userInfo, _),
+             let .merchantError(_, userInfo, _),
+             let .paymentFailed(_, _, _, _, userInfo, _),
+             let .applePayTimedOut(userInfo, _),
+             let .failedToCreatePayment(_, _, userInfo, _),
+             let .failedToResumePayment(_, _, userInfo, _),
+             let .invalidVaultedPaymentMethodId(_, userInfo, _),
+             let .nolError(_, _, userInfo, _),
+             let .nolSdkInitError(userInfo, _),
+             let .klarnaError(_, userInfo, _),
+             let .klarnaUserNotApproved(userInfo, _),
+             let .stripeError(_, _, userInfo, _),
+             let .unableToPresentApplePay(userInfo, _),
+             let .unknown(userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
         }
 
@@ -358,7 +409,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if the token you have provided is a valid token (not nil and not expired)."
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
-        case .missingPrimerInputElement(let inputElementtype, _, _):
+        case let .missingPrimerInputElement(inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
             let message =
@@ -375,9 +426,9 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalidUrl:
             return nil
-        case .invalidArchitecture(_, let recoverySuggestion, _, _):
+        case let .invalidArchitecture(_, recoverySuggestion, _, _):
             return recoverySuggestion
-        case .invalidClientSessionValue(let name, _, let allowedValue, _, _):
+        case let .invalidClientSessionValue(name, _, allowedValue, _, _):
             var str = "Check if you have provided a valid value for \"\(name)\" in your client session."
             if let allowedValue {
                 str += " Allowed values are [\(allowedValue)]."
@@ -385,7 +436,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return str
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier in the SDK settings."
-        case .invalidValue(let key, let value, _, _):
+        case let .invalidValue(key, value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
@@ -395,7 +446,7 @@ public enum PrimerError: PrimerErrorProtocol {
              You can find the necessary values on our documentation (website).
             """
             return message
-        case .unsupportedIntent(let intent, _, _):
+        case let .unsupportedIntent(intent, _, _):
             if intent == .checkout {
                 return "Change the intent to .vault"
             } else {
@@ -407,7 +458,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Use a method that supports this manager, or use the correct manager for the method. See PrimerPaymentMethodManagerCategory."
         case .underlyingErrors:
             return "Check underlying errors for more information."
-        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+        case let .missingSDK(paymentMethodType, sdkName, _, _):
             return "Add \(sdkName) in your project so you can perform payments with \(paymentMethodType)"
         case .merchantError:
             return nil
@@ -455,13 +506,13 @@ public enum PrimerError: PrimerErrorProtocol {
 
     private var paymentMethodType: String? {
         switch self {
-        case .cancelled(let paymentMethodType, _, _),
-             .unableToPresentPaymentMethod(let paymentMethodType, _, _),
-             .unsupportedPaymentMethod(let paymentMethodType, _, _),
-             .missingSDK(let paymentMethodType, _, _, _),
-             .paymentFailed(let paymentMethodType?, _, _, _, _, _),
-             .failedToCreatePayment(let paymentMethodType, _, _, _),
-             .failedToResumePayment(let paymentMethodType, _, _, _):
+        case let .cancelled(paymentMethodType, _, _),
+             let .unableToPresentPaymentMethod(paymentMethodType, _, _),
+             let .unsupportedPaymentMethod(paymentMethodType, _, _),
+             let .missingSDK(paymentMethodType, _, _, _),
+             let .paymentFailed(paymentMethodType?, _, _, _, _, _),
+             let .failedToCreatePayment(paymentMethodType, _, _, _),
+             let .failedToResumePayment(paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks:
