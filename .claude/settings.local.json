@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__zen__debug",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "mcp__unblocked__slack_conversation_details",
+      "Bash(git push:*)"
+    ],
+    "deny": []
+  }
+}
