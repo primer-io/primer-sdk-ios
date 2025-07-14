@@ -228,77 +228,75 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        try await Task(priority: .userInitiated) {
-            var errors: [PrimerValidationError] = []
+        var errors: [PrimerValidationError] = []
 
-            guard let rawData = data as? PrimerBancontactCardData else {
-                let err = PrimerValidationError.invalidRawData(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+        guard let rawData = data as? PrimerBancontactCardData else {
+            let err = PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        if rawData.cardNumber.isEmpty {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number can not be blank.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        } else if !rawData.cardNumber.isValidCardNumber {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number is not valid.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        }
+
+        do {
+            try rawData.expiryDate.validateExpiryDateString()
+        } catch {
+            if let err = error as? PrimerValidationError {
                 errors.append(err)
-                ErrorHandler.handle(error: err)
-
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
             }
+        }
 
-            if rawData.cardNumber.isEmpty {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number can not be blank.",
+        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+            if rawData.cardholderName.isEmpty {
+                errors.append(PrimerValidationError.invalidCardholderName(
+                    message: "Cardholder name cannot be blank.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
-            } else if !rawData.cardNumber.isValidCardNumber {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
+                ))
+            } else if !(rawData.cardholderName).isValidNonDecimalString {
+                errors.append(PrimerValidationError.invalidCardholderName(
+                    message: "Cardholder name is not valid.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
+                ))
             }
+        }
 
-            do {
-                try rawData.expiryDate.validateExpiryDateString()
-            } catch {
-                if let err = error as? PrimerValidationError {
-                    errors.append(err)
-                }
-            }
+        guard errors.isEmpty else {
+            let err = PrimerError.underlyingErrors(
+                errors: errors,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
 
-            if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if rawData.cardholderName.isEmpty {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name cannot be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    ))
-                } else if !(rawData.cardholderName).isValidNonDecimalString {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    ))
-                }
-            }
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
 
-            guard errors.isEmpty else {
-                let err = PrimerError.underlyingErrors(
-                    errors: errors,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
-            }
-
-            notifyDelegateOfValidationResult(isValid: true, errors: nil)
-        }.value
+        notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
-    
+
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
         isDataValid = isValid
 

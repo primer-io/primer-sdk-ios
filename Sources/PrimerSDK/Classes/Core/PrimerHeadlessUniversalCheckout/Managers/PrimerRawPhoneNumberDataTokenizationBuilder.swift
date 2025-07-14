@@ -162,46 +162,44 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        try await Task(priority: .userInitiated) {
-            var errors: [PrimerValidationError] = []
+        var errors: [PrimerValidationError] = []
 
-            guard let rawData = data as? PrimerPhoneNumberData else {
-                let err = PrimerValidationError.invalidRawData(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
-                ErrorHandler.handle(error: err)
+        guard let rawData = data as? PrimerPhoneNumberData else {
+            let err = PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+            ErrorHandler.handle(error: err)
 
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
-            }
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
 
-            if let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
-               !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
-                errors.append(PrimerValidationError.invalidPhoneNumber(
-                    message: "Phone number is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
-            }
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
+           !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
+            errors.append(PrimerValidationError.invalidPhoneNumber(
+                message: "Phone number is not valid.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            ))
+        }
 
-            guard errors.isEmpty else {
-                let err = PrimerError.underlyingErrors(
-                    errors: errors,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
+        guard errors.isEmpty else {
+            let err = PrimerError.underlyingErrors(
+                errors: errors,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
 
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
-            }
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
 
-            notifyDelegateOfValidationResult(isValid: true, errors: nil)
-        }.value
+        notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
-    
+
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
         isDataValid = isValid
 

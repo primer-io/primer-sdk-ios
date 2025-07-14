@@ -319,120 +319,118 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws {
-        try await Task(priority: .userInitiated) {
-            var errors: [PrimerValidationError] = []
+        var errors: [PrimerValidationError] = []
 
-            guard let rawData = data as? PrimerCardData else {
-                let err = PrimerValidationError.invalidRawData(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
-                ErrorHandler.handle(error: err)
+        guard let rawData = data as? PrimerCardData else {
+            let err = PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+            ErrorHandler.handle(error: err)
 
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
-            }
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
 
-            // Locally validated card network
-            var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        // Locally validated card network
+        var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
 
-            // Remotely validated card network
-            if let cardNetworksMetadata = cardNetworksMetadata {
-                let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                    cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+        // Remotely validated card network
+        if let cardNetworksMetadata = cardNetworksMetadata {
+            let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
+                cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
-                if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-                   let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
-                    cardNetwork = network
-                } else {
-                    return
-                }
-
-                // Unsupported card type error
-                if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
-                    errors.append(err)
-                }
+            if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+               let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                cardNetwork = network
             } else {
-                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+                return
             }
 
-            // Invalid card number error
-            if rawData.cardNumber.isEmpty {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number can not be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
-            } else if !rawData.cardNumber.isValidCardNumber {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
+            // Unsupported card type error
+            if !self.allowedCardNetworks.contains(cardNetwork) {
+                let err = PrimerValidationError.invalidCardType(
+                    message: "Unsupported card type detected: \(cardNetwork.displayName)",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
                 errors.append(err)
             }
+        } else {
+            self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+        }
 
-            do {
-                try rawData.expiryDate.validateExpiryDateString()
-            } catch {
-                if let err = error as? PrimerValidationError {
-                    errors.append(err)
-                }
-            }
+        // Invalid card number error
+        if rawData.cardNumber.isEmpty {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number can not be blank.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        } else if !rawData.cardNumber.isValidCardNumber {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number is not valid.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        }
 
-            if rawData.cvv.isEmpty {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+        do {
+            try rawData.expiryDate.validateExpiryDateString()
+        } catch {
+            if let err = error as? PrimerValidationError {
                 errors.append(err)
-            } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV is not valid.",
+            }
+        }
+
+        if rawData.cvv.isEmpty {
+            let err = PrimerValidationError.invalidCvv(
+                message: "CVV cannot be blank.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
+            let err = PrimerValidationError.invalidCvv(
+                message: "CVV is not valid.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+        }
+
+        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+            if (rawData.cardholderName ?? "").isEmpty {
+                errors.append(PrimerValidationError.invalidCardholderName(
+                    message: "Cardholder name cannot be blank.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
-                )
-                errors.append(err)
-            }
-
-            if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if (rawData.cardholderName ?? "").isEmpty {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name cannot be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    ))
-                } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    ))
-                }
-            }
-
-            guard errors.isEmpty else {
-                let err = PrimerError.underlyingErrors(
-                    errors: errors,
+                ))
+            } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
+                errors.append(PrimerValidationError.invalidCardholderName(
+                    message: "Cardholder name is not valid.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-
-                notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                throw err
+                ))
             }
+        }
 
-            notifyDelegateOfValidationResult(isValid: true, errors: nil)
-        }.value
+        guard errors.isEmpty else {
+            let err = PrimerError.underlyingErrors(
+                errors: errors,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
