@@ -1,3 +1,17 @@
+## 2.38.4 (2025-07-14)
+
+### Fix
+
+- ACC-5636 excessive validation logging (#1221)
+
+### Refactor
+
+- Clean up UI event posting (#1214)
+- Migrate PaymentMethodTokenizationViewModel, PaymentMethodTokenizationModelProtocol and BanksTokenizationComponent (#1218)
+- Migrate ClientSessionActionsModule (#1210)
+- Migrate ACHTokenizationService and ACHClientSessionService (#1206)
+- Migrate PrimerAPIConfigurationModule, VaultService, PrimerDelegate, PrimerHeadlessUniversalCheckout and VaultManager (#1217)
+
 ## 2.38.3 (2025-07-02)
 
 ### Fix
