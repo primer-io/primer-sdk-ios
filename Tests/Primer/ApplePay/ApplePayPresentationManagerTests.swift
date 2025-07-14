@@ -132,11 +132,11 @@ final class ApplePayPresentationManagerTests: XCTestCase {
 
     func testErrorForDisplay() {
         let error = sut.errorForDisplay
-        XCTAssertTrue(error.localizedDescription.hasPrefix("[unable-to-present-payment-method] Unable to present payment method APPLE_PAY"))
+        XCTAssertTrue(error.localizedDescription.hasPrefix("[unable-to-present-apple-pay] Unable to present Apple Pay"))
 
         registerApplePayOptions()
         let error2 = sut.errorForDisplay
-        XCTAssertTrue(error2.localizedDescription.hasPrefix("[unable-to-make-payments-on-provided-networks] Unable to make payments on provided networks"))
+        XCTAssertTrue(error2.localizedDescription.hasPrefix("[apple-pay-no-cards-in-wallet] Apple Pay has no cards in wallet"))
     }
 
     // MARK: Helpers
