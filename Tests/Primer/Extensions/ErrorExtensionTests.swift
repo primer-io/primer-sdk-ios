@@ -15,7 +15,7 @@ final class ErrorExtensionTests: XCTestCase {
     func testPrimerErrorForInternalErrors() {
         // MARK: Internal errors
 
-        let internalErrorNoData = InternalError.noData(userInfo: nil, diagnosticsId: nil)
+        let internalErrorNoData = InternalError.noData()
         switch internalErrorNoData.exposedError {
         case PrimerError.unknown(_, _):
             break
