@@ -239,10 +239,8 @@ final class RawDataManagerTests: XCTestCase {
         let expectDidFail = self.expectation(description: "Did fail with merchant error")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
-            case PrimerError.merchantError:
-                break
-            default:
-                XCTFail("Expected merchant error")
+            case PrimerError.merchantError: break
+            default: XCTFail("Expected merchant error")
             }
             expectDidFail.fulfill()
         }
@@ -267,10 +265,8 @@ final class RawDataManagerTests: XCTestCase {
         let expectDidFail = self.expectation(description: "Did fail with merchant error")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
-            case PrimerError.merchantError:
-                break
-            default:
-                XCTFail("Expected merchant error")
+            case PrimerError.merchantError: break
+            default: XCTFail("Expected merchant error")
             }
             expectDidFail.fulfill()
         }
