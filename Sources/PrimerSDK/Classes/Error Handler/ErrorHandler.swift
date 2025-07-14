@@ -21,8 +21,7 @@ final class ErrorHandler: LogReporter {
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
-            self.logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
-            return
+            return self.logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
         }
 
         var event: Analytics.Event!
@@ -93,10 +92,6 @@ final class ErrorHandler: LogReporter {
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
             return .warning
-        case .applePayConfigurationError,
-             .applePayPresentationFailed,
-             .unableToPresentApplePay:
-            return .error
         default:
             return .error
         }
