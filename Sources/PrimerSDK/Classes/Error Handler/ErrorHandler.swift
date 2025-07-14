@@ -19,6 +19,12 @@ final class ErrorHandler: LogReporter {
     func handle(error: Error) {
         self.logger.error(message: error.localizedDescription)
 
+        // Check if error should be filtered from server reporting
+        if shouldFilterError(error) {
+            self.logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
+            return
+        }
+
         var event: Analytics.Event!
 
         if let threeDsError = error as? Primer3DSErrorContainer {
@@ -38,7 +44,7 @@ final class ErrorHandler: LogReporter {
             event = Analytics.Event.message(
                 message: primerError.errorDescription,
                 messageType: .error,
-                severity: .error,
+                severity: determineErrorSeverity(primerError),
                 diagnosticsId: primerError.diagnosticsId,
                 context: primerError.analyticsContext
             )
@@ -65,5 +71,34 @@ final class ErrorHandler: LogReporter {
         }
 
         Analytics.Service.record(event: event)
+    }
+    
+    private func shouldFilterError(_ error: Error) -> Bool {
+        guard let primerError = error as? PrimerError else {
+            return false
+        }
+        
+        // Filter out non-actionable Apple Pay errors
+        switch primerError {
+        case .applePayNoCardsInWallet,
+             .applePayDeviceNotSupported:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    private func determineErrorSeverity(_ error: PrimerError) -> Analytics.Event.MessageSeverity {
+        switch error {
+        case .applePayNoCardsInWallet,
+             .applePayDeviceNotSupported:
+            return .warning
+        case .applePayConfigurationError,
+             .applePayPresentationFailed,
+             .unableToPresentApplePay:
+            return .error
+        default:
+            return .error
+        }
     }
 }
