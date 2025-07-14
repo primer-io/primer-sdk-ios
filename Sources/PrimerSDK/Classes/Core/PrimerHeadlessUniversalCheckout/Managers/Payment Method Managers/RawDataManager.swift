@@ -291,7 +291,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func submit_async() {
-            Analytics.Service.recordSafely(event: Analytics.Event.sdk(
+            Analytics.Service.fire(event: Analytics.Event.sdk(
                 name: "\(Self.self).\(#function)",
                 params: [
                     "category": "RAW_DATA",

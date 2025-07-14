@@ -454,7 +454,7 @@ extension Analytics.Service {
         try await shared.record(event: event)
     }
     
-    static func recordSafely(event: Analytics.Event) {
+    static func fire(event: Analytics.Event) {
         Task {
             try await shared.record(event: event)
         }
@@ -468,7 +468,7 @@ extension Analytics.Service {
         try await shared.record(events: events)
     }
     
-    static func recordSafely(events: [Analytics.Event]) {
+    static func fire(events: [Analytics.Event]) {
         Task {
             try await shared.record(events: events)
         }
@@ -480,12 +480,6 @@ extension Analytics.Service {
 
     static func flush() async throws {
         try await shared.flush()
-    }
-    
-    static func flushSafely() {
-        Task {
-            try await shared.flush()
-        }
     }
 
     static func clear() {
