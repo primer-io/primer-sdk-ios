@@ -650,6 +650,3 @@ public enum PrimerError: PrimerErrorProtocol {
         }
     }
 }
-
-// swiftlint:enable type_body_length
-// swiftlint:enable file_length
