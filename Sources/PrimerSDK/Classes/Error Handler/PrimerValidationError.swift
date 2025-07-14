@@ -181,8 +181,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-phone-number"
         case .invalidRawData:
             return "invalid-raw-data"
-        case .invalidRetailer:
-            return "invalid-retailer"
         case .vaultedPaymentMethodAdditionalDataMismatch:
             return "vaulted-payment-method-additional-data-mismatch"
         case .invalidOTPCode:
@@ -199,46 +197,44 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-payment-category"
         case .paymentAlreadyFinalized:
             return "payment-already-finalized"
-        case .invalidUserDetails(let field, _, _):
+        case let .invalidUserDetails(field, _, _):
             return "invalid-customer-\(field)"
         }
     }
 
     public var errorDescription: String? {
         switch self {
-        case .invalidCardholderName(let message, _, _):
+        case let .invalidCardholderName(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidCardnumber(let message, _, _):
+        case let .invalidCardnumber(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidCvv(let message, _, _):
+        case let .invalidCvv(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidExpiryDate(let message, _, _):
+        case let .invalidExpiryDate(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidPostalCode(let message, _, _):
+        case let .invalidPostalCode(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidFirstName(let message, _, _):
+        case let .invalidFirstName(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidLastName(let message, _, _):
+        case let .invalidLastName(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidAddress(let message, _, _):
+        case let .invalidAddress(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidCity(let message, _, _):
+        case let .invalidCity(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidState(let message, _, _):
+        case let .invalidState(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidCountry(let message, _, _):
+        case let .invalidCountry(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidPhoneNumber(let message, _, _):
+        case let .invalidPhoneNumber(message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidRawData:
             return "[\(errorId)] Raw data is not valid."
-        case .invalidRetailer(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
+        case let .vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType, validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
-        case .invalidOTPCode(let message, _, _):
+        case let .invalidOTPCode(message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidCardType(let message, _, _):
+        case let .invalidCardType(message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidBankId:
             return "Please provide a valid bank id"
@@ -250,7 +246,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "Payment category is invalid."
         case .paymentAlreadyFinalized:
             return "This payment was configured to be finalized automatically."
-        case .invalidUserDetails(let field, _, _):
+        case let .invalidUserDetails(field, _, _):
             return "The \(field) is not valid."
         }
     }
@@ -259,30 +255,29 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {
-        case .invalidCardholderName(_, let userInfo, _),
-             .invalidCardnumber(_, let userInfo, _),
-             .invalidCvv(_, let userInfo, _),
-             .invalidExpiryDate(_, let userInfo, _),
-             .invalidPostalCode(_, let userInfo, _),
-             .invalidFirstName(_, let userInfo, _),
-             .invalidLastName(_, let userInfo, _),
-             .invalidAddress(_, let userInfo, _),
-             .invalidCity(_, let userInfo, _),
-             .invalidState(_, let userInfo, _),
-             .invalidCountry(_, let userInfo, _),
-             .invalidPhoneNumber(_, let userInfo, _),
-             .invalidRawData(let userInfo, _),
-             .invalidRetailer(_, let userInfo, _),
-             .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
-             .invalidOTPCode(_, let userInfo, _),
-             .invalidCardType(_, let userInfo, _),
-             .invalidBankId(_, let userInfo, _),
-             .banksNotLoaded(let userInfo, _),
-             .sessionNotCreated(let userInfo, _),
-             .invalidPaymentCategory(let userInfo, _),
-             .paymentAlreadyFinalized(let userInfo, _),
-             .invalidUserDetails(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case let .invalidCardholderName(_, userInfo, _),
+             let .invalidCardnumber(_, userInfo, _),
+             let .invalidCvv(_, userInfo, _),
+             let .invalidExpiryDate(_, userInfo, _),
+             let .invalidPostalCode(_, userInfo, _),
+             let .invalidFirstName(_, userInfo, _),
+             let .invalidLastName(_, userInfo, _),
+             let .invalidAddress(_, userInfo, _),
+             let .invalidCity(_, userInfo, _),
+             let .invalidState(_, userInfo, _),
+             let .invalidCountry(_, userInfo, _),
+             let .invalidPhoneNumber(_, userInfo, _),
+             let .invalidRawData(userInfo, _),
+             let .vaultedPaymentMethodAdditionalDataMismatch(_, _, userInfo, _),
+             let .invalidOTPCode(_, userInfo, _),
+             let .invalidCardType(_, userInfo, _),
+             let .invalidBankId(_, userInfo, _),
+             let .banksNotLoaded(userInfo, _),
+             let .sessionNotCreated(userInfo, _),
+             let .invalidPaymentCategory(userInfo, _),
+             let .paymentAlreadyFinalized(userInfo, _),
+             let .invalidUserDetails(_, userInfo, _):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
         }
 
         return tmpUserInfo
@@ -291,7 +286,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     public var errorUserInfo: [String: Any] {
         var tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
+            "diagnosticsId": diagnosticsId,
         ]
 
         if let inputElementType {
@@ -321,8 +316,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "EXPIRY_DATE"
         case .invalidPhoneNumber:
             return "PHONE_NUMBER"
-        case .invalidRetailer:
-            return "RETAILER"
         case .invalidOTPCode:
             return "OTP"
         case .invalidCardType:
@@ -349,12 +342,13 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
 
     private var paymentMethodType: String? {
         switch self {
-        case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, _, _, _):
+        case let .vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType, _, _, _):
             return paymentMethodType
         default: return nil
         }
     }
 }
+
 // swiftlint:enable type_body_length
 // swiftlint:enable identifier_name
 // swiftlint:enable function_body_length
