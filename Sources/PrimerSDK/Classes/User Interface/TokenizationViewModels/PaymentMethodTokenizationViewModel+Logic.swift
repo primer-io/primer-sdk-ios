@@ -56,12 +56,16 @@ extension PaymentMethodTokenizationViewModel {
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-
-                    self.showResultScreenIfNeeded(error: primerErr)
+                    
+                    DispatchQueue.main.async {
+                        self.showResultScreenIfNeeded(error: primerErr)
+                    }
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
-                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    DispatchQueue.main.async {
+                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    }
                 }
                 // The above promises will never end up on error.
                 .catch { _ in
@@ -103,10 +107,10 @@ extension PaymentMethodTokenizationViewModel {
                                                                      userInfo: .errorUserInfoDictionary(),
                                                                      diagnosticsId: UUID().uuidString)
                         }
-                        showResultScreenIfNeeded(error: primerErr)
+                        await showResultScreenIfNeeded(error: primerErr)
 
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
-                        handleFailureFlow(errorMessage: merchantErrorMessage)
+                        await handleFailureFlow(errorMessage: merchantErrorMessage)
                     } catch {
                         logger.error(message: "Unselection of payment method failed - this should never happen ...")
                     }
@@ -129,7 +133,9 @@ extension PaymentMethodTokenizationViewModel {
 
     func processVaultPaymentMethodTokenData() {
         PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-        self.handleSuccessfulFlow()
+        DispatchQueue.main.async {
+            self.handleSuccessfulFlow()
+        }
     }
 
     func processCheckoutPaymentMethodTokenData() {
@@ -152,9 +158,11 @@ extension PaymentMethodTokenizationViewModel {
             if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             }
-
-            self.showResultScreenIfNeeded()
-            self.handleSuccessfulFlow()
+            
+            DispatchQueue.main.async {
+                self.showResultScreenIfNeeded()
+                self.handleSuccessfulFlow()
+            }
         }
         .ensure {
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
@@ -196,11 +204,15 @@ extension PaymentMethodTokenizationViewModel {
                                                                  diagnosticsId: UUID().uuidString)
                     }
                     self.setCheckoutDataFromError(primerErr)
-                    self.showResultScreenIfNeeded(error: primerErr)
+                    DispatchQueue.main.async {
+                        self.showResultScreenIfNeeded(error: primerErr)
+                    }
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
-                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    DispatchQueue.main.async {
+                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    }
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
@@ -243,8 +255,8 @@ extension PaymentMethodTokenizationViewModel {
                     await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
 
-                showResultScreenIfNeeded()
-                handleSuccessfulFlow()
+                await showResultScreenIfNeeded()
+                await handleSuccessfulFlow()
             } catch {
                 didFinishPayment?(error)
                 nullifyEventCallbacks()
@@ -272,9 +284,9 @@ extension PaymentMethodTokenizationViewModel {
                                                                  diagnosticsId: UUID().uuidString)
                     }
                     setCheckoutDataFromError(primerErr)
-                    showResultScreenIfNeeded(error: primerErr)
+                    await showResultScreenIfNeeded(error: primerErr)
                     let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
-                    handleFailureFlow(errorMessage: merchantErrorMessage)
+                    await handleFailureFlow(errorMessage: merchantErrorMessage)
                 }
             }
         }
@@ -753,6 +765,7 @@ extension PaymentMethodTokenizationViewModel {
 
     // This method will show the new design for result screen with a specific state: e.g. Error state or Success state
     // For now we will use it only for STRIPE_ACH implementation
+    @MainActor
     func showResultScreenIfNeeded(error: PrimerError? = nil) {
         guard let paymentMethodType = config.internalPaymentMethodType,
               paymentMethodType == .stripeAch else {
@@ -761,6 +774,7 @@ extension PaymentMethodTokenizationViewModel {
         PrimerUIManager.showResultScreen(for: paymentMethodType, error: error)
     }
 
+    @MainActor
     func handleFailureFlow(errorMessage: String?) {
         if config.internalPaymentMethodType != .stripeAch {
             let categories = config.paymentMethodManagerCategories
