@@ -21,7 +21,7 @@ final class ErrorHandler: LogReporter {
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
-            return self.logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
+        logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
         }
 
         var event: Analytics.Event!
