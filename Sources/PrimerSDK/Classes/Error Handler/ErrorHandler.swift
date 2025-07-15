@@ -78,7 +78,10 @@ final class ErrorHandler: LogReporter {
         }
 
         // Filter out non-actionable Apple Pay errors
-        switch primerError {
+        switch primerError as? PrimerError {
+            case .applePayNoCardsInWallet, .applePayDeviceNotSupported: true
+            default: false
+        }
         case .applePayNoCardsInWallet,
              .applePayDeviceNotSupported:
             return true
