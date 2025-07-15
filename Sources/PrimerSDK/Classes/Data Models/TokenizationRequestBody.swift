@@ -44,12 +44,7 @@ extension Request.Body {
             } else if let paymentInstrument = self.paymentInstrument as? ACHPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else {
-                let err = InternalError.invalidValue(key: "PaymentInstrument",
-                                                     value: self.paymentInstrument,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(error: InternalError.invalidValue(key: "PaymentInstrument", value: self.paymentInstrument))
             }
 
             if let tokenType = tokenType {

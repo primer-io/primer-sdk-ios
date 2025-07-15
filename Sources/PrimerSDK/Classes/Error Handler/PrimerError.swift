@@ -19,6 +19,15 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var analyticsContext: [String: Any] { get }
 }
 
+func handled<E: Error>(error: E) -> E {
+    ErrorHandler.handle(error: error)
+    return error
+}
+
+func handled(primerError: PrimerError) -> PrimerError {
+    handled(error: primerError)
+}
+
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
     case uninitializedSDKSession(

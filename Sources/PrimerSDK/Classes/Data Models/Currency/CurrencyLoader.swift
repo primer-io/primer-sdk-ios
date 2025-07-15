@@ -44,11 +44,7 @@ public final class CurrencyLoader: LogReporter {
         loadCurrenciesIfNeeded()
 
         guard let configuration = PrimerAPIConfigurationModule.apiConfiguration else {
-            let error = PrimerError.missingPrimerConfiguration(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-
-            ErrorHandler.handle(error: error)
+            let error = handled(primerError: .missingPrimerConfiguration())
             logger.error(message: "Invalid client token: \(error)")
             completion?(error)
             return
@@ -57,10 +53,7 @@ public final class CurrencyLoader: LogReporter {
         let urlString = (configuration.assetsUrl ?? "-") + "/currency-information/v1/data.json"
         guard let url = URL(string: urlString) else {
             logger.error(message: "Can't make URL from string: \(urlString)")
-            let err = PrimerError.invalidUrl(url: urlString,
-                                             userInfo: .errorUserInfoDictionary(),
-                                             diagnosticsId: UUID().uuidString)
-            completion?(err)
+            completion?(PrimerError.invalidUrl(url: urlString))
             return
         }
 
@@ -86,9 +79,8 @@ public final class CurrencyLoader: LogReporter {
                 Analytics.Service.record(events: [sdkEvent])
                 completion?(nil)
             } catch {
-                ErrorHandler.handle(error: error)
                 self?.logger.error(message: "Error parsing or saving currencies from API: \(error)")
-                completion?(error)
+                completion?(handled(error: error))
             }
         }
     }
