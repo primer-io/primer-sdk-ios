@@ -424,7 +424,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-                    
+
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
                     }

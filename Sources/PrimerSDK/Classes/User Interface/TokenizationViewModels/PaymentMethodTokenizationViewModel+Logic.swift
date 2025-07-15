@@ -56,7 +56,7 @@ extension PaymentMethodTokenizationViewModel {
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-                    
+
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
                     }
@@ -158,7 +158,7 @@ extension PaymentMethodTokenizationViewModel {
             if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             }
-            
+
             DispatchQueue.main.async {
                 self.showResultScreenIfNeeded()
                 self.handleSuccessfulFlow()
