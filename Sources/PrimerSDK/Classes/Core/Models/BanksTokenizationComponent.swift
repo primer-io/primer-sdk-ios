@@ -916,11 +916,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                                             withMessage: errorMessage)
     }
 
-    func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
-    }
-
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
@@ -1055,6 +1050,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     }
 
     func performPostTokenizationSteps() async throws {}
+
+    private func nullifyEventCallbacks() {
+        didStartPayment = nil
+        didFinishPayment = nil
+    }
 
     // Resume payment with Resume payment ID
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
