@@ -77,6 +77,35 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
         }
     }
 
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
+        guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
+            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let rawData = data as? PrimerOTPData else {
+            let err = PrimerError.invalidValue(key: "rawData",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        return Request.Body.Tokenization(
+            paymentInstrument: OffSessionPaymentInstrument(
+                paymentMethodConfigId: paymentMethodId,
+                paymentMethodType: paymentMethodType,
+                sessionInfo: BlikSessionInfo(
+                    blikCode: rawData.otp,
+                    locale: PrimerSettings.current.localeData.localeCode
+                )
+            )
+        )
+    }
+
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async {
@@ -128,11 +157,49 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
         }
     }
 
+    func validateRawData(_ data: PrimerRawData) async throws {
+        var errors: [PrimerValidationError] = []
+
+        guard let rawData = data as? PrimerOTPData else {
+            let err = PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        if !rawData.otp.isValidOTP {
+            errors.append(PrimerValidationError.invalidOTPCode(
+                message: "OTP is not valid.",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            ))
+        }
+
+        guard errors.isEmpty else {
+            let err = PrimerError.underlyingErrors(
+                errors: errors,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        notifyDelegateOfValidationResult(isValid: true, errors: nil)
+    }
+
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+            guard let self, let rawDataManager else { return }
 
             rawDataManager.delegate?.primerRawDataManager?(
                 rawDataManager,

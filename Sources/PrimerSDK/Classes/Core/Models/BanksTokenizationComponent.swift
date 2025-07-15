@@ -79,7 +79,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             throw err
         }
     }
-    
+
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -124,12 +124,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
 
         let paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue:
-            "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue:
-            "ideal"
-        default:
-            ""
+        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
+        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
+        default: ""
         }
 
         let request = Request.Body.Adyen.BanksList(
@@ -752,7 +749,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             responseCode: nil
         )
 
-        try await Analytics.Service.record(events: [presentEvent, networkEvent])
+        Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
             try await uiManager.prepareRootViewController()
@@ -1341,7 +1338,8 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.closePaymentMethodUI()
         }
 
-        try await Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
+
         try validate()
 
         let banks = try await fetchBanks()

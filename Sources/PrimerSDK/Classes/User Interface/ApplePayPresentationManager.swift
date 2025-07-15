@@ -34,7 +34,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
         Promise { seal in
-            let request = createRequest(for: applePayRequest)
+            let request = try createRequest(for: applePayRequest)
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
             paymentController.delegate = delegate
@@ -72,7 +72,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         }
     }
 
-    func createRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
+    func createRequest(for applePayRequest: ApplePayRequest) throws -> PKPaymentRequest {
         let request = PKPaymentRequest()
         let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
 
@@ -90,6 +90,30 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
 
         if let shippingMethods = applePayRequest.shippingMethods {
             request.shippingMethods = shippingMethods
+        }
+
+        if #available(iOS 16.0, *) {
+            request.automaticReloadPaymentRequest = try applePayRequest.automaticReloadRequest?.toPKAutomaticReloadPaymentRequest(
+                orderAmount: applePayRequest.amount,
+                currency: applePayRequest.currency,
+                descriptor: applePayRequest.paymentDescriptor
+            )
+        }
+
+        if #available(iOS 16.4, *) {
+            request.deferredPaymentRequest = try applePayRequest.deferredPaymentRequest?.toPKDeferredPaymentRequest(
+                orderAmount: applePayRequest.amount,
+                currency: applePayRequest.currency,
+                descriptor: applePayRequest.paymentDescriptor
+            )
+        }
+
+        if #available(iOS 16.0, *) {
+            request.recurringPaymentRequest = try applePayRequest.recurringPaymentRequest?.toPKRecurringPaymentRequest(
+                orderAmount: applePayRequest.amount,
+                currency: applePayRequest.currency,
+                descriptor: applePayRequest.paymentDescriptor
+            )
         }
 
         return request

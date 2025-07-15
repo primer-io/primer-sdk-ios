@@ -5,6 +5,9 @@
 //  Created by Evangelos on 13/12/21.
 //
 
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
+
 import Foundation
 
 protocol AnalyticsServiceProtocol {
@@ -454,12 +457,24 @@ extension Analytics.Service {
         try await shared.record(event: event)
     }
 
+    static func fire(event: Analytics.Event) {
+        Task {
+            try await shared.record(event: event)
+        }
+    }
+
     @discardableResult static func record(events: [Analytics.Event]) -> Promise<Void> {
         shared.record(events: events)
     }
 
     static func record(events: [Analytics.Event]) async throws {
         try await shared.record(events: events)
+    }
+
+    static func fire(events: [Analytics.Event]) {
+        Task {
+            try await shared.record(events: events)
+        }
     }
 
     @discardableResult static func flush() -> Promise<Void> {
@@ -474,3 +489,6 @@ extension Analytics.Service {
         shared.clear()
     }
 }
+
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length
