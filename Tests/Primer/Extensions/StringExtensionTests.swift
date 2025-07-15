@@ -237,6 +237,14 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "01/2030".validateExpiryDateString())
+        
+        // Test MM/YY format support
+        XCTAssertNoThrow(try "01/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "02/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "12/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "01/30".validateExpiryDateString())
+        XCTAssertThrowsError(try "01/22".validateExpiryDateString()) // Past date
+        XCTAssertThrowsError(try "08/22".validateExpiryDateString()) // Past date
     }
 
     func testBase64RFC4648Format() {

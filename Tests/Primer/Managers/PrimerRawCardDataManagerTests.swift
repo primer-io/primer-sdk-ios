@@ -319,14 +319,15 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         firstly { () -> Promise<Void> in
-            rawCardData.expiryDate  = "02/25"
+            rawCardData.expiryDate  = "02/30"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
-            XCTAssert(false, "Card data should not pass validation")
+            // With MM/YY support, "02/30" should be valid as it converts to "02/2030"
             exp.fulfill()
         }
         .catch { _ in
+            XCTAssert(false, "Card data should pass validation with MM/YY format")
             exp.fulfill()
         }
 
