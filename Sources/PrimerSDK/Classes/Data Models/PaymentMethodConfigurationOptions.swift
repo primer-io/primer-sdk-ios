@@ -1,10 +1,3 @@
-//
-//  PaymentMethodConfigurationOptions.swift
-//  PrimerSDK
-//
-//  Created by Evangelos on 28/12/21.
-//
-
 import Foundation
 
 protocol PaymentMethodOptions: Codable { }
@@ -15,8 +8,42 @@ struct PayPalOptions: PaymentMethodOptions {
     let clientId: String
 }
 
-struct ApplePayOptions: PaymentMethodOptions {
-    let merchantName: String? // Apple Pay
+enum ApplePayRecurringInterval: String, Codable {
+        case minute
+        case hour
+        case day
+        case month
+        case year
+        case unknown
+
+        var nsCalendarUnit: NSCalendar.Unit? {
+            switch self {
+            case .minute: .minute
+            case .hour: .hour
+            case .day: .day
+            case .month: .month
+            case .year: .year
+            case .unknown: nil
+            }
+        }
+}
+
+protocol ApplePayBillingBase: Codable {
+    var label: String { get }
+    var amount: Int? { get }
+    var recurringStartDate: Double? { get }
+    var recurringEndDate: Double? { get }
+    var recurringIntervalUnit: ApplePayRecurringInterval? { get }
+    var recurringIntervalCount: Int? { get }
+}
+
+struct ApplePayRegularBillingOption: ApplePayBillingBase {
+    let label: String
+    let amount: Int?
+    let recurringStartDate: Double?
+    let recurringEndDate: Double?
+    let recurringIntervalUnit: ApplePayRecurringInterval?
+    let recurringIntervalCount: Int?
 }
 
 struct CardOptions: PaymentMethodOptions {

@@ -432,6 +432,9 @@
                location = "group:Extensions &amp; Utilities"
                name = "Extensions &amp; Utilities">
                <FileRef
+                  location = "group:ApplePayPaymentRequest+PK.swift">
+               </FileRef>
+               <FileRef
                   location = "group:UIScreenExtension.swift">
                </FileRef>
                <FileRef
@@ -2283,6 +2286,9 @@
          <Group
             location = "group:Utils"
             name = "Utils">
+            <FileRef
+               location = "group:ApplePayPaymentRequest+PK.swift">
+            </FileRef>
             <Group
                location = "group:CurrencyFormatting"
                name = "CurrencyFormatting">
