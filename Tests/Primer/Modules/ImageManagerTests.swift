@@ -11,7 +11,7 @@ import XCTest
 final class ImageManagerTests: XCTestCase {
     
     var sut: ImageManager!
-    var mockDownloader: MockDownloader!
+    private var mockDownloader: MockDownloader!
     
     override func setUp() {
         super.setUp()
