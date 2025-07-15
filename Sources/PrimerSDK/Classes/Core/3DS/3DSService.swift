@@ -764,9 +764,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             place: .threeDSScreen
         )
 
-        // MARK: REVIEW_CHECK - Should this be fire and forget?
-
-        try await Analytics.Service.record(events: [present3DSUIEvent])
+        Analytics.Service.fire(events: [present3DSUIEvent])
 
         return try await withCheckedThrowingContinuation { continuation in
             primer3DS.performChallenge(

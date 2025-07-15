@@ -25,10 +25,13 @@ final class IdealPaymentMethodTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil),
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
             order: nil,
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
         guard let mockPrimerApiConfiguration = createMockApiConfiguration(clientSession: clientSession, mockPaymentMethods: [Mocks.PaymentMethods.idealFormWithRedirectPaymentMethod]) else {
             XCTFail("Unable to start mock tokenization")
             return
