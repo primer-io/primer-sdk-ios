@@ -292,14 +292,14 @@ final class ImageManagerTests: XCTestCase {
 
 // MARK: - Mock Classes
 
-class MockDownloader {
+final private class MockDownloader {
     var shouldSucceed = true
     var mockFile: File?
     var mockError: Error = NSError(domain: "test", code: 0, userInfo: nil)
     
     func download(file: File) -> Promise<File> {
         return Promise { seal in
-            if shouldSucceed, let mockFile = mockFile {
+            if shouldSucceed, let mockFile {
                 seal.fulfill(mockFile)
             } else {
                 seal.reject(mockError)
@@ -308,7 +308,7 @@ class MockDownloader {
     }
     
     func download(file: File) async throws -> File {
-        if shouldSucceed, let mockFile = mockFile {
+        if shouldSucceed, let mockFile {
             return mockFile
         } else {
             throw mockError
