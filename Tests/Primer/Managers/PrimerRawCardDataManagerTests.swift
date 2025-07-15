@@ -323,10 +323,11 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
-            XCTAssert(false, "Card data should not pass validation")
+            // With MM/YY support, "02/25" should be valid as it converts to "02/2025"
             exp.fulfill()
         }
         .catch { _ in
+            XCTAssert(false, "Card data should pass validation with MM/YY format")
             exp.fulfill()
         }
 

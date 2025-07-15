@@ -44,6 +44,7 @@ public protocol PrimerDelegate {
     @objc optional func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
 }
 
+// swiftlint:disable:next type_body_length
 final class PrimerDelegateProxy: LogReporter {
     static func primerDidTokenizePaymentMethod(
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData,

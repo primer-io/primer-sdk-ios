@@ -34,7 +34,7 @@ class PrimerDateTests: XCTestCase {
 
         } catch {
             if let err = error as? PrimerValidationError {
-                XCTAssert(err.localizedDescription == "[invalid-expiry-date] Card expiry date is not valid. Valid expiry date format is MM/YYYY.", "Error should be '[invalid-expiry-date] Card expiry date is not valid. Valid expiry date format is MM/YYYY.'")
+                XCTAssert(err.localizedDescription == "[invalid-expiry-date] Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.", "Error should be '[invalid-expiry-date] Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.'")
             } else {
                 XCTAssert(false, "Error should be of type 'PrimerValidationError'.")
             }
@@ -48,7 +48,7 @@ class PrimerDateTests: XCTestCase {
 
         } catch {
             if let err = error as? PrimerValidationError {
-                XCTAssert(err.localizedDescription == "[invalid-expiry-date] Card expiry date is not valid. Valid expiry date format is MM/YYYY.", "Error should be '[invalid-expiry-date] Card expiry date is not valid. Valid expiry date format is MM/YYYY.'")
+                XCTAssert(err.localizedDescription == "[invalid-expiry-date] Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.", "Error should be '[invalid-expiry-date] Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.'")
             } else {
                 XCTAssert(false, "Error should be of type 'PrimerValidationError'.")
             }
