@@ -46,7 +46,8 @@ class RawDataManagerValidationTests: XCTestCase {
                     CardNetwork.amex.rawValue
                     //                    ,
                     //                    CardNetwork.unknown.rawValue
-                ]
+                ],
+                descriptor: nil
             ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
