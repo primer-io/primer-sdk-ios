@@ -1,3 +1,23 @@
+## 2.39.0 (2025-07-15)
+
+### Feat
+
+- **Apple Pay**: Added support for MPAN (#1143)
+
+### Fix
+
+- ACC-5636 excessive validation logging (#1221)
+
+### Refactor
+
+- Migrate RawDataManager and related files (#1219)
+- Migrate PaymentMethodTokenizationViewModel (#1236)
+- Clean up UI event posting (#1214)
+- Migrate PaymentMethodTokenizationViewModel, PaymentMethodTokenizationModelProtocol and BanksTokenizationComponent (#1218)
+- Migrate ClientSessionActionsModule (#1210)
+- Migrate ACHTokenizationService and ACHClientSessionService (#1206)
+- Migrate PrimerAPIConfigurationModule, VaultService, PrimerDelegate, PrimerHeadlessUniversalCheckout and VaultManager (#1217)
+
 ## 2.38.3 (2025-07-02)
 
 ### Fix
