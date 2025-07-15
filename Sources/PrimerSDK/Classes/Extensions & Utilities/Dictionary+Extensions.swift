@@ -1,13 +1,6 @@
-//
-//  Dictionary+Extensions.swift
-//  PrimerSDK
-//
-//  Created by Jack Newcombe on 02/01/2024.
-//
+import struct Swift.Dictionary
 
-import Foundation
-
-extension Dictionary<String, String>? {
+public extension [String: String] {
     static func errorUserInfoDictionary<T>(
         file: StaticString = #file,
         function: StaticString = #function,
