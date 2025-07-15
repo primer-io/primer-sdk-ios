@@ -62,7 +62,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
     }
-
+    
     override func start() {
         self.didPresentExternalView = { [weak self] in
             if let strongSelf = self {
@@ -71,6 +71,16 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         super.start()
+    }
+
+    override func start_async() {
+        self.didPresentExternalView = { [weak self] in
+            if let strongSelf = self {
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: strongSelf.config.type)
+            }
+        }
+
+        super.start_async()
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -180,8 +190,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performTokenizationStep() async throws {
-        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
         let paymentMethodTokenData = try await tokenize()
         self.paymentMethodTokenData = paymentMethodTokenData

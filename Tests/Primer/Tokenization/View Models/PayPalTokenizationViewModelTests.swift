@@ -1,15 +1,7 @@
-//
-//  PayPalTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
-
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PayPalTokenizationViewModelTests: XCTestCase {
-
     var uiManager: MockPrimerUIManager!
 
     var tokenizationService: MockTokenizationService!
@@ -19,7 +11,6 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
     var sut: PayPalTokenizationViewModel!
 
     override func setUpWithError() throws {
-
         uiManager = MockPrimerUIManager()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
@@ -78,6 +69,47 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
+    func testStartWithPreTokenizationAndAbort_async() throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return .success(())
+        }
+
+        _ = uiManager.prepareRootViewController()
+
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
+            decision(.abortPaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        delegate.onDidFail = { error in
+            switch error {
+            case PrimerError.merchantError:
+                break
+            default:
+                XCTFail()
+            }
+            expectWillAbort.fulfill()
+        }
+
+        sut.start_async()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectWillAbort
+        ], timeout: 10.0, enforceOrder: true)
+    }
+
     func testStartWithFullCheckoutFlow() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
@@ -97,19 +129,19 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let payPalService = MockPayPalService()
         sut.payPalService = payPalService
         payPalService.onStartOrderSession = {
-            return .init(orderId: "order_id", approvalUrl: "https://approval.url/")
+            .init(orderId: "order_id", approvalUrl: "https://approval.url/")
         }
         payPalService.onFetchPayPalExternalPayerInfo = { _ in
-            return .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
-                                                                       email: "john@appleseed.com",
-                                                                       firstName: "John",
-                                                                       lastName: "Appleseed"))
+            .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
+                                                                email: "john@appleseed.com",
+                                                                firstName: "John",
+                                                                lastName: "Appleseed"))
         }
 
         let webAuthenticationService = MockWebAuthenticationService()
         sut.webAuthenticationService = webAuthenticationService
         webAuthenticationService.onConnect = { _, _ in
-            return URL(string: "https://webauthsvc.app/")!
+            URL(string: "https://webauthsvc.app/")!
         }
 
         let mockViewController = MockPrimerRootViewController()
@@ -166,6 +198,94 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         ], timeout: 20.0, enforceOrder: true)
     }
 
+    func testStartWithFullCheckoutFlow_async() throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+
+        PrimerInternal.shared.intent = .checkout
+
+        let settings = PrimerSettings(paymentMethodOptions: .init(urlScheme: "urlscheme://app"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
+        let payPalService = MockPayPalService()
+        sut.payPalService = payPalService
+        payPalService.onStartOrderSession = {
+            .init(orderId: "order_id", approvalUrl: "https://approval.url/")
+        }
+        payPalService.onFetchPayPalExternalPayerInfo = { _ in
+            .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
+                                                                email: "john@appleseed.com",
+                                                                firstName: "John",
+                                                                lastName: "Appleseed"))
+        }
+
+        let webAuthenticationService = MockWebAuthenticationService()
+        sut.webAuthenticationService = webAuthenticationService
+        webAuthenticationService.onConnect = { _, _ in
+            URL(string: "https://webauthsvc.app/")!
+        }
+
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return .success(())
+        }
+
+        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            expectShowPaymentMethod.fulfill()
+        }
+
+        _ = uiManager.prepareRootViewController()
+
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectCheckoutDidCompletewithData = self.expectation(description: "Did complete checkout with data")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
+        }
+
+        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        tokenizationService.onTokenize = { _ in
+            expectOnTokenize.fulfill()
+            return .success(self.tokenizationResponseBody)
+        }
+
+        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectDidCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        delegate.onDidFail = { error in
+            print(error)
+        }
+
+        sut.start_async()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectShowPaymentMethod,
+            expectOnTokenize,
+            expectDidCreatePayment,
+            expectCheckoutDidCompletewithData
+        ], timeout: 20.0, enforceOrder: true)
+    }
+
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
@@ -210,88 +330,5 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
                      customerId: "customer_id",
                      orderId: "order_id",
                      status: .success)
-    }
-}
-
-class MockPayPalService: PayPalServiceProtocol {
-
-    // MARK: startOrderSession
-
-    var onStartOrderSession: (() -> Response.Body.PayPal.CreateOrder)?
-
-    func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, any Error>) -> Void) {
-        if let onStartOrderSession = onStartOrderSession {
-            completion(.success(onStartOrderSession()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
-        guard let result = onStartOrderSession?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-
-        return result
-    }
-
-    // MARK: startBillingAgreementSession
-
-    var onStartBillingAgreementSession: (() -> String)?
-
-    func startBillingAgreementSession(_ completion: @escaping (Result<String, any Error>) -> Void) {
-        if let onStartBillingAgreementSession {
-            completion(.success(onStartBillingAgreementSession()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    func startBillingAgreementSession() async throws -> String {
-        guard let result = onStartBillingAgreementSession?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-
-        return result
-    }
-
-    // MARK: confirmBillingAgreement
-
-    var onConfirmBillingAgreement: (() -> Response.Body.PayPal.ConfirmBillingAgreement)?
-
-    func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, any Error>) -> Void) {
-        if let onConfirmBillingAgreement {
-            completion(.success(onConfirmBillingAgreement()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        guard let result = onConfirmBillingAgreement?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-
-        return result
-    }
-
-    // MARK: fetchPayPalExternalPayerInfo
-
-    var onFetchPayPalExternalPayerInfo: ((String) -> Response.Body.PayPal.PayerInfo)?
-
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, any Error>) -> Void) {
-        if let onFetchPayPalExternalPayerInfo {
-            completion(.success(onFetchPayPalExternalPayerInfo(orderId)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
-        guard let result = onFetchPayPalExternalPayerInfo?(orderId) else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-
-        return result
     }
 }
