@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import PassKit
 @testable import PrimerSDK
 
 final class ApplePayPresentationManagerTests: XCTestCase {
@@ -251,5 +252,62 @@ final class ApplePayPresentationManagerTests: XCTestCase {
 
         XCTAssertEqual(billingFields, [])
         XCTAssertEqual(shippingFields, [])
+    }
+    
+    // MARK: - Additional coverage tests
+    
+    func testCreateRequestWithNilShippingMethods() throws {
+        let applePayRequest = ApplePayRequest(
+            currency: Currency(code: "USD", decimalDigits: 2),
+            merchantIdentifier: "merchant_id",
+            countryCode: .us,
+            items: [],
+            shippingMethods: nil
+        )
+        
+        let request = try sut.createRequest(for: applePayRequest)
+        
+        XCTAssertNil(request.shippingMethods)
+        XCTAssertEqual(request.merchantIdentifier, "merchant_id")
+        XCTAssertEqual(request.countryCode, "US")
+    }
+    
+    // MARK: - Error for display tests
+    
+    func testErrorForDisplayWithCheckProvidedNetworksFalse() {
+        // First ensure settings without checkProvidedNetworks
+        let settings = PrimerSettings(paymentMethodOptions:
+                                        .init(applePayOptions:
+                                                .init(merchantIdentifier: "merchant_id", 
+                                                      merchantName: "merchant_name", 
+                                                      checkProvidedNetworks: false)
+                                        )
+        )
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
+        let error = sut.errorForDisplay
+        
+        guard let primerError = error as? PrimerError else {
+            XCTFail("Expected PrimerError")
+            return
+        }
+        
+        // When checkProvidedNetworks is false and device supports Apple Pay, 
+        // it should return the generic unableToPresentApplePay error
+        switch primerError {
+        case .unableToPresentApplePay:
+            XCTAssertEqual(primerError.errorId, "unable-to-present-apple-pay")
+        default:
+            XCTFail("Expected unableToPresentApplePay error")
+        }
+    }
+
+    // MARK: - PKContactField extension tests
+    
+    func testPKContactFieldExtension() {
+        XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.name.toPKContact(), .name)
+        XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.emailAddress.toPKContact(), .emailAddress)
+        XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.phoneNumber.toPKContact(), .phoneNumber)
+        XCTAssertEqual(PrimerApplePayOptions.RequiredContactField.postalAddress.toPKContact(), .postalAddress)
     }
 }
