@@ -62,7 +62,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
     }
-    
+
     override func start() {
         self.didPresentExternalView = { [weak self] in
             if let strongSelf = self {
