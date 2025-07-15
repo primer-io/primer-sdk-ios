@@ -218,34 +218,24 @@ internal extension String {
             throw err
 
         } else {
-            var dateString = self
+            var expiryDate: Date?
             
-            // Check if it's MM/YY format and convert to MM/YYYY
-            let components = self.split(separator: "/")
-            if components.count == 2 {
-                let yearComponent = String(components[1])
-                if yearComponent.count == 2 {
-                    // Convert YY to YYYY by adding "20" prefix
-                    dateString = "\(components[0])/20\(yearComponent)"
-                }
+            // Try MM/yy format first
+            let shortFormatter = DateFormatter()
+            shortFormatter.dateFormat = "MM/yy"
+            shortFormatter.locale = Locale(identifier: "en_US_POSIX")
+            
+            if let date = shortFormatter.date(from: self) {
+                expiryDate = date
+            } else {
+                // Try MM/yyyy format
+                let longFormatter = DateFormatter()
+                longFormatter.dateFormat = "MM/yyyy"
+                longFormatter.locale = Locale(identifier: "en_US_POSIX")
+                expiryDate = longFormatter.date(from: self)
             }
             
-            let dateFormatter = DateFormatter()
-            var dateString = self
-            
-            // Check if it's MM/YY format and convert to MM/YYYY
-            let components = self.split(separator: "/")
-            if components.count == 2 {
-                let yearComponent = String(components[1])
-                if yearComponent.count == 2 {
-                    // Convert YY to YYYY by adding "20" prefix
-                    dateString = "\(components[0])/20\(yearComponent)"
-                }
-            }
-            
-            dateFormatter.dateFormat = "MM/yyyy"
-
-            if let expiryDate = dateFormatter.date(from: dateString) {
+            if let expiryDate = expiryDate {
                 if !expiryDate.isValidExpiryDate {
                     let err = PrimerValidationError.invalidExpiryDate(
                         message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
@@ -253,7 +243,6 @@ internal extension String {
                         diagnosticsId: UUID().uuidString)
                     throw err
                 }
-
             } else {
                 let err = PrimerValidationError.invalidExpiryDate(
                     message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.",
