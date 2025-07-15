@@ -21,7 +21,7 @@ final class ErrorHandler: LogReporter {
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
-        logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
+            logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
         }
 
         var event: Analytics.Event!
@@ -78,12 +78,9 @@ final class ErrorHandler: LogReporter {
         }
 
         // Filter out non-actionable Apple Pay errors
-        switch primerError as? PrimerError {
-            case .applePayNoCardsInWallet, .applePayDeviceNotSupported: true
-            default: false
-        }
+        switch primerError {
         case .applePayNoCardsInWallet,
-             .applePayDeviceNotSupported:
+                .applePayDeviceNotSupported:
             return true
         default:
             return false
@@ -92,11 +89,8 @@ final class ErrorHandler: LogReporter {
 
     private func determineErrorSeverity(_ error: PrimerError) -> Analytics.Event.Property.Severity {
         switch error {
-            case .applePayNoCardsInWallet,  .applePayDeviceNotSupported: .warning
-            default: .error
-        }
         case .applePayNoCardsInWallet,
-             .applePayDeviceNotSupported:
+                .applePayDeviceNotSupported:
             return .warning
         default:
             return .error
