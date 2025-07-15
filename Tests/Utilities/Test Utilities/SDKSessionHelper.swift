@@ -26,7 +26,8 @@ final class SDKSessionHelper {
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
                                                 paymentMethod: .init(vaultOnSuccess: false,
                                                                      options: paymentMethodOptions,
-                                                                     orderedAllowedCardNetworks: nil),
+                                                                     orderedAllowedCardNetworks: nil,
+                                                                     descriptor: nil),
                                                 order: order,
                                                 customer: customer,
                                                 testId: showTestId ? "test_id" : nil)
@@ -90,9 +91,12 @@ final class SDKSessionHelper {
     static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
-            paymentMethod: .init(vaultOnSuccess: false,
-                                 options: nil,
-                                 orderedAllowedCardNetworks: cardNetworks.map { $0.rawValue }),
+            paymentMethod: .init(
+                vaultOnSuccess: false,
+                options: nil,
+                orderedAllowedCardNetworks: cardNetworks.map(\.rawValue),
+                descriptor: nil
+            ),
             order: nil,
             customer: nil,
             testId: nil

@@ -320,26 +320,33 @@ final class ClientSession {
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
         let orderedAllowedCardNetworks: [String]?
+        let descriptor: String?
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case vaultOnSuccess,
                  options,
-                 orderedAllowedCardNetworks
+                 orderedAllowedCardNetworks,
+                 descriptor
         }
 
-        init(vaultOnSuccess: Bool,
-             options: [[String: Any]]?,
-             orderedAllowedCardNetworks: [String]?) {
+        init(
+            vaultOnSuccess: Bool,
+            options: [[String: Any]]?,
+            orderedAllowedCardNetworks: [String]?,
+            descriptor: String?
+        ) {
             self.vaultOnSuccess = vaultOnSuccess
             self.options = options
             self.orderedAllowedCardNetworks = orderedAllowedCardNetworks
+            self.descriptor = descriptor
         }
 
         required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
             self.orderedAllowedCardNetworks = try? container.decode([String].self, forKey: .orderedAllowedCardNetworks)
+            self.descriptor = try? container.decode(String.self, forKey: .descriptor)
 
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),

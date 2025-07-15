@@ -90,7 +90,9 @@ class KlarnaTestsMocks {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil),
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -101,7 +103,8 @@ class KlarnaTestsMocks {
                 fees: nil,
                 lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil),
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
     }
 
     static func getMockPrimerApiConfiguration(clientSession: ClientSession.APIResponse) -> Response.Body.Configuration {
