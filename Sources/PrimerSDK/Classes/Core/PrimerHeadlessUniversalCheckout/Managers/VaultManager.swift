@@ -517,7 +517,7 @@ extension PrimerHeadlessUniversalCheckout {
         private func startManualPaymentFlowAndFetchToken(
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
-            let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+            let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
 
             if let resumeType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeType {
@@ -1017,7 +1017,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-            let resumeDecision = try await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
+            let resumeDecision = await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
 
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
