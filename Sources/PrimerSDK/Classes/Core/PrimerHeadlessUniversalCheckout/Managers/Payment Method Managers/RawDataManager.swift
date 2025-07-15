@@ -334,7 +334,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
                     let requestBody = try await self.makeRequestBody()
-                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
+                    await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
 
                     let paymentMethodTokenData = try await self.tokenizationService.tokenize(requestBody: requestBody)
                     self.paymentMethodTokenData = paymentMethodTokenData
@@ -342,7 +342,7 @@ extension PrimerHeadlessUniversalCheckout {
                     let checkoutData = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
 
                     if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
-                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                        await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 } catch {
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
@@ -752,7 +752,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
         private func startManualPaymentFlowAndFetchToken(
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> DecodedJWTToken? {
-            let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+            let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
 
             if let resumeType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeType {
@@ -1243,7 +1243,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
 
             if isManualPaymentHandling {
-                PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+                await PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
             }
 
             return nil
@@ -1323,7 +1323,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
         }
 
         private func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-            let resumeDecision = try await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
+            let resumeDecision = await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
 
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
