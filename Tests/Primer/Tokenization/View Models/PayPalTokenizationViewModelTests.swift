@@ -82,7 +82,9 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             return .success(())
         }
 
-        _ = uiManager.prepareRootViewController()
+        Task {
+            try? await uiManager.prepareRootViewController()
+        }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
@@ -238,12 +240,9 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             return .success(())
         }
 
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
-        uiDelegate.onUIDidShowPaymentMethod = { _ in
-            expectShowPaymentMethod.fulfill()
+        Task {
+            try? await uiManager.prepareRootViewController()
         }
-
-        _ = uiManager.prepareRootViewController()
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
@@ -252,11 +251,9 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "Did complete checkout with data")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
+        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            expectShowPaymentMethod.fulfill()
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
@@ -271,6 +268,12 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             return self.paymentResponseBody
         }
 
+        let expectCheckoutDidCompletewithData = self.expectation(description: "Did complete checkout with data")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
+        }
         delegate.onDidFail = { error in
             print(error)
         }
