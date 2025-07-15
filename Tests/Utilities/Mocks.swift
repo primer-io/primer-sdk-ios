@@ -76,7 +76,9 @@ class Mocks {
         paymentMethodType: nil,
         sessionInfo: nil,
         bankName: nil,
-        accountNumberLast4Digits: nil)
+        accountNumberLast4Digits: nil,
+        applePayMerchantTokenIdentifier: nil
+    )
 
     static var payment = Response.Body.Payment(
         id: "mock_id",
@@ -381,73 +383,6 @@ class MockLocator {
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
         DependencyContainer.register(state as AppStateProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
-    }
-}
-
-class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
-
-    static var apiClient: PrimerAPIClientProtocol?
-
-    static var clientToken: JWTToken? {
-        return PrimerAPIConfigurationModule.clientToken
-    }
-
-    static var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
-    }
-
-    static var apiConfiguration: PrimerAPIConfiguration? {
-        return PrimerAPIConfigurationModule.apiConfiguration
-    }
-
-    static func resetSession() {
-        PrimerAPIConfigurationModule.resetSession()
-    }
-
-    // MARK: - MOCKED PROPERTIES
-
-    var mockedNetworkDelay: TimeInterval = 0.5
-    var mockedAPIConfiguration: PrimerAPIConfiguration?
-
-    func setupSession(
-        forClientToken clientToken: String,
-        requestDisplayMetadata: Bool,
-        requestClientTokenValidation: Bool,
-        requestVaultedPaymentMethods: Bool
-    ) -> Promise<Void> {
-        return Promise { seal in
-            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
-                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
-                return
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.clientToken = clientToken
-                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
-                seal.fulfill()
-            }
-        }
-    }
-
-    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { _ in
-            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
-                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
-                return
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
-            }
-        }
-    }
-
-    func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
-        return Promise { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.clientToken = newClientToken
-            }
-        }
     }
 }
 

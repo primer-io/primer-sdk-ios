@@ -9,6 +9,7 @@
 
 import Foundation
 
+// MARK: MISSING_TESTS
 final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -75,6 +76,31 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
         }
     }
 
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
+        guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
+            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let rawData = data as? PrimerRetailerData else {
+            let err = PrimerError.invalidValue(key: "rawData", value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        return Request.Body.Tokenization(
+            paymentInstrument: OffSessionPaymentInstrument(
+                paymentMethodConfigId: paymentMethodId,
+                paymentMethodType: paymentMethodType,
+                sessionInfo: RetailOutletTokenizationSessionRequestParameters(retailOutlet: rawData.id)
+            )
+        )
+    }
+
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async {
@@ -125,11 +151,48 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
         }
     }
 
+    func validateRawData(_ data: PrimerRawData) async throws {
+        var errors: [PrimerValidationError] = []
+
+        guard let rawData = data as? PrimerRetailerData else {
+            let err = PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errors.append(err)
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        if rawData.id.isEmpty {
+            errors.append(PrimerValidationError.invalidRawData(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            ))
+        }
+
+        guard errors.isEmpty else {
+            let err = PrimerError.underlyingErrors(
+                errors: errors,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+
+            notifyDelegateOfValidationResult(isValid: false, errors: errors)
+            throw err
+        }
+
+        notifyDelegateOfValidationResult(isValid: true, errors: nil)
+    }
+
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+            guard let self, let rawDataManager else { return }
 
             rawDataManager.delegate?.primerRawDataManager?(
                 rawDataManager,

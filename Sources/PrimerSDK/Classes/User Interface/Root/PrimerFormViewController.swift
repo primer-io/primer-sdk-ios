@@ -1,13 +1,3 @@
-//
-//  PrimerFormViewController.swift
-//  PrimerSDK
-//
-//  Created by Evangelos Pittas on 27/7/21.
-//
-
-// swiftlint:disable function_body_length
-// swiftlint:disable line_length
-
 import UIKit
 
 class PrimerFormViewController: PrimerViewController {

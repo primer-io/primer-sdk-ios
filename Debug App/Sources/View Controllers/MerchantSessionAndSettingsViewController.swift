@@ -924,7 +924,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://primer.io",
                 applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: "merchant.checkout.team",
+                    merchantIdentifier: "merchant.dx.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     showApplePayForUnsupportedDevice: false,

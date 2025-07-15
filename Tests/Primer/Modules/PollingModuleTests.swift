@@ -1,8 +1,7 @@
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class PollingModuleTests: XCTestCase {
-
     func test_successful_polling() throws {
         let expectation = XCTestExpectation(description: "Poll URL | Success")
 
@@ -87,7 +86,6 @@ class PollingModuleTests: XCTestCase {
         }
         .catch { err in
             if let primerErr = err as? PrimerError, case .invalidClientToken = primerErr {
-
             } else {
                 XCTAssert(false, "Polling failed with error \(err.localizedDescription), but it should fail with error .invalidClientToken")
             }

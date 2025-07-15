@@ -7,16 +7,47 @@
 
 import Foundation
 
-internal enum InternalError: PrimerErrorProtocol {
-
-    case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidResponse(userInfo: [String: String]?, diagnosticsId: String?)
-    case noData(userInfo: [String: String]?, diagnosticsId: String?)
-    case serverError(status: Int, response: PrimerServerError?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unauthorized(url: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
+enum InternalError: PrimerErrorProtocol {
+    case failedToDecode(
+        message: String?,
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidUrl(
+        url: String?,
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidValue(
+        key: String,
+        value: Any? = nil,
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidResponse(
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case noData(
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case serverError(
+        status: Int,
+        response: PrimerServerError? = nil,
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unauthorized(
+        url: String,
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case underlyingErrors(
+        errors: [Error],
+        userInfo: [String: String] = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
     case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
     case failedToPerform3dsAndShouldBreak(error: Error)
     case noNeedToPerform3ds(status: String)
@@ -145,7 +176,7 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 
     var analyticsContext: [String: Any] {
-        var context: [String: Any] = [: ]
+        var context: [String: Any] = [:]
         context[AnalyticsContextKeys.errorId] = errorId
         return context
     }

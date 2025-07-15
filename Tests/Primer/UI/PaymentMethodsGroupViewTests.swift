@@ -1,10 +1,3 @@
-//
-//  PaymentMethodsGroupViewTests.swift
-//
-//
-//  Created by Jack Newcombe on 11/06/2024.
-//
-
 import XCTest
 @testable import PrimerSDK
 
@@ -66,41 +59,83 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
+    func performPreTokenizationSteps() async throws {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
     func performTokenizationStep() -> Promise<Void> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+    }
+
+    func performTokenizationStep() async throws {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
     }
 
     func performPostTokenizationSteps() -> Promise<Void> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
+    func performPostTokenizationSteps() async throws {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
     func tokenize() -> PrimerSDK.Promise<PrimerPaymentMethodTokenData> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+    }
+
+    func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
     }
 
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
+    func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+    }
+
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
     }
 
     func presentPaymentMethodUserInterface() -> Promise<Void> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
+    func presentPaymentMethodUserInterface() async throws {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
     func awaitUserInput() -> Promise<Void> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
+
+    func awaitUserInput() async throws {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                             paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+    }
+
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> PrimerSDK.Promise<PrimerSDK.PrimerCheckoutData?> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+    }
+
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerSDK.PrimerCheckoutData? {
+        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
     }
 
     func handleSuccessfulFlow() {

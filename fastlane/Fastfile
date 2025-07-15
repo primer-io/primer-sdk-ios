@@ -91,7 +91,7 @@ platform :ios do
       podfile: podfile_path
     )
 
-    # Build for browserstack
+    # Build for lambdatest
     build_app(
       scheme: app_scheme,
       workspace: app_workspace,
@@ -101,8 +101,8 @@ platform :ios do
       xcargs: "-allowProvisioningUpdates"
     )
 
-    # Upload to Browserstack
-    upload_to_browserstack_and_save_id(
+    # Upload to LambdaTest
+    upload_to_lambdatest_and_save_id(
       file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
@@ -252,16 +252,18 @@ platform :ios do
 
   end
 
-  desc 'This action uploads the .ipa to Browserstack and save its ID into a file'
-  private_lane :upload_to_browserstack_and_save_id do |options|
+  desc 'This action uploads the .ipa to LambdaTest and save its ID into a file'
+  private_lane :upload_to_lambdatest_and_save_id do |options|
 
-    upload_to_browserstack_app_automate(
-      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
-      file_path: options[:file_path]
+    upload_to_lambdatest(
+      lt_username: ENV["LAMBDATEST_USERNAME"],
+      lt_access_key: ENV["LAMBDATEST_ACCESS_KEY"],
+      file_path: options[:file_path],
+      custom_id: source_branch_trimmed,
+      visibility: "team"
     )
 
-    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
+    save_lambdatest_id(lambdatest_id: ENV['APP_URL'])
 
   end
 
@@ -324,15 +326,15 @@ platform :ios do
     sh("echo LIVEDEMOSTORE_URL=#{url} >> $GITHUB_ENV")
   end
 
-  desc 'Store the Browserstack ID into a file'
-  private_lane :save_browserstack_id do |options|
+  desc 'Store the LambdaTest ID into a file'
+  private_lane :save_lambdatest_id do |options|
 
-    browserstack_id_to_save = options[:browserstack_id]
-    browserstack_id_file = "/var/tmp/browserstack_id.txt"
+    lambdatest_id_to_save = options[:lambdatest_id]
+    lambdatest_id_file = "/var/tmp/lambdatest_id.txt" 
 
-    UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
+    UI.message("Saving #{lambdatest_id_to_save} into #{lambdatest_id_file}")
 
-    File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
+    File.open(lambdatest_id_file, 'w') { |file| file.write(options[:lambdatest_id]) }
 
   end
 

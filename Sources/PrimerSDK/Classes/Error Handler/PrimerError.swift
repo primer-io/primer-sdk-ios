@@ -1,17 +1,8 @@
-//
-//  Error.swift
-//  PrimerSDK
-//
-//  Created by Evangelos Pittas on 16/3/21.
-//
-
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
-
 import Foundation
-import UIKit
 
-struct AnalyticsContextKeys {
+enum AnalyticsContextKeys {
     static let createdAt = "createdAt"
     static let paymentMethodType = "paymentMethodType"
     static let reasonCode = "reasonCode"
@@ -30,54 +21,190 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
-    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
-    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerInputElement(inputElementType: PrimerInputElementType,
-                                   userInfo: [String: String]?,
-                                   diagnosticsId: String)
-    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
-    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
-    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedPaymentMethodForManager(paymentMethodType: String,
-                                            category: String,
-                                            userInfo: [String: String]?,
-                                            diagnosticsId: String)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
-    case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
-    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case paymentFailed(paymentMethodType: String?,
-                       paymentId: String,
-                       orderId: String?,
-                       status: String,
-                       userInfo: [String: String]?,
-                       diagnosticsId: String)
-    case failedToCreatePayment(paymentMethodType: String,
-                               description: String,
-                               userInfo: [String: String]?,
-                               diagnosticsId: String)
-    case failedToResumePayment(paymentMethodType: String,
-                               description: String,
-                               userInfo: [String: String]?,
-                               diagnosticsId: String)
-    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
-    case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case nolSdkInitError(userInfo: [String: String]?, diagnosticsId: String)
-    case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case klarnaUserNotApproved(userInfo: [String: String]?, diagnosticsId: String)
-    case stripeError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
-    case unknown(userInfo: [String: String]?, diagnosticsId: String)
+    case uninitializedSDKSession(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidClientToken(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case missingPrimerConfiguration(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case misconfiguredPaymentMethods(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case missingPrimerInputElement(
+        inputElementType: PrimerInputElementType,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case cancelled(
+        paymentMethodType: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case failedToCreateSession(
+        error: Error?,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidUrl(
+        url: String?,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidArchitecture(
+        description: String,
+        recoverSuggestion: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case invalidClientSessionValue(
+        name: String,
+        value: String? = nil,
+        allowedValue: String? = nil,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidMerchantIdentifier(
+        merchantIdentifier: String? = nil,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidValue(
+        key: String,
+        value: Any? = nil,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unableToMakePaymentsOnProvidedNetworks(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unableToPresentPaymentMethod(
+        paymentMethodType: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedIntent(
+        intent: PrimerSessionIntent,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedPaymentMethod(
+        paymentMethodType: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case unsupportedPaymentMethodForManager(
+        paymentMethodType: String,
+        category: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case underlyingErrors(
+        errors: [Error],
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case missingSDK(
+        paymentMethodType: String,
+        sdkName: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case merchantError(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case paymentFailed(
+        paymentMethodType: String?,
+        paymentId: String,
+        orderId: String?,
+        status: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case failedToCreatePayment(
+        paymentMethodType: String,
+        description: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case failedToResumePayment(
+        paymentMethodType: String,
+        description: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case applePayTimedOut(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidVaultedPaymentMethodId(
+        vaultedPaymentMethodId: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case nolError(
+        code: String?,
+        message: String?,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case nolSdkInitError(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case klarnaError(
+        message: String?,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case klarnaUserNotApproved(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case stripeError(
+        key: String,
+        message: String?,
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+    case unableToPresentApplePay(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+
+    case applePayNoCardsInWallet(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+
+    case applePayDeviceNotSupported(
+        userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+
+    case applePayConfigurationError(
+        merchantIdentifier: String?, userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+
+    case applePayPresentationFailed(
+        reason: String?, userInfo: [String: String]?,
+        diagnosticsId: String = .uuid
+    )
+
+    case unknown(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
 
     public var errorId: String {
         switch self {
@@ -143,6 +270,14 @@ public enum PrimerError: PrimerErrorProtocol {
             return key
         case .unableToPresentApplePay:
             return "unable-to-present-apple-pay"
+        case .applePayNoCardsInWallet:
+            return "apple-pay-no-cards-in-wallet"
+        case .applePayDeviceNotSupported:
+            return "apple-pay-device-not-supported"
+        case .applePayConfigurationError:
+            return "apple-pay-configuration-error"
+        case .applePayPresentationFailed:
+            return "apple-pay-presentation-failed"
         case .unknown:
             return "unknown"
         }
@@ -188,6 +323,14 @@ public enum PrimerError: PrimerErrorProtocol {
         case .unableToPresentPaymentMethod(_, _, let diagnosticsId):
             return diagnosticsId
         case .unableToPresentApplePay(_, let diagnosticsId):
+            return diagnosticsId
+        case .applePayNoCardsInWallet(_, let diagnosticsId):
+            return diagnosticsId
+        case .applePayDeviceNotSupported(_, let diagnosticsId):
+            return diagnosticsId
+        case .applePayConfigurationError(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .applePayPresentationFailed(_, _, let diagnosticsId):
             return diagnosticsId
         case .unsupportedIntent(_, _, let diagnosticsId):
             return diagnosticsId
@@ -290,6 +433,14 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
+        case .applePayNoCardsInWallet:
+            return "Apple Pay has no cards in wallet"
+        case .applePayDeviceNotSupported:
+            return "Device does not support Apple Pay"
+        case .applePayConfigurationError(let merchantIdentifier, _, _):
+            return "Apple Pay configuration error: merchant identifier '\(merchantIdentifier ?? "nil")' may be invalid"
+        case .applePayPresentationFailed(let reason, _, _):
+            return "Apple Pay presentation failed: \(reason ?? "unknown reason")"
         case .unknown:
             return "Something went wrong"
         }
@@ -334,6 +485,10 @@ public enum PrimerError: PrimerErrorProtocol {
              .klarnaUserNotApproved(let userInfo, _),
              .stripeError(_, _, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
+             .applePayNoCardsInWallet(let userInfo, _),
+             .applePayDeviceNotSupported(let userInfo, _),
+             .applePayConfigurationError(_, let userInfo, _),
+             .applePayPresentationFailed(_, let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
         }
@@ -435,6 +590,14 @@ public enum PrimerError: PrimerErrorProtocol {
             and other parameters are set correctly for the current environment.
             """
             return message
+        case .applePayNoCardsInWallet:
+            return "The user needs to add cards to their Apple Wallet to use Apple Pay."
+        case .applePayDeviceNotSupported:
+            return "This device does not support Apple Pay. Apple Pay requires compatible hardware and iOS version."
+        case .applePayConfigurationError:
+            return "Check that the merchant identifier matches your Apple Developer configuration and is valid for the current environment (sandbox/production)."
+        case .applePayPresentationFailed:
+            return "Unable to display Apple Pay sheet. This may be due to system restrictions or temporary issues. Try again later."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(diagnosticsId)"
         }
@@ -464,7 +627,12 @@ public enum PrimerError: PrimerErrorProtocol {
              .failedToResumePayment(let paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
-             .unableToMakePaymentsOnProvidedNetworks:
+             .unableToMakePaymentsOnProvidedNetworks,
+             .unableToPresentApplePay,
+             .applePayNoCardsInWallet,
+             .applePayDeviceNotSupported,
+             .applePayConfigurationError,
+             .applePayPresentationFailed:
             return PrimerPaymentMethodType.applePay.rawValue
         case .nolError,
              .nolSdkInitError:

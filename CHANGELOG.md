@@ -1,3 +1,25 @@
+## 2.38.3 (2025-07-02)
+
+### Fix
+
+- Update Primer3DS version (#1215)
+- Fix non-deprecation warnings (#1190)
+
+### Refactor
+
+- Migrate ThreeDSService (#1203)
+- Migrate PollingModule (#1202)
+- Migrate CreateResumePaymentService (#1201)
+- Migrate PrimerUIManager (#1208)
+- Migrate WebAuthenticationService (#1207)
+- Migrate AnalyticsService (#1199)
+- Migrate CheckoutEventsNotifierModule (#1200)
+- Migrate TokenizationService and related files (#1197)
+- Migrate ImageManager and related files (#1198)
+- Migrate PrimerAPIClient and NetworkService (#1196)
+- Remove redundant OS checks (#1189)
+- Reduce hardcoded image usage (#1186)
+
 ## 2.38.2 (2025-06-11)
 
 ### Fix

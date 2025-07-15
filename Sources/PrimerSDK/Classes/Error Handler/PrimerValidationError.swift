@@ -13,82 +13,143 @@
 import Foundation
 
 public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
-
-    case invalidCardholderName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCardnumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCvv(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPostalCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidFirstName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidLastName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidAddress(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCity(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidState(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCountry(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
-    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String,
-                                                    validVaultedPaymentMethodAdditionalDataType: String,
-                                                    userInfo: [String: String]?,
-                                                    diagnosticsId: String)
-    case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCardType(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidBankId(bankId: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case sessionNotCreated(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPaymentCategory(userInfo: [String: String]?, diagnosticsId: String)
-    case paymentAlreadyFinalized(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidUserDetails(field: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidCardholderName(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidCardnumber(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidCvv(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidExpiryDate(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidPostalCode(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidFirstName(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidLastName(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidAddress(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidCity(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidState(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidCountry(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidPhoneNumber(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidRetailer(
+        message: String,
+        userInfo: [String: String]?,
+        diagnosticsId: String
+    )
+    case invalidRawData(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case vaultedPaymentMethodAdditionalDataMismatch(
+        paymentMethodType: String,
+        validVaultedPaymentMethodAdditionalDataType: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidOTPCode(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidCardType(
+        message: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case banksNotLoaded(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidBankId(
+        bankId: String?,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case sessionNotCreated(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidPaymentCategory(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case paymentAlreadyFinalized(
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
+    case invalidUserDetails(
+        field: String,
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
+    )
 
     public var diagnosticsId: String {
         switch self {
-        case .invalidCardholderName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCardnumber(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCvv(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidExpiryDate(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidPostalCode(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidFirstName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidLastName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidAddress(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCity(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidState(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCountry(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidPhoneNumber(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidRawData(_, let diagnosticsId):
-            return diagnosticsId
-        case .invalidRetailer(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidOTPCode(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCardType(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .banksNotLoaded(userInfo: _, let diagnosticId):
-            return diagnosticId
-        case .invalidBankId(bankId: _, userInfo: _, let diagnosticId):
-            return diagnosticId
-        case .sessionNotCreated(userInfo: _, diagnosticsId: let diagnosticsId):
-            return diagnosticsId
-        case .invalidPaymentCategory(userInfo: _, diagnosticsId: let diagnosticsId):
-            return diagnosticsId
-        case .paymentAlreadyFinalized(userInfo: _, diagnosticsId: let diagnosticsId):
-            return diagnosticsId
-        case .invalidUserDetails(_, _, let diagnosticsId):
-            return diagnosticsId
+        case let .invalidCardholderName(_, _, diagnosticsId): diagnosticsId
+        case let .invalidCardnumber(_, _, diagnosticsId): diagnosticsId
+        case let .invalidCvv(_, _, diagnosticsId): diagnosticsId
+        case let .invalidExpiryDate(_, _, diagnosticsId): diagnosticsId
+        case let .invalidPostalCode(_, _, diagnosticsId): diagnosticsId
+        case let .invalidFirstName(_, _, diagnosticsId): diagnosticsId
+        case let .invalidLastName(_, _, diagnosticsId): diagnosticsId
+        case let .invalidAddress(_, _, diagnosticsId): diagnosticsId
+        case let .invalidCity(_, _, diagnosticsId): diagnosticsId
+        case let .invalidState(_, _, diagnosticsId): diagnosticsId
+        case let .invalidCountry(_, _, diagnosticsId): diagnosticsId
+        case let .invalidPhoneNumber(_, _, diagnosticsId): diagnosticsId
+        case .invalidRetailer(_, _, let diagnosticsId): diagnosticsId
+        case let .invalidRawData(_, diagnosticsId): diagnosticsId
+        case let .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, diagnosticsId): diagnosticsId
+        case let .invalidOTPCode(_, _, diagnosticsId): diagnosticsId
+        case let .invalidCardType(_, _, diagnosticsId): diagnosticsId
+        case .banksNotLoaded(userInfo: _, let diagnosticId): diagnosticId
+        case .invalidBankId(bankId: _, userInfo: _, let diagnosticId): diagnosticId
+        case .sessionNotCreated(userInfo: _, diagnosticsId: let diagnosticsId): diagnosticsId
+        case .invalidPaymentCategory(userInfo: _, diagnosticsId: let diagnosticsId): diagnosticsId
+        case .paymentAlreadyFinalized(userInfo: _, diagnosticsId: let diagnosticsId): diagnosticsId
+        case let .invalidUserDetails(_, _, diagnosticsId): diagnosticsId
         }
     }
 
