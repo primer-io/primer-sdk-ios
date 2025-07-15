@@ -134,11 +134,9 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() async throws {
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
-        }
+        await PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
 
-        let event = Analytics.Event.ui(
+        Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
@@ -150,9 +148,8 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             objectId: .select,
             objectClass: "\(Self.self)",
             place: .paymentMethodPopup
-        )
+        ))
 
-        try await Analytics.Service.record(event: event)
         await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
             imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
             message: nil
@@ -190,10 +187,9 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performTokenizationStep() async throws {
-        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        let paymentMethodTokenData = try await tokenize()
-        self.paymentMethodTokenData = paymentMethodTokenData
+        self.paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -203,7 +199,9 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func performPostTokenizationSteps() async throws {}
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
+    }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
@@ -247,8 +245,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func awaitUserInput() async throws {
-        let instrument = try await createPaypalPaymentInstrument()
-        self.payPalInstrument = instrument
+        self.payPalInstrument = try await createPaypalPaymentInstrument()
     }
 
     private func fetchOAuthURL() -> Promise<URL> {
@@ -356,7 +353,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func createOAuthSession(_ url: URL) async throws -> URL {
         let scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        let oauthUrl = try await webAuthenticationService.connect(paymentMethodType: self.config.type, url: url, scheme: scheme)
+        let oauthUrl = try await webAuthenticationService.connect(paymentMethodType: config.type, url: url, scheme: scheme)
         webAuthenticationService.session?.cancel()
         return oauthUrl
     }
@@ -470,9 +467,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    private func generatePaypalPaymentInstrument(
-        externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?
-    ) async throws -> PayPalPaymentInstrument {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?) async throws -> PayPalPaymentInstrument {
         switch PrimerInternal.shared.intent {
         case .checkout:
             guard let orderId = orderId else {
@@ -625,7 +620,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         try await tokenizationService.tokenize(
-            requestBody: Request.Body.Tokenization(paymentInstrument: self.payPalInstrument)
+            requestBody: Request.Body.Tokenization(paymentInstrument: payPalInstrument)
         )
     }
 }

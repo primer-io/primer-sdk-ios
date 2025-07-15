@@ -15,7 +15,8 @@ protocol PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
     func prepareRootViewController() -> Promise<Void>
-    func prepareRootViewController() async throws
+    @MainActor
+    func prepareRootViewController() async
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String?)
@@ -158,7 +159,7 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     @MainActor
-    func prepareRootViewController() async throws {
+    func prepareRootViewController() async {
         if PrimerUIManager.primerRootViewController == nil {
             primerRootViewController = PrimerRootViewController()
         }
@@ -342,8 +343,8 @@ extension PrimerUIManager {
     }
 
     @MainActor
-    static func prepareRootViewController() async throws {
-        try await shared.prepareRootViewController()
+    static func prepareRootViewController() async {
+        await shared.prepareRootViewController()
     }
 
     static func validatePaymentUIPresentation() -> Promise<Void> {

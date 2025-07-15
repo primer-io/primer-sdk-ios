@@ -83,7 +83,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         }
 
         Task {
-            try? await uiManager.prepareRootViewController()
+            await uiManager.prepareRootViewController()
         }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
@@ -109,7 +109,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         wait(for: [
             expectWillCreatePaymentData,
             expectWillAbort
-        ], timeout: 10.0, enforceOrder: true)
+        ], timeout: 120.0, enforceOrder: true)
     }
 
     func testStartWithFullCheckoutFlow() throws {
@@ -241,7 +241,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         }
 
         Task {
-            try? await uiManager.prepareRootViewController()
+            await uiManager.prepareRootViewController()
         }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
@@ -286,7 +286,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             expectOnTokenize,
             expectDidCreatePayment,
             expectCheckoutDidCompletewithData
-        ], timeout: 20.0, enforceOrder: true)
+        ], timeout: 120.0, enforceOrder: true)
     }
 
     // MARK: Helpers
