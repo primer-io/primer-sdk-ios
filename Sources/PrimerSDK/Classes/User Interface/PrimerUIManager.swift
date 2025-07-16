@@ -257,30 +257,26 @@ final class PrimerUIManager: PrimerUIManaging {
     func validatePaymentUIPresentation_throws() throws {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType))
             }
 
             guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
-                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType))
             }
 
             if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
-                throw PrimerError.unsupportedIntent(intent: .checkout)
+                throw handled(primerError: .unsupportedIntent(intent: .checkout))
 
             } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
-                throw PrimerError.unsupportedIntent(intent: .vault)
+                throw handled(primerError: .unsupportedIntent(intent: .vault))
             }
         }
 
         let state: AppStateProtocol = DependencyContainer.resolve()
 
         if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
-            throw PrimerError.invalidValue(key: "customer.id",
-                                           userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"])
+            throw handled(primerError: .invalidValue(key: "customer.id",
+                                                     userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"]))
         }
     }
 
