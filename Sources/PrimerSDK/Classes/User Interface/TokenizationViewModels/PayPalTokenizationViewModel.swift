@@ -154,7 +154,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
             message: nil
         )
-        
+
         try validate()
 
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
