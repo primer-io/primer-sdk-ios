@@ -179,8 +179,6 @@ public struct PrimerCheckout: View {
     }
 
     public var body: some View {
-        // The internal implementation will be created in Phase 5
-        // For now, return a placeholder that will be replaced
         InternalCheckout(
             clientToken: clientToken,
             settings: settings,
@@ -272,367 +270,81 @@ internal struct InternalCheckout: View {
         initializationError = nil
 
         do {
-            // Follow the exact same pattern as CheckoutComponentsPrimer.swift:267-317
-            // Step 1: Set up SDK integration type and intent
-            PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
-            PrimerInternal.shared.intent = .checkout
-            PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-
-            // Step 2: Register settings in dependency container
-            DependencyContainer.register(settings as PrimerSettingsProtocol)
-
-            // Step 3: Initialize SDK session using configuration module
-            let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-            try await withCheckedThrowingContinuation { continuation in
-                firstly {
-                    apiConfigurationModule.setupSession(
-                        forClientToken: clientToken,
-                        requestDisplayMetadata: true,
-                        requestClientTokenValidation: false,
-                        requestVaultedPaymentMethods: false
-                    )
-                }
-                .done {
-                    continuation.resume()
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-            }
-
-            // Step 4: Configure CheckoutComponents DI container
-            let composableContainer = ComposableContainer()
-            await composableContainer.configure()
-
-            // SDK is now ready - create the checkout scope
-            let defaultScope = DefaultCheckoutScope(
-                clientToken: clientToken,
-                settings: settings,
-                diContainer: diContainer,
-                navigator: navigator,
-                presentationContext: presentationContext
-            )
-
-            checkoutScope = defaultScope
-            sdkInitialized = true
-            isInitializing = false
-
-            // Handle direct card form presentation
-            if presentationContext == .direct {
-                // Navigate directly to card form for direct presentation
-                defaultScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
-            }
-
+            try await performSDKInitialization()
+            await finalizeSDKInitialization()
         } catch {
-            isInitializing = false
+            handleInitializationError(error)
+        }
+    }
 
-            // Convert to PrimerError if needed
-            if let primerError = error as? PrimerError {
-                initializationError = primerError
-            } else {
-                initializationError = PrimerError.underlyingErrors(
-                    errors: [error],
-                    userInfo: .errorUserInfoDictionary(
-                        additionalInfo: ["message": "SDK initialization failed"]
-                    ),
-                    diagnosticsId: UUID().uuidString
+    private func performSDKInitialization() async throws {
+        // Follow the exact same pattern as CheckoutComponentsPrimer.swift:267-317
+        setupSDKIntegration()
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        try await initializeAPIConfiguration()
+
+        let composableContainer = ComposableContainer()
+        await composableContainer.configure()
+    }
+
+    private func setupSDKIntegration() {
+        PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+        PrimerInternal.shared.intent = .checkout
+        PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+    }
+
+    private func initializeAPIConfiguration() async throws {
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+
+        try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                apiConfigurationModule.setupSession(
+                    forClientToken: clientToken,
+                    requestDisplayMetadata: true,
+                    requestClientTokenValidation: false,
+                    requestVaultedPaymentMethods: false
                 )
             }
-        }
-    }
-}
-// MARK: - Generic Payment Method Screen
-
-/// Generic payment method screen that dynamically resolves and displays any payment method
-@available(iOS 15.0, *)
-@MainActor
-internal struct PaymentMethodScreen: View {
-    let paymentMethodType: String
-    let checkoutScope: PrimerCheckoutScope
-
-    var body: some View {
-        // Truly generic dynamic scope resolution for ANY payment method
-        Group {
-            // Use non-generic method to get the scope as existential type, then check specific types
-            if let paymentMethodScope = try? PaymentMethodRegistry.shared.createScope(
-                for: paymentMethodType,
-                checkoutScope: checkoutScope,
-                diContainer: (checkoutScope as? DefaultCheckoutScope)?.diContainer ?? DIContainer.shared
-            ) {
-                // Check if this is a card form scope specifically
-                if let cardFormScope = paymentMethodScope as? any PrimerCardFormScope {
-                    // Check for custom screen first, fallback to default
-                    if let customScreen = checkoutScope.getPaymentMethodScreen(.paymentCard) {
-                        customScreen(cardFormScope)
-                    } else {
-                        AnyView(CardFormScreen(scope: cardFormScope))
-                    }
-                } else {
-                    // For other payment method scopes in the future, we'll add similar type checks here
-                    // For now, show placeholder for non-card payment methods
-                    PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
-                }
-            } else {
-                // This payment method doesn't have a scope implementation yet
-                // Show placeholder that works for any payment method type
-                PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
+            .done {
+                continuation.resume()
+            }
+            .catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }
-}
 
-/// Placeholder screen for payment methods that don't have implemented scopes yet
-@available(iOS 15.0, *)
-@MainActor
-internal struct PaymentMethodPlaceholder: View {
-    let paymentMethodType: String
-
-    var body: some View {
-        AnyView(
-            VStack(spacing: 16) {
-                Image(systemName: paymentMethodIcon)
-                    .font(.system(size: 48))
-                    .foregroundColor(.gray)
-
-                Text("Payment Method: \(displayName)")
-                    .font(.headline)
-
-                Text("Implementation coming soon")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    private func finalizeSDKInitialization() async {
+        let defaultScope = DefaultCheckoutScope(
+            clientToken: clientToken,
+            settings: settings,
+            diContainer: diContainer,
+            navigator: navigator,
+            presentationContext: presentationContext
         )
-    }
 
-    private var displayName: String {
-        PrimerPaymentMethodType(rawValue: paymentMethodType)?.checkoutComponentsDisplayName ?? paymentMethodType
-    }
+        checkoutScope = defaultScope
+        sdkInitialized = true
+        isInitializing = false
 
-    private var paymentMethodIcon: String {
-        switch paymentMethodType {
-        case "PAYMENT_CARD": return "creditcard"
-        case "APPLE_PAY": return "applelogo"
-        case "GOOGLE_PAY": return "wallet.pass"
-        case "PAYPAL": return "dollarsign.circle"
-        default: return "creditcard"
-        }
-    }
-}
-
-// MARK: - Checkout Scope Observer
-
-/// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
-@available(iOS 15.0, *)
-internal struct CheckoutScopeObserver: View, LogReporter {
-    @ObservedObject private var scope: DefaultCheckoutScope
-    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
-    private let onCompletion: (() -> Void)?
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    // Design tokens state
-    @State private var designTokens: DesignTokens?
-    @State private var designTokensManager: DesignTokensManager?
-
-    init(scope: DefaultCheckoutScope, customContent: ((PrimerCheckoutScope) -> AnyView)?, scopeCustomization: ((PrimerCheckoutScope) -> Void)?, onCompletion: (() -> Void)?) {
-        self.scope = scope
-        self.customContent = customContent
-        self.scopeCustomization = scopeCustomization
-        self.onCompletion = onCompletion
-    }
-
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Navigation state driven UI (now properly observing @Published navigationState)
-                ZStack {
-                    switch scope.navigationState {
-                    case .loading:
-                        if let customLoading = scope.loadingScreen {
-                            AnyView(customLoading())
-                        } else {
-                            AnyView(LoadingScreen())
-                        }
-
-                    case .paymentMethodSelection:
-                        if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-                            AnyView(customPaymentSelection(scope.paymentMethodSelection))
-                        } else {
-                            AnyView(PaymentMethodSelectionScreen(
-                                scope: scope.paymentMethodSelection
-                            ))
-                        }
-
-                    case .paymentMethod(let paymentMethodType):
-                        // Handle all payment method types using truly unified dynamic approach
-                        PaymentMethodScreen(
-                            paymentMethodType: paymentMethodType,
-                            checkoutScope: scope
-                        )
-
-                    case .success(let result):
-                        if let customSuccess = scope.successScreen {
-                            AnyView(customSuccess(result))
-                        } else {
-                            AnyView(SuccessScreen(result: result) {
-                                // Handle auto-dismiss with completion callback
-                                logger.info(message: "Success screen auto-dismiss, calling completion callback")
-                                onCompletion?()
-                            })
-                        }
-
-                    case .failure(let error):
-                        if let customError = scope.errorScreen {
-                            AnyView(customError(error.localizedDescription))
-                        } else {
-                            AnyView(ErrorScreen(error: error) {
-                                // Handle auto-dismiss with completion callback
-                                logger.info(message: "Error screen auto-dismiss, calling completion callback")
-                                onCompletion?()
-                            })
-                        }
-                    
-                    case .dismissed:
-                        // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
-                        AnyView(VStack {
-                            Text("Dismissing...")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .onAppear {
-                            logger.info(message: "Checkout dismissed, calling completion callback")
-                            DispatchQueue.main.async {
-                                onCompletion?()
-                            }
-                        })
-                    }
-
-                    // Custom content overlay if provided
-                    if let customContent = customContent {
-                        customContent(scope)
-                    }
-                }
-            }
-            .environmentObject(scope)
-            .environment(\.diContainer, DIContainer.currentSync)
-            .environment(\.designTokens, designTokens)
-        }
-        .onAppear {
-            // Apply any scope customizations (only after SDK is initialized)
-            scopeCustomization?(scope)
-
-            // Set up design tokens
-            Task {
-                await setupDesignTokens()
-            }
-        }
-        .onChange(of: colorScheme) { newColorScheme in
-            // Reload design tokens when color scheme changes
-            Task {
-                await loadDesignTokens(for: newColorScheme)
-            }
+        if presentationContext == .direct {
+            defaultScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
         }
     }
 
-    // MARK: - Design Token Management
+    private func handleInitializationError(_ error: Error) {
+        isInitializing = false
 
-    private func setupDesignTokens() async {
-        logger.info(message: "🎨 [DesignTokens] Setting up design tokens...")
-        do {
-            guard let container = await DIContainer.current else {
-                logger.warn(message: "🎨 [DesignTokens] DI Container not available for design tokens")
-                return
-            }
-
-            designTokensManager = try await container.resolve(DesignTokensManager.self)
-            logger.info(message: "🎨 [DesignTokens] DesignTokensManager resolved successfully")
-            await loadDesignTokens(for: colorScheme)
-        } catch {
-            logger.error(message: "🎨 [DesignTokens] Failed to setup design tokens: \(error)")
+        if let primerError = error as? PrimerError {
+            initializationError = primerError
+        } else {
+            initializationError = PrimerError.underlyingErrors(
+                errors: [error],
+                userInfo: .errorUserInfoDictionary(
+                    additionalInfo: ["message": "SDK initialization failed"]
+                ),
+                diagnosticsId: UUID().uuidString
+            )
         }
-    }
-
-    private func loadDesignTokens(for colorScheme: ColorScheme) async {
-        guard let manager = designTokensManager else {
-            logger.warn(message: "🎨 [DesignTokens] DesignTokensManager not available")
-            return
-        }
-
-        logger.info(message: "🎨 [DesignTokens] Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
-        do {
-            try await manager.fetchTokens(for: colorScheme)
-            await MainActor.run {
-                designTokens = manager.tokens
-                logger.info(message: "🎨 [DesignTokens] Design tokens loaded successfully")
-
-                // Log the specific focus border color for debugging
-                if let focusColor = designTokens?.primerColorBorderOutlinedFocus {
-                    logger.info(message: "🎨 [DesignTokens] Focus border color: \(focusColor)")
-                } else {
-                    logger.warn(message: "🎨 [DesignTokens] Focus border color not found in design tokens!")
-                }
-
-                // Log the brand color for comparison
-                if let brandColor = designTokens?.primerColorBrand {
-                    logger.info(message: "🎨 [DesignTokens] Brand color: \(brandColor)")
-                } else {
-                    logger.warn(message: "🎨 [DesignTokens] Brand color not found in design tokens!")
-                }
-            }
-        } catch {
-            logger.error(message: "🎨 [DesignTokens] Failed to load design tokens: \(error)")
-        }
-    }
-}
-
-// MARK: - SDK Initialization UI Components
-
-/// Loading view shown during SDK initialization
-@available(iOS 15.0, *)
-internal struct SDKInitializationLoadingView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.5)
-
-            Text("Initializing payment system...")
-                .font(.headline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-/// Error view shown when SDK initialization fails
-@available(iOS 15.0, *)
-internal struct SDKInitializationErrorView: View {
-    let error: PrimerError
-    let onRetry: () -> Void
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 48))
-                .foregroundColor(.orange)
-
-            Text("Payment System Error")
-                .font(.headline)
-
-            Text(error.localizedDescription)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            Button("Retry") {
-                onRetry()
-            }
-            .buttonStyle(.borderedProminent)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
     }
 }

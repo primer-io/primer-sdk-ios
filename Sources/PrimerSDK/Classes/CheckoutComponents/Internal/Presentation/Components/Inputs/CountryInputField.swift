@@ -124,10 +124,12 @@ internal struct CountryInputField: View, LogReporter {
                 // Country selector button content
                 Button(action: {
                     onOpenCountrySelector?()
-                }) {
+                }, label: {
                     HStack {
                         Text(countryName.isEmpty ? placeholder : countryName)
-                            .foregroundColor(countryName.isEmpty ? (tokens?.primerColorTextSecondary ?? .secondary) : (tokens?.primerColorTextPrimary ?? .primary))
+                            .foregroundColor(countryName.isEmpty ?
+                                                (tokens?.primerColorTextSecondary ?? .secondary) :
+                                                (tokens?.primerColorTextPrimary ?? .primary))
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         Spacer()
@@ -135,7 +137,7 @@ internal struct CountryInputField: View, LogReporter {
                     .padding(.leading, tokens?.primerSpaceLarge ?? 16)
                     .padding(.trailing, tokens?.primerSizeXxlarge ?? 60)
                     .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
-                }
+                })
                 .buttonStyle(PlainButtonStyle())
 
                 // Right side overlay (error icon or chevron)

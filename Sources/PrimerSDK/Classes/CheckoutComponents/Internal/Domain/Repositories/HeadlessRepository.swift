@@ -37,24 +37,6 @@ internal protocol HeadlessRepository {
         selectedNetwork: CardNetwork?
     ) async throws -> PaymentResult
 
-    /// Tokenizes card data without processing payment.
-    /// - Parameters:
-    ///   - cardNumber: The card number.
-    ///   - cvv: The CVV/CVC code.
-    ///   - expiryMonth: The expiry month (MM).
-    ///   - expiryYear: The expiry year (YY or YYYY).
-    ///   - cardholderName: The name on the card.
-    ///   - selectedNetwork: The selected card network for co-badged cards.
-    /// - Returns: The tokenization result.
-    func tokenizeCard(
-        cardNumber: String,
-        cvv: String,
-        expiryMonth: String,
-        expiryYear: String,
-        cardholderName: String,
-        selectedNetwork: CardNetwork?
-    ) async throws -> TokenizationResult
-
     /// Sets the billing address for the current session.
     /// - Parameter billingAddress: The billing address data.
     func setBillingAddress(_ billingAddress: BillingAddress) async throws

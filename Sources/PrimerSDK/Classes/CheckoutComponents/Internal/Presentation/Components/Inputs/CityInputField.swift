@@ -301,7 +301,7 @@ private struct CityTextField: UIViewRepresentable, LogReporter {
 
         private func validateCity() {
             let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedCity.isEmpty {
                 isValid = false // City is required
@@ -309,7 +309,7 @@ private struct CityTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             let result = validationService.validate(
                 input: city,
                 with: CityRule()

@@ -10,7 +10,8 @@ import Foundation
 /// Factory for creating validation rules
 internal protocol RulesFactory {
     /// Creates a card number validation rule
-    func createCardNumberRule() -> CardNumberRule
+    /// - Parameter allowedCardNetworks: The allowed card networks for validation (defaults to client session config)
+    func createCardNumberRule(allowedCardNetworks: [CardNetwork]?) -> CardNumberRule
 
     /// Creates an expiry date validation rule
     func createExpiryDateRule() -> ExpiryDateRule
@@ -51,8 +52,10 @@ internal protocol RulesFactory {
 /// Default implementation of RulesFactory
 internal final class DefaultRulesFactory: RulesFactory {
 
-    func createCardNumberRule() -> CardNumberRule {
-        return CardNumberRule()
+    func createCardNumberRule(allowedCardNetworks: [CardNetwork]? = nil) -> CardNumberRule {
+        // Use provided networks or default to allowed networks from client session
+        let networks = allowedCardNetworks ?? [CardNetwork].allowedCardNetworks
+        return CardNumberRule(allowedCardNetworks: networks)
     }
 
     func createExpiryDateRule() -> ExpiryDateRule {

@@ -88,9 +88,9 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .success(checkoutResult))
     }
 
-    /// Navigate to success screen (legacy method for backward compatibility)
+    /// Navigate to success screen
     func navigateToSuccess() {
-        logger.info(message: "Legacy success navigation - handled by CheckoutComponentsPrimer delegate")
+        logger.info(message: "Success navigation - handled by CheckoutComponentsPrimer delegate")
 
         // Success handling is now managed by CheckoutComponentsPrimer delegate
         // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately
@@ -144,9 +144,9 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         // In a full implementation, this would contain the actual payment result
         let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: nil)
 
-        // Call the legacy delegate to maintain compatibility
+        // Call the delegate to handle completion
         // The delegate proxy already handles UI dismissal
-        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+        await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
 
         // Dismissal would be handled by parent view controller
     }
@@ -155,9 +155,9 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     private func handleCheckoutError(_ message: String) async {
         // Create a generic error for the delegate
         let nsError = NSError(domain: "CheckoutComponents", code: -1, userInfo: [NSLocalizedDescriptionKey: message])
-        let error = PrimerError.underlyingErrors(errors: [nsError], userInfo: [String: String]?.errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+        let error = PrimerError.underlyingErrors(errors: [nsError], userInfo: [String: String].errorUserInfoDictionary(), diagnosticsId: .uuid)
 
-        // Call the legacy delegate to maintain compatibility
+        // Call the delegate to handle errors
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             // Handle error decision
             switch errorDecision.type {
@@ -170,7 +170,7 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
 /// Environment key for CheckoutNavigator
 @available(iOS 15.0, *)
-internal struct CheckoutNavigatorKey: EnvironmentKey {
+internal struct CheckoutNavigatorKey: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: CheckoutNavigator = CheckoutNavigator()
 }
 

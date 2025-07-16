@@ -33,7 +33,7 @@ internal struct CardNetworkSelector: View {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isExpanded.toggle()
                 }
-            }) {
+            }, label: {
                 HStack {
                     if let icon = selectedNetwork.icon {
                         Image(uiImage: icon)
@@ -56,7 +56,7 @@ internal struct CardNetworkSelector: View {
                 .padding(.vertical, 8)
                 .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                 .cornerRadius(8)
-            }
+            })
 
             // Dropdown list
             if isExpanded {
@@ -69,7 +69,7 @@ internal struct CardNetworkSelector: View {
                                     isExpanded = false
                                     onNetworkSelected?(network)
                                 }
-                            }) {
+                            }, label: {
                                 HStack {
                                     if let icon = network.icon {
                                         Image(uiImage: icon)
@@ -87,7 +87,7 @@ internal struct CardNetworkSelector: View {
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
                                 .background(Color.clear)
-                            }
+                            })
                             .buttonStyle(PlainButtonStyle())
 
                             if network != availableNetworks.last {

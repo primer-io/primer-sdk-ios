@@ -80,10 +80,6 @@
                      <FileRef
                         location = "group:ComposableContainer.swift">
                      </FileRef>
-                     <Group
-                        location = "group:Implementation"
-                        name = "Implementation">
-                     </Group>
                   </Group>
                   <Group
                      location = "group:Core"
@@ -275,9 +271,6 @@
                               location = "group:BillingAddressView.swift">
                            </FileRef>
                         </Group>
-                        <FileRef
-                           location = "group:InputConfigsWrapper.swift">
-                        </FileRef>
                         <Group
                            location = "group:Inputs"
                            name = "Inputs">

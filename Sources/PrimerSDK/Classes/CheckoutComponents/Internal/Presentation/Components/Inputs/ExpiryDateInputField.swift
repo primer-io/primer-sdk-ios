@@ -234,7 +234,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
             return UIFont.systemFont(ofSize: 16, weight: .regular)
         }()
-        
+
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [

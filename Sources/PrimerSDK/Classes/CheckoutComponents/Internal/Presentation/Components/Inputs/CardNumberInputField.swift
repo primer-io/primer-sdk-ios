@@ -287,7 +287,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return UIFont.systemFont(ofSize: 16, weight: .regular)
         }()
-        
+
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
@@ -434,13 +434,11 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     // Simple backspace - remove the character before the cursor in unformatted text
                     // Count numeric characters up to cursor position
                     var unformattedPos = 0
-                    for i in 0..<range.location {
-                        if i < (textField.text?.count ?? 0) {
-                            let textString = textField.text!
-                            let charIndex = textString.index(textString.startIndex, offsetBy: i)
-                            if textString[charIndex].isNumber {
-                                unformattedPos += 1
-                            }
+                    for i in 0..<range.location where i < (textField.text?.count ?? 0) {
+                        let textString = textField.text!
+                        let charIndex = textString.index(textString.startIndex, offsetBy: i)
+                        if textString[charIndex].isNumber {
+                            unformattedPos += 1
                         }
                     }
 
@@ -463,13 +461,11 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
                 // Count numeric characters up to cursor position to get insertion point
                 var unformattedPos = 0
-                for i in 0..<range.location {
-                    if i < (textField.text?.count ?? 0) {
-                        let textString = textField.text!
-                        let charIndex = textString.index(textString.startIndex, offsetBy: i)
-                        if textString[charIndex].isNumber {
-                            unformattedPos += 1
-                        }
+                for i in 0..<range.location where i < (textField.text?.count ?? 0) {
+                    let textString = textField.text!
+                    let charIndex = textString.index(textString.startIndex, offsetBy: i)
+                    if textString[charIndex].isNumber {
+                        unformattedPos += 1
                     }
                 }
 
@@ -587,12 +583,10 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 let rangeEnd = min(formattedRange.location + formattedRange.length, formattedText.count)
 
                 // Count digits in the selection
-                for index in formattedRange.location..<rangeEnd {
-                    if index < formattedText.count {
-                        let charIndex = formattedText.index(formattedText.startIndex, offsetBy: index)
-                        if formattedText[charIndex].isNumber {
-                            unformattedLength += 1
-                        }
+                for index in formattedRange.location..<rangeEnd where index < formattedText.count {
+                    let charIndex = formattedText.index(formattedText.startIndex, offsetBy: index)
+                    if formattedText[charIndex].isNumber {
+                        unformattedLength += 1
                     }
                 }
             }

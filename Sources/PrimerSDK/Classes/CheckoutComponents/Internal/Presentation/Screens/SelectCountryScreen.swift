@@ -62,15 +62,15 @@ internal struct SelectCountryScreen: View {
                 get: { countryState.searchQuery },
                 set: { scope.onSearch(query: $0) }
             ))
-                .textFieldStyle(PlainTextFieldStyle())
+            .textFieldStyle(PlainTextFieldStyle())
 
             if !countryState.searchQuery.isEmpty {
                 Button(action: {
                     scope.onSearch(query: "")
-                }) {
+                }, label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                }
+                })
             }
         }
         .padding(.horizontal, 12)

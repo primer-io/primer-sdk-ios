@@ -247,7 +247,7 @@ public class DefaultValidationService: ValidationService {
 
         // Check if rules factory is properly configured
         let testCardNumber = "4111111111111111"
-        let cardNumberRule = rulesFactory.createCardNumberRule()
+        let cardNumberRule = rulesFactory.createCardNumberRule(allowedCardNetworks: nil)
         let testResult = cardNumberRule.validate(testCardNumber)
 
         if !testResult.isValid {
@@ -373,7 +373,7 @@ extension DefaultValidationService {
             input: number,
             type: "cardNumber"
         ) {
-            let rule = rulesFactory.createCardNumberRule()
+            let rule = rulesFactory.createCardNumberRule(allowedCardNetworks: nil)
             return rule.validate(number)
         }
     }

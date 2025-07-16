@@ -326,7 +326,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
         private func validatePostalCode() {
             let trimmedPostalCode = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedPostalCode.isEmpty {
                 isValid = false // Postal code is required
@@ -334,7 +334,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             let result = validationService.validate(
                 input: postalCode,
                 with: PostalCodeRule(countryCode: countryCode)

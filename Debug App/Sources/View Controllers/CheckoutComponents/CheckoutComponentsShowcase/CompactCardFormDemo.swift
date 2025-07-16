@@ -147,7 +147,7 @@ struct CompactCardFormDemo: View {
                                                     .padding(.horizontal, 12)
                                                     .background(.blue)
                                                     .cornerRadius(6)
-                                                    .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1),
+                                                    .shadow(color: Color.gray.opacity(0.2 ), radius: 2, offsetX: 0, offsetY: 1),
                                                     "Pay"
                                                 )
                                             }

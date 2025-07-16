@@ -210,7 +210,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             }
             return UIFont.systemFont(ofSize: 16, weight: .regular)
         }()
-        
+
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
@@ -328,7 +328,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
         private func validateCardholderName() {
             let trimmedName = cardholderName.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
                 isValid = false // Cardholder name is required
@@ -336,7 +336,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             let result = validationService.validate(
                 input: cardholderName,
                 with: CardholderNameRule()

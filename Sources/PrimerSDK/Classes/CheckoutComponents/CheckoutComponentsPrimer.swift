@@ -216,9 +216,9 @@ public extension CheckoutComponentsDelegate {
         }
     }
 
-    /// Internal method for handling payment success (legacy method without result)
+    /// Internal method for handling payment success (without result)
     internal func handlePaymentSuccess() {
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully (legacy)")
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
         handlePaymentSuccess(PaymentResult(paymentId: "unknown", status: .success))
     }
 

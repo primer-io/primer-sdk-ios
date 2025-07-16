@@ -107,14 +107,6 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(TokenizeCardInteractor.self)
-            .asTransient()
-            .with { resolver in
-                TokenizeCardInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
-                )
-            }
-
         _ = try? await container.register(ValidateInputInteractor.self)
             .asTransient()
             .with { resolver in
@@ -142,13 +134,6 @@ private extension ComposableContainer {
     /// Register presentation layer (scopes, view models).
     func registerPresentation() async {
         logger.debug(message: "🎨 [ComposableContainer] Registering presentation layer...")
-
-        // Scope implementations will be registered here in Phase 5
-        // Examples:
-        // - DefaultCheckoutScope (implements PrimerCheckoutScope)
-        // - DefaultCardFormScope (implements PrimerCardFormScope)
-        // - DefaultPaymentMethodSelectionScope
-        // - DefaultSelectCountryScope
     }
 
     #if DEBUG

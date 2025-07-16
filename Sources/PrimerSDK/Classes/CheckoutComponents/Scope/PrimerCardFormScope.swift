@@ -28,11 +28,11 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     func start()
 
     /// Submits the payment method for processing.
-    /// Maps to onSubmit() for backward compatibility.
+    /// Maps to onSubmit() for consistent API naming.
     func submit()
 
     /// Cancels the payment method flow and returns to payment method selection.
-    /// Maps to onCancel() for backward compatibility.
+    /// Maps to onCancel() for consistent API naming.
     func cancel()
 
     // MARK: - Navigation Methods

@@ -306,7 +306,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
 
         private func validateEmail() {
             let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedEmail.isEmpty {
                 isValid = false // Email is required
@@ -314,7 +314,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             let result = validationService.validate(
                 input: email,
                 with: EmailRule()

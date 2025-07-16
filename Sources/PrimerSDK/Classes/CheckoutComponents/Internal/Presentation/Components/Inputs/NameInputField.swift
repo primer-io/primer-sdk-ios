@@ -313,7 +313,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
 
         private func validateName() {
             let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
                 isValid = false // Name fields are required
@@ -321,7 +321,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             // Convert PrimerInputElementType to ValidationError.InputElementType
             let elementType: ValidationError.InputElementType = {
                 switch inputType {

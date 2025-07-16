@@ -26,14 +26,14 @@ internal struct CardFormScreen: View {
     /// Get billing address configuration from API configuration
     private var billingAddressConfiguration: BillingAddressConfiguration {
         guard let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
-                .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions else {
+                .first(where: { $0.type == "BILLING_ADDRESS" })?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions else {
             return BillingAddressConfiguration.none
         }
 
         return BillingAddressConfiguration(
             showFirstName: billingAddressModuleOptions.firstName != false,
             showLastName: billingAddressModuleOptions.lastName != false,
-            showEmail: false, // Email is typically not part of billing address module
+            showEmail: false, // Email is not part of billing address module, left here for possible future use
             showPhoneNumber: billingAddressModuleOptions.phoneNumber != false,
             showAddressLine1: billingAddressModuleOptions.addressLine1 != false,
             showAddressLine2: billingAddressModuleOptions.addressLine2 != false,
@@ -58,21 +58,21 @@ internal struct CardFormScreen: View {
             if scope.presentationContext.shouldShowBackButton {
                 Button(action: {
                     scope.onBack()
-                }) {
+                }, label: {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
                             .font(.body.weight(.medium))
                         Text("Back")
                     }
                     .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                }
+                })
             }
 
             Spacer()
 
-            Button(CheckoutComponentsStrings.cancelButton) {
+            Button(CheckoutComponentsStrings.cancelButton, action: {
                 scope.onCancel()
-            }
+            })
             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
         }
         .padding(.horizontal, 16)

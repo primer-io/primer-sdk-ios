@@ -151,7 +151,7 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
                 networkSurcharges[networkType] = surchargeAmount
                 logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found network surcharge (nested): \(networkType) = \(surchargeAmount)")
             }
-            // Fallback: handle direct surcharge integer (backward compatibility)
+            // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
@@ -177,7 +177,7 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
                 networkSurcharges[networkType] = surchargeAmount
                 logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found network surcharge: \(networkType) = \(surchargeAmount)")
             }
-            // Fallback: handle direct surcharge integer (backward compatibility)
+            // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge

@@ -11,8 +11,8 @@ import Foundation
  * A data class representing a validation error encountered during the payment method data validation process.
  * Updated to match Android SyncValidationError structure for exact parity.
  *
- * @property code A unique identifier for the error (legacy).
- * @property message A descriptive message explaining the error (legacy).
+ * @property code A unique identifier for the error.
+ * @property message A descriptive message explaining the error.
  * @property inputElementType Android parity: The input element type that failed validation.
  * @property errorId Android parity: Error identifier string.
  * @property fieldNameKey Android parity: Localization key for field name.
@@ -20,7 +20,7 @@ import Foundation
  * @property errorFormatKey Android parity: Localization key for formatted error with placeholder.
  */
 public struct ValidationError: Equatable, Hashable, Codable {
-    // Legacy properties for backward compatibility
+    // Core error properties
     let code: String
     let message: String
 
@@ -71,7 +71,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
         self.message = message
     }
 
-    /// Legacy initializer for backward compatibility
+    /// Simplified initializer
     public init(code: String, message: String) {
         self.code = code
         self.message = message
@@ -82,7 +82,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
         self.errorFormatKey = nil
     }
 
-    /// Legacy field-based initializer for compatibility
+    /// Field-based initializer
     internal init(field: String, message: String) {
         self.code = "invalid-\(field)"
         self.message = message
@@ -97,7 +97,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
 // MARK: - Convenience Extensions
 
 extension ValidationError.InputElementType {
-    /// Convert from legacy field string to InputElementType
+    /// Convert from field string to InputElementType
     static func from(field: String) -> ValidationError.InputElementType {
         switch field.lowercased() {
         case "cardnumber", "card-number", "card_number":

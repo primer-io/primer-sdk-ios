@@ -47,8 +47,20 @@
       "Bash(xxd:*)",
       "Bash(git checkout:*)",
       "Bash(swift:*)",
-      "Bash(swift:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "mcp__figma-dev-mode-mcp-server__get_code",
+      "mcp__figma-dev-mode-mcp-server__get_image",
+      "mcp__zen__listmodels",
+      "mcp__zen__analyze",
+      "mcp__unblocked__slack_conversation_details",
+      "mcp__zen__thinkdeep",
+      "mcp__atlassian__createJiraIssue",
+      "mcp__atlassian__getAccessibleAtlassianResources",
+      "mcp__atlassian__getVisibleJiraProjects",
+      "mcp__atlassian__getJiraProjectIssueTypesMetadata",
+      "mcp__atlassian__searchJiraIssuesUsingJql",
+      "mcp__atlassian__editJiraIssue",
+      "mcp__atlassian__updateConfluencePage"
     ],
     "deny": []
   }

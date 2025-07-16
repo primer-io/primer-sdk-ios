@@ -84,7 +84,6 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let diContainer: DIContainer
-    private var tokenizeCardInteractor: TokenizeCardInteractor?
     private var processCardPaymentInteractor: ProcessCardPaymentInteractor?
     private var validateInputInteractor: ValidateInputInteractor?
 
@@ -124,27 +123,20 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     // MARK: - Setup
-
     private func setupInteractors() async {
         do {
-            guard let container = await DIContainer.current else {
+            guard await DIContainer.current != nil else {
                 throw ContainerError.containerUnavailable
             }
-            do {
-                // Setup interactors (proper layered architecture)
-                let repository = HeadlessRepositoryImpl()
-                headlessRepository = repository
-                processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
-                logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
 
-                // Setup network detection stream
-                setupNetworkDetectionStream()
+            // Setup interactors (proper layered architecture)
+            let repository = HeadlessRepositoryImpl()
+            headlessRepository = repository
+            processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
+            logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
 
-                // tokenizeCardInteractor = try await container.resolve(TokenizeCardInteractor.self)
-                // validateInputInteractor = try await container.resolve(ValidateInputInteractor.self)
-            } catch {
-                logger.error(message: "Failed to resolve dependencies: \(error)")
-            }
+            // Setup network detection stream
+            setupNetworkDetectionStream()
         } catch {
             logger.error(message: "Failed to setup interactors: \(error)")
         }
@@ -159,9 +151,14 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     /// Sets up core card-related field builders (card number, expiry, CVV, cardholder name)
-    // swiftlint:disable:next function_body_length
     private func setupCoreCardFieldBuilders() {
-        // Card number input field builder
+        setupCardNumberFieldBuilder()
+        setupExpiryDateFieldBuilder()
+        setupCvvFieldBuilder()
+        setupCardholderNameFieldBuilder()
+    }
+
+    private func setupCardNumberFieldBuilder() {
         self.cardNumberInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             let selectedNetwork: CardNetwork? = {
@@ -192,15 +189,16 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                         }
                     },
                     onNetworksDetected: { [weak self] networks in
-                        if let scope = self as? DefaultCardFormScope {
+                        if let scope = self {
                             scope.handleDetectedNetworks(networks)
                         }
                     }
                 )
             )
         }
+    }
 
-        // Expiry date input field builder
+    private func setupExpiryDateFieldBuilder() {
         self.expiryDateInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -208,7 +206,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                     label: "Expiry Date",
                     placeholder: "MM/YY",
                     modifier: modifier,
-                    onExpiryDateChange: { [weak self] _ in
+                    onExpiryDateChange: { _ in
                         // Handled by month/year callbacks
                     },
                     onValidationChange: { [weak self] isValid in
@@ -229,21 +227,13 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // CVV input field builder
+    private func setupCvvFieldBuilder() {
         self.cvvInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
 
-            // Get the selected card network for CVV validation
-            let cardNetwork: CardNetwork = {
-                if let selectedNetworkString = self.internalState.selectedCardNetwork,
-                   let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
-                    return selectedNetwork
-                } else {
-                    // Fallback to auto-detecting from card number if no explicit selection
-                    return CardNetwork(cardNumber: self.internalState.cardNumber)
-                }
-            }()
+            let cardNetwork = self.getCardNetworkForCvv()
 
             return AnyView(
                 CVVInputField(
@@ -266,8 +256,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Cardholder name input field builder
+    private func setupCardholderNameFieldBuilder() {
         self.cardholderNameInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -292,10 +283,26 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         }
     }
 
-    /// Sets up billing address-related field builders (postal code, country, city, state)
-    // swiftlint:disable:next function_body_length
+    private func getCardNetworkForCvv() -> CardNetwork {
+        if let selectedNetworkString = internalState.selectedCardNetwork,
+           let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
+            return selectedNetwork
+        } else {
+            return CardNetwork(cardNumber: internalState.cardNumber)
+        }
+    }
+
+    // Sets up billing address-related field builders (postal code, country, city, state)
     private func setupBillingAddressFieldBuilders() {
-        // Postal code input field builder
+        setupPostalCodeFieldBuilder()
+        setupCountryFieldBuilder()
+        setupCityFieldBuilder()
+        setupStateFieldBuilder()
+        setupAddressLine1FieldBuilder()
+        setupAddressLine2FieldBuilder()
+    }
+
+    private func setupPostalCodeFieldBuilder() {
         self.postalCodeInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -313,8 +320,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Country code input field builder with navigation support
+    private func setupCountryFieldBuilder() {
         self.countryInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -335,8 +343,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // City input field builder
+    private func setupCityFieldBuilder() {
         self.cityInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -354,8 +363,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // State input field builder
+    private func setupStateFieldBuilder() {
         self.stateInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -373,8 +383,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Address line 1 input field builder
+    private func setupAddressLine1FieldBuilder() {
         self.addressLine1Input = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -394,8 +405,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Address line 2 input field builder
+    private func setupAddressLine2FieldBuilder() {
         self.addressLine2Input = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -419,7 +431,13 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     /// Sets up personal information field builders (first name, last name, email, phone)
     private func setupPersonalInfoFieldBuilders() {
-        // First name input field builder
+        setupFirstNameFieldBuilder()
+        setupLastNameFieldBuilder()
+        setupEmailFieldBuilder()
+        setupPhoneNumberFieldBuilder()
+    }
+
+    private func setupFirstNameFieldBuilder() {
         self.firstNameInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -438,8 +456,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Last name input field builder
+    private func setupLastNameFieldBuilder() {
         self.lastNameInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -458,8 +477,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Email input field builder
+    private func setupEmailFieldBuilder() {
         self.emailInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -477,8 +497,9 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 )
             )
         }
+    }
 
-        // Phone number input field builder (using NameInputField as base)
+    private func setupPhoneNumberFieldBuilder() {
         self.phoneNumberInput = { [weak self] modifier in
             guard let self = self else { return AnyView(EmptyView()) }
             return AnyView(
@@ -507,7 +528,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
             return AnyView(
                 Button(action: {
                     self.onSubmit()
-                }) {
+                }, label: {
                     HStack {
                         if self.internalState.isSubmitting {
                             ProgressView()
@@ -523,7 +544,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                     .padding(.vertical, 16)
                     .background(self.internalState.isValid && !self.internalState.isSubmitting ? Color.blue : Color.gray)
                     .cornerRadius(8)
-                }
+                })
                 .disabled(!self.internalState.isValid || self.internalState.isSubmitting)
                 .primerModifier(modifier)
             )
@@ -876,91 +897,105 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     func submit() async {
         logger.debug(message: "Card form submit initiated")
-
-        // Update state to submitting
         internalState.isSubmitting = true
 
         do {
-            // Send billing address first if needed
-            if !billingAddressSent, let billingAddress = createBillingAddress() {
-                logger.debug(message: "Sending billing address via Client Session Actions")
-
-                await withCheckedContinuation { continuation in
-                    ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
-                        .done {
-                            self.billingAddressSent = true
-                            continuation.resume()
-                        }
-                        .catch { error in
-                            self.logger.error(message: "Failed to send billing address: \(error)")
-                            continuation.resume()
-                        }
-                }
-            }
-
-            // Submit card data using interactor (proper layered architecture)
-            logger.debug(message: "Processing card payment using ProcessCardPaymentInteractor")
-
-            guard let interactor = processCardPaymentInteractor else {
-                throw PrimerError.unknown(
-                    userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
-                    diagnosticsId: UUID().uuidString
-                )
-            }
-
-            // Parse expiry components
-            let expiryComponents = internalState.expiryDate.components(separatedBy: "/")
-            guard expiryComponents.count == 2 else {
-                throw PrimerError.unknown(
-                    userInfo: ["error": "Invalid expiry date format"],
-                    diagnosticsId: UUID().uuidString
-                )
-            }
-
-            let expiryMonth = expiryComponents[0]
-            let expiryYear = expiryComponents[1]
-            // Convert 2-digit year to 4-digit year if needed
-            let fullYear = expiryYear.count == 2 ? "20\(expiryYear)" : expiryYear
-
-            // Get selected network if any
-            let selectedNetwork: CardNetwork? = {
-                if let networkString = internalState.selectedCardNetwork {
-                    return CardNetwork(rawValue: networkString)
-                }
-                return nil
-            }()
-
-            logger.debug(message: "Processing payment: card=***\(String(internalState.cardNumber.suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
-
-            // Create billing address from current state (for interactor)
-            let billingAddress = createInteractorBillingAddress()
-
-            // Create card payment data for interactor
-            let cardData = CardPaymentData(
-                cardNumber: internalState.cardNumber,
-                cvv: internalState.cvv,
-                expiryMonth: expiryMonth,
-                expiryYear: fullYear,
-                cardholderName: internalState.cardholderName,
-                selectedNetwork: selectedNetwork,
-                billingAddress: billingAddress
-            )
-
-            // Process payment through interactor (follows proper architecture)
-            let result = try await interactor.execute(cardData: cardData)
-
-            logger.info(message: "Card payment processed successfully via interactor")
+            try await sendBillingAddressIfNeeded()
+            let cardData = try await prepareCardPaymentData()
+            let result = try await processCardPayment(cardData: cardData)
             await handlePaymentSuccess(result)
-
         } catch {
-            logger.error(message: "Card form submission failed: \(error)")
-            internalState.isSubmitting = false
-            let primerError = error as? PrimerError ?? PrimerError.unknown(
-                userInfo: nil,
+            await handlePaymentError(error)
+        }
+    }
+
+    private func sendBillingAddressIfNeeded() async throws {
+        guard !billingAddressSent, let billingAddress = createBillingAddress() else { return }
+
+        logger.debug(message: "Sending billing address via Client Session Actions")
+
+        await withCheckedContinuation { continuation in
+            ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
+                .done {
+                    self.billingAddressSent = true
+                    continuation.resume()
+                }
+                .catch { error in
+                    self.logger.error(message: "Failed to send billing address: \(error)")
+                    continuation.resume()
+                }
+        }
+    }
+
+    private func prepareCardPaymentData() async throws -> CardPaymentData {
+        guard processCardPaymentInteractor != nil else {
+            throw PrimerError.unknown(
+                userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
                 diagnosticsId: UUID().uuidString
             )
-            checkoutScope?.handlePaymentError(primerError)
         }
+
+        let (expiryMonth, fullYear) = try parseExpiryComponents()
+        let selectedNetwork = getSelectedCardNetwork()
+        let billingAddress = createInteractorBillingAddress()
+
+        logger.debug(message: "Processing payment: card=***\(String(internalState.cardNumber.suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
+
+        return CardPaymentData(
+            cardNumber: internalState.cardNumber,
+            cvv: internalState.cvv,
+            expiryMonth: expiryMonth,
+            expiryYear: fullYear,
+            cardholderName: internalState.cardholderName,
+            selectedNetwork: selectedNetwork,
+            billingAddress: billingAddress
+        )
+    }
+
+    private func parseExpiryComponents() throws -> (month: String, year: String) {
+        let expiryComponents = internalState.expiryDate.components(separatedBy: "/")
+        guard expiryComponents.count == 2 else {
+            throw PrimerError.unknown(
+                userInfo: ["error": "Invalid expiry date format"],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+
+        let expiryMonth = expiryComponents[0]
+        let expiryYear = expiryComponents[1]
+        let fullYear = expiryYear.count == 2 ? "20\(expiryYear)" : expiryYear
+
+        return (expiryMonth, fullYear)
+    }
+
+    private func getSelectedCardNetwork() -> CardNetwork? {
+        guard let networkString = internalState.selectedCardNetwork else { return nil }
+        return CardNetwork(rawValue: networkString)
+    }
+
+    private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
+        logger.debug(message: "Processing card payment using ProcessCardPaymentInteractor")
+
+        guard let interactor = processCardPaymentInteractor else {
+            throw PrimerError.unknown(
+                userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+
+        let result = try await interactor.execute(cardData: cardData)
+        logger.info(message: "Card payment processed successfully via interactor")
+        return result
+    }
+
+    private func handlePaymentError(_ error: Error) async {
+        logger.error(message: "Card form submission failed: \(error)")
+        internalState.isSubmitting = false
+        let primerError = error as? PrimerError ?? PrimerError.unknown(
+            userInfo: nil,
+            diagnosticsId: UUID().uuidString
+        )
+        checkoutScope?.handlePaymentError(primerError)
     }
 
     private func handlePaymentSuccess(_ result: PaymentResult) async {

@@ -456,7 +456,7 @@ struct CheckoutContentView: View {
         .padding(20)
         .background(Color(red: 0.95, green: 0.96, blue: 0.98))
     }
-    
+
     @ViewBuilder
     private func createModernTheme(cardScope: any PrimerCardFormScope) -> some View {
         VStack(spacing: 20) {
@@ -472,7 +472,7 @@ struct CheckoutContentView: View {
                         .padding(.horizontal, 20)
                         .background(.white)
                         .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+                        .shadow(color: .black.opacity(0.1), radius: 2, offsetY: 1)
                     )
                 }
                 
@@ -484,7 +484,7 @@ struct CheckoutContentView: View {
                             .padding(.horizontal, 20)
                             .background(.white)
                             .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+                            .shadow(color: .black.opacity(0.1), radius: 2, offsetY: 1)
                         )
                     }
                     
@@ -495,7 +495,7 @@ struct CheckoutContentView: View {
                             .padding(.horizontal, 20)
                             .background(.white)
                             .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+                            .shadow(color: .black.opacity(0.1), radius: 2, offsetY: 1)
                         )
                     }
                 }
@@ -507,7 +507,7 @@ struct CheckoutContentView: View {
                         .padding(.horizontal, 20)
                         .background(.white)
                         .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+                        .shadow(color: .black.opacity(0.1), radius: 2, offsetY: 1)
                     )
                 }
             }
@@ -1378,7 +1378,7 @@ struct CheckoutContentView: View {
                         .background(.white)
                         .cornerRadius(16)
                         .border(.purple, width: 2)
-                        .shadow(color: .purple.opacity(0.2), radius: 4, y: 2)
+                        .shadow(color: .purple.opacity(0.2), radius: 4, offsetY: 2)
                         .font(.system(size: 17, weight: .medium, design: .rounded))
                     )
                 }
@@ -1393,7 +1393,7 @@ struct CheckoutContentView: View {
                             .background(.purple.opacity(0.1))
                             .cornerRadius(14)
                             .border(.blue, width: 1.5)
-                            .shadow(color: .blue.opacity(0.15), radius: 3, y: 1)
+                            .shadow(color: .blue.opacity(0.15), radius: 3, offsetY: 1)
                         )
                     }
                     
@@ -1405,7 +1405,7 @@ struct CheckoutContentView: View {
                             .background(.pink.opacity(0.1))
                             .cornerRadius(14)
                             .border(.pink, width: 1.5)
-                            .shadow(color: .pink.opacity(0.15), radius: 3, y: 1)
+                            .shadow(color: .pink.opacity(0.15), radius: 3, offsetY: 1)
                         )
                     }
                 }
@@ -1420,7 +1420,7 @@ struct CheckoutContentView: View {
                         .background(.white)
                         .cornerRadius(16)
                         .border(.purple, width: 2)
-                        .shadow(color: .purple.opacity(0.2), radius: 6, y: 3)
+                        .shadow(color: .purple.opacity(0.2), radius: 6, offsetY: 3)
                         .font(.system(size: 17, weight: .medium, design: .rounded))
                     )
                 }
@@ -1575,7 +1575,7 @@ struct CheckoutContentView: View {
                         .background(.white)
                         .cornerRadius(12)
                         .border(.teal.opacity(0.6), width: 2)
-                        .shadow(color: .teal.opacity(0.2), radius: 4, y: 2)
+                        .shadow(color: .teal.opacity(0.2), radius: 4, offsetY: 2)
                     )
                     .animation(.spring(duration: 0.3), value: true)
                 }

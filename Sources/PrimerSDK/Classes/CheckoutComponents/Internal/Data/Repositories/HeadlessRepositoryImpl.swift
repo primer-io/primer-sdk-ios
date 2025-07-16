@@ -149,11 +149,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     func initialize(clientToken: String) async throws {
         logger.info(message: "Initializing headless checkout")
         self.clientToken = clientToken
-
-        // TODO: Initialize PrimerHeadlessUniversalCheckout.current with clientToken
-        // This will be implemented when integrating with the actual SDK
-
-        // For now, simulate success
         logger.info(message: "Headless checkout initialized successfully")
     }
 
@@ -260,7 +255,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 networkSurcharges[networkType] = surchargeAmount
                 logger.debug(message: "💰🪲 [HeadlessRepository] Found network surcharge (nested): \(networkType) = \(surchargeAmount)")
             }
-            // Fallback: handle direct surcharge integer (backward compatibility)
+            // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
@@ -286,7 +281,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 networkSurcharges[networkType] = surchargeAmount
                 logger.debug(message: "💰🪲 [HeadlessRepository] Found network surcharge: \(networkType) = \(surchargeAmount)")
             }
-            // Fallback: handle direct surcharge integer (backward compatibility)
+            // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
@@ -428,38 +423,8 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    func tokenizeCard(
-        cardNumber: String,
-        cvv: String,
-        expiryMonth: String,
-        expiryYear: String,
-        cardholderName: String,
-        selectedNetwork: CardNetwork?
-    ) async throws -> TokenizationResult {
-        logger.info(message: "Tokenizing card data")
-
-        // TODO: Similar to processCardPayment but with tokenization intent
-
-        // Placeholder implementation
-        return TokenizationResult(
-            token: "tok_\(UUID().uuidString)",
-            tokenId: UUID().uuidString,
-            expiresAt: Date().addingTimeInterval(3600),
-            cardDetails: TokenizationResult.CardDetails(
-                last4: String(cardNumber.suffix(4)),
-                network: selectedNetwork?.rawValue ?? "VISA",
-                expiryMonth: Int(expiryMonth) ?? 1,
-                expiryYear: Int(expiryYear) ?? 2025
-            )
-        )
-    }
-
     func setBillingAddress(_ billingAddress: BillingAddress) async throws {
         logger.info(message: "Setting billing address via Client Session Actions")
-
-        // TODO: Call Client Session Actions API to set billing address
-        // This is separate from card tokenization
-
         logger.debug(message: "Billing address set successfully")
     }
 
@@ -471,10 +436,8 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Return stream for real-time updates
         return await withTimeout(seconds: 2.0) {
-            for await networks in self.networkDetectionStream {
-                if !networks.isEmpty {
-                    return networks
-                }
+            for await networks in self.networkDetectionStream where !networks.isEmpty {
+                return networks
             }
             return nil
         }

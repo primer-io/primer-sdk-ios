@@ -28,34 +28,6 @@ internal struct NavigationCoordinatorFactory {
     }
 }
 
-// MARK: - Future Extension Example
-@available(iOS 15.0, *)
-@MainActor
-extension NavigationCoordinatorFactory {
-
-    /// Example of how to extend for new route types in the future
-    /// This demonstrates the Open/Closed Principle in action
-    static func createVaultCoordinator() -> any NavigationCoordinator {
-        // Future: return VaultCoordinator() when implemented
-        // This shows how easy it is to add new coordinators without modifying existing code
-        return CheckoutCoordinator() // Placeholder
-    }
-
-    /// Example of creating specialized coordinators with different behaviors
-    static func createModalCoordinator() -> any NavigationCoordinator {
-        // Future: return ModalNavigationCoordinator() when implemented
-        // This could handle modal presentation differently
-        return CheckoutCoordinator() // Placeholder
-    }
-
-    /// Specialized coordinator for 3DS flows
-    static func createThreeDSCoordinator() -> any NavigationCoordinator {
-        // Future: return ThreeDSNavigationCoordinator() when implemented
-        // This could handle 3DS web flows with different navigation patterns
-        return CheckoutCoordinator() // Placeholder
-    }
-}
-
 // MARK: - Navigation Coordinator Extensions
 @available(iOS 15.0, *)
 @MainActor

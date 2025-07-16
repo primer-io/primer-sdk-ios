@@ -144,9 +144,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 throw ContainerError.containerUnavailable
             }
             logger.info(message: "✅ [CheckoutComponents] DI Container found")
-
-            // TODO: Implement proper interactor resolution when available
-            // For now, create a bridge to existing SDK payment methods
             logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
             getPaymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
 

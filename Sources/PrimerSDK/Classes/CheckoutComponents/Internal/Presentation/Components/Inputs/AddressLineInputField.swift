@@ -223,7 +223,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             }
             return UIFont.systemFont(ofSize: 16, weight: .regular)
         }()
-        
+
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
@@ -344,7 +344,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
         private func validateAddress() {
             let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedAddress.isEmpty {
                 isValid = isRequired ? false : true // Required fields are invalid when empty, optional fields are valid
@@ -352,7 +352,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(isValid)
                 return
             }
-            
+
             // Convert PrimerInputElementType to ValidationError.InputElementType
             let elementType: ValidationError.InputElementType = {
                 switch inputType {

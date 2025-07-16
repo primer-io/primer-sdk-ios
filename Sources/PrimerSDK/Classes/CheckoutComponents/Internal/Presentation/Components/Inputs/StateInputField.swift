@@ -301,7 +301,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
 
         private func validateState() {
             let trimmedState = state.trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             // Empty field handling - don't show errors for empty fields
             if trimmedState.isEmpty {
                 isValid = false // State is required
@@ -309,7 +309,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
                 onValidationChange?(false)
                 return
             }
-            
+
             let result = validationService.validate(
                 input: state,
                 with: StateRule()

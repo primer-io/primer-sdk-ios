@@ -10,6 +10,12 @@ import Foundation
 /// Validation rule for card numbers.
 internal class CardNumberRule: ValidationRule {
 
+    private let allowedCardNetworks: Set<CardNetwork>
+
+    init(allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks) {
+        self.allowedCardNetworks = Set(allowedCardNetworks)
+    }
+
     func validate(_ value: String) -> ValidationResult {
         let cleanedNumber = value.replacingOccurrences(of: " ", with: "")
 
@@ -35,6 +41,25 @@ internal class CardNumberRule: ValidationRule {
         if !isValidLuhn(cleanedNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
+        }
+
+        // Check if card network is allowed - matches Drop-in/Headless behavior
+        // Only validate network if we have a reasonably complete card number
+        if cleanedNumber.count >= 13 {
+            let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
+            if !allowedCardNetworks.isEmpty && !allowedCardNetworks.contains(detectedNetwork) {
+                // Use the specific "Unsupported card type" error from CheckoutComponentsStrings
+                let error = ValidationError(
+                    inputElementType: .cardNumber,
+                    errorId: "unsupported_card_type",
+                    fieldNameKey: "card_number_field",
+                    errorMessageKey: "form_error_card_type_not_supported",
+                    errorFormatKey: nil,
+                    code: "unsupported-card-type",
+                    message: CheckoutComponentsStrings.formErrorCardTypeNotSupported
+                )
+                return .invalid(error: error)
+            }
         }
 
         return .valid

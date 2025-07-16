@@ -328,40 +328,20 @@ Placeholders for upcoming features:
 // - Bank transfers
 ```
 
-## Migration Guide
+## Integration Examples
 
-### From Drop-in Integration
+### Basic Integration
 
 ```swift
-// Before (Drop-in)
-Primer.shared.showUniversalCheckout(clientToken: token)
-
-// After (CheckoutComponents)
 CheckoutComponentsPrimer.presentCheckout(with: token)
 ```
 
-### From Headless Integration
+### Custom UI Integration
 
 ```swift
-// Before (Headless)
-let checkout = PrimerHeadlessUniversalCheckout()
-checkout.start(with: token)
-
-// After (CheckoutComponents with custom UI)
 CheckoutComponentsPrimer.presentCheckout(with: token) { scope in
     // Your custom UI using scope for logic
 }
-```
-
-### From Legacy CheckoutComponents Prototypes
-
-```swift
-// Before (Early CheckoutComponents prototypes)
-// Legacy prototype APIs
-
-// After (Production CheckoutComponents)
-CheckoutComponentsPrimer.presentCheckout(with: token)
-// Production-ready with exact Android parity
 ```
 
 ## Best Practices

@@ -247,7 +247,7 @@ extension ErrorMessageResolver {
             errorMessageKey: errorMessageKey,
             errorFormatKey: nil,
             code: "invalid-\(inputElementType.rawValue.lowercased())",
-            message: "Field is required" // Legacy fallback
+            message: "Field is required" // Default fallback
         )
     }
 
@@ -263,7 +263,7 @@ extension ErrorMessageResolver {
             errorMessageKey: errorMessageKey,
             errorFormatKey: nil,
             code: "invalid-\(inputElementType.rawValue.lowercased())",
-            message: "Field is invalid" // Legacy fallback
+            message: "Field is invalid" // Default fallback
         )
     }
 

@@ -255,7 +255,7 @@ struct PrimerInputField: View {
             return ErrorMessageResolver.resolveErrorMessage(for: error)
         }
 
-        // Fall back to direct string for backward compatibility
+        // Fall back to direct string handling
         return validationError as? String
     }
 
@@ -401,7 +401,7 @@ struct PrimerInputField_Previews: PreviewProvider {
                 placeholderText: "Enter your email",
                 leadingIcon: Image(systemName: "envelope"),
                 isError: true,
-                validationError: "Please enter a valid email address.", // Legacy string error
+                validationError: "Please enter a valid email address.", // String error example
                 keyboardType: .emailAddress
             )
 
