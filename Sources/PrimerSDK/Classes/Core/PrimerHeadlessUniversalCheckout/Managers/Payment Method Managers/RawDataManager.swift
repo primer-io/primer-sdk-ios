@@ -1457,7 +1457,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
                 Task { @MainActor in
                     if PrimerUIManager.primerRootViewController == nil {
-                        try? await PrimerUIManager.prepareRootViewController()
+                        PrimerUIManager.prepareRootViewController_main_actor()
                     }
 
                     PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
