@@ -275,26 +275,29 @@ extension DecodedJWTToken {
     func validate() throws {
         if accessToken == nil {
             let info = ["reason": "Access token is nil"]
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
         }
 
         guard let expDate = expDate else {
-            let info = ["reason": "Expiry date missing"]
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(
+                primerError: .invalidValue(
+                    key: "expDate",
+                    userInfo: .errorUserInfoDictionary(
+                        additionalInfo: ["reason": "Expiry date missing"]
+                    )
+                )
+            )
         }
 
         if expDate < Date() {
-            let info = ["reason": "Expiry datetime has passed."]
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(
+                primerError: .invalidValue(
+                    key: "expDate",
+                    userInfo: .errorUserInfoDictionary(
+                        additionalInfo: ["reason": "Expiry datetime has passed."]
+                    )
+                )
+            )
         }
     }
 }
