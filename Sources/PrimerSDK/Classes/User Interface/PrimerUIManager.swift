@@ -295,7 +295,7 @@ final class PrimerUIManager: PrimerUIManaging {
     func dismissPrimerUI_async(animated flag: Bool) async {
         await withCheckedContinuation { continuation in
             self.dismissPrimerUI(animated: flag) {
-                continuation.resume(returning: ())
+                continuation.resume()
             }
         }
     }
