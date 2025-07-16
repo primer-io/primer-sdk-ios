@@ -80,13 +80,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         .then { _ -> Promise<ThreeDS.PostAuthResponse> in
             sdkDismissed?()
 
-            guard let token = paymentMethodTokenData.token else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            guard let token = paymentMethodTokenData.token else { throw handled(primerError: .invalidClientToken()) }
 
             return self.finalize3DSAuthorization(
                 paymentMethodToken: token,
@@ -117,14 +111,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             if case InternalError.noNeedToPerform3ds = err {
                 guard let resumePaymentToken = self.resumePaymentToken else {
-                    let err = PrimerError.invalidValue(
-                        key: "resumeToken",
-                        value: nil,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    completion(.failure(err))
-                    return
+                    return completion(.failure(handled(primerError: .invalidValue(key: "resumeToken"))))
                 }
 
                 completion(.success(resumePaymentToken))
@@ -140,10 +127,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 continueInfo = primer3DSErrorContainer.continueInfo
 
             } else {
-                let errContainer = Primer3DSErrorContainer.underlyingError(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString,
-                    error: err)
+                let errContainer = Primer3DSErrorContainer.underlyingError(error: err)
                 continueInfo = ThreeDS.ContinueInfo(
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
                     error: errContainer)
@@ -151,12 +135,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             }
 
             guard let token = paymentMethodTokenData.token else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err.primerError))
-                return
+                return completion(.failure(handled(primerError: .invalidClientToken())))
             }
 
             firstly {
@@ -172,24 +151,14 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         }
 
         #else
-        let missingSdkErr = Primer3DSErrorContainer.missingSdkDependency(
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: missingSdkErr)
-
+        let missingSdkErr = handled(error: Primer3DSErrorContainer.missingSdkDependency())
         let continueErrorInfo = missingSdkErr.continueInfo
 
         firstly {
             self.validate()
         }
         .then { () -> Promise<ThreeDS.PostAuthResponse> in
-            guard let token = paymentMethodTokenData.token else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            guard let token = paymentMethodTokenData.token else { throw handled(primerError: .invalidClientToken()) }
 
             return self.finalize3DSAuthorization(paymentMethodToken: token, continueInfo: continueErrorInfo)
         }
@@ -224,27 +193,15 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private func validate() -> Promise<Void> {
         return Promise { seal in
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-                let uuid = UUID().uuidString
-
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: uuid)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                seal.reject(internalErr)
-                return
+                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())
+                return seal.reject(internalErr)
             }
-
             guard AppState.current.apiConfiguration != nil else {
-                let uuid = UUID().uuidString
-
-                let err = PrimerError.missingPrimerConfiguration(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: uuid)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                seal.reject(internalErr)
-                return
+                return seal.reject(
+                    InternalError.failedToPerform3dsAndShouldBreak(
+                        error: PrimerError.missingPrimerConfiguration()
+                    )
+                )
             }
 
             seal.fulfill(())
@@ -253,21 +210,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private func validate() async throws {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: err)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())
         }
 
         guard AppState.current.apiConfiguration != nil else {
-            let err = PrimerError.missingPrimerConfiguration(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: err)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.missingPrimerConfiguration())
         }
     }
 
@@ -308,12 +255,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         sdkDismissed?()
 
         guard let token = paymentMethodTokenData.token else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         let result = try await finalize3DSAuthorization(paymentMethodToken: token, continueInfo: nil)
@@ -324,16 +266,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private func handleAuthenticationError(paymentMethodTokenData: PrimerPaymentMethodTokenData, error: Error) async throws -> String {
         var continueInfo: ThreeDS.ContinueInfo?
         if case InternalError.noNeedToPerform3ds = error {
-            guard let resumePaymentToken else {
-                let err = PrimerError.invalidValue(
-                    key: "resumeToken",
-                    value: nil,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
             return resumePaymentToken
         } else if case InternalError.failedToPerform3dsAndShouldBreak(let primerErr) = error {
             ErrorHandler.handle(error: primerErr)
@@ -342,11 +275,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             ErrorHandler.handle(error: primer3DSErrorContainer)
             continueInfo = primer3DSErrorContainer.continueInfo
         } else {
-            let errContainer = Primer3DSErrorContainer.underlyingError(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString,
-                error: error
-            )
+            let errContainer = Primer3DSErrorContainer.underlyingError(error: error)
             continueInfo = ThreeDS.ContinueInfo(
                 initProtocolVersion: initProtocolVersion?.rawValue,
                 error: errContainer
@@ -355,12 +284,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         }
 
         guard let token = paymentMethodTokenData.token else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         do {
@@ -402,13 +326,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private func create3DsAuthData(paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<SDKAuthResult> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                seal.reject(internalErr)
-                return
+                return seal.reject(
+                    InternalError.failedToPerform3dsAndShouldBreak(
+                        error: PrimerError.invalidClientToken()
+                    )
+                )
             }
 
             let network = paymentMethodTokenData.paymentInstrumentData?.binData?.network
@@ -425,13 +347,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 seal.fulfill(result)
 
             } catch {
-                let uuid = UUID().uuidString
-
                 if let primer3DSError = error as? Primer3DSError {
                     let err = Primer3DSErrorContainer.primer3DSSdkError(
                         paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: uuid,
                         initProtocolVersion: self.initProtocolVersion?.rawValue,
                         errorInfo: Primer3DSErrorInfo(
                             errorId: primer3DSError.errorId,
@@ -459,12 +377,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> SDKAuthResult {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: err)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())
         }
 
         let network = paymentMethodTokenData.paymentInstrumentData?.binData?.network
@@ -636,15 +549,11 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         threeDsAppRequestorUrl: URL?
     ) -> Promise<Primer3DSCompletion> {
         return Promise { seal in
-            guard let primer3DS = primer3DS else {
-                let uuid = UUID().uuidString
-
+            guard let primer3DS else {
                 let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
 
                 let err = Primer3DSErrorContainer.primer3DSSdkError(
                     paymentMethodType: paymentMethodType,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: uuid,
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
                     errorInfo: Primer3DSErrorInfo(
                         errorId: primer3DSError.errorId,
@@ -694,8 +603,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 if let primer3DSError = err as? Primer3DSError {
                     let err = Primer3DSErrorContainer.primer3DSSdkError(
                         paymentMethodType: self?.paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString,
                         initProtocolVersion: self?.initProtocolVersion?.rawValue,
                         errorInfo: Primer3DSErrorInfo(
                             errorId: primer3DSError.errorId,
@@ -708,20 +615,15 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                             threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
                             threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
 
-                    let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                    seal.reject(internalErr)
+                    seal.reject(InternalError.failedToPerform3dsButShouldContinue(error: err))
 
                 } else if let primer3DSCompletion = primer3DSCompletion {
                     seal.fulfill(primer3DSCompletion)
 
                 } else {
-                    let err = PrimerError.invalidValue(
-                        key: "performChallenge.result",
-                        value: nil,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                    seal.reject(internalErr)
+                    seal.reject(InternalError.failedToPerform3dsAndShouldBreak(
+                        error: PrimerError.invalidValue(key: "performChallenge.result")
+                    ))
                 }
             }
         }
@@ -780,12 +682,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 } else if let primer3DSCompletion {
                     continuation.resume(returning: primer3DSCompletion)
                 } else {
-                    let err = PrimerError.invalidValue(
-                        key: "performChallenge.result",
-                        value: nil,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
+                    let err = PrimerError.invalidValue(key: "performChallenge.result")
                     continuation.resume(throwing: InternalError.failedToPerform3dsAndShouldBreak(error: err))
                 }
             }
@@ -798,13 +695,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void
     ) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-
-            let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-            completion(.failure(internalErr))
-            return
+            return completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())))
         }
 
         let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
@@ -818,16 +709,9 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 if let primerError = underlyingErr as? PrimerError {
                     primerErr = primerError
                 } else {
-                    primerErr = PrimerError.underlyingErrors(
-                        errors: [underlyingErr],
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.underlyingErrors(errors: [underlyingErr])
                 }
-
-                ErrorHandler.handle(error: primerErr)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
-                completion(.failure(internalErr))
+                completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
 
             case .success(let res):
                 completion(.success(res))
@@ -836,24 +720,14 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
     }
     #else
     private func handleMissingSDK(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String {
-        let missingSdkErr = Primer3DSErrorContainer.missingSdkDependency(
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: missingSdkErr)
-
+        let missingSdkErr = handled(error: Primer3DSErrorContainer.missingSdkDependency())
         let continueErrorInfo = missingSdkErr.continueInfo
 
         do {
             try await validate()
 
             guard let token = paymentMethodTokenData.token else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidClientToken())
             }
 
             let threeDsAuth = try await finalize3DSAuthorization(paymentMethodToken: token, continueInfo: continueErrorInfo)
@@ -871,13 +745,11 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
     ) -> Promise<ThreeDS.PostAuthResponse> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                seal.reject(internalErr)
-                return
+                return seal.reject(
+                    InternalError.failedToPerform3dsAndShouldBreak(
+                        error: PrimerError.invalidClientToken()
+                    )
+                )
             }
 
             let continueInfo = continueInfo ?? ThreeDS.ContinueInfo(initProtocolVersion: self.initProtocolVersion?.rawValue,
@@ -891,14 +763,10 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 switch result {
                 case .failure(let underlyingErr):
                     var primerErr: PrimerError
-
                     if let primerError = underlyingErr as? PrimerError {
                         primerErr = primerError
                     } else {
-                        primerErr = PrimerError.underlyingErrors(
-                            errors: [underlyingErr],
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
+                        primerErr = PrimerError.underlyingErrors(errors: [underlyingErr])
                     }
 
                     let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
@@ -916,12 +784,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         continueInfo: ThreeDS.ContinueInfo?
     ) async throws -> ThreeDS.PostAuthResponse {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: err)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())
         }
 
         let continueInfo = continueInfo ?? ThreeDS.ContinueInfo(
@@ -942,11 +805,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             if let primerError = error as? PrimerError {
                 primerErr = primerError
             } else {
-                primerErr = PrimerError.underlyingErrors(
-                    errors: [error],
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+                primerErr = PrimerError.underlyingErrors(errors: [error])
             }
             throw InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
         }
@@ -957,24 +816,14 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
 private extension ThreeDSService {
     func fetchToken() throws -> DecodedJWTToken {
         guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
-            throw InternalError.failedToPerform3dsAndShouldBreak(
-                error: PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-            )
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: PrimerError.invalidClientToken())
         }
         return token
     }
 
     func fetchConfiguration() throws -> PrimerAPIConfiguration {
         guard let configuration = AppState.current.apiConfiguration else {
-            let error = PrimerError.missingPrimerConfiguration(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: error)
-            throw error
+            throw handled(primerError: .missingPrimerConfiguration())
         }
         return configuration
     }
@@ -983,8 +832,6 @@ private extension ThreeDSService {
         guard let key = config.keys?.netceteraApiKey else {
             throw InternalError.failedToPerform3dsButShouldContinue(
                 error: Primer3DSErrorContainer.missing3DSConfiguration(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString,
                     missingKey: "netceteraApiKey"
                 )
             )
@@ -1026,8 +873,6 @@ private extension ThreeDSService {
             throw(
                 InternalError.failedToPerform3dsButShouldContinue(
                     error: Primer3DSErrorContainer.invalid3DSSdkVersion(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString,
                         invalidVersion: Primer3DS.version,
                         validVersion: "1.1.0"
                     )
@@ -1039,8 +884,6 @@ private extension ThreeDSService {
     private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
         return Primer3DSErrorContainer.primer3DSSdkError(
             paymentMethodType: self.paymentMethodType,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString,
             initProtocolVersion: self.initProtocolVersion?.rawValue,
             errorInfo: Primer3DSErrorInfo(primer3DSError)
         )

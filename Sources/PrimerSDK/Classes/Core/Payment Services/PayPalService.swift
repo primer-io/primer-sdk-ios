@@ -46,46 +46,21 @@ final class PayPalService: PayPalServiceProtocol {
 
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
         let apiConfig = PrimerAPIConfigurationModule.apiConfiguration
         guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let err = PrimerError.invalidValue(
-                key: "configuration.paypal.id",
-                value: apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            let value = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
         }
 
         guard let amount = AppState.current.amount else {
-            let err = PrimerError.invalidValue(
-                key: "amount",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidValue(key: "amount"))))
         }
 
         guard let currency = AppState.current.currency else {
-            let err = PrimerError.invalidValue(
-                key: "currency",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidValue(key: "currency"))))
         }
 
         var scheme: String
@@ -107,11 +82,7 @@ final class PayPalService: PayPalServiceProtocol {
         apiClient.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err,
-                                                                     userInfo: .errorUserInfoDictionary(),
-                                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: containerErr)
-                completion(.failure(containerErr))
+                completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
             case .success(let res):
                 completion(.success(res))
             }
@@ -122,22 +93,12 @@ final class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = AppState.current
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
         guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let err = PrimerError.invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
         }
 
         var scheme: String
@@ -158,11 +119,7 @@ final class PayPalService: PayPalServiceProtocol {
                                                       payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err,
-                                                                     userInfo: .errorUserInfoDictionary(),
-                                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: containerErr)
-                completion(.failure(containerErr))
+                completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
             case .success(let config):
                 self?.paypalTokenId = config.tokenId
                 completion(.success(config.approvalUrl))
@@ -174,46 +131,25 @@ final class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = AppState.current
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
         guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let err = PrimerError.invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
         }
 
-        guard let tokenId = self.paypalTokenId else {
-            let err = PrimerError.invalidValue(
-                key: "paypalTokenId",
-                value: self.paypalTokenId,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+        guard let paypalTokenId else {
+            return completion(.failure(handled(primerError: .invalidValue(key: "paypalTokenId", value: paypalTokenId))))
         }
 
-        let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
+        let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: paypalTokenId)
 
         apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
                                                 payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err,
-                                                                     userInfo: .errorUserInfoDictionary(),
-                                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: containerErr)
-                completion(.failure(containerErr))
+                completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
             case .success(let response):
                 completion(.success(response))
             }
@@ -224,22 +160,12 @@ final class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = AppState.current
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
         guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let err = PrimerError.invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
+            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
         }
 
         apiClient.fetchPayPalExternalPayerInfo(

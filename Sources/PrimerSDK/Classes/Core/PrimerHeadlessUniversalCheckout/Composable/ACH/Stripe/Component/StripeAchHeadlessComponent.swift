@@ -42,8 +42,7 @@ final class StripeAchHeadlessComponent {
                 try tokenizationViewModel.validate()
             } catch {
                 if let err = error as? PrimerError {
-                    ErrorHandler.handle(error: error)
-                    errorDelegate?.didReceiveError(error: err)
+                    errorDelegate?.didReceiveError(error: handled(primerError: err))
                 }
             }
         }
@@ -59,12 +58,8 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
             inputUserDetails.update(with: collectableData)
             validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
         } else {
-            let error = collectableData.invalidFieldError
-            ErrorHandler.handle(error: error)
-            let validationError = PrimerValidationError.invalidUserDetails(
-                field: error.fieldValueDescription,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+            let error = handled(error: collectableData.invalidFieldError)
+            let validationError = PrimerValidationError.invalidUserDetails(field: error.fieldValueDescription)
             validationDelegate?.didUpdate(validationStatus: .invalid(errors: [validationError]), for: collectableData)
         }
     }

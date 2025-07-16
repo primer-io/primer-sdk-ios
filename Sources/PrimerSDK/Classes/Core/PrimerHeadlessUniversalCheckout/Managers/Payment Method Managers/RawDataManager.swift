@@ -133,10 +133,7 @@ extension PrimerHeadlessUniversalCheckout {
             self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
             }
 
             self.paymentMethodType = paymentMethodType
@@ -164,10 +161,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.rawDataTokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             default:
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
             }
 
             super.init()
@@ -195,11 +189,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(nil, err)
-                return
+                return completion(nil, handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
             }
 
             switch paymentMethodType {
@@ -228,10 +218,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             guard let rawData = rawData else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
+                let err = handled(primerError: .invalidValue(key: "rawData"))
 
                 self.isDataValid = false
 
@@ -255,12 +242,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .then { () -> Promise<Void> in
                 // Only proceed if validation succeeded
-                guard self.isDataValid else {
-                    let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    throw err
-                }
+                guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
             .then { () -> Promise<Request.Body.Tokenization> in
@@ -301,19 +283,15 @@ extension PrimerHeadlessUniversalCheckout {
             ))
 
             guard let rawData else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
+                let err = handled(primerError: .invalidValue(key: "rawData"))
 
-                self.isDataValid = false
+                isDataValid = false
 
                 DispatchQueue.main.async {
                     self.delegate?.primerRawDataManager?(self, dataIsValid: self.isDataValid, errors: [err])
                 }
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err,
-                                                                  checkoutData: self.paymentCheckoutData)
+                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
                 return
             }
 
@@ -326,11 +304,7 @@ extension PrimerHeadlessUniversalCheckout {
                     try await PrimerHeadlessUniversalCheckout.current.validateSession()
                     try await validateRawData(rawData)
 
-                    guard self.isDataValid else {
-                        throw PrimerError.invalidValue(key: "rawData", value: nil,
-                                                      userInfo: .errorUserInfoDictionary(),
-                                                      diagnosticsId: UUID().uuidString)
-                    }
+                    guard self.isDataValid else { throw PrimerError.invalidValue(key: "rawData") }
 
                     try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
                     let requestBody = try await self.makeRequestBody()
@@ -466,10 +440,7 @@ extension PrimerHeadlessUniversalCheckout {
                             decisionHandlerHasBeenCalled = true
                             switch paymentCreationDecision.type {
                             case .abort(let errorMessage):
-                                let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                                seal.reject(error)
+                                seal.reject(PrimerError.merchantError(message: errorMessage ?? ""))
                             case .continue:
                                 seal.fulfill()
                             }
@@ -511,13 +482,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
             decisionHandlerHasBeenCalled = true
 
             switch paymentCreationDecision.type {
-            case .abort(let errorMessage):
-                let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                      userInfo: .errorUserInfoDictionary(),
-                                                      diagnosticsId: UUID().uuidString)
-                throw error
-            case .continue:
-                return
+            case .abort(let errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
+            case .continue: return
             }
         }
 
@@ -525,11 +491,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
             return Promise { seal in
                 guard let rawData = self.rawData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    seal.reject(err)
-                    return
+                    return seal.reject(PrimerValidationError.invalidRawData())
                 }
 
                 firstly {
@@ -543,13 +505,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
         }
 
         private func makeRequestBody() async throws -> Request.Body.Tokenization {
-            guard let rawData else {
-                throw PrimerValidationError.invalidRawData(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-            }
-
+            guard let rawData else { throw PrimerValidationError.invalidRawData() }
             return try await rawDataTokenizationBuilder.makeRequestBodyWithRawData(rawData)
         }
 
@@ -635,10 +591,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                                 diagnosticsId: UUID().uuidString)
-                                        ErrorHandler.handle(error: err)
-                                        throw err
+                                        throw handled(primerError: .invalidClientToken())
                                     }
 
                                     seal.fulfill(decodedJWTToken)
@@ -648,12 +601,9 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 }
 
                             case .fail(let message):
-                                var merchantErr: Error!
-                                if let message = message {
-                                    let err = PrimerError.merchantError(message: message,
-                                                                        userInfo: .errorUserInfoDictionary(),
-                                                                        diagnosticsId: UUID().uuidString)
-                                    merchantErr = err
+                                let merchantErr: Error
+                                if let message {
+                                    merchantErr = PrimerError.merchantError(message: message)
                                 } else {
                                     merchantErr = NSError.emptyDescriptionError
                                 }
@@ -670,10 +620,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                                 diagnosticsId: UUID().uuidString)
-                                        ErrorHandler.handle(error: err)
-                                        throw err
+                                        throw handled(primerError: .invalidClientToken())
                                     }
 
                                     seal.fulfill(decodedJWTToken)
@@ -693,12 +640,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
                 } else {
                     guard let token = paymentMethodTokenData.token else {
-                        let err = PrimerError.invalidClientToken(
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
+                        return seal.reject(handled(primerError: .invalidClientToken()))
                     }
 
                     firstly {
@@ -716,10 +658,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                             diagnosticsId: UUID().uuidString)
-                                    ErrorHandler.handle(error: err)
-                                    throw err
+                                    throw handled(primerError: .invalidClientToken())
                                 }
 
                                 seal.fulfill(decodedJWTToken)
@@ -763,19 +702,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        throw err
+                        throw handled(primerError: .invalidClientToken())
                     }
 
                     return decodedJWTToken
                 case .fail(let message):
                     let err: Error
                     if let message {
-                        err = PrimerError.merchantError(message: message,
-                                                        userInfo: .errorUserInfoDictionary(),
-                                                        diagnosticsId: UUID().uuidString)
+                        err = PrimerError.merchantError(message: message)
                     } else {
                         err = NSError.emptyDescriptionError
                     }
@@ -788,10 +722,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        throw err
+                        throw handled(primerError: .invalidClientToken())
                     }
 
                     return decodedJWTToken
@@ -807,14 +738,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
         private func startAutomaticPaymentFlowAndFetchToken(
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> DecodedJWTToken? {
-            guard let token = paymentMethodTokenData.token else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            guard let token = paymentMethodTokenData.token else { throw handled(primerError: .invalidClientToken()) }
 
             let paymentResponse = try await handleCreatePaymentEvent(token)
             paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
@@ -825,10 +749,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidClientToken())
                 }
 
                 return decodedJWTToken
@@ -900,11 +821,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             if let primerErr = err as? PrimerError {
                                 pollingModule?.cancel(withError: primerErr)
                             } else {
-                                let err = PrimerError.underlyingErrors(errors: [err],
-                                                                       userInfo: .errorUserInfoDictionary(),
-                                                                       diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                pollingModule?.cancel(withError: err)
+                                pollingModule?.cancel(withError: handled(primerError: .underlyingErrors(errors: [err])))
                             }
 
                             pollingModule = nil
@@ -913,10 +830,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         }
 
                     } else {
-                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .invalidClientToken()))
                     }
 
                 } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
@@ -951,11 +865,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 if let primerErr = err as? PrimerError {
                                     pollingModule?.cancel(withError: primerErr)
                                 } else {
-                                    let err = PrimerError.underlyingErrors(errors: [err],
-                                                                           userInfo: .errorUserInfoDictionary(),
-                                                                           diagnosticsId: UUID().uuidString)
-                                    ErrorHandler.handle(error: err)
-                                    pollingModule?.cancel(withError: err)
+                                    pollingModule?.cancel(withError: handled(primerError: .underlyingErrors(errors: [err])))
                                 }
 
                                 pollingModule = nil
@@ -979,9 +889,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         }
 
                     } else {
-                        let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                   diagnosticsId: UUID().uuidString)
-                        seal.reject(error)
+                       seal.reject(PrimerError.invalidClientToken())
                     }
 
                 } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
@@ -993,23 +901,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
 
                         guard let decodedExpiresAt = decodedJWTToken.expiresAt else {
-                            let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt",
-                                                               value: nil,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            return seal.reject(handled(primerError: .invalidValue(key: "decodedJWTToken.expiresAt")))
                         }
 
                         guard let decodedVoucherReference = decodedJWTToken.reference else {
-                            let err = PrimerError.invalidValue(key: "decodedJWTToken.reference",
-                                                               value: nil,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            return seal.reject(handled(primerError: .invalidValue(key: "decodedJWTToken.reference")))
                         }
 
                         guard let selectedRetailer = rawData as? PrimerRetailerData,
@@ -1018,13 +914,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 .first(where: { $0.id == selectedRetailer.id })?
                                 .name
                         else {
-                            let err = PrimerError.invalidValue(key: "rawData.id",
-                                                               value: "Invalid Retailer Identifier",
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            return seal.reject(
+                                handled(
+                                    primerError: .invalidValue(
+                                        key: "rawData.id",
+                                        value: "Invalid Retailer Identifier"
+                                    )
+                                )
+                            )
                         }
 
                         let formatter = DateFormatter().withExpirationDisplayDateFormat()
@@ -1046,12 +943,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     }
 
                 } else {
-                    let err = PrimerError.invalidValue(key: "resumeToken",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidValue(key: "resumeToken")))
                 }
             }
         }
@@ -1067,12 +959,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
             } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                 return try await handlePaymentMethodVoucherForDecodedClientToken(decodedJWTToken)
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "resumeToken"))
             }
         }
 
@@ -1091,10 +978,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                   let statusUrl = URL(string: statusUrlStr),
                   decodedJWTToken.intent != nil
             else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidClientToken())
             }
 
             DispatchQueue.main.async {
@@ -1129,11 +1013,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 if let primerErr = error as? PrimerError {
                     pollingModule?.cancel(withError: primerErr)
                 } else {
-                    let err = PrimerError.underlyingErrors(errors: [error],
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    pollingModule?.cancel(withError: err)
+                    pollingModule?.cancel(withError: handled(primerError: .underlyingErrors(errors: [error])))
                 }
 
                 pollingModule = nil
@@ -1147,8 +1027,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                   let statusUrl = URL(string: statusUrlStr),
                   decodedJWTToken.intent != nil
             else {
-                throw PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                throw handled(primerError: .invalidClientToken())
             }
 
             if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -1171,11 +1050,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     if let primerErr = error as? PrimerError {
                         pollingModule?.cancel(withError: primerErr)
                     } else {
-                        let err = PrimerError.underlyingErrors(errors: [error],
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        pollingModule?.cancel(withError: err)
+                        pollingModule?.cancel(withError: handled(primerError: .underlyingErrors(errors: [error])))
                     }
 
                     pollingModule = nil
@@ -1200,21 +1075,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
             switch paymentMethodType {
             case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
                 guard let decodedExpiresAt = decodedJWTToken.expiresAt else {
-                    let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidValue(key: "decodedJWTToken.expiresAt"))
                 }
 
                 guard let decodedVoucherReference = decodedJWTToken.reference else {
-                    let err = PrimerError.invalidValue(key: "decodedJWTToken.reference",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidValue(key: "decodedJWTToken.reference"))
                 }
 
                 guard let selectedRetailer = rawData as? PrimerRetailerData,
@@ -1223,12 +1088,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                       .first(where: { $0.id == selectedRetailer.id })?
                       .name
                 else {
-                    let err = PrimerError.invalidValue(key: "rawData.id",
-                                                       value: "Invalid Retailer Identifier",
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier"))
                 }
 
                 let formatter = DateFormatter().withExpirationDisplayDateFormat()
@@ -1256,12 +1116,9 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                             switch resumeDecisionType {
                             case .fail(let message):
-                                var merchantErr: Error!
-                                if let message = message {
-                                    let err = PrimerError.merchantError(message: message,
-                                                                        userInfo: .errorUserInfoDictionary(),
-                                                                        diagnosticsId: UUID().uuidString)
-                                    merchantErr = err
+                                let merchantErr: Error
+                                if let message {
+                                    merchantErr = PrimerError.merchantError(message: message)
                                 } else {
                                     merchantErr = NSError.emptyDescriptionError
                                 }
@@ -1290,13 +1147,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
                 } else {
                     guard let resumePaymentId = self.resumePaymentId else {
-                        let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
-                                                                            value: "Resume Payment ID not valid",
-                                                                            userInfo: .errorUserInfoDictionary(),
-                                                                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: resumePaymentIdError)
-                        seal.reject(resumePaymentIdError)
-                        return
+                        return seal.reject(
+                            handled(
+                                primerError: .invalidValue(
+                                    key: "resumePaymentId",
+                                    value: "Resume Payment ID not valid"
+                                )
+                            )
+                        )
                     }
 
                     firstly {
@@ -1330,9 +1188,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 case .fail(let message):
                     let err: Error
                     if let message {
-                        err = PrimerError.merchantError(message: message,
-                                                        userInfo: .errorUserInfoDictionary(),
-                                                        diagnosticsId: UUID().uuidString)
+                        err = PrimerError.merchantError(message: message)
                     } else {
                         err = NSError.emptyDescriptionError
                     }
@@ -1349,12 +1205,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
         private func handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
             guard let resumePaymentId else {
-                let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
-                                                                    value: "Resume Payment ID not valid",
-                                                                    userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: resumePaymentIdError)
-                throw resumePaymentIdError
+                throw handled(primerError: .invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid"))
             }
 
             let paymentResponse = try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
@@ -1472,13 +1323,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
 extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewControllerDelegate {
 
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if let webViewCompletion = webViewCompletion {
-            // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType,
-                                            userInfo: .errorUserInfoDictionary(),
-                                            diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            webViewCompletion(nil, err)
+        if let webViewCompletion {
+            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: self.paymentMethodType)))
         }
 
         self.webViewCompletion = nil
@@ -1498,20 +1344,11 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
 
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
               let paymentMethodId = paymentMethod.id else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
-            return
+            return completion(nil, handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
         }
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
-            return
+            return completion(nil, handled(primerError: .invalidClientToken()))
         }
 
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in

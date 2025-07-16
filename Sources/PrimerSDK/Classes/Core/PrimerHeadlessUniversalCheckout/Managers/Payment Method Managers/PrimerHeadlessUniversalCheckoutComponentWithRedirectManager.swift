@@ -28,21 +28,18 @@ extension PrimerHeadlessUniversalCheckout {
         public func provideBanksComponent(paymentMethodType: String) throws -> any PrimerHeadlessMainComponent {
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
                   paymentMethodType == .adyenIDeal else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
             }
 
             guard let tokenizationModel = try getTokenizationModel() else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType.rawValue,
-                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                "message": "Unable to locate a correct payment method view model"
-                                                               ]),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(
+                    primerError: .unsupportedPaymentMethod(
+                        paymentMethodType: paymentMethodType.rawValue,
+                        userInfo: .errorUserInfoDictionary(
+                            additionalInfo: ["message": "Unable to locate a correct payment method view model"]
+                        )
+                    )
+                )
             }
 
             return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationProvidingModel: tokenizationModel) {
