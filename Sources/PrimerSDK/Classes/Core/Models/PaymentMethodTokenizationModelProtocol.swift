@@ -41,7 +41,11 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData?
+
+    @MainActor
     func handleSuccessfulFlow()
+
+    @MainActor
     func handleFailureFlow(errorMessage: String?)
     func cancel()
 }

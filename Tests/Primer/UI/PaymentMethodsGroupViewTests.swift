@@ -138,9 +138,11 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
         throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
     }
 
+    @MainActor
     func handleSuccessfulFlow() {
     }
 
+    @MainActor
     func handleFailureFlow(errorMessage: String?) {
     }
 

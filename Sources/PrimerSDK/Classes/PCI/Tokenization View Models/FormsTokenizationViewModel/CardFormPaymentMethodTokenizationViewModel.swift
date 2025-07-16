@@ -425,11 +425,15 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                                                                  diagnosticsId: UUID().uuidString)
                     }
 
-                    self.showResultScreenIfNeeded(error: primerErr)
+                    DispatchQueue.main.async {
+                        self.showResultScreenIfNeeded(error: primerErr)
+                    }
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
-                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    DispatchQueue.main.async {
+                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    }
                 }
                 // The above promises will never end up on error.
                 .catch { _ in
