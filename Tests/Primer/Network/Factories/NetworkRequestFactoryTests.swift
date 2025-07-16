@@ -106,7 +106,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
             switch error {
             case .invalidUrl(let url, let userInfo, _):
                 XCTAssertTrue(url?.hasPrefix("Unknown Host") ?? false)
-                XCTAssertEqual(userInfo?["function"], "baseRequest(from:)")
+                XCTAssertEqual(userInfo["function"], "baseRequest(from:)")
             default:
                 XCTFail()
             }

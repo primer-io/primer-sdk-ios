@@ -71,7 +71,7 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
             params["binData"] = ["network": cardNetwork]
         }
 
-        PrimerDelegateProxy.primerClientSessionWillUpdate()
+        await PrimerDelegateProxy.primerClientSessionWillUpdate()
 
         let apiConfigurationModule = PrimerAPIConfigurationModule()
         try await apiConfigurationModule.updateSession(
@@ -83,7 +83,7 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
         )
 
         if PrimerAPIConfigurationModule.apiConfiguration != nil {
-            PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
+            await PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
         }
     }
 
@@ -125,7 +125,7 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
         guard PrimerInternal.shared.intent == .checkout else { return }
         guard PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == true else { return }
 
-        PrimerDelegateProxy.primerClientSessionWillUpdate()
+        await PrimerDelegateProxy.primerClientSessionWillUpdate()
 
         let apiConfigurationModule = PrimerAPIConfigurationModule()
         try await apiConfigurationModule
@@ -135,7 +135,7 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
             )])))
 
         if PrimerAPIConfigurationModule.apiConfiguration != nil {
-            PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
+            await PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
         }
     }
 
@@ -293,13 +293,13 @@ final class ClientSessionActionsModule: ClientSessionActionsProtocol {
     func dispatch(actions: [ClientSession.Action]) async throws {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
 
-        PrimerDelegateProxy.primerClientSessionWillUpdate()
+        await PrimerDelegateProxy.primerClientSessionWillUpdate()
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
         try await apiConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
 
         if AppState.current.apiConfiguration != nil {
-            PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
+            await PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
         }
     }
 }

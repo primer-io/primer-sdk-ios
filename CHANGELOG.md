@@ -1,3 +1,27 @@
+## 2.39.0 (2025-07-15)
+
+### Feat
+
+- Add support for MM/YY expiry date format in RawDataManager (#1244)
+- Implement better ApplePay error categorization (#1242)
+- **Apple Pay**: Added support for MPAN (#1143)
+
+### Fix
+
+- Reduce console noise for nil remoteUrl in ImageManager (#1240)
+- ACC-5636 excessive validation logging (#1221)
+
+### Refactor
+
+- Introduce default values for PrimerError (#1241)
+- Migrate RawDataManager and related files (#1219)
+- Migrate PaymentMethodTokenizationViewModel (#1236)
+- Clean up UI event posting (#1214)
+- Migrate PaymentMethodTokenizationViewModel, PaymentMethodTokenizationModelProtocol and BanksTokenizationComponent (#1218)
+- Migrate ClientSessionActionsModule (#1210)
+- Migrate ACHTokenizationService and ACHClientSessionService (#1206)
+- Migrate PrimerAPIConfigurationModule, VaultService, PrimerDelegate, PrimerHeadlessUniversalCheckout and VaultManager (#1217)
+
 ## 2.38.3 (2025-07-02)
 
 ### Fix

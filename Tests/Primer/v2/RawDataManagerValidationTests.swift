@@ -46,7 +46,8 @@ class RawDataManagerValidationTests: XCTestCase {
                     CardNetwork.amex.rawValue
                     //                    ,
                     //                    CardNetwork.unknown.rawValue
-                ]
+                ],
+                descriptor: nil
             ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
@@ -500,16 +501,16 @@ class RawDataManagerValidationTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssertFalse(isValid, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
-            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            // With MM/YY support, "03/30" should be valid as it converts to "03/2030"
+            XCTAssertTrue(isValid, "Data should be valid with MM/YY format")
+            XCTAssertNil(errors, "Should not have thrown errors")
             validation.fulfill()
         }
         .catch { _ in
             XCTFail()
         }
 
-        // Invalid expiry date
+        // Valid expiry date in MM/YY format
         let cardData = PrimerCardData(cardNumber: "4242424242424242",
                                       expiryDate: "03/30",
                                       cvv: "123",

@@ -75,10 +75,7 @@ extension PrimerPaymentMethod {
                    borderColor == nil,
                    text == nil,
                    textColor == nil {
-                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(error: InternalError.failedToDecode(message: "BaseColors"))
                 }
             }
         }
