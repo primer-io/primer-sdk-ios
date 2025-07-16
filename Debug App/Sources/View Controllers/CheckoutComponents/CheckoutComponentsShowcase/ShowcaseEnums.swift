@@ -10,8 +10,5 @@ import Foundation
 /// Enumeration of available showcase categories
 @available(iOS 15.0, *)
 enum ShowcaseCategory: String, CaseIterable {
-    case layouts = "Layout Configurations"
     case styling = "Styling Variations"
-    case interactive = "Interactive Features"
-    case advanced = "Advanced Customization"
 }

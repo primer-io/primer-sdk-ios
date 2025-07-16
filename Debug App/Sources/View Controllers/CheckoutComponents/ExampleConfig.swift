@@ -29,20 +29,7 @@ struct ExampleConfig: Identifiable {
     }
     
     enum CheckoutCustomization {
-        case compact
-        case expanded
-        case inline
-        case grid
-        case corporate
-        case modern
         case colorful
-        case dark
-        case liveState
-        case validation
-        case coBadged
-        case modifierChains
-        case customScreen
-        case animated
     }
 }
 
@@ -67,130 +54,20 @@ extension ExampleConfig {
     }
 }
 
-// MARK: - Layout Examples
-
-let layoutExamples: [ExampleConfig] = [
-    ExampleConfig(
-        name: "Compact Layout",
-        description: "Horizontal fields with tight spacing",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .compact
-    ),
-    ExampleConfig(
-        name: "Expanded Layout", 
-        description: "Vertical fields with generous spacing",
-        sessionType: .cardAndApplePay,
-        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY"],
-        customization: .expanded
-    ),
-    ExampleConfig(
-        name: "Inline Layout",
-        description: "Embedded seamlessly in content",
-        sessionType: .fullMethods,
-        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY", "PAYPAL", "GOOGLE_PAY"],
-        customization: .inline
-    ),
-    ExampleConfig(
-        name: "Grid Layout with Surcharge",
-        description: "Card details in organized grid with surcharge display",
-        sessionType: .cardOnlyWithSurcharge,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .grid
-    )
-]
 
 // MARK: - Styling Examples
 
 let stylingExamples: [ExampleConfig] = [
-    ExampleConfig(
-        name: "Corporate Theme",
-        description: "Professional blue and gray styling",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .corporate
-    ),
-    ExampleConfig(
-        name: "Modern Theme",
-        description: "Clean white with subtle shadows",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .modern
-    ),
     ExampleConfig(
         name: "Colorful Theme",
         description: "Branded colors with gradients",
         sessionType: .cardOnly,
         paymentMethods: ["PAYMENT_CARD"],
         customization: .colorful
-    ),
-    ExampleConfig(
-        name: "Dark Theme",
-        description: "Full dark mode implementation",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .dark
     )
 ]
 
-// MARK: - Interactive Examples
 
-let interactiveExamples: [ExampleConfig] = [
-    ExampleConfig(
-        name: "Live State Demo",
-        description: "Real-time state updates and debugging",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .liveState
-    ),
-    ExampleConfig(
-        name: "Validation Showcase",
-        description: "Error states and validation feedback",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .validation
-    ),
-    ExampleConfig(
-        name: "Co-badged Cards",
-        description: "Multiple network selection demo",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .coBadged
-    ),
-    ExampleConfig(
-        name: "Surcharge Demo",
-        description: "Network-based surcharge display",
-        sessionType: .cardOnlyWithSurcharge,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .validation
-    )
-]
-
-// MARK: - Advanced Examples
-
-let advancedExamples: [ExampleConfig] = [
-    ExampleConfig(
-        name: "PrimerModifier Chains",
-        description: "Complex styling combinations",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .modifierChains
-    ),
-    ExampleConfig(
-        name: "Custom Screen Layout",
-        description: "Completely custom form layouts",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .customScreen
-    ),
-    ExampleConfig(
-        name: "Animation Playground",
-        description: "Various animation styles",
-        sessionType: .cardOnly,
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .animated
-    )
-]
 
 // MARK: - Default Examples
 
@@ -208,23 +85,14 @@ let defaultExamples: [ExampleConfig] = [
 
 enum ExampleCategory: String, CaseIterable {
     case `default` = "Default Example"
-    case layouts = "Layout Configurations"
     case styling = "Styling Variations"
-    case interactive = "Interactive Features"
-    case advanced = "Advanced Customization"
     
     var examples: [ExampleConfig] {
         switch self {
         case .default:
             return defaultExamples
-        case .layouts:
-            return layoutExamples
         case .styling:
             return stylingExamples
-        case .interactive:
-            return interactiveExamples
-        case .advanced:
-            return advancedExamples
         }
     }
     
@@ -232,14 +100,8 @@ enum ExampleCategory: String, CaseIterable {
         switch self {
         case .default:
             return "Basic CheckoutComponents without customization"
-        case .layouts:
-            return "Different ways to arrange CheckoutComponents"
         case .styling:
             return "Various visual themes and customizations"
-        case .interactive:
-            return "Dynamic behaviors and real-time interactions"
-        case .advanced:
-            return "Complex styling and custom implementations"
         }
     }
 }
