@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
 
 import UIKit
 
@@ -251,7 +252,7 @@ final class PrimerUIManager: PrimerUIManaging {
             seal.fulfill()
         }
     }
-    
+
     func validatePaymentUIPresentation_throws() throws {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
@@ -469,3 +470,4 @@ extension PrimerUIManager {
     }
 }
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
