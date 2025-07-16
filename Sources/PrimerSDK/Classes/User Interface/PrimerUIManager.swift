@@ -15,7 +15,8 @@ protocol PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
     func prepareRootViewController() -> Promise<Void>
-    func prepareRootViewController() async throws
+    @MainActor
+    func prepareRootViewController_main_actor()
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String?)
@@ -65,6 +66,21 @@ final class PrimerUIManager: PrimerUIManaging {
                 seal.reject(err)
             }
         }
+    }
+
+    func preparePresentation(clientToken: String) async throws {
+        await PrimerUIManager.prepareRootViewController_main_actor()
+        let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+        let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
+
+        try await apiConfigurationModule.setupSession(
+            forClientToken: clientToken,
+            requestDisplayMetadata: true,
+            requestClientTokenValidation: false,
+            requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
+        )
+
+        try PrimerUIManager.validatePaymentUIPresentation_throws()
     }
 
     func presentPaymentUI() {
@@ -158,7 +174,7 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     @MainActor
-    func prepareRootViewController() async throws {
+    func prepareRootViewController_main_actor() {
         if PrimerUIManager.primerRootViewController == nil {
             primerRootViewController = PrimerRootViewController()
         }
@@ -235,6 +251,54 @@ final class PrimerUIManager: PrimerUIManaging {
             seal.fulfill()
         }
     }
+    
+    func validatePaymentUIPresentation_throws() throws {
+        if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
+            guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
+                let err = PrimerError.unableToPresentPaymentMethod(
+                    paymentMethodType: paymentMethodType,
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+
+            guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
+                let err = PrimerError.unableToPresentPaymentMethod(
+                    paymentMethodType: paymentMethodType,
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+
+            if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
+                let err = PrimerError.unsupportedIntent(
+                    intent: .checkout,
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+                throw err
+
+            } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
+                let err = PrimerError.unsupportedIntent(
+                    intent: .vault,
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+                throw err
+            }
+        }
+
+        let state: AppStateProtocol = DependencyContainer.resolve()
+
+        if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
+            let err = PrimerError.invalidValue(key: "customer.id",
+                                               value: nil,
+                                               userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"],
+                                               diagnosticsId: UUID().uuidString)
+            throw err
+
+        }
+    }
 
     @discardableResult
     func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
@@ -243,6 +307,15 @@ final class PrimerUIManager: PrimerUIManaging {
                 self.dismissPrimerUI(animated: flag) {
                     seal.fulfill()
                 }
+            }
+        }
+    }
+
+    @MainActor
+    func dismissPrimerUI_async(animated flag: Bool) async {
+        await withCheckedContinuation { continuation in
+            self.dismissPrimerUI(animated: flag) {
+                continuation.resume(returning: ())
             }
         }
     }
@@ -329,6 +402,10 @@ extension PrimerUIManager {
         shared.preparePresentation(clientToken: clientToken)
     }
 
+    static func preparePresentation(clientToken: String) async throws {
+        try await shared.preparePresentation(clientToken: clientToken)
+    }
+
     static func presentPaymentUI() {
         shared.presentPaymentUI()
     }
@@ -342,17 +419,26 @@ extension PrimerUIManager {
     }
 
     @MainActor
-    static func prepareRootViewController() async throws {
-        try await shared.prepareRootViewController()
+    static func prepareRootViewController_main_actor() {
+        shared.prepareRootViewController_main_actor()
     }
 
     static func validatePaymentUIPresentation() -> Promise<Void> {
         shared.validatePaymentUIPresentation()
     }
 
+    static func validatePaymentUIPresentation_throws() throws {
+        try shared.validatePaymentUIPresentation_throws()
+    }
+
     @discardableResult
     static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
         shared.dismissPrimerUI(animated: flag)
+    }
+
+    @MainActor
+    static func dismissPrimerUI_async(animated flag: Bool) async {
+        await shared.dismissPrimerUI_async(animated: flag)
     }
 
     static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
