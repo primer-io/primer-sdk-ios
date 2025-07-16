@@ -212,6 +212,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         return paymentMethodTokenData
     }
 
+    @MainActor
     func handleSuccessfulFlow() {
         if config.internalPaymentMethodType != .stripeAch {
             let categories = self.config.paymentMethodManagerCategories
