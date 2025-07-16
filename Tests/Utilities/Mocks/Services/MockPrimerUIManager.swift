@@ -27,12 +27,8 @@ final class MockPrimerUIManager: PrimerUIManaging {
         }
     }
 
-    func prepareRootViewController() async throws {
-        switch onPrepareViewController?() {
-        case .success(let success): return success
-        case .failure(let failure): throw failure
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
+    func prepareRootViewController_main_actor() {
+        _ = onPrepareViewController?()
     }
 
     // MARK: dismissOrShowResultScreen
