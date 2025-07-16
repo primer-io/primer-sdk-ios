@@ -113,28 +113,14 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
 
     func validUrlForUrlScheme() throws -> URL {
         guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
-            let err = PrimerError.invalidValue(
-                key: "urlScheme",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "urlScheme"))
         }
         return url
     }
 
     func validSchemeForUrlScheme() throws -> String {
         let url = try validUrlForUrlScheme()
-        guard let scheme = url.scheme else {
-            let err = PrimerError.invalidValue(
-                key: "urlScheme",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        guard let scheme = url.scheme else { throw handled(primerError: .invalidValue(key: "urlScheme")) }
         return scheme
     }
 }
