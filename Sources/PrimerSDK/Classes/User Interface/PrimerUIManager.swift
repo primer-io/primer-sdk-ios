@@ -257,48 +257,30 @@ final class PrimerUIManager: PrimerUIManaging {
     func validatePaymentUIPresentation_throws() throws {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                let err = PrimerError.unableToPresentPaymentMethod(
-                    paymentMethodType: paymentMethodType,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
-                let err = PrimerError.unableToPresentPaymentMethod(
-                    paymentMethodType: paymentMethodType,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
-                let err = PrimerError.unsupportedIntent(
-                    intent: .checkout,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                throw err
+                throw PrimerError.unsupportedIntent(intent: .checkout)
 
             } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
-                let err = PrimerError.unsupportedIntent(
-                    intent: .vault,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                throw err
+                throw PrimerError.unsupportedIntent(intent: .vault)
             }
         }
 
         let state: AppStateProtocol = DependencyContainer.resolve()
 
         if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
-            let err = PrimerError.invalidValue(key: "customer.id",
-                                               value: nil,
-                                               userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"],
-                                               diagnosticsId: UUID().uuidString)
-            throw err
-
+            throw PrimerError.invalidValue(key: "customer.id",
+                                           userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"])
         }
     }
 

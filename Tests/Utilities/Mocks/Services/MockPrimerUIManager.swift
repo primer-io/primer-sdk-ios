@@ -16,19 +16,17 @@ final class MockPrimerUIManager: PrimerUIManaging {
     var primerRootViewController: PrimerRootViewController?
     var apiConfigurationModule: (any PrimerSDK.PrimerAPIConfigurationModuleProtocol)?
 
-    var onPrepareViewController: (() -> Result<Void, Error>)?
+    var onPrepareViewController: (() -> Void)?
     var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType, [PrimerPaymentMethodManagerCategory], String?) -> Void)?
 
     func prepareRootViewController() -> Promise<Void> {
-        switch onPrepareViewController?() {
-        case .success(let success): .fulfilled(success)
-        case .failure(let failure): .rejected(failure)
-        case nil: .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-        }
+        onPrepareViewController?()
+        return .fulfilled(())
     }
-
+    
+    @MainActor
     func prepareRootViewController_main_actor() {
-        _ = onPrepareViewController?()
+        onPrepareViewController?()
     }
 
     // MARK: dismissOrShowResultScreen
