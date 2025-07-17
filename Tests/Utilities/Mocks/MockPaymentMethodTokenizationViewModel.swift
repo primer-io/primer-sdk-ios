@@ -73,8 +73,9 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             self.paymentMethodTokenData = paymentMethodTokenData
 
             if PrimerInternal.shared.intent == .vault {
-                self.handleSuccessfulFlow()
-
+                DispatchQueue.main.async{
+                    self.handleSuccessfulFlow()
+                }
             } else {
                 self.didStartPayment?()
                 self.didStartPayment = nil
@@ -85,7 +86,9 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                 .done { _ in
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
-                    self.handleSuccessfulFlow()
+                    DispatchQueue.main.async {
+                        self.handleSuccessfulFlow()
+                    }
                 }
                 .catch { err in
                     self.didFinishPayment?(err)
@@ -304,8 +307,10 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         }
     }
 
+    @MainActor
     func handleSuccessfulFlow() {}
 
+    @MainActor
     func handleFailureFlow(errorMessage: String?) {}
 
     func submitButtonTapped() {}

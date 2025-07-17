@@ -141,8 +141,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
             PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-            self.handleSuccessfulFlow()
-
+            DispatchQueue.main.async {
+                self.handleSuccessfulFlow()
+            }
         } else {
             self.didStartPayment?()
             self.didStartPayment = nil
@@ -158,8 +159,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
-
-                self.handleSuccessfulFlow()
+                DispatchQueue.main.async {
+                    self.handleSuccessfulFlow()
+                }
             }
             .ensure {
                 self.uiManager.primerRootViewController?.enableUserInteraction(true)
@@ -205,7 +207,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                                                                                data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
-                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                        DispatchQueue.main.async {
+                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                        }
                     }
                     // The above promises will never end up on error.
                     .catch { _ in }
@@ -752,7 +756,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
-            try await uiManager.prepareRootViewController()
+            uiManager.prepareRootViewController_main_actor()
         }
 
         uiManager.primerRootViewController?.present(
@@ -901,13 +905,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         return paymentCheckoutData
     }
 
+    @MainActor
     func handleSuccessfulFlow() {}
 
-    func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
-    }
-
+    @MainActor
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
         uiManager.dismissOrShowResultScreen(type: .failure,
@@ -1049,6 +1050,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     }
 
     func performPostTokenizationSteps() async throws {}
+
+    private func nullifyEventCallbacks() {
+        didStartPayment = nil
+        didFinishPayment = nil
+    }
 
     // Resume payment with Resume payment ID
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {

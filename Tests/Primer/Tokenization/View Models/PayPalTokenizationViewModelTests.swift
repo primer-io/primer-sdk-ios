@@ -48,7 +48,6 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return .success(())
         }
 
         _ = uiManager.prepareRootViewController()
@@ -116,7 +115,6 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return .success(())
         }
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
