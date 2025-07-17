@@ -343,7 +343,6 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
 
-    // TODO: FINAL MIGRATION
     override func start() {
         let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
         let isMerchantAmountNil
@@ -439,6 +438,82 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                 // The above promises will never end up on error.
                 .catch { _ in
                     self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
+                }
+            }
+        }
+    }
+
+    override func start_async() {
+        let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
+        let isMerchantAmountNil
+            = PrimerAPIConfigurationModule.apiConfiguration?
+            .clientSession?
+            .order?
+            .merchantAmount == nil
+        let currencyExists = AppState.current.currency != nil
+        let shouldShowSurcharge
+            = surchargeAmount != nil && isMerchantAmountNil && currencyExists
+
+        // If we would *hide* the surcharge label, then “unselect” the method
+        if !shouldShowSurcharge {
+            unselectPaymentMethodSilently()
+        }
+
+        self.checkoutEventsNotifierModule.didStartTokenization = {
+            self.uiModule.submitButton?.startAnimating()
+            self.uiManager.primerRootViewController?.enableUserInteraction(false)
+        }
+
+        self.checkoutEventsNotifierModule.didFinishTokenization = {
+            self.uiModule.submitButton?.stopAnimating()
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+        }
+
+        self.didStartPayment = {
+            self.uiModule.submitButton?.startAnimating()
+            self.uiManager.primerRootViewController?.enableUserInteraction(false)
+        }
+
+        self.didFinishPayment = { _ in
+            self.uiModule.submitButton?.stopAnimating()
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+
+        Task {
+            do {
+                self.paymentMethodTokenData = try await startTokenizationFlow()
+                processPaymentMethodTokenData()
+            } catch {
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                if let primerErr = error as? PrimerError,
+                   case .cancelled = primerErr,
+                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                   self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    do {
+                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                    } catch {
+                        // TODO: REVIEW_CHECK - What should we do here ?
+                    }
+                } else {
+                    do {
+                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+
+                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        await showResultScreenIfNeeded(error: primerErr)
+                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
+                        await handleFailureFlow(errorMessage: merchantErrorMessage)
+                    } catch {
+                        self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
+                    }
                 }
             }
         }
@@ -570,11 +645,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func performTokenizationStep() async throws {
-        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
-
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        let paymentMethodTokenData = try await tokenize()
-        self.paymentMethodTokenData = paymentMethodTokenData
+        self.paymentMethodTokenData = try await tokenize()
         return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -584,7 +657,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
-    override func performPostTokenizationSteps() async throws {}
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
+    }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
@@ -607,7 +682,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     @MainActor
     override func presentPaymentMethodUserInterface() async throws {
-        switch self.config.type {
+        switch config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             uiManager.primerRootViewController?.show(
                 viewController: PrimerCardFormViewController(viewModel: self)
@@ -632,15 +707,15 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func awaitUserInput() async throws {
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
+
         try await withCheckedThrowingContinuation { continuation in
             self.userInputCompletion = {
-                DispatchQueue.main.async { [weak self] in
-                    self?.uiManager.primerRootViewController?.enableUserInteraction(false)
-                }
                 continuation.resume()
             }
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
+
+        await uiManager.primerRootViewController?.enableUserInteraction(false)
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -658,16 +733,17 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        try await withCheckedThrowingContinuation { continuation in
-            self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
+        await MainActor.run {
+            cardComponentsManager.tokenize()
+        }
+        return try await withCheckedThrowingContinuation { continuation in
+            self.cardComponentsManagerTokenizationCompletion = { paymentMethodTokenData, err in
                 if let err {
                     continuation.resume(throwing: err)
                 } else if let paymentMethodTokenData {
                     continuation.resume(returning: paymentMethodTokenData)
                 }
             }
-
-            self.cardComponentsManager.tokenize()
         }
     }
 
@@ -784,12 +860,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
             return try await handleProcessor3DSForDecodedClientToken(decodedJWTToken)
         } else {
-            let err = PrimerError.invalidValue(key: "resumeToken",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "resumeToken"))
         }
     }
 
@@ -803,9 +874,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                                                  diagnosticsId: UUID().uuidString)
         }
 
-        DispatchQueue.main.async {
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
-        }
+        await uiManager.primerRootViewController?.enableUserInteraction(true)
 
         try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
         return try await PollingModule(url: statusUrl).start()
@@ -846,16 +915,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
               let statusUrlStr = decodedJWTToken.statusUrl,
               let statusUrl = URL(string: statusUrlStr),
               decodedJWTToken.intent != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
-        DispatchQueue.main.async {
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
-        }
-
+        await self.uiManager.primerRootViewController?.enableUserInteraction(true)
         try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
 
         let pollingModule = PollingModule(url: statusUrl)
@@ -897,7 +960,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
         self.webViewController = safariViewController
-        
+
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.webViewCompletion = { _, err in
                 if let err {
@@ -1000,7 +1063,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             ]
 
             var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
-            
+
             if isShowingBillingAddressFieldsRequired {
                 let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
                                                                   lastName: lastNameFieldView.lastName,
