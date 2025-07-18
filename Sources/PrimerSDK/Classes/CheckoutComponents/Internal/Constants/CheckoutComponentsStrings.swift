@@ -15,7 +15,7 @@ internal struct CheckoutComponentsStrings {
     static let cardPaymentTitle = NSLocalizedString(
         "checkout-components-card-payment-title",
         bundle: Bundle.primerResources,
-        value: "Card Payment",
+        value: "Pay with card",
         comment: "Card Payment screen title"
     )
 

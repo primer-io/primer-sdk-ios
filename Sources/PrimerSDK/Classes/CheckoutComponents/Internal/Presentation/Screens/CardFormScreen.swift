@@ -85,7 +85,7 @@ internal struct CardFormScreen: View {
 
     private var mainContent: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
                 titleSection
                 cardDetailsSection
                 if isShowingBillingAddressFieldsRequired {
@@ -111,7 +111,7 @@ internal struct CardFormScreen: View {
     }
 
     private var cardDetailsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
             cardInputSection
             cobadgedCardsSection
         }
@@ -120,7 +120,7 @@ internal struct CardFormScreen: View {
     @ViewBuilder
     private var cardInputSection: some View {
         // Use individual field builders from scope for flexible customization
-        VStack(spacing: 16) {
+        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
             // Card Number - use custom implementation if available, otherwise default
             if let cardNumberBuilder = scope.cardNumberInput {
                 cardNumberBuilder(PrimerModifier())
@@ -147,8 +147,16 @@ internal struct CardFormScreen: View {
                 )
             }
 
+            // Allowed Card Networks Display (Android parity)
+            let allowedNetworks = [CardNetwork].allowedCardNetworks
+            if !allowedNetworks.isEmpty {
+                AllowedCardNetworksView(
+                    allowedCardNetworks: allowedNetworks
+                )
+            }
+
             // Expiry Date and CVV row
-            HStack(spacing: 16) {
+            HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
                 // Expiry Date
                 if let expiryDateBuilder = scope.expiryDateInput {
                     expiryDateBuilder(PrimerModifier())

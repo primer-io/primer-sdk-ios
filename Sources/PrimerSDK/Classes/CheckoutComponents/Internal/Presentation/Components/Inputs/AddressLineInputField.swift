@@ -64,7 +64,7 @@ internal struct AddressLineInputField: View, LogReporter {
         } else if isFocused {
             return tokens?.primerColorBorderOutlinedFocus ?? .blue
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
         }
     }
 
@@ -92,7 +92,7 @@ internal struct AddressLineInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
+        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
@@ -161,7 +161,7 @@ internal struct AddressLineInputField: View, LogReporter {
                     }
                 }
             }
-            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+            .frame(height: FigmaDesignConstants.inputFieldHeight)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")

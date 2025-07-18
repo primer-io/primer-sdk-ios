@@ -54,7 +54,7 @@ internal struct OTPCodeInputField: View, LogReporter {
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
             return tokens?.primerColorBorderOutlinedError ?? .red
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
         }
     }
 

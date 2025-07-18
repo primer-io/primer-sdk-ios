@@ -47,7 +47,7 @@ internal class CardNumberRule: ValidationRule {
         // Only validate network if we have a reasonably complete card number
         if cleanedNumber.count >= 13 {
             let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
-            if !allowedCardNetworks.isEmpty && !allowedCardNetworks.contains(detectedNetwork) {
+            if !allowedCardNetworks.contains(detectedNetwork) {
                 // Use the specific "Unsupported card type" error from CheckoutComponentsStrings
                 let error = ValidationError(
                     inputElementType: .cardNumber,

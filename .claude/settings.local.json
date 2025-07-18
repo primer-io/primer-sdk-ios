@@ -60,7 +60,8 @@
       "mcp__atlassian__getJiraProjectIssueTypesMetadata",
       "mcp__atlassian__searchJiraIssuesUsingJql",
       "mcp__atlassian__editJiraIssue",
-      "mcp__atlassian__updateConfluencePage"
+      "mcp__atlassian__updateConfluencePage",
+      "mcp__zen__challenge"
     ],
     "deny": []
   }

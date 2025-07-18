@@ -104,7 +104,7 @@ internal struct CardNumberInputField: View, LogReporter {
             color = tokens?.primerColorBorderOutlinedFocus ?? .blue
             logger.debug(message: "🎨 [CardNumber] Border color: FOCUSED - \(color) (tokens available: \(tokens != nil))")
         } else {
-            color = tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+            color = tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
             logger.debug(message: "🎨 [CardNumber] Border color: DEFAULT - \(color)")
         }
         return color
@@ -113,7 +113,7 @@ internal struct CardNumberInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
+        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
@@ -208,7 +208,7 @@ internal struct CardNumberInputField: View, LogReporter {
                     }
                 }
             }
-            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+            .frame(height: FigmaDesignConstants.inputFieldHeight)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")

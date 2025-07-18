@@ -134,7 +134,7 @@ struct PrimerInputField: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
+        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label (if provided)
             if let labelText = labelText {
                 Text(labelText)
