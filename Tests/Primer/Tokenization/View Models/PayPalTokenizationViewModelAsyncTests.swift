@@ -1,16 +1,7 @@
-//
-//  PayPalTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
-
-import XCTest
-import AuthenticationServices
 @testable import PrimerSDK
+import XCTest
 
-final class PayPalTokenizationViewModelTests: XCTestCase {
-
+final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
     var uiManager: MockPrimerUIManager!
 
     var tokenizationService: MockTokenizationService!
@@ -20,12 +11,12 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
     var sut: PayPalTokenizationViewModel!
 
     override func setUpWithError() throws {
-
         uiManager = MockPrimerUIManager()
+        uiManager.primerRootViewController = MockPrimerRootViewController()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
 
-        sut = PayPalTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
+        sut = PayPalTokenizationViewModel(config: Mocks.PaymentMethods.paypalPaymentMethod,
                                           uiManager: uiManager,
                                           tokenizationService: tokenizationService,
                                           createResumePaymentService: createResumePaymentService)
@@ -38,28 +29,21 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         uiManager = nil
     }
 
-    func testStartWithPreTokenizationAndAbort() throws {
+    func test_start_with_pre_tokenization_and_abort_async() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        _ = uiManager.prepareRootViewController()
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
+            XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectOnDidFail = self.expectation(description: "onDidFail is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -67,18 +51,18 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectWillAbort.fulfill()
+            expectOnDidFail.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
         wait(for: [
-            expectWillCreatePaymentData,
-            expectWillAbort
+            expectOnWillCreatePaymentWithData,
+            expectOnDidFail
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func test_start_with_full_checkout_flow_async() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -97,71 +81,64 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let payPalService = MockPayPalService()
         sut.payPalService = payPalService
         payPalService.onStartOrderSession = {
-            return .init(orderId: "order_id", approvalUrl: "https://approval.url/")
+            .init(orderId: "order_id", approvalUrl: "https://approval.url/")
         }
         payPalService.onFetchPayPalExternalPayerInfo = { _ in
-            return .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
-                                                                       email: "john@appleseed.com",
-                                                                       firstName: "John",
-                                                                       lastName: "Appleseed"))
+            .init(orderId: "order_id", externalPayerInfo: .init(externalPayerId: "external_payer_id",
+                                                                email: "john@appleseed.com",
+                                                                firstName: "John",
+                                                                lastName: "Appleseed"))
         }
 
         let webAuthenticationService = MockWebAuthenticationService()
         sut.webAuthenticationService = webAuthenticationService
         webAuthenticationService.onConnect = { _, _ in
-            return URL(string: "https://webauthsvc.app/")!
+            URL(string: "https://webauthsvc.app/")!
         }
 
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
-        uiDelegate.onUIDidShowPaymentMethod = { _ in
-            expectShowPaymentMethod.fulfill()
-        }
-
-        _ = uiManager.prepareRootViewController()
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
+            XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "Did complete checkout with data")
+        let expectOnDidShowPaymentMethod = self.expectation(description: "onUIDidShowPaymentMethod is called")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            expectOnDidShowPaymentMethod.fulfill()
+        }
+
+        let expectOnTokenize = self.expectation(description: "onTokenize is called")
+        tokenizationService.onTokenize = { _ in
+            expectOnTokenize.fulfill()
+            return .success(self.tokenizationResponseBody)
+        }
+
+        let expectOnCreatePayment = self.expectation(description: "onCreatePayment is called")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectOnCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        let expectOnDidCompleteCheckoutWithData = self.expectation(description: "onDidCompleteCheckoutWithData is called")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { _ in
-            expectOnTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
-        }
-
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { _ in
-            expectDidCreatePayment.fulfill()
-            return self.paymentResponseBody
+            expectOnDidCompleteCheckoutWithData.fulfill()
         }
 
         delegate.onDidFail = { error in
             print(error)
         }
 
-        sut.start()
+        sut.start_async()
 
         wait(for: [
-            expectWillCreatePaymentData,
-            expectShowPaymentMethod,
+            expectOnWillCreatePaymentWithData,
+            expectOnDidShowPaymentMethod,
             expectOnTokenize,
-            expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
+            expectOnCreatePayment,
+            expectOnDidCompleteCheckoutWithData
         ], timeout: 20.0, enforceOrder: true)
     }
 
