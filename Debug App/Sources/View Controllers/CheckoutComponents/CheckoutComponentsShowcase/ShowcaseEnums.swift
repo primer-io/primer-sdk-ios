@@ -1,0 +1,14 @@
+//
+//  ShowcaseEnums.swift
+//  Debug App
+//
+//  Created by Claude on 26.6.25.
+//
+
+import Foundation
+
+/// Enumeration of available showcase categories
+@available(iOS 15.0, *)
+enum ShowcaseCategory: String, CaseIterable {
+    case styling = "Styling Variations"
+}
