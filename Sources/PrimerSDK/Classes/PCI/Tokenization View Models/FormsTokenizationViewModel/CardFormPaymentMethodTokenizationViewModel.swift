@@ -52,7 +52,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     var userInputCompletion: (() -> Void)?
     // swiftlint:disable:next identifier_name
-    private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
+    private var cardComponentsManagerTokenizationCompletion: ((Result<PrimerPaymentMethodTokenData, Error>) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
@@ -693,11 +693,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethodTokenData = paymentMethodTokenData {
-                    seal.fulfill(paymentMethodTokenData)
+            self.cardComponentsManagerTokenizationCompletion = { result in
+                switch result {
+                case .success(let paymentMethodTokenData): seal.fulfill(paymentMethodTokenData)
+                case .failure(let error): seal.reject(error)
                 }
             }
 
@@ -705,17 +704,13 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
+    @MainActor
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        await MainActor.run {
-            cardComponentsManager.tokenize()
-        }
+        cardComponentsManager.tokenize()
+
         return try await withCheckedThrowingContinuation { continuation in
-            self.cardComponentsManagerTokenizationCompletion = { paymentMethodTokenData, err in
-                if let err {
-                    continuation.resume(throwing: err)
-                } else if let paymentMethodTokenData {
-                    continuation.resume(returning: paymentMethodTokenData)
-                }
+            self.cardComponentsManagerTokenizationCompletion = { result in
+                continuation.resume(with: result)
             }
         }
     }
@@ -1074,7 +1069,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
-        self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
+        self.cardComponentsManagerTokenizationCompletion?(.success(paymentMethodToken))
         self.cardComponentsManagerTokenizationCompletion = nil
     }
 
@@ -1087,7 +1082,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        self.cardComponentsManagerTokenizationCompletion?(nil, handled(primerError: .underlyingErrors(errors: errors)))
+        self.cardComponentsManagerTokenizationCompletion?(.failure(handled(primerError: .underlyingErrors(errors: errors))))
         self.cardComponentsManagerTokenizationCompletion = nil
     }
 
