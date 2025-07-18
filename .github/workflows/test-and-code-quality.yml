@@ -70,7 +70,6 @@ jobs:
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           sdk-name: ${{ matrix.package-swift.name }}
           package-swift: ${{  matrix.package-swift.file }}
-        
 
   sonarcloud:
     needs:
