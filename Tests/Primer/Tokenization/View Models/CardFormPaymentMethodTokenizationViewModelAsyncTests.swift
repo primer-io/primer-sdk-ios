@@ -93,7 +93,15 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        _ = PrimerUIManager.prepareRootViewController()
+        Task {
+            await PrimerUIManager.prepareRootViewController_main_actor()
+        }
+
+        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            self.sut.userInputCompletion?()
+            expectWillShowPaymentMethod.fulfill()
+        }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
@@ -105,30 +113,23 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { _ in
-            self.sut.userInputCompletion?()
-            expectWillShowPaymentMethod.fulfill()
-        }
-
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
+        }
 
+        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
         }
 
         sut.start_async()
