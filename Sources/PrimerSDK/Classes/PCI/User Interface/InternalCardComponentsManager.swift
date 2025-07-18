@@ -334,6 +334,21 @@ and 4 characters for expiry year separated by '/'.
                     return
                 }
 
+                // Validate card network before tokenization
+                if let cardPaymentInstrument = tokenizationPaymentInstrument as? CardPaymentInstrument {
+                    let cardNetwork = CardNetwork(cardNumber: cardPaymentInstrument.number)
+                    let allowedCardNetworks = Set(Array.allowedCardNetworks)
+                    if !allowedCardNetworks.contains(cardNetwork) {
+                        let err = PrimerError.invalidValue(key: "cardNetwork",
+                                                           value: cardNetwork.displayName,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                        return
+                    }
+                }
+
                 self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
                 let requestBody = Request.Body.Tokenization(paymentInstrument: tokenizationPaymentInstrument)
 
