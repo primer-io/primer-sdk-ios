@@ -215,7 +215,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
 
         case .klarna:
-            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
+            categories.append(PrimerPaymentMethodManagerCategory.klarna)
 
         case .paymentCard:
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
