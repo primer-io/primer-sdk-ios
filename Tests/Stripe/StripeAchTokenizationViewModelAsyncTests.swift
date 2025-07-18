@@ -42,22 +42,22 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         SDKSessionHelper.tearDown()
     }
 
-    func test_tokenization_validation() throws {
+    func test_validate() throws {
         XCTAssertNoThrow(try sut.validate())
     }
 
-    func test_start_pre_tokenization_and_abort_async() throws {
+    func test_start_with_pre_tokenization_and_abort_async() throws {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectOnDidFail = self.expectation(description: "onDidFail is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -65,15 +65,18 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectWillAbort.fulfill()
+            expectOnDidFail.fulfill()
         }
 
         sut.start_async()
 
-        waitForExpectations(timeout: 10.0)
+        wait(for: [
+            expectOnWillCreatePaymentWithData,
+            expectOnDidFail
+        ], timeout: 10.0, enforceOrder: true)
     }
 
-    func test_full_flow_checkout_async() throws {
+    func test_start_with_full_checkout_flow_async() throws {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -85,64 +88,64 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
 
         PrimerAPIConfigurationModule.apiClient = apiClient
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectOnWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidStartTokenization = self.expectation(description: "didStartTokenization is called")
+        let expectOnDidStartTokenization = self.expectation(description: "onDidStartTokenization is called")
         delegate.onDidStartTokenization = { paymentType in
             XCTAssertEqual(paymentType, self.stripeACHPaymentMethodType)
-            expectDidStartTokenization.fulfill()
+            expectOnDidStartTokenization.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectOnTokenize = self.expectation(description: "onTokenize is called")
         tokenizationService.onTokenize = { _ in
-            expectDidTokenize.fulfill()
+            expectOnTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment is called")
+        let expectOnCreatePayment = self.expectation(description: "onCreatePayment is called")
         createResumePaymentService.onCreatePayment = { _ in
-            expectDidCreatePayment.fulfill()
+            expectOnCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidReceiveStripeCollectorAdditionalInfo = self.expectation(description: "didReceiveStripeCollectorAdditionalInfo is called")
-        let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
+        let expectOnDidReceiveStripeCollectorAdditionalInfo = self.expectation(description: "onDidReceiveStripeCollectorAdditionalInfo is called")
+        let expectOnDidReceiveMandateAdditionalInfo = self.expectation(description: "onDidReceiveMandateAdditionalInfo is called")
         delegate.onDidReceiveAdditionalInfo = { additionalInfo in
             if additionalInfo is ACHBankAccountCollectorAdditionalInfo {
-                expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
+                expectOnDidReceiveStripeCollectorAdditionalInfo.fulfill()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.sut.stripeBankAccountCollectorCompletion?(.success(()))
                 }
             } else {
-                expectDidReceiveMandateAdditionalInfo.fulfill()
+                expectOnDidReceiveMandateAdditionalInfo.fulfill()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.mandateDelegate?.acceptMandate()
                 }
             }
         }
 
-        let expectCheckoutDidCompleteWithData = self.expectation(description: "didCompleteCheckout is called")
+        let expectOnDidCompleteCheckoutWithData = self.expectation(description: "onDidCompleteCheckoutWithData is called")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompleteWithData.fulfill()
+            expectOnDidCompleteCheckoutWithData.fulfill()
         }
 
         sut.start_async()
 
         wait(for: [
-            expectWillCreatePaymentData,
-            expectDidStartTokenization,
-            expectDidTokenize,
-            expectDidCreatePayment,
-            expectDidReceiveStripeCollectorAdditionalInfo,
-            expectDidReceiveMandateAdditionalInfo,
-            expectCheckoutDidCompleteWithData
+            expectOnWillCreatePaymentWithData,
+            expectOnDidStartTokenization,
+            expectOnTokenize,
+            expectOnCreatePayment,
+            expectOnDidReceiveStripeCollectorAdditionalInfo,
+            expectOnDidReceiveMandateAdditionalInfo,
+            expectOnDidCompleteCheckoutWithData
         ], timeout: 20.0, enforceOrder: true)
     }
 
