@@ -139,7 +139,7 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
             expectOnTokenize,
             expectOnCreatePayment,
             expectOnDidCompleteCheckoutWithData
-        ], timeout: 20.0, enforceOrder: true)
+        ], timeout: 10.0, enforceOrder: true)
     }
 
     // MARK: Helpers
