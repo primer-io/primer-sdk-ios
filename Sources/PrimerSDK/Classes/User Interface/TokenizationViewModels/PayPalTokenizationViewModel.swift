@@ -75,8 +75,10 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func start_async() {
         self.didPresentExternalView = { [weak self] in
-            if let strongSelf = self {
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: strongSelf.config.type)
+            guard let self else { return }
+
+            Task {
+                await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
             }
         }
 
