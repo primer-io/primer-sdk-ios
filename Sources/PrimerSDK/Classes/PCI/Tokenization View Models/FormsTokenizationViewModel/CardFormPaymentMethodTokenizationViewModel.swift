@@ -1045,7 +1045,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             "binData": ["network": network]
         ]
         var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
-        
+
         if isShowingBillingAddressFieldsRequired {
             let updatedBillingAddress = await MainActor.run {
                 ClientSession.Address(firstName: firstNameFieldView.firstName,
