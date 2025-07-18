@@ -139,8 +139,7 @@ extension KlarnaTokenizationComponent {
             }
             // Ensure the payment method has a valid ID and the payment session id is available
             guard let paymentMethodConfigId = paymentMethod.id, let sessionId = paymentSessionId else {
-                seal.reject(KlarnaHelpers.getInvalidValueError(key: "paymentSessionId || configId", value: nil))
-                return
+                return seal.reject(KlarnaHelpers.getInvalidValueError(key: "paymentSessionId || configId"))
             }
             switch KlarnaHelpers.getSessionType() {
             case .oneOffPayment:

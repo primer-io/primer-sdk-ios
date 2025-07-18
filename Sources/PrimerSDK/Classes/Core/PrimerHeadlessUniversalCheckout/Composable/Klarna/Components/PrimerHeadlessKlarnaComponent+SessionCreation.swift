@@ -87,46 +87,14 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
     func createSessionError(_ error: KlarnaSessionError) {
         var primerError: PrimerError
         switch error {
-        case .missingConfiguration:
-            primerError = PrimerError.missingPrimerConfiguration(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-        case .invalidClientToken:
-            primerError = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-        case .sessionCreationFailed(let error):
-            primerError = PrimerError.failedToCreateSession(
-                error: error,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+        case .missingConfiguration: primerError = .missingPrimerConfiguration()
+        case .invalidClientToken: primerError = .invalidClientToken()
+        case .sessionCreationFailed(let error): primerError = .failedToCreateSession(error: error)
+        case .klarnaAuthorizationFailed: primerError = PrimerError.klarnaError(message: "PrimerKlarnaWrapperAuthorization failed")
+        case .klarnaFinalizationFailed: primerError = .klarnaError(message: "PrimerKlarnaWrapperFinalization failed")
+        case .klarnaUserNotApproved: primerError = .klarnaUserNotApproved()
         case .sessionAuthorizationFailed(error: let error):
-            primerError = PrimerError.failedToCreatePayment(
-                paymentMethodType: "KLARNA",
-                description: error.localizedDescription,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-        case .klarnaAuthorizationFailed:
-            primerError = PrimerError.klarnaError(
-                message: "PrimerKlarnaWrapperAuthorization failed",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-        case .klarnaFinalizationFailed:
-            primerError = PrimerError.klarnaError(
-                message: "PrimerKlarnaWrapperFinalization failed",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-        case .klarnaUserNotApproved:
-            primerError = PrimerError.klarnaUserNotApproved(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            primerError = .failedToCreatePayment(paymentMethodType: "KLARNA", description: error.localizedDescription)
         }
         handleReceivedError(error: primerError)
     }
@@ -147,9 +115,7 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                         decisionHandlerHasBeenCalled = true
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                                  userInfo: .errorUserInfoDictionary(),
-                                                                  diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.merchantError(message: errorMessage ?? "")
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()

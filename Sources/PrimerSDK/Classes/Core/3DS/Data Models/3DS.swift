@@ -268,11 +268,7 @@ public final class ThreeDS {
                                                                  forKey: .authentication) {
                 authentication = methodResponse
             } else {
-                let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse",
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(error: InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse"))
             }
 
             resumeToken = try container.decode(String.self, forKey: .resumeToken)

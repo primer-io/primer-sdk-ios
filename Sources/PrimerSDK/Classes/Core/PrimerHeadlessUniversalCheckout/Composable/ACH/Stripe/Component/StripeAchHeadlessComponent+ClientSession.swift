@@ -37,13 +37,7 @@ extension StripeAchHeadlessComponent {
         }
         .done {}
         .catch { error in
-            let primerError = PrimerError.failedToCreateSession(
-                error: error,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            self.errorDelegate?.didReceiveError(error: primerError)
+            self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
         }
     }
 
@@ -106,13 +100,7 @@ extension StripeAchHeadlessComponent {
             self.startVMTokenization()
         }
         .catch { error in
-            let primerError = PrimerError.failedToCreateSession(
-                error: error,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-
-            self.errorDelegate?.didReceiveError(error: primerError)
+            self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
         }
     }
 

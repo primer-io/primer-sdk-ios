@@ -67,20 +67,14 @@ public final class NolPayLinkedCardsComponent {
                 .options as? MerchantOptions,
               let nolPayAppId = nolPaymentMethodOption.appId
         else {
-            let error = PrimerError.invalidValue(key: "nolPayAppId",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
+            let error = handled(primerError: .invalidValue(key: "nolPayAppId"))
             errorDelegate?.didReceiveError(error: error)
             completion(.failure(error))
             return
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
+            let err = handled(primerError: .invalidClientToken())
             errorDelegate?.didReceiveError(error: err)
             completion(.failure(err))
             return
@@ -114,9 +108,7 @@ public final class NolPayLinkedCardsComponent {
                         completion(.success(()))
                     case .failure(let error):
                         continuation.resume(throwing: error)
-                        let primerError = PrimerError.underlyingErrors(errors: [error],
-                                                                       userInfo: .errorUserInfoDictionary(),
-                                                                       diagnosticsId: UUID().uuidString)
+                        let primerError = PrimerError.underlyingErrors(errors: [error])
                         completion(.failure(primerError))
                     }
                 }
@@ -135,14 +127,9 @@ public final class NolPayLinkedCardsComponent {
         #if canImport(PrimerNolPaySDK)
 
         guard let nolPay else {
-            let error = PrimerError.nolSdkInitError(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let error = handled(primerError: .nolSdkInitError())
             errorDelegate?.didReceiveError(error: error)
-            ErrorHandler.handle(error: error)
-            completion(.failure(error))
-            return
+            return completion(.failure(error))
         }
 
         #endif
@@ -155,22 +142,14 @@ public final class NolPayLinkedCardsComponent {
                 case .valid:
 
                     guard let mobileNumber else {
-                        let error = PrimerError.invalidValue(key: "mobileNumber",
-                                                             value: nil,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: error)
+                        let error = handled(primerError: .invalidValue(key: "mobileNumber"))
                         self.errorDelegate?.didReceiveError(error: error)
                         completion(.failure(error))
                         return
                     }
 
                     guard let countryCode else {
-                        let error = PrimerError.invalidValue(key: "countryCode",
-                                                             value: nil,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: error)
+                        let error = handled(primerError: .invalidValue(key: "countryCode"))
                         self.errorDelegate?.didReceiveError(error: error)
                         completion(.failure(error))
                         return
@@ -181,12 +160,8 @@ public final class NolPayLinkedCardsComponent {
                         case .success(let cards):
                             completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
                         case .failure(let error):
-                            let error = PrimerError.nolError(code: error.errorCode,
-                                                             message: error.description,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
+                            let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                             self.errorDelegate?.didReceiveError(error: error)
-                            ErrorHandler.handle(error: error)
                             completion(.failure(error))
                         }
                     }
@@ -194,11 +169,7 @@ public final class NolPayLinkedCardsComponent {
 
                 case .invalid(errors: let validationErrors):
                     self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
-
-                    let err = PrimerError.underlyingErrors(errors: validationErrors,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    completion(.failure(err))
+                    completion(.failure(PrimerError.underlyingErrors(errors: validationErrors)))
 
                 default: break
                 }

@@ -53,24 +53,18 @@ final class DefaultBanksComponent: BanksComponent {
         switch data {
         case .bankId(bankId: let bankId):
             if !isBankIdValid(bankId: bankId) {
-                let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString) :
-                    PrimerValidationError.invalidBankId(
-                        bankId: bankId,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
-                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
+                let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded() : PrimerValidationError.invalidBankId(bankId: bankId)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [handled(error: error)]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
             }
         case .bankFilterText(text: let text):
             if banks.isEmpty {
-                let error = PrimerValidationError.banksNotLoaded(
-                    userInfo: .errorUserInfoDictionary(additionalInfo: ["text": text]),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
+                let error = handled(
+                    error: PrimerValidationError.banksNotLoaded(
+                        userInfo: .errorUserInfoDictionary(additionalInfo: ["text": text])
+                    )
+                )
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)

@@ -84,11 +84,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
         case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber):
 
             if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
-                errors.append(PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
+                errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
             }
 
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
@@ -117,12 +113,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             }
         case .otpData(otpCode: let otpCode):
             if !otpCode.isValidOTP {
-                errors.append(PrimerValidationError.invalidOTPCode(
-                    message: "OTP is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
-                ErrorHandler.handle(error: errors.last!)
+                errors.append(handled(error: PrimerValidationError.invalidOTPCode(message: "OTP is not valid.")))
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
@@ -167,11 +158,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
                     self.nextDataStep = .collectOtpData
                     self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                 case .failure(let error):
-                    let error = PrimerError.nolError(code: error.errorCode,
-                                                     message: error.description,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: error)
+                    let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
@@ -203,19 +190,11 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
                         self.nextDataStep = .cardUnlinked
                         self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                     } else {
-                        let error = PrimerError.nolError(code: "unknown",
-                                                         message: "Unlinking failed from unknown reason",
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: error)
+                        let error = handled(primerError: .nolError(code: "unknown", message: "Unlinking failed from unknown reason"))
                         self.errorDelegate?.didReceiveError(error: error)
                     }
                 case .failure(let error):
-                    let error = PrimerError.nolError(code: error.errorCode,
-                                                     message: error.description,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: error)
+                    let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
@@ -241,10 +220,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errorDelegate?.didReceiveError(error: err)
+            errorDelegate?.didReceiveError(error: handled(primerError: .invalidClientToken()))
             return
         }
 
@@ -274,14 +250,14 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             }
         }
         #else
-        let error = PrimerError.missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
-            sdkName: "PrimerNolPaySDK",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
+        errorDelegate?.didReceiveError(
+            error: handled(
+                primerError: .missingSDK(
+                    paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
+                    sdkName: "PrimerNolPaySDK"
+                )
+            )
         )
-        ErrorHandler.handle(error: error)
-        errorDelegate?.didReceiveError(error: error)
         #endif
     }
 }

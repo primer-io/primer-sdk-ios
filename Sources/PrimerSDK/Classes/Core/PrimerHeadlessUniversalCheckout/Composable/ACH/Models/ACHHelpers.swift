@@ -39,58 +39,23 @@ struct ACHHelpers {
 
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .invalidClientToken())
     }
 
-    static func getInvalidSettingError(
-        name: String
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: name,
-            value: nil,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+    static func getInvalidSettingError(name: String) -> PrimerError {
+        handled(primerError: .invalidValue(key: name))
     }
 
-    static func getInvalidValueError(
-        key: String,
-        value: Any? = nil
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+    static func getInvalidValueError(key: String, value: Any? = nil) -> PrimerError {
+        handled(primerError: .invalidValue(key: key, value: value))
     }
 
     static func getCancelledError(paymentMethodType: String) -> PrimerError {
-        let error = PrimerError.cancelled(
-            paymentMethodType: paymentMethodType,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .cancelled(paymentMethodType: paymentMethodType))
     }
 
     static func getMissingSDKError(sdk: String) -> PrimerError {
-        let error = PrimerError.missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
-            sdkName: sdk,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .missingSDK(paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue, sdkName: sdk))
     }
 
 }

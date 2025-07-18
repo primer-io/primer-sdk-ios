@@ -208,8 +208,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let bin = String(cardNumber.prefix(Self.maximumBinLength))
 
         guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                             diagnosticsId: ""))
+            return rejectedPromise(withError: PrimerError.invalidClientToken())
         }
 
         return Promise { resolver in

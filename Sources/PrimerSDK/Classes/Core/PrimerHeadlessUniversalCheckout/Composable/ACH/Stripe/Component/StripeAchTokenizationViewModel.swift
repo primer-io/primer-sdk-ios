@@ -73,8 +73,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .catch { err in
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(error: err))
             }
         }
     }
@@ -100,16 +99,15 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 var primerError: PrimerError
 
                 if let primerErr = err as? PrimerError {
-                    primerError = primerErr
+                    primerError = handled(primerError: primerErr)
                 } else {
-                    let primerErr = PrimerError.failedToCreatePayment(
-                        paymentMethodType: self.config.type,
-                        description: "Failed to perform tokenization step due to error: \(err.localizedDescription)",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    primerError = primerErr
+                    primerError = handled(
+                        primerError: .failedToCreatePayment(
+                            paymentMethodType: self.config.type,
+                            description: "Failed to perform tokenization step due to error: \(err.localizedDescription)"
+                        )
+                    )
                 }
-                ErrorHandler.handle(error: primerError)
                 seal.reject(primerError)
             }
         }
@@ -134,21 +132,13 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
 
             guard let intent = decodedJWTToken.intent, intent.contains("STRIPE_ACH") else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidClientToken()))
             }
 
             guard let clientSecret = decodedJWTToken.stripeClientSecret,
                   let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
                   let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
-
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidClientToken()))
                 return
             }
 
@@ -173,8 +163,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill(nil)
             }
             .catch { err in
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(error: err))
             }
         }
     }
@@ -449,14 +438,10 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 logger.warn(message: logMessage)
 
                 let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.config.type,
-                                                                     userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                        "message": message
-                                                                     ]),
-                                                                     diagnosticsId: UUID().uuidString)
-
-                seal.reject(error)
-                return
+                return seal.reject(PrimerError.unableToPresentPaymentMethod(
+                    paymentMethodType: self.config.type,
+                    userInfo: .errorUserInfoDictionary(additionalInfo: ["message": message])
+                ))
             }
 
             var additionalInfo: ACHAdditionalInfo
@@ -490,12 +475,8 @@ extension StripeAchTokenizationViewModel {
     private func getPublishableKey() -> Promise<Void> {
         return Promise { seal in
             guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
-                let primerError = PrimerError.merchantError(
-                    message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey was nil or empty.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                seal.reject(primerError)
-                return
+                let value = nilOrEmptyErrorMessage("PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey")
+                return seal.reject(PrimerError.merchantError(message: nilOrEmptyErrorMessage(value)))
             }
             self.publishableKey = publishableKey
             seal.fulfill()
@@ -505,16 +486,14 @@ extension StripeAchTokenizationViewModel {
     private func getMandateData() -> Promise<PrimerStripeOptions.MandateData> {
         return Promise { seal in
             guard let mandateData = PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData else {
-                let primerError = PrimerError.merchantError(
-                    message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData was nil or empty.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                seal.reject(primerError)
-                return
+                let value = nilOrEmptyErrorMessage("PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData")
+                return seal.reject(PrimerError.merchantError(message: nilOrEmptyErrorMessage(value)))
             }
             seal.fulfill(mandateData)
         }
     }
+
+    private func nilOrEmptyErrorMessage(_ value: String) -> String { "Required value for \(value) was nil or empty." }
 
     private func getUrlScheme() -> Promise<String> {
         return Promise { seal in
@@ -561,13 +540,12 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(.failure(error))
         case .failed(let error):
-            let primerError = PrimerError.stripeError(
+            let primerError = handled(primerError: .stripeError(
                 key: error.errorId,
                 message: error.errorDescription,
                 userInfo: error.userInfo,
                 diagnosticsId: error.diagnosticsId
-            )
-            ErrorHandler.handle(error: primerError)
+            ))
             stripeBankAccountCollectorCompletion?(.failure(primerError))
         }
     }
