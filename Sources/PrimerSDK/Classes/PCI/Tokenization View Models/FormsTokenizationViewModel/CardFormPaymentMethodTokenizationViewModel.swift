@@ -453,28 +453,36 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
 
         self.checkoutEventsNotifierModule.didStartTokenization = {
-            self.uiModule.submitButton?.startAnimating()
-            self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            DispatchQueue.main.async {
+                self.uiModule.submitButton?.startAnimating()
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
         }
 
         self.checkoutEventsNotifierModule.didFinishTokenization = {
-            self.uiModule.submitButton?.stopAnimating()
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            DispatchQueue.main.async {
+                self.uiModule.submitButton?.stopAnimating()
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
         }
 
         self.didStartPayment = {
-            self.uiModule.submitButton?.startAnimating()
-            self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            DispatchQueue.main.async {
+                self.uiModule.submitButton?.startAnimating()
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
         }
 
         self.didFinishPayment = { _ in
-            self.uiModule.submitButton?.stopAnimating()
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            DispatchQueue.main.async {
+                self.uiModule.submitButton?.stopAnimating()
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
 
-            self.willDismissPaymentMethodUI?()
-            self.webViewController?.dismiss(animated: true, completion: {
-                self.didDismissPaymentMethodUI?()
-            })
+                self.willDismissPaymentMethodUI?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissPaymentMethodUI?()
+                })
+            }
         }
 
         Task {
@@ -1034,21 +1042,21 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
         let params: [String: Any] = [
             "paymentMethodType": config.type,
-            "binData": [
-                "network": network
-            ]
+            "binData": ["network": network]
         ]
-
         var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+        
         if isShowingBillingAddressFieldsRequired {
-            let updatedBillingAddress = await ClientSession.Address(firstName: firstNameFieldView.firstName,
-                                                                    lastName: lastNameFieldView.lastName,
-                                                                    addressLine1: addressLine1FieldView.addressLine1,
-                                                                    addressLine2: addressLine2FieldView.addressLine2,
-                                                                    city: cityFieldView.city,
-                                                                    postalCode: postalCodeFieldView.postalCode,
-                                                                    state: stateFieldView.state,
-                                                                    countryCode: countryFieldView.countryCode)
+            let updatedBillingAddress = await MainActor.run {
+                ClientSession.Address(firstName: firstNameFieldView.firstName,
+                                      lastName: lastNameFieldView.lastName,
+                                      addressLine1: addressLine1FieldView.addressLine1,
+                                      addressLine2: addressLine2FieldView.addressLine2,
+                                      city: cityFieldView.city,
+                                      postalCode: postalCodeFieldView.postalCode,
+                                      state: stateFieldView.state,
+                                      countryCode: countryFieldView.countryCode)
+            }
             if let billingAddress = try? updatedBillingAddress.asDictionary() {
                 let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
                 actions.append(billingAddressAction)
