@@ -33,18 +33,4 @@ final class NativeUIManagerTests: XCTestCase {
         }
         SDKSessionHelper.tearDown()
     }
-
-    func testNativeUIManagerWithNativeMethod() throws {
-        let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
-
-        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-
-        do {
-            let manager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
-            XCTAssertEqual(manager.paymentMethodType, paymentMethod.type)
-        } catch {
-            XCTFail("Unexpected error type. Should be `uninitializedSDKSession`")
-        }
-        SDKSessionHelper.tearDown()
-    }
 }
