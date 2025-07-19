@@ -2,6 +2,7 @@
 import XCTest
 
 final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
+    var apiClient: MockPrimerAPIClient!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
     var uiManager: MockPrimerUIManager!
@@ -10,6 +11,9 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
     var mandateDelegate: ACHMandateDelegate?
 
     override func setUpWithError() throws {
+        apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+
         SDKSessionHelper.setUp(order: order)
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
@@ -81,12 +85,8 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
         apiClient.sdkCompleteUrlResult = (Response.Body.Complete(), nil)
-
-        PrimerAPIConfigurationModule.apiClient = apiClient
 
         let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
@@ -146,7 +146,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
             expectOnDidReceiveStripeCollectorAdditionalInfo,
             expectOnDidReceiveMandateAdditionalInfo,
             expectOnDidCompleteCheckoutWithData
-        ], timeout: 20.0, enforceOrder: true)
+        ], timeout: 10.0, enforceOrder: true)
     }
 
     // MARK: Helpers
