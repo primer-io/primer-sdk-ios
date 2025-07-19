@@ -149,7 +149,7 @@ extension PaymentMethodTokenizationViewModel {
             self.handleSuccessfulFlow()
         }
     }
-    
+
     @MainActor
     func processVaultPaymentMethodTokenData_main_actor() {
         PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
