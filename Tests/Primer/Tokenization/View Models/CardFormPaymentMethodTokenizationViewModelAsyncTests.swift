@@ -2,40 +2,36 @@
 import XCTest
 
 final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, TokenizationViewModelTestCase {
+    var apiClient: MockPrimerAPIClient!
     var tokenizationService: MockTokenizationService!
-
     var createResumePaymentService: MockCreateResumePaymentService!
-
     var uiManager: MockPrimerUIManager!
-
     var sut: CardFormPaymentMethodTokenizationViewModel!
-
     var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
-
     var uiDelegate: MockPrimerHeadlessUniversalCheckoutUIDelegate!
 
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
+        uiManager.primerRootViewController = MockPrimerRootViewController()
         sut = CardFormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.paymentCardPaymentMethod,
                                                          uiManager: uiManager,
                                                          tokenizationService: tokenizationService,
                                                          createResumePaymentService: createResumePaymentService)
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
         delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+        apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
 
         PrimerInternal.shared.intent = .checkout
     }
 
     override func tearDownWithError() throws {
+        apiClient = nil
         sut = nil
         uiManager = nil
         createResumePaymentService = nil
@@ -43,24 +39,36 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         SDKSessionHelper.tearDown()
     }
 
-    func testStartWithPreTokenizationAndAbort_async() throws {
+    func test_validate() throws {
+        SDKSessionHelper.tearDown()
+        XCTAssertThrowsError(try sut.validate())
+
+        try SDKSessionHelper.test {
+            PrimerInternal.shared.intent = .none
+            setupAppState()
+            XCTAssertNoThrow(try sut.validate())
+
+            PrimerInternal.shared.intent = .checkout
+            XCTAssertThrowsError(try sut.validate())
+
+            setupAppState(amount: 1234)
+            XCTAssertThrowsError(try sut.validate())
+
+            setupAppState(currencyCode: "GBP")
+            XCTAssertThrowsError(try sut.validate())
+
+            setupAppState(amount: 1234, currencyCode: "GBP")
+            XCTAssertNoThrow(try sut.validate())
+        }
+    }
+
+    func test_start_with_pre_tokenization_and_abort_async() throws {
         SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        Task {
-            await uiManager.prepareRootViewController_main_actor()
-        }
 
         let expectOnDidShowPaymentMethod = self.expectation(description: "onUIDidShowPaymentMethod is called")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
@@ -95,24 +103,13 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         ], timeout: 10, enforceOrder: true)
     }
 
-    func testStartWithFullCheckoutFlow_async() throws {
+    func test_start_with_full_checkout_flow_async() throws {
         SDKSessionHelper.setUp(checkoutModules: [checkoutModule]) { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        Task {
-            await uiManager.prepareRootViewController_main_actor()
-        }
 
         let expectOnDidShowPaymentMethod = self.expectation(description: "onUIDidShowPaymentMethod is called")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
@@ -160,30 +157,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func testValidate() throws {
-        SDKSessionHelper.tearDown()
-        XCTAssertThrowsError(try sut.validate())
-
-        try SDKSessionHelper.test {
-            PrimerInternal.shared.intent = .none
-            setupAppState()
-            XCTAssertNoThrow(try sut.validate())
-
-            PrimerInternal.shared.intent = .checkout
-            XCTAssertThrowsError(try sut.validate())
-
-            setupAppState(amount: 1234)
-            XCTAssertThrowsError(try sut.validate())
-
-            setupAppState(currencyCode: "GBP")
-            XCTAssertThrowsError(try sut.validate())
-
-            setupAppState(amount: 1234, currencyCode: "GBP")
-            XCTAssertNoThrow(try sut.validate())
-        }
-    }
-
-    func test_checkoutDataFromError() throws {
+    func test_setCheckoutDataFromError() throws {
         let sut = PaymentMethodTokenizationViewModel(config: PrimerPaymentMethod(id: "id",
                                                                                  implementationType: .nativeSdk,
                                                                                  type: "PMT",
@@ -209,7 +183,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         XCTAssertNil(error2.checkoutData)
     }
 
-    func testSubmitButtonDisabledWithInvalidFields_async() throws {
+    func test_start_with_submit_button_disabled() throws {
         SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
