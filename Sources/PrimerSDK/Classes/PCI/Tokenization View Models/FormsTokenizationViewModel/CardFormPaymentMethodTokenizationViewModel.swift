@@ -488,7 +488,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         Task {
             do {
                 self.paymentMethodTokenData = try await startTokenizationFlow()
-                processPaymentMethodTokenData()
+                await processPaymentMethodTokenData()
             } catch {
                 await uiManager.primerRootViewController?.enableUserInteraction(true)
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
