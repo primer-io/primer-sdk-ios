@@ -692,7 +692,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             self.userInputCompletion = {
                 continuation.resume()
             }
-            
+
             Task {
                 await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
             }
