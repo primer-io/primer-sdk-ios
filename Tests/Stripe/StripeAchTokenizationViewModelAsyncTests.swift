@@ -2,13 +2,17 @@
 import XCTest
 
 final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
+    // MARK: - Test Dependencies
+
+    var sut: StripeAchTokenizationViewModel!
     var apiClient: MockPrimerAPIClient!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
     var uiManager: MockPrimerUIManager!
-    var sut: StripeAchTokenizationViewModel!
     var appState: MockAppState!
     var mandateDelegate: ACHMandateDelegate?
+
+    // MARK: - Setup & Teardown
 
     override func setUpWithError() throws {
         apiClient = MockPrimerAPIClient()
@@ -46,11 +50,15 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         SDKSessionHelper.tearDown()
     }
 
-    func test_validate() throws {
+    // MARK: - Validation Tests
+
+    func test_validation_requiresValidConfiguration() throws {
         XCTAssertNoThrow(try sut.validate())
     }
 
-    func test_start_with_pre_tokenization_and_abort_async() throws {
+    // MARK: - Async Flow Tests
+
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
@@ -80,7 +88,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func test_start_with_full_checkout_flow_async() throws {
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -149,7 +157,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    // MARK: Helpers
+    // MARK: - Test Helper Data
 
     var stripeACHPaymentMethodType = "STRIPE_ACH"
 
