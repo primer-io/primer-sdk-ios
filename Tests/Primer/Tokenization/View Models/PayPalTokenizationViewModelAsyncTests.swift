@@ -2,14 +2,16 @@
 import XCTest
 
 final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
+    
+    // MARK: - Test Dependencies
+    
+    var sut: PayPalTokenizationViewModel!
     var uiManager: MockPrimerUIManager!
-
     var tokenizationService: MockTokenizationService!
-
     var createResumePaymentService: MockCreateResumePaymentService!
 
-    var sut: PayPalTokenizationViewModel!
-
+    // MARK: - Setup & Teardown
+    
     override func setUpWithError() throws {
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
@@ -29,7 +31,9 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
         uiManager = nil
     }
 
-    func test_start_with_pre_tokenization_and_abort_async() throws {
+    // MARK: - Async Flow Tests
+
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -62,7 +66,7 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func test_start_with_full_checkout_flow_async() throws {
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -142,7 +146,7 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    // MARK: Helpers
+    // MARK: - Test Helper Data
 
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(analyticsId: "analytics_id",
