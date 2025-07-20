@@ -3,16 +3,17 @@ import PassKit
 import XCTest
 
 final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
+    
+    // MARK: - Test Dependencies
+    
+    var sut: ApplePayTokenizationViewModel!
     var tokenizationService: MockTokenizationService!
-
     var createResumePaymentService: MockCreateResumePaymentService!
-
     var uiManager: MockPrimerUIManager!
-
     var appState: MockAppState!
 
-    var sut: ApplePayTokenizationViewModel!
-
+    // MARK: - Setup & Teardown
+    
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
@@ -40,8 +41,10 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         tokenizationService = nil
         SDKSessionHelper.tearDown()
     }
+    
+    // MARK: - Validation Tests
 
-    func testClientTokenValidation() throws {
+    func test_validation_requiresValidConfiguration() throws {
         // without token
         SDKSessionHelper.tearDown()
         XCTAssertThrowsError(try sut.validate())
@@ -75,8 +78,10 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             XCTAssertNoThrow(try sut.validate())
         }
     }
+    
+    // MARK: - Async Flow Tests
 
-    func test_start_pre_tokenization_and_abort_async() throws {
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -107,24 +112,24 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         ], timeout: 2.0, enforceOrder: true)
     }
 
-    func testWithShippingModules() throws {
+    func test_startFlow_withShippingModules_shouldCompleteSuccessfully() throws {
         guard var config = PrimerAPIConfiguration.current else {
             XCTFail("Unable to generate configuration")
             return
         }
         config.checkoutModules = checkoutModules
-        testStartWithFullCheckoutFlow(config: config)
+        performFullCheckoutFlowTest(config: config)
     }
 
-    func testFullCheckoutFlow() throws {
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         guard let config = PrimerAPIConfiguration.current else {
             XCTFail("Unable to generate configuration")
             return
         }
-        testStartWithFullCheckoutFlow(config: config)
+        performFullCheckoutFlowTest(config: config)
     }
 
-    private func testStartWithFullCheckoutFlow(config: PrimerAPIConfiguration) {
+    private func performFullCheckoutFlowTest(config: PrimerAPIConfiguration) {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -189,11 +194,13 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             expectOnDidCompleteCheckoutWithData
         ], timeout: 10.0, enforceOrder: true)
     }
-
+    
+    // MARK: - Order Item Creation Tests
+    
     private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
     private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
 
-    func testGetShippingMethodsInfo() throws {
+    func test_getShippingMethodsInfo_shouldReturnCorrectData() throws {
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = checkoutModules
 
         let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
@@ -211,7 +218,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         XCTAssert(methods.selectedShippingMethodOrderItem?.name == "Shipping")
     }
 
-    func testCreateOrderItemsWithFees() throws {
+    func test_createOrderItems_withFees_shouldIncludeAllItems() throws {
         let itemName = "Fancy Shoes"
         let itemDescription = "Some nice shoes"
         let itemAmount = 1000
@@ -279,7 +286,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         }
     }
 
-    func testCreateOrderItemsWithMerchantAmount() throws {
+    func test_createOrderItems_withMerchantAmount_shouldHandleCorrectly() throws {
         let itemName = "Fancy Shoes"
         let itemDescription = "Some nice shoes"
         let itemAmount = 1000
@@ -317,7 +324,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         )
     }
 
-    func testCreateOrderItemsWithShipping() throws {
+    func test_createOrderItems_withShipping_shouldIncludeShippingItem() throws {
         let itemName = "Fancy Shoes"
         let itemDescription = "Some nice shoes"
         let itemAmount = 1000
@@ -400,8 +407,10 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             XCTFail("Failed with error: \(error.localizedDescription)")
         }
     }
+    
+    // MARK: - Shipping Tests
 
-    func testProcessShippingContactChange() async throws {
+    func test_processShippingContactChange_shouldUpdatePaymentSummary() async throws {
         let contact = PKContact()
         var nameParts = PersonNameComponents()
         nameParts.givenName = "John"
@@ -507,7 +516,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         XCTAssertNotNil(update4.errors)
     }
 
-    func testProcessShippingMethodChange() async throws {
+    func test_processShippingMethodChange_shouldUpdatePaymentSummary() async throws {
         let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
                                                                             implementationType: .nativeSdk,
                                                                             type: "APPLE_PAY",
@@ -591,8 +600,8 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         XCTAssertEqual(shippingItem.amount, 2)
         XCTAssertEqual(shippingItem.label, "Shipping")
     }
-
-    // MARK: Helpers
+    
+    // MARK: - Test Helper Data
 
     var order: ClientSession.Order {
         .init(id: "order_id",
@@ -676,31 +685,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
     ]
 }
 
-private class MockApplePayPresentationManager: ApplePayPresenting {
-    var isPresentable: Bool = true
-
-    var errorForDisplay: Error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
-                                                                          userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-
-    var onPresent: ((ApplePayRequest, PKPaymentAuthorizationControllerDelegate) -> Result<Void, Error>)?
-
-    func present(withRequest applePayRequest: ApplePayRequest, delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
-        switch onPresent?(applePayRequest, delegate) {
-        case .success: .fulfilled(())
-        case .failure(let error): .rejected(error)
-        case nil: .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-        }
-    }
-
-    func present(withRequest applePayRequest: ApplePayRequest, delegate: any PKPaymentAuthorizationControllerDelegate) async throws {
-        switch onPresent?(applePayRequest, delegate) {
-        case .success: return
-        case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-    }
-}
+// MARK: - Mock Classes
 
 private class MockPKPayment: PKPayment {
     override var token: PKPaymentToken {
