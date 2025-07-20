@@ -86,14 +86,14 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.abortPaymentCreation())
-            expectOnWillCreatePaymentWithData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectOnDidFail = self.expectation(description: "onDidFail is called")
+        let expectDidFail = self.expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -101,14 +101,14 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectOnDidFail.fulfill()
+            expectDidFail.fulfill()
         }
 
         sut.start_async()
 
         wait(for: [
-            expectOnWillCreatePaymentWithData,
-            expectOnDidFail
+            expectWillCreatePaymentWithData,
+            expectDidFail
         ], timeout: 2.0, enforceOrder: true)
     }
 
@@ -141,14 +141,14 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         let applePayPresentationManager = MockApplePayPresentationManager()
         sut.applePayPresentationManager = applePayPresentationManager
 
-        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.continuePaymentCreation())
-            expectOnWillCreatePaymentWithData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectOnPresent = self.expectation(description: "onPresent is called")
+        let expectDidPresentApplePay = self.expectation(description: "Apple Pay UI presents")
         applePayPresentationManager.onPresent = { _, delegate in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 let dummyController = PKPaymentAuthorizationController()
@@ -157,27 +157,27 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
                                                          handler: { _ in })
                 delegate.paymentAuthorizationControllerDidFinish(dummyController)
             }
-            expectOnPresent.fulfill()
+            expectDidPresentApplePay.fulfill()
             return .success(())
         }
 
-        let expectOnTokenize = self.expectation(description: "onTokenize is called")
+        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
-            expectOnTokenize.fulfill()
+            expectDidTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectOnCreatePayment = self.expectation(description: "onCreatePayment is called")
+        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
-            expectOnCreatePayment.fulfill()
+            expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectOnDidCompleteCheckoutWithData = self.expectation(description: "onDidCompleteCheckoutWithData is called")
+        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectOnDidCompleteCheckoutWithData.fulfill()
+            expectDidCompleteCheckout.fulfill()
         }
 
         delegate.onDidFail = { error in
@@ -187,11 +187,11 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
         sut.start_async()
 
         wait(for: [
-            expectOnWillCreatePaymentWithData,
-            expectOnPresent,
-            expectOnTokenize,
-            expectOnCreatePayment,
-            expectOnDidCompleteCheckoutWithData
+            expectWillCreatePaymentWithData,
+            expectDidPresentApplePay,
+            expectDidTokenize,
+            expectDidCreatePayment,
+            expectDidCompleteCheckout
         ], timeout: 10.0, enforceOrder: true)
     }
     
