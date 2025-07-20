@@ -40,14 +40,14 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
-        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.abortPaymentCreation())
-            expectOnWillCreatePaymentWithData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectOnDidFail = self.expectation(description: "onDidFail is called")
+        let expectDidFail = self.expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -55,14 +55,14 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectOnDidFail.fulfill()
+            expectDidFail.fulfill()
         }
 
         sut.start_async()
 
         wait(for: [
-            expectOnWillCreatePaymentWithData,
-            expectOnDidFail
+            expectWillCreatePaymentWithData,
+            expectDidFail
         ], timeout: 10.0, enforceOrder: true)
     }
 
@@ -100,35 +100,35 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
             URL(string: "https://webauthsvc.app/")!
         }
 
-        let expectOnWillCreatePaymentWithData = self.expectation(description: "onWillCreatePaymentWithData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, PrimerPaymentMethodType.payPal.rawValue)
             decision(.continuePaymentCreation())
-            expectOnWillCreatePaymentWithData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectOnDidShowPaymentMethod = self.expectation(description: "onUIDidShowPaymentMethod is called")
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
-            expectOnDidShowPaymentMethod.fulfill()
+            expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectOnTokenize = self.expectation(description: "onTokenize is called")
+        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
-            expectOnTokenize.fulfill()
+            expectDidTokenize.fulfill()
             return .success(self.tokenizationResponseBody)
         }
 
-        let expectOnCreatePayment = self.expectation(description: "onCreatePayment is called")
+        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
-            expectOnCreatePayment.fulfill()
+            expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectOnDidCompleteCheckoutWithData = self.expectation(description: "onDidCompleteCheckoutWithData is called")
+        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectOnDidCompleteCheckoutWithData.fulfill()
+            expectDidCompleteCheckout.fulfill()
         }
 
         delegate.onDidFail = { error in
@@ -138,11 +138,11 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
         sut.start_async()
 
         wait(for: [
-            expectOnWillCreatePaymentWithData,
-            expectOnDidShowPaymentMethod,
-            expectOnTokenize,
-            expectOnCreatePayment,
-            expectOnDidCompleteCheckoutWithData
+            expectWillCreatePaymentWithData,
+            expectDidShowPaymentMethod,
+            expectDidTokenize,
+            expectDidCreatePayment,
+            expectDidCompleteCheckout
         ], timeout: 10.0, enforceOrder: true)
     }
 
