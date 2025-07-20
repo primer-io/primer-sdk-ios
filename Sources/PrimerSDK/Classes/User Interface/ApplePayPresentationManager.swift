@@ -204,7 +204,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                                                           diagnosticsId: UUID().uuidString)
             return err
         }
-        
+
         // Generic error - shouldn't reach here in normal flow
         self.logger.error(message: "APPLE PAY")
         self.logger.error(message: "Cannot present Apple Pay")
