@@ -144,7 +144,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         do {
             try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            self.paymentMethodTokenData = try await achTokenizationService.tokenize()
+            paymentMethodTokenData = try await achTokenizationService.tokenize()
             try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
         } catch {
             let primerError = (error as? PrimerError) ?? PrimerError.failedToCreatePayment(
@@ -216,8 +216,10 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         guard let intent = decodedJWTToken.intent, intent.contains("STRIPE_ACH") else {
             throw handled(primerError: .invalidClientToken())
         }
@@ -286,9 +288,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let isMockBE = false
         #endif
 
-        guard !isMockBE else {
-            return
-        }
+        guard !isMockBE else { return }
 
         try await getPublishableKey()
         try await getClientSessionUserDetails()
@@ -408,9 +408,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let isMockBE = false
         #endif
 
-        guard !isMockBE else {
-            return
-        }
+        guard !isMockBE else { return }
 
         try await awaitStripeBankAccountCollectorResponse()
         try await sendAdditionalInfoEvent()
@@ -700,9 +698,7 @@ extension StripeAchTokenizationViewModel {
     private func getPublishableKey() async throws {
         guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
             throw PrimerError.merchantError(
-                message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey was nil or empty.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
+                message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey was nil or empty."
             )
         }
         self.publishableKey = publishableKey
@@ -718,18 +714,16 @@ extension StripeAchTokenizationViewModel {
         }
     }
 
-    private func nilOrEmptyErrorMessage(_ value: String) -> String { "Required value for \(value) was nil or empty." }
-
     private func getMandateData() async throws -> PrimerStripeOptions.MandateData {
         guard let mandateData = PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData else {
             throw PrimerError.merchantError(
-                message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData was nil or empty.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
+                message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData was nil or empty."
             )
         }
         return mandateData
     }
+
+    private func nilOrEmptyErrorMessage(_ value: String) -> String { "Required value for \(value) was nil or empty." }
 
     private func getUrlScheme_Promise() -> Promise<String> {
         return Promise { seal in
