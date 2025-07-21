@@ -16,10 +16,14 @@ protocol TokenizationSetupAndCleaning {
 protocol BankSelectorTokenizationProviding: TokenizationSetupAndCleaning {
     var paymentMethodType: PrimerPaymentMethodType { get }
     func validateReturningPromise() -> Promise<Void>
+    func validate() async throws
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
+    func retrieveListOfBanks() async throws -> [AdyenBank]
     func filterBanks(query: String) -> [AdyenBank]
     func tokenize(bankId: String) -> Promise<Void>
+    func tokenize(bankId: String) async throws
     func handlePaymentMethodTokenData() -> Promise<Void>
+    func handlePaymentMethodTokenData() async throws
 }
 
 protocol WebRedirectTokenizationDelegate: TokenizationSetupAndCleaning, AnyObject {
