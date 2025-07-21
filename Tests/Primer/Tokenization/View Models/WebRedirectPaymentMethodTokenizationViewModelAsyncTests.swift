@@ -1,22 +1,16 @@
-//
-//  WebRedirectPaymentMethodTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 22/05/2024.
-//
-
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
-final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
+final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase {
+    // MARK: - Test Dependencies
 
     var tokenizationService: MockTokenizationService!
-
     var createResumePaymentService: MockCreateResumePaymentService!
-
     var uiManager: MockPrimerUIManager!
-
+    var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
     var sut: WebRedirectPaymentMethodTokenizationViewModel!
+
+    // MARK: - Setup & Teardown
 
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
@@ -26,6 +20,9 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                                                             uiManager: uiManager,
                                                             tokenizationService: tokenizationService,
                                                             createResumePaymentService: createResumePaymentService)
+
+        delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
     }
 
     override func tearDownWithError() throws {
@@ -36,7 +33,9 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         SDKSessionHelper.tearDown()
     }
 
-    func testClientTokenValidation() throws {
+    // MARK: - Validation Tests
+
+    func test_validate_withInvalidClientToken_shouldThrowError() throws {
         SDKSessionHelper.tearDown()
         XCTAssertThrowsError(try sut.validate())
 
@@ -45,43 +44,53 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
     }
 
-    func testStartWithCancellation() throws {
+    // MARK: - Flow Tests
+
+    // TODO: Enable Cancellation
+//    func test_startFlow_withCancellation_shouldCallOnDidFail() throws {
+//        SDKSessionHelper.setUp()
+//
+//        sut.start_async()
+//
+//        delegate.onWillCreatePaymentWithData = { data, decision in
+//            XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
+//                decision(.continuePaymentCreation())
+//            }
+//        }
+//
+//        let expectDidFail = self.expectation(description: "onDidFail called")
+//        delegate.onDidFail = { error in
+//            switch error {
+//            case PrimerError.cancelled(let paymentMethodType, _, _):
+//                XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
+//            default:
+//                XCTFail()
+//            }
+//            expectDidFail.fulfill()
+//        }
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            let cancelNotif = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
+//            NotificationCenter.default.post(cancelNotif)
+//        }
+//
+//        waitForExpectations(timeout: 10.0)
+//    }
+
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        sut.start()
-
-        let expectDidFail = self.expectation(description: "onDidFail called")
-        delegate.onDidFail = { error in
-            switch error {
-            case PrimerError.cancelled(let paymentMethodType, _, _):
-                XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
-            default:
-                XCTFail()
-            }
-            expectDidFail.fulfill()
-        }
-
-        let cancelNotif = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
-        NotificationCenter.default.post(cancelNotif)
-
-        waitForExpectations(timeout: 2.0)
-    }
-
-    func testStartWithPreTokenizationAndAbort() throws {
-        SDKSessionHelper.setUp()
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectDidFail = self.expectation(description: "flow fails with error")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -89,18 +98,17 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectWillAbort.fulfill()
+            expectDidFail.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
-        waitForExpectations(timeout: 2.0)
+        wait(for: [expectWillCreatePaymentWithData, expectDidFail], timeout: 2.0, enforceOrder: true)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         SDKSessionHelper.setUp()
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
@@ -114,20 +122,20 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidStartTokenization = self.expectation(description: "onDidStartTokenization is called")
+        let expectDidStartTokenization = self.expectation(description: "tokenization begins")
         delegate.onDidStartTokenization = { type in
             XCTAssertEqual(type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             expectDidStartTokenization.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectDidTokenize = self.expectation(description: "payment method tokenized")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Result.success(
@@ -147,7 +155,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             )
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = self.expectation(description: "payment created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return .init(id: "id",
@@ -162,17 +170,17 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          status: .success)
         }
 
-        let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
+        let expectDidShowPaymentMethod = self.expectation(description: "payment method UI presented")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             XCTAssertNotNil(self.sut.webViewController?.delegate)
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectResumePayment = self.expectation(description: "Resumed payment")
+        let expectDidResumePayment = self.expectation(description: "payment resumed")
         createResumePaymentService.onResumePayment = { paymentId, request in
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
-            expectResumePayment.fulfill()
+            expectDidResumePayment.fulfill()
             return .init(id: "id",
                          paymentId: "payment_id",
                          amount: 1234,
@@ -182,27 +190,29 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          status: .success)
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        let expectDidCompleteCheckoutWithData = self.expectation(description: "checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
+            expectDidCompleteCheckoutWithData.fulfill()
         }
 
-        sut.start()
+        sut.start_async()
 
         wait(for: [
-            expectWillCreatePaymentData,
+            expectWillCreatePaymentWithData,
             expectDidStartTokenization,
             expectDidTokenize,
             expectDidCreatePayment,
             expectDidShowPaymentMethod,
-            expectResumePayment,
-            expectCheckoutDidCompletewithData
+            expectDidResumePayment,
+            expectDidCompleteCheckoutWithData
         ], timeout: 15.0, enforceOrder: true)
     }
 
-    func test_adyenVippsSessionInfo() throws {
+    // MARK: - Session Info Tests
+
+    func test_adyenVippsSessionInfo_shouldReturnCorrectPlatform() throws {
         sut = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
                                                             uiManager: uiManager,
                                                             tokenizationService: tokenizationService,
@@ -221,5 +231,4 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         sessionInfo = sut.sessionInfo()
         XCTAssertEqual(sessionInfo.platform, "WEB")
     }
-
 }

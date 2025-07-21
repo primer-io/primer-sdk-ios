@@ -834,10 +834,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
         switch paymentCreationDecision.type {
         case .abort(let errorMessage):
-            let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                  userInfo: .errorUserInfoDictionary(),
-                                                  diagnosticsId: UUID().uuidString)
-            throw error
+            throw PrimerError.merchantError(message: errorMessage ?? "")
         case .continue:
             return
         }

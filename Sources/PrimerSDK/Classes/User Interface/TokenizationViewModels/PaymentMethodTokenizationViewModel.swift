@@ -40,6 +40,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var didCancel: (() -> Void)?
     var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
     var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
+    var awaitUserInputTask: Task<String, Error>?
     var isCancelled: Bool = false
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
