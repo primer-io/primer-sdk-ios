@@ -547,7 +547,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
     }
 
     func handlePaymentMethodTokenData() async throws {
-        processPaymentMethodTokenData()
+        await processPaymentMethodTokenData()
     }
 }
 

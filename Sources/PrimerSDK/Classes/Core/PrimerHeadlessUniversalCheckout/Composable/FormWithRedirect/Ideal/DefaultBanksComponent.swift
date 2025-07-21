@@ -7,7 +7,6 @@
 
 import Foundation
 
-// TODO: FINAL_MIGRATION
 final class DefaultBanksComponent: BanksComponent {
 
     let paymentMethodType: PrimerPaymentMethodType
@@ -86,6 +85,10 @@ final class DefaultBanksComponent: BanksComponent {
                 ErrorHandler.handle(error: error)
             }
     }
+    
+    public func start_async() {
+        tokenizationProvidingModel.retrieveListOfBanks()
+    }
 
     public func submit() {
         trackSubmit()
@@ -103,6 +106,7 @@ final class DefaultBanksComponent: BanksComponent {
                 }
         }
     }
+    
 }
 
 private extension DefaultBanksComponent {
