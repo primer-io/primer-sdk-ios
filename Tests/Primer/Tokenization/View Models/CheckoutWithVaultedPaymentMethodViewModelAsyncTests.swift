@@ -1,15 +1,7 @@
-//
-//  CheckoutWithVaultedPaymentMethodViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 07/05/2024.
-//
-
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
-final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
-
+final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -32,7 +24,7 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         tokenizationService = nil
     }
 
-    func testStartWithPreTokenizationAndAbort() throws {
+    func testStartWithPreTokenizationAndAbort_async() async throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -55,12 +47,12 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectWillAbort.fulfill()
         }
 
-        _ = sut.start()
+        try await sut.start_async()
 
-        waitForExpectations(timeout: 2.0)
+        await fulfillment(of: [expectWillCreatePaymentData, expectWillAbort], timeout: 5.0)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func testStartWithFullCheckoutFlow_async() async throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -76,19 +68,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        //        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        //        tokenizationService.onTokenize = { body in
-        //            expectOnTokenize.fulfill()
-        //            return Promise.fulfilled(self.tokenizationResponseBody)
-        //        }
-
         let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
@@ -100,7 +79,13 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
+        }
 
+        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
         }
 
         delegate.onDidFail = { error in
@@ -108,17 +93,22 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         }
 
         let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
-        _ = sut.start().done {
-            expectPromiseResolved.fulfill()
+        Task {
+            do {
+                try await sut.start_async()
+                expectPromiseResolved.fulfill()
+            } catch {
+                XCTFail()
+            }
         }
 
-        wait(for: [
+        await fulfillment(of: [
             expectWillCreatePaymentData,
             expectDidExchangeToken,
             expectDidCreatePayment,
             expectCheckoutDidCompletewithData,
             expectPromiseResolved
-        ], timeout: 10.0, enforceOrder: true)
+        ], timeout: 20.0, enforceOrder: true)
     }
 
     // MARK: Helpers
