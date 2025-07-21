@@ -460,7 +460,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             return nil
         } else {
-            precondition(false)
+            preconditionFailure()
         }
     }
 
