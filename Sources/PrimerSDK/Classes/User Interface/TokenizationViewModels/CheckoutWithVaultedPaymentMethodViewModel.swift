@@ -93,32 +93,22 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         }
     }
     
-    @MainActor
     func start_async() async throws {
         do {
             _ = try await self.startTokenizationFlow()
 
             if let checkoutData = try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData) {
-                PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             } else if let paymentCheckoutData {
-                PrimerDelegateProxy.primerDidCompleteCheckoutWithData(paymentCheckoutData)
+                await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(paymentCheckoutData)
             }
 
-            handleSuccessfulFlow()
+            await handleSuccessfulFlow()
         } catch {
             self.didFinishPayment?(error)
-
-            let primerErr: PrimerError
-            if let primerError = error as? PrimerError {
-                primerErr = primerError
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-            }
-
-            let merchantErrorMessage = try? await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
-            self.handleFailureFlow(errorMessage: merchantErrorMessage)
+            let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+            let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
+            await handleFailureFlow(errorMessage: merchantErrorMessage)
         }
     }
 
@@ -172,27 +162,13 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     func performTokenizationStep() async throws {
         guard let tokenizationViewModel = config.tokenizationViewModel else {
-            let err = PrimerError.invalidValue(
-                key: "config.tokenizationViewModel",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "config.tokenizationViewModel"))
         }
 
         try await tokenizationViewModel.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
 
         guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
-            let err = PrimerError.invalidValue(
-                key: "paymentMethodTokenId",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "paymentMethodTokenId"))
         }
 
         self.paymentMethodTokenData = try await tokenizationService.exchangePaymentMethodToken(
@@ -333,15 +309,12 @@ Make sure you call the decision handler otherwise the SDK will hang.
             }
         }
 
-        let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+        let paymentCreationDecision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
         decisionHandlerHasBeenCalled = true
 
         switch paymentCreationDecision.type {
         case .abort(let errorMessage):
-            let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                  userInfo: .errorUserInfoDictionary(),
-                                                  diagnosticsId: UUID().uuidString)
-            throw error
+            throw PrimerError.merchantError(message: errorMessage ?? "")
         case .continue:
             return
         }
@@ -465,27 +438,22 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
         if PrimerSettings.current.paymentHandling == .manual {
-            return try await handleManualResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+            try await handleManualResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
         } else {
-            return try await handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+            try await handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
         }
     }
     
     func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        let resumeDecision = try await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
+        let resumeDecision = await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case .fail(let message):
-                var merchantErr: Error
                 if let message = message {
-                    let err = PrimerError.merchantError(message: message,
-                                                        userInfo: .errorUserInfoDictionary(),
-                                                        diagnosticsId: UUID().uuidString)
-                    merchantErr = err
+                    throw PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    throw NSError.emptyDescriptionError
                 }
-                throw merchantErr
             case .succeed, .continueWithNewClientToken:
                 return nil
             }
@@ -497,13 +465,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
     
     func handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        guard let resumePaymentId = self.resumePaymentId else {
-            let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
-                                                                value: "Resume Payment ID not valid",
-                                                                userInfo: .errorUserInfoDictionary(),
-                                                                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: resumePaymentIdError)
-            throw resumePaymentIdError
+        guard let resumePaymentId else {
+            throw handled(primerError: .invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid"))
         }
 
         let paymentResponse = try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
@@ -641,7 +604,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func startManualPaymentFlowAndFetchToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws
         -> DecodedJWTToken? {
-        let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+        let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
             case .succeed:
@@ -651,23 +614,15 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidClientToken())
                 }
                 return decodedJWTToken
             case .fail(let message):
-                let merchantErr: Error
                 if let message = message {
-                    let err = PrimerError.merchantError(message: message,
-                                                        userInfo: .errorUserInfoDictionary(),
-                                                        diagnosticsId: UUID().uuidString)
-                    merchantErr = err
+                    throw PrimerError.merchantError(message: message)
                 } else {
-                    merchantErr = NSError.emptyDescriptionError
+                    throw NSError.emptyDescriptionError
                 }
-                throw merchantErr
             }
         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
@@ -676,10 +631,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(primerError: .invalidClientToken())
                 }
                 return decodedJWTToken
             case .complete:
@@ -693,12 +645,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func startAutomaticPaymentFlowAndFetchToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws
         -> DecodedJWTToken? {
         guard let token = paymentMethodTokenData.token else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         let paymentResponse = try await self.handleCreatePaymentEvent(token)
@@ -710,10 +657,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidClientToken())
             }
 
             return decodedJWTToken
@@ -779,28 +723,17 @@ Make sure you call the decision handler otherwise the SDK will hang.
         } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             return try await handle3DSAuthenticationForDecodedClientToken(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
         } else {
-            let err = PrimerError.invalidValue(key: "resumeToken",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "resumeToken"))
         }
     }
 
     private func handleStripeACHForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken) async throws -> String? {
         guard let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
               let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-        }
-
+        await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         try await createResumePaymentService.completePayment(clientToken: decodedJWTToken,
                                                              completeUrl: sdkCompleteUrl,
                                                              body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
@@ -811,8 +744,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         _ decodedJWTToken: DecodedJWTToken,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
-        let threeDSService = ThreeDSService()
-        return try await threeDSService.perform3DS(
+        try await ThreeDSService().perform3DS(
             paymentMethodTokenData: paymentMethodTokenData,
             sdkDismissed: nil
         )
@@ -833,17 +765,15 @@ Make sure you call the decision handler otherwise the SDK will hang.
            paymentMethodType == .stripeAch {
             PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
         } else {
-            let categories = self.config.paymentMethodManagerCategories
             PrimerUIManager.dismissOrShowResultScreen(type: .success,
-                                                      paymentMethodManagerCategories: categories ?? [])
+                                                      paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [])
         }
     }
 
     @MainActor
     func handleFailureFlow(errorMessage: String?) {
-        let categories = self.config.paymentMethodManagerCategories
         PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                  paymentMethodManagerCategories: categories ?? [],
+                                                  paymentMethodManagerCategories: config.paymentMethodManagerCategories ?? [],
                                                   withMessage: errorMessage)
     }
 
