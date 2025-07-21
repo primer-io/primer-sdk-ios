@@ -466,7 +466,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             }
         }
 
-        self.didStartPayment = {
+        didStartPayment = {
             DispatchQueue.main.async {
                 self.uiModule.submitButton?.startAnimating()
                 self.uiManager.primerRootViewController?.enableUserInteraction(false)
