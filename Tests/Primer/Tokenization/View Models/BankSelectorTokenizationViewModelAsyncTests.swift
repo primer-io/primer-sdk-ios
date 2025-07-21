@@ -1,14 +1,7 @@
-//
-//  BankSelectionTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
-
 import XCTest
 @testable import PrimerSDK
 
-final class BankSelectionTokenizationViewModelTests: XCTestCase {
+final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
 
     var uiManager: MockPrimerUIManager!
 
@@ -23,6 +16,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
     override func setUpWithError() throws {
 
         uiManager = MockPrimerUIManager()
+        uiManager.primerRootViewController = MockPrimerRootViewController()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
         banksApiClient = MockBanksAPIClient()
@@ -49,13 +43,6 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
         let banks = setupBanksAPIClient()
-
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        _ = uiManager.prepareRootViewController()
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
