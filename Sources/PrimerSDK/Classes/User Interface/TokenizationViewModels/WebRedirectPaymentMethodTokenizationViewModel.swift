@@ -184,7 +184,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         try validate()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
         try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
-        try await self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
     override func performTokenizationStep() -> Promise<Void> {
@@ -209,11 +209,11 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
         }
     }
-    
+
     override func performTokenizationStep() async throws {
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
-        try await self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await self.tokenize()
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        self.paymentMethodTokenData = try await tokenize()
         return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -301,19 +301,19 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     @MainActor
     override func presentPaymentMethodUserInterface() async throws {
-        let safariViewController = SFSafariViewController(url: self.redirectUrl)
+        let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
         self.webViewController = safariViewController
 
         self.willPresentPaymentMethodUI?()
 
-        self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
+        self.redirectUrlComponents = URLComponents(string: redirectUrl.absoluteString)
         self.redirectUrlComponents?.query = nil
 
         let presentEvent = Analytics.Event.ui(
             action: .present,
             context: Analytics.Event.Property.Context(
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: self.redirectUrlComponents?.url?.absoluteString
             ),
             extra: nil,
@@ -327,8 +327,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         let networkEvent = Analytics.Event.networkCall(
             callType: .requestStart,
-            id: self.redirectUrlRequestId!,
-            url: self.redirectUrlComponents?.url?.absoluteString ?? "",
+            id: redirectUrlRequestId!,
+            url: redirectUrlComponents?.url?.absoluteString ?? "",
             method: .get,
             errorBody: nil,
             responseCode: nil
@@ -339,7 +339,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         #if DEBUG
         if TEST {
             guard !UIApplication.shared.windows.isEmpty else {
-                await self.handleWebViewControllerPresentedCompletion_main_actor()
+                await handleWebViewControllerPresentedCompletion_main_actor()
                 return
             }
         }
@@ -395,7 +395,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             place: .webview
         ))
 
-        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
         self.didPresentPaymentMethodUI?()
     }
 
@@ -433,9 +433,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
         }
     }
-    
+
     override func awaitUserInput() async throws {
-        let pollingModule = PollingModule(url: self.statusUrl)
+        let pollingModule = PollingModule(url: statusUrl)
 
         awaitUserInputTask = Task {
             do {
@@ -545,7 +545,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
         }
     }
-    
+
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                                    paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
         if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
@@ -559,8 +559,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.statusUrl = statusUrl
 
                 try await presentPaymentMethodUserInterface()
-                try await self.awaitUserInput()
-                return self.resumeToken
+                try await awaitUserInput()
+                return resumeToken
             } else {
                 throw handled(primerError: .invalidClientToken())
             }
