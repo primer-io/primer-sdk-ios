@@ -443,7 +443,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             try await handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
         }
     }
-    
+
     func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
         let resumeDecision = await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
