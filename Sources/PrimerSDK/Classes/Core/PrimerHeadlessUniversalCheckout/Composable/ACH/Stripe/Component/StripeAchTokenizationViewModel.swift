@@ -224,9 +224,10 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let clientSecret = decodedJWTToken.stripeClientSecret,
-              let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
-              let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
+        guard
+            let clientSecret = decodedJWTToken.stripeClientSecret,
+            let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
+            let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
             throw handled(primerError: .invalidClientToken())
         }
 
@@ -526,9 +527,7 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     private func showACHUserDetailsViewController() async throws {
         let rootVC = uiManager.primerRootViewController
         let isCurrentViewController = await rootVC?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
-        guard !isCurrentViewController else {
-            return
-        }
+        guard !isCurrentViewController else { return }
 
         let achUserDetailsViewController = await ACHUserDetailsViewController(tokenizationViewModel: self, delegate: self)
         await PrimerUIManager.primerRootViewController?.show(viewController: achUserDetailsViewController)
@@ -681,7 +680,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func getClientSessionUserDetails() async throws {
-        self.userDetails = try await clientSessionService.getClientSessionUserDetails()
+        userDetails = try await clientSessionService.getClientSessionUserDetails()
     }
 
     private func getPublishableKey() -> Promise<Void> {
