@@ -444,8 +444,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             .order?
             .merchantAmount == nil
         let currencyExists = AppState.current.currency != nil
-        let shouldShowSurcharge
-            = surchargeAmount != nil && isMerchantAmountNil && currencyExists
+        let shouldShowSurcharge = surchargeAmount != nil && isMerchantAmountNil && currencyExists
 
         // If we would *hide* the surcharge label, then “unselect” the method
         if !shouldShowSurcharge {
@@ -627,7 +626,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     override func performTokenizationStep() async throws {
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -842,8 +841,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     @MainActor
-    private func handle3DSAuthenticationForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken,
-                                                              paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+    private func handle3DSAuthenticationForDecodedClientToken(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
         #if DEBUG
         let threeDSService: ThreeDSServiceProtocol =
             PrimerAPIConfiguration.current?.clientSession?.testId != nil ? Mock3DSService() : ThreeDSService()
@@ -870,7 +871,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         try await self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
 
         let pollingModule = PollingModule(url: statusUrl)
-        self.didCancel = {
+        didCancel = {
             pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
         }
         return try await pollingModule.start()
