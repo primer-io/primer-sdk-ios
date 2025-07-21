@@ -452,14 +452,14 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             unselectPaymentMethodSilently()
         }
 
-        self.checkoutEventsNotifierModule.didStartTokenization = {
+        checkoutEventsNotifierModule.didStartTokenization = {
             DispatchQueue.main.async {
                 self.uiModule.submitButton?.startAnimating()
                 self.uiManager.primerRootViewController?.enableUserInteraction(false)
             }
         }
 
-        self.checkoutEventsNotifierModule.didFinishTokenization = {
+        checkoutEventsNotifierModule.didFinishTokenization = {
             DispatchQueue.main.async {
                 self.uiModule.submitButton?.stopAnimating()
                 self.uiManager.primerRootViewController?.enableUserInteraction(true)
@@ -473,7 +473,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             }
         }
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             DispatchQueue.main.async {
                 self.uiModule.submitButton?.stopAnimating()
                 self.uiManager.primerRootViewController?.enableUserInteraction(true)
@@ -523,8 +523,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl",
-                                                     value: decodedJWTToken.pciUrl))
+            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl))
         }
 
         if PrimerInternal.shared.intent == .checkout {
