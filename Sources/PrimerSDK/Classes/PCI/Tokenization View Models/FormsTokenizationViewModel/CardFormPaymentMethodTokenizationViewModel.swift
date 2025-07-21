@@ -902,7 +902,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
-        self.webViewController = safariViewController
+        webViewController = safariViewController
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.webViewCompletion = { _, err in
