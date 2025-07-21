@@ -94,7 +94,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func start_async() async throws {
         do {
             _ = try await self.startTokenizationFlow()
@@ -476,7 +476,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             precondition(false)
         }
     }
-    
+
     func handleAutomaticResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
         guard let resumePaymentId else {
             throw handled(primerError: .invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid"))
@@ -696,8 +696,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
-    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-        paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
 
             if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
