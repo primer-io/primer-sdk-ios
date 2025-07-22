@@ -48,6 +48,17 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
     var cardValidationService: CardValidationService?
+    
+    /// Converts a 2-digit expiry year to a 4-digit year by prepending the current millennium and century
+    /// e.g. "30" -> "2030" when current year is 2024
+    private func convertToFourDigitYear(_ twoDigitYear: String) -> String {
+        guard twoDigitYear.count == 2 else { return twoDigitYear }
+        let currentYearAsString = Date().yearComponentAsString
+        guard currentYearAsString.count >= 2 else { return twoDigitYear }
+        let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
+        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
+        return "\(milleniumAndCenturyOfCurrentYearAsString)\(twoDigitYear)"
+    }
 
     var isDataValid: Bool = false
     var paymentMethodType: String
@@ -123,7 +134,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             }
 
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
-            let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+            let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+            let expiryYear = convertToFourDigitYear(rawExpiryYear)
 
             let paymentInstrument = CardPaymentInstrument(
                 number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
@@ -159,7 +171,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
-        let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+        let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+        let expiryYear = convertToFourDigitYear(rawExpiryYear)
 
         return Request.Body.Tokenization(
             paymentInstrument: CardPaymentInstrument(
