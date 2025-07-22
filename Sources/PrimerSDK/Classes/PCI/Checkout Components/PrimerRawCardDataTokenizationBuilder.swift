@@ -48,16 +48,16 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
     var cardValidationService: CardValidationService?
-    
-    /// Converts a 2-digit expiry year to a 4-digit year by prepending the current millennium and century
-    /// e.g. "30" -> "2030" when current year is 2024
+
     private func convertToFourDigitYear(_ twoDigitYear: String) -> String {
-        guard twoDigitYear.count == 2 else { return twoDigitYear }
-        let currentYearAsString = Date().yearComponentAsString
-        guard currentYearAsString.count >= 2 else { return twoDigitYear }
-        let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
-        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
-        return "\(milleniumAndCenturyOfCurrentYearAsString)\(twoDigitYear)"
+        guard twoDigitYear.count == 2,
+              twoDigitYear.allSatisfy(\.isNumber) else { 
+            return twoDigitYear 
+        }
+        
+        let currentYear = Calendar.current.component(.year, from: Date())
+        let century = String(currentYear).prefix(2)
+        return "\(century)\(twoDigitYear)"
     }
 
     var isDataValid: Bool = false
