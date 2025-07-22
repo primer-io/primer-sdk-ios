@@ -172,23 +172,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     }
 
     @IBAction func payButtonTapped(_ sender: UIButton) {
-        guard let expiryText = expiryDateTextField?.text,
-              !expiryText.isEmpty,
-              let expiryComponents = expiryDateTextField?.text?.split(separator: "/") else {
-            self.showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
-            return
-        }
-
-        if expiryComponents.count != 2 {
-            self.showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
-            return
-        }
-        
-        // Allow both MM/YY (5 chars) and MM/YYYY (7 chars) formats
-        let yearComponent = String(expiryComponents[1])
-        guard [2, 4].contains(yearComponent.count) else {
-            self.showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
-            return
+        guard expiryDateTextField?.text?.isEmpty == false,
+              let expiryComponents = expiryDateTextField?.text?.split(separator: "/"),
+              expiryComponents.count == 2,
+              case let yearComponent = String(expiryComponents[1]),
+              [2, 4].contains(yearComponent.count) else {
+            return showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
         }
 
         if paymentMethodType == "PAYMENT_CARD" {
