@@ -186,7 +186,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         
         // Allow both MM/YY (5 chars) and MM/YYYY (7 chars) formats
         let yearComponent = String(expiryComponents[1])
-        if yearComponent.count != 2 && yearComponent.count != 4 {
+        guard [2, 4].contains(yearComponent.count) else {
             self.showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
             return
         }
