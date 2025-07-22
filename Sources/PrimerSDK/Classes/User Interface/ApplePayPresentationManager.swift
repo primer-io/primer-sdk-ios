@@ -82,15 +82,15 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             paymentController.present { success in
-                if success == false {
+                guard success else {
                     let err = PrimerError.unableToPresentApplePay()
                     self.logger.error(message: "APPLE PAY")
                     self.logger.error(message: err.recoverySuggestion ?? "")
-                    continuation.resume(throwing: handled(primerError: err))
-                } else {
-                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
-                    continuation.resume()
+                    return continuation.resume(throwing: handled(primerError: err))
                 }
+
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
+                continuation.resume()
             }
         }
     }

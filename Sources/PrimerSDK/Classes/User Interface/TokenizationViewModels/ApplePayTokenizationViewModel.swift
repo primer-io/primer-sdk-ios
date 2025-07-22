@@ -194,7 +194,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func performTokenizationStep() async throws {
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
