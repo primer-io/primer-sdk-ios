@@ -28,6 +28,10 @@ func handled(primerError: PrimerError) -> PrimerError {
     handled(error: primerError)
 }
 
+func handled(primerValidationError: PrimerValidationError) -> PrimerValidationError {
+    handled(error: primerValidationError)
+}
+
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
     case uninitializedSDKSession(
