@@ -219,12 +219,12 @@ internal extension String {
 
         } else {
             var expiryDate: Date?
-            
+
             // Try MM/yy format first
             let shortFormatter = DateFormatter()
             shortFormatter.dateFormat = "MM/yy"
             shortFormatter.locale = Locale(identifier: "en_US_POSIX")
-            
+
             if let date = shortFormatter.date(from: self) {
                 expiryDate = date
             } else {
@@ -234,7 +234,7 @@ internal extension String {
                 longFormatter.locale = Locale(identifier: "en_US_POSIX")
                 expiryDate = longFormatter.date(from: self)
             }
-            
+
             if let expiryDate = expiryDate {
                 if !expiryDate.isValidExpiryDate {
                     let err = PrimerValidationError.invalidExpiryDate(
@@ -281,7 +281,7 @@ internal extension String {
         let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
         return matches?.count ?? 0 > 0
     }
-    
+
     /// Normalizes a year string to 4-digit format
     /// - Returns: A 4-digit year string, or nil if the input is not a valid 2-digit or 4-digit year
     /// - Note: 2-digit years (e.g., "30") are converted using current century (e.g., "2030")
@@ -289,17 +289,16 @@ internal extension String {
     ///         Invalid inputs return nil
     func normalizedFourDigitYear() -> String? {
         guard self.allSatisfy(\.isNumber) else { return nil }
-        
-        if self.count == 2 {
+
+        switch self.count {
+        case 4:
+            return self
+        case 2:
             // Convert 2-digit year to 4-digit using current century
             let currentYear = Calendar.current.component(.year, from: Date())
             let century = String(currentYear).prefix(2)
             return "\(century)\(self)"
-        } else if self.count == 4 {
-            // Already 4-digit year, return as-is
-            return self
-        } else {
-            // Invalid length for a year
+        default:
             return nil
         }
     }

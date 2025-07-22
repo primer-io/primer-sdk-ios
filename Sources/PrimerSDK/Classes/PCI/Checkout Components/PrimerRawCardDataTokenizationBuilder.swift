@@ -124,7 +124,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
             let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
-            
+
             guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
                 let err = PrimerError.invalidValue(key: "rawData.expiryDate",
                                                    value: rawData.expiryDate,
@@ -170,7 +170,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
         let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
-        
+
         guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
             let err = PrimerError.invalidValue(key: "rawData.expiryDate",
                                                value: rawData.expiryDate,
