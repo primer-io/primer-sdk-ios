@@ -126,13 +126,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
             guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
-                let err = PrimerError.invalidValue(key: "rawData.expiryDate",
-                                                   value: rawData.expiryDate,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError:
+                        .invalidExpiryDate(message: "Expiry year '\(rawExpiryYear)' is not valid. Please provide a 2-digit (YY) or 4-digit (YYYY) year."))
+                )
             }
 
             let paymentInstrument = CardPaymentInstrument(
@@ -172,12 +168,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
         guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
-            let err = PrimerError.invalidValue(key: "rawData.expiryDate",
-                                               value: rawData.expiryDate,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidExpiryDate(
+                message: "Expiry year '\(rawExpiryYear)' is not valid. Please provide a 2-digit (YY) or 4-digit (YYYY) year."
+            ))
         }
 
         return Request.Body.Tokenization(
