@@ -49,17 +49,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     var cardValidationService: CardValidationService?
 
-    private func convertToFourDigitYear(_ twoDigitYear: String) -> String {
-        guard twoDigitYear.count == 2,
-              twoDigitYear.allSatisfy(\.isNumber) else {
-            return twoDigitYear
-        }
-
-        let currentYear = Calendar.current.component(.year, from: Date())
-        let century = String(currentYear).prefix(2)
-        return "\(century)\(twoDigitYear)"
-    }
-
     var isDataValid: Bool = false
     var paymentMethodType: String
 
@@ -135,7 +124,16 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
             let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
-            let expiryYear = convertToFourDigitYear(rawExpiryYear)
+            
+            guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
+                let err = PrimerError.invalidValue(key: "rawData.expiryDate",
+                                                   value: rawData.expiryDate,
+                                                   userInfo: .errorUserInfoDictionary(),
+                                                   diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
 
             let paymentInstrument = CardPaymentInstrument(
                 number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
@@ -172,7 +170,15 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
         let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
-        let expiryYear = convertToFourDigitYear(rawExpiryYear)
+        
+        guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
+            let err = PrimerError.invalidValue(key: "rawData.expiryDate",
+                                               value: rawData.expiryDate,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
 
         return Request.Body.Tokenization(
             paymentInstrument: CardPaymentInstrument(
