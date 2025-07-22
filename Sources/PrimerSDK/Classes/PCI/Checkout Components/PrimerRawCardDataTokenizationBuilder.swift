@@ -51,10 +51,10 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     private func convertToFourDigitYear(_ twoDigitYear: String) -> String {
         guard twoDigitYear.count == 2,
-              twoDigitYear.allSatisfy(\.isNumber) else { 
-            return twoDigitYear 
+              twoDigitYear.allSatisfy(\.isNumber) else {
+            return twoDigitYear
         }
-        
+
         let currentYear = Calendar.current.component(.year, from: Date())
         let century = String(currentYear).prefix(2)
         return "\(century)\(twoDigitYear)"
