@@ -1,22 +1,12 @@
-//
-//  BankComponentTests.swift
-//  Debug App Tests
-//
-//  Created by Alexandra Lovin on 14.11.2023.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
-
 import XCTest
 @testable import PrimerSDK
 
-final class BankComponentTests: XCTestCase {
+final class DefaultBanksComponentAsyncTests: XCTestCase {
 
     let expectationTimeout = 5.0
-
     var validationErrors: [String] = []
     var validationStatuses: [String] = []
     var webRedirectComponent: WebRedirectComponent?
-
     var mockSteppableDelegate: MockSteppableDelegate!
 
     override func setUp() {
@@ -69,13 +59,13 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         XCTAssertNil(bankComponent.bankId)
-        bankComponent.start()
+        bankComponent.start_async()
         let banksRetrievedExpectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
             XCTAssertEqual(bankComponent.bankId, bankId)
-            bankComponent.submit()
+            bankComponent.submit_async()
             banksRetrievedExpectation.fulfill()
         }
         waitForExpectations(timeout: self.expectationTimeout)
@@ -88,7 +78,7 @@ final class BankComponentTests: XCTestCase {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = mockSteppableDelegate
-        bankComponent.start()
+        bankComponent.start_async()
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
@@ -127,7 +117,7 @@ final class BankComponentTests: XCTestCase {
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: "filter_query"))
         }
 
-        bankComponent.start()
+        bankComponent.start_async()
 
         waitForExpectations(timeout: self.expectationTimeout)
     }
@@ -163,7 +153,7 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start()
+        bankComponent.start_async()
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { _ in
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "0"))
@@ -182,7 +172,7 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start()
+        bankComponent.start_async()
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { _ in
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_bank_id"))
@@ -195,7 +185,30 @@ final class BankComponentTests: XCTestCase {
     }
 }
 
-extension BankComponentTests: PrimerHeadlessValidatableDelegate {
+final class MockSteppableDelegate: PrimerHeadlessSteppableDelegate {
+
+    var banks: [IssuingBank] = []
+    var steps: [BanksStep] = []
+
+    var onReceiveStep: ((PrimerHeadlessStep) -> Void)?
+
+    var onReceiveBanks: (([IssuingBank]) -> Void)?
+
+    func didReceiveStep(step: PrimerHeadlessStep) {
+        guard let step = step as? BanksStep else {
+            return
+        }
+        steps.append(step)
+        switch step {
+        case .loading: break
+        case .banksRetrieved(banks: let banks):
+            self.onReceiveBanks?(banks)
+            self.banks = banks
+        }
+    }
+}
+
+extension DefaultBanksComponentAsyncTests: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
         case .validating: validationStatuses.append("validating")
