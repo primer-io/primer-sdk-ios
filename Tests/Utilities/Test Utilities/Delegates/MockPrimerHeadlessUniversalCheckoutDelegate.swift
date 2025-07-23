@@ -62,7 +62,7 @@ class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalChecko
 
     typealias CreatePaymentDecisionHandler = (PrimerPaymentCreationDecision) -> Void
 
-    var onWillCreatePaymentWithData: ((PrimerCheckoutPaymentMethodData, @escaping CreatePaymentDecisionHandler) -> Void)?
+    var onWillCreatePaymentWithData: ((PrimerCheckoutPaymentMethodData, CreatePaymentDecisionHandler) -> Void)?
 
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData,
                                                                   decisionHandler: @escaping CreatePaymentDecisionHandler) {

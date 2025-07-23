@@ -50,34 +50,6 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
 
     // TODO: Enable Cancellation
 //    func test_startFlow_withCancellation_shouldCallOnDidFail() throws {
-//        SDKSessionHelper.setUp()
-//
-//        sut.start_async()
-//
-//        delegate.onWillCreatePaymentWithData = { data, decision in
-//            XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) {
-//                decision(.continuePaymentCreation())
-//            }
-//        }
-//
-//        let expectDidFail = self.expectation(description: "onDidFail called")
-//        delegate.onDidFail = { error in
-//            switch error {
-//            case PrimerError.cancelled(let paymentMethodType, _, _):
-//                XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
-//            default:
-//                XCTFail()
-//            }
-//            expectDidFail.fulfill()
-//        }
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            let cancelNotif = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
-//            NotificationCenter.default.post(cancelNotif)
-//        }
-//
-//        waitForExpectations(timeout: 10.0)
 //    }
 
     func test_startFlow_whenAborted_shouldCallOnDidFail() throws {

@@ -87,7 +87,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     override func start_async() {
-        self.didFinishPayment = { [weak self] _ in
+        didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
             Task { @MainActor in self.cleanup_main_actor() }
         }
@@ -117,8 +117,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     @MainActor
     func cleanup_main_actor() {
-        self.willDismissPaymentMethodUI?()
-        self.webViewController?.dismiss(animated: true, completion: {
+        willDismissPaymentMethodUI?()
+        webViewController?.dismiss(animated: true, completion: {
             self.didDismissPaymentMethodUI?()
         })
     }
@@ -133,7 +133,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -221,7 +221,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func performTokenizationStep() async throws {
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -311,18 +311,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func presentPaymentMethodUserInterface() async throws {
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
-        self.webViewController = safariViewController
+        webViewController = safariViewController
 
-        self.willPresentPaymentMethodUI?()
+        willPresentPaymentMethodUI?()
 
-        self.redirectUrlComponents = URLComponents(string: redirectUrl.absoluteString)
-        self.redirectUrlComponents?.query = nil
+        redirectUrlComponents = URLComponents(string: redirectUrl.absoluteString)
+        redirectUrlComponents?.query = nil
 
         let presentEvent = Analytics.Event.ui(
             action: .present,
             context: Analytics.Event.Property.Context(
                 paymentMethodType: config.type,
-                url: self.redirectUrlComponents?.url?.absoluteString
+                url: redirectUrlComponents?.url?.absoluteString
             ),
             extra: nil,
             objectType: .button,
@@ -331,7 +331,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             place: .webview
         )
 
-        self.redirectUrlRequestId = UUID().uuidString
+        redirectUrlRequestId = UUID().uuidString
 
         let networkEvent = Analytics.Event.networkCall(
             callType: .requestStart,
@@ -393,8 +393,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .view,
             context: Analytics.Event.Property.Context(
-                paymentMethodType: self.config.type,
-                url: self.redirectUrlComponents?.url?.absoluteString ?? ""
+                paymentMethodType: config.type,
+                url: redirectUrlComponents?.url?.absoluteString ?? ""
             ),
             extra: nil,
             objectType: .button,
@@ -404,7 +404,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         ))
 
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
-        self.didPresentPaymentMethodUI?()
+        didPresentPaymentMethodUI?()
     }
 
     override func awaitUserInput() -> Promise<Void> {
