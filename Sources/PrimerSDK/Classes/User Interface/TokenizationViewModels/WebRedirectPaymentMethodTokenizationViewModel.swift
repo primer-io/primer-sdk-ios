@@ -89,7 +89,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func start_async() {
         self.didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { @MainActor in self.cleanup_main_actor() }
         }
 
         setupNotificationObservers()
@@ -109,6 +109,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     func cleanup() {
+        self.willDismissPaymentMethodUI?()
+        self.webViewController?.dismiss(animated: true, completion: {
+            self.didDismissPaymentMethodUI?()
+        })
+    }
+
+    @MainActor
+    func cleanup_main_actor() {
         self.willDismissPaymentMethodUI?()
         self.webViewController?.dismiss(animated: true, completion: {
             self.didDismissPaymentMethodUI?()
