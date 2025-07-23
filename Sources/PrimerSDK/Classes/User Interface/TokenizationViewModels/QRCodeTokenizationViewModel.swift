@@ -23,10 +23,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
     }
 
@@ -106,13 +103,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         return Promise { seal in
             let pollingModule = PollingModule(url: statusUrl)
             self.didCancel = {
-                let err = PrimerError.cancelled(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                pollingModule.cancel(withError: err)
-                return
+                return pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
             }
 
             firstly {
@@ -134,13 +125,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id",
-                                                   value: config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "configuration.id")))
             }
 
             let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
@@ -190,9 +175,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     seal.reject(err)
                 }
             } else {
-                let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                seal.reject(error)
+                seal.reject(PrimerError.invalidClientToken())
             }
         }
     }
@@ -264,20 +247,15 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 logger.warn(message: logMessage)
 
                 let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.config.type,
-                                                                     userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                        "message": message
-                                                                     ]),
-                                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
-                seal.reject(error)
+                let dictionary: Dictionary = .errorUserInfoDictionary(additionalInfo: ["message": message])
+                seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type, userInfo: dictionary)))
             }
 
             /// We don't want to put a lot of conditions for already unhandled payment methods
             /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible
             /// to proceed with almost only happy path
 
-            guard self.config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
+            guard config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
                 seal.fulfill()
                 return
             }
@@ -289,31 +267,15 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                  PrimerPaymentMethodType.omisePromptPay.rawValue:
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidClientToken()))
                 }
 
                 guard let expiresAt = decodedJWTToken.expDate else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt",
-                                                       value: decodedJWTToken.expiresAt,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.expiresAt")))
                 }
 
                 guard let qrCodeString = decodedJWTToken.qrCode else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode",
-                                                       value: decodedJWTToken.qrCode,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.qrCode")))
                 }
 
                 let formatter = DateFormatter().withExpirationDisplayDateFormat()
@@ -335,16 +297,11 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 self.logger.info(message: self.config.type)
             }
 
-            if let additionalInfo = additionalInfo {
+            if let additionalInfo {
                 PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
                 seal.fulfill()
             } else {
-                let err = PrimerError.invalidValue(key: "additionalInfo",
-                                                   value: additionalInfo,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidValue(key: "additionalInfo")))
             }
         }
     }

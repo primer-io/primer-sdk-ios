@@ -47,8 +47,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         guard config.id != nil else {
-            throw handled(primerError: .invalidValue(key: "configuration.id",
-                                                     value: config.id))
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
@@ -212,51 +211,24 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             DispatchQueue.main.async {
                 if PrimerInternal.shared.intent == .vault {
-                    let err = PrimerError.unsupportedIntent(intent: .vault,
-                                                            userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .unsupportedIntent(intent: .vault)))
                 }
 
                 guard PrimerAPIConfigurationModule.decodedJWTToken != nil
                 else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidClientToken()))
                 }
 
                 guard let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode else {
-                    let err = PrimerError.invalidClientSessionValue(name: "order.countryCode",
-                                                                    value: "nil",
-                                                                    allowedValue: "",
-                                                                    userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidClientSessionValue(name: "order.countryCode")))
                 }
 
                 guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
-                    let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: "nil",
-                                                                    userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidMerchantIdentifier()))
                 }
 
                 guard let currency = AppState.current.currency else {
-                    let err = PrimerError.invalidValue(key: "Currency",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidValue(key: "Currency")))
                 }
 
                 let amount = AppState.current.amount
@@ -395,34 +367,18 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let applePayConfigId = self.config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id",
-                                                   value: self.config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "configuration.id")))
             }
 
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidClientToken()))
             }
 
             guard let merchantIdentifier =
                     PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier
             else {
                 let key = "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier"
-                let err = PrimerError.invalidValue(key: key,
-                                                   value: self.config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: key)))
             }
 
             let paymentInstrument = ApplePayPaymentInstrument(
@@ -563,12 +519,7 @@ extension ApplePayTokenizationViewModel {
         } else if let lineItems = clientSession.order?.lineItems {
             // If there's no hardcoded amount, map line items to order items
             guard !lineItems.isEmpty else {
-                let err = PrimerError.invalidValue(
-                    key: "clientSession.order.lineItems",
-                    value: "[]",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                throw err
+                throw PrimerError.invalidValue(key: "clientSession.order.lineItems", value: "[]")
             }
 
             for lineItem in lineItems {
@@ -606,13 +557,7 @@ extension ApplePayTokenizationViewModel {
             orderItems.append(summaryItem)
 
         } else {
-            // Throw error that neither a hardcoded amount, nor line items exist
-            let err = PrimerError.invalidValue(
-                key: "clientSession.order.lineItems or clientSession.order.amount",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            throw err
+            throw PrimerError.invalidValue(key: "clientSession.order.lineItems or clientSession.order.amount")
         }
 
         return orderItems
@@ -644,21 +589,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         if self.isCancelled {
             controller.dismiss(completion: nil)
-            let err = PrimerError.cancelled(
-                paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            applePayReceiveDataCompletion?(.failure(err))
+            let error: PrimerError = .cancelled(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+            applePayReceiveDataCompletion?(.failure(handled(primerError: error)))
             applePayReceiveDataCompletion = nil
 
         } else if self.didTimeout {
             controller.dismiss(completion: nil)
-            let err = PrimerError.applePayTimedOut(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion?(.failure(handled(primerError: .applePayTimedOut())))
             applePayReceiveDataCompletion = nil
         }
     }
@@ -754,11 +691,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             return try await withCheckedThrowingContinuation { continuation in
                 firstly {
                     guard let address = self.clientSessionAddressFromApplePayShippingContact(contact) else {
-                        let err = PrimerError.invalidValue(key: "shippingContact",
-                                                           value: "nil",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        throw(err)
+                        throw(PrimerError.invalidValue(key: "shippingContact"))
                     }
                     return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
                                                                                                           mobileNumber: nil,
@@ -768,11 +701,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                     guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
-                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
-                                                                               value: nil,
-                                                                               userInfo: .errorUserInfoDictionary(),
-                                                                               diagnosticsId: UUID().uuidString))
-                        return
+                        return continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession"))
                     }
 
                     let orderItems = try self.createOrderItemsFromClientSession(
@@ -823,11 +752,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             return try await withCheckedThrowingContinuation { continuation in
                 firstly {
                     guard let identifier = shippingMethod.identifier else {
-                        let err = PrimerError.invalidValue(key: "shippingMethod.identifier",
-                                                           value: "nil",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        throw(err)
+                        throw(PrimerError.invalidValue(key: "shippingMethod.identifier"))
                     }
 
                     return ClientSessionActionsModule.selectShippingMethodIfNeeded(identifier)
@@ -836,11 +761,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                     guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
-                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
-                                                                               value: nil,
-                                                                               userInfo: .errorUserInfoDictionary(),
-                                                                               diagnosticsId: UUID().uuidString))
-                        return
+                        return continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession"))
                     }
 
                     do {
