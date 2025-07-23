@@ -36,8 +36,7 @@ extension Request.URLParameters {
             self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
 
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                throw InternalError.failedToDecode(message: "All values are nil")
             }
         }
 
@@ -45,8 +44,7 @@ extension Request.URLParameters {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                throw InternalError.failedToDecode(message: "All values are nil")
             }
 
             if let skipPaymentMethodTypes = skipPaymentMethodTypes {
@@ -360,11 +358,7 @@ extension Response.Body.Configuration {
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
                 if self.cardHolderName == nil && self.saveCardCheckbox == nil {
-                    let err = InternalError.failedToDecode(message: "All fields are nil",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }
         }
@@ -446,11 +440,7 @@ extension Response.Body.Configuration {
                     self.countryCode == nil &&
                     self.phoneNumber == nil &&
                     self.state == nil {
-                    let err = InternalError.failedToDecode(message: "All fields are nil",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }
         }

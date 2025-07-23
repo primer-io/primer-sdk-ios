@@ -870,8 +870,8 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
     }
 
+    @MainActor
     override func handleSuccessfulFlow() {
-
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
             return
         }

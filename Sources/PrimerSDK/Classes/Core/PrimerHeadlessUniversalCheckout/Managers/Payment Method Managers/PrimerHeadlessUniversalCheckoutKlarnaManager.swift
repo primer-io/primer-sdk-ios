@@ -17,22 +17,19 @@ extension PrimerHeadlessUniversalCheckout {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
                     .first(where: { $0.type == "KLARNA" })
             else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: "KLARNA",
-                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                "message": "Unable to locate a valid payment method configuration"
-                                                               ]),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(
+                    primerError: .unsupportedPaymentMethod(
+                        paymentMethodType: "KLARNA",
+                        userInfo: .errorUserInfoDictionary(
+                            additionalInfo: ["message": "Unable to locate a valid payment method configuration"]
+                        )
+                    )
+                )
             }
 
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
-                let err = PrimerError.unsupportedIntent(intent: intent,
-                                                        userInfo: .errorUserInfoDictionary(),
-                                                        diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .unsupportedIntent(intent: intent))
             }
             PrimerInternal.shared.intent = intent
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)

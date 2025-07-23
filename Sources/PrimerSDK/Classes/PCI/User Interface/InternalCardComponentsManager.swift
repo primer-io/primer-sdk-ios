@@ -148,12 +148,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
                     } else {
                         let preconditionMessage = "Decoded client token should never be null at this point."
                         precondition(false, preconditionMessage)
-                        let err = PrimerError.invalidValue(key: "self.decodedClientToken",
-                                                           value: nil,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .invalidValue(key: "self.decodedClientToken")))
                     }
                 }
                 .catch { err in
@@ -205,18 +200,10 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         var errors: [Error] = []
 
         if cardnumberField.cardnumber.isEmpty {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number can not be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
 
         } else if !cardnumberField.cardnumber.isValidCardNumber {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         }
 
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
@@ -224,47 +211,28 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
 Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
 and 4 characters for expiry year separated by '/'.
 """
-            errors.append(PrimerValidationError.invalidExpiryDate(
-                            message: message,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+            errors.append(PrimerValidationError.invalidExpiryDate(message: message))
         }
 
         if isRequiringCVVInput {
             if cvvField.cvv.isEmpty {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
-
+                errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
             } else if !cvvField.cvv.isValidCVV(cardNetwork: selectedCardNetwork ?? CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
+                errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
             }
         }
 
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
             if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView {
                 switch simpleCardFormTextFieldView.validation {
-                case .invalid(let error):
-                    ErrorHandler.handle(error: error!)
-                    errors.append(error!)
-                default:
-                    break
+                case .invalid(let error): errors.append(handled(error: error!))
+                default: break
                 }
             }
         }
 
         if !errors.isEmpty {
-            let err = PrimerError.underlyingErrors(errors: errors,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .underlyingErrors(errors: errors))
         }
     }
 
@@ -325,11 +293,7 @@ and 4 characters for expiry year separated by '/'.
             .done { _ in
 
                 guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
-                    let err = PrimerError.invalidValue(key: "Payment Instrument",
-                                                       value: self.tokenizationPaymentInstrument,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
+                    let err = handled(primerError: .invalidValue(key: "Payment Instrument"))
                     self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     return
                 }
@@ -344,9 +308,7 @@ and 4 characters for expiry year separated by '/'.
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: containerErr)
+                    ErrorHandler.handle(error: PrimerError.underlyingErrors(errors: [err]))
                     self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
             }

@@ -47,25 +47,14 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
         return Promise { seal in
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
             }
 
             guard let rawData = data as? PrimerOTPData else {
-                let err = PrimerError.invalidValue(key: "rawData",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "rawData")))
             }
 
-            let sessionInfo = BlikSessionInfo(blikCode: rawData.otp,
-                                              locale: PrimerSettings.current.localeData.localeCode)
+            let sessionInfo = BlikSessionInfo(blikCode: rawData.otp, locale: PrimerSettings.current.localeData.localeCode)
 
             let paymentInstrument = OffSessionPaymentInstrument(
                 paymentMethodConfigId: paymentMethodId,
@@ -79,19 +68,11 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
         }
 
         guard let rawData = data as? PrimerOTPData else {
-            let err = PrimerError.invalidValue(key: "rawData",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
         return Request.Body.Tokenization(
@@ -112,39 +93,22 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
                 var errors: [PrimerValidationError] = []
 
                 guard let rawData = data as? PrimerOTPData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(error: PrimerValidationError.invalidRawData())
                     errors.append(err)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
-
-                    DispatchQueue.main.async {
-                        seal.reject(err)
-                    }
-
+                    DispatchQueue.main.async { seal.reject(err) }
                     return
                 }
 
                 if !rawData.otp.isValidOTP {
-                    errors.append(PrimerValidationError.invalidOTPCode(
-                                    message: "OTP is not valid.",
-                                    userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidOTPCode(message: "OTP is not valid."))
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
                     }
                 } else {
                     self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
@@ -161,35 +125,20 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
         var errors: [PrimerValidationError] = []
 
         guard let rawData = data as? PrimerOTPData else {
-            let err = PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerValidationError.invalidRawData()
             errors.append(err)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw handled(error: err)
         }
 
         if !rawData.otp.isValidOTP {
-            errors.append(PrimerValidationError.invalidOTPCode(
-                message: "OTP is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            ))
+            errors.append(PrimerValidationError.invalidOTPCode(message: "OTP is not valid."))
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-
+            let err = PrimerError.underlyingErrors(errors: errors)
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw handled(primerError: err)
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)

@@ -35,23 +35,12 @@ final class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
         debouncer.debounce {
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+                return completion(.failure(handled(primerError: .invalidClientToken())))
             }
 
             guard !mobileNumber.isEmpty else {
-                let validationError = PrimerValidationError.invalidPhoneNumber(
-                    message: "Phone number cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: validationError)
-
-                completion(.success((.invalid(errors: [validationError]), nil, nil)))
-                return
+                let validationError = handled(error: PrimerValidationError.invalidPhoneNumber(message: "Phone number cannot be blank."))
+                return completion(.success((.invalid(errors: [validationError]), nil, nil)))
             }
 
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
@@ -64,24 +53,11 @@ final class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
                     if phoneMetadataResponse.isValid {
                         completion(.success((.valid, countryCode, mobileNumber)))
                     } else {
-                        let validationError = PrimerValidationError.invalidPhoneNumber(
-                            message: "Phone number is not valid.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
-                        ErrorHandler.handle(error: validationError)
-
-                        completion(.success((.invalid(errors: [validationError]), nil, nil)))
+                        let error = handled(error: PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
+                        completion(.success((.invalid(errors: [error]), nil, nil)))
                     }
                 case .failure(let error):
-                    let primerError = PrimerError.underlyingErrors(
-                        errors: [error],
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
-                    ErrorHandler.handle(error: primerError)
-
-                    completion(.failure(primerError))
+                    completion(.failure(handled(primerError: .underlyingErrors(errors: [error]))))
                 }
             }
         }

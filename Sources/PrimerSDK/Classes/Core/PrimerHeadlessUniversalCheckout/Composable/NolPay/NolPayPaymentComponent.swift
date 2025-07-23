@@ -92,12 +92,7 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                           mobileNumber: let mobileNumber):
 
             if cardNumber.isEmpty || !cardNumber.isNumeric {
-                errors.append(PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
-                ErrorHandler.handle(error: errors.last!)
+                errors.append(handled(error: PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")))
             }
 
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
@@ -173,20 +168,12 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                             self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                             completion?(.success(true))
                         } else {
-                            let error = PrimerError.nolError(code: "unknown",
-                                                             message: "Payment failed from unknown reason",
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: error)
+                            let error = handled(primerError: .nolError(code: "unknown", message: "Payment failed from unknown reason"))
                             self.errorDelegate?.didReceiveError(error: error)
                             completion?(.failure(error))
                         }
                     case .failure(let error):
-                        let error = PrimerError.nolError(code: error.errorCode,
-                                                         message: error.description,
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: error)
+                        let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                         self.errorDelegate?.didReceiveError(error: error)
                         completion?(.failure(error))
                     }
@@ -216,10 +203,7 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errorDelegate?.didReceiveError(error: err)
+            errorDelegate?.didReceiveError(error: handled(primerError: .invalidClientToken()))
             return
         }
 
@@ -240,24 +224,15 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             return try await withCheckedThrowingContinuation { continuation in
                 self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
-                    case .success(let appSecret):
-                        continuation.resume(returning: appSecret.sdkSecret)
-                    case .failure(let error):
-                        ErrorHandler.handle(error: error)
-                        continuation.resume(throwing: error)
+                    case .success(let appSecret): continuation.resume(returning: appSecret.sdkSecret)
+                    case .failure(let error): continuation.resume(throwing: handled(error: error))
                     }
                 }
             }
         }
         #else
-        let error = PrimerError.missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
-            sdkName: "PrimerNolPaySDK",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        errorDelegate?.didReceiveError(error: error)
+        let error = handled(primerError: .missingSDK(paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue, sdkName: "PrimerNolPaySDK"))
+        errorDelegate?.didReceiveError(error: handled(primerError: error))
         #endif
     }
 }

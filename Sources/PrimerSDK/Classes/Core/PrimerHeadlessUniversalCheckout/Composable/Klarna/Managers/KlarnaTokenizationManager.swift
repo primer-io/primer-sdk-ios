@@ -134,7 +134,7 @@ extension KlarnaTokenizationManager {
             // Validates the presence of session data.
             // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
             guard let sessionData = customerToken?.sessionData else {
-                let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData", value: nil)
+                let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData")
                 seal.reject(error)
                 return
             }
@@ -147,9 +147,7 @@ extension KlarnaTokenizationManager {
             // for `tokenization.customerToken`
             if KlarnaHelpers.getSessionType() == .recurringPayment {
                 guard let klarnaCustomerToken = customerToken?.customerTokenId else {
-                    let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken", value: nil)
-                    seal.reject(error)
-                    return
+                    return seal.reject(KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken"))
                 }
                 customerTokenId = klarnaCustomerToken
                 // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object

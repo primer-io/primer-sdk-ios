@@ -24,8 +24,8 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     typealias K = AnalyticsContextKeys
 
     case missingSdkDependency(
-        userInfo: [String: String]?,
-        diagnosticsId: String
+        userInfo: [String: String]? = .errorUserInfoDictionary(),
+        diagnosticsId: String = .uuid
     )
     case invalid3DSSdkVersion(
         userInfo: [String: String]? = .errorUserInfoDictionary(),

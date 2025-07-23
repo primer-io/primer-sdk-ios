@@ -158,9 +158,7 @@ final class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err])
             }
 
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -205,9 +203,7 @@ final class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err])
             }
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
@@ -250,9 +246,7 @@ final class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err])
             }
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)

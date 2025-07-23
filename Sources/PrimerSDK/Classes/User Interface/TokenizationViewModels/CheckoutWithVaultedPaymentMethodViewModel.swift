@@ -64,8 +64,9 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 } else if let checkoutData = self.paymentCheckoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
-
-                self.handleSuccessfulFlow()
+                DispatchQueue.main.async {
+                    self.handleSuccessfulFlow()
+                }
                 seal.fulfill()
             }
             .catch { err in
@@ -84,7 +85,9 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
-                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    DispatchQueue.main.async {
+                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    }
                     seal.fulfill()
                 }
                 .catch { _ in }
@@ -523,6 +526,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
     }
 
+    @MainActor
     func handleSuccessfulFlow() {
         if let paymentMethodType = config.internalPaymentMethodType,
            paymentMethodType == .stripeAch {
@@ -534,6 +538,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
+    @MainActor
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
         PrimerUIManager.dismissOrShowResultScreen(type: .failure,

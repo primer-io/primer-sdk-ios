@@ -8,11 +8,12 @@
 import Foundation
 
 public enum PrimerPaymentMethodManagerCategory: String {
-    case nativeUI        = "NATIVE_UI"
-    case rawData         = "RAW_DATA"
-    case nolPay          = "NOL_PAY"
-    case componentWithRedirect = "COMPONENT_WITH_REDIRECT"
-    case stripeAch = "STRIPE_ACH"
+    case nativeUI               = "NATIVE_UI"
+    case rawData                = "RAW_DATA"
+    case nolPay                 = "NOL_PAY"
+    case componentWithRedirect  = "COMPONENT_WITH_REDIRECT"
+    case stripeAch              = "STRIPE_ACH"
+    case klarna                 = "KLARNA"
 }
 
 internal protocol PrimerPaymentMethodManager {

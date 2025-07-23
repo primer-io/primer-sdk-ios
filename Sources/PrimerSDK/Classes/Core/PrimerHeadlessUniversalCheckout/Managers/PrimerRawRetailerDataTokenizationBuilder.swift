@@ -48,20 +48,11 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
         return Promise { seal in
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
             }
 
             guard let rawData = data as? PrimerRetailerData else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "rawData")))
             }
 
             let sessionInfo = RetailOutletTokenizationSessionRequestParameters(retailOutlet: rawData.id)
@@ -78,18 +69,11 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
         }
 
         guard let rawData = data as? PrimerRetailerData else {
-            let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
         return Request.Body.Tokenization(
@@ -107,38 +91,24 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
                 var errors: [PrimerValidationError] = []
 
                 guard let rawData = data as? PrimerRetailerData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(error: PrimerValidationError.invalidRawData())
                     errors.append(err)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
-                    DispatchQueue.main.async {
-                        seal.reject(err)
-                    }
+                    DispatchQueue.main.async { seal.reject(err) }
 
                     return
                 }
 
                 if rawData.id.isEmpty {
-                    errors.append(PrimerValidationError.invalidRawData(
-                                    userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidRawData())
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
                     }
                 } else {
                     self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
@@ -155,34 +125,19 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
         var errors: [PrimerValidationError] = []
 
         guard let rawData = data as? PrimerRetailerData else {
-            let err = PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerValidationError.invalidRawData()
             errors.append(err)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw handled(error: err)
         }
 
         if rawData.id.isEmpty {
-            errors.append(PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            ))
+            errors.append(PrimerValidationError.invalidRawData())
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)

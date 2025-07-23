@@ -205,6 +205,10 @@ internal extension String {
         return phoneNumber.evaluate(with: self)
     }
 
+    /// Validates expiry date string in MM/YY or MM/YYYY format
+    /// - Throws: PrimerValidationError if the date format is invalid or the date is expired
+    /// - Note: This function accepts both MM/YY and MM/YYYY formats to maintain compatibility
+    ///         between Drop-in UI (MM/YY) and Headless/RawDataManager (MM/YYYY) implementations
     func validateExpiryDateString() throws {
         if self.isEmpty {
             let err = PrimerValidationError.invalidExpiryDate(
@@ -214,10 +218,24 @@ internal extension String {
             throw err
 
         } else {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MM/yyyy"
-
-            if let expiryDate = dateFormatter.date(from: self) {
+            var expiryDate: Date?
+            
+            // Try MM/yy format first
+            let shortFormatter = DateFormatter()
+            shortFormatter.dateFormat = "MM/yy"
+            shortFormatter.locale = Locale(identifier: "en_US_POSIX")
+            
+            if let date = shortFormatter.date(from: self) {
+                expiryDate = date
+            } else {
+                // Try MM/yyyy format
+                let longFormatter = DateFormatter()
+                longFormatter.dateFormat = "MM/yyyy"
+                longFormatter.locale = Locale(identifier: "en_US_POSIX")
+                expiryDate = longFormatter.date(from: self)
+            }
+            
+            if let expiryDate = expiryDate {
                 if !expiryDate.isValidExpiryDate {
                     let err = PrimerValidationError.invalidExpiryDate(
                         message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
@@ -225,10 +243,9 @@ internal extension String {
                         diagnosticsId: UUID().uuidString)
                     throw err
                 }
-
             } else {
                 let err = PrimerValidationError.invalidExpiryDate(
-                    message: "Card expiry date is not valid. Valid expiry date format is MM/YYYY.",
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 throw err

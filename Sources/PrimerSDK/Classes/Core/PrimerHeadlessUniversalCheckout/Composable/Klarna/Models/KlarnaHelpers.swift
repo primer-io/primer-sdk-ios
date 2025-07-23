@@ -183,58 +183,22 @@ struct KlarnaHelpers {
 
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .invalidClientToken())
     }
 
-    static func getInvalidSettingError(
-        name: String
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: name,
-            value: nil,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+    static func getInvalidSettingError(name: String) -> PrimerError {
+        handled(primerError: .invalidValue(key: name))
     }
 
-    static func getInvalidValueError(
-        key: String,
-        value: Any? = nil
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
+    static func getInvalidValueError(key: String, value: Any? = nil) -> PrimerError {
+        handled(primerError: .invalidValue(key: key, value: value))
     }
 
     static func getPaymentFailedError() -> PrimerError {
-        let error = PrimerError.failedToCreatePayment(
-            paymentMethodType: "KLARNA",
-            description: "Failed to create payment",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .failedToCreatePayment(paymentMethodType: "KLARNA", description: "Failed to create payment"))
     }
 
     static func getMissingSDKError() -> PrimerError {
-        let error = PrimerError.missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
-            sdkName: "KlarnaSDK",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
+        handled(primerError: .missingSDK(paymentMethodType: PrimerPaymentMethodType.klarna.rawValue, sdkName: "KlarnaSDK"))
     }
 }

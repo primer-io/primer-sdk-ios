@@ -152,11 +152,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
                   let cacheKey = Self.cacheKey else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidClientToken()))
             }
 
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
@@ -182,10 +178,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let cacheKey = Self.cacheKey
         else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
@@ -195,7 +188,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         )
 
         try? await ImageFileProcessor().process(configuration: configuration)
-        
+
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
         PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
         let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
@@ -279,10 +272,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         guard var currentDecodedToken = tokenToValidate.decodedJWTToken,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
-            let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            throw error
+            throw handled(primerError: .invalidClientToken())
         }
 
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
@@ -360,11 +350,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
                   let cacheKey = Self.cacheKey else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidClientToken()))
             }
 
             PrimerAPIConfigurationModule.queue.sync {
@@ -437,10 +423,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let cacheKey = Self.cacheKey
         else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -481,7 +464,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                         clientToken: clientToken,
                         requestParameters: requestParameters
                     )
-                        
+
                     try? await ImageFileProcessor().process(configuration: configuration)
 
                     // Cache the result
