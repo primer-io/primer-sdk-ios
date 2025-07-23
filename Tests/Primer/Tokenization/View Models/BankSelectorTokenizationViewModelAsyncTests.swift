@@ -2,11 +2,16 @@
 import XCTest
 
 final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
+    
+    // MARK: - Test Dependencies
+    
     var uiManager: MockPrimerUIManager!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
     var banksApiClient: MockBanksAPIClient!
     var sut: BankSelectorTokenizationViewModel!
+    
+    // MARK: - Helper Data
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(analyticsId: "analytics_id",
               id: "id",
@@ -51,6 +56,8 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
                      status: .success)
     }
 
+    // MARK: - Setup & Teardown
+    
     override func setUpWithError() throws {
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
@@ -72,7 +79,9 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
         uiManager = nil
     }
 
-    func testStartWithPreTokenizationAndAbort() throws {
+    // MARK: - Async Flow Tests
+    
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -81,20 +90,20 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
 
         let banks = setupBanksAPIClient()
 
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.bankSelectionCompletion?(banks.result.first!)
-            expectShowPaymentMethod.fulfill()
+            expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectDidFail = self.expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -102,19 +111,19 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
             default:
                 XCTFail()
             }
-            expectWillAbort.fulfill()
+            expectDidFail.fulfill()
         }
 
         sut.start_async()
 
         wait(for: [
-            expectShowPaymentMethod,
-            expectWillCreatePaymentData,
-            expectWillAbort
+            expectDidShowPaymentMethod,
+            expectWillCreatePaymentWithData,
+            expectDidFail
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -127,33 +136,33 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
 
         let banks = setupBanksAPIClient()
 
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.bankSelectionCompletion?(banks.result.first!)
-            expectShowPaymentMethod.fulfill()
+            expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
+            expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        let expectDidCompleteCheckoutWithData = self.expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
+            expectDidCompleteCheckoutWithData.fulfill()
         }
 
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
-            expectOnTokenize.fulfill()
+            expectDidTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -166,15 +175,15 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
         sut.start_async()
 
         wait(for: [
-            expectShowPaymentMethod,
-            expectWillCreatePaymentData,
-            expectOnTokenize,
+            expectDidShowPaymentMethod,
+            expectWillCreatePaymentWithData,
+            expectDidTokenize,
             expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
+            expectDidCompleteCheckoutWithData
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    // MARK: Helpers
+    // MARK: - Helpers
 
     func setupBanksAPIClient() -> BanksListSessionResponse {
         let banks: BanksListSessionResponse = .init(
