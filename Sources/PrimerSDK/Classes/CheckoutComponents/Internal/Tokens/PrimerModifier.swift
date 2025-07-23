@@ -59,6 +59,18 @@ public struct PrimerModifier {
         // Custom SwiftUI Modifier
         case custom(AnyViewModifier)
     }
+
+    // MARK: - Modifier Targeting
+
+    /// Specifies which part of a field component to apply modifiers to
+    public enum ModifierTarget {
+        case container    /// Apply to entire field container (label + input)
+        case inputOnly    /// Apply only to input field portion
+        case labelOnly    /// Apply only to label portion
+    }
+
+    /// Target for applying modifiers - defaults to container for backward compatibility
+    internal var target: ModifierTarget = .container
 }
 
 // MARK: - Layout Modifiers
@@ -311,6 +323,48 @@ public extension PrimerModifier {
     }
 }
 
+// MARK: - Modifier Targeting
+
+@available(iOS 15.0, *)
+public extension PrimerModifier {
+
+    /// Creates a modifier that targets only the input field portion (not the label or container)
+    func inputOnly() -> PrimerModifier {
+        var copy = self
+        copy.target = .inputOnly
+        return copy
+    }
+
+    /// Creates a modifier that targets only the label portion
+    func labelOnly() -> PrimerModifier {
+        var copy = self
+        copy.target = .labelOnly
+        return copy
+    }
+
+    /// Creates a modifier that targets the entire container (default behavior)
+    func container() -> PrimerModifier {
+        var copy = self
+        copy.target = .container
+        return copy
+    }
+
+    /// Convenience method to create an input-targeted modifier from scratch
+    static func forInput() -> PrimerModifier {
+        return PrimerModifier().inputOnly()
+    }
+
+    /// Convenience method to create a label-targeted modifier from scratch
+    static func forLabel() -> PrimerModifier {
+        return PrimerModifier().labelOnly()
+    }
+
+    /// Convenience method to create a container-targeted modifier from scratch
+    static func forContainer() -> PrimerModifier {
+        return PrimerModifier().container()
+    }
+}
+
 // MARK: - Static Factory Methods (matches Android's Modifier.* pattern)
 
 @available(iOS 15.0, *)
@@ -372,6 +426,15 @@ public extension View {
     /// Applies a PrimerModifier to any SwiftUI view
     func primerModifier(_ modifier: PrimerModifier) -> some View {
         modifier.apply(to: self)
+    }
+
+    /// Applies a PrimerModifier only if it targets the specified component
+    func primerModifier(_ modifier: PrimerModifier, target: PrimerModifier.ModifierTarget) -> some View {
+        if modifier.target == target {
+            return AnyView(modifier.apply(to: self))
+        } else {
+            return AnyView(self)
+        }
     }
 }
 

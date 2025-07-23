@@ -137,8 +137,8 @@ class CheckoutComponentsMenuViewController: UIViewController {
                 )
                 ccSession.paymentMethod = cardOnlyPaymentMethod
             } else {
-                // Fallback to card-only if no payment method configured
-                ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .cardOnly)
+                // Fallback to basic payment method if no payment method configured
+                ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .cardAndApplePay)
             }
             
             Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in

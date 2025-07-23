@@ -55,6 +55,9 @@ struct PrimerInputField: View {
     /// The return key type
     let keyboardReturnKey: UIReturnKeyType
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private State
 
     @State private var isFocused: Bool = false
@@ -75,7 +78,8 @@ struct PrimerInputField: View {
         enabled: Bool = true,
         readOnly: Bool = false,
         keyboardType: UIKeyboardType = .default,
-        keyboardReturnKey: UIReturnKeyType = .default
+        keyboardReturnKey: UIReturnKeyType = .default,
+        modifier: PrimerModifier = PrimerModifier()
     ) {
         self.value = value
         self.onValueChange = onValueChange
@@ -90,6 +94,7 @@ struct PrimerInputField: View {
         self.readOnly = readOnly
         self.keyboardType = keyboardType
         self.keyboardReturnKey = keyboardReturnKey
+        self.modifier = modifier
     }
 
     // MARK: - Computed Properties
@@ -135,11 +140,12 @@ struct PrimerInputField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label (if provided)
+            // Label (if provided) with label-specific modifier targeting
             if let labelText = labelText {
                 Text(labelText)
                     .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                    .primerModifier(modifier, target: .labelOnly)
             }
 
             // Input field with ZStack architecture
@@ -223,6 +229,7 @@ struct PrimerInputField: View {
                 }
             }
             .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+            .primerModifier(modifier, target: .inputOnly)
 
             // Error text or supporting text below the input field
             if isError, let errorMessage = resolveErrorMessage() {
@@ -242,6 +249,7 @@ struct PrimerInputField: View {
                     .transition(.opacity)
             }
         }
+        .primerModifier(modifier, target: .container)
     }
 
     // MARK: - Helper Functions
@@ -272,7 +280,8 @@ extension PrimerInputField {
         value: String,
         onValueChange: @escaping (String) -> Void,
         isError: Bool = false,
-        validationError: Any? = nil
+        validationError: Any? = nil,
+        modifier: PrimerModifier = PrimerModifier()
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
@@ -281,7 +290,8 @@ extension PrimerInputField {
             placeholderText: CheckoutComponentsStrings.firstNamePlaceholder,
             isError: isError,
             validationError: validationError,
-            keyboardType: .default
+            keyboardType: .default,
+            modifier: modifier
         )
     }
 
@@ -291,7 +301,8 @@ extension PrimerInputField {
         value: String,
         onValueChange: @escaping (String) -> Void,
         isError: Bool = false,
-        validationError: Any? = nil
+        validationError: Any? = nil,
+        modifier: PrimerModifier = PrimerModifier()
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
@@ -300,7 +311,8 @@ extension PrimerInputField {
             placeholderText: CheckoutComponentsStrings.lastNamePlaceholder,
             isError: isError,
             validationError: validationError,
-            keyboardType: .default
+            keyboardType: .default,
+            modifier: modifier
         )
     }
 
@@ -310,7 +322,8 @@ extension PrimerInputField {
         value: String,
         onValueChange: @escaping (String) -> Void,
         isError: Bool = false,
-        validationError: Any? = nil
+        validationError: Any? = nil,
+        modifier: PrimerModifier = PrimerModifier()
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
@@ -320,7 +333,8 @@ extension PrimerInputField {
             leadingIcon: Image(systemName: "envelope"),
             isError: isError,
             validationError: validationError,
-            keyboardType: .emailAddress
+            keyboardType: .emailAddress,
+            modifier: modifier
         )
     }
 
@@ -330,7 +344,8 @@ extension PrimerInputField {
         value: String,
         onValueChange: @escaping (String) -> Void,
         isError: Bool = false,
-        validationError: Any? = nil
+        validationError: Any? = nil,
+        modifier: PrimerModifier = PrimerModifier()
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
@@ -340,7 +355,8 @@ extension PrimerInputField {
             leadingIcon: Image(systemName: "phone"),
             isError: isError,
             validationError: validationError,
-            keyboardType: .phonePad
+            keyboardType: .phonePad,
+            modifier: modifier
         )
     }
 
@@ -352,7 +368,8 @@ extension PrimerInputField {
         labelText: String,
         placeholderText: String,
         isError: Bool = false,
-        validationError: Any? = nil
+        validationError: Any? = nil,
+        modifier: PrimerModifier = PrimerModifier()
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
@@ -361,7 +378,8 @@ extension PrimerInputField {
             placeholderText: placeholderText,
             isError: isError,
             validationError: validationError,
-            keyboardType: .default
+            keyboardType: .default,
+            modifier: modifier
         )
     }
 

@@ -34,7 +34,7 @@ private struct FieldValidationStates: Equatable {
 /// Default implementation of PrimerCardFormScope
 @available(iOS 15.0, *)
 @MainActor
-internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
+public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
     /// The current card form state

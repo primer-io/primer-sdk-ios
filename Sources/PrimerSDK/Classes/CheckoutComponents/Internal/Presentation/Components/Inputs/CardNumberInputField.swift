@@ -114,10 +114,11 @@ internal struct CardNumberInputField: View, LogReporter {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label
+            // Label with label-specific modifier targeting
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .primerModifier(modifier, target: .labelOnly)
 
             // Card input field with integrated network icon
             ZStack {
@@ -209,6 +210,7 @@ internal struct CardNumberInputField: View, LogReporter {
                 }
             }
             .frame(height: FigmaDesignConstants.inputFieldHeight)
+            .primerModifier(modifier, target: .inputOnly)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
@@ -218,7 +220,7 @@ internal struct CardNumberInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier)
+        .primerModifier(modifier, target: .container)
         .onAppear {
             setupValidationService()
         }

@@ -12,6 +12,9 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CardPaymentMethod: PaymentMethodProtocol {
 
+    /// The scope type this payment method creates
+    internal typealias ScopeType = DefaultCardFormScope
+
     /// The payment method type identifier for cards
     internal static let paymentMethodType: String = "PAYMENT_CARD"
 

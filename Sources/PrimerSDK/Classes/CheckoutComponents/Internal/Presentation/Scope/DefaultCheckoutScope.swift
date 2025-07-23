@@ -58,9 +58,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     /// Generic payment method screen registry for type-safe screen customization
     private var paymentMethodScreens: [String: Any] = [:]
 
-    // MARK: - State Management
-    // Note: Success result is no longer stored - delegate is called immediately on success
-
     // MARK: - Child Scopes
 
     private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?

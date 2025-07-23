@@ -248,7 +248,8 @@ internal struct CardFormScreen: View {
     private var billingAddressSection: some View {
         BillingAddressView(
             cardFormScope: scope,
-            configuration: billingAddressConfiguration
+            configuration: billingAddressConfiguration,
+            modifier: createBillingAddressModifier()
         )
         .padding(.horizontal)
     }
@@ -342,6 +343,13 @@ internal struct CardFormScreen: View {
         Task {
             await (scope as? DefaultCardFormScope)?.submit()
         }
+    }
+    
+    /// Creates a modifier for billing address customization
+    /// This allows billing address sections to inherit consistent styling
+    private func createBillingAddressModifier() -> PrimerModifier {
+        return PrimerModifier()
+            .padding(.vertical, 4)
     }
 
     private func observeState() {

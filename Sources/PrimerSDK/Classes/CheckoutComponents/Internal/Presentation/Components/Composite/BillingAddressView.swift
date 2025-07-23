@@ -72,6 +72,9 @@ internal struct BillingAddressView: View, LogReporter {
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     /// Currently selected country (atomic state for bug-free updates)
     @State private var selectedCountry: CountryCode.PhoneNumberCountryCode?
 
@@ -103,37 +106,60 @@ internal struct BillingAddressView: View, LogReporter {
     @Environment(\.designTokens) private var tokens
     @Environment(\.diContainer) private var diContainer
 
+    // MARK: - Initialization
+
+    /// Creates a new BillingAddressView with comprehensive customization support
+    internal init(
+        cardFormScope: any PrimerCardFormScope,
+        configuration: BillingAddressConfiguration,
+        modifier: PrimerModifier = PrimerModifier()
+    ) {
+        self.cardFormScope = cardFormScope
+        self.configuration = configuration
+        self.modifier = modifier
+    }
+
     // MARK: - Body
 
     var body: some View {
         VStack(spacing: 16) {
-            // Name fields (horizontal layout) - Using PrimerInputField with Android parity
+            // Name fields (horizontal layout) - Using field builders with customizable modifiers
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
-                        PrimerInputField.firstName(
-                            value: firstName,
-                            onValueChange: { name in
-                                firstName = name
-                                cardFormScope.updateFirstName(name)
-                                validateFirstName(name)
-                            },
-                            isError: firstNameError != nil,
-                            validationError: firstNameError
-                        )
+                        if let firstNameBuilder = cardFormScope.firstNameInput {
+                            firstNameBuilder(modifier)
+                        } else {
+                            PrimerInputField.firstName(
+                                value: firstName,
+                                onValueChange: { name in
+                                    firstName = name
+                                    cardFormScope.updateFirstName(name)
+                                    validateFirstName(name)
+                                },
+                                isError: firstNameError != nil,
+                                validationError: firstNameError,
+                                modifier: modifier
+                            )
+                        }
                     }
 
                     if configuration.showLastName {
-                        PrimerInputField.lastName(
-                            value: lastName,
-                            onValueChange: { name in
-                                lastName = name
-                                cardFormScope.updateLastName(name)
-                                validateLastName(name)
-                            },
-                            isError: lastNameError != nil,
-                            validationError: lastNameError
-                        )
+                        if let lastNameBuilder = cardFormScope.lastNameInput {
+                            lastNameBuilder(modifier)
+                        } else {
+                            PrimerInputField.lastName(
+                                value: lastName,
+                                onValueChange: { name in
+                                    lastName = name
+                                    cardFormScope.updateLastName(name)
+                                    validateLastName(name)
+                                },
+                                isError: lastNameError != nil,
+                                validationError: lastNameError,
+                                modifier: modifier
+                            )
+                        }
                     }
                 }
             }
@@ -171,88 +197,114 @@ internal struct BillingAddressView: View, LogReporter {
                 )
             }
 
-            // Address Line 1 - Using PrimerInputField with Android parity
+            // Address Line 1 - Using field builders with customizable modifiers
             if configuration.showAddressLine1 {
-                PrimerInputField.addressLine(
-                    value: addressLine1,
-                    onValueChange: { address in
-                        addressLine1 = address
-                        cardFormScope.updateAddressLine1(address)
-                        validateAddressLine1(address)
-                    },
-                    labelText: CheckoutComponentsStrings.addressLine1Label,
-                    placeholderText: CheckoutComponentsStrings.addressLine1Placeholder,
-                    isError: addressLine1Error != nil,
-                    validationError: addressLine1Error
-                )
+                if let addressLine1Builder = cardFormScope.addressLine1Input {
+                    addressLine1Builder(modifier)
+                } else {
+                    PrimerInputField.addressLine(
+                        value: addressLine1,
+                        onValueChange: { address in
+                            addressLine1 = address
+                            cardFormScope.updateAddressLine1(address)
+                            validateAddressLine1(address)
+                        },
+                        labelText: CheckoutComponentsStrings.addressLine1Label,
+                        placeholderText: CheckoutComponentsStrings.addressLine1Placeholder,
+                        isError: addressLine1Error != nil,
+                        validationError: addressLine1Error,
+                        modifier: modifier
+                    )
+                }
             }
 
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
-                PrimerInputField.addressLine(
-                    value: postalCode,
-                    onValueChange: { postalCodeValue in
-                        postalCode = postalCodeValue
-                        cardFormScope.updatePostalCode(postalCodeValue)
-                        validatePostalCode(postalCodeValue)
-                    },
-                    labelText: CheckoutComponentsStrings.postalCodeLabel,
-                    placeholderText: postalCodePlaceholder,
-                    isError: postalCodeError != nil,
-                    validationError: postalCodeError
-                )
+                if let postalCodeBuilder = cardFormScope.postalCodeInput {
+                    postalCodeBuilder(modifier)
+                } else {
+                    PrimerInputField.addressLine(
+                        value: postalCode,
+                        onValueChange: { postalCodeValue in
+                            postalCode = postalCodeValue
+                            cardFormScope.updatePostalCode(postalCodeValue)
+                            validatePostalCode(postalCodeValue)
+                        },
+                        labelText: CheckoutComponentsStrings.postalCodeLabel,
+                        placeholderText: postalCodePlaceholder,
+                        isError: postalCodeError != nil,
+                        validationError: postalCodeError,
+                        modifier: modifier
+                    )
+                }
             }
 
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
-                PrimerInputField.addressLine(
-                    value: state,
-                    onValueChange: { stateValue in
-                        state = stateValue
-                        cardFormScope.updateState(stateValue)
-                        validateState(stateValue)
-                    },
-                    labelText: CheckoutComponentsStrings.stateLabel,
-                    placeholderText: CheckoutComponentsStrings.statePlaceholder,
-                    isError: stateError != nil,
-                    validationError: stateError
-                )
+                if let stateBuilder = cardFormScope.stateInput {
+                    stateBuilder(modifier)
+                } else {
+                    PrimerInputField.addressLine(
+                        value: state,
+                        onValueChange: { stateValue in
+                            state = stateValue
+                            cardFormScope.updateState(stateValue)
+                            validateState(stateValue)
+                        },
+                        labelText: CheckoutComponentsStrings.stateLabel,
+                        placeholderText: CheckoutComponentsStrings.statePlaceholder,
+                        isError: stateError != nil,
+                        validationError: stateError,
+                        modifier: modifier
+                    )
+                }
             }
 
-            // Address Line 2 - Using PrimerInputField with Android parity (Optional)
+            // Address Line 2 - Using field builders with customizable modifiers (Optional)
             if configuration.showAddressLine2 {
-                PrimerInputField.addressLine(
-                    value: addressLine2,
-                    onValueChange: { address in
-                        addressLine2 = address
-                        cardFormScope.updateAddressLine2(address)
-                        validateAddressLine2(address)
-                    },
-                    labelText: CheckoutComponentsStrings.addressLine2Label,
-                    placeholderText: CheckoutComponentsStrings.addressLine2Placeholder,
-                    isError: addressLine2Error != nil,
-                    validationError: addressLine2Error
-                )
+                if let addressLine2Builder = cardFormScope.addressLine2Input {
+                    addressLine2Builder(modifier)
+                } else {
+                    PrimerInputField.addressLine(
+                        value: addressLine2,
+                        onValueChange: { address in
+                            addressLine2 = address
+                            cardFormScope.updateAddressLine2(address)
+                            validateAddressLine2(address)
+                        },
+                        labelText: CheckoutComponentsStrings.addressLine2Label,
+                        placeholderText: CheckoutComponentsStrings.addressLine2Placeholder,
+                        isError: addressLine2Error != nil,
+                        validationError: addressLine2Error,
+                        modifier: modifier
+                    )
+                }
             }
 
             // City - After address fields
             if configuration.showCity {
-                PrimerInputField.addressLine(
-                    value: city,
-                    onValueChange: { cityValue in
-                        city = cityValue
-                        cardFormScope.updateCity(cityValue)
-                        validateCity(cityValue)
-                    },
-                    labelText: CheckoutComponentsStrings.cityLabel,
-                    placeholderText: CheckoutComponentsStrings.cityPlaceholder,
-                    isError: cityError != nil,
-                    validationError: cityError
-                )
+                if let cityBuilder = cardFormScope.cityInput {
+                    cityBuilder(modifier)
+                } else {
+                    PrimerInputField.addressLine(
+                        value: city,
+                        onValueChange: { cityValue in
+                            city = cityValue
+                            cardFormScope.updateCity(cityValue)
+                            validateCity(cityValue)
+                        },
+                        labelText: CheckoutComponentsStrings.cityLabel,
+                        placeholderText: CheckoutComponentsStrings.cityPlaceholder,
+                        isError: cityError != nil,
+                        validationError: cityError,
+                        modifier: modifier
+                    )
+                }
             }
 
             // Email - Near the end
             if configuration.showEmail {
+                // Note: Email doesn't have a specific field builder in PrimerCardFormScope yet
                 PrimerInputField.email(
                     value: email,
                     onValueChange: { emailValue in
@@ -261,22 +313,28 @@ internal struct BillingAddressView: View, LogReporter {
                         validateEmail(emailValue)
                     },
                     isError: emailError != nil,
-                    validationError: emailError
+                    validationError: emailError,
+                    modifier: modifier
                 )
             }
 
             // Phone Number - Last field
             if configuration.showPhoneNumber {
-                PrimerInputField.phoneNumber(
-                    value: phoneNumber,
-                    onValueChange: { phone in
-                        phoneNumber = phone
-                        cardFormScope.updatePhoneNumber(phone)
-                        validatePhoneNumber(phone)
-                    },
-                    isError: phoneNumberError != nil,
-                    validationError: phoneNumberError
-                )
+                if let phoneNumberBuilder = cardFormScope.phoneNumberInput {
+                    phoneNumberBuilder(modifier)
+                } else {
+                    PrimerInputField.phoneNumber(
+                        value: phoneNumber,
+                        onValueChange: { phone in
+                            phoneNumber = phone
+                            cardFormScope.updatePhoneNumber(phone)
+                            validatePhoneNumber(phone)
+                        },
+                        isError: phoneNumberError != nil,
+                        validationError: phoneNumberError,
+                        modifier: modifier
+                    )
+                }
             }
         }
         .sheet(isPresented: $showCountrySelector) {
@@ -307,6 +365,7 @@ internal struct BillingAddressView: View, LogReporter {
                         showCountrySelector = false
                     }
                 )
+                .primerModifier(modifier)
             } else {
                 // Fallback if scopes aren't available
                 Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
@@ -433,6 +492,7 @@ internal struct BillingAddressView: View, LogReporter {
             postalCodeError = await validateField(type: .postalCode, value: value)
         }
     }
+
 }
 
 // MARK: - Custom Country Scope for Billing Address

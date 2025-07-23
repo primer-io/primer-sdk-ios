@@ -19,25 +19,24 @@ internal struct PaymentMethodScreen: View {
     var body: some View {
         // Truly generic dynamic scope resolution for ANY payment method
         Group {
-            // Use non-generic method to get the scope as existential type, then check specific types
-            if let paymentMethodScope = try? PaymentMethodRegistry.shared.createScope(
+            // Use checkout scope's cached method to ensure field customizations are preserved
+            // For card forms, use the generic method to ensure we get the right cached instance
+            if paymentMethodType == "PAYMENT_CARD",
+               let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+                // Check for custom screen first, fallback to default
+                if let customScreen = checkoutScope.getPaymentMethodScreen(.paymentCard) {
+                    customScreen(cardFormScope)
+                } else {
+                    AnyView(CardFormScreen(scope: cardFormScope))
+                }
+            } else if let paymentMethodScope = try? PaymentMethodRegistry.shared.createScope(
                 for: paymentMethodType,
                 checkoutScope: checkoutScope,
                 diContainer: (checkoutScope as? DefaultCheckoutScope)?.diContainer ?? DIContainer.shared
             ) {
-                // Check if this is a card form scope specifically
-                if let cardFormScope = paymentMethodScope as? any PrimerCardFormScope {
-                    // Check for custom screen first, fallback to default
-                    if let customScreen = checkoutScope.getPaymentMethodScreen(.paymentCard) {
-                        customScreen(cardFormScope)
-                    } else {
-                        AnyView(CardFormScreen(scope: cardFormScope))
-                    }
-                } else {
-                    // For other payment method scopes in the future, we'll add similar type checks here
-                    // For now, show placeholder for non-card payment methods
-                    PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
-                }
+                // For non-card payment methods in the future, we'll add similar type checks here
+                // For now, show placeholder for non-card payment methods
+                PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
             } else {
                 // This payment method doesn't have a scope implementation yet
                 // Show placeholder that works for any payment method type
