@@ -323,9 +323,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         guard let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode else {
-            throw handled(primerError: .invalidClientSessionValue(name: "order.countryCode",
-                                                                  value: "nil",
-                                                                  allowedValue: ""))
+            throw handled(primerError: .invalidClientSessionValue(name: "order.countryCode"))
         }
 
         guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
