@@ -272,11 +272,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
     private func tokenize(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
-            return
+            return completion(nil, handled(primerError: .invalidClientToken()))
         }
 
         let sessionInfo = PrimerTestPaymentMethodSessionInfo(flowDecision: selectedDecision)

@@ -145,13 +145,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
 
             #else
-            let err = PrimerError.missingSDK(
-                paymentMethodType: self.config.type,
-                sdkName: "PrimerIPay88SDK",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            seal.reject(handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK")))
             #endif
         }
     }
@@ -195,13 +189,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
 
             #else
-            let err = PrimerError.missingSDK(
-                paymentMethodType: self.config.type,
-                sdkName: "PrimerIPay88SDK",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            seal.reject(handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK")))
             #endif
         }
     }
@@ -223,13 +211,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             seal.fulfill()
 
             #else
-            let err = PrimerError.missingSDK(
-                paymentMethodType: self.config.type,
-                sdkName: "PrimerIPay88SDK",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            seal.reject(handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK")))
             #endif
         }
     }
@@ -246,13 +228,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id",
-                                                   value: config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "configuration.id")))
             }
 
             let sessionInfo = IPay88SessionInfo(refNo: UUID().uuidString, locale: "en-US")
@@ -275,13 +251,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
 
             #else
-            let err = PrimerError.missingSDK(
-                paymentMethodType: self.config.type,
-                sdkName: "PrimerIPay88SDK",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            seal.reject(handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK")))
             #endif
         }
     }
@@ -320,12 +290,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                       let statusUrl = URL(string: statusUrlStr),
                       let primerTransactionId = decodedJWTToken.primerTransactionId
                 else {
-                    let err = PrimerError.invalidClientToken(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                    return seal.reject(handled(primerError: .invalidClientToken()))
                 }
 
                 DispatchQueue.main.async {
@@ -361,13 +326,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
 
             #else
-            let err = PrimerError.missingSDK(
-                paymentMethodType: self.config.type,
-                sdkName: "PrimerIPay88SDK",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            seal.reject(handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK")))
             #endif
         }
     }
@@ -527,11 +486,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.demoThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: self.config.type)
                         self.demoThirdPartySDKViewController!.onSendCredentialsButtonTapped = {
                             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                         diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                seal.reject(err)
-                                return
+                                return seal.reject(handled(primerError: .invalidClientToken()))
                             }
 
                             let client = PrimerAPIClient()
@@ -637,12 +592,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             let pollingModule = PollingModule(url: self.statusUrl)
             self.didCancel = {
-                let err = PrimerError.cancelled(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                pollingModule.cancel(withError: err)
+                pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
             }
 
             self.didFail = { err in
