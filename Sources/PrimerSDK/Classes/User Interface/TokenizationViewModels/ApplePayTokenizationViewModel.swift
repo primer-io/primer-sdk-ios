@@ -162,9 +162,9 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         try await ClientSessionActionsModule
             .updateBillingAddressViaClientSessionActionWithAddressIfNeeded(applePayPaymentResponse.billingAddress)
         try await ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(
-            address: self.applePayPaymentResponse.shippingAddress,
-            mobileNumber: self.applePayPaymentResponse.mobileNumber,
-            emailAddress: self.applePayPaymentResponse.emailAddress
+            address: applePayPaymentResponse.shippingAddress,
+            mobileNumber: applePayPaymentResponse.mobileNumber,
+            emailAddress: applePayPaymentResponse.emailAddress
         )
     }
 
@@ -445,9 +445,8 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        guard let applePayConfigId = self.config.id else {
-            throw handled(primerError: .invalidValue(key: "configuration.id",
-                                                     value: self.config.id))
+        guard let applePayConfigId = config.id else {
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
@@ -455,8 +454,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
-            throw handled(primerError: .invalidValue(key: "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier",
-                                                     value: self.config.id))
+            throw handled(primerError: .invalidValue(key: "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier"))
         }
 
         return try await tokenizationService.tokenize(
@@ -464,7 +462,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 paymentInstrument: ApplePayPaymentInstrument(
                     paymentMethodConfigId: applePayConfigId,
                     sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
-                    token: self.applePayPaymentResponse.token
+                    token: applePayPaymentResponse.token
                 )
             )
         )
