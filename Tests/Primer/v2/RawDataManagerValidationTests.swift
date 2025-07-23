@@ -224,8 +224,9 @@ class RawDataManagerValidationTests: XCTestCase {
         }
         .done { (_, errors) in
             XCTAssertFalse(false, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
-            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            XCTAssertEqual(errors?.count, 2, "Should have thrown 2 errors")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "unsupported-card-type")
+            XCTAssertEqual((errors?[1] as? PrimerValidationError)?.errorId, "invalid-card-number")
             validation.fulfill()
         }
         .catch { _ in

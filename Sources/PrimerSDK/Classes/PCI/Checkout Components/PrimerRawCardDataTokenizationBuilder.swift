@@ -123,7 +123,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             }
 
             // Validate card network before tokenization
-            let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+            // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+            let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 let err = PrimerError.invalidValue(key: "cardNetwork",
                                                    value: cardNetwork.displayName,
@@ -171,7 +172,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         // Validate card network before tokenization
-        let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+        let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
         if !self.allowedCardNetworks.contains(cardNetwork) {
             let err = PrimerError.invalidValue(key: "cardNetwork",
                                                value: cardNetwork.displayName,
@@ -238,7 +240,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 }
 
                 // Locally validated card network
-                var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+                // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+                var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
 
                 // Remotely validated card network
                 if let cardNetworksMetadata = cardNetworksMetadata {
@@ -368,7 +371,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         // Locally validated card network
-        var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
 
         // Remotely validated card network
         if let cardNetworksMetadata = cardNetworksMetadata {

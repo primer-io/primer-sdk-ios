@@ -489,10 +489,8 @@ final class PrimerDelegateProxy: LogReporter {
 
     @MainActor
     static func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) async {
-        DispatchQueue.main.async {
-            if PrimerInternal.shared.sdkIntegrationType == .headless {
-                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: paymentMethodType)
-            }
+        if PrimerInternal.shared.sdkIntegrationType == .headless {
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: paymentMethodType)
         }
     }
 }

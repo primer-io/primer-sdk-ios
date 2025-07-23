@@ -58,17 +58,11 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
             if self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false {
                 self.validation = .valid
             } else if (primerTextField.internalText?.withoutWhiteSpace ?? "").isEmpty {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number can not be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                let err = PrimerValidationError.invalidCardnumber(message: "Card number can not be blank.")
                 self.validation = PrimerTextField.Validation.invalid(err)
 
             } else {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                let err = PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")
                 self.validation = PrimerTextField.Validation.invalid(err)
             }
 

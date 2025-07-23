@@ -171,10 +171,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         if let isValid = self.isValid {
             validation = (isValid(primerTextField.internalText ?? "") ?? false)
                 ? PrimerTextField.Validation.valid
-                : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text",
-                                                                              value: textField.text,
-                                                                              userInfo: .errorUserInfoDictionary(),
-                                                                              diagnosticsId: UUID().uuidString))
+                : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text))
         }
 
         switch validation {
