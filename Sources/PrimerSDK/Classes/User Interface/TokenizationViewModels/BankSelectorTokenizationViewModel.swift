@@ -149,12 +149,10 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     
     override func performPreTokenizationSteps() async throws {
         if !PrimerInternal.isInHeadlessMode {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
+            await uiManager.primerRootViewController?.enableUserInteraction(true)
         }
         
-        try await Analytics.Service.record(event: Analytics.Event.ui(
+        Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
@@ -167,7 +165,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             objectClass: "\(Self.self)",
             place: .bankSelectionList
         ))
-        
+
         defer {
             DispatchQueue.main.async {
                 self.willDismissPaymentMethodUI?()
@@ -182,12 +180,11 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         }
         
         try validate()
-        let banks = try await fetchBanks()
-        self.banks = banks
+        banks = try await fetchBanks()
         self.dataSource = banks
-        try await presentBankList()
-        try await awaitBankSelection()
-        self.bankSelectionCompletion = nil
+        await presentBankList_main_actor()
+        await awaitBankSelection()
+        bankSelectionCompletion = nil
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
@@ -252,7 +249,9 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         }
     }
 
-    override func performPostTokenizationSteps() async throws {}
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
+    }
 
     private func presentBankList() -> Promise<Void> {
         return Promise { seal in
@@ -263,14 +262,10 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             }
         }
     }
-
-    private func presentBankList() async {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.show(viewController: BankSelectorViewController(viewModel: self))
-                continuation.resume()
-            }
-        }
+    
+    @MainActor
+    private func presentBankList_main_actor() {
+        uiManager.primerRootViewController?.show(viewController: BankSelectorViewController(viewModel: self))
     }
 
     private func awaitBankSelection() -> Promise<Void> {
@@ -327,25 +322,23 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 
     private func fetchBanks() async throws -> [AdyenBank] {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
+        }
+
+        guard let configId = config.id else {
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         let paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue:
-            "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue:
-            "ideal"
-        default:
-            ""
+        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
+        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
+        default: ""
         }
 
-        let banks = try await self.apiClient.listAdyenBanks(
+        let banks = try await apiClient.listAdyenBanks(
             clientToken: decodedJWTToken,
             request: Request.Body.Adyen.BanksList(
-                paymentMethodConfigId: config.id!,
+                paymentMethodConfigId: configId,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue)
             )
         )
@@ -368,9 +361,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let selectedBank = selectedBank else {
-            throw PrimerError.invalidValue(key: "selectedBank", value: "Selected bank is nil",
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
+            throw PrimerError.invalidValue(key: "selectedBank", value: "Selected bank is nil")
         }
 
         return try await tokenize(bank: selectedBank)
@@ -401,15 +392,16 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     
     private func tokenize(bank: AdyenBank) async throws -> PrimerPaymentMethodTokenData {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
+        }
+
+        guard let configId = config.id else {
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
+                paymentMethodConfigId: configId,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)
             )
@@ -494,8 +486,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
 
     func retrieveListOfBanks() async throws -> [AdyenBank] {
         try validate()
-        let banks = try await fetchBanks()
-        self.banks = banks
+        banks = try await fetchBanks()
         return banks
     }
 
@@ -523,7 +514,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
     }
 
     func tokenize(bankId: String) async throws {
-        self.selectedBank = banks.first(where: { $0.id == bankId })
+        selectedBank = banks.first(where: { $0.id == bankId })
         try await performTokenizationStep()
         try await performPostTokenizationSteps()
         try await handlePaymentMethodTokenData()
