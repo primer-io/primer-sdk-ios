@@ -62,7 +62,7 @@ extension KlarnaTokenizationComponent {
         guard paymentMethod.id != nil else {
             throw KlarnaHelpers.getInvalidValueError(key: "configuration.id")
         }
-        
+
         switch KlarnaHelpers.getSessionType() {
         case .oneOffPayment:
             try validateOneOffPayment()

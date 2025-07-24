@@ -74,7 +74,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         super.start()
     }
-    
+
     override func start_async() {
         checkoutEventsNotifierModule.didStartTokenization = {
             DispatchQueue.main.async {
