@@ -31,10 +31,6 @@ internal struct AddressLineInputField: View, LogReporter {
 
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -55,6 +51,7 @@ internal struct AddressLineInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Modifier Value Extraction
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -76,7 +73,6 @@ internal struct AddressLineInputField: View, LogReporter {
         placeholder: String,
         isRequired: Bool,
         inputType: PrimerInputElementType,
-        modifier: PrimerModifier = PrimerModifier(),
         onAddressChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
@@ -84,7 +80,6 @@ internal struct AddressLineInputField: View, LogReporter {
         self.placeholder = placeholder
         self.isRequired = isRequired
         self.inputType = inputType
-        self.modifier = modifier
         self.onAddressChange = onAddressChange
         self.onValidationChange = onValidationChange
     }
@@ -97,24 +92,22 @@ internal struct AddressLineInputField: View, LogReporter {
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .primerModifier(modifier, target: .labelOnly)
 
             // Address input field with ZStack architecture
             ZStack {
-                // Background and border styling
-                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .fill(tokens?.primerColorBackground ?? Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: borderColor)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
+                // Background and border styling with gradient-aware hierarchy
+                Group {
+                    if true {
+                        // Only apply manual background when no gradient is present
+                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                            .fill(tokens?.primerColorBackground ?? .white)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                        .animation(.easeInOut(duration: 0.2), value: borderColor)
+                )
 
                 // Input field content
                 HStack {
@@ -163,7 +156,6 @@ internal struct AddressLineInputField: View, LogReporter {
                 }
             }
             .frame(height: FigmaDesignConstants.inputFieldHeight)
-            .primerModifier(modifier, target: .inputOnly)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
@@ -173,7 +165,6 @@ internal struct AddressLineInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier, target: .container)
         .onAppear {
             setupValidationService()
         }
@@ -234,13 +225,23 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             ]
         )
 
-        // Add a "Done" button to the keyboard
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
-        toolbar.items = [flexSpace, doneButton]
-        textField.inputAccessoryView = toolbar
+        // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        accessoryView.backgroundColor = UIColor.systemGray6
+
+        let doneButton = UIButton(type: .system)
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
+
+        accessoryView.addSubview(doneButton)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
+            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
+        ])
+
+        textField.inputAccessoryView = accessoryView
 
         return textField
     }

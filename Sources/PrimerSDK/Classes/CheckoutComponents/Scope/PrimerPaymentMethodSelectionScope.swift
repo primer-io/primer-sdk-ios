@@ -34,7 +34,7 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// Individual payment method card/tile component.
     /// Default implementation shows payment method icon and name.
-    var paymentMethodCard: ((_ modifier: PrimerModifier, _ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)? { get set }
+    var paymentMethodCard: ((_ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)? { get set }
 
     /// Individual payment method item component.
     /// Default implementation shows payment method with selection state.

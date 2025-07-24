@@ -246,8 +246,7 @@ internal struct PaymentMethodSelectionScreen: View {
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
         if let customPaymentMethodCard = scope.paymentMethodCard {
-            let modifier = PrimerModifier()
-            customPaymentMethodCard(modifier) {
+            customPaymentMethodCard {
                 scope.onPaymentMethodSelected(paymentMethod: method)
             }
         } else {

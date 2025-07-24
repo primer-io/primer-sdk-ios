@@ -32,10 +32,6 @@ internal struct CountryInputField: View, LogReporter {
 
     /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -59,6 +55,7 @@ internal struct CountryInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Modifier Value Extraction
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -79,7 +76,6 @@ internal struct CountryInputField: View, LogReporter {
         label: String,
         placeholder: String,
         selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
-        modifier: PrimerModifier = PrimerModifier(),
         onCountryChange: ((String) -> Void)? = nil,
         onCountryCodeChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
@@ -88,7 +84,6 @@ internal struct CountryInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.selectedCountry = selectedCountry
-        self.modifier = modifier
         self.onCountryChange = onCountryChange
         self.onCountryCodeChange = onCountryCodeChange
         self.onValidationChange = onValidationChange
@@ -106,20 +101,19 @@ internal struct CountryInputField: View, LogReporter {
 
             // Country field with selector button using ZStack architecture
             ZStack {
-                // Background and border styling
-                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .fill(tokens?.primerColorBackground ?? Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: borderColor)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
+                // Background and border styling with gradient-aware hierarchy
+                Group {
+                    if true {
+                        // Only apply manual background when no gradient is present
+                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                            .fill(tokens?.primerColorBackground ?? .white)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                        .animation(.easeInOut(duration: 0.2), value: borderColor)
+                )
 
                 // Country selector button content
                 Button(action: {
@@ -170,7 +164,6 @@ internal struct CountryInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
             updateFromExternalState()

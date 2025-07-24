@@ -83,6 +83,16 @@ public protocol PaymentMethodProtocol {
         checkoutScope: PrimerCheckoutScope,
         diContainer: DIContainer
     ) throws -> ScopeType
+
+    /// Provides custom UI for this payment method using ViewBuilder.
+    /// - Parameter content: A ViewBuilder closure that uses the payment method's scope as a parameter,
+    ///                      allowing full access to the payment method's state and behavior.
+    @MainActor
+    func content<V: View>(@ViewBuilder content: @escaping (ScopeType) -> V) -> AnyView
+
+    /// Provides the default UI implementation for this payment method.
+    @MainActor
+    func defaultContent() -> AnyView
 }
 
 // MARK: - Payment Method Type Extensions

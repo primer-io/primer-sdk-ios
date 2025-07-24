@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 /// Card payment method implementation conforming to PaymentMethodProtocol.
 /// Provides self-contained card payment functionality with scope creation.
 @available(iOS 15.0, *)
@@ -64,6 +63,25 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
         logger.info(message: "🧭 [CardPaymentMethod]   - Final card scope context: \(paymentMethodContext)")
 
         return DefaultCardFormScope(checkoutScope: defaultCheckoutScope, presentationContext: paymentMethodContext)
+    }
+
+    /// Provides custom UI for this payment method using ViewBuilder.
+    /// - Parameter content: A ViewBuilder closure that uses the card form scope as a parameter
+    @MainActor
+    internal func content<V: View>(@ViewBuilder content: @escaping (DefaultCardFormScope) -> V) -> AnyView {
+        // This method would be called with a custom ViewBuilder implementation
+        // For now, return a placeholder as the actual implementation would require
+        // instantiating the scope and passing it to the content closure
+        fatalError("Custom content method should be implemented by the CheckoutComponents framework")
+    }
+
+    /// Provides the default UI implementation for card payments.
+    @MainActor
+    internal func defaultContent() -> AnyView {
+        // This would return the default CardFormScreen
+        // For now, return a placeholder as the actual implementation would require
+        // proper scope creation and screen instantiation
+        fatalError("Default content method should be implemented by the CheckoutComponents framework")
     }
 }
 

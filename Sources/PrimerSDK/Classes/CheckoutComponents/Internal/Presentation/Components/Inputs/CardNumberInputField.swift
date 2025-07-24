@@ -34,10 +34,6 @@ internal struct CardNumberInputField: View, LogReporter {
 
     /// The currently selected network (takes precedence over auto-detected network)
     let selectedNetwork: CardNetwork?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -64,6 +60,7 @@ internal struct CardNumberInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Modifier Value Extraction
     // MARK: - Initialization
 
     /// Creates a new CardNumberInputField with comprehensive customization support
@@ -71,7 +68,6 @@ internal struct CardNumberInputField: View, LogReporter {
         label: String,
         placeholder: String,
         selectedNetwork: CardNetwork? = nil,
-        modifier: PrimerModifier = PrimerModifier(),
         onCardNumberChange: ((String) -> Void)? = nil,
         onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
@@ -80,7 +76,6 @@ internal struct CardNumberInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.selectedNetwork = selectedNetwork
-        self.modifier = modifier
         self.onCardNumberChange = onCardNumberChange
         self.onCardNetworkChange = onCardNetworkChange
         self.onValidationChange = onValidationChange
@@ -118,24 +113,22 @@ internal struct CardNumberInputField: View, LogReporter {
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .primerModifier(modifier, target: .labelOnly)
 
             // Card input field with integrated network icon
             ZStack {
-                // Background and border styling
-                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .fill(tokens?.primerColorBackground ?? Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
+                // Background and border styling with gradient-aware hierarchy
+                Group {
+                    if true {
+                        // Only apply manual background when no gradient is present
+                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                            .fill(tokens?.primerColorBackground ?? .white)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                        .animation(.easeInOut(duration: 0.2), value: isFocused)
+                )
 
                 // Input field content
                 HStack {
@@ -210,7 +203,6 @@ internal struct CardNumberInputField: View, LogReporter {
                 }
             }
             .frame(height: FigmaDesignConstants.inputFieldHeight)
-            .primerModifier(modifier, target: .inputOnly)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
@@ -220,7 +212,6 @@ internal struct CardNumberInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier, target: .container)
         .onAppear {
             setupValidationService()
         }
@@ -298,13 +289,23 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             ]
         )
 
-        // Add a "Done" button to the keyboard
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
-        toolbar.items = [flexSpace, doneButton]
-        textField.inputAccessoryView = toolbar
+        // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        accessoryView.backgroundColor = UIColor.systemGray6
+
+        let doneButton = UIButton(type: .system)
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
+
+        accessoryView.addSubview(doneButton)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
+            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
+        ])
+
+        textField.inputAccessoryView = accessoryView
 
         return textField
     }

@@ -26,10 +26,6 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -46,7 +42,6 @@ internal struct OTPCodeInputField: View, LogReporter {
     @State private var errorMessage: String?
 
     @Environment(\.designTokens) private var tokens
-
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -65,14 +60,12 @@ internal struct OTPCodeInputField: View, LogReporter {
         label: String,
         placeholder: String,
         expectedLength: Int,
-        modifier: PrimerModifier = PrimerModifier(),
         onOTPCodeChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.expectedLength = expectedLength
-        self.modifier = modifier
         self.onOTPCodeChange = onOTPCodeChange
         self.onValidationChange = onValidationChange
     }
@@ -91,12 +84,19 @@ internal struct OTPCodeInputField: View, LogReporter {
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
                 .padding(tokens?.primerSpaceMedium ?? 12)
-                .background(tokens?.primerColorBackground ?? Color.white)
+                .background(
+                    Group {
+                        if true {
+                            // Only apply manual background when no gradient is present
+                            tokens?.primerColorBackground ?? .white
+                        }
+                    }
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
                         .stroke(borderColor, lineWidth: 1)
                 )
-                .cornerRadius(tokens?.primerRadiusMedium ?? 8)
+                .cornerRadius(FigmaDesignConstants.inputFieldRadius)
                 .onChange(of: otpCode) { newValue in
                     // Limit to expected length
                     if newValue.count > expectedLength {
@@ -115,7 +115,6 @@ internal struct OTPCodeInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
         }

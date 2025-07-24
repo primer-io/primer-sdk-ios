@@ -90,4 +90,3 @@ struct StylingVariationsSection: View {
         }
     }
 }
-
