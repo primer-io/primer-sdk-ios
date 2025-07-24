@@ -78,31 +78,8 @@ public protocol PrimerCheckoutScope: AnyObject {
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T?
 
     // MARK: - Payment Method Screen Customization
-
-    /// Sets a custom screen for a specific payment method type.
-    /// This allows simple customization using enum values instead of complex type passing.
-    /// - Parameters:
-    ///   - paymentMethodType: The payment method type enum (e.g., .paymentCard)
-    ///   - screenBuilder: The custom screen builder closure that receives the appropriate scope
-    ///
-    /// Example usage:
-    /// ```swift
-    /// checkoutScope.setPaymentMethodScreen(.paymentCard) { scope in
-    ///     // scope is automatically typed as PrimerCardFormScope
-    ///     CustomCardFormView(scope: scope)
-    /// }
-    /// ```
-    func setPaymentMethodScreen(
-        _ paymentMethodType: PrimerPaymentMethodType,
-        screenBuilder: @escaping (any PrimerPaymentMethodScope) -> AnyView
-    )
-
-    /// Gets a custom screen for a specific payment method type.
-    /// - Parameter paymentMethodType: The payment method type enum
-    /// - Returns: The custom screen builder closure if set, nil otherwise
-    func getPaymentMethodScreen(
-        _ paymentMethodType: PrimerPaymentMethodType
-    ) -> ((any PrimerPaymentMethodScope) -> AnyView)?
+    // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
+    // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
 
     // MARK: - Navigation
 

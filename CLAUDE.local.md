@@ -1,3 +1,4 @@
 - Do not commit, push, or run/build the project yourself; wait for instructions
 - Do not run swiftlint after changes
 - Never commit and push yourself unless I tell you to do so
+- Never try building xcode project yourself searching for build errors

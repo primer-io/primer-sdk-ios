@@ -4,6 +4,7 @@
 //
 //  Created by Boris on 23.6.25.
 //
+// swiftlint:disable identifier_name
 
 import SwiftUI
 import UIKit
@@ -113,65 +114,62 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     /// Scope for country selection functionality.
     var selectCountry: PrimerSelectCountryScope { get }
 
-    // MARK: - Customizable UI Components (18 total - exact match to Android)
+    // MARK: - ViewBuilder Field Functions (18 total - exact match to Android)
 
     /// The entire card form screen.
     /// Default implementation provides standard card form layout.
     var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)? { get set }
 
-    /// Submit button component.
-    var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)? { get set }
+    /// Cardholder name input field with ViewBuilder.
+    @ViewBuilder func PrimerCardholderNameField(label: String?) -> any View
 
-    /// Card number input field.
-    var cardNumberInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Card number input field with ViewBuilder.
+    @ViewBuilder func PrimerCardNumberField(label: String?) -> any View
 
-    /// CVV/CVC input field.
-    var cvvInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// CVV/CVC input field with ViewBuilder.
+    @ViewBuilder func PrimerCvvField(label: String?) -> any View
 
-    /// Expiry date input field.
-    var expiryDateInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Expiry date input field with ViewBuilder.
+    @ViewBuilder func PrimerExpiryDateField(label: String?) -> any View
 
-    /// Cardholder name input field.
-    var cardholderNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Postal code input field with ViewBuilder.
+    @ViewBuilder func PrimerPostalCodeField(label: String?) -> any View
 
-    /// Postal code input field.
-    var postalCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Country selection field with ViewBuilder.
+    @ViewBuilder func PrimerCountryField(label: String?) -> any View
 
-    /// Country code input field with selection.
-    var countryCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// City input field with ViewBuilder.
+    @ViewBuilder func PrimerCityField(label: String?) -> any View
 
-    /// City input field.
-    var cityInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// State/province input field with ViewBuilder.
+    @ViewBuilder func PrimerStateField(label: String?) -> any View
 
-    /// State/province input field.
-    var stateInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// First address line input field with ViewBuilder.
+    @ViewBuilder func PrimerAddressLine1Field(label: String?) -> any View
 
-    /// First address line input field.
-    var addressLine1Input: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Second address line input field with ViewBuilder.
+    @ViewBuilder func PrimerAddressLine2Field(label: String?) -> any View
 
-    /// Second address line input field.
-    var addressLine2Input: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Phone number input field with ViewBuilder.
+    @ViewBuilder func PrimerPhoneNumberField(label: String?) -> any View
 
-    /// Phone number input field.
-    var phoneNumberInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// First name input field with ViewBuilder.
+    @ViewBuilder func PrimerFirstNameField(label: String?) -> any View
 
-    /// First name input field.
-    var firstNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Last name input field with ViewBuilder.
+    @ViewBuilder func PrimerLastNameField(label: String?) -> any View
 
-    /// Last name input field.
-    var lastNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Email input field with ViewBuilder.
+    @ViewBuilder func PrimerEmailField(label: String?) -> any View
 
-    /// Retail outlet input field (region specific).
-    var retailOutletInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Retail outlet input field with ViewBuilder.
+    @ViewBuilder func PrimerRetailOutletField(label: String?) -> any View
 
-    /// OTP code input field.
-    var otpCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// OTP code input field with ViewBuilder.
+    @ViewBuilder func PrimerOtpCodeField(label: String?) -> any View
 
-    /// Composite component for card details section.
-    var cardDetails: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
-
-    /// Composite component for billing address section.
-    var billingAddress: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+    /// Submit button with ViewBuilder.
+    @ViewBuilder func PrimerSubmitButton(text: String) -> any View
 
     /// Co-badged cards selection view for dual-network cards.
     /// Shown when a card supports multiple networks (e.g., Visa/Mastercard).
@@ -188,7 +186,7 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
 
     /// Save card toggle for vaulting (Future feature).
     /// When enabled, allows users to save their card for future payments.
-    // var saveCardToggle: (@ViewBuilder (_ isOn: Binding<Bool>, _ modifier: PrimerModifier) -> any View)? { get set }
+    // @ViewBuilder func PrimerSaveCardToggle(isOn: Binding<Bool>) -> any View
 
     /// Saved cards selector (Future feature).
     /// When enabled, shows previously saved cards for selection.
@@ -313,3 +311,4 @@ extension PrimerCardFormScope {
         onCancel()
     }
 }
+// swiftlint:enable identifier_name

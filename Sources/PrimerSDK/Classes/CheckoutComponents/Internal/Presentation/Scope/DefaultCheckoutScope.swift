@@ -55,8 +55,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public var errorScreen: ((_ message: String) -> AnyView)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
 
-    /// Generic payment method screen registry for type-safe screen customization
-    private var paymentMethodScreens: [String: Any] = [:]
+    // Removed: paymentMethodScreens - now using PaymentMethodProtocol.content()
 
     // MARK: - Child Scopes
 
@@ -399,34 +398,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         return type.rawValue
     }
 
-    /// Sets a custom screen for a specific payment method type
-    /// - Parameters:
-    ///   - paymentMethodType: The payment method type enum (e.g., .paymentCard)
-    ///   - screenBuilder: The custom screen builder closure that receives the appropriate scope
-    public func setPaymentMethodScreen(
-        _ paymentMethodType: PrimerPaymentMethodType,
-        screenBuilder: @escaping (any PrimerPaymentMethodScope) -> AnyView
-    ) {
-        let identifier = getPaymentMethodIdentifier(paymentMethodType)
-        logger.debug(message: "Setting custom screen for payment method type: \(paymentMethodType) (\(identifier))")
-        paymentMethodScreens[identifier] = screenBuilder
-    }
+    // Removed: setPaymentMethodScreen - now using PaymentMethodProtocol.content()
 
-    /// Gets a custom screen for a specific payment method type
-    /// - Parameter paymentMethodType: The payment method type enum
-    /// - Returns: The custom screen builder closure if set, nil otherwise
-    public func getPaymentMethodScreen(
-        _ paymentMethodType: PrimerPaymentMethodType
-    ) -> ((any PrimerPaymentMethodScope) -> AnyView)? {
-        let identifier = getPaymentMethodIdentifier(paymentMethodType)
-        logger.debug(message: "Getting custom screen for payment method type: \(paymentMethodType) (\(identifier))")
-        return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
-    }
+    // Removed: getPaymentMethodScreen - now using PaymentMethodProtocol.content()
 
-    /// Internal method to get custom screen by string identifier (for backwards compatibility)
-    internal func getPaymentMethodScreenByIdentifier(_ identifier: String) -> ((any PrimerPaymentMethodScope) -> AnyView)? {
-        return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
-    }
+    // Removed: getPaymentMethodScreenByIdentifier - now using PaymentMethodProtocol.content()
 
     public func onDismiss() {
         logger.debug(message: "Checkout dismissed")
@@ -439,7 +415,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         _paymentMethodSelection = nil
         currentPaymentMethodScope = nil
         paymentMethodScopeCache.removeAll()
-        paymentMethodScreens.removeAll()
+        // Payment method screens now handled by PaymentMethodProtocol
 
         // Navigate to dismiss the checkout
         navigator.dismiss()

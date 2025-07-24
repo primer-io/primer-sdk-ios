@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable identifier_name
 
 import SwiftUI
 import Foundation
@@ -61,24 +62,307 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - UI Customization Properties
 
-    public var cardNumberInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var cvvInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var expiryDateInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var cardholderNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var firstNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var lastNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var emailInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var phoneNumberInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var addressLine1Input: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var addressLine2Input: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var cityInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var stateInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var postalCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var countryInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var otpCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
-    public var errorView: ((_ error: String) -> AnyView)?
-    public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
+    // MARK: - Field Customization Properties (removed - now using @ViewBuilder functions)
+
+    // MARK: - @ViewBuilder Field Implementations
+
+    @ViewBuilder
+    public func PrimerCardNumberField(label: String?) -> any View {
+        let selectedNetwork: CardNetwork? = {
+            if let networkString = self.internalState.selectedCardNetwork {
+                return CardNetwork(rawValue: networkString)
+            }
+            return nil
+        }()
+
+        CardNumberInputField(
+            label: label ?? "Card Number",
+            placeholder: "1234 1234 1234 1234",
+            selectedNetwork: selectedNetwork,
+            onCardNumberChange: { [weak self] number in
+                self?.updateCardNumber(number)
+            },
+            onCardNetworkChange: { _ in
+                // Network changes handled by HeadlessRepository stream
+            },
+            onValidationChange: { [weak self] isValid in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    self.logger.debug(message: "🔍 [Field] Card number validation changed: \(isValid)")
+                    self.fieldValidationStates.cardNumber = isValid
+                    self.updateFieldValidationState()
+                }
+            },
+            onNetworksDetected: { [weak self] networks in
+                if let scope = self {
+                    scope.handleDetectedNetworks(networks)
+                }
+            }
+        )
+    }
+    @ViewBuilder
+    public func PrimerCvvField(label: String?) -> any View {
+        let cardNetwork = getCardNetworkForCvv()
+
+        CVVInputField(
+            label: label ?? "CVV",
+            placeholder: cardNetwork == .amex ? "1234" : "123",
+            cardNetwork: cardNetwork,
+            onCvvChange: { [weak self] cvv in
+                self?.updateCvv(cvv)
+            },
+            onValidationChange: { [weak self] isValid in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    self.logger.debug(message: "🔍 [Field] CVV validation changed: \(isValid)")
+                    self.fieldValidationStates.cvv = isValid
+                    self.updateFieldValidationState()
+                }
+            })
+    }
+
+    @ViewBuilder
+    public func PrimerExpiryDateField(label: String?) -> any View {
+        ExpiryDateInputField(
+            label: label ?? "Expiry Date",
+            placeholder: "MM/YY",
+            onExpiryDateChange: { _ in
+                // Handled by month/year callbacks
+            },
+            onValidationChange: { [weak self] isValid in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    self.logger.debug(message: "🔍 [Field] Expiry validation changed: \(isValid)")
+                    self.fieldValidationStates.expiry = isValid
+                    self.updateFieldValidationState()
+                }
+            },
+            onMonthChange: { [weak self] month in
+                self?.updateExpiryMonth(month)
+            },
+            onYearChange: { [weak self] year in
+                self?.updateExpiryYear(year)
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCardholderNameField(label: String?) -> any View {
+        CardholderNameInputField(
+            label: label ?? "Cardholder Name",
+            placeholder: "John Smith",
+            onCardholderNameChange: { [weak self] name in
+                self?.updateCardholderName(name)
+            },
+            onValidationChange: { [weak self] isValid in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    self.logger.debug(message: "🔍 [Field] Cardholder name validation changed: \(isValid)")
+                    self.fieldValidationStates.cardholderName = isValid
+                    self.updateFieldValidationState()
+                }
+            })
+    }
+
+    @ViewBuilder
+    public func PrimerPostalCodeField(label: String?) -> any View {
+        PostalCodeInputField(
+            label: label ?? CheckoutComponentsStrings.postalCodeLabel,
+            placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+            onPostalCodeChange: { [weak self] postalCode in
+                self?.updatePostalCode(postalCode)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.postalCode = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCountryField(label: String?) -> any View {
+        CountryInputField(
+            label: label ?? CheckoutComponentsStrings.countryLabel,
+            placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+            onCountryCodeChange: { [weak self] countryCode in
+                self?.updateCountryCode(countryCode)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.countryCode = isValid
+                self?.updateFieldValidationState()
+            },
+            onOpenCountrySelector: { [weak self] in
+                self?.navigateToCountrySelection()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCityField(label: String?) -> any View {
+        CityInputField(
+            label: label ?? CheckoutComponentsStrings.cityLabel,
+            placeholder: CheckoutComponentsStrings.cityPlaceholder,
+            onCityChange: { [weak self] city in
+                self?.updateCity(city)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.city = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerStateField(label: String?) -> any View {
+        StateInputField(
+            label: label ?? CheckoutComponentsStrings.stateLabel,
+            placeholder: CheckoutComponentsStrings.statePlaceholder,
+            onStateChange: { [weak self] state in
+                self?.updateState(state)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.state = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerAddressLine1Field(label: String?) -> any View {
+        AddressLineInputField(
+            label: label ?? CheckoutComponentsStrings.addressLine1Label,
+            placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
+            isRequired: true,
+            inputType: .addressLine1,
+            onAddressChange: { [weak self] addressLine in
+                self?.updateAddressLine1(addressLine)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.addressLine1 = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerAddressLine2Field(label: String?) -> any View {
+        AddressLineInputField(
+            label: label ?? CheckoutComponentsStrings.addressLine2Label,
+            placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
+            isRequired: false,
+            inputType: .addressLine2,
+            onAddressChange: { [weak self] addressLine in
+                self?.updateAddressLine2(addressLine)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.addressLine2 = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerFirstNameField(label: String?) -> any View {
+        NameInputField(
+            label: label ?? CheckoutComponentsStrings.firstNameLabel,
+            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+            inputType: .firstName,
+            onNameChange: { [weak self] firstName in
+                self?.updateFirstName(firstName)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.firstName = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerLastNameField(label: String?) -> any View {
+        NameInputField(
+            label: label ?? CheckoutComponentsStrings.lastNameLabel,
+            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+            inputType: .lastName,
+            onNameChange: { [weak self] lastName in
+                self?.updateLastName(lastName)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.lastName = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerEmailField(label: String?) -> any View {
+        EmailInputField(
+            label: label ?? CheckoutComponentsStrings.emailLabel,
+            placeholder: CheckoutComponentsStrings.emailPlaceholder,
+            onEmailChange: { [weak self] email in
+                self?.updateEmail(email)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.email = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerPhoneNumberField(label: String?) -> any View {
+        NameInputField(
+            label: label ?? CheckoutComponentsStrings.phoneNumberLabel,
+            placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
+            inputType: .phoneNumber,
+            onNameChange: { [weak self] phoneNumber in
+                self?.updatePhoneNumber(phoneNumber)
+            },
+            onValidationChange: { [weak self] isValid in
+                self?.fieldValidationStates.phoneNumber = isValid
+                self?.updateFieldValidationState()
+            }
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerOtpCodeField(label: String?) -> any View {
+        // OTP implementation would go here
+        // For now, return a placeholder
+        Text("OTP Field Not Implemented")
+            .foregroundColor(.gray)
+    }
+
+    @ViewBuilder
+    public func PrimerRetailOutletField(label: String?) -> any View {
+        // Retail outlet implementation would go here
+        // For now, return a placeholder
+        Text("Retail Outlet Field Not Implemented")
+            .foregroundColor(.gray)
+    }
+
+    @ViewBuilder
+    public func PrimerSubmitButton(text: String) -> any View {
+        Button(action: {
+            self.onSubmit()
+        }, label: {
+            HStack {
+                if self.internalState.isSubmitting {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(0.8)
+                } else {
+                    Text(text)
+                }
+            }
+            .font(.body)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(self.internalState.isValid && !self.internalState.isSubmitting ? Color.blue : Color.gray)
+            .cornerRadius(8)
+        })
+        .disabled(!self.internalState.isValid || self.internalState.isSubmitting)
+    }
 
     // MARK: - Private Properties
 
@@ -113,10 +397,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         logger.info(message: "🧭 [CardFormScope] Initialized with presentation context: \(presentationContext)")
         logger.info(message: "🧭 [CardFormScope]   - Should show back button: \(presentationContext.shouldShowBackButton)")
         logger.info(message: "🧭 [CardFormScope]   - Cancel behavior: \(presentationContext.cancelBehavior)")
-
-        // Set up individual field builders for customization
-        setupFieldBuilders()
-
         Task {
             await setupInteractors()
         }
@@ -142,147 +422,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    /// Sets up individual field builders for customization support
-    private func setupFieldBuilders() {
-        setupCoreCardFieldBuilders()
-        setupBillingAddressFieldBuilders()
-        setupPersonalInfoFieldBuilders()
-        setupUIComponentBuilders()
-    }
-
-    /// Sets up core card-related field builders (card number, expiry, CVV, cardholder name)
-    private func setupCoreCardFieldBuilders() {
-        setupCardNumberFieldBuilder()
-        setupExpiryDateFieldBuilder()
-        setupCvvFieldBuilder()
-        setupCardholderNameFieldBuilder()
-    }
-
-    private func setupCardNumberFieldBuilder() {
-        self.cardNumberInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            let selectedNetwork: CardNetwork? = {
-                if let networkString = self.internalState.selectedCardNetwork {
-                    return CardNetwork(rawValue: networkString)
-                }
-                return nil
-            }()
-            return AnyView(
-                CardNumberInputField(
-                    label: "Card Number",
-                    placeholder: "1234 1234 1234 1234",
-                    selectedNetwork: selectedNetwork,
-                    modifier: modifier,
-                    onCardNumberChange: { [weak self] number in
-                        self?.updateCardNumber(number)
-                    },
-                    onCardNetworkChange: { _ in
-                        // Network changes handled by HeadlessRepository stream
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        Task { @MainActor in
-                            guard let self = self else { return }
-                            self.logger.debug(message: "🔍 [FieldBuilder] Card number validation changed: \(isValid)")
-                            self.fieldValidationStates.cardNumber = isValid
-                            self.logger.debug(message: "🔍 [FieldBuilder] Updated fieldValidationStates.cardNumber to: \(self.fieldValidationStates.cardNumber)")
-                            self.updateFieldValidationState()
-                        }
-                    },
-                    onNetworksDetected: { [weak self] networks in
-                        if let scope = self {
-                            scope.handleDetectedNetworks(networks)
-                        }
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupExpiryDateFieldBuilder() {
-        self.expiryDateInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                ExpiryDateInputField(
-                    label: "Expiry Date",
-                    placeholder: "MM/YY",
-                    modifier: modifier,
-                    onExpiryDateChange: { _ in
-                        // Handled by month/year callbacks
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        Task { @MainActor in
-                            guard let self = self else { return }
-                            self.logger.debug(message: "🔍 [FieldBuilder] Expiry validation changed: \(isValid)")
-                            self.fieldValidationStates.expiry = isValid
-                            self.logger.debug(message: "🔍 [FieldBuilder] Updated fieldValidationStates.expiry to: \(self.fieldValidationStates.expiry)")
-                            self.updateFieldValidationState()
-                        }
-                    },
-                    onMonthChange: { [weak self] month in
-                        self?.updateExpiryMonth(month)
-                    },
-                    onYearChange: { [weak self] year in
-                        self?.updateExpiryYear(year)
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupCvvFieldBuilder() {
-        self.cvvInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-
-            let cardNetwork = self.getCardNetworkForCvv()
-
-            return AnyView(
-                CVVInputField(
-                    label: "CVV",
-                    placeholder: cardNetwork == .amex ? "1234" : "123",
-                    cardNetwork: cardNetwork,
-                    modifier: modifier,
-                    onCvvChange: { [weak self] cvv in
-                        self?.updateCvv(cvv)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        Task { @MainActor in
-                            guard let self = self else { return }
-                            self.logger.debug(message: "🔍 [FieldBuilder] CVV validation changed: \(isValid)")
-                            self.fieldValidationStates.cvv = isValid
-                            self.logger.debug(message: "🔍 [FieldBuilder] Updated fieldValidationStates.cvv to: \(self.fieldValidationStates.cvv)")
-                            self.updateFieldValidationState()
-                        }
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupCardholderNameFieldBuilder() {
-        self.cardholderNameInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                CardholderNameInputField(
-                    label: "Cardholder Name",
-                    placeholder: "John Smith",
-                    modifier: modifier,
-                    onCardholderNameChange: { [weak self] name in
-                        self?.updateCardholderName(name)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        Task { @MainActor in
-                            guard let self = self else { return }
-                            self.logger.debug(message: "🔍 [FieldBuilder] Cardholder name validation changed: \(isValid)")
-                            self.fieldValidationStates.cardholderName = isValid
-                            self.logger.debug(message: "🔍 [FieldBuilder] Updated fieldValidationStates.cardholderName to: \(self.fieldValidationStates.cardholderName)")
-                            self.updateFieldValidationState()
-                        }
-                    }
-                )
-            )
-        }
-    }
-
     private func getCardNetworkForCvv() -> CardNetwork {
         if let selectedNetworkString = internalState.selectedCardNetwork,
            let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
@@ -292,279 +431,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    // Sets up billing address-related field builders (postal code, country, city, state)
-    private func setupBillingAddressFieldBuilders() {
-        setupPostalCodeFieldBuilder()
-        setupCountryFieldBuilder()
-        setupCityFieldBuilder()
-        setupStateFieldBuilder()
-        setupAddressLine1FieldBuilder()
-        setupAddressLine2FieldBuilder()
-    }
-
-    private func setupPostalCodeFieldBuilder() {
-        self.postalCodeInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                PostalCodeInputField(
-                    label: CheckoutComponentsStrings.postalCodeLabel,
-                    placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
-                    modifier: modifier,
-                    onPostalCodeChange: { [weak self] postalCode in
-                        self?.updatePostalCode(postalCode)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.postalCode = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupCountryFieldBuilder() {
-        self.countryInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                CountryInputField(
-                    label: CheckoutComponentsStrings.countryLabel,
-                    placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                    modifier: modifier,
-                    onCountryCodeChange: { [weak self] countryCode in
-                        self?.updateCountryCode(countryCode)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.countryCode = isValid
-                        self?.updateFieldValidationState()
-                    },
-                    onOpenCountrySelector: { [weak self] in
-                        self?.navigateToCountrySelection()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupCityFieldBuilder() {
-        self.cityInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                CityInputField(
-                    label: CheckoutComponentsStrings.cityLabel,
-                    placeholder: CheckoutComponentsStrings.cityPlaceholder,
-                    modifier: modifier,
-                    onCityChange: { [weak self] city in
-                        self?.updateCity(city)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.city = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupStateFieldBuilder() {
-        self.stateInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                StateInputField(
-                    label: CheckoutComponentsStrings.stateLabel,
-                    placeholder: CheckoutComponentsStrings.statePlaceholder,
-                    modifier: modifier,
-                    onStateChange: { [weak self] state in
-                        self?.updateState(state)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.state = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupAddressLine1FieldBuilder() {
-        self.addressLine1Input = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                AddressLineInputField(
-                    label: CheckoutComponentsStrings.addressLine1Label,
-                    placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
-                    isRequired: true,
-                    inputType: .addressLine1,
-                    modifier: modifier,
-                    onAddressChange: { [weak self] addressLine in
-                        self?.updateAddressLine1(addressLine)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.addressLine1 = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupAddressLine2FieldBuilder() {
-        self.addressLine2Input = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                AddressLineInputField(
-                    label: CheckoutComponentsStrings.addressLine2Label,
-                    placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
-                    isRequired: false,
-                    inputType: .addressLine2,
-                    modifier: modifier,
-                    onAddressChange: { [weak self] addressLine in
-                        self?.updateAddressLine2(addressLine)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.addressLine2 = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    /// Sets up personal information field builders (first name, last name, email, phone)
-    private func setupPersonalInfoFieldBuilders() {
-        setupFirstNameFieldBuilder()
-        setupLastNameFieldBuilder()
-        setupEmailFieldBuilder()
-        setupPhoneNumberFieldBuilder()
-    }
-
-    private func setupFirstNameFieldBuilder() {
-        self.firstNameInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                NameInputField(
-                    label: CheckoutComponentsStrings.firstNameLabel,
-                    placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
-                    inputType: .firstName,
-                    modifier: modifier,
-                    onNameChange: { [weak self] firstName in
-                        self?.updateFirstName(firstName)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.firstName = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupLastNameFieldBuilder() {
-        self.lastNameInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                NameInputField(
-                    label: CheckoutComponentsStrings.lastNameLabel,
-                    placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
-                    inputType: .lastName,
-                    modifier: modifier,
-                    onNameChange: { [weak self] lastName in
-                        self?.updateLastName(lastName)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.lastName = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupEmailFieldBuilder() {
-        self.emailInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                EmailInputField(
-                    label: CheckoutComponentsStrings.emailLabel,
-                    placeholder: CheckoutComponentsStrings.emailPlaceholder,
-                    modifier: modifier,
-                    onEmailChange: { [weak self] email in
-                        self?.updateEmail(email)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.email = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    private func setupPhoneNumberFieldBuilder() {
-        self.phoneNumberInput = { [weak self] modifier in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                NameInputField(
-                    label: CheckoutComponentsStrings.phoneNumberLabel,
-                    placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
-                    inputType: .phoneNumber,
-                    modifier: modifier,
-                    onNameChange: { [weak self] phoneNumber in
-                        self?.updatePhoneNumber(phoneNumber)
-                    },
-                    onValidationChange: { [weak self] isValid in
-                        self?.fieldValidationStates.phoneNumber = isValid
-                        self?.updateFieldValidationState()
-                    }
-                )
-            )
-        }
-    }
-
-    /// Sets up UI component builders (submit button, error view, etc.)
-    private func setupUIComponentBuilders() {
-        // Submit button builder
-        self.submitButton = { [weak self] modifier, text in
-            guard let self = self else { return AnyView(EmptyView()) }
-            return AnyView(
-                Button(action: {
-                    self.onSubmit()
-                }, label: {
-                    HStack {
-                        if self.internalState.isSubmitting {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(0.8)
-                        } else {
-                            Text(text)
-                        }
-                    }
-                    .font(.body)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(self.internalState.isValid && !self.internalState.isSubmitting ? Color.blue : Color.gray)
-                    .cornerRadius(8)
-                })
-                .disabled(!self.internalState.isValid || self.internalState.isSubmitting)
-                .primerModifier(modifier)
-            )
-        }
-
-        // Error view builder
-        self.errorView = { errorMessage in
-            AnyView(
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(4)
-            )
-        }
-    }
-
-    /// Updates the overall form validation state based on individual field validation
     private func updateFieldValidationState() {
         logger.debug(message: "🔍 [FieldValidation] Current fieldValidationStates - Card: \(fieldValidationStates.cardNumber), CVV: \(fieldValidationStates.cvv), Expiry: \(fieldValidationStates.expiry), Cardholder: \(fieldValidationStates.cardholderName)")
 
@@ -819,11 +685,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Screen Customization
 
     public var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)?
-    public var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)?
-    public var cardDetails: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var billingAddress: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var countryCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
-    public var retailOutletInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
+    public var errorView: ((_ error: String) -> AnyView)?
 
     // MARK: - Private Methods
 
@@ -1060,3 +923,4 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 }
 
 // swiftlint:enable file_length
+// swiftlint:enable identifier_name

@@ -67,7 +67,8 @@
       "WebFetch(domain:docs.swift.org)",
       "mcp__sequentialthinking__sequentialthinking",
       "mcp__git__git_status",
-      "mcp__git__git_diff_staged"
+      "mcp__git__git_diff_staged",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

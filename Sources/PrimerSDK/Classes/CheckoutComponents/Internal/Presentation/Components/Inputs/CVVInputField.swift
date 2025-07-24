@@ -27,10 +27,6 @@ internal struct CVVInputField: View, LogReporter {
 
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -50,14 +46,8 @@ internal struct CVVInputField: View, LogReporter {
     @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
-    
-    // MARK: - Modifier Value Extraction
-    
-    /// Unified modifier extraction using PrimerModifierExtractor
-    private var modifierProps: PrimerModifierExtractor.ComputedProperties {
-        PrimerModifierExtractor.computedProperties(modifier: modifier, tokens: tokens)
-    }
 
+    // MARK: - Modifier Value Extraction
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -78,14 +68,12 @@ internal struct CVVInputField: View, LogReporter {
         label: String,
         placeholder: String,
         cardNetwork: CardNetwork,
-        modifier: PrimerModifier = PrimerModifier(),
         onCvvChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.cardNetwork = cardNetwork
-        self.modifier = modifier
         self.onCvvChange = onCvvChange
         self.onValidationChange = onValidationChange
     }
@@ -98,20 +86,19 @@ internal struct CVVInputField: View, LogReporter {
             Text(label)
                 .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .primerModifier(modifier, target: .labelOnly)
 
             // CVV input field with ZStack architecture
             ZStack {
                 // Background and border styling with gradient-aware hierarchy
                 Group {
-                    if !PrimerModifierExtractor.hasBackgroundGradient(modifier) {
+                    if true {
                         // Only apply manual background when no gradient is present
-                        RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
-                            .fill(modifierProps.effectiveBackgroundColor)
+                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                            .fill(tokens?.primerColorBackground ?? .white)
                     }
                 }
                 .overlay(
-                    RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
                         .stroke(borderColor, lineWidth: 1)
                         .animation(.easeInOut(duration: 0.2), value: borderColor)
                 )
@@ -162,7 +149,6 @@ internal struct CVVInputField: View, LogReporter {
                 }
             }
             .frame(height: FigmaDesignConstants.inputFieldHeight)
-            .primerModifier(modifier, target: .inputOnly)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
@@ -175,7 +161,6 @@ internal struct CVVInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier, target: .container)
         .onAppear {
             setupValidationService()
         }
@@ -237,19 +222,19 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
         let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
         accessoryView.backgroundColor = UIColor.systemGray6
-        
+
         let doneButton = UIButton(type: .system)
         doneButton.setTitle("Done", for: .normal)
         doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
-        
+
         accessoryView.addSubview(doneButton)
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
             doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
         ])
-        
+
         textField.inputAccessoryView = accessoryView
 
         return textField

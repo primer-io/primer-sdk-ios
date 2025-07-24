@@ -35,7 +35,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     // MARK: - UI Customization Properties
 
     public var screen: (() -> AnyView)?
-    public var paymentMethodCard: ((_ modifier: PrimerModifier, _ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)?
+    public var paymentMethodCard: ((_ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)?
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
     public var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)?
     public var categoryHeader: ((_ category: String) -> AnyView)?

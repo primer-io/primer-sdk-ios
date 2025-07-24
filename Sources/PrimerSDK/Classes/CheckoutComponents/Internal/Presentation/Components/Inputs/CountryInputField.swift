@@ -32,10 +32,6 @@ internal struct CountryInputField: View, LogReporter {
 
     /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
-
-    /// PrimerModifier for comprehensive styling customization
-    let modifier: PrimerModifier
-
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -58,14 +54,8 @@ internal struct CountryInputField: View, LogReporter {
     @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
-    
-    // MARK: - Modifier Value Extraction
-    
-    /// Unified modifier extraction using PrimerModifierExtractor
-    private var modifierProps: PrimerModifierExtractor.ComputedProperties {
-        PrimerModifierExtractor.computedProperties(modifier: modifier, tokens: tokens)
-    }
 
+    // MARK: - Modifier Value Extraction
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -86,7 +76,6 @@ internal struct CountryInputField: View, LogReporter {
         label: String,
         placeholder: String,
         selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
-        modifier: PrimerModifier = PrimerModifier(),
         onCountryChange: ((String) -> Void)? = nil,
         onCountryCodeChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
@@ -95,7 +84,6 @@ internal struct CountryInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.selectedCountry = selectedCountry
-        self.modifier = modifier
         self.onCountryChange = onCountryChange
         self.onCountryCodeChange = onCountryCodeChange
         self.onValidationChange = onValidationChange
@@ -115,14 +103,14 @@ internal struct CountryInputField: View, LogReporter {
             ZStack {
                 // Background and border styling with gradient-aware hierarchy
                 Group {
-                    if !PrimerModifierExtractor.hasBackgroundGradient(modifier) {
+                    if true {
                         // Only apply manual background when no gradient is present
-                        RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
-                            .fill(modifierProps.effectiveBackgroundColor)
+                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
+                            .fill(tokens?.primerColorBackground ?? .white)
                     }
                 }
                 .overlay(
-                    RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
                         .stroke(borderColor, lineWidth: 1)
                         .animation(.easeInOut(duration: 0.2), value: borderColor)
                 )
@@ -176,7 +164,6 @@ internal struct CountryInputField: View, LogReporter {
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
-        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
             updateFromExternalState()

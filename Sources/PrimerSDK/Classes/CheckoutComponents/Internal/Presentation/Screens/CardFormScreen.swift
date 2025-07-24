@@ -121,31 +121,8 @@ internal struct CardFormScreen: View {
     private var cardInputSection: some View {
         // Use individual field builders from scope for flexible customization
         VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-            // Card Number - use custom implementation if available, otherwise default
-            if let cardNumberBuilder = scope.cardNumberInput {
-                cardNumberBuilder(PrimerModifier())
-            } else {
-                // Fallback to direct field instantiation
-                CardNumberInputField(
-                    label: "Card Number",
-                    placeholder: "1234 1234 1234 1234",
-                    selectedNetwork: selectedCardNetwork != .unknown ? selectedCardNetwork : nil,
-                    onCardNumberChange: { number in
-                        scope.updateCardNumber(number)
-                    },
-                    onCardNetworkChange: { _ in
-                        // Network changes handled by HeadlessRepository stream
-                    },
-                    onValidationChange: { _ in
-                        // Validation handled by scope
-                    },
-                    onNetworksDetected: { networks in
-                        if let defaultScope = scope as? DefaultCardFormScope {
-                            defaultScope.handleDetectedNetworks(networks)
-                        }
-                    }
-                )
-            }
+            // Card Number - use ViewBuilder method
+            AnyView(scope.PrimerCardNumberField(label: "Card Number"))
 
             // Allowed Card Networks Display (Android parity)
             let allowedNetworks = [CardNetwork].allowedCardNetworks
@@ -158,56 +135,16 @@ internal struct CardFormScreen: View {
             // Expiry Date and CVV row
             HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
                 // Expiry Date
-                if let expiryDateBuilder = scope.expiryDateInput {
-                    expiryDateBuilder(PrimerModifier())
-                        .frame(maxWidth: .infinity)
-                } else {
-                    ExpiryDateInputField(
-                        label: "Expiry Date",
-                        placeholder: "MM/YY",
-                        onExpiryDateChange: { _ in },
-                        onValidationChange: { _ in },
-                        onMonthChange: { month in
-                            scope.updateExpiryMonth(month)
-                        },
-                        onYearChange: { year in
-                            scope.updateExpiryYear(year)
-                        }
-                    )
+                AnyView(scope.PrimerExpiryDateField(label: "Expiry Date"))
                     .frame(maxWidth: .infinity)
-                }
 
                 // CVV
-                if let cvvBuilder = scope.cvvInput {
-                    cvvBuilder(PrimerModifier())
-                        .frame(maxWidth: .infinity)
-                } else {
-                    CVVInputField(
-                        label: "CVV",
-                        placeholder: "123",
-                        cardNetwork: .unknown,
-                        onCvvChange: { cvv in
-                            scope.updateCvv(cvv)
-                        },
-                        onValidationChange: { _ in }
-                    )
+                AnyView(scope.PrimerCvvField(label: "CVV"))
                     .frame(maxWidth: .infinity)
-                }
             }
 
             // Cardholder Name
-            if let cardholderNameBuilder = scope.cardholderNameInput {
-                cardholderNameBuilder(PrimerModifier())
-            } else {
-                CardholderNameInputField(
-                    label: "Cardholder Name",
-                    placeholder: "John Doe",
-                    onCardholderNameChange: { name in
-                        scope.updateCardholderName(name)
-                    },
-                    onValidationChange: { _ in }
-                )
-            }
+            AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name"))
         }
         .padding(.horizontal)
     }
@@ -248,27 +185,26 @@ internal struct CardFormScreen: View {
     private var billingAddressSection: some View {
         BillingAddressView(
             cardFormScope: scope,
-            configuration: billingAddressConfiguration,
-            modifier: createBillingAddressModifier()
+            configuration: billingAddressConfiguration
         )
         .padding(.horizontal)
     }
 
     private var submitButtonSection: some View {
         Group {
-            if let customSubmitButton = scope.submitButton {
-                customSubmitButton(PrimerModifier(), submitButtonText)
-                    .onTapGesture {
-                        if cardFormState.isValid && !cardFormState.isSubmitting {
-                            submitAction()
-                        }
+            AnyView(scope.PrimerSubmitButton(text: submitButtonText))
+                .onTapGesture {
+                    if cardFormState.isValid && !cardFormState.isSubmitting {
+                        submitAction()
                     }
-            } else {
-                Button(action: submitAction) {
-                    submitButtonContent
                 }
-                .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
-            }
+            /*
+             // Legacy fallback logic
+             Button(action: submitAction) {
+             submitButtonContent
+             }
+             .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
+             */
         }
         .padding(.horizontal)
         .padding(.bottom)
@@ -344,13 +280,8 @@ internal struct CardFormScreen: View {
             await (scope as? DefaultCardFormScope)?.submit()
         }
     }
-    
-    /// Creates a modifier for billing address customization
-    /// This allows billing address sections to inherit consistent styling
-    private func createBillingAddressModifier() -> PrimerModifier {
-        return PrimerModifier()
-            .padding(.vertical, 4)
-    }
+
+    // Removed: createBillingAddressModifier() - no longer needed with ViewBuilder approach
 
     private func observeState() {
         Task {

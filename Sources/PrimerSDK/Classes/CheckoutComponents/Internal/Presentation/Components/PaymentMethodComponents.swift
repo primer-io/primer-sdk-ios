@@ -23,8 +23,8 @@ internal struct PaymentMethodScreen: View {
             // For card forms, use the generic method to ensure we get the right cached instance
             if paymentMethodType == "PAYMENT_CARD",
                let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
-                // Check for custom screen first, fallback to default
-                if let customScreen = checkoutScope.getPaymentMethodScreen(.paymentCard) {
+                // Check if custom screen is provided, otherwise use default
+                if let customScreen = cardFormScope.screen {
                     customScreen(cardFormScope)
                 } else {
                     AnyView(CardFormScreen(scope: cardFormScope))
