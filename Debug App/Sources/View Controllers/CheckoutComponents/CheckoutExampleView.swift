@@ -234,8 +234,8 @@ struct CheckoutContentView: View {
     private var customizedSwiftUIContent: some View {
         // Route to the actual showcase demo files for customized examples
         switch example.name {
-        case "Colorful Theme":
-            ColorfulThemedCardFormDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+        case "Single Field Customisation":
+            SingleFieldCustomisationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         default:
             // Fallback to default implementation
             VStack {

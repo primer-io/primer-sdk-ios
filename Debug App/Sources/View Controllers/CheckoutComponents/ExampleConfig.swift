@@ -27,8 +27,8 @@ struct ExampleConfig: Identifiable {
 
 let stylingExamples: [ExampleConfig] = [
     ExampleConfig(
-        name: "Colorful Theme",
-        description: "Branded colors with gradients",
+        name: "Single Field Customisation",
+        description: "Customize only cardholder name field",
         paymentMethods: ["PAYMENT_CARD"],
         customization: .colorful
     )

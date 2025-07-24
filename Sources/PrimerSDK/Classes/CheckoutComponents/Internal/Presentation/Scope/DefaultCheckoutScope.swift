@@ -21,7 +21,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
         case dismissed
-        
+
         static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
             switch (lhs, rhs) {
             case (.loading, .loading):

@@ -431,7 +431,7 @@ Debug App/Sources/View Controllers/CheckoutComponentsShowcase/
 ├── GridCardFormDemo.swift                        # Layout: Grid layout
 ├── CorporateThemedCardFormDemo.swift             # Styling: Corporate theme
 ├── ModernThemedCardFormDemo.swift                # Styling: Modern theme
-├── ColorfulThemedCardFormDemo.swift              # Styling: Colorful theme
+├── SingleFieldCustomisationDemo.swift              # Styling: Colorful theme
 ├── DarkThemedCardFormDemo.swift                  # Styling: Dark theme
 ├── LiveStateCardFormDemo.swift                   # Interactive: Live state
 ├── ValidationCardFormDemo.swift                  # Interactive: Validation

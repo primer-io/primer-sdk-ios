@@ -120,34 +120,40 @@ internal struct CardFormScreen: View, LogReporter {
 
     @ViewBuilder
     private var cardInputSection: some View {
-        // Use individual field builders from scope for flexible customization
-        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-            // Card Number - use ViewBuilder method
-            AnyView(scope.PrimerCardNumberField(label: "Card Number", styling: nil))
+        // Check for section-level override first
+        if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
+            customSection()
+                .padding(.horizontal)
+        } else {
+            // Use individual field builders from scope for flexible customization
+            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                // Card Number - use ViewBuilder method
+                AnyView(scope.PrimerCardNumberField(label: "Card Number", styling: nil))
 
-            // Allowed Card Networks Display (Android parity)
-            let allowedNetworks = [CardNetwork].allowedCardNetworks
-            if !allowedNetworks.isEmpty {
-                AllowedCardNetworksView(
-                    allowedCardNetworks: allowedNetworks
-                )
+                // Allowed Card Networks Display (Android parity)
+                let allowedNetworks = [CardNetwork].allowedCardNetworks
+                if !allowedNetworks.isEmpty {
+                    AllowedCardNetworksView(
+                        allowedCardNetworks: allowedNetworks
+                    )
+                }
+
+                // Expiry Date and CVV row
+                HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
+                    // Expiry Date
+                    AnyView(scope.PrimerExpiryDateField(label: "Expiry Date", styling: nil))
+                        .frame(maxWidth: .infinity)
+
+                    // CVV
+                    AnyView(scope.PrimerCvvField(label: "CVV", styling: nil))
+                        .frame(maxWidth: .infinity)
+                }
+
+                // Cardholder Name
+                AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name", styling: nil))
             }
-
-            // Expiry Date and CVV row
-            HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
-                // Expiry Date
-                AnyView(scope.PrimerExpiryDateField(label: "Expiry Date", styling: nil))
-                    .frame(maxWidth: .infinity)
-
-                // CVV
-                AnyView(scope.PrimerCvvField(label: "CVV", styling: nil))
-                    .frame(maxWidth: .infinity)
-            }
-
-            // Cardholder Name
-            AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name", styling: nil))
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 
     @ViewBuilder
@@ -183,33 +189,49 @@ internal struct CardFormScreen: View, LogReporter {
         }
     }
 
+    @ViewBuilder
     private var billingAddressSection: some View {
-        BillingAddressView(
-            cardFormScope: scope,
-            configuration: billingAddressConfiguration
-        )
-        .padding(.horizontal)
-        .id(refreshTrigger) // Force rebuild when state changes
+        // Check for section-level override first
+        if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
+            customSection()
+                .padding(.horizontal)
+                .id(refreshTrigger) // Force rebuild when state changes
+        } else {
+            BillingAddressView(
+                cardFormScope: scope,
+                configuration: billingAddressConfiguration
+            )
+            .padding(.horizontal)
+            .id(refreshTrigger) // Force rebuild when state changes
+        }
     }
 
+    @ViewBuilder
     private var submitButtonSection: some View {
-        Group {
-            AnyView(scope.PrimerSubmitButton(text: submitButtonText))
-                .onTapGesture {
-                    if cardFormState.isValid && !cardFormState.isSubmitting {
-                        submitAction()
+        // Check for section-level override first
+        if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
+            customSection()
+                .padding(.horizontal)
+                .padding(.bottom)
+        } else {
+            Group {
+                AnyView(scope.PrimerSubmitButton(text: submitButtonText))
+                    .onTapGesture {
+                        if cardFormState.isValid && !cardFormState.isSubmitting {
+                            submitAction()
+                        }
                     }
-                }
-            /*
-             // Legacy fallback logic
-             Button(action: submitAction) {
-             submitButtonContent
-             }
-             .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
-             */
+                /*
+                 // Legacy fallback logic
+                 Button(action: submitAction) {
+                 submitButtonContent
+                 }
+                 .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
+                 */
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
         }
-        .padding(.horizontal)
-        .padding(.bottom)
     }
 
     private var submitButtonContent: some View {
@@ -290,7 +312,7 @@ internal struct CardFormScreen: View, LogReporter {
             for await state in scope.state {
                 await MainActor.run {
                     self.cardFormState = state
-                    
+
                     // Force UI refresh when state changes
                     self.refreshTrigger = UUID()
 

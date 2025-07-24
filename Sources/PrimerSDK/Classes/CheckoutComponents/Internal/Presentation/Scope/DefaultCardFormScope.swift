@@ -40,7 +40,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// The current card form state
     @Published private var internalState = PrimerCardFormState()
-    
+
     /// Debug getter for internal state
     internal var debugInternalState: PrimerCardFormState {
         internalState
@@ -73,313 +73,414 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     @ViewBuilder
     public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        let selectedNetwork: CardNetwork? = {
-            if let networkString = self.internalState.selectedCardNetwork {
-                return CardNetwork(rawValue: networkString)
-            }
-            return nil
-        }()
+        // Check for custom field override first
+        if let customField = cardNumberField {
+            customField(label, styling ?? defaultFieldStyling?["cardNumber"])
+        } else {
+            // Use default implementation
+            let selectedNetwork: CardNetwork? = {
+                if let networkString = self.internalState.selectedCardNetwork {
+                    return CardNetwork(rawValue: networkString)
+                }
+                return nil
+            }()
 
-        CardNumberInputField(
-            label: label ?? "Card Number",
-            placeholder: "1234 1234 1234 1234",
-            selectedNetwork: selectedNetwork,
-            styling: styling,
-            onCardNumberChange: { [weak self] number in
-                self?.updateCardNumber(number)
-            },
-            onCardNetworkChange: { _ in
-                // Network changes handled by HeadlessRepository stream
-            },
-            onValidationChange: { [weak self] isValid in
-                Task { @MainActor in
-                    guard let self = self else { return }
-                    self.logger.debug(message: "🔍 [Field] Card number validation changed: \(isValid)")
-                    self.fieldValidationStates.cardNumber = isValid
-                    self.updateFieldValidationState()
+            CardNumberInputField(
+                label: label ?? "Card Number",
+                placeholder: "1234 1234 1234 1234",
+                selectedNetwork: selectedNetwork,
+                styling: styling ?? defaultFieldStyling?["cardNumber"],
+                onCardNumberChange: { [weak self] number in
+                    self?.updateCardNumber(number)
+                },
+                onCardNetworkChange: { _ in
+                    // Network changes handled by HeadlessRepository stream
+                },
+                onValidationChange: { [weak self] isValid in
+                    Task { @MainActor in
+                        guard let self = self else { return }
+                        self.logger.debug(message: "🔍 [Field] Card number validation changed: \(isValid)")
+                        self.fieldValidationStates.cardNumber = isValid
+                        self.updateFieldValidationState()
+                    }
+                },
+                onNetworksDetected: { [weak self] networks in
+                    if let scope = self {
+                        scope.handleDetectedNetworks(networks)
+                    }
                 }
-            },
-            onNetworksDetected: { [weak self] networks in
-                if let scope = self {
-                    scope.handleDetectedNetworks(networks)
-                }
-            }
-        )
+            )
+        }
     }
     @ViewBuilder
     public func PrimerCvvField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        let cardNetwork = getCardNetworkForCvv()
+        // Check for custom field override first
+        if let customField = cvvField {
+            customField(label, styling ?? defaultFieldStyling?["cvv"])
+        } else {
+            // Use default implementation
+            let cardNetwork = getCardNetworkForCvv()
 
-        CVVInputField(
-            label: label ?? "CVV",
-            placeholder: cardNetwork == .amex ? "1234" : "123",
-            cardNetwork: cardNetwork,
-            styling: styling,
-            onCvvChange: { [weak self] cvv in
-                self?.updateCvv(cvv)
-            },
-            onValidationChange: { [weak self] isValid in
-                Task { @MainActor in
-                    guard let self = self else { return }
-                    self.logger.debug(message: "🔍 [Field] CVV validation changed: \(isValid)")
-                    self.fieldValidationStates.cvv = isValid
-                    self.updateFieldValidationState()
-                }
-            })
+            CVVInputField(
+                label: label ?? "CVV",
+                placeholder: cardNetwork == .amex ? "1234" : "123",
+                cardNetwork: cardNetwork,
+                styling: styling ?? defaultFieldStyling?["cvv"],
+                onCvvChange: { [weak self] cvv in
+                    self?.updateCvv(cvv)
+                },
+                onValidationChange: { [weak self] isValid in
+                    Task { @MainActor in
+                        guard let self = self else { return }
+                        self.logger.debug(message: "🔍 [Field] CVV validation changed: \(isValid)")
+                        self.fieldValidationStates.cvv = isValid
+                        self.updateFieldValidationState()
+                    }
+                })
+        }
     }
 
     @ViewBuilder
     public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        ExpiryDateInputField(
-            label: label ?? "Expiry Date",
-            placeholder: "MM/YY",
-            styling: styling,
-            onExpiryDateChange: { _ in
-                // Handled by month/year callbacks
-            },
-            onValidationChange: { [weak self] isValid in
-                Task { @MainActor in
-                    guard let self = self else { return }
-                    self.logger.debug(message: "🔍 [Field] Expiry validation changed: \(isValid)")
-                    self.fieldValidationStates.expiry = isValid
-                    self.updateFieldValidationState()
+        // Check for custom field override first
+        if let customField = expiryDateField {
+            customField(label, styling ?? defaultFieldStyling?["expiryDate"])
+        } else {
+            // Use default implementation
+            ExpiryDateInputField(
+                label: label ?? "Expiry Date",
+                placeholder: "MM/YY",
+                styling: styling ?? defaultFieldStyling?["expiryDate"],
+                onExpiryDateChange: { _ in
+                    // Handled by month/year callbacks
+                },
+                onValidationChange: { [weak self] isValid in
+                    Task { @MainActor in
+                        guard let self = self else { return }
+                        self.logger.debug(message: "🔍 [Field] Expiry validation changed: \(isValid)")
+                        self.fieldValidationStates.expiry = isValid
+                        self.updateFieldValidationState()
+                    }
+                },
+                onMonthChange: { [weak self] month in
+                    self?.updateExpiryMonth(month)
+                },
+                onYearChange: { [weak self] year in
+                    self?.updateExpiryYear(year)
                 }
-            },
-            onMonthChange: { [weak self] month in
-                self?.updateExpiryMonth(month)
-            },
-            onYearChange: { [weak self] year in
-                self?.updateExpiryYear(year)
-            }
-        )
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        CardholderNameInputField(
-            label: label ?? "Cardholder Name",
-            placeholder: "John Smith",
-            styling: styling,
-            onCardholderNameChange: { [weak self] name in
-                self?.updateCardholderName(name)
-            },
-            onValidationChange: { [weak self] isValid in
-                Task { @MainActor in
-                    guard let self = self else { return }
-                    self.logger.debug(message: "🔍 [Field] Cardholder name validation changed: \(isValid)")
-                    self.fieldValidationStates.cardholderName = isValid
-                    self.updateFieldValidationState()
-                }
-            })
+        // Check for custom field override first
+        if let customField = cardholderNameField {
+            customField(label, styling ?? defaultFieldStyling?["cardholderName"])
+        } else {
+            // Use default implementation
+            CardholderNameInputField(
+                label: label ?? "Cardholder Name",
+                placeholder: "John Smith",
+                styling: styling ?? defaultFieldStyling?["cardholderName"],
+                onCardholderNameChange: { [weak self] name in
+                    self?.updateCardholderName(name)
+                },
+                onValidationChange: { [weak self] isValid in
+                    Task { @MainActor in
+                        guard let self = self else { return }
+                        self.logger.debug(message: "🔍 [Field] Cardholder name validation changed: \(isValid)")
+                        self.fieldValidationStates.cardholderName = isValid
+                        self.updateFieldValidationState()
+                    }
+                })
+        }
     }
 
     @ViewBuilder
     public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        PostalCodeInputField(
-            label: label ?? CheckoutComponentsStrings.postalCodeLabel,
-            placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
-            styling: styling,
-            onPostalCodeChange: { [weak self] postalCode in
-                self?.updatePostalCode(postalCode)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.postalCode = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = postalCodeField {
+            customField(label, styling ?? defaultFieldStyling?["postalCode"])
+        } else {
+            // Use default implementation
+            PostalCodeInputField(
+                label: label ?? CheckoutComponentsStrings.postalCodeLabel,
+                placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+                styling: styling ?? defaultFieldStyling?["postalCode"],
+                onPostalCodeChange: { [weak self] postalCode in
+                    self?.updatePostalCode(postalCode)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.postalCode = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerCountryField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        // Use the wrapper view that properly observes this scope
-        CountryInputFieldWrapper(
-            scope: self,
-            label: label ?? CheckoutComponentsStrings.countryLabel,
-            placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-            styling: styling,
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.countryCode = isValid
-                self?.updateFieldValidationState()
-            },
-            onOpenCountrySelector: { [weak self] in
-                self?.navigateToCountrySelection()
-            }
-        )
+        // Check for custom field override first
+        if let customField = countryField {
+            customField(label, styling ?? defaultFieldStyling?["country"])
+        } else {
+            // Use default implementation with the wrapper view that properly observes this scope
+            CountryInputFieldWrapper(
+                scope: self,
+                label: label ?? CheckoutComponentsStrings.countryLabel,
+                placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+                styling: styling ?? defaultFieldStyling?["country"],
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.countryCode = isValid
+                    self?.updateFieldValidationState()
+                },
+                onOpenCountrySelector: { [weak self] in
+                    self?.navigateToCountrySelection()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerCityField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        CityInputField(
-            label: label ?? CheckoutComponentsStrings.cityLabel,
-            placeholder: CheckoutComponentsStrings.cityPlaceholder,
-            styling: styling,
-            onCityChange: { [weak self] city in
-                self?.updateCity(city)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.city = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = cityField {
+            customField(label, styling ?? defaultFieldStyling?["city"])
+        } else {
+            // Use default implementation
+            CityInputField(
+                label: label ?? CheckoutComponentsStrings.cityLabel,
+                placeholder: CheckoutComponentsStrings.cityPlaceholder,
+                styling: styling ?? defaultFieldStyling?["city"],
+                onCityChange: { [weak self] city in
+                    self?.updateCity(city)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.city = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerStateField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        StateInputField(
-            label: label ?? CheckoutComponentsStrings.stateLabel,
-            placeholder: CheckoutComponentsStrings.statePlaceholder,
-            styling: styling,
-            onStateChange: { [weak self] state in
-                self?.updateState(state)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.state = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = stateField {
+            customField(label, styling ?? defaultFieldStyling?["state"])
+        } else {
+            // Use default implementation
+            StateInputField(
+                label: label ?? CheckoutComponentsStrings.stateLabel,
+                placeholder: CheckoutComponentsStrings.statePlaceholder,
+                styling: styling ?? defaultFieldStyling?["state"],
+                onStateChange: { [weak self] state in
+                    self?.updateState(state)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.state = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        AddressLineInputField(
-            label: label ?? CheckoutComponentsStrings.addressLine1Label,
-            placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
-            isRequired: true,
-            inputType: .addressLine1,
-            styling: styling,
-            onAddressChange: { [weak self] addressLine in
-                self?.updateAddressLine1(addressLine)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.addressLine1 = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = addressLine1Field {
+            customField(label, styling ?? defaultFieldStyling?["addressLine1"])
+        } else {
+            // Use default implementation
+            AddressLineInputField(
+                label: label ?? CheckoutComponentsStrings.addressLine1Label,
+                placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
+                isRequired: true,
+                inputType: .addressLine1,
+                styling: styling ?? defaultFieldStyling?["addressLine1"],
+                onAddressChange: { [weak self] addressLine in
+                    self?.updateAddressLine1(addressLine)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.addressLine1 = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        AddressLineInputField(
-            label: label ?? CheckoutComponentsStrings.addressLine2Label,
-            placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
-            isRequired: false,
-            inputType: .addressLine2,
-            styling: styling,
-            onAddressChange: { [weak self] addressLine in
-                self?.updateAddressLine2(addressLine)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.addressLine2 = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = addressLine2Field {
+            customField(label, styling ?? defaultFieldStyling?["addressLine2"])
+        } else {
+            // Use default implementation
+            AddressLineInputField(
+                label: label ?? CheckoutComponentsStrings.addressLine2Label,
+                placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
+                isRequired: false,
+                inputType: .addressLine2,
+                styling: styling ?? defaultFieldStyling?["addressLine2"],
+                onAddressChange: { [weak self] addressLine in
+                    self?.updateAddressLine2(addressLine)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.addressLine2 = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        NameInputField(
-            label: label ?? CheckoutComponentsStrings.firstNameLabel,
-            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
-            inputType: .firstName,
-            styling: styling,
-            onNameChange: { [weak self] firstName in
-                self?.updateFirstName(firstName)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.firstName = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = firstNameField {
+            customField(label, styling ?? defaultFieldStyling?["firstName"])
+        } else {
+            // Use default implementation
+            NameInputField(
+                label: label ?? CheckoutComponentsStrings.firstNameLabel,
+                placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+                inputType: .firstName,
+                styling: styling ?? defaultFieldStyling?["firstName"],
+                onNameChange: { [weak self] firstName in
+                    self?.updateFirstName(firstName)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.firstName = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        NameInputField(
-            label: label ?? CheckoutComponentsStrings.lastNameLabel,
-            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
-            inputType: .lastName,
-            styling: styling,
-            onNameChange: { [weak self] lastName in
-                self?.updateLastName(lastName)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.lastName = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = lastNameField {
+            customField(label, styling ?? defaultFieldStyling?["lastName"])
+        } else {
+            // Use default implementation
+            NameInputField(
+                label: label ?? CheckoutComponentsStrings.lastNameLabel,
+                placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+                inputType: .lastName,
+                styling: styling ?? defaultFieldStyling?["lastName"],
+                onNameChange: { [weak self] lastName in
+                    self?.updateLastName(lastName)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.lastName = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerEmailField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        EmailInputField(
-            label: label ?? CheckoutComponentsStrings.emailLabel,
-            placeholder: CheckoutComponentsStrings.emailPlaceholder,
-            styling: styling,
-            onEmailChange: { [weak self] email in
-                self?.updateEmail(email)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.email = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = emailField {
+            customField(label, styling ?? defaultFieldStyling?["email"])
+        } else {
+            // Use default implementation
+            EmailInputField(
+                label: label ?? CheckoutComponentsStrings.emailLabel,
+                placeholder: CheckoutComponentsStrings.emailPlaceholder,
+                styling: styling ?? defaultFieldStyling?["email"],
+                onEmailChange: { [weak self] email in
+                    self?.updateEmail(email)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.email = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        NameInputField(
-            label: label ?? CheckoutComponentsStrings.phoneNumberLabel,
-            placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
-            inputType: .phoneNumber,
-            styling: styling,
-            onNameChange: { [weak self] phoneNumber in
-                self?.updatePhoneNumber(phoneNumber)
-            },
-            onValidationChange: { [weak self] isValid in
-                self?.fieldValidationStates.phoneNumber = isValid
-                self?.updateFieldValidationState()
-            }
-        )
+        // Check for custom field override first
+        if let customField = phoneNumberField {
+            customField(label, styling ?? defaultFieldStyling?["phoneNumber"])
+        } else {
+            // Use default implementation
+            NameInputField(
+                label: label ?? CheckoutComponentsStrings.phoneNumberLabel,
+                placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
+                inputType: .phoneNumber,
+                styling: styling ?? defaultFieldStyling?["phoneNumber"],
+                onNameChange: { [weak self] phoneNumber in
+                    self?.updatePhoneNumber(phoneNumber)
+                },
+                onValidationChange: { [weak self] isValid in
+                    self?.fieldValidationStates.phoneNumber = isValid
+                    self?.updateFieldValidationState()
+                }
+            )
+        }
     }
 
     @ViewBuilder
     public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        // OTP implementation would go here
-        // For now, return a placeholder
-        Text("OTP Field Not Implemented")
-            .foregroundColor(.gray)
+        // Check for custom field override first
+        if let customField = otpCodeField {
+            customField(label, styling ?? defaultFieldStyling?["otpCode"])
+        } else {
+            // Use default implementation
+            // OTP implementation would go here
+            // For now, return a placeholder
+            Text("OTP Field Not Implemented")
+                .foregroundColor(.gray)
+        }
     }
 
     @ViewBuilder
     public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        // Retail outlet implementation would go here
-        // For now, return a placeholder
-        Text("Retail Outlet Field Not Implemented")
-            .foregroundColor(.gray)
+        // Check for custom field override first
+        if let customField = retailOutletField {
+            customField(label, styling ?? defaultFieldStyling?["retailOutlet"])
+        } else {
+            // Use default implementation
+            // Retail outlet implementation would go here
+            // For now, return a placeholder
+            Text("Retail Outlet Field Not Implemented")
+                .foregroundColor(.gray)
+        }
     }
 
     @ViewBuilder
     public func PrimerSubmitButton(text: String) -> any View {
-        Button(action: {
-            self.onSubmit()
-        }, label: {
-            HStack {
-                if self.internalState.isSubmitting {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
-                } else {
-                    Text(text)
+        // Check for custom button override first
+        if let customButton = submitButton {
+            customButton(text)
+        } else {
+            // Use default implementation
+            Button(action: {
+                self.onSubmit()
+            }, label: {
+                HStack {
+                    if self.internalState.isSubmitting {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                    } else {
+                        Text(text)
+                    }
                 }
-            }
-            .font(.body)
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(self.internalState.isValid && !self.internalState.isSubmitting ? Color.blue : Color.gray)
-            .cornerRadius(8)
-        })
-        .disabled(!self.internalState.isValid || self.internalState.isSubmitting)
+                .font(.body)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(self.internalState.isValid && !self.internalState.isSubmitting ? Color.blue : Color.gray)
+                .cornerRadius(8)
+            })
+            .disabled(!self.internalState.isValid || self.internalState.isSubmitting)
+        }
     }
 
     // MARK: - Private Properties
@@ -403,13 +504,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
-    
+
     /// Computed property to get the selected country from the country code
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
         logger.debug(message: "🔍 [CountryField] Computing selectedCountryFromCode - current code: '\(internalState.countryCode)'")
-        guard !internalState.countryCode.isEmpty else { 
+        guard !internalState.countryCode.isEmpty else {
             logger.debug(message: "🔍 [CountryField] Country code is empty, returning nil")
-            return nil 
+            return nil
         }
         let country = CountryCode.phoneNumberCountryCodes.first { $0.code.uppercased() == internalState.countryCode.uppercased() }
         logger.debug(message: "🔍 [CountryField] Found country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
@@ -703,7 +804,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             logger.error(message: "Cannot navigate - checkoutNavigator is nil")
             return
         }
-        
+
         navigator.navigateToCountrySelection()
     }
 
@@ -724,6 +825,33 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)?
     public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
     public var errorView: ((_ error: String) -> AnyView)?
+
+    // MARK: - Field-Level Customization Properties
+    public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
+    public var submitButton: ((_ text: String) -> AnyView)?
+
+    // MARK: - Section-Level Customization Properties
+    public var cardInputSection: (() -> AnyView)?
+    public var billingAddressSection: (() -> AnyView)?
+    public var submitButtonSection: (() -> AnyView)?
+
+    // MARK: - Default Styling Properties
+    public var defaultFieldStyling: [String: PrimerFieldStyling]?
 
     // MARK: - Private Methods
 
@@ -958,6 +1086,5 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 }
-
-// swiftlint:enable file_length
 // swiftlint:enable identifier_name
+// swiftlint:enable file_length

@@ -179,6 +179,96 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     /// Default implementation shows error text in red.
     var errorView: ((_ error: String) -> AnyView)? { get set }
 
+    // MARK: - Field-Level Customization (Partial UI Override)
+
+    /// Custom card number field implementation.
+    /// When set, overrides the default card number field.
+    var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom expiry date field implementation.
+    /// When set, overrides the default expiry date field.
+    var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom CVV field implementation.
+    /// When set, overrides the default CVV field.
+    var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom cardholder name field implementation.
+    /// When set, overrides the default cardholder name field.
+    var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom postal code field implementation.
+    /// When set, overrides the default postal code field.
+    var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom country field implementation.
+    /// When set, overrides the default country field.
+    var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom city field implementation.
+    /// When set, overrides the default city field.
+    var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom state field implementation.
+    /// When set, overrides the default state field.
+    var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom address line 1 field implementation.
+    /// When set, overrides the default address line 1 field.
+    var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom address line 2 field implementation.
+    /// When set, overrides the default address line 2 field.
+    var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom phone number field implementation.
+    /// When set, overrides the default phone number field.
+    var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom first name field implementation.
+    /// When set, overrides the default first name field.
+    var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom last name field implementation.
+    /// When set, overrides the default last name field.
+    var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom email field implementation.
+    /// When set, overrides the default email field.
+    var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom retail outlet field implementation.
+    /// When set, overrides the default retail outlet field.
+    var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom OTP code field implementation.
+    /// When set, overrides the default OTP code field.
+    var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+
+    /// Custom submit button implementation.
+    /// When set, overrides the default submit button.
+    var submitButton: ((_ text: String) -> AnyView)? { get set }
+
+    // MARK: - Section-Level Customization
+
+    /// Custom card input section (card number, expiry, CVV, cardholder name).
+    /// When set, overrides the entire card input section.
+    var cardInputSection: (() -> AnyView)? { get set }
+
+    /// Custom billing address section.
+    /// When set, overrides the entire billing address section.
+    var billingAddressSection: (() -> AnyView)? { get set }
+
+    /// Custom submit button section.
+    /// When set, overrides the entire submit button section.
+    var submitButtonSection: (() -> AnyView)? { get set }
+
+    // MARK: - Default Styling
+
+    /// Default field styling to be used by CardFormScreen when no override is provided.
+    /// Keys are field names: "cardNumber", "expiryDate", "cvv", etc.
+    var defaultFieldStyling: [String: PrimerFieldStyling]? { get set }
+
     // MARK: - Future Features (Vaulting Support)
 
     // The following features are placeholders for future vaulting functionality.

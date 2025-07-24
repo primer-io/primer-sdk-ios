@@ -16,7 +16,7 @@ internal struct CountryInputFieldWrapper: View, LogReporter {
     let styling: PrimerFieldStyling?
     let onValidationChange: ((Bool) -> Void)?
     let onOpenCountrySelector: (() -> Void)?
-    
+
     var body: some View {
         CountryInputField(
             label: label,
@@ -30,20 +30,20 @@ internal struct CountryInputFieldWrapper: View, LogReporter {
             onOpenCountrySelector: onOpenCountrySelector
         )
     }
-    
+
     /// Convert country code to CountryCode.PhoneNumberCountryCode
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
         let code = scope.debugInternalState.countryCode
-        
+
         guard !code.isEmpty else {
             return nil
         }
-        
+
         // Find the matching country from the phone number country codes
         let matchingCountry = CountryCode.phoneNumberCountryCodes.first { phoneCountry in
             phoneCountry.code.caseInsensitiveCompare(code) == .orderedSame
         }
-        
+
         return matchingCountry
     }
 }

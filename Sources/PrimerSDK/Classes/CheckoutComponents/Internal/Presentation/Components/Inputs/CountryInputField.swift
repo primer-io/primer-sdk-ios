@@ -58,7 +58,6 @@ internal struct CountryInputField: View, LogReporter {
 
     /// Debounce navigation to prevent multiple rapid calls
     @State private var isNavigating: Bool = false
-    
 
     @Environment(\.designTokens) private var tokens
 
@@ -129,15 +128,15 @@ internal struct CountryInputField: View, LogReporter {
                 guard !isNavigating else {
                     return
                 }
-                
+
                 isNavigating = true
-                
+
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                 impactFeedback.impactOccurred()
-                
+
                 onOpenCountrySelector?()
-                
-                // Reset after shorter timeout - 1 second should be enough  
+
+                // Reset after shorter timeout - 1 second should be enough
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.isNavigating = false
                 }

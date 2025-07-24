@@ -52,7 +52,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
 
     public func onCountrySelected(countryCode: String, countryName: String) {
         logger.debug(message: "Country selected: \(countryName) (\(countryCode))")
-        
+
         // Update the card form scope with selected country
         if let cardFormScope = cardFormScope {
             cardFormScope.updateCountryCode(countryCode)

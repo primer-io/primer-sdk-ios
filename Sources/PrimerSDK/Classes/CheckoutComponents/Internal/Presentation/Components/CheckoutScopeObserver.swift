@@ -22,7 +22,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     // Design tokens state
     @State private var designTokens: DesignTokens?
     @State private var designTokensManager: DesignTokensManager?
-    
+
     // Country selection modal state
     @State private var showingCountrySelection = false
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
@@ -98,7 +98,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 } else {
                     isAlreadyCountrySelection = false
                 }
-                
+
                 if !isAlreadyCountrySelection {
                     previousNavigationState = findPreviousNonCountryState()
                 }
@@ -131,7 +131,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     }
 
     // MARK: - Helper Methods
-    
+
     private func findPreviousNonCountryState() -> DefaultCheckoutScope.NavigationState? {
         // Check if we have a stored previous state that's not selectCountry
         if let prev = previousNavigationState {
@@ -141,7 +141,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 return prev
             }
         }
-        
+
         // Fallback: try to infer from available payment methods
         if !scope.availablePaymentMethods.isEmpty {
             if scope.availablePaymentMethods.count == 1,
@@ -151,7 +151,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 return .paymentMethodSelection
             }
         }
-        
+
         return .loading
     }
 

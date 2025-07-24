@@ -81,10 +81,10 @@ struct StylingVariationsSection: View {
         ) {
             VStack(spacing: 16) {
                 ShowcaseDemo(
-                    title: "Colorful Theme",
-                    description: "Branded colors with gradients"
+                    title: "Single Field Customisation",
+                    description: "Customize only cardholder name field"
                 ) {
-                    ColorfulThemedCardFormDemo(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
+                    SingleFieldCustomisationDemo(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
                 }
             }
         }
