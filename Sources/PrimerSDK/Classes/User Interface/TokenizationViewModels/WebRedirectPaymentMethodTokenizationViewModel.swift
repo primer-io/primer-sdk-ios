@@ -62,7 +62,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             self.webViewController?.dismiss(animated: true)
             self.didCancel?()
-            self.awaitUserInputTask?.cancel()
+            awaitUserInputTask?.cancel()
             self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
@@ -174,7 +174,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -347,25 +347,23 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         #if DEBUG
         if TEST {
             guard !UIApplication.shared.windows.isEmpty else {
-                await handleWebViewControllerPresentedCompletion_main_actor()
-                return
+                return handleWebViewControllerPresentedCompletion_main_actor()
             }
         }
         #endif
 
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            Task { @MainActor in
-                if PrimerUIManager.primerRootViewController == nil {
-                    PrimerUIManager.prepareRootViewController_main_actor()
-                }
-            }
+        if PrimerUIManager.primerRootViewController == nil {
+            PrimerUIManager.prepareRootViewController_main_actor()
+        }
 
+        await withCheckedContinuation { continuation in
             uiManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
-                Task { await self.handleWebViewControllerPresentedCompletion_main_actor() }
                 continuation.resume()
-
             })
         }
+
+        handleWebViewControllerPresentedCompletion_main_actor()
+
     }
 
     private func handleWebViewControllerPresentedCompletion() {
@@ -389,7 +387,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     @MainActor
-    private func handleWebViewControllerPresentedCompletion_main_actor() async {
+    private func handleWebViewControllerPresentedCompletion_main_actor() {
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .view,
             context: Analytics.Event.Property.Context(
@@ -403,7 +401,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             place: .webview
         ))
 
-        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
         didPresentPaymentMethodUI?()
     }
 
