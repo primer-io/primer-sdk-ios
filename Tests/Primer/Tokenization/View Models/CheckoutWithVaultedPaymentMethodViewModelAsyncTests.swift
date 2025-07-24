@@ -2,23 +2,70 @@
 import XCTest
 
 final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
-    
     // MARK: - Test Dependencies
-    
-    var tokenizationService: MockTokenizationService!
-    var createResumePaymentService: MockCreateResumePaymentService!
-    var sut: CheckoutWithVaultedPaymentMethodViewModel!
-    
+
+    private var sut: CheckoutWithVaultedPaymentMethodViewModel!
+    private var tokenizationService: MockTokenizationService!
+    private var createResumePaymentService: MockCreateResumePaymentService!
+
+    // MARK: - Test Helper Data
+
+    private let tokenizationResponseBody = Response.Body.Tokenization(
+        analyticsId: "analytics_id",
+        id: "id",
+        isVaulted: false,
+        isAlreadyVaulted: false,
+        paymentInstrumentType: .offSession,
+        paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+        paymentInstrumentData: nil,
+        threeDSecureAuthentication: nil,
+        token: "token",
+        tokenType: .singleUse,
+        vaultData: nil
+    )
+
+    private let paymentResponseBody = Response.Body.Payment(
+        id: "id",
+        paymentId: "payment_id",
+        amount: 123,
+        currencyCode: "GBP",
+        customer: .init(firstName: "first_name",
+                        lastName: "last_name",
+                        emailAddress: "email_address",
+                        mobileNumber: "+44(0)7891234567",
+                        billingAddress: .init(firstName: "billing_first_name",
+                                              lastName: "billing_last_name",
+                                              addressLine1: "billing_line_1",
+                                              addressLine2: "billing_line_2",
+                                              city: "billing_city",
+                                              state: "billing_state",
+                                              countryCode: "billing_country_code",
+                                              postalCode: "billing_postal_code"),
+                        shippingAddress: .init(firstName: "shipping_first_name",
+                                               lastName: "shipping_last_name",
+                                               addressLine1: "shipping_line_1",
+                                               addressLine2: "shipping_line_2",
+                                               city: "shipping_city",
+                                               state: "shipping_state",
+                                               countryCode: "shipping_country_code",
+                                               postalCode: "shipping_postal_code")),
+        customerId: "customer_id",
+        orderId: "order_id",
+        status: .success
+    )
+
     // MARK: - Setup & Teardown
-    
+
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
-        sut = CheckoutWithVaultedPaymentMethodViewModel(configuration: Mocks.PaymentMethods.paymentCardPaymentMethod,
-                                                        selectedPaymentMethodTokenData: Mocks.primerPaymentMethodTokenData,
-                                                        additionalData: nil,
-                                                        tokenizationService: tokenizationService,
-                                                        createResumePaymentService: createResumePaymentService)
+        sut = CheckoutWithVaultedPaymentMethodViewModel(
+            configuration: Mocks.PaymentMethods.paymentCardPaymentMethod,
+            selectedPaymentMethodTokenData: Mocks.primerPaymentMethodTokenData,
+            additionalData: nil,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func tearDownWithError() throws {
@@ -26,9 +73,9 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
         createResumePaymentService = nil
         tokenizationService = nil
     }
-    
+
     // MARK: - Async Flow Tests
-    
+
     func test_startFlow_whenAborted_shouldCallOnDidFail() async throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
@@ -54,7 +101,11 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
 
         try await sut.start_async()
 
-        await fulfillment(of: [expectWillCreatePaymentWithData, expectDidFail], timeout: 5.0)
+        await fulfillment(of: [
+            expectWillCreatePaymentWithData,
+            expectDidFail
+        ],
+        timeout: 5.0)
     }
 
     func test_startFlow_fullCheckout_shouldCompleteSuccessfully() async throws {
@@ -113,52 +164,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
             expectDidCreatePayment,
             expectDidCompleteCheckoutWithData,
             expectPromiseResolved
-        ], timeout: 20.0, enforceOrder: true)
-    }
-
-    // MARK: - Test Helper Data
-    
-    var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .offSession,
-              paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
-    }
-
-    var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "GBP",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     status: .success)
+        ], timeout: 10.0, enforceOrder: true)
     }
 }
