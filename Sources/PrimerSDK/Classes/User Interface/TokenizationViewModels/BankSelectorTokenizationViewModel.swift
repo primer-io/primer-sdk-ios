@@ -8,7 +8,9 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {
         didSet {
-            tableView.reloadData()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         }
     }
 
