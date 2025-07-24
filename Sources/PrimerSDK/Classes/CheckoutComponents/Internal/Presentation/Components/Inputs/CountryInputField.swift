@@ -58,6 +58,13 @@ internal struct CountryInputField: View, LogReporter {
     @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
+    
+    // MARK: - Modifier Value Extraction
+    
+    /// Unified modifier extraction using PrimerModifierExtractor
+    private var modifierProps: PrimerModifierExtractor.ComputedProperties {
+        PrimerModifierExtractor.computedProperties(modifier: modifier, tokens: tokens)
+    }
 
     // MARK: - Computed Properties
 
@@ -106,20 +113,19 @@ internal struct CountryInputField: View, LogReporter {
 
             // Country field with selector button using ZStack architecture
             ZStack {
-                // Background and border styling
-                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .fill(tokens?.primerColorBackground ?? Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: borderColor)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
+                // Background and border styling with gradient-aware hierarchy
+                Group {
+                    if !PrimerModifierExtractor.hasBackgroundGradient(modifier) {
+                        // Only apply manual background when no gradient is present
+                        RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                            .fill(modifierProps.effectiveBackgroundColor)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                        .animation(.easeInOut(duration: 0.2), value: borderColor)
+                )
 
                 // Country selector button content
                 Button(action: {

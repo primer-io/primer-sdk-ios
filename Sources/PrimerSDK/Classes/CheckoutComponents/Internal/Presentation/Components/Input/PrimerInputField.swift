@@ -158,12 +158,6 @@ struct PrimerInputField: View {
                             .stroke(borderColor, lineWidth: 1)
                             .animation(.easeInOut(duration: 0.2), value: borderColor)
                     )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
 
                 // Input field content
                 HStack {

@@ -39,7 +39,6 @@ public struct PrimerModifier {
         case backgroundGradient(Gradient, startPoint: UnitPoint, endPoint: UnitPoint)
         case cornerRadius(CGFloat)
         case border(Color, width: CGFloat)
-        case shadow(color: Color, radius: CGFloat, offsetX: CGFloat, offsetY: CGFloat)
         case opacity(Double)
 
         // Interactive States
@@ -213,18 +212,6 @@ public extension PrimerModifier {
     func border(_ color: Color, width: CGFloat = 1) -> PrimerModifier {
         var copy = self
         copy.modifiers.append(.border(color, width: width))
-        return copy
-    }
-
-    /// Adds a shadow
-    func shadow(
-        color: Color = .black.opacity(0.2),
-        radius: CGFloat = 4,
-        offsetX: CGFloat = 0,
-        offsetY: CGFloat = 2
-    ) -> PrimerModifier {
-        var copy = self
-        copy.modifiers.append(.shadow(color: color, radius: radius, offsetX: offsetX, offsetY: offsetY))
         return copy
     }
 
@@ -474,7 +461,6 @@ internal extension PrimerModifier {
              .backgroundGradient,
              .cornerRadius,
              .border,
-             .shadow,
              .opacity:
             applyAppearanceModifier(modifier, to: view)
 
@@ -540,8 +526,6 @@ internal extension PrimerModifier {
                 RoundedRectangle(cornerRadius: 0)
                     .stroke(color, lineWidth: width)
             )
-        case .shadow(let color, let radius, let offsetX, let offsetY):
-            view.shadow(color: color, radius: radius, x: offsetX, y: offsetY)
         case .opacity(let opacity):
             view.opacity(opacity)
         default:

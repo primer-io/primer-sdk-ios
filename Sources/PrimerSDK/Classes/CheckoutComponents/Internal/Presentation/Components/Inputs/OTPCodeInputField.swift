@@ -47,6 +47,11 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    /// Unified modifier extraction using PrimerModifierExtractor
+    private var modifierProps: PrimerModifierExtractor.ComputedProperties {
+        PrimerModifierExtractor.computedProperties(modifier: modifier, tokens: tokens)
+    }
+
     // MARK: - Computed Properties
 
     /// Dynamic border color based on field state
@@ -91,12 +96,19 @@ internal struct OTPCodeInputField: View, LogReporter {
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
                 .padding(tokens?.primerSpaceMedium ?? 12)
-                .background(tokens?.primerColorBackground ?? Color.white)
+                .background(
+                    Group {
+                        if !PrimerModifierExtractor.hasBackgroundGradient(modifier) {
+                            // Only apply manual background when no gradient is present
+                            modifierProps.effectiveBackgroundColor
+                        }
+                    }
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
                         .stroke(borderColor, lineWidth: 1)
                 )
-                .cornerRadius(tokens?.primerRadiusMedium ?? 8)
+                .cornerRadius(modifierProps.effectiveCornerRadius)
                 .onChange(of: otpCode) { newValue in
                     // Limit to expected length
                     if newValue.count > expectedLength {

@@ -61,7 +61,13 @@
       "mcp__atlassian__searchJiraIssuesUsingJql",
       "mcp__atlassian__editJiraIssue",
       "mcp__atlassian__updateConfluencePage",
-      "mcp__zen__challenge"
+      "mcp__zen__challenge",
+      "mcp__zen__challenge",
+      "mcp__zen__debug",
+      "WebFetch(domain:docs.swift.org)",
+      "mcp__sequentialthinking__sequentialthinking",
+      "mcp__git__git_status",
+      "mcp__git__git_diff_staged"
     ],
     "deny": []
   }

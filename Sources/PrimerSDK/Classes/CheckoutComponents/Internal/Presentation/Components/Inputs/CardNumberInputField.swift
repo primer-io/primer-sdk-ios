@@ -63,6 +63,13 @@ internal struct CardNumberInputField: View, LogReporter {
     @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
+    
+    // MARK: - Modifier Value Extraction
+    
+    /// Unified modifier extraction using PrimerModifierExtractor
+    private var modifierProps: PrimerModifierExtractor.ComputedProperties {
+        PrimerModifierExtractor.computedProperties(modifier: modifier, tokens: tokens)
+    }
 
     // MARK: - Initialization
 
@@ -122,20 +129,19 @@ internal struct CardNumberInputField: View, LogReporter {
 
             // Card input field with integrated network icon
             ZStack {
-                // Background and border styling
-                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .fill(tokens?.primerColorBackground ?? Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.04),
-                        radius: tokens?.primerSpaceXsmall ?? 2,
-                        x: 0,
-                        y: 1
-                    )
+                // Background and border styling with gradient-aware hierarchy
+                Group {
+                    if !PrimerModifierExtractor.hasBackgroundGradient(modifier) {
+                        // Only apply manual background when no gradient is present
+                        RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                            .fill(modifierProps.effectiveBackgroundColor)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: modifierProps.effectiveCornerRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                        .animation(.easeInOut(duration: 0.2), value: isFocused)
+                )
 
                 // Input field content
                 HStack {
@@ -298,13 +304,23 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             ]
         )
 
-        // Add a "Done" button to the keyboard
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
-        toolbar.items = [flexSpace, doneButton]
-        textField.inputAccessoryView = toolbar
+        // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        accessoryView.backgroundColor = UIColor.systemGray6
+        
+        let doneButton = UIButton(type: .system)
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
+        
+        accessoryView.addSubview(doneButton)
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
+            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
+        ])
+        
+        textField.inputAccessoryView = accessoryView
 
         return textField
     }
