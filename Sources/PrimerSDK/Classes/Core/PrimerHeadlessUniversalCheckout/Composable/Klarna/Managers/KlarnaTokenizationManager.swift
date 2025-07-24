@@ -63,9 +63,11 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
-    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?,
-                          offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData {
-        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
+    func tokenizeHeadless(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerCheckoutData {
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
 
         let requestBody = try await getRequestBody(
             customerToken: customerToken,
@@ -94,8 +96,10 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
-    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?,
-                        offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData {
+    func tokenizeDropIn(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerPaymentMethodTokenData {
         let requestBody = try await getRequestBody(
             customerToken: customerToken,
             offSessionAuthorizationId: offSessionAuthorizationId
@@ -151,14 +155,13 @@ extension KlarnaTokenizationManager {
     }
 
     func startManualPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData {
-        let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+        let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
 
         if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
             case .continueWithNewClientToken:
                 // TODO: REVIEW_CHECK - What should we return here?
                 preconditionFailure()
-
             case .complete:
                 return PrimerCheckoutData(payment: nil)
             }
@@ -226,14 +229,16 @@ extension KlarnaTokenizationManager {
         }
     }
 
-    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
-                                offSessionAuthorizationId: String?) async throws -> Request.Body
+    private func getRequestBody(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> Request.Body
         .Tokenization {
         var paymentInstrument: TokenizationRequestBodyPaymentInstrument
         // Validates the presence of session data.
         // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
         guard let sessionData = customerToken?.sessionData else {
-            throw KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData", value: nil)
+            throw KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData")
         }
 
         // Checks if the session type is for recurring payments. If so, it attempts to extract the
@@ -245,7 +250,7 @@ extension KlarnaTokenizationManager {
         // for `tokenization.customerToken`
         if KlarnaHelpers.getSessionType() == .recurringPayment {
             guard let klarnaCustomerToken = customerToken?.customerTokenId else {
-                throw KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken", value: nil)
+                throw KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken")
             }
             // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
             paymentInstrument = KlarnaCustomerTokenPaymentInstrument(klarnaCustomerToken: klarnaCustomerToken, sessionData: sessionData)

@@ -28,7 +28,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private let tokenizationComponent: KlarnaTokenizationComponentProtocol
     private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
-    private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    private var klarnaPaymentSessionCompletion: ((Result<String, Error>) -> Void)?
     private var authorizationToken: String?
 
     override init(config: PrimerPaymentMethod,
@@ -73,6 +73,34 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         super.start()
+    }
+    
+    override func start_async() {
+        checkoutEventsNotifierModule.didStartTokenization = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
+        }
+
+        checkoutEventsNotifierModule.didFinishTokenization = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
+        }
+
+        didStartPayment = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
+        }
+
+        didFinishPayment = { _ in
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
+        }
+
+        super.start_async()
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -135,22 +163,11 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() async throws {
-        guard let authorizationToken else {
-            let err = PrimerError.invalidValue(
-                key: "authorizationToken",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        try await Analytics.Service.record(event: Analytics.Event.ui(
+        Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -163,24 +180,28 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         #if canImport(PrimerKlarnaSDK)
+
+        defer {
+            Task { @MainActor in
+                self.willDismissExternalView?()
+            }
+        }
+
         try validate()
 
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
-        self.klarnaPaymentSession = try await tokenizationComponent.createPaymentSession()
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
+        klarnaPaymentSession = try await tokenizationComponent.createPaymentSession()
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
-        self.klarnaCustomerTokenAPIResponse = try await tokenizationComponent.authorizePaymentSession(authorizationToken: authorizationToken)
 
-        await MainActor.run {
-            self.willDismissExternalView?()
+        guard let authorizationToken else {
+            throw handled(primerError: .invalidValue(key: "authorizationToken"))
         }
 
-        self.willDismissExternalView?()
+        klarnaCustomerTokenAPIResponse = try await tokenizationComponent.authorizePaymentSession(authorizationToken: authorizationToken)
         #else
-        let error = KlarnaHelpers.getMissingSDKError()
-        ErrorHandler.handle(error: error)
-        throw error
+        throw handled(primerError: KlarnaHelpers.getMissingSDKError())
         #endif
     }
 
@@ -208,18 +229,11 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func performTokenizationStep() async throws {
         guard let authorizationToken else {
-            let err = PrimerError.invalidValue(
-                key: "authorizationToken",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "authorizationToken"))
         }
 
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenizationComponent.tokenizeDropIn(
+        paymentMethodTokenData = try await tokenizationComponent.tokenizeDropIn(
             customerToken: klarnaCustomerTokenAPIResponse,
             offSessionAuthorizationId: authorizationToken
         )
@@ -273,14 +287,13 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
-            self.klarnaPaymentSessionCompletion = { authorizationToken, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let authorizationToken = authorizationToken {
+            self.klarnaPaymentSessionCompletion = { result in
+                switch result {
+                case .success(let authorizationToken):
                     self.authorizationToken = authorizationToken
                     seal.fulfill()
-                } else {
-                    precondition(false, "Should never end up in here")
+                case .failure(let error):
+                    seal.reject(error)
                 }
             }
         }
@@ -288,29 +301,27 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.klarnaPaymentSessionCompletion = { authorizationToken, err in
-                if let err {
-                    continuation.resume(throwing: err)
-                } else if let authorizationToken {
+            self.klarnaPaymentSessionCompletion = { result in
+                switch result {
+                case .success(let authorizationToken):
                     self.authorizationToken = authorizationToken
                     continuation.resume()
-                } else {
-                    preconditionFailure("Should never end up in here")
+                case .failure(let error):
+                    continuation.resume(throwing: error)
                 }
             }
         }
     }
-
 }
 
 #if canImport(PrimerKlarnaSDK)
 extension KlarnaTokenizationViewModel: PrimerKlarnaCategoriesDelegate {
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
-        klarnaPaymentSessionCompletion?(authorizationToken, nil)
+        klarnaPaymentSessionCompletion?(.success(authorizationToken))
     }
 
     func primerKlarnaPaymentSessionFailed(error: Error) {
-        klarnaPaymentSessionCompletion?(nil, error)
+        klarnaPaymentSessionCompletion?(.failure(error))
     }
 }
 #endif

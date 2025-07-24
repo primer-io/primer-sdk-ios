@@ -1,15 +1,9 @@
-//
-//  KlarnaTokenizationManagerTests.swift
-//
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
-//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
-
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
 @testable import PrimerSDK
 import XCTest
 
-final class KlarnaTokenizationManagerTests: XCTestCase {
+final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
     var sut: KlarnaTokenizationManager!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -37,7 +31,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_tokenizeHeadless_success() {
+    func test_tokenizeHeadless_success_async() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -53,26 +47,22 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             return KlarnaTestsMocks.paymentResponseBody
         }
 
-        firstly {
-            sut.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { tokenData in
+        do {
+            let tokenData = try await sut.tokenizeHeadless(
+                customerToken: finalizePaymentData,
+                offSessionAuthorizationId: finalizePaymentData.customerTokenId
+            )
             XCTAssertNotNil(tokenData, "Result should not be nil")
             expectation.fulfill()
-        }
-        .catch { _ in
+        } catch {
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
 
-        wait(for: [
-            expectDidTokenize,
-            expectDidCreatePayment,
-            expectation
-        ], timeout: 10.0, enforceOrder: true)
+        await fulfillment(of: [expectDidTokenize, expectDidCreatePayment, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeHeadless_failure() {
+    func test_tokenizeHeadless_failure_async() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -82,25 +72,22 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             return .failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
         }
 
-        firstly {
-            sut.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { _ in
+        do {
+            _ = try await sut.tokenizeHeadless(
+                customerToken: finalizePaymentData,
+                offSessionAuthorizationId: finalizePaymentData.customerTokenId
+            )
             XCTFail("Result should be nil")
             expectation.fulfill()
-        }
-        .catch { error in
+        } catch {
             XCTAssertNotNil(error, "Error should not be nil")
             expectation.fulfill()
         }
 
-        wait(for: [
-            expectDidTokenize,
-            expectation
-        ], timeout: 10.0, enforceOrder: true)
+        await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_success() {
+    func test_tokenizeDropIn_success_async() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -110,25 +97,22 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             return .success(KlarnaTestsMocks.tokenizationResponseBody)
         }
 
-        firstly {
-            sut.tokenizeDropIn(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { tokenData in
+        do {
+            let tokenData = try await sut.tokenizeDropIn(
+                customerToken: finalizePaymentData,
+                offSessionAuthorizationId: finalizePaymentData.customerTokenId
+            )
             XCTAssertNotNil(tokenData, "Result should not be nil")
             expectation.fulfill()
-        }
-        .catch { _ in
+        } catch {
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
 
-        wait(for: [
-            expectDidTokenize,
-            expectation
-        ], timeout: 10.0, enforceOrder: true)
+        await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_failure() {
+    func test_tokenizeDropIn_failure_async() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -138,25 +122,22 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             return .failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
         }
 
-        firstly {
-            sut.tokenizeDropIn(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { _ in
+        do {
+            _ = try await sut.tokenizeDropIn(
+                customerToken: finalizePaymentData,
+                offSessionAuthorizationId: finalizePaymentData.customerTokenId
+            )
             XCTFail("Result should be nil")
             expectation.fulfill()
-        }
-        .catch { error in
+        } catch {
             XCTAssertNotNil(error, "Error should not be nil")
             expectation.fulfill()
         }
 
-        wait(for: [
-            expectDidTokenize,
-            expectation
-        ], timeout: 10.0, enforceOrder: true)
+        await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_headless() throws {
+    func testFullPaymentFlow_headless_async() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -176,18 +157,18 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
-        sut.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { _ in
-                expectDidCompleteCheckout.fulfill()
-            }
-            .catch { error in
-                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
-            }
+        do {
+            let tokenData = try await sut.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+            expectDidCompleteCheckout.fulfill()
+        } catch {
+            XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+        }
 
-        waitForExpectations(timeout: 5.0)
+        await fulfillment(of: [expectDidTokenize, expectCreatePayment, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn() throws {
+    func testFullPaymentFlow_dropIn_async() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -200,18 +181,18 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
-        sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { _ in
-                expectDidCompleteCheckout.fulfill()
-            }
-            .catch { error in
-                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
-            }
+        do {
+            let tokenData = try await sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+            expectDidCompleteCheckout.fulfill()
+        } catch {
+            XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+        }
 
-        waitForExpectations(timeout: 5.0)
+        await fulfillment(of: [expectDidTokenize, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn_vault() throws {
+    func testFullPaymentFlow_dropIn_vault_async() async throws {
         PrimerInternal.shared.intent = .vault
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -224,19 +205,19 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
-        sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { _ in
-                expectDidCompleteCheckout.fulfill()
-            }
-            .catch { error in
-                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
-            }
+        do {
+            let tokenData = try await sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+            expectDidCompleteCheckout.fulfill()
+        } catch {
+            XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+        }
 
-        waitForExpectations(timeout: 5.0)
+        await fulfillment(of: [expectDidTokenize, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 }
 
-extension KlarnaTokenizationManagerTests {
+extension KlarnaTokenizationManagerAsyncTests {
     private var address: Response.Body.Klarna.BillingAddress {
         .init(addressLine1: "address_line_1",
               addressLine2: "address_line_2",
