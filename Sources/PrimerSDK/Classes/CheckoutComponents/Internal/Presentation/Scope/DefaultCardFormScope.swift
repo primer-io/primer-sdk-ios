@@ -67,7 +67,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - @ViewBuilder Field Implementations
 
     @ViewBuilder
-    public func PrimerCardNumberField(label: String?) -> any View {
+    public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         let selectedNetwork: CardNetwork? = {
             if let networkString = self.internalState.selectedCardNetwork {
                 return CardNetwork(rawValue: networkString)
@@ -79,6 +79,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label ?? "Card Number",
             placeholder: "1234 1234 1234 1234",
             selectedNetwork: selectedNetwork,
+            styling: styling,
             onCardNumberChange: { [weak self] number in
                 self?.updateCardNumber(number)
             },
@@ -101,13 +102,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         )
     }
     @ViewBuilder
-    public func PrimerCvvField(label: String?) -> any View {
+    public func PrimerCvvField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         let cardNetwork = getCardNetworkForCvv()
 
         CVVInputField(
             label: label ?? "CVV",
             placeholder: cardNetwork == .amex ? "1234" : "123",
             cardNetwork: cardNetwork,
+            styling: styling,
             onCvvChange: { [weak self] cvv in
                 self?.updateCvv(cvv)
             },
@@ -122,10 +124,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerExpiryDateField(label: String?) -> any View {
+    public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         ExpiryDateInputField(
             label: label ?? "Expiry Date",
             placeholder: "MM/YY",
+            styling: styling,
             onExpiryDateChange: { _ in
                 // Handled by month/year callbacks
             },
@@ -147,10 +150,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerCardholderNameField(label: String?) -> any View {
+    public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         CardholderNameInputField(
             label: label ?? "Cardholder Name",
             placeholder: "John Smith",
+            styling: styling,
             onCardholderNameChange: { [weak self] name in
                 self?.updateCardholderName(name)
             },
@@ -165,10 +169,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerPostalCodeField(label: String?) -> any View {
+    public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         PostalCodeInputField(
             label: label ?? CheckoutComponentsStrings.postalCodeLabel,
             placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+            styling: styling,
             onPostalCodeChange: { [weak self] postalCode in
                 self?.updatePostalCode(postalCode)
             },
@@ -180,10 +185,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerCountryField(label: String?) -> any View {
+    public func PrimerCountryField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         CountryInputField(
             label: label ?? CheckoutComponentsStrings.countryLabel,
             placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+            styling: styling,
             onCountryCodeChange: { [weak self] countryCode in
                 self?.updateCountryCode(countryCode)
             },
@@ -198,10 +204,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerCityField(label: String?) -> any View {
+    public func PrimerCityField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         CityInputField(
             label: label ?? CheckoutComponentsStrings.cityLabel,
             placeholder: CheckoutComponentsStrings.cityPlaceholder,
+            styling: styling,
             onCityChange: { [weak self] city in
                 self?.updateCity(city)
             },
@@ -213,10 +220,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerStateField(label: String?) -> any View {
+    public func PrimerStateField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         StateInputField(
             label: label ?? CheckoutComponentsStrings.stateLabel,
             placeholder: CheckoutComponentsStrings.statePlaceholder,
+            styling: styling,
             onStateChange: { [weak self] state in
                 self?.updateState(state)
             },
@@ -228,12 +236,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerAddressLine1Field(label: String?) -> any View {
+    public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         AddressLineInputField(
             label: label ?? CheckoutComponentsStrings.addressLine1Label,
             placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
             isRequired: true,
             inputType: .addressLine1,
+            styling: styling,
             onAddressChange: { [weak self] addressLine in
                 self?.updateAddressLine1(addressLine)
             },
@@ -245,12 +254,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerAddressLine2Field(label: String?) -> any View {
+    public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         AddressLineInputField(
             label: label ?? CheckoutComponentsStrings.addressLine2Label,
             placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
             isRequired: false,
             inputType: .addressLine2,
+            styling: styling,
             onAddressChange: { [weak self] addressLine in
                 self?.updateAddressLine2(addressLine)
             },
@@ -262,11 +272,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerFirstNameField(label: String?) -> any View {
+    public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         NameInputField(
             label: label ?? CheckoutComponentsStrings.firstNameLabel,
             placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
             inputType: .firstName,
+            styling: styling,
             onNameChange: { [weak self] firstName in
                 self?.updateFirstName(firstName)
             },
@@ -278,11 +289,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerLastNameField(label: String?) -> any View {
+    public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         NameInputField(
             label: label ?? CheckoutComponentsStrings.lastNameLabel,
             placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
             inputType: .lastName,
+            styling: styling,
             onNameChange: { [weak self] lastName in
                 self?.updateLastName(lastName)
             },
@@ -294,10 +306,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerEmailField(label: String?) -> any View {
+    public func PrimerEmailField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         EmailInputField(
             label: label ?? CheckoutComponentsStrings.emailLabel,
             placeholder: CheckoutComponentsStrings.emailPlaceholder,
+            styling: styling,
             onEmailChange: { [weak self] email in
                 self?.updateEmail(email)
             },
@@ -309,11 +322,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerPhoneNumberField(label: String?) -> any View {
+    public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         NameInputField(
             label: label ?? CheckoutComponentsStrings.phoneNumberLabel,
             placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
             inputType: .phoneNumber,
+            styling: styling,
             onNameChange: { [weak self] phoneNumber in
                 self?.updatePhoneNumber(phoneNumber)
             },
@@ -325,7 +339,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerOtpCodeField(label: String?) -> any View {
+    public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         // OTP implementation would go here
         // For now, return a placeholder
         Text("OTP Field Not Implemented")
@@ -333,7 +347,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     @ViewBuilder
-    public func PrimerRetailOutletField(label: String?) -> any View {
+    public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
         // Retail outlet implementation would go here
         // For now, return a placeholder
         Text("Retail Outlet Field Not Implemented")

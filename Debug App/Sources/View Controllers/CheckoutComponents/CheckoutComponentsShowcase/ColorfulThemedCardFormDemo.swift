@@ -99,13 +99,15 @@ struct ColorfulThemedCardFormDemo: View {
     
     private func checkoutView(clientToken: String) -> some View {
         VStack {
-            Text("Colorful Theme Demo")
+            Text("Deep Field Styling Demo")
                 .font(.headline)
                 .padding()
             
-            Text("Branded colors with gradients")
+            Text("Custom fonts, colors, borders & styling applied directly to input fields")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
                 .padding(.bottom)
 
             PrimerCheckout(
@@ -143,34 +145,40 @@ struct ColorfulThemedCardFormDemo: View {
             VStack(spacing: 20) {
                 // Title section
                 VStack(spacing: 8) {
-                    Text("Colorful Card Payment")
+                    Text("Deep Field Customization")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("ViewBuilder Demo with Field Rearrangement")
+                    Text("Custom field styling: fonts, colors, borders, radius, padding")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 
-                // CARDHOLDER NAME FIRST! 🎯 Demonstrating field rearrangement
+                // CARDHOLDER NAME with custom field styling 🎯 
                 VStack(spacing: 16) {
-                    AnyView(scope.PrimerCardholderNameField(label: "Full Name"))
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.purple.opacity(0.12), Color.indigo.opacity(0.08)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.purple.opacity(0.25), lineWidth: 1.5)
-                            )
-                            .padding(.horizontal)
+                    AnyView(scope.PrimerCardholderNameField(
+                        label: "Full Name",
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            labelFont: .caption,
+                            textColor: .purple,
+                            labelColor: .indigo,
+                            backgroundColor: Color.purple.opacity(0.05),
+                            borderColor: .purple,
+                            focusedBorderColor: .indigo,
+                            errorBorderColor: .red,
+                            placeholderColor: .purple.opacity(0.6),
+                            cornerRadius: 16,
+                            borderWidth: 2,
+                            padding: EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20),
+                            fieldHeight: 60
+                        )
+                    ))
+                    .padding(.horizontal)
                     
                     // Custom merchant component between Primer fields
                     HStack {
@@ -190,51 +198,66 @@ struct ColorfulThemedCardFormDemo: View {
                     .cornerRadius(8)
                     .padding(.horizontal)
                     
-                        // Card Number with blue gradient
-                        AnyView(scope.PrimerCardNumberField(label: "Card Number"))
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.blue.opacity(0.15), Color.indigo.opacity(0.10)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
+                        // Card Number with deep field styling
+                        AnyView(scope.PrimerCardNumberField(
+                            label: "Card Number",
+                            styling: PrimerFieldStyling(
+                                font: .title2,
+                                labelFont: .caption2,
+                                textColor: .blue,
+                                labelColor: .cyan,
+                                backgroundColor: Color.blue.opacity(0.08),
+                                borderColor: .blue,
+                                focusedBorderColor: .cyan,
+                                errorBorderColor: .red,
+                                placeholderColor: .blue.opacity(0.5),
+                                cornerRadius: 20,
+                                borderWidth: 3,
+                                padding: EdgeInsets(top: 18, leading: 24, bottom: 18, trailing: 24),
+                                fieldHeight: 65
                             )
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.blue.opacity(0.3), lineWidth: 1.5)
-                            )
-                            .padding(.horizontal)
+                        ))
+                        .padding(.horizontal)
                         
-                        // Expiry and CVV in horizontal layout
+                        // Expiry and CVV with custom field styling
                         HStack(spacing: 12) {
-                            AnyView(scope.PrimerExpiryDateField(label: "Expiry"))
-                                .background(
-                                    LinearGradient(
-                                        colors: [Color.orange.opacity(0.12), Color.yellow.opacity(0.08)],
-                                        startPoint: .topTrailing,
-                                        endPoint: .bottomLeading
-                                    )
+                            AnyView(scope.PrimerExpiryDateField(
+                                label: "Expiry",
+                                styling: PrimerFieldStyling(
+                                    font: .headline,
+                                    labelFont: .caption,
+                                    textColor: .orange,
+                                    labelColor: .yellow,
+                                    backgroundColor: Color.orange.opacity(0.1),
+                                    borderColor: .orange,
+                                    focusedBorderColor: .yellow,
+                                    errorBorderColor: .red,
+                                    placeholderColor: .orange.opacity(0.7),
+                                    cornerRadius: 12,
+                                    borderWidth: 2,
+                                    padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16),
+                                    fieldHeight: 55
                                 )
-                                .cornerRadius(12)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.orange.opacity(0.25), lineWidth: 1.5)
-                                )
+                            ))
                             
-                            AnyView(scope.PrimerCvvField(label: "CVV"))
-                                .background(
-                                    LinearGradient(
-                                        colors: [Color.teal.opacity(0.15), Color.mint.opacity(0.10)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
+                            AnyView(scope.PrimerCvvField(
+                                label: "CVV",
+                                styling: PrimerFieldStyling(
+                                    font: .headline,
+                                    labelFont: .caption,
+                                    textColor: .teal,
+                                    labelColor: .mint,
+                                    backgroundColor: Color.teal.opacity(0.1),
+                                    borderColor: .teal,
+                                    focusedBorderColor: .mint,
+                                    errorBorderColor: .red,
+                                    placeholderColor: .teal.opacity(0.7),
+                                    cornerRadius: 12,
+                                    borderWidth: 2,
+                                    padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16),
+                                    fieldHeight: 55
                                 )
-                                .cornerRadius(12)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.teal.opacity(0.3), lineWidth: 1.5)
-                                )
+                            ))
                         }
                         .padding(.horizontal)
                     
@@ -295,106 +318,111 @@ struct ColorfulThemedCardFormDemo: View {
     // Create colorful billing address section with ViewBuilder
     private func createColorfulBillingAddressSection(scope: any PrimerCardFormScope) -> some View {
         VStack(spacing: 16) {
-            // Name fields in horizontal layout
+            // Name fields with deep styling
             HStack(spacing: 12) {
-                AnyView(scope.PrimerFirstNameField(label: "First Name"))
-                    .background(
-                        LinearGradient(
-                            colors: [Color.cyan.opacity(0.10), Color.teal.opacity(0.06)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+                AnyView(scope.PrimerFirstNameField(
+                    label: "First Name",
+                    styling: PrimerFieldStyling(
+                        font: .body,
+                        labelFont: .caption2,
+                        textColor: .cyan,
+                        labelColor: .teal,
+                        backgroundColor: Color.cyan.opacity(0.08),
+                        borderColor: .cyan,
+                        focusedBorderColor: .teal,
+                        placeholderColor: .cyan.opacity(0.6),
+                        cornerRadius: 7,
+                        borderWidth: 1.5
                     )
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.cyan.opacity(0.25), lineWidth: 1)
-                    )
+                ))
                 
-                AnyView(scope.PrimerLastNameField(label: "Last Name"))
-                    .background(
-                        LinearGradient(
-                            colors: [Color.mint.opacity(0.10), Color.green.opacity(0.06)],
-                            startPoint: .topTrailing,
-                            endPoint: .bottomLeading
-                        )
+                AnyView(scope.PrimerLastNameField(
+                    label: "Last Name",
+                    styling: PrimerFieldStyling(
+                        font: .body,
+                        labelFont: .caption2,
+                        textColor: .mint,
+                        labelColor: .green,
+                        backgroundColor: Color.mint.opacity(0.08),
+                        borderColor: .mint,
+                        focusedBorderColor: .green,
+                        placeholderColor: .mint.opacity(0.6),
+                        cornerRadius: 10,
+                        borderWidth: 1.5
                     )
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.mint.opacity(0.25), lineWidth: 1)
-                    )
+                ))
             }
             .padding(.horizontal)
             
-            // Country field
-            AnyView(scope.PrimerCountryField(label: "Country"))
-                .background(
-                    LinearGradient(
-                        colors: [Color.purple.opacity(0.08), Color.indigo.opacity(0.06)],
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
+            // Country field with custom styling
+            AnyView(scope.PrimerCountryField(
+                label: "Country",
+                styling: PrimerFieldStyling(
+                    font: .body,
+                    labelFont: .caption2,
+                    textColor: .purple,
+                    labelColor: .indigo,
+                    backgroundColor: Color.purple.opacity(0.06),
+                    borderColor: .purple,
+                    focusedBorderColor: .indigo,
+                    placeholderColor: .purple.opacity(0.6),
+                    cornerRadius: 13,
+                    borderWidth: 3
                 )
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.purple.opacity(0.25), lineWidth: 1)
-                )
-                .padding(.horizontal)
+            ))
+            .padding(.horizontal)
             
-            // Address fields
-            AnyView(scope.PrimerAddressLine1Field(label: "Address"))
-                .background(
-                    LinearGradient(
-                        colors: [Color.indigo.opacity(0.10), Color.purple.opacity(0.06)],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
+            // Address field with custom styling
+            AnyView(scope.PrimerAddressLine1Field(
+                label: "Address",
+                styling: PrimerFieldStyling(
+                    font: .body,
+                    labelFont: .caption2,
+                    textColor: .indigo,
+                    labelColor: .purple,
+                    backgroundColor: Color.indigo.opacity(0.08),
+                    borderColor: .indigo,
+                    focusedBorderColor: .purple,
+                    placeholderColor: .indigo.opacity(0.6),
+                    cornerRadius: 17,
+                    borderWidth: 1.5
                 )
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.indigo.opacity(0.25), lineWidth: 1)
-                )
-                .padding(.horizontal)
+            ))
+            .padding(.horizontal)
             
-            // Postal Code and State
+            // Postal Code and State with custom styling
             HStack(spacing: 12) {
-                AnyView(scope.PrimerPostalCodeField(label: "Postal Code"))
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                Color.red.opacity(0.08),
-                                Color.orange.opacity(0.06),
-                                Color.yellow.opacity(0.08),
-                                Color.green.opacity(0.06),
-                                Color.blue.opacity(0.08),
-                                Color.purple.opacity(0.06)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                AnyView(scope.PrimerPostalCodeField(
+                    label: "Postal Code",
+                    styling: PrimerFieldStyling(
+                        font: .body,
+                        labelFont: .caption2,
+                        textColor: .pink,
+                        labelColor: .red,
+                        backgroundColor: Color.pink.opacity(0.08),
+                        borderColor: .pink,
+                        focusedBorderColor: .red,
+                        placeholderColor: .pink.opacity(0.6),
+                        cornerRadius: 20,
+                        borderWidth: 1.5
                     )
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.purple.opacity(0.25), lineWidth: 1)
-                    )
+                ))
                 
-                AnyView(scope.PrimerStateField(label: "State"))
-                    .background(
-                        LinearGradient(
-                            colors: [Color.gray.opacity(0.08), Color.secondary.opacity(0.04)],
-                            startPoint: .topTrailing,
-                            endPoint: .bottomLeading
-                        )
+                AnyView(scope.PrimerStateField(
+                    label: "State",
+                    styling: PrimerFieldStyling(
+                        font: .body,
+                        labelFont: .caption2,
+                        textColor: .gray,
+                        labelColor: .secondary,
+                        backgroundColor: Color.gray.opacity(0.06),
+                        borderColor: .gray,
+                        focusedBorderColor: .primary,
+                        placeholderColor: .gray.opacity(0.7),
+                        cornerRadius: 23,
+                        borderWidth: 1
                     )
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.20), lineWidth: 1)
-                    )
+                ))
             }
             .padding(.horizontal)
         }

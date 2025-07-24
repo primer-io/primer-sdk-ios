@@ -122,7 +122,7 @@ internal struct CardFormScreen: View {
         // Use individual field builders from scope for flexible customization
         VStack(spacing: FigmaDesignConstants.sectionSpacing) {
             // Card Number - use ViewBuilder method
-            AnyView(scope.PrimerCardNumberField(label: "Card Number"))
+            AnyView(scope.PrimerCardNumberField(label: "Card Number", styling: nil))
 
             // Allowed Card Networks Display (Android parity)
             let allowedNetworks = [CardNetwork].allowedCardNetworks
@@ -135,16 +135,16 @@ internal struct CardFormScreen: View {
             // Expiry Date and CVV row
             HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
                 // Expiry Date
-                AnyView(scope.PrimerExpiryDateField(label: "Expiry Date"))
+                AnyView(scope.PrimerExpiryDateField(label: "Expiry Date", styling: nil))
                     .frame(maxWidth: .infinity)
 
                 // CVV
-                AnyView(scope.PrimerCvvField(label: "CVV"))
+                AnyView(scope.PrimerCvvField(label: "CVV", styling: nil))
                     .frame(maxWidth: .infinity)
             }
 
             // Cardholder Name
-            AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name"))
+            AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name", styling: nil))
         }
         .padding(.horizontal)
     }

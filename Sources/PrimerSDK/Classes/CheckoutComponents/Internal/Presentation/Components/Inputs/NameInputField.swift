@@ -8,6 +8,46 @@
 import SwiftUI
 import UIKit
 
+/// Helper function to convert SwiftUI Font to UIFont
+@available(iOS 15.0, *)
+private func convertSwiftUIFontToUIFont(_ font: Font) -> UIFont {
+    // Handle iOS 14.0+ specific font cases first
+    if #available(iOS 14.0, *) {
+        switch font {
+        case .title2:
+            return UIFont.preferredFont(forTextStyle: .title2)
+        case .title3:
+            return UIFont.preferredFont(forTextStyle: .title3)
+        case .caption2:
+            return UIFont.preferredFont(forTextStyle: .caption2)
+        default:
+            break
+        }
+    }
+
+    // Handle all iOS 13.1+ compatible cases
+    switch font {
+    case .largeTitle:
+        return UIFont.preferredFont(forTextStyle: .largeTitle)
+    case .title:
+        return UIFont.preferredFont(forTextStyle: .title1)
+    case .headline:
+        return UIFont.preferredFont(forTextStyle: .headline)
+    case .subheadline:
+        return UIFont.preferredFont(forTextStyle: .subheadline)
+    case .body:
+        return UIFont.preferredFont(forTextStyle: .body)
+    case .callout:
+        return UIFont.preferredFont(forTextStyle: .callout)
+    case .footnote:
+        return UIFont.preferredFont(forTextStyle: .footnote)
+    case .caption:
+        return UIFont.preferredFont(forTextStyle: .caption1)
+    default:
+        return UIFont.systemFont(ofSize: 16, weight: .regular)
+    }
+}
+
 /// A SwiftUI component for first/last name input with validation and consistent styling
 /// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
@@ -28,6 +68,9 @@ internal struct NameInputField: View, LogReporter {
 
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
+
+    /// Optional styling configuration for customizing field appearance
+    let styling: PrimerFieldStyling?
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -53,13 +96,15 @@ internal struct NameInputField: View, LogReporter {
 
     /// Dynamic border color based on field state
     private var borderColor: Color {
+        let color: Color
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            return tokens?.primerColorBorderOutlinedError ?? .red
+            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
         } else if isFocused {
-            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
+            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
         }
+        return color
     }
 
     // MARK: - Initialization
@@ -69,12 +114,14 @@ internal struct NameInputField: View, LogReporter {
         label: String,
         placeholder: String,
         inputType: PrimerInputElementType,
+        styling: PrimerFieldStyling? = nil,
         onNameChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.inputType = inputType
+        self.styling = styling
         self.onNameChange = onNameChange
         self.onValidationChange = onValidationChange
     }
@@ -83,26 +130,22 @@ internal struct NameInputField: View, LogReporter {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label
+            // Label with custom styling support
             Text(label)
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
 
             // Name input field with ZStack architecture
             ZStack {
                 // Background and border styling with gradient-aware hierarchy
-                Group {
-                    if true {
-                        // Only apply manual background when no gradient is present
-                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                            .fill(tokens?.primerColorBackground ?? .white)
-                    }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                        .stroke(borderColor, lineWidth: 1)
-                        .animation(.easeInOut(duration: 0.2), value: borderColor)
-                )
+                // Background and border styling with custom styling support
+                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused)
+                    )
 
                 // Input field content
                 HStack {
@@ -114,22 +157,23 @@ internal struct NameInputField: View, LogReporter {
                             isFocused: $isFocused,
                             placeholder: placeholder,
                             inputType: inputType,
+                            styling: styling,
                             validationService: validationService,
                             onNameChange: onNameChange,
                             onValidationChange: onValidationChange
                         )
-                        .padding(.leading, tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
+                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
                         TextField(placeholder, text: $name)
                             .autocapitalization(.words)
                             .disableAutocorrection(true)
                             .disabled(true)
-                            .padding(.leading, tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
+                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
+                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     }
 
                     Spacer()
@@ -150,7 +194,7 @@ internal struct NameInputField: View, LogReporter {
                     }
                 }
             }
-            .frame(height: FigmaDesignConstants.inputFieldHeight)
+            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
@@ -188,6 +232,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
     @Binding var isFocused: Bool
     let placeholder: String
     let inputType: PrimerInputElementType
+    let styling: PrimerFieldStyling?
     let validationService: ValidationService
     let onNameChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
@@ -197,10 +242,42 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
         textField.delegate = context.coordinator
         textField.placeholder = placeholder
         textField.borderStyle = .none
-        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        // Apply custom font or use system default
+        if let customFont = styling?.font {
+            textField.font = convertSwiftUIFontToUIFont(customFont)
+        } else {
+            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        }
+
+        textField.backgroundColor = .clear
+
+        // Apply custom text color if provided
+        if let textColor = styling?.textColor {
+            textField.textColor = UIColor(textColor)
+        }
         textField.autocapitalizationType = .words
         textField.autocorrectionType = .no
         textField.returnKeyType = .done
+
+        // Apply custom placeholder styling or use defaults
+        let placeholderFont: UIFont = {
+            if let customFont = styling?.font {
+                return convertSwiftUIFontToUIFont(customFont)
+            } else if let interFont = UIFont(name: "InterVariable", size: 16) {
+                return interFont
+            }
+            return UIFont.systemFont(ofSize: 16, weight: .regular)
+        }()
+
+        let placeholderColor = styling?.placeholderColor != nil ? UIColor(styling!.placeholderColor!) : UIColor.systemGray
+
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [
+                .foregroundColor: placeholderColor,
+                .font: placeholderFont
+            ]
+        )
 
         // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
         let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))

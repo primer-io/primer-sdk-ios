@@ -72,7 +72,8 @@ internal struct BillingAddressView: View, LogReporter {
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
 
-    // Removed: modifier - no longer needed with ViewBuilder approach
+    /// Optional styling configuration for customizing field appearance
+    let styling: PrimerFieldStyling?
 
     /// Currently selected country (atomic state for bug-free updates)
     @State private var selectedCountry: CountryCode.PhoneNumberCountryCode?
@@ -87,11 +88,12 @@ internal struct BillingAddressView: View, LogReporter {
     /// Creates a new BillingAddressView with comprehensive customization support
     internal init(
         cardFormScope: any PrimerCardFormScope,
-        configuration: BillingAddressConfiguration
+        configuration: BillingAddressConfiguration,
+        styling: PrimerFieldStyling? = nil
     ) {
         self.cardFormScope = cardFormScope
         self.configuration = configuration
-        // Removed: modifier assignment
+        self.styling = styling
     }
 
     // MARK: - Body
@@ -102,53 +104,53 @@ internal struct BillingAddressView: View, LogReporter {
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
-                        AnyView(cardFormScope.PrimerFirstNameField(label: CheckoutComponentsStrings.firstNameLabel))
+                        AnyView(cardFormScope.PrimerFirstNameField(label: CheckoutComponentsStrings.firstNameLabel, styling: styling))
                     }
 
                     if configuration.showLastName {
-                        AnyView(cardFormScope.PrimerLastNameField(label: CheckoutComponentsStrings.lastNameLabel))
+                        AnyView(cardFormScope.PrimerLastNameField(label: CheckoutComponentsStrings.lastNameLabel, styling: styling))
                     }
                 }
             }
 
             // Country - Show first to match Drop-in layout
             if configuration.showCountry {
-                AnyView(cardFormScope.PrimerCountryField(label: CheckoutComponentsStrings.countryLabel))
+                AnyView(cardFormScope.PrimerCountryField(label: CheckoutComponentsStrings.countryLabel, styling: styling))
             }
 
             // Address Line 1 - Using ViewBuilder field functions
             if configuration.showAddressLine1 {
-                AnyView(cardFormScope.PrimerAddressLine1Field(label: CheckoutComponentsStrings.addressLine1Label))
+                AnyView(cardFormScope.PrimerAddressLine1Field(label: CheckoutComponentsStrings.addressLine1Label, styling: styling))
             }
 
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
-                AnyView(cardFormScope.PrimerPostalCodeField(label: CheckoutComponentsStrings.postalCodeLabel))
+                AnyView(cardFormScope.PrimerPostalCodeField(label: CheckoutComponentsStrings.postalCodeLabel, styling: styling))
             }
 
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
-                AnyView(cardFormScope.PrimerStateField(label: CheckoutComponentsStrings.stateLabel))
+                AnyView(cardFormScope.PrimerStateField(label: CheckoutComponentsStrings.stateLabel, styling: styling))
             }
 
             // Address Line 2 - Using ViewBuilder field functions (Optional)
             if configuration.showAddressLine2 {
-                AnyView(cardFormScope.PrimerAddressLine2Field(label: CheckoutComponentsStrings.addressLine2Label))
+                AnyView(cardFormScope.PrimerAddressLine2Field(label: CheckoutComponentsStrings.addressLine2Label, styling: styling))
             }
 
             // City - After address fields
             if configuration.showCity {
-                AnyView(cardFormScope.PrimerCityField(label: CheckoutComponentsStrings.cityLabel))
+                AnyView(cardFormScope.PrimerCityField(label: CheckoutComponentsStrings.cityLabel, styling: styling))
             }
 
             // Email - Near the end
             if configuration.showEmail {
-                AnyView(cardFormScope.PrimerEmailField(label: CheckoutComponentsStrings.emailLabel))
+                AnyView(cardFormScope.PrimerEmailField(label: CheckoutComponentsStrings.emailLabel, styling: styling))
             }
 
             // Phone Number - Last field
             if configuration.showPhoneNumber {
-                AnyView(cardFormScope.PrimerPhoneNumberField(label: CheckoutComponentsStrings.phoneNumberLabel))
+                AnyView(cardFormScope.PrimerPhoneNumberField(label: CheckoutComponentsStrings.phoneNumberLabel, styling: styling))
             }
         }
         .sheet(isPresented: $showCountrySelector) {

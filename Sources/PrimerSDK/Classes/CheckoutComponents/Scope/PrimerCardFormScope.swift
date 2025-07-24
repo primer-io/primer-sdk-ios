@@ -121,52 +121,52 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)? { get set }
 
     /// Cardholder name input field with ViewBuilder.
-    @ViewBuilder func PrimerCardholderNameField(label: String?) -> any View
+    @ViewBuilder func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Card number input field with ViewBuilder.
-    @ViewBuilder func PrimerCardNumberField(label: String?) -> any View
+    @ViewBuilder func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// CVV/CVC input field with ViewBuilder.
-    @ViewBuilder func PrimerCvvField(label: String?) -> any View
+    @ViewBuilder func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Expiry date input field with ViewBuilder.
-    @ViewBuilder func PrimerExpiryDateField(label: String?) -> any View
+    @ViewBuilder func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Postal code input field with ViewBuilder.
-    @ViewBuilder func PrimerPostalCodeField(label: String?) -> any View
+    @ViewBuilder func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Country selection field with ViewBuilder.
-    @ViewBuilder func PrimerCountryField(label: String?) -> any View
+    @ViewBuilder func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// City input field with ViewBuilder.
-    @ViewBuilder func PrimerCityField(label: String?) -> any View
+    @ViewBuilder func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// State/province input field with ViewBuilder.
-    @ViewBuilder func PrimerStateField(label: String?) -> any View
+    @ViewBuilder func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// First address line input field with ViewBuilder.
-    @ViewBuilder func PrimerAddressLine1Field(label: String?) -> any View
+    @ViewBuilder func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Second address line input field with ViewBuilder.
-    @ViewBuilder func PrimerAddressLine2Field(label: String?) -> any View
+    @ViewBuilder func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Phone number input field with ViewBuilder.
-    @ViewBuilder func PrimerPhoneNumberField(label: String?) -> any View
+    @ViewBuilder func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// First name input field with ViewBuilder.
-    @ViewBuilder func PrimerFirstNameField(label: String?) -> any View
+    @ViewBuilder func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Last name input field with ViewBuilder.
-    @ViewBuilder func PrimerLastNameField(label: String?) -> any View
+    @ViewBuilder func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Email input field with ViewBuilder.
-    @ViewBuilder func PrimerEmailField(label: String?) -> any View
+    @ViewBuilder func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Retail outlet input field with ViewBuilder.
-    @ViewBuilder func PrimerRetailOutletField(label: String?) -> any View
+    @ViewBuilder func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// OTP code input field with ViewBuilder.
-    @ViewBuilder func PrimerOtpCodeField(label: String?) -> any View
+    @ViewBuilder func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     /// Submit button with ViewBuilder.
     @ViewBuilder func PrimerSubmitButton(text: String) -> any View
@@ -311,4 +311,5 @@ extension PrimerCardFormScope {
         onCancel()
     }
 }
+
 // swiftlint:enable identifier_name

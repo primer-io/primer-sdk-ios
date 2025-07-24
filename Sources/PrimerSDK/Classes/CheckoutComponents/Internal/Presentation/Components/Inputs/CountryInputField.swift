@@ -32,6 +32,9 @@ internal struct CountryInputField: View, LogReporter {
 
     /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
+
+    /// Optional styling configuration for customizing field appearance
+    let styling: PrimerFieldStyling?
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -60,12 +63,28 @@ internal struct CountryInputField: View, LogReporter {
 
     /// Dynamic border color based on field state
     private var borderColor: Color {
+        let color: Color
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            return tokens?.primerColorBorderOutlinedError ?? .red
+            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
         } else if isFocused {
-            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
+            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
+        }
+        return color
+    }
+
+    /// Display text font for country field
+    private var countryTextFont: Font {
+        styling?.font ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .body)
+    }
+
+    /// Text color for country display (placeholder vs selected)
+    private var countryTextColor: Color {
+        if countryName.isEmpty {
+            return styling?.placeholderColor ?? tokens?.primerColorTextSecondary ?? .secondary
+        } else {
+            return styling?.textColor ?? tokens?.primerColorTextPrimary ?? .primary
         }
     }
 
@@ -76,6 +95,7 @@ internal struct CountryInputField: View, LogReporter {
         label: String,
         placeholder: String,
         selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
+        styling: PrimerFieldStyling? = nil,
         onCountryChange: ((String) -> Void)? = nil,
         onCountryCodeChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
@@ -84,6 +104,7 @@ internal struct CountryInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.selectedCountry = selectedCountry
+        self.styling = styling
         self.onCountryChange = onCountryChange
         self.onCountryCodeChange = onCountryCodeChange
         self.onValidationChange = onValidationChange
@@ -94,26 +115,22 @@ internal struct CountryInputField: View, LogReporter {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label
+            // Label with custom styling support
             Text(label)
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
 
             // Country field with selector button using ZStack architecture
             ZStack {
                 // Background and border styling with gradient-aware hierarchy
-                Group {
-                    if true {
-                        // Only apply manual background when no gradient is present
-                        RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                            .fill(tokens?.primerColorBackground ?? .white)
-                    }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                        .stroke(borderColor, lineWidth: 1)
-                        .animation(.easeInOut(duration: 0.2), value: borderColor)
-                )
+                // Background and border styling with custom styling support
+                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused)
+                    )
 
                 // Country selector button content
                 Button(action: {
@@ -121,16 +138,15 @@ internal struct CountryInputField: View, LogReporter {
                 }, label: {
                     HStack {
                         Text(countryName.isEmpty ? placeholder : countryName)
-                            .foregroundColor(countryName.isEmpty ?
-                                                (tokens?.primerColorTextSecondary ?? .secondary) :
-                                                (tokens?.primerColorTextPrimary ?? .primary))
+                            .font(countryTextFont)
+                            .foregroundColor(countryTextColor)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         Spacer()
                     }
-                    .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                    .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                     .padding(.trailing, tokens?.primerSizeXxlarge ?? 60)
-                    .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                 })
                 .buttonStyle(PlainButtonStyle())
 
@@ -154,7 +170,7 @@ internal struct CountryInputField: View, LogReporter {
                     }
                 }
             }
-            .frame(height: FigmaDesignConstants.inputFieldHeight)
+            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
