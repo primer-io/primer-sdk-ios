@@ -74,12 +74,10 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func start_async() {
-        self.didPresentExternalView = { [weak self] in
+        didPresentExternalView = { [weak self] in
             guard let self else { return }
 
-            Task {
-                await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
-            }
+            Task { await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type) }
         }
 
         super.start_async()
@@ -142,7 +140,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil
             ),
             extra: nil,
@@ -153,15 +151,15 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         ))
 
         await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-            imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
+            imageView: uiModule.makeIconImageView(withDimension: 24.0),
             message: nil
         )
 
         try validate()
 
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
-        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
     }
@@ -190,9 +188,9 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performTokenizationStep() async throws {
-        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -248,7 +246,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func awaitUserInput() async throws {
-        self.payPalInstrument = try await createPaypalPaymentInstrument()
+        payPalInstrument = try await createPaypalPaymentInstrument()
     }
 
     private func fetchOAuthURL() -> Promise<URL> {
@@ -481,16 +479,16 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 externalPayerInfo: externalPayerInfo
             )
         case .vault:
-            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
+            guard let confirmBillingAgreementResponse else {
                 throw handled(primerError: .invalidValue(key: "confirmedBillingAgreement",
                                                          value: orderId))
             }
 
             return PayPalPaymentInstrument(
                 paypalOrderId: nil,
-                paypalBillingAgreementId: confirmedBillingAgreement.billingAgreementId,
-                shippingAddress: confirmedBillingAgreement.shippingAddress,
-                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
+                paypalBillingAgreementId: confirmBillingAgreementResponse.billingAgreementId,
+                shippingAddress: confirmBillingAgreementResponse.shippingAddress,
+                externalPayerInfo: confirmBillingAgreementResponse.externalPayerInfo
             )
         case .none:
             preconditionFailure("Intent should already be set")
@@ -566,9 +564,8 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func generateBillingAgreementConfirmation() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
         do {
-            let res = try await payPalService.confirmBillingAgreement()
-            self.confirmBillingAgreementResponse = res
-            return res
+            self.confirmBillingAgreementResponse = try await payPalService.confirmBillingAgreement()
+            return confirmBillingAgreementResponse!
         } catch {
             throw handled(primerError: .failedToCreateSession(error: error))
         }

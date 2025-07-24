@@ -202,12 +202,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             switch self.createPayPalOrderSessionResult {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let successResult):
-                completion(.success(successResult))
-            case nil:
-                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
+            case .failure(let err): completion(.failure(err))
+            case .success(let successResult): completion(.success(successResult))
+            case nil: completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -219,12 +216,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
         switch createPayPalOrderSessionResult {
-        case .failure(let err):
-            throw err
-        case .success(let successResult):
-            return successResult
-        case nil:
-            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        case .failure(let err): throw err
+        case .success(let successResult): return successResult
+        case nil: throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -235,12 +229,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             switch self.createPayPalBillingAgreementSessionResult {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let successResult):
-                completion(.success(successResult))
-            case nil:
-                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
+            case .failure(let err): completion(.failure(err))
+            case .success(let successResult): completion(.success(successResult))
+            case nil: completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -252,12 +243,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
         switch createPayPalBillingAgreementSessionResult {
-        case .failure(let err):
-            throw err
-        case .success(let successResult):
-            return successResult
-        case nil:
-            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        case .failure(let err): throw err
+        case .success(let successResult): return successResult
+        case nil: throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -268,12 +256,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             switch self.confirmPayPalBillingAgreementResult {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let successResult):
-                completion(.success(successResult))
-            case nil:
-                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
+            case .failure(let err): completion(.failure(err))
+            case .success(let successResult): completion(.success(successResult))
+            case nil: completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -285,12 +270,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
         switch confirmPayPalBillingAgreementResult {
-        case .failure(let err):
-            throw err
-        case .success(let successResult):
-            return successResult
-        case nil:
-            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        case .failure(let err): throw err
+        case .success(let successResult): return successResult
+        case nil: throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -301,12 +283,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     ) {
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             switch self.fetchPayPalExternalPayerInfoResult {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let successResult):
-                completion(.success(successResult))
-            case nil:
-                completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
+            case .failure(let err): completion(.failure(err))
+            case .success(let successResult): completion(.success(successResult))
+            case nil: completion(.failure(NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)))
             }
         }
     }
@@ -318,12 +297,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
         switch fetchPayPalExternalPayerInfoResult {
-        case .failure(let err):
-            throw err
-        case .success(let successResult):
-            return successResult
-        case nil:
-            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        case .failure(let err): throw err
+        case .success(let successResult): return successResult
+        case nil: throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
