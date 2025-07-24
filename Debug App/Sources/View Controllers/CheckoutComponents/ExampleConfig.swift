@@ -20,6 +20,11 @@ struct ExampleConfig: Identifiable {
     
     enum CheckoutCustomization {
         case colorful
+        case stepByStep
+        case dynamicLayout
+        case runtimeCustomization
+        case propertyReassignment
+        case mixedComponents
     }
 }
 
@@ -45,11 +50,59 @@ let defaultExamples: [ExampleConfig] = [
     )
 ]
 
+// MARK: - Architecture Examples
+
+let architectureExamples: [ExampleConfig] = [
+    ExampleConfig(
+        name: "Step-by-Step Navigation",
+        description: "Single input field with Previous/Next controls",
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .stepByStep
+    ),
+    ExampleConfig(
+        name: "Mixed Components",
+        description: "Combining default and custom styled fields",
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .mixedComponents
+    )
+]
+
+// MARK: - Layout Examples
+
+let layoutExamples: [ExampleConfig] = [
+    ExampleConfig(
+        name: "Dynamic Layouts",
+        description: "Switch between vertical, horizontal, grid, and compact layouts",
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .dynamicLayout
+    )
+]
+
+// MARK: - Interactive Examples
+
+let interactiveExamples: [ExampleConfig] = [
+    ExampleConfig(
+        name: "Property Reassignment",
+        description: "Change component properties dynamically at runtime",
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .propertyReassignment
+    ),
+    ExampleConfig(
+        name: "Conditional Customization",
+        description: "Components adapt based on card type and validation state",
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .runtimeCustomization
+    )
+]
+
 // MARK: - All Examples by Category
 
 enum ExampleCategory: String, CaseIterable {
     case `default` = "Default Example"
     case styling = "Styling Variations"
+    case architecture = "Architecture Patterns"
+    case layouts = "Layout Variations"
+    case interactive = "Interactive Features"
     
     var examples: [ExampleConfig] {
         switch self {
@@ -57,6 +110,12 @@ enum ExampleCategory: String, CaseIterable {
             return defaultExamples
         case .styling:
             return stylingExamples
+        case .architecture:
+            return architectureExamples
+        case .layouts:
+            return layoutExamples
+        case .interactive:
+            return interactiveExamples
         }
     }
     
@@ -66,6 +125,12 @@ enum ExampleCategory: String, CaseIterable {
             return "Basic CheckoutComponents without customization"
         case .styling:
             return "Various visual themes and customizations"
+        case .architecture:
+            return "Component composition and structure variations"
+        case .layouts:
+            return "Different ways to arrange form fields"
+        case .interactive:
+            return "Runtime behavior and conditional customization"
         }
     }
 }

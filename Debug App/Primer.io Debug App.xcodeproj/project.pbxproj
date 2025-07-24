@@ -55,6 +55,11 @@
 		A1892C942E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1892C902E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A1FD8B2DA599550069B0DB /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = A1A1FD8A2DA599550069B0DB /* chocolate_bar_demo.otf */; };
+		A1B439D12E32DCAA00CB7AB2 /* CustomCardFormLayoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B439CE2E32DCAA00CB7AB2 /* CustomCardFormLayoutDemo.swift */; };
+		A1B439D22E32DCAA00CB7AB2 /* PropertyReassignmentDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B439CF2E32DCAA00CB7AB2 /* PropertyReassignmentDemo.swift */; };
+		A1B439D32E32DCAA00CB7AB2 /* SingleInputFieldDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B439D02E32DCAA00CB7AB2 /* SingleInputFieldDemo.swift */; };
+		A1B439D62E32DD1800CB7AB2 /* MixedComponentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B439D42E32DD1800CB7AB2 /* MixedComponentsDemo.swift */; };
+		A1B439D72E32DD1800CB7AB2 /* RuntimeCustomizationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B439D52E32DD1800CB7AB2 /* RuntimeCustomizationDemo.swift */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
 		C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
@@ -228,6 +233,11 @@
 		A1A701442C739C17002E236F /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Main.strings; sourceTree = "<group>"; };
 		A1A701452C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A1A701462C739C1D002E236F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Main.strings; sourceTree = "<group>"; };
+		A1B439CE2E32DCAA00CB7AB2 /* CustomCardFormLayoutDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCardFormLayoutDemo.swift; sourceTree = "<group>"; };
+		A1B439CF2E32DCAA00CB7AB2 /* PropertyReassignmentDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyReassignmentDemo.swift; sourceTree = "<group>"; };
+		A1B439D02E32DCAA00CB7AB2 /* SingleInputFieldDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInputFieldDemo.swift; sourceTree = "<group>"; };
+		A1B439D42E32DD1800CB7AB2 /* MixedComponentsDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedComponentsDemo.swift; sourceTree = "<group>"; };
+		A1B439D52E32DD1800CB7AB2 /* RuntimeCustomizationDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCustomizationDemo.swift; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
@@ -453,6 +463,11 @@
 		A12200882E0DCF670053BF11 /* CheckoutComponentsShowcase */ = {
 			isa = PBXGroup;
 			children = (
+				A1B439D42E32DD1800CB7AB2 /* MixedComponentsDemo.swift */,
+				A1B439D52E32DD1800CB7AB2 /* RuntimeCustomizationDemo.swift */,
+				A1B439CE2E32DCAA00CB7AB2 /* CustomCardFormLayoutDemo.swift */,
+				A1B439CF2E32DCAA00CB7AB2 /* PropertyReassignmentDemo.swift */,
+				A1B439D02E32DCAA00CB7AB2 /* SingleInputFieldDemo.swift */,
 				A12200762E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift */,
 				A12200782E0DCF670053BF11 /* SingleFieldCustomisationDemo.swift */,
 				A12200842E0DCF670053BF11 /* ShowcaseDemo.swift */,
@@ -800,7 +815,12 @@
 				049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */,
+				A1B439D12E32DCAA00CB7AB2 /* CustomCardFormLayoutDemo.swift in Sources */,
+				A1B439D22E32DCAA00CB7AB2 /* PropertyReassignmentDemo.swift in Sources */,
+				A1B439D32E32DCAA00CB7AB2 /* SingleInputFieldDemo.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
+				A1B439D62E32DD1800CB7AB2 /* MixedComponentsDemo.swift in Sources */,
+				A1B439D72E32DD1800CB7AB2 /* RuntimeCustomizationDemo.swift in Sources */,
 				8761410A2B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
 				04921D0D2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				A1892C912E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift in Sources */,

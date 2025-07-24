@@ -68,7 +68,10 @@
       "mcp__sequentialthinking__sequentialthinking",
       "mcp__git__git_status",
       "mcp__git__git_diff_staged",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:primerapi.atlassian.net)",
+      "mcp__atlassian__getJiraIssue",
+      "mcp__atlassian__addCommentToJiraIssue"
     ],
     "deny": []
   }
