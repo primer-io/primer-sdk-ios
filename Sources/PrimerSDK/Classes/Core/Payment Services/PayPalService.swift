@@ -99,22 +99,12 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let apiConfig = PrimerAPIConfigurationModule.apiConfiguration
-
-        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            throw handled(primerError: .invalidValue(
-                key: "configuration.paypal.id",
-                value: apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            ))
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
         guard let amount = AppState.current.amount else {
-            throw handled(primerError: .invalidValue(
-                key: "amount",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            ))
+            throw handled(primerError: .invalidValue(key: "amount"))
         }
 
         guard let currency = AppState.current.currency else {
@@ -176,17 +166,12 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession() async throws -> String {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            throw handled(primerError: .invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            ))
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
         let scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
@@ -238,21 +223,16 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            throw handled(primerError: .invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            ))
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
-        guard let tokenId = paypalTokenId else {
-            throw handled(primerError: .invalidValue(key: "paypalTokenId", value: paypalTokenId))
+        guard let paypalTokenId else {
+            throw handled(primerError: .invalidValue(key: "paypalTokenId"))
         }
 
         do {
@@ -260,7 +240,7 @@ final class PayPalService: PayPalServiceProtocol {
                 clientToken: decodedJWTToken,
                 payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement(
                     paymentMethodConfigId: configId,
-                    tokenId: tokenId
+                    tokenId: paypalTokenId
                 )
             )
         } catch {
@@ -293,19 +273,12 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            throw handled(primerError: .invalidValue(
-                key: "configuration.paypal.id",
-                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            ))
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
         return try await apiClient.fetchPayPalExternalPayerInfo(

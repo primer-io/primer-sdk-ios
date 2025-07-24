@@ -29,37 +29,19 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl"))
         }
 
         guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         guard decodedJWTToken.coreUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.coreUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.coreUrl"))
         }
     }
 
@@ -76,7 +58,6 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func start_async() {
         didPresentExternalView = { [weak self] in
             guard let self else { return }
-
             Task { await PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type) }
         }
 
@@ -305,17 +286,17 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         case .checkout:
             let res = try await payPalService.startOrderSession()
             guard let url = URL(string: res.approvalUrl) else {
-                throw handled(primerError: .invalidValue(key: "res.approvalUrl",
-                                                         value: res.approvalUrl))
+                throw handled(primerError: .invalidValue(key: "res.approvalUrl", value: res.approvalUrl))
             }
             self.orderId = res.orderId
             return url
         case .vault:
             let urlStr = try await payPalService.startBillingAgreementSession()
+
             guard let url = URL(string: urlStr) else {
-                throw handled(primerError: .invalidValue(key: "billingAgreement.response.url",
-                                                         value: urlStr))
+                throw handled(primerError: .invalidValue(key: "billingAgreement.response.url", value: urlStr))
             }
+
             return url
         case .none:
             preconditionFailure("Intent should already be set")
@@ -431,10 +412,10 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 externalPayerInfo: billingAgreement.externalPayerInfo
             )
         } else {
-            guard let orderId = orderId else {
-                throw handled(primerError: .invalidValue(key: "orderId",
-                                                         value: orderId))
+            guard let orderId else {
+                throw handled(primerError: .invalidValue(key: "orderId"))
             }
+
             let response = try await fetchPayPalExternalPayerInfo(orderId: orderId)
 
             // MARK: REVIEW_CHECK: Is this correct? because PromiseKit version is using 'generatePaypalPaymentInstrument' twice
@@ -462,14 +443,12 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     ) async throws -> PayPalPaymentInstrument {
         switch PrimerInternal.shared.intent {
         case .checkout:
-            guard let orderId = orderId else {
-                throw handled(primerError: .invalidValue(key: "orderId",
-                                                         value: orderId))
+            guard let orderId else {
+                throw handled(primerError: .invalidValue(key: "orderId"))
             }
 
-            guard let externalPayerInfo = externalPayerInfo else {
-                throw handled(primerError: .invalidValue(key: "externalPayerInfo",
-                                                         value: orderId))
+            guard let externalPayerInfo else {
+                throw handled(primerError: .invalidValue(key: "externalPayerInfo"))
             }
 
             return PayPalPaymentInstrument(
@@ -480,8 +459,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             )
         case .vault:
             guard let confirmBillingAgreementResponse else {
-                throw handled(primerError: .invalidValue(key: "confirmedBillingAgreement",
-                                                         value: orderId))
+                throw handled(primerError: .invalidValue(key: "confirmedBillingAgreement"))
             }
 
             return PayPalPaymentInstrument(
@@ -498,49 +476,33 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func generatePaypalPaymentInstrument(externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?, completion: @escaping (Result<PayPalPaymentInstrument, Error>) -> Void) {
         switch PrimerInternal.shared.intent {
         case .checkout:
-            guard let orderId = orderId else {
-                let err = PrimerError.invalidValue(key: "orderId",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+            guard let orderId else {
+                return completion(.failure(handled(primerError: .invalidValue(key: "orderId"))))
             }
 
-            guard let externalPayerInfo = externalPayerInfo else {
-                let err = PrimerError.invalidValue(key: "externalPayerInfo",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+            guard let externalPayerInfo else {
+                return completion(.failure(handled(primerError: .invalidValue(key: "externalPayerInfo"))))
             }
 
             let paymentInstrument = PayPalPaymentInstrument(
                 paypalOrderId: orderId,
                 paypalBillingAgreementId: nil,
                 shippingAddress: nil,
-                externalPayerInfo: externalPayerInfo)
+                externalPayerInfo: externalPayerInfo
+            )
 
             completion(.success(paymentInstrument))
 
         case .vault:
-            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
-                let err = PrimerError.invalidValue(key: "confirmedBillingAgreement",
-                                                   value: orderId,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
+            guard let confirmBillingAgreementResponse else {
+                return completion(.failure(handled(primerError: .invalidValue(key: "confirmedBillingAgreement"))))
             }
+            
             let paymentInstrument = PayPalPaymentInstrument(
                 paypalOrderId: nil,
-                paypalBillingAgreementId: confirmedBillingAgreement.billingAgreementId,
-                shippingAddress: confirmedBillingAgreement.shippingAddress,
-                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo)
+                paypalBillingAgreementId: confirmBillingAgreementResponse.billingAgreementId,
+                shippingAddress: confirmBillingAgreementResponse.shippingAddress,
+                externalPayerInfo: confirmBillingAgreementResponse.externalPayerInfo)
 
             completion(.success(paymentInstrument))
 
@@ -564,7 +526,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func generateBillingAgreementConfirmation() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
         do {
-            self.confirmBillingAgreementResponse = try await payPalService.confirmBillingAgreement()
+            confirmBillingAgreementResponse = try await payPalService.confirmBillingAgreement()
             return confirmBillingAgreementResponse!
         } catch {
             throw handled(primerError: .failedToCreateSession(error: error))
