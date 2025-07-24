@@ -2,62 +2,68 @@
 import XCTest
 
 final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
-    
     // MARK: - Test Dependencies
-    
-    var uiManager: MockPrimerUIManager!
-    var tokenizationService: MockTokenizationService!
-    var createResumePaymentService: MockCreateResumePaymentService!
-    var banksApiClient: MockBanksAPIClient!
-    var sut: BankSelectorTokenizationViewModel!
-    
-    // MARK: - Helper Data
-    var tokenizationResponseBody: Response.Body.Tokenization {
-        .init(analyticsId: "analytics_id",
-              id: "id",
-              isVaulted: false,
-              isAlreadyVaulted: false,
-              paymentInstrumentType: .offSession,
-              paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-              paymentInstrumentData: nil,
-              threeDSecureAuthentication: nil,
-              token: "token",
-              tokenType: .singleUse,
-              vaultData: nil)
-    }
 
-    var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "GBP",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     status: .success)
-    }
+    private var uiManager: MockPrimerUIManager!
+    private var tokenizationService: MockTokenizationService!
+    private var createResumePaymentService: MockCreateResumePaymentService!
+    private var banksApiClient: MockBanksAPIClient!
+    private var sut: BankSelectorTokenizationViewModel!
+
+    // MARK: - Helper Data
+
+    private let tokenizationResponseBody = Response.Body.Tokenization(
+        analyticsId: "analytics_id",
+        id: "id",
+        isVaulted: false,
+        isAlreadyVaulted: false,
+        paymentInstrumentType: .offSession,
+        paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+        paymentInstrumentData: nil,
+        threeDSecureAuthentication: nil,
+        token: "token",
+        tokenType: .singleUse,
+        vaultData: nil
+    )
+
+    private let paymentResponseBody = Response.Body.Payment(
+        id: "id",
+        paymentId: "payment_id",
+        amount: 123,
+        currencyCode: "GBP",
+        customer: .init(
+            firstName: "first_name",
+            lastName: "last_name",
+            emailAddress: "email_address",
+            mobileNumber: "+44(0)7891234567",
+            billingAddress: .init(
+                firstName: "billing_first_name",
+                lastName: "billing_last_name",
+                addressLine1: "billing_line_1",
+                addressLine2: "billing_line_2",
+                city: "billing_city",
+                state: "billing_state",
+                countryCode: "billing_country_code",
+                postalCode: "billing_postal_code"
+            ),
+            shippingAddress: .init(
+                firstName: "shipping_first_name",
+                lastName: "shipping_last_name",
+                addressLine1: "shipping_line_1",
+                addressLine2: "shipping_line_2",
+                city: "shipping_city",
+                state: "shipping_state",
+                countryCode: "shipping_country_code",
+                postalCode: "shipping_postal_code"
+            )
+        ),
+        customerId: "customer_id",
+        orderId: "order_id",
+        status: .success
+    )
 
     // MARK: - Setup & Teardown
-    
+
     override func setUpWithError() throws {
         uiManager = MockPrimerUIManager()
         uiManager.primerRootViewController = MockPrimerRootViewController()
@@ -65,11 +71,13 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
         createResumePaymentService = MockCreateResumePaymentService()
         banksApiClient = MockBanksAPIClient()
 
-        sut = BankSelectorTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
-                                                uiManager: uiManager,
-                                                tokenizationService: tokenizationService,
-                                                createResumePaymentService: createResumePaymentService,
-                                                apiClient: banksApiClient)
+        sut = BankSelectorTokenizationViewModel(
+            config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
+            uiManager: uiManager,
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService,
+            apiClient: banksApiClient
+        )
     }
 
     override func tearDownWithError() throws {
@@ -80,7 +88,7 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
     }
 
     // MARK: - Async Flow Tests
-    
+
     func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
