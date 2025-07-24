@@ -6,8 +6,17 @@
         "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
         "state": {
           "branch": null,
-          "revision": "146d9ae8f7accc1ad7b64b2a455106d54914edef",
-          "version": "1.1.0"
+          "revision": "e6405455eefc00fb7ebc64f8d16b151c527d2ea8",
+          "version": "1.1.2"
+        }
+      },
+      {
+        "package": "primer-nol-pay-sdk-ios",
+        "repositoryURL": "https://github.com/primer-io/primer-nol-pay-sdk-ios",
+        "state": {
+          "branch": null,
+          "revision": "2ddb759f2aa710ff4287723d2ca762f019eae7b7",
+          "version": "1.0.2"
         }
       },
       {
@@ -15,8 +24,17 @@
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
           "branch": null,
-          "revision": "9904050b5d7f9b9814a6a49bbd617945875bfc41",
-          "version": "2.2.1"
+          "revision": "5af78e1f7b3a5913a410d5d5c429b5eda0891f20",
+          "version": "2.4.4"
+        }
+      },
+      {
+        "package": "primer-stripe-sdk-ios",
+        "repositoryURL": "https://github.com/primer-io/primer-stripe-sdk-ios",
+        "state": {
+          "branch": null,
+          "revision": "257fd44196a4f0e8a99110bae654ae5d46e3fd43",
+          "version": "1.0.1"
         }
       }
     ]
