@@ -13,6 +13,8 @@ protocol ApplePayPresenting {
     var errorForDisplay: Error { get }
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws
 }
 
 final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
@@ -68,6 +70,27 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                     PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
                     seal.fulfill()
                 }
+            }
+        }
+    }
+
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws {
+        let request = try createRequest(for: applePayRequest)
+        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+        paymentController.delegate = delegate
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            paymentController.present { success in
+                guard success else {
+                    let err = PrimerError.unableToPresentApplePay()
+                    self.logger.error(message: "APPLE PAY")
+                    self.logger.error(message: err.recoverySuggestion ?? "")
+                    return continuation.resume(throwing: handled(primerError: err))
+                }
+
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
+                continuation.resume()
             }
         }
     }
@@ -181,7 +204,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                                                           diagnosticsId: UUID().uuidString)
             return err
         }
-        
+
         // Generic error - shouldn't reach here in normal flow
         self.logger.error(message: "APPLE PAY")
         self.logger.error(message: "Cannot present Apple Pay")
