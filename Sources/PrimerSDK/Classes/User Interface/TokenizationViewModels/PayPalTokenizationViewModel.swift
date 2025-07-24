@@ -497,12 +497,13 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             guard let confirmBillingAgreementResponse else {
                 return completion(.failure(handled(primerError: .invalidValue(key: "confirmedBillingAgreement"))))
             }
-            
+
             let paymentInstrument = PayPalPaymentInstrument(
                 paypalOrderId: nil,
                 paypalBillingAgreementId: confirmBillingAgreementResponse.billingAgreementId,
                 shippingAddress: confirmBillingAgreementResponse.shippingAddress,
-                externalPayerInfo: confirmBillingAgreementResponse.externalPayerInfo)
+                externalPayerInfo: confirmBillingAgreementResponse.externalPayerInfo
+            )
 
             completion(.success(paymentInstrument))
 
