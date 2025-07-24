@@ -183,7 +183,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         
         try validate()
         banks = try await fetchBanks()
-        self.dataSource = banks
+        dataSource = banks
         await presentBankList_main_actor()
         await awaitBankSelection()
         bankSelectionCompletion = nil
@@ -240,8 +240,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         }
         
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        let paymentMethodTokenData = try await tokenize()
-        self.paymentMethodTokenData = paymentMethodTokenData
+        paymentMethodTokenData =  try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -337,14 +336,13 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         default: ""
         }
 
-        let banks = try await apiClient.listAdyenBanks(
+        return try await apiClient.listAdyenBanks(
             clientToken: decodedJWTToken,
             request: Request.Body.Adyen.BanksList(
                 paymentMethodConfigId: configId,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue)
             )
-        )
-        return banks.result
+        ).result
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -362,8 +360,8 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     }
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        guard let selectedBank = selectedBank else {
-            throw PrimerError.invalidValue(key: "selectedBank", value: "Selected bank is nil")
+        guard let selectedBank else {
+            throw PrimerError.invalidValue(key: "selectedBank")
         }
 
         return try await tokenize(bank: selectedBank)
@@ -401,15 +399,15 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
-        let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(
+        paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: configId,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)
             )
         ))
-        self.paymentMethodTokenData = paymentMethodTokenData
-        return paymentMethodTokenData
+        
+        return paymentMethodTokenData!
     }
 }
 
