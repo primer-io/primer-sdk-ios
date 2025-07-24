@@ -73,7 +73,11 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     /// Navigate to country selection
     func navigateToCountrySelection() {
+        logger.debug(message: "🧭 [CheckoutNavigator] navigateToCountrySelection called")
+        logger.debug(message: "🧭 [CheckoutNavigator] Current route before navigation: \(coordinator.currentRoute)")
         coordinator.navigate(to: .selectCountry)
+        logger.debug(message: "🧭 [CheckoutNavigator] Current route after navigation: \(coordinator.currentRoute)")
+        logger.debug(message: "🧭 [CheckoutNavigator] Navigation call completed")
     }
 
     /// Navigate to success screen with payment result

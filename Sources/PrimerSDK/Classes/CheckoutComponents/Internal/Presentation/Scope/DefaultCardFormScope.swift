@@ -40,6 +40,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// The current card form state
     @Published private var internalState = PrimerCardFormState()
+    
+    /// Debug getter for internal state
+    internal var debugInternalState: PrimerCardFormState {
+        internalState
+    }
 
     /// The presentation context determining navigation behavior
     public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
@@ -186,13 +191,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     @ViewBuilder
     public func PrimerCountryField(label: String?, styling: PrimerFieldStyling? = nil) -> any View {
-        CountryInputField(
+        // Use the wrapper view that properly observes this scope
+        CountryInputFieldWrapper(
+            scope: self,
             label: label ?? CheckoutComponentsStrings.countryLabel,
             placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
             styling: styling,
-            onCountryCodeChange: { [weak self] countryCode in
-                self?.updateCountryCode(countryCode)
-            },
             onValidationChange: { [weak self] isValid in
                 self?.fieldValidationStates.countryCode = isValid
                 self?.updateFieldValidationState()
@@ -399,6 +403,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
+    
+    /// Computed property to get the selected country from the country code
+    private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
+        logger.debug(message: "🔍 [CountryField] Computing selectedCountryFromCode - current code: '\(internalState.countryCode)'")
+        guard !internalState.countryCode.isEmpty else { 
+            logger.debug(message: "🔍 [CountryField] Country code is empty, returning nil")
+            return nil 
+        }
+        let country = CountryCode.phoneNumberCountryCodes.first { $0.code.uppercased() == internalState.countryCode.uppercased() }
+        logger.debug(message: "🔍 [CountryField] Found country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
+        return country
+    }
 
     // MARK: - Initialization
 
@@ -411,6 +427,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         logger.info(message: "🧭 [CardFormScope] Initialized with presentation context: \(presentationContext)")
         logger.info(message: "🧭 [CardFormScope]   - Should show back button: \(presentationContext.shouldShowBackButton)")
         logger.info(message: "🧭 [CardFormScope]   - Cancel behavior: \(presentationContext.cancelBehavior)")
+        logger.info(message: "🧭 [CardFormScope] Instance ID: \(ObjectIdentifier(self))")
         Task {
             await setupInteractors()
         }
@@ -597,6 +614,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func updateCountryCode(_ countryCode: String) {
         logger.debug(message: "Updating country code: \(countryCode)")
         internalState.countryCode = countryCode
+        // Force UI update by publishing the change
+        objectWillChange.send()
     }
 
     public func updateOtpCode(_ otpCode: String) {
@@ -680,8 +699,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     public func navigateToCountrySelection() {
-        logger.debug(message: "Navigate to country selection")
-        checkoutScope?.checkoutNavigator.navigateToCountrySelection()
+        guard let navigator = checkoutScope?.checkoutNavigator else {
+            logger.error(message: "Cannot navigate - checkoutNavigator is nil")
+            return
+        }
+        
+        navigator.navigateToCountrySelection()
     }
 
     // MARK: - Nested Scope

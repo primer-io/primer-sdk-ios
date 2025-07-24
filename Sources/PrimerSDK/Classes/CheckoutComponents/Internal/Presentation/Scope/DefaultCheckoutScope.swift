@@ -13,13 +13,35 @@ import SwiftUI
 internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
     // MARK: - Internal Navigation State
 
-    internal enum NavigationState {
+    internal enum NavigationState: Equatable {
         case loading
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
+        case selectCountry  // Country selection screen
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
         case dismissed
+        
+        static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
+            switch (lhs, rhs) {
+            case (.loading, .loading):
+                return true
+            case (.paymentMethodSelection, .paymentMethodSelection):
+                return true
+            case (.selectCountry, .selectCountry):
+                return true
+            case (.dismissed, .dismissed):
+                return true
+            case (.paymentMethod(let lhsType), .paymentMethod(let rhsType)):
+                return lhsType == rhsType
+            case (.success(let lhsResult), .success(let rhsResult)):
+                return lhsResult.paymentId == rhsResult.paymentId
+            case (.failure(let lhsError), .failure(let rhsError)):
+                return lhsError.localizedDescription == rhsError.localizedDescription
+            default:
+                return false
+            }
+        }
     }
 
     // MARK: - Properties
@@ -229,7 +251,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         logger.debug(message: "State update completed. Current state: \(internalState)")
     }
 
-    private func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
+    internal func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
         logger.debug(message: "Navigation state updating to: \(newState)")
         navigationState = newState
 
@@ -242,6 +264,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 navigator.navigateToPaymentSelection()
             case .paymentMethod(let paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
+            case .selectCountry:
+                navigator.navigateToCountrySelection()
             case .success(let result):
                 // Success handling is now done via the view's switch statement, not the navigator
                 logger.info(message: "Success navigation handled by view layer")
@@ -271,6 +295,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     newNavigationState = .paymentMethodSelection
                 case .paymentMethod(let paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
+                case .selectCountry:
+                    newNavigationState = .selectCountry
                 case .failure(let checkoutError):
                     let primerError = PrimerError.unknown(
                         userInfo: ["error": checkoutError.message, "code": checkoutError.code],
@@ -301,7 +327,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private func navigationStateEquals(_ lhs: NavigationState, _ rhs: NavigationState) -> Bool {
         switch (lhs, rhs) {
         case (.loading, .loading),
-             (.paymentMethodSelection, .paymentMethodSelection):
+             (.paymentMethodSelection, .paymentMethodSelection),
+             (.selectCountry, .selectCountry):
             return true
         case (.paymentMethod(let lhsType), .paymentMethod(let rhsType)):
             return lhsType == rhsType

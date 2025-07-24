@@ -9,12 +9,13 @@ import SwiftUI
 
 /// Default card form screen for CheckoutComponents
 @available(iOS 15.0, *)
-internal struct CardFormScreen: View {
+internal struct CardFormScreen: View, LogReporter {
     let scope: any PrimerCardFormScope
 
     @Environment(\.designTokens) private var tokens
     @State private var cardFormState: PrimerCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
+    @State private var refreshTrigger = UUID() // Force refresh trigger
 
     /// Check if billing address fields are required based on API configuration
     private var isShowingBillingAddressFieldsRequired: Bool {
@@ -188,6 +189,7 @@ internal struct CardFormScreen: View {
             configuration: billingAddressConfiguration
         )
         .padding(.horizontal)
+        .id(refreshTrigger) // Force rebuild when state changes
     }
 
     private var submitButtonSection: some View {
@@ -288,6 +290,9 @@ internal struct CardFormScreen: View {
             for await state in scope.state {
                 await MainActor.run {
                     self.cardFormState = state
+                    
+                    // Force UI refresh when state changes
+                    self.refreshTrigger = UUID()
 
                     // Update selected network if changed
                     if let selectedNetwork = state.selectedCardNetwork,

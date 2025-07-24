@@ -22,8 +22,15 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     // Design tokens state
     @State private var designTokens: DesignTokens?
     @State private var designTokensManager: DesignTokensManager?
+    
+    // Country selection modal state
+    @State private var showingCountrySelection = false
+    @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
 
-    init(scope: DefaultCheckoutScope, customContent: ((PrimerCheckoutScope) -> AnyView)?, scopeCustomization: ((PrimerCheckoutScope) -> Void)?, onCompletion: (() -> Void)?) {
+    init(scope: DefaultCheckoutScope,
+         customContent: ((PrimerCheckoutScope) -> AnyView)?,
+         scopeCustomization: ((PrimerCheckoutScope) -> Void)?,
+         onCompletion: (() -> Void)?) {
         self.scope = scope
         self.customContent = customContent
         self.scopeCustomization = scopeCustomization
@@ -35,71 +42,27 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             VStack(spacing: 0) {
                 // Navigation state driven UI (now properly observing @Published navigationState)
                 ZStack {
-                    switch scope.navigationState {
-                    case .loading:
-                        if let customLoading = scope.loadingScreen {
-                            AnyView(customLoading())
-                        } else {
-                            AnyView(LoadingScreen())
-                        }
-
-                    case .paymentMethodSelection:
-                        if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-                            AnyView(customPaymentSelection(scope.paymentMethodSelection))
-                        } else {
-                            AnyView(PaymentMethodSelectionScreen(
-                                scope: scope.paymentMethodSelection
-                            ))
-                        }
-
-                    case .paymentMethod(let paymentMethodType):
-                        // Handle all payment method types using truly unified dynamic approach
-                        PaymentMethodScreen(
-                            paymentMethodType: paymentMethodType,
-                            checkoutScope: scope
-                        )
-
-                    case .success(let result):
-                        if let customSuccess = scope.successScreen {
-                            AnyView(customSuccess(result))
-                        } else {
-                            AnyView(SuccessScreen(result: result) {
-                                // Handle auto-dismiss with completion callback
-                                logger.info(message: "Success screen auto-dismiss, calling completion callback")
-                                onCompletion?()
-                            })
-                        }
-
-                    case .failure(let error):
-                        if let customError = scope.errorScreen {
-                            AnyView(customError(error.localizedDescription))
-                        } else {
-                            AnyView(ErrorScreen(error: error) {
-                                // Handle auto-dismiss with completion callback
-                                logger.info(message: "Error screen auto-dismiss, calling completion callback")
-                                onCompletion?()
-                            })
-                        }
-
-                    case .dismissed:
-                        // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
-                        AnyView(VStack {
-                            Text("Dismissing...")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .onAppear {
-                            logger.info(message: "Checkout dismissed, calling completion callback")
-                            DispatchQueue.main.async {
-                                onCompletion?()
-                            }
-                        })
-                    }
+                    getCurrentView()
 
                     // Custom content overlay if provided
                     if let customContent = customContent {
                         customContent(scope)
                     }
+                }
+                .sheet(isPresented: $showingCountrySelection) {
+                    // Present country selection as a modal sheet
+                    let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
+                    let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
+                    SelectCountryScreen(
+                        scope: countryScope,
+                        onDismiss: {
+                            showingCountrySelection = false
+                            // Restore previous navigation state after dismissal
+                            if let previousState = previousNavigationState {
+                                scope.updateNavigationState(previousState, syncToNavigator: false)
+                            }
+                        }
+                    )
                 }
             }
             .environmentObject(scope)
@@ -120,6 +83,163 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             Task {
                 await loadDesignTokens(for: newColorScheme)
             }
+        }
+        .onChange(of: scope.navigationState) { newNavigationState in
+            // Handle modal presentation for country selection
+            if case .selectCountry = newNavigationState {
+                // Store the previous state if it's not already country selection
+                let isAlreadyCountrySelection: Bool
+                if let prev = previousNavigationState {
+                    if case .selectCountry = prev {
+                        isAlreadyCountrySelection = true
+                    } else {
+                        isAlreadyCountrySelection = false
+                    }
+                } else {
+                    isAlreadyCountrySelection = false
+                }
+                
+                if !isAlreadyCountrySelection {
+                    previousNavigationState = findPreviousNonCountryState()
+                }
+                showingCountrySelection = true
+            } else {
+                // Update previous state for tracking (don't track selectCountry)
+                if case .selectCountry = newNavigationState {
+                    // Don't track selectCountry as previous state
+                } else {
+                    previousNavigationState = newNavigationState
+                }
+            }
+        }
+        .onChange(of: showingCountrySelection) { isShowing in
+            if !isShowing {
+                // When modal is dismissed, reset the navigation state in the navigator
+                if let previousState = previousNavigationState {
+                    switch previousState {
+                    case .paymentMethod(let paymentMethodType):
+                        // Update the navigator to reflect we're back at the payment method
+                        scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
+                    case .paymentMethodSelection:
+                        scope.checkoutNavigator.navigateToPaymentSelection()
+                    default:
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Helper Methods
+    
+    private func findPreviousNonCountryState() -> DefaultCheckoutScope.NavigationState? {
+        // Check if we have a stored previous state that's not selectCountry
+        if let prev = previousNavigationState {
+            if case .selectCountry = prev {
+                // Previous state is selectCountry, skip it
+            } else {
+                return prev
+            }
+        }
+        
+        // Fallback: try to infer from available payment methods
+        if !scope.availablePaymentMethods.isEmpty {
+            if scope.availablePaymentMethods.count == 1,
+               let singleMethod = scope.availablePaymentMethods.first {
+                return .paymentMethod(singleMethod.type ?? "PAYMENT_CARD")
+            } else {
+                return .paymentMethodSelection
+            }
+        }
+        
+        return .loading
+    }
+
+    // MARK: - View Builder
+
+    private func getCurrentView() -> AnyView {
+        switch scope.navigationState {
+        case .loading:
+            if let customLoading = scope.loadingScreen {
+                return AnyView(customLoading())
+            } else {
+                return AnyView(LoadingScreen())
+            }
+
+        case .paymentMethodSelection:
+            if let customPaymentSelection = scope.paymentMethodSelectionScreen {
+                return AnyView(customPaymentSelection(scope.paymentMethodSelection))
+            } else {
+                return AnyView(PaymentMethodSelectionScreen(
+                    scope: scope.paymentMethodSelection
+                ))
+            }
+
+        case .paymentMethod(let paymentMethodType):
+            // Handle all payment method types using truly unified dynamic approach
+            return AnyView(PaymentMethodScreen(
+                paymentMethodType: paymentMethodType,
+                checkoutScope: scope
+            ))
+
+        case .selectCountry:
+            // Country selection is now handled via modal sheet, return the previous view
+            if let previousState = previousNavigationState {
+                switch previousState {
+                case .paymentMethod(let paymentMethodType):
+                    return AnyView(PaymentMethodScreen(
+                        paymentMethodType: paymentMethodType,
+                        checkoutScope: scope
+                    ))
+                case .paymentMethodSelection:
+                    return AnyView(PaymentMethodSelectionScreen(
+                        scope: scope.paymentMethodSelection
+                    ))
+                case .loading:
+                    return AnyView(LoadingScreen())
+                default:
+                    return AnyView(LoadingScreen())
+                }
+            } else {
+                // Fallback to loading if we can't determine the previous state
+                return AnyView(LoadingScreen())
+            }
+
+        case .success(let result):
+            if let customSuccess = scope.successScreen {
+                return AnyView(customSuccess(result))
+            } else {
+                return AnyView(SuccessScreen(result: result) {
+                    // Handle auto-dismiss with completion callback
+                    logger.info(message: "Success screen auto-dismiss, calling completion callback")
+                    onCompletion?()
+                })
+            }
+
+        case .failure(let error):
+            if let customError = scope.errorScreen {
+                return AnyView(customError(error.localizedDescription))
+            } else {
+                return AnyView(ErrorScreen(error: error) {
+                    // Handle auto-dismiss with completion callback
+                    logger.info(message: "Error screen auto-dismiss, calling completion callback")
+                    onCompletion?()
+                })
+            }
+
+        case .dismissed:
+            // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
+            return AnyView(VStack {
+                Text("Dismissing...")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .onAppear {
+                logger.info(message: "Checkout dismissed, calling completion callback")
+                DispatchQueue.main.async {
+                    onCompletion?()
+                }
+            })
         }
     }
 

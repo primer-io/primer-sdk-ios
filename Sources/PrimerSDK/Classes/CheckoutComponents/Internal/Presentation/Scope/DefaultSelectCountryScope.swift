@@ -52,26 +52,58 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
 
     public func onCountrySelected(countryCode: String, countryName: String) {
         logger.debug(message: "Country selected: \(countryName) (\(countryCode))")
-
+        
         // Update the card form scope with selected country
-        cardFormScope?.updateCountryCode(countryCode)
-
-        // Navigate back to card form
-        if let checkoutScope = checkoutScope {
-            checkoutScope.checkoutNavigator.navigateBack()
+        if let cardFormScope = cardFormScope {
+            cardFormScope.updateCountryCode(countryCode)
         } else {
-            // For sheet presentation, the sheet will be dismissed by the onDismiss callback
-            logger.debug(message: "Country selection completed - sheet will be dismissed externally")
+            logger.error(message: "CardFormScope is nil, cannot update country code")
+        }
+
+        // For modal presentation, dismiss by restoring previous navigation state
+        if let checkoutScope = checkoutScope {
+            // Find the previous payment method state to return to
+            if !checkoutScope.availablePaymentMethods.isEmpty {
+                if checkoutScope.availablePaymentMethods.count == 1,
+                   let singleMethod = checkoutScope.availablePaymentMethods.first {
+                    // Return to single payment method
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type ?? "PAYMENT_CARD")
+                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
+                } else {
+                    // Assume we came from a payment method form, find which one
+                    let cardMethodType = checkoutScope.availablePaymentMethods.first { $0.type == "PAYMENT_CARD" }?.type ?? "PAYMENT_CARD"
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
+                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
+                }
+            } else {
+                // Fallback to payment method selection
+                checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
+            }
         }
     }
 
     public func onCancel() {
         logger.debug(message: "Country selection cancelled")
         if let checkoutScope = checkoutScope {
-            checkoutScope.checkoutNavigator.navigateBack()
+            // For modal presentation, dismiss by restoring previous navigation state (same logic as onCountrySelected)
+            if !checkoutScope.availablePaymentMethods.isEmpty {
+                if checkoutScope.availablePaymentMethods.count == 1,
+                   let singleMethod = checkoutScope.availablePaymentMethods.first {
+                    // Return to single payment method
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type ?? "PAYMENT_CARD")
+                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
+                } else {
+                    // Assume we came from a payment method form, find which one
+                    let cardMethodType = checkoutScope.availablePaymentMethods.first { $0.type == "PAYMENT_CARD" }?.type ?? "PAYMENT_CARD"
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
+                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
+                }
+            } else {
+                // Fallback to payment method selection
+                checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
+            }
         } else {
             // For sheet presentation, the sheet will be dismissed by the onDismiss callback
-            logger.debug(message: "Country selection cancelled - sheet will be dismissed externally")
         }
     }
 
@@ -84,21 +116,12 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     // MARK: - Private Methods
 
     private func loadAvailableCountries() {
-        // Debug: Check if phone number country codes are loaded
-        logger.debug(message: "Phone number country codes available: \(CountryCode.phoneNumberCountryCodes.count)")
-
         // Load all available countries from CountryCode enum with localization and dial codes
         let allCountries = CountryCode.allCases.compactMap { countryCode in
             convertCountryCodeToPrimerCountry(countryCode)
         }.sorted { $0.name < $1.name } // Sort alphabetically by localized name
 
         logger.debug(message: "Loaded \(allCountries.count) countries for selection")
-
-        // Debug: Show first few countries with their dial codes
-        let sampleCountries = allCountries.prefix(5)
-        for country in sampleCountries {
-            logger.debug(message: "Sample country: \(country.name) (\(country.code)) - \(country.dialCode ?? "no dial code")")
-        }
 
         internalState.countries = allCountries
         internalState.filteredCountries = allCountries
@@ -114,11 +137,6 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
         let dialCode = CountryCode.phoneNumberCountryCodes
             .first { $0.code.uppercased() == code.uppercased() }?
             .dialCode
-
-        // Debug logging for dial code matching
-        if dialCode == nil {
-            logger.debug(message: "No dial code found for country: \(code)")
-        }
 
         // Only include countries that have valid localized names
         guard localizedName != "N/A" && !localizedName.isEmpty else {
@@ -149,8 +167,6 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
                     normalizedCountryCode.contains(normalizedQuery) ||
                     (country.dialCode?.contains(query) ?? false)
             }
-
-            logger.debug(message: "Filtered \(internalState.filteredCountries.count) countries for query: '\(query)'")
         }
     }
 }

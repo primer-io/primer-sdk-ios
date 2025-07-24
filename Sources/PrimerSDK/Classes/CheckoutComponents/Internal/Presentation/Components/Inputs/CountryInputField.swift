@@ -56,6 +56,10 @@ internal struct CountryInputField: View, LogReporter {
     /// Focus state for input field styling
     @State private var isFocused: Bool = false
 
+    /// Debounce navigation to prevent multiple rapid calls
+    @State private var isNavigating: Bool = false
+    
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Modifier Value Extraction
@@ -120,22 +124,35 @@ internal struct CountryInputField: View, LogReporter {
                 .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
                 .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Country field with selector button using ZStack architecture
-            ZStack {
-                // Background and border styling with gradient-aware hierarchy
-                // Background and border styling with custom styling support
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
-                    )
+            // Country field with selector button using Button with HStack layout
+            Button(action: {
+                guard !isNavigating else {
+                    return
+                }
+                
+                isNavigating = true
+                
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                
+                onOpenCountrySelector?()
+                
+                // Reset after shorter timeout - 1 second should be enough  
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.isNavigating = false
+                }
+            }) {
+                ZStack {
+                    // Background and border styling
+                    RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                        .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
+                                .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
+                                .animation(.easeInOut(duration: 0.2), value: isFocused)
+                        )
 
-                // Country selector button content
-                Button(action: {
-                    onOpenCountrySelector?()
-                }, label: {
+                    // Content layout
                     HStack {
                         Text(countryName.isEmpty ? placeholder : countryName)
                             .font(countryTextFont)
@@ -143,33 +160,28 @@ internal struct CountryInputField: View, LogReporter {
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         Spacer()
+
+                        // Right side icon (error icon or chevron)
+                        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                            // Error icon when validation fails
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                                .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                        } else {
+                            // Chevron down icon when no error
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                        }
                     }
                     .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                    .padding(.trailing, tokens?.primerSizeXxlarge ?? 60)
+                    .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
                     .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                })
-                .buttonStyle(PlainButtonStyle())
-
-                // Right side overlay (error icon or chevron)
-                HStack {
-                    Spacer()
-
-                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
-                        // Error icon when validation fails
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    } else {
-                        // Chevron down icon when no error
-                        Image(systemName: "chevron.down")
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    }
                 }
             }
+            .buttonStyle(PlainButtonStyle())
+            .disabled(isNavigating)
             .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
 
             // Error message (always reserve space to prevent height changes)
@@ -181,11 +193,11 @@ internal struct CountryInputField: View, LogReporter {
                 .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
         .onAppear {
+            isNavigating = false
             setupValidationService()
             updateFromExternalState()
         }
         .onChange(of: selectedCountry) { newCountry in
-            logger.debug(message: "CountryInputField onChange triggered with: \(newCountry?.name ?? "nil") (\(newCountry?.code ?? "nil"))")
             updateFromExternalState(with: newCountry)
         }
     }
@@ -210,18 +222,11 @@ internal struct CountryInputField: View, LogReporter {
 
     /// Updates the field from external state changes using the provided country
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
-        // Debug: Show what we received
-        logger.debug(message: "CountryInputField updateFromExternalState called with country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
-
         // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
         if let country = country, !country.name.isEmpty, !country.code.isEmpty {
-            logger.debug(message: "CountryInputField updating from external state: \(country.name) (\(country.code))")
-            // Always update to ensure we have the latest state, even if it seems the same
             countryName = country.name
             countryCode = country.code
             validateCountry()
-        } else {
-            logger.debug(message: "CountryInputField skipping update - country is nil or empty")
         }
     }
 
