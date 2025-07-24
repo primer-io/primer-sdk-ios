@@ -568,7 +568,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             newPrimerIPay88ViewController.isModalInPresentation = true
             newPrimerIPay88ViewController.modalPresentationStyle = .fullScreen
             primerIPay88ViewController = newPrimerIPay88ViewController
-            
+
             Analytics.Service.fire(
                 event: Analytics.Event.ui(
                     action: .present,
