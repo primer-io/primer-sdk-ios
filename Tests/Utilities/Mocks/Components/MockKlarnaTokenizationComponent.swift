@@ -33,7 +33,9 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func authorizePaymentSession(authorizationToken: String) -> PrimerSDK.Promise<PrimerSDK.Response.Body.Klarna.CustomerToken> {
+    func authorizePaymentSession(
+        authorizationToken: String
+    ) -> PrimerSDK.Promise<PrimerSDK.Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
             switch authorizePaymentSessionResult {
             case .success(let customerToken): seal.fulfill(customerToken)
@@ -43,7 +45,9 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func authorizePaymentSession(authorizationToken: String) async throws -> PrimerSDK.Response.Body.Klarna.CustomerToken {
+    func authorizePaymentSession(
+        authorizationToken: String
+    ) async throws -> PrimerSDK.Response.Body.Klarna.CustomerToken {
         switch authorizePaymentSessionResult {
         case .success(let customerToken): return customerToken
         case .failure(let error): throw error
@@ -51,8 +55,10 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func tokenizeHeadless(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> PrimerSDK
-        .Promise<PrimerSDK.PrimerCheckoutData> {
+    func tokenizeHeadless(
+        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) -> PrimerSDK.Promise<PrimerSDK.PrimerCheckoutData> {
         return Promise { seal in
             switch tokenizeHeadlessResult {
             case .success(let primerCheckoutData): seal.fulfill(primerCheckoutData)
@@ -62,8 +68,10 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func tokenizeHeadless(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerSDK
-        .PrimerCheckoutData {
+    func tokenizeHeadless(
+        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerSDK.PrimerCheckoutData {
         switch tokenizeHeadlessResult {
         case .success(let primerCheckoutData): return primerCheckoutData
         case .failure(let error): throw error
@@ -71,8 +79,10 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func tokenizeDropIn(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> PrimerSDK
-        .Promise<PrimerSDK.PrimerPaymentMethodTokenData> {
+    func tokenizeDropIn(
+        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) -> PrimerSDK.Promise<PrimerSDK.PrimerPaymentMethodTokenData> {
         return Promise { seal in
             switch tokenizeDropInResult {
             case .success(let paymentMethodToken): seal.fulfill(paymentMethodToken)
@@ -85,8 +95,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     func tokenizeDropIn(
         customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
-    ) async throws -> PrimerSDK
-        .PrimerPaymentMethodTokenData {
+    ) async throws -> PrimerSDK.PrimerPaymentMethodTokenData {
         switch tokenizeDropInResult {
         case .success(let paymentMethodToken): return paymentMethodToken
         case .failure(let error): throw error

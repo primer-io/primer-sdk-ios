@@ -23,7 +23,6 @@ final class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokeni
 
     private let paymentMethod: PrimerPaymentMethod
     private let apiClient: PrimerAPIClientProtocol
-//    private var clientSession: ClientSession.APIResponse?
     private var paymentSessionId: String?
     private var recurringPaymentDescription: String?
 
