@@ -1,10 +1,10 @@
-@testable import PrimerSDK
 import Foundation
+@testable import PrimerSDK
 
 struct MockDeeplinkAbilityProvider: DeeplinkAbilityProviding {
-    var isDeeplinkAvailable: Bool = true
+    var isDeeplinkAvailable = true
 
     func canOpenURL(_ url: URL) -> Bool {
-        return isDeeplinkAvailable
+        isDeeplinkAvailable
     }
 }

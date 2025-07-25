@@ -13,7 +13,6 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
     // MARK: - Setup & Teardown
 
     override func setUpWithError() throws {
-        print("setUpWithError")
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
@@ -27,7 +26,6 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
     }
 
     override func tearDownWithError() throws {
-        print("tearDownWithError")
         sut = nil
         uiManager = nil
         createResumePaymentService = nil
@@ -48,26 +46,20 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
 
     // MARK: - Flow Tests
 
-    // TODO: Enable Cancellation
-//    func test_startFlow_withCancellation_shouldCallOnDidFail() throws {
-//    }
-
     func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            print("onWillCreatePaymentWithData")
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "flow fails with error")
+        let expectDidFail = expectation(description: "flow fails with error")
         delegate.onDidFail = { error in
-            print("onDidFail")
             switch error {
             case PrimerError.merchantError:
                 break
@@ -98,24 +90,21 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "payment data creation requested")
+        let expectWillCreatePaymentWithData = expectation(description: "payment data creation requested")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            print("onWillCreatePaymentWithData")
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidStartTokenization = self.expectation(description: "tokenization begins")
+        let expectDidStartTokenization = expectation(description: "tokenization begins")
         delegate.onDidStartTokenization = { type in
-            print("onDidStartTokenization")
             XCTAssertEqual(type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             expectDidStartTokenization.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "payment method tokenized")
+        let expectDidTokenize = expectation(description: "payment method tokenized")
         tokenizationService.onTokenize = { _ in
-            print("onTokenize")
             expectDidTokenize.fulfill()
             return Result.success(
                 PrimerPaymentMethodTokenData(
@@ -134,47 +123,49 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
             )
         }
 
-        let expectDidCreatePayment = self.expectation(description: "payment created")
+        let expectDidCreatePayment = expectation(description: "payment created")
         createResumePaymentService.onCreatePayment = { _ in
-            print("onCreatePayment")
             expectDidCreatePayment.fulfill()
-            return .init(id: "id",
-                         paymentId: "payment_id",
-                         amount: 123,
-                         currencyCode: "GBP",
-                         customerId: "customer_id",
-                         orderId: "order_id",
-                         requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
-                                               name: .checkout,
-                                               description: "description"),
-                         status: .success)
+            return Response.Body.Payment(
+                id: "id",
+                paymentId: "payment_id",
+                amount: 123,
+                currencyCode: "GBP",
+                customerId: "customer_id",
+                orderId: "order_id",
+                requiredAction: Response.Body.Payment.RequiredAction(
+                    clientToken: MockAppState.mockClientTokenWithRedirect,
+                    name: .checkout,
+                    description: "description"
+                ),
+                status: .success
+            )
         }
 
-        let expectDidShowPaymentMethod = self.expectation(description: "payment method UI presented")
+        let expectDidShowPaymentMethod = expectation(description: "payment method UI presented")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
-            print("onUIDidShowPaymentMethod")
             XCTAssertNotNil(self.sut.webViewController?.delegate)
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectDidResumePayment = self.expectation(description: "payment resumed")
+        let expectDidResumePayment = expectation(description: "payment resumed")
         createResumePaymentService.onResumePayment = { paymentId, request in
-            print("onResumePayment")
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
             expectDidResumePayment.fulfill()
-            return .init(id: "id",
-                         paymentId: "payment_id",
-                         amount: 1234,
-                         currencyCode: "GBP",
-                         customerId: "customer_id",
-                         orderId: "order_id",
-                         status: .success)
+            return Response.Body.Payment(
+                id: "id",
+                paymentId: "payment_id",
+                amount: 1234,
+                currencyCode: "GBP",
+                customerId: "customer_id",
+                orderId: "order_id",
+                status: .success
+            )
         }
 
-        let expectDidCompleteCheckoutWithData = self.expectation(description: "checkout completes successfully")
+        let expectDidCompleteCheckoutWithData = expectation(description: "checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
-            print("onDidCompleteCheckoutWithData")
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectDidCompleteCheckoutWithData.fulfill()
