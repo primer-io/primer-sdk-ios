@@ -14,7 +14,7 @@ final class MockNetworkService: NetworkServiceProtocol {
     var mockedError: Error?
     var mockedHeaders: [String: String]?
     var onReceiveEndpoint: ((Endpoint) -> Void)?
-    private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 2)
+    private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 1)
 
     func request<T>(
         _ endpoint: PrimerSDK.Endpoint,
