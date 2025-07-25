@@ -295,9 +295,9 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     // MARK: Private helper methods
-    
+
     private func enableUserInteraction(_ enable: Bool) {
         DispatchQueue.main.async {
             PrimerUIManager.primerRootViewController?.enableUserInteraction(enable)
