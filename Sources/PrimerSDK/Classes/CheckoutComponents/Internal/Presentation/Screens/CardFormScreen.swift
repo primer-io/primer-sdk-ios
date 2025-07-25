@@ -127,8 +127,12 @@ internal struct CardFormScreen: View, LogReporter {
         } else {
             // Use individual field builders from scope for flexible customization
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-                // Card Number - use ViewBuilder method
-                AnyView(scope.PrimerCardNumberField(label: "Card Number", styling: nil))
+                // Card Number - use closure property or default
+                if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
+                    customField("Card Number", nil)
+                } else {
+                    defaultCardNumberField()
+                }
 
                 // Allowed Card Networks Display (Android parity)
                 let allowedNetworks = [CardNetwork].allowedCardNetworks
@@ -141,16 +145,30 @@ internal struct CardFormScreen: View, LogReporter {
                 // Expiry Date and CVV row
                 HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
                     // Expiry Date
-                    AnyView(scope.PrimerExpiryDateField(label: "Expiry Date", styling: nil))
-                        .frame(maxWidth: .infinity)
+                    if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
+                        customField("Expiry Date", nil)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        defaultExpiryDateField()
+                            .frame(maxWidth: .infinity)
+                    }
 
                     // CVV
-                    AnyView(scope.PrimerCvvField(label: "CVV", styling: nil))
-                        .frame(maxWidth: .infinity)
+                    if let customField = (scope as? DefaultCardFormScope)?.cvvField {
+                        customField("CVV", nil)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        defaultCvvField()
+                            .frame(maxWidth: .infinity)
+                    }
                 }
 
                 // Cardholder Name
-                AnyView(scope.PrimerCardholderNameField(label: "Cardholder Name", styling: nil))
+                if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
+                    customField("Cardholder Name", nil)
+                } else {
+                    defaultCardholderNameField()
+                }
             }
             .padding(.horizontal)
         }
@@ -215,12 +233,16 @@ internal struct CardFormScreen: View, LogReporter {
                 .padding(.bottom)
         } else {
             Group {
-                AnyView(scope.PrimerSubmitButton(text: submitButtonText))
-                    .onTapGesture {
-                        if cardFormState.isValid && !cardFormState.isSubmitting {
-                            submitAction()
+                if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
+                    customButton(submitButtonText)
+                        .onTapGesture {
+                            if cardFormState.isValid && !cardFormState.isSubmitting {
+                                submitAction()
+                            }
                         }
-                    }
+                } else {
+                    defaultSubmitButton()
+                }
                 /*
                  // Legacy fallback logic
                  Button(action: submitAction) {
@@ -335,6 +357,110 @@ internal struct CardFormScreen: View, LogReporter {
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - Default Field Implementations
+    
+    @ViewBuilder
+    private func defaultCardNumberField() -> some View {
+        let selectedNetwork: CardNetwork? = {
+            if let networkString = cardFormState.selectedCardNetwork {
+                return CardNetwork(rawValue: networkString)
+            }
+            return nil
+        }()
+
+        CardNumberInputField(
+            label: "Card Number",
+            placeholder: "1234 1234 1234 1234",
+            selectedNetwork: selectedNetwork,
+            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cardNumber"],
+            onCardNumberChange: { [weak scope] number in
+                scope?.updateCardNumber(number)
+            },
+            onCardNetworkChange: { _ in
+                // Network changes handled by HeadlessRepository stream
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field and scope
+            },
+            onNetworksDetected: { [weak scope] networks in
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.handleDetectedNetworks(networks)
+                }
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultExpiryDateField() -> some View {
+        ExpiryDateInputField(
+            label: "Expiry Date",
+            placeholder: "MM/YY",
+            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["expiryDate"],
+            onExpiryDateChange: { _ in
+                // Handled by month/year callbacks
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field and scope
+            },
+            onMonthChange: { [weak scope] month in
+                scope?.updateExpiryMonth(month)
+            },
+            onYearChange: { [weak scope] year in
+                scope?.updateExpiryYear(year)
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultCvvField() -> some View {
+        let cardNetwork = getCardNetworkForCvv()
+        
+        CVVInputField(
+            label: "CVV",
+            placeholder: cardNetwork == .amex ? "1234" : "123",
+            cardNetwork: cardNetwork,
+            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cvv"],
+            onCvvChange: { [weak scope] cvv in
+                scope?.updateCvv(cvv)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field and scope
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultCardholderNameField() -> some View {
+        CardholderNameInputField(
+            label: "Cardholder Name",
+            placeholder: "John Smith",
+            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cardholderName"],
+            onCardholderNameChange: { [weak scope] name in
+                scope?.updateCardholderName(name)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field and scope
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultSubmitButton() -> some View {
+        Button(action: submitAction) {
+            submitButtonContent
+        }
+        .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
+    }
+    
+    private func getCardNetworkForCvv() -> CardNetwork {
+        if let selectedNetworkString = cardFormState.selectedCardNetwork,
+           let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
+            return selectedNetwork
+        } else {
+            return CardNetwork(cardNumber: cardFormState.cardNumber)
         }
     }
 }

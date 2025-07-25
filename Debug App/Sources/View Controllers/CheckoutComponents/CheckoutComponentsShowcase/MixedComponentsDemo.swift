@@ -253,18 +253,8 @@ private struct MixedStyleCardFormView: View {
                                 .foregroundColor(.red)
                         }
                         
-                        // Real card number field from SDK with custom fancy styling
-                        AnyView(cardFormScope.PrimerCardNumberField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                font: .system(size: 18, weight: .medium, design: .monospaced),
-                                backgroundColor: .clear,
-                                borderColor: .clear,
-                                cornerRadius: 12,
-                                borderWidth: 0,
-                                padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-                            )
-                        ))
+                        // Mock card number field with custom fancy styling
+                        fancyCardNumberField()
                         .background(
                             LinearGradient(
                                 colors: [Color.blue.opacity(0.05), Color.purple.opacity(0.05)],
@@ -293,17 +283,8 @@ private struct MixedStyleCardFormView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            // Real expiry date field from SDK with default styling
-                            AnyView(cardFormScope.PrimerExpiryDateField(
-                                label: nil,
-                                styling: PrimerFieldStyling(
-                                    backgroundColor: Color.gray.opacity(0.1),
-                                    borderColor: .clear,
-                                    cornerRadius: 8,
-                                    borderWidth: 0,
-                                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                                )
-                            ))
+                            // Mock expiry date field with default styling
+                            defaultStyleField(placeholder: "MM/YY", label: nil)
                         }
                         
                         // CVV - Custom interactive style using real SDK component
@@ -317,18 +298,8 @@ private struct MixedStyleCardFormView: View {
                             }
                             
                             HStack {
-                                // Real CVV field from SDK with custom interactive styling
-                                AnyView(cardFormScope.PrimerCvvField(
-                                    label: nil,
-                                    styling: PrimerFieldStyling(
-                                        font: .system(.body, design: .monospaced),
-                                        backgroundColor: Color.orange.opacity(0.1),
-                                        borderColor: .clear,
-                                        cornerRadius: 8,
-                                        borderWidth: 0,
-                                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                                    )
-                                ))
+                                // Mock CVV field with custom interactive styling
+                                interactiveCvvField()
                                 .onTapGesture {
                                     withAnimation(.spring()) {
                                         isCardFlipped = true
@@ -353,17 +324,8 @@ private struct MixedStyleCardFormView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        // Real cardholder name field from SDK with default styling
-                        AnyView(cardFormScope.PrimerCardholderNameField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.gray.opacity(0.1),
-                                borderColor: .clear,
-                                cornerRadius: 8,
-                                borderWidth: 0,
-                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                            )
-                        ))
+                        // Mock cardholder name field with default styling
+                        defaultStyleField(placeholder: "John Smith", label: nil)
                     }
                 }
                 .padding()
@@ -574,6 +536,51 @@ private struct CardVisualization: View {
         }
         
         return formatted
+    }
+    
+    @ViewBuilder
+    private func fancyCardNumberField() -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.clear)
+                .frame(height: 50)
+                .overlay(
+                    Text("1234 5678 9012 3456")
+                        .font(.system(size: 18, weight: .medium, design: .monospaced))
+                        .foregroundColor(.black.opacity(0.3))
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
+        }
+    }
+    
+    @ViewBuilder
+    private func defaultStyleField(placeholder: String, label: String?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.1))
+                .frame(height: 50)
+                .overlay(
+                    Text(placeholder)
+                        .foregroundColor(.gray.opacity(0.5))
+                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
+        }
+    }
+    
+    @ViewBuilder
+    private func interactiveCvvField() -> some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.orange.opacity(0.1))
+            .frame(height: 50)
+            .overlay(
+                Text("123")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            )
     }
 }
 

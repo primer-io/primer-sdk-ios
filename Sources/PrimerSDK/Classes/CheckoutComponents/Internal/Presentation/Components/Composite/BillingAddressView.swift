@@ -100,57 +100,97 @@ internal struct BillingAddressView: View, LogReporter {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Name fields (horizontal layout) - Using ViewBuilder field functions
+            // Name fields (horizontal layout) - Using closure properties
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
-                        AnyView(cardFormScope.PrimerFirstNameField(label: CheckoutComponentsStrings.firstNameLabel, styling: styling))
+                        if let customField = (cardFormScope as? DefaultCardFormScope)?.firstNameField {
+                            customField(CheckoutComponentsStrings.firstNameLabel, styling)
+                        } else {
+                            defaultFirstNameField()
+                        }
                     }
 
                     if configuration.showLastName {
-                        AnyView(cardFormScope.PrimerLastNameField(label: CheckoutComponentsStrings.lastNameLabel, styling: styling))
+                        if let customField = (cardFormScope as? DefaultCardFormScope)?.lastNameField {
+                            customField(CheckoutComponentsStrings.lastNameLabel, styling)
+                        } else {
+                            defaultLastNameField()
+                        }
                     }
                 }
             }
 
             // Country - Show first to match Drop-in layout
             if configuration.showCountry {
-                AnyView(cardFormScope.PrimerCountryField(label: CheckoutComponentsStrings.countryLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.countryField {
+                    customField(CheckoutComponentsStrings.countryLabel, styling)
+                } else {
+                    defaultCountryField()
+                }
             }
 
-            // Address Line 1 - Using ViewBuilder field functions
+            // Address Line 1
             if configuration.showAddressLine1 {
-                AnyView(cardFormScope.PrimerAddressLine1Field(label: CheckoutComponentsStrings.addressLine1Label, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine1Field {
+                    customField(CheckoutComponentsStrings.addressLine1Label, styling)
+                } else {
+                    defaultAddressLine1Field()
+                }
             }
 
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
-                AnyView(cardFormScope.PrimerPostalCodeField(label: CheckoutComponentsStrings.postalCodeLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.postalCodeField {
+                    customField(CheckoutComponentsStrings.postalCodeLabel, styling)
+                } else {
+                    defaultPostalCodeField()
+                }
             }
 
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
-                AnyView(cardFormScope.PrimerStateField(label: CheckoutComponentsStrings.stateLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.stateField {
+                    customField(CheckoutComponentsStrings.stateLabel, styling)
+                } else {
+                    defaultStateField()
+                }
             }
 
-            // Address Line 2 - Using ViewBuilder field functions (Optional)
+            // Address Line 2 (Optional)
             if configuration.showAddressLine2 {
-                AnyView(cardFormScope.PrimerAddressLine2Field(label: CheckoutComponentsStrings.addressLine2Label, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine2Field {
+                    customField(CheckoutComponentsStrings.addressLine2Label, styling)
+                } else {
+                    defaultAddressLine2Field()
+                }
             }
 
             // City - After address fields
             if configuration.showCity {
-                AnyView(cardFormScope.PrimerCityField(label: CheckoutComponentsStrings.cityLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.cityField {
+                    customField(CheckoutComponentsStrings.cityLabel, styling)
+                } else {
+                    defaultCityField()
+                }
             }
 
             // Email - Near the end
             if configuration.showEmail {
-                AnyView(cardFormScope.PrimerEmailField(label: CheckoutComponentsStrings.emailLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.emailField {
+                    customField(CheckoutComponentsStrings.emailLabel, styling)
+                } else {
+                    defaultEmailField()
+                }
             }
 
             // Phone Number - Last field
             if configuration.showPhoneNumber {
-                AnyView(cardFormScope.PrimerPhoneNumberField(label: CheckoutComponentsStrings.phoneNumberLabel, styling: styling))
+                if let customField = (cardFormScope as? DefaultCardFormScope)?.phoneNumberField {
+                    customField(CheckoutComponentsStrings.phoneNumberLabel, styling)
+                } else {
+                    defaultPhoneNumberField()
+                }
             }
         }
         .sheet(isPresented: $showCountrySelector) {
@@ -188,6 +228,170 @@ internal struct BillingAddressView: View, LogReporter {
                     .padding()
             }
         }
+    }
+    
+    // MARK: - Default Field Implementations
+    
+    @ViewBuilder
+    private func defaultFirstNameField() -> some View {
+        NameInputField(
+            label: CheckoutComponentsStrings.firstNameLabel,
+            placeholder: "John",
+            inputType: .firstName,
+            styling: styling,
+            onNameChange: { [weak cardFormScope] name in
+                cardFormScope?.updateFirstName(name)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultLastNameField() -> some View {
+        NameInputField(
+            label: CheckoutComponentsStrings.lastNameLabel,
+            placeholder: "Smith",
+            inputType: .lastName,
+            styling: styling,
+            onNameChange: { [weak cardFormScope] name in
+                cardFormScope?.updateLastName(name)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+
+    @ViewBuilder
+    private func defaultCountryField() -> some View {
+        CountryInputField(
+            label: CheckoutComponentsStrings.countryLabel,
+            placeholder: CheckoutComponentsStrings.countrySelectorPlaceholder,
+            selectedCountry: selectedCountry,
+            styling: styling,
+            onCountryChange: { [weak cardFormScope] countryCode in
+                cardFormScope?.updateCountryCode(countryCode)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+        .onTapGesture {
+            showCountrySelector = true
+        }
+    }
+    
+    @ViewBuilder
+    private func defaultAddressLine1Field() -> some View {
+        AddressLineInputField(
+            label: CheckoutComponentsStrings.addressLine1Label,
+            placeholder: "123 Main St",
+            isRequired: true,
+            inputType: .addressLine1,
+            styling: styling,
+            onAddressChange: { [weak cardFormScope] address in
+                cardFormScope?.updateAddressLine1(address)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultAddressLine2Field() -> some View {
+        AddressLineInputField(
+            label: CheckoutComponentsStrings.addressLine2Label,
+            placeholder: "Apt 4B",
+            isRequired: false,
+            inputType: .addressLine2,
+            styling: styling,
+            onAddressChange: { [weak cardFormScope] address in
+                cardFormScope?.updateAddressLine2(address)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultCityField() -> some View {
+        CityInputField(
+            label: CheckoutComponentsStrings.cityLabel,
+            placeholder: "New York",
+            styling: styling,
+            onCityChange: { [weak cardFormScope] city in
+                cardFormScope?.updateCity(city)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultStateField() -> some View {
+        StateInputField(
+            label: CheckoutComponentsStrings.stateLabel,
+            placeholder: "NY",
+            styling: styling,
+            onStateChange: { [weak cardFormScope] state in
+                cardFormScope?.updateState(state)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultPostalCodeField() -> some View {
+        PostalCodeInputField(
+            label: CheckoutComponentsStrings.postalCodeLabel,
+            placeholder: "10001",
+            styling: styling,
+            onPostalCodeChange: { [weak cardFormScope] postalCode in
+                cardFormScope?.updatePostalCode(postalCode)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultEmailField() -> some View {
+        EmailInputField(
+            label: CheckoutComponentsStrings.emailLabel,
+            placeholder: "john.smith@example.com",
+            styling: styling,
+            onEmailChange: { [weak cardFormScope] email in
+                cardFormScope?.updateEmail(email)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
+    }
+    
+    @ViewBuilder
+    private func defaultPhoneNumberField() -> some View {
+        // Using NameInputField with phoneNumber type for phone number input
+        NameInputField(
+            label: CheckoutComponentsStrings.phoneNumberLabel,
+            placeholder: "+1 (555) 123-4567",
+            inputType: .phoneNumber,
+            styling: styling,
+            onNameChange: { [weak cardFormScope] phoneNumber in
+                cardFormScope?.updatePhoneNumber(phoneNumber)
+            },
+            onValidationChange: { _ in
+                // Validation is handled internally by the field
+            }
+        )
     }
 
 }

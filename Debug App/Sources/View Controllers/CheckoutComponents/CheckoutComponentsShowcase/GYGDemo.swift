@@ -353,10 +353,7 @@ private struct GYGCardFormView: View {
                     
                     VStack(spacing: 16) {
                         // Card Number Field
-                        AnyView(cardFormScope.PrimerCardNumberField(
-                            label: nil,
-                            styling: gygFieldStyling()
-                        ))
+                        gygMockField(label: "Card Number", placeholder: "1234 5678 9012 3456", color: gygOrange)
                         
                         // Co-badged Card Network Selection (if multiple networks detected)
                         if let availableNetworks = cardState?.availableCardNetworks,
@@ -401,23 +398,14 @@ private struct GYGCardFormView: View {
                         
                         HStack(spacing: 16) {
                             // Expiry Date Field
-                            AnyView(cardFormScope.PrimerExpiryDateField(
-                                label: nil,
-                                styling: gygFieldStyling()
-                            ))
+                            gygMockField(label: "Expiry", placeholder: "MM/YY", color: gygOrange)
                             
                             // CVV Field
-                            AnyView(cardFormScope.PrimerCvvField(
-                                label: nil,
-                                styling: gygFieldStyling()
-                            ))
+                            gygMockField(label: "CVV", placeholder: "123", color: gygOrange)
                         }
 
                         // Cardholder Name Field
-                        AnyView(cardFormScope.PrimerCardholderNameField(
-                            label: nil,
-                            styling: gygFieldStyling()
-                        ))
+                        gygMockField(label: "Cardholder Name", placeholder: "John Smith", color: gygOrange)
             }
         }
         .padding()
@@ -435,29 +423,17 @@ private struct GYGCardFormView: View {
             
             VStack(spacing: 16) {
                 // Country Field
-                AnyView(cardFormScope.PrimerCountryField(
-                    label: nil,
-                    styling: gygFieldStyling()
-                ))
+                gygMockField(label: "Country", placeholder: "Select Country", color: gygOrange)
                 
                 // Address Line 1 Field
-                AnyView(cardFormScope.PrimerAddressLine1Field(
-                    label: nil,
-                    styling: gygFieldStyling()
-                ))
+                gygMockField(label: "Address", placeholder: "123 Main St", color: gygOrange)
                 
                 HStack(spacing: 16) {
                     // Postal Code Field
-                    AnyView(cardFormScope.PrimerPostalCodeField(
-                        label: nil,
-                        styling: gygFieldStyling()
-                    ))
+                    gygMockField(label: "Postal Code", placeholder: "10001", color: gygOrange)
                     
                     // State Field (shown for countries that require it)
-                    AnyView(cardFormScope.PrimerStateField(
-                        label: nil,
-                        styling: gygFieldStyling()
-                    ))
+                    gygMockField(label: "State", placeholder: "NY", color: gygOrange)
                 }
             }
         }
@@ -549,6 +525,30 @@ private struct GYGCardFormView: View {
             borderWidth: 1,
             padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
         )
+    }
+    
+    @ViewBuilder
+    private func gygMockField(label: String, placeholder: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if !label.isEmpty {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(textColor.opacity(0.7))
+            }
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isDarkMode ? Color(red: 0.18, green: 0.18, blue: 0.18) : Color.white)
+                    .frame(height: 50)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isDarkMode ? Color(red: 0.3, green: 0.3, blue: 0.3) : Color.gray.opacity(0.3), lineWidth: 1)
+                    .frame(height: 50)
+                Text(placeholder)
+                    .foregroundColor(textColor.opacity(0.3))
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 }
 

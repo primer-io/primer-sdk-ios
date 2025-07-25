@@ -289,64 +289,64 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Card Number")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real card number field from SDK
-                AnyView(cardFormScope.PrimerCardNumberField(
-                    label: nil,
+                // Mock card number field
+                mockLayoutField(
+                    placeholder: "1234 5678 9012 3456",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.blue.opacity(0.05),
                         borderColor: .blue,
                         cornerRadius: 8,
                         borderWidth: 1
                     )
-                ))
+                )
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Expiry Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real expiry date field from SDK
-                AnyView(cardFormScope.PrimerExpiryDateField(
-                    label: nil,
+                // Mock expiry date field
+                mockLayoutField(
+                    placeholder: "MM/YY",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.green.opacity(0.05),
                         borderColor: .green,
                         cornerRadius: 8,
                         borderWidth: 1
                     )
-                ))
+                )
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("CVV")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real CVV field from SDK
-                AnyView(cardFormScope.PrimerCvvField(
-                    label: nil,
+                // Mock CVV field
+                mockLayoutField(
+                    placeholder: "123",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.orange.opacity(0.05),
                         borderColor: .orange,
                         cornerRadius: 8,
                         borderWidth: 1
                     )
-                ))
+                )
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Cardholder Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real cardholder name field from SDK
-                AnyView(cardFormScope.PrimerCardholderNameField(
-                    label: nil,
+                // Mock cardholder name field
+                mockLayoutField(
+                    placeholder: "John Smith",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.purple.opacity(0.05),
                         borderColor: .purple,
                         cornerRadius: 8,
                         borderWidth: 1
                     )
-                ))
+                )
             }
         }
     }
@@ -359,16 +359,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real card number field from SDK
-                    AnyView(cardFormScope.PrimerCardNumberField(
-                        label: nil,
+                    // Mock card number field
+                    mockLayoutField(
+                        placeholder: "1234 5678 9012 3456",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.blue.opacity(0.05),
                             borderColor: .blue,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                     .frame(width: 200)
                 }
                 
@@ -376,16 +376,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real expiry date field from SDK
-                    AnyView(cardFormScope.PrimerExpiryDateField(
-                        label: nil,
+                    // Mock expiry date field
+                    mockLayoutField(
+                        placeholder: "MM/YY",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.green.opacity(0.05),
                             borderColor: .green,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                     .frame(width: 100)
                 }
                 
@@ -393,16 +393,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real CVV field from SDK
-                    AnyView(cardFormScope.PrimerCvvField(
-                        label: nil,
+                    // Mock CVV field
+                    mockLayoutField(
+                        placeholder: "123",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.orange.opacity(0.05),
                             borderColor: .orange,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                     .frame(width: 80)
                 }
                 
@@ -410,16 +410,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Name")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real cardholder name field from SDK
-                    AnyView(cardFormScope.PrimerCardholderNameField(
-                        label: nil,
+                    // Mock cardholder name field
+                    mockLayoutField(
+                        placeholder: "John Smith",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.purple.opacity(0.05),
                             borderColor: .purple,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                     .frame(width: 150)
                 }
             }
@@ -434,32 +434,32 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real card number field from SDK
-                    AnyView(cardFormScope.PrimerCardNumberField(
-                        label: nil,
+                    // Mock card number field
+                    mockLayoutField(
+                        placeholder: "1234 5678 9012 3456",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.blue.opacity(0.05),
                             borderColor: .blue,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real expiry date field from SDK
-                    AnyView(cardFormScope.PrimerExpiryDateField(
-                        label: nil,
+                    // Mock expiry date field
+                    mockLayoutField(
+                        placeholder: "MM/YY",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.green.opacity(0.05),
                             borderColor: .green,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                 }
             }
             
@@ -468,32 +468,32 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real CVV field from SDK
-                    AnyView(cardFormScope.PrimerCvvField(
-                        label: nil,
+                    // Mock CVV field
+                    mockLayoutField(
+                        placeholder: "123",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.orange.opacity(0.05),
                             borderColor: .orange,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cardholder")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real cardholder name field from SDK
-                    AnyView(cardFormScope.PrimerCardholderNameField(
-                        label: nil,
+                    // Mock cardholder name field
+                    mockLayoutField(
+                        placeholder: "John Smith",
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.purple.opacity(0.05),
                             borderColor: .purple,
                             cornerRadius: 8,
                             borderWidth: 1
                         )
-                    ))
+                    )
                 }
             }
         }
@@ -502,8 +502,9 @@ private struct DynamicLayoutCardFormView: View {
     @ViewBuilder
     private var compactLayout: some View {
         VStack(spacing: 12) {
-            // Real card number field from SDK
-            AnyView(cardFormScope.PrimerCardNumberField(
+            // Mock card number field
+            mockLayoutField(
+                placeholder: "1234 5678 9012 3456",
                 label: "Card Number",
                 styling: PrimerFieldStyling(
                     backgroundColor: Color.blue.opacity(0.05),
@@ -512,11 +513,12 @@ private struct DynamicLayoutCardFormView: View {
                     borderWidth: 1,
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
-            ))
+            )
             
             HStack(spacing: 12) {
-                // Real expiry date field from SDK
-                AnyView(cardFormScope.PrimerExpiryDateField(
+                // Mock expiry date field
+                mockLayoutField(
+                    placeholder: "MM/YY",
                     label: "Expiry",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.green.opacity(0.05),
@@ -525,10 +527,11 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1,
                         padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                     )
-                ))
+                )
                 
-                // Real CVV field from SDK
-                AnyView(cardFormScope.PrimerCvvField(
+                // Mock CVV field
+                mockLayoutField(
+                    placeholder: "123",
                     label: "CVV",
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.orange.opacity(0.05),
@@ -537,11 +540,12 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1,
                         padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                     )
-                ))
+                )
             }
             
-            // Real cardholder name field from SDK
-            AnyView(cardFormScope.PrimerCardholderNameField(
+            // Mock cardholder name field
+            mockLayoutField(
+                placeholder: "John Smith",
                 label: "Cardholder Name",
                 styling: PrimerFieldStyling(
                     backgroundColor: Color.purple.opacity(0.05),
@@ -550,7 +554,33 @@ private struct DynamicLayoutCardFormView: View {
                     borderWidth: 1,
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
-            ))
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private func mockLayoutField(placeholder: String, label: String? = nil, styling: PrimerFieldStyling?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let label = label, !label.isEmpty {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            let effectiveStyling = styling ?? PrimerFieldStyling()
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                    .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
+                    .frame(height: 50)
+                RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                    .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
+                    .frame(height: 50)
+                Text(placeholder)
+                    .foregroundColor(effectiveStyling.placeholderColor?.opacity(0.5) ?? Color.gray.opacity(0.5))
+                    .padding(.horizontal, effectiveStyling.padding?.leading ?? 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 }

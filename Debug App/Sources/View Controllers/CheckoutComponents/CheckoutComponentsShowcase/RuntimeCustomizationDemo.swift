@@ -230,7 +230,7 @@ private struct ConditionalCardFormView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             // Real card number field from SDK with conditional styling
-                            AnyView(cardFormScope.PrimerCardNumberField(
+                            mockDynamicField(type: "cardNumber", placeholder: "1234 5678 9012 3456",
                                 label: nil,
                                 styling: PrimerFieldStyling(
                                     backgroundColor: cardTypeColor.opacity(0.05),
@@ -240,7 +240,7 @@ private struct ConditionalCardFormView: View {
                                     borderWidth: 1,
                                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                                 )
-                            ))
+                            )
                         }
                     }
                     
@@ -251,7 +251,7 @@ private struct ConditionalCardFormView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             // Real expiry date field from SDK
-                            AnyView(cardFormScope.PrimerExpiryDateField(
+                            mockDynamicField(type: "expiry", placeholder: "MM/YY",
                                 label: nil,
                                 styling: PrimerFieldStyling(
                                     backgroundColor: Color.gray.opacity(0.05),
@@ -260,7 +260,7 @@ private struct ConditionalCardFormView: View {
                                     borderWidth: 1,
                                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                                 )
-                            ))
+                            )
                         }
                         
                         // CVV with conditional tooltip
@@ -276,7 +276,7 @@ private struct ConditionalCardFormView: View {
                                 }
                             }
                             // Real CVV field from SDK with Amex-specific styling
-                            AnyView(cardFormScope.PrimerCvvField(
+                            mockDynamicField(type: "cvv", placeholder: "123",
                                 label: nil,
                                 styling: PrimerFieldStyling(
                                     backgroundColor: Color.gray.opacity(0.05),
@@ -286,7 +286,7 @@ private struct ConditionalCardFormView: View {
                                     borderWidth: isAmex ? 2 : 1,
                                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                                 )
-                            ))
+                            )
                         }
                     }
                     
@@ -296,7 +296,7 @@ private struct ConditionalCardFormView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         // Real cardholder name field from SDK with validation styling
-                        AnyView(cardFormScope.PrimerCardholderNameField(
+                        mockDynamicField(type: "cardholderName", placeholder: "John Smith",
                             label: nil,
                             styling: PrimerFieldStyling(
                                 backgroundColor: Color.gray.opacity(0.05),
@@ -306,7 +306,7 @@ private struct ConditionalCardFormView: View {
                                 borderWidth: cardholderValidationColor == .clear ? 1 : 2,
                                 padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                             )
-                        ))
+                        )
                     }
                 }
                 .padding()
@@ -448,6 +448,30 @@ private struct ConditionalCardFormView: View {
             detectedCardType = "Unknown"
             showSecurityBadge = false
             isAmex = false
+        }
+    }
+    
+    @ViewBuilder
+    private func mockDynamicField(type: String, placeholder: String, label: String?, styling: PrimerFieldStyling?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let label = label, !label.isEmpty {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            let effectiveStyling = styling ?? PrimerFieldStyling()
+            
+            RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
+                .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
+                .frame(height: 50)
+                .overlay(
+                    Text(placeholder)
+                        .foregroundColor(effectiveStyling.placeholderColor?.opacity(0.5) ?? Color.gray.opacity(0.5))
+                        .padding(.horizontal, effectiveStyling.padding?.leading ?? 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
         }
     }
 }

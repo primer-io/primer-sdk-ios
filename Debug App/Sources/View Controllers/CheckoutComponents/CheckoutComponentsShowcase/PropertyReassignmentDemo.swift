@@ -239,37 +239,37 @@ private struct DynamicPropertiesCardFormView: View {
                 // Card form with dynamic properties using real SDK fields
                 VStack(spacing: fieldSpacing) {
                     fieldWrapper(label: "Card Number") {
-                        // Real card number field from SDK
-                        AnyView(cardFormScope.PrimerCardNumberField(
-                            label: showLabels ? nil : "Card Number",
-                            styling: dynamicFieldStyling()
-                        ))
+                        // Mock card number field
+                        mockInputField(
+                            placeholder: "1234 5678 9012 3456",
+                            label: showLabels ? nil : "Card Number"
+                        )
                     }
                     
                     HStack(spacing: fieldSpacing) {
                         fieldWrapper(label: "Expiry") {
-                            // Real expiry date field from SDK
-                            AnyView(cardFormScope.PrimerExpiryDateField(
-                                label: showLabels ? nil : "Expiry",
-                                styling: dynamicFieldStyling()
-                            ))
+                            // Mock expiry date field
+                            mockInputField(
+                                placeholder: "MM/YY",
+                                label: showLabels ? nil : "Expiry"
+                            )
                         }
                         
                         fieldWrapper(label: "CVV") {
-                            // Real CVV field from SDK
-                            AnyView(cardFormScope.PrimerCvvField(
-                                label: showLabels ? nil : "CVV",
-                                styling: dynamicFieldStyling()
-                            ))
+                            // Mock CVV field
+                            mockInputField(
+                                placeholder: "123",
+                                label: showLabels ? nil : "CVV"
+                            )
                         }
                     }
                     
                     fieldWrapper(label: "Cardholder Name") {
-                        // Real cardholder name field from SDK
-                        AnyView(cardFormScope.PrimerCardholderNameField(
-                            label: showLabels ? nil : "Cardholder Name",
-                            styling: dynamicFieldStyling()
-                        ))
+                        // Mock cardholder name field
+                        mockInputField(
+                            placeholder: "John Smith",
+                            label: showLabels ? nil : "Cardholder Name"
+                        )
                     }
                 }
                 .padding()
@@ -362,6 +362,28 @@ private struct DynamicPropertiesCardFormView: View {
                 borderWidth: 1,
                 padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
             )
+        }
+    }
+    
+    @ViewBuilder
+    private func mockInputField(placeholder: String, label: String?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let label = label, !label.isEmpty {
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(isDarkMode ? .white.opacity(0.7) : .black.opacity(0.7))
+            }
+            
+            RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
+                .fill(dynamicFieldStyling().backgroundColor ?? .clear)
+                .stroke(dynamicFieldStyling().borderColor ?? .gray.opacity(0.5), lineWidth: dynamicFieldStyling().borderWidth ?? 1)
+                .frame(height: 50)
+                .overlay(
+                    Text(placeholder)
+                        .foregroundColor((dynamicFieldStyling().placeholderColor ?? dynamicFieldStyling().textColor ?? .gray).opacity(0.5))
+                        .padding(.horizontal, dynamicFieldStyling().padding?.leading ?? 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
         }
     }
 }

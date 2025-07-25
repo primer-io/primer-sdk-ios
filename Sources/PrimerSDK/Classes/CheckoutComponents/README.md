@@ -82,19 +82,26 @@ PrimerCheckout(
     clientToken: clientToken,
     settings: settings,
     scope: { checkoutScope in
-        // Customize card number input
-        checkoutScope.cardForm.cardNumberInput = { modifier in
-            CustomCardNumberField(modifier: modifier)
+        // Get the card form scope
+        if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? DefaultCardFormScope {
+            // Customize card number field using closure property
+            cardScope.cardNumberField = { label, styling in
+                AnyView(CustomCardNumberField(
+                    label: label,
+                    styling: styling,
+                    onChange: cardScope.updateCardNumber
+                ))
+            }
         }
         
         // Customize loading screen
         checkoutScope.loadingScreen = {
-            CustomLoadingView()
+            AnyView(CustomLoadingView())
         }
         
         // Customize error screen
         checkoutScope.errorScreen = { error in
-            CustomErrorView(message: error)
+            AnyView(CustomErrorView(message: error))
         }
     }
 )
@@ -160,21 +167,44 @@ cardFormScope.submit()
 
 ### Customizable Components
 
+CheckoutComponents provides closure properties for customizing individual fields:
+
 ```swift
-scope.cardForm.cardNumberInput = { modifier in
-    CustomCardNumberInput(modifier: modifier)
+// Get the card form scope
+if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? DefaultCardFormScope {
+    // Customize card number field
+    cardScope.cardNumberField = { label, styling in
+        AnyView(CustomCardNumberInput(
+            label: label,
+            styling: styling,
+            onChange: cardScope.updateCardNumber
+        ))
+    }
+    
+    // Customize expiry date field
+    cardScope.expiryDateField = { label, styling in
+        AnyView(CustomExpiryInput(
+            label: label,
+            styling: styling,
+            onMonthChange: cardScope.updateExpiryMonth,
+            onYearChange: cardScope.updateExpiryYear
+        ))
+    }
+    
+    // Customize CVV field
+    cardScope.cvvField = { label, styling in
+        AnyView(CustomCVVInput(
+            label: label,
+            styling: styling,
+            onChange: cardScope.updateCvv
+        ))
+    }
+    
+    // ... and 15 more field customization options
 }
-
-scope.cardForm.expiryDateInput = { modifier in
-    CustomExpiryInput(modifier: modifier)
-}
-
-scope.cardForm.cvvInput = { modifier in
-    CustomCVVInput(modifier: modifier)
-}
-
-// ... and 15 more components
 ```
+
+This single, consistent approach matches Android's API exactly, providing a clean and predictable customization pattern.
 
 ## State Observation
 
