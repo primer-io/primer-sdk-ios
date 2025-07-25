@@ -66,7 +66,7 @@ public enum PrimerError: PrimerErrorProtocol {
         diagnosticsId: String = .uuid
     )
     case invalidUrl(
-        url: String?,
+        url: String? = nil,
         userInfo: [String: String]? = .errorUserInfoDictionary(),
         diagnosticsId: String = .uuid
     )
@@ -608,7 +608,10 @@ public enum PrimerError: PrimerErrorProtocol {
         case .applePayDeviceNotSupported:
             return "This device does not support Apple Pay. Apple Pay requires compatible hardware and iOS version."
         case .applePayConfigurationError:
-            return "Check that the merchant identifier matches your Apple Developer configuration and is valid for the current environment (sandbox/production)."
+            return """
+            Check that the merchant identifier matches your Apple Developer configuration and \
+            is valid for the current environment (sandbox/production).
+            """
         case .applePayPresentationFailed:
             return "Unable to display Apple Pay sheet. This may be due to system restrictions or temporary issues. Try again later."
         case .unknown:
