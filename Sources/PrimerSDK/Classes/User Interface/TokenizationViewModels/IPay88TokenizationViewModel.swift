@@ -73,7 +73,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         if (AppState.current.amount ?? 0) == 0 {
             errors.append(PrimerError.invalidClientSessionValue(
                 name: "amount",
-                value: AppState.current.amount == nil ? nil : "\(AppState.current.amount!)"
+                value: AppState.current.amount.map(String.init)
             ))
         }
 
@@ -378,21 +378,21 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     ) async throws -> String? {
         #if canImport(PrimerIPay88MYSDK)
         if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
-            guard let backendCallbackUrlRawString = decodedJWTToken.backendCallbackUrl,
-                  let backendCallbackUrlStr =
-                  backendCallbackUrlRawString.addingPercentEncoding(withAllowedCharacters: .urlPasswordAllowed)?
-                      .replacingOccurrences(of: "=", with: "%3D"),
-                      let backendCallbackUrl = URL(string: backendCallbackUrlStr),
-                      let statusUrlStr = decodedJWTToken.statusUrl,
-                      let statusUrl = URL(string: statusUrlStr),
-                      let primerTransactionId = decodedJWTToken.primerTransactionId
+            guard let callbackRaw = decodedJWTToken.backendCallbackUrl,
+                  let callbackStr = callbackRaw.addingPercentEncoding(
+                      withAllowedCharacters: .urlPasswordAllowed
+                  )?.replacingOccurrences(of: "=", with: "%3D"),
+                  let callbackUrl = URL(string: callbackStr),
+                  let statusUrlRaw = decodedJWTToken.statusUrl,
+                  let statusUrl = URL(string: statusUrlRaw),
+                  let primerTransactionId = decodedJWTToken.primerTransactionId
             else {
                 throw handled(primerError: .invalidClientToken())
             }
 
             await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
 
-            self.backendCallbackUrl = backendCallbackUrl
+            self.backendCallbackUrl = callbackUrl
             self.primerTransactionId = primerTransactionId
             self.statusUrl = statusUrl
 
@@ -588,7 +588,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             willPresentPaymentMethodUI?()
             let delegate = PrimerHeadlessUniversalCheckout.current.uiDelegate
 
-            self.didComplete = {
+            didComplete = {
                 DispatchQueue.main.async {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                     newPrimerIPay88ViewController.dismiss(animated: true, completion: nil)
@@ -697,7 +697,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func awaitUserInput() async throws {
         let pollingModule = PollingModule(url: statusUrl)
-        self.didCancel = {
+        didCancel = {
             let err = PrimerError.cancelled(
                 paymentMethodType: self.config.type,
                 userInfo: .errorUserInfoDictionary(),
@@ -726,7 +726,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .iPay88View
             ))
 
-            DispatchQueue.main.async { [unowned self] in
+            DispatchQueue.main.async {
                 #if DEBUG
                 let isMockBE = PrimerAPIConfiguration.current?.clientSession?.testId != nil
                 #else
