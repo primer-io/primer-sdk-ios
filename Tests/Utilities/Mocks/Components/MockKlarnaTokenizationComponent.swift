@@ -88,7 +88,10 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         }
     }
 
-    func tokenizeDropIn(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerSDK
+    func tokenizeDropIn(
+        customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerSDK
         .PrimerPaymentMethodTokenData {
         switch tokenizeDropInResult {
         case .success(let paymentMethodToken): return paymentMethodToken

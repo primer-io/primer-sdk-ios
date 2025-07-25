@@ -234,38 +234,26 @@ extension KlarnaTokenizationManagerAsyncTests {
     }
 
     private var customerToken: Response.Body.Klarna.CustomerToken {
-        .init(customerTokenId: "customer_token_id",
-              sessionData: .init(recurringDescription: "recurring_description",
-                                 purchaseCountry: "gb",
-                                 purchaseCurrency: "GBP",
-                                 locale: "gb",
-                                 orderAmount: 1234,
-                                 orderTaxAmount: nil,
-                                 orderLines: [],
-                                 billingAddress: address,
-                                 shippingAddress: address,
-                                 tokenDetails: .init(brand: "brand",
-                                                     maskedNumber: nil,
-                                                     type: "td_type",
-                                                     expiryDate: nil)))
-    }
-
-    private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
+        .init(
+            customerTokenId: "customer_token_id",
+            sessionData: .init(
+                recurringDescription: "recurring_description",
+                purchaseCountry: "gb",
+                purchaseCurrency: "GBP",
+                locale: "gb",
+                orderAmount: 1234,
+                orderTaxAmount: nil,
+                orderLines: [],
+                billingAddress: address,
+                shippingAddress: address,
+                tokenDetails: .init(
+                    brand: "brand",
+                    maskedNumber: nil,
+                    type: "td_type",
+                    expiryDate: nil
+                )
+            )
         )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

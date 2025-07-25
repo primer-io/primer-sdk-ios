@@ -47,29 +47,20 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func start() {
-
         checkoutEventsNotifierModule.didStartTokenization = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(false)
-            }
+            self.enableUserInteraction(false)
         }
 
         checkoutEventsNotifierModule.didFinishTokenization = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
+            self.enableUserInteraction(true)
         }
 
         didStartPayment = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(false)
-            }
+            self.enableUserInteraction(false)
         }
 
         didFinishPayment = { _ in
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
+            self.enableUserInteraction(true)
         }
 
         super.start()
@@ -77,27 +68,19 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     override func start_async() {
         checkoutEventsNotifierModule.didStartTokenization = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(false)
-            }
+            self.enableUserInteraction(false)
         }
 
         checkoutEventsNotifierModule.didFinishTokenization = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
+            self.enableUserInteraction(true)
         }
 
         didStartPayment = {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(false)
-            }
+            self.enableUserInteraction(false)
         }
 
         didFinishPayment = { _ in
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
+            self.enableUserInteraction(true)
         }
 
         super.start_async()
@@ -310,6 +293,14 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+    
+    // MARK: Private helper methods
+    
+    private func enableUserInteraction(_ enable: Bool) {
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(enable)
         }
     }
 }

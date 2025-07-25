@@ -232,33 +232,22 @@ extension KlarnaTokenizationManager {
     private func getRequestBody(
         customerToken: Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
-    ) async throws -> Request.Body
-        .Tokenization {
-        var paymentInstrument: TokenizationRequestBodyPaymentInstrument
-        // Validates the presence of session data.
-        // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
+    ) async throws -> Request.Body.Tokenization {
         guard let sessionData = customerToken?.sessionData else {
             throw KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData")
         }
 
-        // Checks if the session type is for recurring payments. If so, it attempts to extract the
-        // customer token ID and sets 'KlarnaCustomerTokenPaymentInstrument' as a payment instrument.
-        // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value
-        // which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider
-        // delegate method and sets 'KlarnaAuthorizationPaymentInstrument' as a payment instrument.
-        // If the token ID is not found, it generates an error indicating an invalid value
-        // for `tokenization.customerToken`
+        let paymentInstrument: TokenizationRequestBodyPaymentInstrument
+
         if KlarnaHelpers.getSessionType() == .recurringPayment {
             guard let klarnaCustomerToken = customerToken?.customerTokenId else {
                 throw KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken")
             }
-            // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
             paymentInstrument = KlarnaCustomerTokenPaymentInstrument(klarnaCustomerToken: klarnaCustomerToken, sessionData: sessionData)
         } else {
-            // Prepares the payment instrument by creating a `KlarnaAuthorizationPaymentInstrument` object
             paymentInstrument = KlarnaAuthorizationPaymentInstrument(klarnaAuthorizationToken: offSessionAuthorizationId, sessionData: sessionData)
         }
-        // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
+
         return Request.Body.Tokenization(paymentInstrument: paymentInstrument)
     }
 }
