@@ -160,7 +160,6 @@ extension KlarnaTokenizationManager {
         if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
             case .continueWithNewClientToken:
-                // TODO: REVIEW_CHECK - What should we return here?
                 preconditionFailure()
             case .complete:
                 return PrimerCheckoutData(payment: nil)
