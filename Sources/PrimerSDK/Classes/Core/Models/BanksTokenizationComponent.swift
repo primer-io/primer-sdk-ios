@@ -205,7 +205,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             _ = await PrimerDelegateProxy.raisePrimerDidFailWithError(PrimerError.invalidValue(key: "paymentMethodTokenData"), data: nil)
             return
         }
-        
+
         guard PrimerInternal.shared.intent != .vault else {
             _ = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
             return await handleSuccessfulFlow()

@@ -88,8 +88,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     override func start_async() {
         didFinishPayment = { [weak self] _ in
-            guard let self else { return }
-            self.cleanup()
+            guard let self = self else { return }
+            Task { @MainActor in self.cleanup_main_actor() }
         }
 
         setupNotificationObservers()
