@@ -1,4 +1,4 @@
-# CLAUDE.md - PCI Compliant Payment Processing
+# PCI Compliant Payment Processing
 
 This directory contains PCI DSS (Payment Card Industry Data Security Standard) compliant components for secure payment data handling.
 

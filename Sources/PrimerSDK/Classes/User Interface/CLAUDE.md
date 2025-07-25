@@ -1,6 +1,6 @@
-# CLAUDE.md - User Interface (Legacy UIKit)
+# User Interface (UIKit)
 
-This directory contains the legacy UIKit-based user interface components for the traditional Drop-in integration approach. These components support iOS 13.1+ and provide a complete payment experience with minimal integration effort.
+This directory contains the UIKit-based user interface components for the Drop-in integration approach. These components support iOS 13.1+ and provide a complete payment experience with minimal integration effort.
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# CLAUDE.md - Services
+# Services
 
 This directory contains the service layer infrastructure that provides networking, data processing, and external service integration capabilities for the Primer iOS SDK.
 

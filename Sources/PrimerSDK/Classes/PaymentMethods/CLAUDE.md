@@ -1,4 +1,4 @@
-# CLAUDE.md - Payment Methods
+# Payment Methods
 
 This directory would contain various payment method implementations. Currently focused on CheckoutComponents payment methods with modern SwiftUI architecture.
 

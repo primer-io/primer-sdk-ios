@@ -16,7 +16,7 @@ This file provides comprehensive guidance for working with the Primer iOS SDK re
 ### `/Sources/PrimerSDK/` - Core SDK Implementation
 Main SDK source code with three distinct integration patterns:
 
-#### `Classes/Core/` - Legacy Integrations
+#### `Classes/Core/` - Drop-in and Headless Integrations
 - **Drop-in** (`Classes/Core/Primer/`): Full UI solution with `Primer.swift` entry point
 - **Headless** (`Classes/Core/PrimerHeadlessUniversalCheckout/`): API-only integration
 - **Payment Services** (`Classes/Core/Payment Services/`): Shared payment processing logic
@@ -138,12 +138,12 @@ bundle exec fastlane build_spm
 
 ### Dependency Injection Systems
 
-**Legacy DI** (Drop-in/Headless):
+**Drop-in/Headless DI**:
 ```swift
 @Dependency private var apiClient: PrimerAPIClientProtocol
 ```
 
-**Modern DI** (CheckoutComponents):
+**CheckoutComponents DI**:
 ```swift
 // Actor-based async container
 let service = try await diContainer.resolve(ServiceType.self)
@@ -156,12 +156,12 @@ await container.register(ServiceType.self, .singleton) {
 
 ### Payment Method Architecture
 
-**Legacy Pattern** (Drop-in/Headless):
+**Drop-in/Headless Pattern**:
 ```
 PrimerPaymentMethod → Manager → TokenizationComponent → ViewModel → Completion
 ```
 
-**Modern Pattern** (CheckoutComponents):
+**CheckoutComponents Pattern**:
 ```
 PaymentMethodProtocol → Scope Protocol → ViewModel (Scope Implementation) → SwiftUI View
 ```
@@ -229,7 +229,7 @@ The CheckoutComponents framework is **production-ready** with comprehensive feat
 
 ### Adding a New Payment Method
 
-**For Legacy (Drop-in/Headless):**
+**For Drop-in/Headless:**
 1. Create in `Core/PrimerHeadlessUniversalCheckout/Payment Methods/`
 2. Implement `PrimerHeadlessUniversalCheckoutPaymentMethodTokenizationDelegate`
 3. Add UI in `User Interface/TokenizationViewControllers/` if needed
@@ -349,69 +349,29 @@ The SDK supports multiple Package.swift configurations:
 6. **Modular Payment Methods**: Each payment method is self-contained with clear boundaries
 7. **Security-First Architecture**: PCI compliance built into the foundation
 
-## Recent Updates and Improvements
+## Key Features
 
-### Billing Address Collection Implementation ✅
+### Billing Address Collection
 - **Backend-controlled configuration**: Billing address collection configured via checkout modules
-- **Debug App integration**: Added billing address collection switch with proper guidance
+- **Debug App integration**: Billing address collection switch with proper guidance
 - **Cross-integration support**: Works automatically across Drop-in, Headless, and CheckoutComponents
-- **Documentation**: Comprehensive setup guide in `BILLING_ADDRESS_SETUP.md`
 
-### CheckoutComponents Production Readiness ✅
+### CheckoutComponents
 - **Complete implementation**: All scopes, validation, navigation, and UI components
-- **3DS authentication**: Working properly in debug and production environments
+- **3DS authentication**: Full authentication flow support
 - **Performance optimization**: Efficient DI container and state management
 - **Error handling**: Comprehensive error scenarios with user-friendly messaging
+- **Card validation system**: Real-time field and form validation with Luhn algorithm
+- **Country selection**: Complete SwiftUI country selector with 250+ countries and search
+- **UI customization**: Single closure property approach matching Android API exactly
 
-### CheckoutComponents Recent Enhancements (June 26, 2025) ✅
-
-#### Card Validation System Overhaul
-- **Fixed validation disconnect**: Resolved critical issue where card validation errors displayed but payment button remained enabled
-- **Synchronized validation states**: Field-level and form-level validation now communicate in real-time
-- **Test card compatibility**: Fixed validation for cards like "9120 0000 0000 0006" during typing
-- **Unknown network handling**: Improved Luhn validation for cards with unknown networks (13-19 digits)
-
-#### 3DS Authentication Complete Implementation
-- **Pure Swift protocol integration**: Added 3DS delegate methods to CheckoutComponentsPrimer
-- **Proper flow separation**: Tokenization completes, 3DS handled at payment level
-- **Centralized error messaging**: Added 3DS-specific error messages in CheckoutComponentsStrings
-- **Full Drop-in parity**: Complete 3DS functionality while maintaining CheckoutComponents architecture
-
-#### Country Selection and Billing Address Improvements
-- **Complete country database**: Implemented 250+ countries with dial codes and comprehensive search
-- **Diacritic-insensitive search**: Enhanced country filtering with accent-insensitive matching
-- **Billing address field reordering**: Changed to Drop-in layout (Country → Address → Postal → State)
-- **Automatic country selection**: Improved UX with proper scope-based navigation for sheet presentation
-
-#### Android Parity Error Messaging System
-- **Centralized error resolution**: Implemented ErrorMessageResolver for consistent error formatting
-- **BillingAddressValidationRules**: Complete validation rules matching Android error structure
-- **Extended RulesFactory**: Added billing address validation rule creation methods
-- **Localized error strings**: Added missing localized strings for all validation scenarios
-
-#### Country Picker Infrastructure
-- **Real CountryCode data integration**: Replaced placeholder with production country data
-- **Search functionality**: Added comprehensive search with filtering capabilities
-- **Bug fixes**: Resolved string interpolation issues showing literal placeholders
-- **UI improvements**: Enhanced country picker presentation and dismissal
-
-### CheckoutComponents Recent Enhancements (July 25, 2025) ✅
-
-#### UI Customization API Simplification
-- **Removed ViewBuilder methods**: Eliminated confusing dual-approach pattern (ViewBuilder methods + closure properties)
-- **Single customization approach**: Now only using closure properties to match Android's clean API exactly
-- **Improved consistency**: All field customizations use the same pattern: `scope.fieldNameField = { label, styling in AnyView(...) }`
-- **Better Android parity**: iOS now matches Android's single property assignment approach
-- **Updated components**: CardFormScreen and BillingAddressView now use closure properties with fallback defaults
-
-### CheckoutComponents Showcase Implementation ✅
-- **Comprehensive Demo Suite**: 18 demo components showcasing CheckoutComponents flexibility
-- **Four Categories**: Layout Configurations, Styling Variations, Interactive Features, Advanced Customization
+### CheckoutComponents Showcase
+- **Demo Suite**: 8 demo components showcasing CheckoutComponents flexibility
 - **Modal Integration**: Seamless SwiftUI modal presentation from main Debug App
-- **File Organization**: Clean separation with 18 dedicated showcase files in organized directory structure
-- **Production Examples**: Real-world styling patterns including corporate, modern, colorful, and dark themes
-- **Interactive Demonstrations**: Live state management, validation flows, and co-badged card support
-- **Advanced Layouts**: Custom screen layouts including split-screen, carousel, stepped, and floating designs
+- **File Organization**: Clean separation with dedicated showcase files in organized directory structure
+- **Production Examples**: Real-world styling patterns and customization approaches
+- **Interactive Demonstrations**: Live state management, validation flows, and component customization
+- **Custom Layouts**: Custom screen layouts and component arrangements
 
 ## Memories and Conventions
 
@@ -434,20 +394,14 @@ Debug App/Sources/View Controllers/CheckoutComponentsShowcase/
 ├── ShowcaseEnums.swift                           # Section definitions
 ├── ShowcaseSection.swift                         # Reusable section wrapper
 ├── ShowcaseDemo.swift                            # Individual demo container
-├── CompactCardFormDemo.swift                     # Layout: Compact form
-├── ExpandedCardFormDemo.swift                    # Layout: Expanded form
-├── InlineCardFormDemo.swift                      # Layout: Inline form
-├── GridCardFormDemo.swift                        # Layout: Grid layout
-├── CorporateThemedCardFormDemo.swift             # Styling: Corporate theme
-├── ModernThemedCardFormDemo.swift                # Styling: Modern theme
-├── SingleFieldCustomisationDemo.swift              # Styling: Colorful theme
-├── DarkThemedCardFormDemo.swift                  # Styling: Dark theme
-├── LiveStateCardFormDemo.swift                   # Interactive: Live state
-├── ValidationCardFormDemo.swift                  # Interactive: Validation
-├── CoBadgedCardFormDemo.swift                    # Interactive: Co-badged cards
-├── ModifierChainsCardFormDemo.swift              # Advanced: Modifier chains
-├── CustomScreenCardFormDemo.swift                # Advanced: Custom layouts
-└── AnimatedCardFormDemo.swift                    # Advanced: Animations
+├── SingleFieldCustomisationDemo.swift           # Single field customization
+├── CustomScreenPaymentSelectionDemo.swift       # Custom payment selection screen
+├── GYGDemo.swift                                 # GYG-style demonstration
+├── CustomCardFormLayoutDemo.swift               # Custom card form layouts
+├── PropertyReassignmentDemo.swift               # Property reassignment patterns
+├── RuntimeCustomizationDemo.swift               # Runtime customization
+├── MixedComponentsDemo.swift                     # Mixed component usage
+└── SingleInputFieldDemo.swift                   # Single input field demo
 ```
 
 ### Integration Pattern

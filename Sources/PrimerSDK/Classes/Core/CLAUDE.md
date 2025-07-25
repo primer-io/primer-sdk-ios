@@ -1,6 +1,6 @@
-# CLAUDE.md - Core SDK Implementation
+# Core SDK Implementation
 
-This directory contains the legacy (but stable) implementation of the Primer iOS SDK, supporting iOS 13.1+ with traditional UIKit patterns.
+This directory contains the Drop-in and Headless implementation of the Primer iOS SDK, supporting iOS 13.1+ with traditional UIKit patterns.
 
 ## Architecture Overview
 
@@ -19,7 +19,7 @@ Primer.showCheckout(with: clientToken,
 - `Primer.swift`: Main SDK entry point
 - `PrimerDelegate`: Callback interface
 - `AppState.swift`: Global SDK state management
-- `DependencyInjection.swift`: Legacy DI container
+- `DependencyInjection.swift`: Property wrapper-based DI container
 
 #### 2. Headless Integration (`PrimerHeadlessUniversalCheckout/`)
 **When to use**: Custom UI with full control over UX
@@ -88,7 +88,7 @@ Secure storage for sensitive data:
 
 #### DI Container Pattern
 ```swift
-// Legacy DI registration
+// DI registration
 DependencyContainer.register(MyService.self) { resolver in
     MyServiceImpl(dependency: resolver.resolve(Dependency.self))
 }

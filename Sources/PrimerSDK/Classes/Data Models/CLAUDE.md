@@ -1,4 +1,4 @@
-# CLAUDE.md - Data Models
+# Data Models
 
 This directory contains the core data models and domain objects that represent the business entities throughout the Primer iOS SDK.
 

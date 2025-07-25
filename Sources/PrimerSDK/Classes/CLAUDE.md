@@ -1,10 +1,10 @@
-# CLAUDE.md - PrimerSDK Classes
+# PrimerSDK Classes
 
 This file provides context for the main PrimerSDK Classes directory structure and architecture patterns.
 
 ## Directory Overview
 
-### Core/ - Legacy SDK Implementation
+### Core/ - Drop-in and Headless Implementation
 The main iOS SDK implementation with three integration approaches:
 
 #### Drop-in Integration (`Core/Primer/`)
@@ -25,7 +25,7 @@ The main iOS SDK implementation with three integration approaches:
 - **VaultService**: Stored payment methods
 
 ### CheckoutComponents/ - Scope-Based SwiftUI Framework
-**NEWEST**: Type-safe scope-based API matching Android exactly (iOS 15+)
+Type-safe scope-based API matching Android exactly (iOS 15+)
 - **Main Entry Point**: `CheckoutComponents/CheckoutComponentsPrimer.swift` - UIKit-friendly API
 - **SwiftUI Entry**: `CheckoutComponents/PrimerCheckout.swift`
 - **Pattern**: Exact Android API parity with scope-based customization
@@ -33,15 +33,6 @@ The main iOS SDK implementation with three integration approaches:
 - **Scopes**: PrimerCheckoutScope, PrimerCardFormScope, PrimerPaymentMethodSelectionScope
 - **Bridge Services**: CheckoutComponentsPaymentMethodsBridge and HeadlessRepositoryImpl for SDK integration
 - **Architecture**: Production-ready with comprehensive documentation
-
-### CheckoutComponents/ - Scope-Based SwiftUI Framework
-**NEWEST**: Type-safe scope-based API matching Android exactly (iOS 15+)
-- **Main Entry Point**: `CheckoutComponents/CheckoutComponentsPrimer.swift` - UIKit-friendly API
-- **SwiftUI Entry**: `CheckoutComponents/PrimerCheckout.swift`
-- **Pattern**: Exact Android API parity with scope-based customization
-- **Key Features**: AsyncStream state management, full UI customization, co-badged cards
-- **Scopes**: PrimerCheckoutScope, PrimerCardFormScope, PrimerPaymentMethodSelectionScope
-- **Architecture**: See `CheckoutComponents/CLAUDE.md` for complete details
 
 ### Data Models/ - Domain Objects
 Core business entities and API models:
@@ -54,7 +45,7 @@ Core business entities and API models:
 - **Network/**: API client and networking infrastructure
 - **Parser/**: Data transformation utilities
 
-### User Interface/ - Legacy UI Components
+### User Interface/ - UIKit Components
 UIKit-based UI components for Drop-in integration:
 - **Root/**: Main view controllers
 - **Components/**: Reusable UI elements
@@ -70,17 +61,17 @@ Payment Card Industry compliant secure data processing:
 
 ### 1. Dependency Injection
 Two DI systems coexist:
-- **Legacy**: `DependencyInjection.swift` - Property wrapper based
-- **Modern**: `CheckoutComponents/Internal/DI/` - Actor-based async DI
+- **Drop-in/Headless**: `DependencyInjection.swift` - Property wrapper based
+- **CheckoutComponents**: `CheckoutComponents/Internal/DI/` - Actor-based async DI
 
 ### 2. Payment Method Integration
 
-**Legacy Pattern** (Drop-in/Headless):
+**Drop-in/Headless Pattern**:
 ```
 Entry Point → Manager → Component → Tokenization → Result
 ```
 
-**Modern Pattern** (CheckoutComponents):
+**CheckoutComponents Pattern**:
 ```
 PaymentMethodProtocol → Scope (Protocol) → ViewModel (Implementation) → View → DI Resolution
 ```
@@ -109,12 +100,12 @@ Comprehensive event tracking:
 
 ## Integration Notes
 
-### For Legacy Integrations (Drop-in/Headless)
+### For Drop-in/Headless Integrations
 - Use existing `DependencyContainer` for dependencies
 - Follow UIKit patterns for UI components
 - Implement delegate protocols for callbacks
 
-### For Modern Integrations (CheckoutComponents)
+### For CheckoutComponents Integrations
 - Use SwiftUI with scope-based architecture
 - Follow PaymentMethodProtocol pattern with associated types
 - Leverage async/await DI container for dependency resolution
@@ -131,11 +122,11 @@ Comprehensive event tracking:
 
 ### Adding a New Payment Method
 
-**For Legacy (Drop-in/Headless):**
+**For Drop-in/Headless:**
 1. Create tokenization component in appropriate directory
 2. Implement `PaymentMethodTokenizationViewModel`
 3. Add UIKit UI components
-4. Register in legacy `DependencyContainer`
+4. Register in `DependencyContainer`
 5. Add analytics events
 6. Create comprehensive tests
 
@@ -150,7 +141,7 @@ Comprehensive event tracking:
 8. Create comprehensive tests with DI mocking
 
 ### Modifying Core SDK Behavior
-1. Check both legacy and modern implementations
+1. Check both Drop-in/Headless and CheckoutComponents implementations
 2. Update appropriate service layer
 3. Ensure backward compatibility
 4. Update integration documentation
