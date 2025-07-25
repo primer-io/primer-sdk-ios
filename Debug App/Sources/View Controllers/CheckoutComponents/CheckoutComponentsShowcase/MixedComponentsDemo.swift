@@ -253,8 +253,20 @@ private struct MixedStyleCardFormView: View {
                                 .foregroundColor(.red)
                         }
                         
-                        // Mock card number field with custom fancy styling
-                        self.fancyCardNumberField()
+                        // Real SDK card number field with custom fancy styling
+                        CardNumberInputField(
+                            scope: cardFormScope,
+                            styling: PrimerFieldStyling(
+                                textColor: .black,
+                                backgroundColor: .clear,
+                                borderColor: .clear,
+                                cornerRadius: 12,
+                                borderWidth: 0,
+                                font: .system(size: 18, weight: .medium, design: .monospaced),
+                                padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+                            )
+                        )
+                        .frame(height: 50)
                         .background(
                             LinearGradient(
                                 colors: [Color.blue.opacity(0.05), Color.purple.opacity(0.05)],
@@ -283,8 +295,18 @@ private struct MixedStyleCardFormView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            // Mock expiry date field with default styling
-                            self.defaultStyleField(placeholder: "MM/YY", label: nil)
+                            // Real SDK expiry date field with default styling
+                            ExpiryDateInputField(
+                                scope: cardFormScope,
+                                styling: PrimerFieldStyling(
+                                    backgroundColor: Color.gray.opacity(0.1),
+                                    borderColor: .clear,
+                                    cornerRadius: 8,
+                                    borderWidth: 0,
+                                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                                )
+                            )
+                            .frame(height: 50)
                         }
                         
                         // CVV - Custom interactive style using real SDK component
@@ -298,8 +320,19 @@ private struct MixedStyleCardFormView: View {
                             }
                             
                             HStack {
-                                // Mock CVV field with custom interactive styling
-                                self.interactiveCvvField()
+                                // Real SDK CVV field with custom interactive styling
+                                CVVInputField(
+                                    scope: cardFormScope,
+                                    styling: PrimerFieldStyling(
+                                        backgroundColor: Color.orange.opacity(0.1),
+                                        borderColor: .clear,
+                                        cornerRadius: 8,
+                                        borderWidth: 0,
+                                        font: .system(.body, design: .monospaced),
+                                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                                    )
+                                )
+                                .frame(height: 50)
                                 .onTapGesture {
                                     withAnimation(.spring()) {
                                         isCardFlipped = true
@@ -324,8 +357,18 @@ private struct MixedStyleCardFormView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        // Mock cardholder name field with default styling
-                        self.defaultStyleField(placeholder: "John Smith", label: nil)
+                        // Real SDK cardholder name field with default styling
+                        CardholderNameInputField(
+                            scope: cardFormScope,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.gray.opacity(0.1),
+                                borderColor: .clear,
+                                cornerRadius: 8,
+                                borderWidth: 0,
+                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                            )
+                        )
+                        .frame(height: 50)
                     }
                 }
                 .padding()
@@ -410,50 +453,6 @@ private struct MixedStyleCardFormView: View {
         }
     }
     
-    @ViewBuilder
-    private func fancyCardNumberField() -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.clear)
-                .frame(height: 50)
-                .overlay(
-                    Text("1234 5678 9012 3456")
-                        .font(.system(size: 18, weight: .medium, design: .monospaced))
-                        .foregroundColor(.black.opacity(0.3))
-                        .padding(.horizontal, 16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
-        }
-    }
-    
-    @ViewBuilder
-    private func defaultStyleField(placeholder: String, label: String?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.1))
-                .frame(height: 50)
-                .overlay(
-                    Text(placeholder)
-                        .foregroundColor(.gray.opacity(0.5))
-                        .padding(.horizontal, 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
-        }
-    }
-    
-    @ViewBuilder
-    private func interactiveCvvField() -> some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.orange.opacity(0.1))
-            .frame(height: 50)
-            .overlay(
-                Text("123")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
-                    .padding(.horizontal, 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            )
-    }
 }
 
 /// Card visualization component

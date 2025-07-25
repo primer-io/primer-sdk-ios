@@ -187,11 +187,139 @@ struct GYGDemo: View {
         
         // Get the card form scope and apply GYG styling
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
-            // Override the card form screen with GYG-themed design
+            // Apply GYG field customizations to use real SDK components
+            let gygStyling = createGYGFieldStyling()
+            
+            // Customize individual fields with GYG branding
+            cardFormScope.cardNumberField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Card Number",
+                        styling: gygStyling,
+                        fieldType: .cardNumber,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.expiryDateField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Expiry",
+                        styling: gygStyling,
+                        fieldType: .expiryDate,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.cvvField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "CVV",
+                        styling: gygStyling,
+                        fieldType: .cvv,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.cardholderNameField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Cardholder Name",
+                        styling: gygStyling,
+                        fieldType: .cardholderName,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.countryField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Country",
+                        styling: gygStyling,
+                        fieldType: .countryCode,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.addressLine1Field = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Address",
+                        styling: gygStyling,
+                        fieldType: .addressLine1,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.postalCodeField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "Postal Code",
+                        styling: gygStyling,
+                        fieldType: .postalCode,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            cardFormScope.stateField = { label, _ in
+                AnyView(
+                    GYGStyledField(
+                        label: label ?? "State",
+                        styling: gygStyling,
+                        fieldType: .state,
+                        scope: cardFormScope,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            // Customize co-badged cards view with GYG styling
+            cardFormScope.cobadgedCardsView = { availableNetworks, selectNetwork in
+                AnyView(
+                    GYGCobadgedCardsView(
+                        availableNetworks: availableNetworks,
+                        selectNetwork: selectNetwork,
+                        isDarkMode: isDarkMode
+                    )
+                )
+            }
+            
+            // Override the entire screen to maintain GYG layout
             cardFormScope.screen = { _ in
                 AnyView(GYGCardFormView(cardFormScope: cardFormScope, isDarkMode: isDarkMode))
             }
         }
+    }
+    
+    private func createGYGFieldStyling() -> PrimerFieldStyling {
+        let gygOrange = Color(red: 1.0, green: 0.4, blue: 0.0)
+        
+        return PrimerFieldStyling(
+            font: .body,
+            labelFont: .caption,
+            textColor: isDarkMode ? .white : Color(red: 0.2, green: 0.2, blue: 0.2),
+            labelColor: isDarkMode ? Color.white.opacity(0.7) : Color(red: 0.2, green: 0.2, blue: 0.2).opacity(0.7),
+            backgroundColor: isDarkMode ? Color(red: 0.18, green: 0.18, blue: 0.18) : Color.white,
+            borderColor: isDarkMode ? Color(red: 0.3, green: 0.3, blue: 0.3) : Color.gray.opacity(0.3),
+            focusedBorderColor: gygOrange,
+            cornerRadius: 8,
+            borderWidth: 1,
+            padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+        )
     }
     
     // MARK: - Session Creation
@@ -232,7 +360,7 @@ struct GYGDemo: View {
     }
 }
 
-/// GetYourGuide-themed card form view
+/// GetYourGuide-themed card form view using real SDK components
 @available(iOS 15.0, *)
 private struct GYGCardFormView: View {
     let cardFormScope: DefaultCardFormScope
@@ -269,16 +397,12 @@ private struct GYGCardFormView: View {
             VStack(spacing: 24) {
                 experienceSummaryCard
                 
-                // Wrap form sections in a container with dark mode background
-                VStack(spacing: 16) {
-                    paymentDetailsSection
-                    billingAddressSection
-                }
-                .background(isDarkMode ? Color(red: 0.11, green: 0.11, blue: 0.11) : Color.white)
-                .cornerRadius(16)
+                // Use the default CardFormScreen but within our GYG styling
+                CardFormScreen(scope: cardFormScope)
+                    .background(isDarkMode ? Color(red: 0.11, green: 0.11, blue: 0.11) : Color.white)
+                    .cornerRadius(16)
                 
                 securityAssuranceView
-                submitButton
                 footerText
             }
             .padding()
@@ -343,81 +467,6 @@ private struct GYGCardFormView: View {
         .cornerRadius(16)
     }
 
-    @ViewBuilder
-    private var paymentDetailsSection: some View {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Payment Details")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(textColor)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    VStack(spacing: 16) {
-                        // Card Number Field
-                        gygMockField(label: "Card Number", placeholder: "1234 5678 9012 3456", color: gygOrange)
-                        
-                        // Co-badged Card Network Selection (if multiple networks detected)
-                        if let availableNetworks = cardState?.availableNetworks,
-                           availableNetworks.count > 1 {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Select Card Network")
-                                    .font(.system(size: 15, weight: .medium))
-                                    .foregroundColor(textColor)
-                                
-                                HStack(spacing: 12) {
-                                    ForEach(availableNetworks, id: \.self) { network in
-                                        networkSelectionButton(for: network)
-                                    }
-                                }
-                            }
-                            .transition(.asymmetric(
-                                insertion: .scale.combined(with: .opacity),
-                                removal: .scale.combined(with: .opacity)
-                            ))
-                        }
-                        
-                        HStack(spacing: 16) {
-                            // Expiry Date Field
-                            gygMockField(label: "Expiry", placeholder: "MM/YY", color: gygOrange)
-                            
-                            // CVV Field
-                            gygMockField(label: "CVV", placeholder: "123", color: gygOrange)
-                        }
-
-                        // Cardholder Name Field
-                        gygMockField(label: "Cardholder Name", placeholder: "John Smith", color: gygOrange)
-            }
-        }
-        .padding()
-    }
-    
-    @ViewBuilder
-    private var billingAddressSection: some View {
-        // Always show billing address for GYG demo to demonstrate all features
-        // In production, the backend controls these fields via checkout modules
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Billing Address")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundColor(textColor)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: 16) {
-                // Country Field
-                gygMockField(label: "Country", placeholder: "Select Country", color: gygOrange)
-                
-                // Address Line 1 Field
-                gygMockField(label: "Address", placeholder: "123 Main St", color: gygOrange)
-                
-                HStack(spacing: 16) {
-                    // Postal Code Field
-                    gygMockField(label: "Postal Code", placeholder: "10001", color: gygOrange)
-                    
-                    // State Field (shown for countries that require it)
-                    gygMockField(label: "State", placeholder: "NY", color: gygOrange)
-                }
-            }
-        }
-        .padding()
-    }
     
     @ViewBuilder
     private var securityAssuranceView: some View {
@@ -440,36 +489,6 @@ private struct GYGCardFormView: View {
         .cornerRadius(12)
     }
     
-    @ViewBuilder
-    private var submitButton: some View {
-        if let state = cardState {
-            Button(action: {
-                cardFormScope.onSubmit()
-            }) {
-                HStack(spacing: 12) {
-                    if state.isValid {
-                        Image(systemName: "creditcard.fill")
-                            .font(.title3)
-                    }
-                    Text("Complete Booking")
-                        .font(.system(size: 17, weight: .semibold))
-                    if state.isValid {
-                        Image(systemName: "arrow.right")
-                            .font(.title3)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(state.isValid ? gygBlue : Color.gray.opacity(0.3))
-                .foregroundColor(.white)
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(state.isValid ? 0.1 : 0), radius: 4, x: 0, y: 2)
-            }
-            .disabled(!state.isValid)
-            .animation(.spring(), value: state.isValid)
-            .buttonStyle(PlainButtonStyle())
-        }
-    }
     
     @ViewBuilder
     private var footerText: some View {
@@ -492,70 +511,102 @@ private struct GYGCardFormView: View {
             }
         }
     }
+}
+
+/// GYG-styled field component that wraps real SDK input fields
+@available(iOS 15.0, *)
+private struct GYGStyledField: View {
+    let label: String
+    let styling: PrimerFieldStyling
+    let fieldType: PrimerInputElementType
+    let scope: DefaultCardFormScope
+    let isDarkMode: Bool
     
-    private func gygFieldStyling() -> PrimerFieldStyling {
-        PrimerFieldStyling(
-            font: .body,
-            textColor: textColor,
-            backgroundColor: isDarkMode ? Color(red: 0.18, green: 0.18, blue: 0.18) : Color.white, // #2E2E2E
-            borderColor: isDarkMode ? Color(red: 0.3, green: 0.3, blue: 0.3) : Color.gray.opacity(0.3), // #4D4D4D
-            focusedBorderColor: gygOrange,
-            cornerRadius: 8,
-            borderWidth: 1,
-            padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-        )
-    }
-    
-    @ViewBuilder
-    private func networkSelectionButton(for network: PrimerCardNetwork) -> some View {
-        let isSelected = cardState?.selectedNetwork == network
-        
-        Button(action: {
-            cardFormScope.updateSelectedCardNetwork(network.network.rawValue)
-        }) {
-            HStack {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? gygOrange : .gray)
-                Text(network.network.rawValue.uppercased())
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(textColor)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? gygOrange.opacity(0.1) : Color.gray.opacity(0.1))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? gygOrange : Color.gray.opacity(0.3), lineWidth: 1)
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    @ViewBuilder
-    private func gygMockField(label: String, placeholder: String, color: Color) -> some View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if !label.isEmpty {
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(textColor.opacity(0.7))
-            }
+            Text(label)
+                .font(.caption)
+                .foregroundColor(styling.labelColor ?? .primary)
             
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isDarkMode ? Color(red: 0.18, green: 0.18, blue: 0.18) : Color.white)
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isDarkMode ? Color(red: 0.3, green: 0.3, blue: 0.3) : Color.gray.opacity(0.3), lineWidth: 1)
-                    .frame(height: 50)
-                Text(placeholder)
-                    .foregroundColor(textColor.opacity(0.3))
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            // Use the actual SDK input fields based on type
+            Group {
+                switch fieldType {
+                case .cardNumber:
+                    CardNumberInputField(scope: scope, styling: styling)
+                case .expiryDate:
+                    ExpiryDateInputField(scope: scope, styling: styling)
+                case .cvv:
+                    CVVInputField(scope: scope, styling: styling)
+                case .cardholderName:
+                    CardholderNameInputField(scope: scope, styling: styling)
+                case .countryCode:
+                    CountryInputField(scope: scope, styling: styling)
+                case .addressLine1:
+                    AddressLineInputField(scope: scope, styling: styling, fieldType: .addressLine1)
+                case .postalCode:
+                    PostalCodeInputField(scope: scope, styling: styling)
+                case .state:
+                    StateInputField(scope: scope, styling: styling)
+                default:
+                    // Fallback for other field types
+                    CardNumberInputField(scope: scope, styling: styling)
+                }
+            }
+            .frame(height: 50)
+        }
+    }
+}
+
+/// GYG-themed co-badged cards view
+@available(iOS 15.0, *)
+private struct GYGCobadgedCardsView: View {
+    let availableNetworks: [String]
+    let selectNetwork: (String) -> Void
+    let isDarkMode: Bool
+    
+    private let gygOrange = Color(red: 1.0, green: 0.4, blue: 0.0)
+    
+    private var textColor: Color {
+        isDarkMode ? Color.white : Color(red: 0.2, green: 0.2, blue: 0.2)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Card Network")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(textColor)
+            
+            HStack(spacing: 12) {
+                ForEach(availableNetworks, id: \.self) { network in
+                    Button(action: {
+                        selectNetwork(network)
+                    }) {
+                        HStack {
+                            Image(systemName: "circle")
+                                .foregroundColor(.gray)
+                            Text(network.uppercased())
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(textColor)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.1))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
             }
         }
+        .transition(.asymmetric(
+            insertion: .scale.combined(with: .opacity),
+            removal: .scale.combined(with: .opacity)
+        ))
     }
 }
 

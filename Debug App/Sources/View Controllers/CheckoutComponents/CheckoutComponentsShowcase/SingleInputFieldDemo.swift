@@ -336,76 +336,61 @@ private struct SingleInputFieldCardFormView: View {
     private var currentFieldView: some View {
         switch currentFieldIndex {
         case 0:
-            // Real card number field from SDK
-            // Card number field - use default SDK implementation
-            Text("Card Number")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            // Note: In a real implementation, you would use PrimerCheckout
-            // with proper scope customization. This demo shows the concept
-            // of single-field navigation.
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.blue.opacity(0.05))
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.blue, lineWidth: 2)
-                    .frame(height: 50)
-                Text("Card Number Field")
-                    .foregroundColor(.blue)
-            }
+            // Real card number field from SDK with step-specific styling
+            CardNumberInputField(
+                scope: cardFormScope,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.blue.opacity(0.05),
+                    borderColor: .blue,
+                    focusedBorderColor: .blue,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                )
+            )
+            .frame(height: 50)
         case 1:
-            // Real expiry date field from SDK
-            // Expiry date field - use default SDK implementation
-            Text("Expiry Date")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.green.opacity(0.05))
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.green, lineWidth: 2)
-                    .frame(height: 50)
-                Text("Expiry Date Field")
-                    .foregroundColor(.green)
-            }
+            // Real expiry date field from SDK with step-specific styling
+            ExpiryDateInputField(
+                scope: cardFormScope,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.green.opacity(0.05),
+                    borderColor: .green,
+                    focusedBorderColor: .green,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                )
+            )
+            .frame(height: 50)
         case 2:
-            // Real CVV field from SDK
-            // CVV field - use default SDK implementation
-            Text("CVV")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.orange.opacity(0.05))
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.orange, lineWidth: 2)
-                    .frame(height: 50)
-                Text("CVV Field")
-                    .foregroundColor(.orange)
-            }
+            // Real CVV field from SDK with step-specific styling
+            CVVInputField(
+                scope: cardFormScope,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.orange.opacity(0.05),
+                    borderColor: .orange,
+                    focusedBorderColor: .orange,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                )
+            )
+            .frame(height: 50)
         case 3:
-            // Real cardholder name field from SDK
-            // Cardholder name field - use default SDK implementation
-            Text("Cardholder Name")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.purple.opacity(0.05))
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.purple, lineWidth: 2)
-                    .frame(height: 50)
-                Text("Cardholder Name Field")
-                    .foregroundColor(.purple)
-            }
+            // Real cardholder name field from SDK with step-specific styling
+            CardholderNameInputField(
+                scope: cardFormScope,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.purple.opacity(0.05),
+                    borderColor: .purple,
+                    focusedBorderColor: .purple,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                )
+            )
+            .frame(height: 50)
         default:
             EmptyView()
         }

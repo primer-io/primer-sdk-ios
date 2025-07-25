@@ -239,37 +239,41 @@ private struct DynamicPropertiesCardFormView: View {
                 // Card form with dynamic properties using real SDK fields
                 VStack(spacing: fieldSpacing) {
                     fieldWrapper(label: "Card Number") {
-                        // Mock card number field
-                        mockInputField(
-                            placeholder: "1234 5678 9012 3456",
-                            label: showLabels ? nil : "Card Number"
+                        // Real SDK card number field with dynamic styling
+                        CardNumberInputField(
+                            scope: cardFormScope,
+                            styling: dynamicFieldStyling()
                         )
+                        .frame(height: 50)
                     }
                     
                     HStack(spacing: fieldSpacing) {
                         fieldWrapper(label: "Expiry") {
-                            // Mock expiry date field
-                            mockInputField(
-                                placeholder: "MM/YY",
-                                label: showLabels ? nil : "Expiry"
+                            // Real SDK expiry date field with dynamic styling
+                            ExpiryDateInputField(
+                                scope: cardFormScope,
+                                styling: dynamicFieldStyling()
                             )
+                            .frame(height: 50)
                         }
                         
                         fieldWrapper(label: "CVV") {
-                            // Mock CVV field
-                            mockInputField(
-                                placeholder: "123",
-                                label: showLabels ? nil : "CVV"
+                            // Real SDK CVV field with dynamic styling
+                            CVVInputField(
+                                scope: cardFormScope,
+                                styling: dynamicFieldStyling()
                             )
+                            .frame(height: 50)
                         }
                     }
                     
                     fieldWrapper(label: "Cardholder Name") {
-                        // Mock cardholder name field
-                        mockInputField(
-                            placeholder: "John Smith",
-                            label: showLabels ? nil : "Cardholder Name"
+                        // Real SDK cardholder name field with dynamic styling
+                        CardholderNameInputField(
+                            scope: cardFormScope,
+                            styling: dynamicFieldStyling()
                         )
+                        .frame(height: 50)
                     }
                 }
                 .padding()
@@ -365,27 +369,4 @@ private struct DynamicPropertiesCardFormView: View {
         }
     }
     
-    @ViewBuilder
-    private func mockInputField(placeholder: String, label: String?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if let label = label, !label.isEmpty {
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(isDarkMode ? .white.opacity(0.7) : .black.opacity(0.7))
-            }
-            
-            ZStack {
-                RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
-                    .fill(dynamicFieldStyling().backgroundColor ?? .clear)
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
-                    .stroke(dynamicFieldStyling().borderColor ?? .gray.opacity(0.5), lineWidth: dynamicFieldStyling().borderWidth ?? 1)
-                    .frame(height: 50)
-                Text(placeholder)
-                    .foregroundColor((dynamicFieldStyling().placeholderColor ?? dynamicFieldStyling().textColor ?? .gray).opacity(0.5))
-                    .padding(.horizontal, dynamicFieldStyling().padding?.leading ?? 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
 }

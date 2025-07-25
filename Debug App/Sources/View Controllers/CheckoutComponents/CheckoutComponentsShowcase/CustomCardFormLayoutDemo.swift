@@ -289,9 +289,9 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Card Number")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Mock card number field
-                mockLayoutField(
-                    placeholder: "1234 5678 9012 3456",
+                // Real SDK card number field
+                CardNumberInputField(
+                    scope: cardFormScope,
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.blue.opacity(0.05),
                         borderColor: .blue,
@@ -299,15 +299,16 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1
                     )
                 )
+                .frame(height: 50)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Expiry Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Mock expiry date field
-                mockLayoutField(
-                    placeholder: "MM/YY",
+                // Real SDK expiry date field
+                ExpiryDateInputField(
+                    scope: cardFormScope,
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.green.opacity(0.05),
                         borderColor: .green,
@@ -315,15 +316,16 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1
                     )
                 )
+                .frame(height: 50)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("CVV")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Mock CVV field
-                mockLayoutField(
-                    placeholder: "123",
+                // Real SDK CVV field
+                CVVInputField(
+                    scope: cardFormScope,
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.orange.opacity(0.05),
                         borderColor: .orange,
@@ -331,15 +333,16 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1
                     )
                 )
+                .frame(height: 50)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Cardholder Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Mock cardholder name field
-                mockLayoutField(
-                    placeholder: "John Smith",
+                // Real SDK cardholder name field
+                CardholderNameInputField(
+                    scope: cardFormScope,
                     styling: PrimerFieldStyling(
                         backgroundColor: Color.purple.opacity(0.05),
                         borderColor: .purple,
@@ -347,6 +350,7 @@ private struct DynamicLayoutCardFormView: View {
                         borderWidth: 1
                     )
                 )
+                .frame(height: 50)
             }
         }
     }
@@ -359,9 +363,9 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock card number field
-                    mockLayoutField(
-                        placeholder: "1234 5678 9012 3456",
+                    // Real SDK card number field
+                    CardNumberInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.blue.opacity(0.05),
                             borderColor: .blue,
@@ -369,16 +373,16 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
-                    .frame(width: 200)
+                    .frame(width: 200, height: 50)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock expiry date field
-                    mockLayoutField(
-                        placeholder: "MM/YY",
+                    // Real SDK expiry date field
+                    ExpiryDateInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.green.opacity(0.05),
                             borderColor: .green,
@@ -386,16 +390,16 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
-                    .frame(width: 100)
+                    .frame(width: 100, height: 50)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock CVV field
-                    mockLayoutField(
-                        placeholder: "123",
+                    // Real SDK CVV field
+                    CVVInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.orange.opacity(0.05),
                             borderColor: .orange,
@@ -403,16 +407,16 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
-                    .frame(width: 80)
+                    .frame(width: 80, height: 50)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Name")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock cardholder name field
-                    mockLayoutField(
-                        placeholder: "John Smith",
+                    // Real SDK cardholder name field
+                    CardholderNameInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.purple.opacity(0.05),
                             borderColor: .purple,
@@ -420,7 +424,7 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
-                    .frame(width: 150)
+                    .frame(width: 150, height: 50)
                 }
             }
         }
@@ -434,9 +438,9 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock card number field
-                    mockLayoutField(
-                        placeholder: "1234 5678 9012 3456",
+                    // Real SDK card number field
+                    CardNumberInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.blue.opacity(0.05),
                             borderColor: .blue,
@@ -444,15 +448,16 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
+                    .frame(height: 50)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock expiry date field
-                    mockLayoutField(
-                        placeholder: "MM/YY",
+                    // Real SDK expiry date field
+                    ExpiryDateInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.green.opacity(0.05),
                             borderColor: .green,
@@ -460,6 +465,7 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
+                    .frame(height: 50)
                 }
             }
             
@@ -468,9 +474,9 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock CVV field
-                    mockLayoutField(
-                        placeholder: "123",
+                    // Real SDK CVV field
+                    CVVInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.orange.opacity(0.05),
                             borderColor: .orange,
@@ -478,15 +484,16 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
+                    .frame(height: 50)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cardholder")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Mock cardholder name field
-                    mockLayoutField(
-                        placeholder: "John Smith",
+                    // Real SDK cardholder name field
+                    CardholderNameInputField(
+                        scope: cardFormScope,
                         styling: PrimerFieldStyling(
                             backgroundColor: Color.purple.opacity(0.05),
                             borderColor: .purple,
@@ -494,6 +501,7 @@ private struct DynamicLayoutCardFormView: View {
                             borderWidth: 1
                         )
                     )
+                    .frame(height: 50)
                 }
             }
         }
@@ -502,85 +510,80 @@ private struct DynamicLayoutCardFormView: View {
     @ViewBuilder
     private var compactLayout: some View {
         VStack(spacing: 12) {
-            // Mock card number field
-            mockLayoutField(
-                placeholder: "1234 5678 9012 3456",
-                label: "Card Number",
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.blue.opacity(0.05),
-                    borderColor: .blue,
-                    cornerRadius: 8,
-                    borderWidth: 1,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                )
-            )
-            
-            HStack(spacing: 12) {
-                // Mock expiry date field
-                mockLayoutField(
-                    placeholder: "MM/YY",
-                    label: "Expiry",
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Card Number")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                // Real SDK card number field
+                CardNumberInputField(
+                    scope: cardFormScope,
                     styling: PrimerFieldStyling(
-                        backgroundColor: Color.green.opacity(0.05),
-                        borderColor: .green,
+                        backgroundColor: Color.blue.opacity(0.05),
+                        borderColor: .blue,
                         cornerRadius: 8,
                         borderWidth: 1,
                         padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                     )
                 )
-                
-                // Mock CVV field
-                mockLayoutField(
-                    placeholder: "123",
-                    label: "CVV",
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.orange.opacity(0.05),
-                        borderColor: .orange,
-                        cornerRadius: 8,
-                        borderWidth: 1,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                    )
-                )
+                .frame(height: 50)
             }
             
-            // Mock cardholder name field
-            mockLayoutField(
-                placeholder: "John Smith",
-                label: "Cardholder Name",
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.purple.opacity(0.05),
-                    borderColor: .purple,
-                    cornerRadius: 8,
-                    borderWidth: 1,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Expiry")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    // Real SDK expiry date field
+                    ExpiryDateInputField(
+                        scope: cardFormScope,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.green.opacity(0.05),
+                            borderColor: .green,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                        )
+                    )
+                    .frame(height: 50)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("CVV")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    // Real SDK CVV field
+                    CVVInputField(
+                        scope: cardFormScope,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.orange.opacity(0.05),
+                            borderColor: .orange,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                        )
+                    )
+                    .frame(height: 50)
+                }
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Cardholder Name")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                // Real SDK cardholder name field
+                CardholderNameInputField(
+                    scope: cardFormScope,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.purple.opacity(0.05),
+                        borderColor: .purple,
+                        cornerRadius: 8,
+                        borderWidth: 1,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    )
                 )
-            )
+                .frame(height: 50)
+            }
         }
     }
     
-    @ViewBuilder
-    private func mockLayoutField(placeholder: String, label: String? = nil, styling: PrimerFieldStyling?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if let label = label, !label.isEmpty {
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            let effectiveStyling = styling ?? PrimerFieldStyling()
-            
-            ZStack {
-                RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
-                    .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
-                    .frame(height: 50)
-                RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
-                    .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
-                    .frame(height: 50)
-                Text(placeholder)
-                    .foregroundColor(effectiveStyling.placeholderColor?.opacity(0.5) ?? Color.gray.opacity(0.5))
-                    .padding(.horizontal, effectiveStyling.padding?.leading ?? 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
 }
