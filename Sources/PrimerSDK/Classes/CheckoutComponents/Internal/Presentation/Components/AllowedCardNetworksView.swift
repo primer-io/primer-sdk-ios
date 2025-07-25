@@ -88,9 +88,6 @@ private struct CardNetworkBadge: View, LogReporter {
                     )
             }
         }
-        .onAppear {
-            logger.debug(message: "🎨 [AllowedCardNetworks] Displaying badge for network: \(network.displayName)")
-        }
     }
 
     // MARK: - Private Methods

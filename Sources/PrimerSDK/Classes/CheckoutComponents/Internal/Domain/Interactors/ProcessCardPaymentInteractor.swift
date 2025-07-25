@@ -60,6 +60,7 @@ internal final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInterac
 
             // Then process the card payment
             logger.debug(message: "Processing card tokenization and payment")
+            let startTime = CFAbsoluteTimeGetCurrent()
             let result = try await repository.processCardPayment(
                 cardNumber: cardData.cardNumber,
                 cvv: cardData.cvv,
@@ -69,7 +70,8 @@ internal final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInterac
                 selectedNetwork: cardData.selectedNetwork
             )
 
-            logger.info(message: "Card payment processed successfully: \(result.paymentId)")
+            let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+            logger.info(message: "[PERF] Card payment processed in \(String(format: "%.0f", duration))ms: \(result.paymentId)")
             return result
 
         } catch {

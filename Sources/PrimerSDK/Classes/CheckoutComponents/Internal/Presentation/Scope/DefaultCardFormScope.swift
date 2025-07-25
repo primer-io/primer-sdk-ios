@@ -222,7 +222,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Generic field update method for internal use
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
         structuredState.data[fieldType] = value
-        
+
         // Call specific update method if needed for additional logic
         switch fieldType {
         case .cardNumber:
@@ -277,7 +277,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private func triggerNetworkDetection(for cardNumber: String) async {
         guard let repository = headlessRepository, cardNumber.count >= 6 else { return }
 
-        logger.debug(message: "🌐 [CardForm] Triggering network detection for: ***\(String(cardNumber.suffix(4)))")
+        logger.debug(message: "🌐 [CardForm] Triggering network detection")
         await repository.updateCardNumberInRawDataManager(cardNumber)
     }
 
@@ -288,16 +288,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     public func updateExpiryDate(_ expiryDate: String) {
-        logger.debug(message: "Updating expiry date: \(expiryDate)")
+        logger.debug(message: "Updating expiry date")
         structuredState.data[.expiryDate] = expiryDate
-
-        // Parse month and year from the expiry date
-        let components = expiryDate.components(separatedBy: "/")
-        if components.count == 2 {
-            structuredState.data[.expiryMonth] = components[0]
-            structuredState.data[.expiryYear] = components[1]
-        }
-
         updateCardData()
     }
 
@@ -390,7 +382,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateSelectedCardNetwork(_ network: String) {
         logger.info(message: "🌐 [CardForm] User selected card network: \(network)")
-        
+
         // Update structured state
         if let cardNetwork = CardNetwork(rawValue: network) {
             structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
@@ -487,12 +479,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Private Methods
 
     private func updateExpiryDateFromComponents() {
-        let month = structuredState.data[.expiryMonth]
-        let year = structuredState.data[.expiryYear]
-
-        if !month.isEmpty && !year.isEmpty {
-            structuredState.data[.expiryDate] = "\(month)/\(year)"
-        }
+        // This method is no longer needed since we update expiryDate directly
+        // in updateExpiryMonth and updateExpiryYear methods
     }
 
     private func updateCardData() {
@@ -596,7 +584,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         let selectedNetwork = getSelectedCardNetwork()
         let billingAddress = createInteractorBillingAddress()
 
-        logger.debug(message: "Processing payment: card=***\(String(structuredState.data[.cardNumber].suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
+        logger.debug(message: "Processing payment with selected network: \(selectedNetwork?.rawValue ?? "auto")")
 
         return CardPaymentData(
             cardNumber: structuredState.data[.cardNumber],
@@ -750,7 +738,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         logger.info(message: "🔍 [StructuredState] Updated form configuration: \(configuration.allFields.map { $0.displayName })")
     }
 }
-
 
 // swiftlint:enable identifier_name
 // swiftlint:enable file_length

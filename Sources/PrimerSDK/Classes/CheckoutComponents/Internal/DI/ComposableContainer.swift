@@ -133,7 +133,7 @@ private extension ComposableContainer {
 
     /// Register presentation layer (scopes, view models).
     func registerPresentation() async {
-        logger.debug(message: "🎨 [ComposableContainer] Registering presentation layer...")
+        logger.debug(message: "Registering presentation layer...")
     }
 
     #if DEBUG

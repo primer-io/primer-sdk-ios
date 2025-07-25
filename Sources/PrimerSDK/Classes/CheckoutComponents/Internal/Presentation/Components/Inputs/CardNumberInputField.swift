@@ -566,7 +566,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         }
 
         private func detectNetworksForCardNumber(_ cardNumber: String) {
-            logger.debug(message: "Detecting networks for: ***\(String(cardNumber.suffix(4)))")
+            logger.debug(message: "Detecting card networks")
         }
 
         private func validateCardNumberWhileTyping(_ number: String) {

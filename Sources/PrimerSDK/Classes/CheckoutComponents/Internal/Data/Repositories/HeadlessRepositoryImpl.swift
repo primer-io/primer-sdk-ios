@@ -71,12 +71,12 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        logger.info(message: "🔐🪲 [3DS] Payment method tokenized - proceeding to completion")
+        logger.info(message: "Payment method tokenized - proceeding to completion")
 
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
         // This follows the pattern from MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
-        logger.debug(message: "🔐🪲 [3DS] Completing tokenization, 3DS will be handled during payment creation")
+        logger.debug(message: "Completing tokenization, 3DS will be handled during payment creation")
         decisionHandler(.complete())
     }
 
@@ -84,7 +84,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ resumeToken: String,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        logger.info(message: "🔐🪲 [3DS] Payment resumed with token, proceeding to completion")
+        logger.info(message: "Payment resumed with token, proceeding to completion")
         decisionHandler(.complete())
     }
 
@@ -163,10 +163,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             let networkSurcharges = extractNetworkSurcharges(for: primerMethod.type)
 
             // Debug logging for surcharge data
-            logger.debug(message: "💰🪲 [HeadlessRepository] Payment method \(primerMethod.type) - \(primerMethod.name):")
-            logger.debug(message: "💰🪲 [HeadlessRepository]   - surcharge: \(primerMethod.surcharge?.description ?? "nil")")
-            logger.debug(message: "💰🪲 [HeadlessRepository]   - hasUnknownSurcharge: \(primerMethod.hasUnknownSurcharge)")
-            logger.debug(message: "💰🪲 [HeadlessRepository]   - networkSurcharges: \(networkSurcharges?.description ?? "nil")")
 
             return InternalPaymentMethod(
                 id: primerMethod.id ?? primerMethod.type,
@@ -191,49 +187,34 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Extract network-specific surcharges from client session configuration
     private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-        logger.debug(message: "💰🪲 [HeadlessRepository] Extracting network surcharges for payment method type: \(paymentMethodType)")
 
         // Only card payment methods have network-specific surcharges
         guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
-            logger.debug(message: "💰🪲 [HeadlessRepository] Not a card payment method, no network surcharges")
             return nil
         }
 
         // Get client session payment method data
         let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
-            logger.debug(message: "💰🪲 [HeadlessRepository] No payment method data found in client session")
             return nil
         }
-
-        logger.debug(message: "💰🪲 [HeadlessRepository] Client session payment method data found, checking options...")
 
         // Check for networks in payment method options
         guard let options = paymentMethodData.options else {
-            logger.debug(message: "💰🪲 [HeadlessRepository] No options found in payment method data")
             return nil
         }
-
-        logger.debug(message: "💰🪲 [HeadlessRepository] Found \(options.count) payment method options")
 
         // Find the payment card option
         guard let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType }) else {
-            logger.debug(message: "💰🪲 [HeadlessRepository] No PAYMENT_CARD option found in payment method options")
             return nil
         }
 
-        logger.debug(message: "💰🪲 [HeadlessRepository] Found PAYMENT_CARD option: \(paymentCardOption.keys.joined(separator: ", "))")
-
         // Check for networks data - handle both array and dictionary formats
         if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
-            logger.debug(message: "💰🪲 [HeadlessRepository] Found networks array format with \(networksArray.count) networks")
             return extractFromNetworksArray(networksArray)
         } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
-            logger.debug(message: "💰🪲 [HeadlessRepository] Found networks dictionary format with \(networksDict.count) networks")
             return extractFromNetworksDict(networksDict)
         } else {
-            logger.debug(message: "💰🪲 [HeadlessRepository] No networks data found in payment card option")
-            logger.debug(message: "💰🪲 [HeadlessRepository] Available keys in payment card option: \(paymentCardOption.keys.joined(separator: ", "))")
             return nil
         }
     }
@@ -244,7 +225,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         for networkData in networksArray {
             guard let networkType = networkData["type"] as? String else {
-                logger.debug(message: "💰🪲 [HeadlessRepository] Network missing type field, skipping")
                 continue
             }
 
@@ -253,19 +233,15 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                let surchargeAmount = surchargeData["amount"] as? Int,
                surchargeAmount > 0 {
                 networkSurcharges[networkType] = surchargeAmount
-                logger.debug(message: "💰🪲 [HeadlessRepository] Found network surcharge (nested): \(networkType) = \(surchargeAmount)")
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
-                logger.debug(message: "💰🪲 [HeadlessRepository] Found network surcharge (direct): \(networkType) = \(surcharge)")
             } else {
-                logger.debug(message: "💰🪲 [HeadlessRepository] No surcharge found for network: \(networkType)")
             }
         }
 
-        logger.debug(message: "💰🪲 [HeadlessRepository] Extracted \(networkSurcharges.count) network surcharges from array format")
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
@@ -279,19 +255,15 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                let surchargeAmount = surchargeData["amount"] as? Int,
                surchargeAmount > 0 {
                 networkSurcharges[networkType] = surchargeAmount
-                logger.debug(message: "💰🪲 [HeadlessRepository] Found network surcharge: \(networkType) = \(surchargeAmount)")
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
-                logger.debug(message: "💰🪲 [HeadlessRepository] Found direct network surcharge: \(networkType) = \(surcharge)")
             } else {
-                logger.debug(message: "💰🪲 [HeadlessRepository] No surcharge found for network: \(networkType)")
             }
         }
 
-        logger.debug(message: "💰🪲 [HeadlessRepository] Extracted \(networkSurcharges.count) network surcharges")
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
@@ -334,7 +306,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             cardData.cardNetwork = selectedNetwork
                         }
 
-                        self.logger.debug(message: "Card data prepared: number=***\(String(cardData.cardNumber.suffix(4))), expiry=\(cardData.expiryDate), network=\(cardData.cardNetwork?.rawValue ?? "auto")")
+                        self.logger.debug(message: "Card data prepared for payment processing")
 
                         // Create payment completion handler
                         let paymentHandler = PaymentCompletionHandler(repository: self) { result in
@@ -429,7 +401,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]? {
-        logger.debug(message: "Detecting card networks for card number: ***\(String(cardNumber.suffix(4)))")
+        logger.debug(message: "Detecting card networks")
 
         // Use RawDataManager for real network detection
         await updateCardNumberInRawDataManager(cardNumber)
@@ -468,7 +440,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         // Trigger network detection by setting raw data
         rawDataManager?.rawData = rawCardData
 
-        logger.debug(message: "Updated RawDataManager with card number: ***\(String(cardNumber.suffix(4)))")
+        logger.debug(message: "Updated RawDataManager with card data")
     }
 
     /// Handle user selection of a specific card network (for co-badged cards)
@@ -490,7 +462,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Create user-friendly 3DS error using centralized strings
     private func createUserFriendly3DSError(from error: Error) -> Error {
-        logger.debug(message: "🔐🪲 [3DS] Creating user-friendly error from: \(error)")
+        logger.debug(message: "Creating user-friendly error from: \(error)")
 
         // Check for specific 3DS error types
         if let primer3DSError = error as? Primer3DSErrorContainer {
@@ -620,15 +592,12 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Update client session with payment method selection (matches Drop-in's dispatchActions)
     /// This is CRITICAL for surcharge functionality - backend needs network context for correct calculation
     private func updateClientSessionBeforePayment(selectedNetwork: CardNetwork?, completion: @escaping (Error?) -> Void) {
-        logger.debug(message: "💰🪲 [HeadlessRepository] Updating client session before payment submission...")
 
         // Determine card network (following Drop-in logic exactly)
         var network = selectedNetwork?.rawValue.uppercased()
         if network == nil || network == "UNKNOWN" {
             network = "OTHER"
         }
-
-        logger.debug(message: "💰🪲 [HeadlessRepository] Using card network for surcharge: \(network ?? "nil")")
 
         // Create parameters matching Drop-in's dispatchActions format
         let params: [String: Any] = [
@@ -638,8 +607,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             ]
         ]
 
-        logger.debug(message: "💰🪲 [HeadlessRepository] Client session action parameters: \(params)")
-
         // Create action (single action for now - billing address would be added here if needed)
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
@@ -648,11 +615,9 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         clientSessionActionsModule.dispatch(actions: actions)
             .done { [weak self] in
-                self?.logger.debug(message: "💰🪲 [HeadlessRepository] Client session updated successfully - surcharge context set")
                 completion(nil)
             }
             .catch { [weak self] error in
-                self?.logger.error(message: "💰🪲 [HeadlessRepository] Client session update failed: \(error)")
                 completion(error)
             }
     }
@@ -696,7 +661,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
             logger.error(message: "Received non-card metadata. Ignoring ...")
             return
         }
-        logger.debug(message: "RawDataManager willFetchMetadataForState: ***\(String(state.cardNumber.suffix(4)))")
+        logger.debug(message: "RawDataManager fetching metadata for card state")
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
@@ -711,7 +676,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
         let metadataDescription = metadataModel.selectableCardNetworks?.items
             .map { $0.displayName }
             .joined(separator: ", ") ?? "n/a"
-        logger.debug(message: "RawDataManager didReceiveMetadata: (selectable ->) \(metadataDescription), cardState: ***\(String(stateModel.cardNumber.suffix(4)))")
+        logger.debug(message: "RawDataManager didReceiveMetadata: (selectable ->) \(metadataDescription)")
 
         // Extract networks following traditional SDK pattern
         var primerNetworks: [PrimerCardNetwork]

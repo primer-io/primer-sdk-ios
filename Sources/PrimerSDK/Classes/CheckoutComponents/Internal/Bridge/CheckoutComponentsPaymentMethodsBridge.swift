@@ -50,11 +50,7 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
             // Extract background color from display metadata
             let backgroundColor = primerMethod.displayMetadata?.button.backgroundColor?.uiColor
 
-            // Debug logging for surcharge data extraction
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] \(type) - \(primerMethod.name):")
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge]   - surcharge: \(primerMethod.surcharge?.description ?? "nil")")
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge]   - hasUnknownSurcharge: \(primerMethod.hasUnknownSurcharge)")
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge]   - networkSurcharges: \(networkSurcharges?.description ?? "nil")")
+            // Extract surcharge data for payment method
 
             return InternalPaymentMethod(
                 id: primerMethod.id ?? UUID().uuidString,
@@ -87,49 +83,33 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
 
     /// Extract network-specific surcharges from client session configuration
     private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Extracting network surcharges for payment method type: \(paymentMethodType)")
-
         // Only card payment methods have network-specific surcharges
         guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] Not a card payment method, no network surcharges")
             return nil
         }
 
         // Get client session payment method data
         let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] No payment method data found in client session")
             return nil
         }
-
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Client session payment method data found, checking options...")
 
         // Check for networks in payment method options
         guard let options = paymentMethodData.options else {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] No options found in payment method data")
             return nil
         }
-
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found \(options.count) payment method options")
 
         // Find the payment card option
         guard let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType }) else {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] No PAYMENT_CARD option found in payment method options")
             return nil
         }
 
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found PAYMENT_CARD option: \(paymentCardOption.keys.joined(separator: ", "))")
-
         // Check for networks data - handle both array and dictionary formats
         if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found networks array format with \(networksArray.count) networks")
             return extractFromNetworksArray(networksArray)
         } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found networks dictionary format with \(networksDict.count) networks")
             return extractFromNetworksDict(networksDict)
         } else {
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] No networks data found in payment card option")
-            logger.debug(message: "💰🪲 [PaymentMethodsBridge] Available keys in payment card option: \(paymentCardOption.keys.joined(separator: ", "))")
             return nil
         }
     }
@@ -140,7 +120,6 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
 
         for networkData in networksArray {
             guard let networkType = networkData["type"] as? String else {
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] Network missing type field, skipping")
                 continue
             }
 
@@ -149,19 +128,15 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
                let surchargeAmount = surchargeData["amount"] as? Int,
                surchargeAmount > 0 {
                 networkSurcharges[networkType] = surchargeAmount
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found network surcharge (nested): \(networkType) = \(surchargeAmount)")
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found network surcharge (direct): \(networkType) = \(surcharge)")
             } else {
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] No surcharge found for network: \(networkType)")
             }
         }
 
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Extracted \(networkSurcharges.count) network surcharges from array format")
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
@@ -175,19 +150,15 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
                let surchargeAmount = surchargeData["amount"] as? Int,
                surchargeAmount > 0 {
                 networkSurcharges[networkType] = surchargeAmount
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found network surcharge: \(networkType) = \(surchargeAmount)")
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
                     surcharge > 0 {
                 networkSurcharges[networkType] = surcharge
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] Found direct network surcharge: \(networkType) = \(surcharge)")
             } else {
-                logger.debug(message: "💰🪲 [PaymentMethodsBridge] No surcharge found for network: \(networkType)")
             }
         }
 
-        logger.debug(message: "💰🪲 [PaymentMethodsBridge] Extracted \(networkSurcharges.count) network surcharges")
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 

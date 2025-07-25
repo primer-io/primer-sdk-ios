@@ -251,50 +251,50 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     // MARK: - Design Token Management
 
     private func setupDesignTokens() async {
-        logger.info(message: "🎨 [DesignTokens] Setting up design tokens...")
+        logger.info(message: "Setting up design tokens...")
         do {
             guard let container = await DIContainer.current else {
-                logger.warn(message: "🎨 [DesignTokens] DI Container not available for design tokens")
+                logger.warn(message: "DI Container not available for design tokens")
                 return
             }
 
             designTokensManager = try await container.resolve(DesignTokensManager.self)
-            logger.info(message: "🎨 [DesignTokens] DesignTokensManager resolved successfully")
+            logger.info(message: "DesignTokensManager resolved successfully")
             await loadDesignTokens(for: colorScheme)
         } catch {
-            logger.error(message: "🎨 [DesignTokens] Failed to setup design tokens: \(error)")
+            logger.error(message: "Failed to setup design tokens: \(error)")
         }
     }
 
     private func loadDesignTokens(for colorScheme: ColorScheme) async {
         guard let manager = designTokensManager else {
-            logger.warn(message: "🎨 [DesignTokens] DesignTokensManager not available")
+            logger.warn(message: "DesignTokensManager not available")
             return
         }
 
-        logger.info(message: "🎨 [DesignTokens] Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
+        logger.info(message: "Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
         do {
             try await manager.fetchTokens(for: colorScheme)
             await MainActor.run {
                 designTokens = manager.tokens
-                logger.info(message: "🎨 [DesignTokens] Design tokens loaded successfully")
+                logger.info(message: "Design tokens loaded successfully")
 
                 // Log the specific focus border color for debugging
                 if let focusColor = designTokens?.primerColorBorderOutlinedFocus {
-                    logger.info(message: "🎨 [DesignTokens] Focus border color: \(focusColor)")
+                    logger.info(message: "Focus border color: \(focusColor)")
                 } else {
-                    logger.warn(message: "🎨 [DesignTokens] Focus border color not found in design tokens!")
+                    logger.warn(message: "Focus border color not found in design tokens!")
                 }
 
                 // Log the brand color for comparison
                 if let brandColor = designTokens?.primerColorBrand {
-                    logger.info(message: "🎨 [DesignTokens] Brand color: \(brandColor)")
+                    logger.info(message: "Brand color: \(brandColor)")
                 } else {
-                    logger.warn(message: "🎨 [DesignTokens] Brand color not found in design tokens!")
+                    logger.warn(message: "Brand color not found in design tokens!")
                 }
             }
         } catch {
-            logger.error(message: "🎨 [DesignTokens] Failed to load design tokens: \(error)")
+            logger.error(message: "Failed to load design tokens: \(error)")
         }
     }
 }

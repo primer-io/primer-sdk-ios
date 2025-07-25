@@ -24,10 +24,12 @@ internal final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteracto
 
     func execute() async throws -> [InternalPaymentMethod] {
         logger.info(message: "Fetching available payment methods")
+        let startTime = CFAbsoluteTimeGetCurrent()
 
         do {
             let paymentMethods = try await repository.getPaymentMethods()
-            logger.info(message: "Retrieved \(paymentMethods.count) payment methods")
+            let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+            logger.info(message: "[PERF] Retrieved \(paymentMethods.count) payment methods in \(String(format: "%.0f", duration))ms")
             return paymentMethods
         } catch {
             logger.error(message: "Failed to fetch payment methods: \(error)")

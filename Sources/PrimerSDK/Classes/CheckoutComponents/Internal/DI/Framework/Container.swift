@@ -188,6 +188,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
 
     /// Resolve a dependency with an optional name
     public func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
+        let startTime = CFAbsoluteTimeGetCurrent()
         let key = TypeKey(type, name: name)
 
         guard let registration = factories[key] else {
@@ -215,6 +216,11 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
 
             guard let typed = instance as? T else {
                 throw ContainerError.typeCastFailed(key, expected: T.self, actual: Swift.type(of: instance))
+            }
+
+            let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+            if duration > 100 {
+                logger.info(message: "[PERF] DI resolution slow for \(String(describing: type)): \(String(format: "%.0f", duration))ms")
             }
 
             return typed
