@@ -101,7 +101,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
             let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
             let metadata = createValidationMetadata(networks: networks,
-                                                         source: .remote)
+                                                    source: .remote)
 
             self.handle(cardMetadata: metadata, forCardState: cardState)
         }.catch { error in
