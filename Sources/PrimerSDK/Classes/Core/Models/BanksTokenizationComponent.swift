@@ -205,6 +205,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             _ = await PrimerDelegateProxy.raisePrimerDidFailWithError(PrimerError.invalidValue(key: "paymentMethodTokenData"), data: nil)
             return
         }
+        
         guard PrimerInternal.shared.intent != .vault else {
             _ = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
             return await handleSuccessfulFlow()
@@ -327,7 +328,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData? {
         startPaymentFlowTask = Task {
             do {
                 try Task.checkCancellation()
@@ -1102,16 +1105,20 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 
     func setupNotificationObservers() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeRedirect,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
-                                               name: Notification.Name.receivedUrlSchemeCancellation,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeRedirect,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.receivedNotification(_:)),
+            name: Notification.Name.receivedUrlSchemeCancellation,
+            object: nil
+        )
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
                 self.didDismissPaymentMethodUI?()
@@ -1217,7 +1224,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         default: break
         }
     }
-    
+
     func performPreTokenizationSteps() -> Promise<Void> {
         if !PrimerInternal.isInHeadlessMode {
             DispatchQueue.main.async {
@@ -1284,8 +1291,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             objectClass: "\(Self.self)",
             place: .bankSelectionList
         ))
-
-        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
         defer {
             self.closePaymentMethodUI()
