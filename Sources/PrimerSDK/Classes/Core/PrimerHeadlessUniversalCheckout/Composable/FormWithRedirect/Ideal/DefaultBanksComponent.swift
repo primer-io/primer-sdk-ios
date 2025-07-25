@@ -86,6 +86,22 @@ final class DefaultBanksComponent: BanksComponent {
             }
     }
 
+    public func start_async() {
+        trackStart()
+        stepDelegate?.didReceiveStep(step: BanksStep.loading)
+        Task {
+            do {
+                let banks = try await tokenizationProvidingModel.retrieveListOfBanks()
+                self.banks = banks.map { IssuingBank(bank: $0) }
+                let step = BanksStep.banksRetrieved(banks: self.banks)
+                self.nextDataStep = step
+                self.stepDelegate?.didReceiveStep(step: step)
+            } catch {
+                ErrorHandler.handle(error: error)
+            }
+        }
+    }
+
     public func submit() {
         trackSubmit()
         switch nextDataStep {
@@ -100,6 +116,26 @@ final class DefaultBanksComponent: BanksComponent {
                 }.catch { error in
                     ErrorHandler.handle(error: error)
                 }
+        }
+    }
+
+    public func submit_async() {
+        trackSubmit()
+        switch nextDataStep {
+        case .loading: break
+        case .banksRetrieved:
+            guard let bankId = self.bankId else { return }
+            let redirectComponent = onFinished()
+            redirectComponent.start()
+
+            Task {
+                do {
+                    _ = try await tokenizationProvidingModel.tokenize(bankId: bankId)
+                    redirectComponent.didReceiveStep(step: WebStep.loaded)
+                } catch {
+                    ErrorHandler.handle(error: error)
+                }
+            }
         }
     }
 }
