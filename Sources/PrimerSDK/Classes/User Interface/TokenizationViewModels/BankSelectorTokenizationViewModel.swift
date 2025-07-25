@@ -1,10 +1,11 @@
 // swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import SafariServices
 import UIKit
 
 final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
-
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {
         didSet {
@@ -148,12 +149,12 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             }
         }
     }
-    
+
     override func performPreTokenizationSteps() async throws {
         if !PrimerInternal.isInHeadlessMode {
             await uiManager.primerRootViewController?.enableUserInteraction(true)
         }
-        
+
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
@@ -180,7 +181,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             self.webViewController = nil
             self.webViewCompletion = nil
         }
-        
+
         try validate()
         banks = try await fetchBanks()
         dataSource = banks
@@ -238,9 +239,9 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
                 self.webViewController = nil
                 self.webViewCompletion = nil
         }
-        
+
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        paymentMethodTokenData =  try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -263,7 +264,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             }
         }
     }
-    
+
     @MainActor
     private func presentBankList_main_actor() {
         uiManager.primerRootViewController?.show(viewController: BankSelectorViewController(viewModel: self))
@@ -389,7 +390,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             completion(nil, err)
         }
     }
-    
+
     private func tokenize(bank: AdyenBank) async throws -> PrimerPaymentMethodTokenData {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             throw handled(primerError: .invalidClientToken())
@@ -406,7 +407,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)
             )
         ))
-        
+
         return paymentMethodTokenData!
     }
 }
@@ -533,3 +534,5 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
 
 extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length

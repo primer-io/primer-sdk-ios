@@ -98,20 +98,20 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
 
         let banks = setupBanksAPIClient()
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.bankSelectionCompletion?(banks.result.first!)
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidFail = self.expectation(description: "Payment flow fails")
+        let expectDidFail = expectation(description: "Payment flow fails")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -144,33 +144,33 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
 
         let banks = setupBanksAPIClient()
 
-        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        let expectDidShowPaymentMethod = expectation(description: "UI shows payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.bankSelectionCompletion?(banks.result.first!)
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentWithData.fulfill()
         }
 
-        let expectDidCompleteCheckoutWithData = self.expectation(description: "Checkout completes successfully")
+        let expectDidCompleteCheckoutWithData = expectation(description: "Checkout completes successfully")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectDidCompleteCheckoutWithData.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
+        let expectDidTokenize = expectation(description: "Payment method tokenizes")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
+        let expectDidCreatePayment = expectation(description: "Payment gets created")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
