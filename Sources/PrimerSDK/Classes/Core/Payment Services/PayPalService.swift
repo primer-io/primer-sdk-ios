@@ -1,6 +1,5 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
-// swiftlint:disable file_length
 
 import Foundation
 
@@ -18,6 +17,7 @@ internal protocol PayPalServiceProtocol {
 final class PayPalService: PayPalServiceProtocol {
 
     private var paypalTokenId: String?
+    private var apiConfig: PrimerAPIConfiguration? { PrimerAPIConfigurationModule.apiConfiguration }
 
     let apiClient: PrimerAPIClientPayPalProtocol
 
@@ -31,8 +31,7 @@ final class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return nil
         }
 
@@ -54,8 +53,7 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
@@ -98,8 +96,7 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -134,8 +131,7 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
@@ -170,8 +166,7 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -201,8 +196,7 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
@@ -228,8 +222,7 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -257,14 +250,14 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
         apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
-            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
+            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)
+        ) { result in
             switch result {
             case .success(let response):
                 completion(.success(response))
@@ -279,8 +272,7 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let config = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -295,4 +287,3 @@ final class PayPalService: PayPalServiceProtocol {
 }
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
-// swiftlint:enable file_length
