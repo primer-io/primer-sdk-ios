@@ -31,8 +31,8 @@ final class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-        else {
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return nil
         }
 
@@ -54,10 +54,9 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        let apiConfig = PrimerAPIConfigurationModule.apiConfiguration
-        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let value = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
         guard let amount = AppState.current.amount else {
@@ -99,7 +98,8 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -134,9 +134,9 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
         var scheme: String
@@ -170,7 +170,8 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -200,9 +201,9 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
         guard let paypalTokenId else {
@@ -227,7 +228,8 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
@@ -255,9 +257,9 @@ final class PayPalService: PayPalServiceProtocol {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
-            let value = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id", value: value))))
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            return completion(.failure(handled(primerError: .invalidValue(key: "configuration.paypal.id"))))
         }
 
         apiClient.fetchPayPalExternalPayerInfo(
@@ -277,7 +279,8 @@ final class PayPalService: PayPalServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        let config = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = config?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             throw handled(primerError: .invalidValue(key: "configuration.paypal.id"))
         }
 
