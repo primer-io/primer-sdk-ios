@@ -167,7 +167,12 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             }
 
         case .paymentMethodSelection:
-            if let customPaymentSelection = scope.paymentMethodSelectionScreen {
+            // First check if the payment method selection scope itself has a custom screen
+            if let customScreen = scope.paymentMethodSelection.screen {
+                return AnyView(customScreen())
+            }
+            // Then check if the checkout scope has a custom payment selection screen
+            else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
                 return AnyView(customPaymentSelection(scope.paymentMethodSelection))
             } else {
                 return AnyView(PaymentMethodSelectionScreen(

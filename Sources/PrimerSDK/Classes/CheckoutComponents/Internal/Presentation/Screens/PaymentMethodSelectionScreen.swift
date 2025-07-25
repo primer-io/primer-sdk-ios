@@ -202,16 +202,20 @@ internal struct PaymentMethodSelectionScreen: View {
         VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
             // Group header with surcharge info (only show if group name is not empty)
             if !group.group.isEmpty {
-                HStack {
-                    let headerFontSize = tokens?.primerTypographyBodyMediumSize ?? 14
-                    let headerFontWeight: Font.Weight = .medium
+                if let customCategoryHeader = scope.categoryHeader {
+                    customCategoryHeader(group.group)
+                } else {
+                    HStack {
+                        let headerFontSize = tokens?.primerTypographyBodyMediumSize ?? 14
+                        let headerFontWeight: Font.Weight = .medium
 
-                    Text(group.group)
-                        .font(.system(size: headerFontSize, weight: headerFontWeight))
-                        .foregroundColor(dynamicGroupHeaderColor(for: group.group))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        Text(group.group)
+                            .font(.system(size: headerFontSize, weight: headerFontWeight))
+                            .foregroundColor(dynamicGroupHeaderColor(for: group.group))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    .padding(.horizontal, tokens?.primerSpaceSmall ?? 8)
                 }
-                .padding(.horizontal, tokens?.primerSpaceSmall ?? 8)
             }
 
             // Gray rounded container for payment methods group
@@ -245,10 +249,11 @@ internal struct PaymentMethodSelectionScreen: View {
 
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
-        if let customPaymentMethodCard = scope.paymentMethodCard {
-            customPaymentMethodCard {
-                scope.onPaymentMethodSelected(paymentMethod: method)
-            }
+        if let customPaymentMethodItem = scope.paymentMethodItem {
+            customPaymentMethodItem(method)
+                .onTapGesture {
+                    scope.onPaymentMethodSelected(paymentMethod: method)
+                }
         } else {
             ModernPaymentMethodCardView(
                 method: method,

@@ -147,6 +147,13 @@ struct LayoutsSection: View {
                 ) {
                     CustomCardFormLayoutDemo(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
                 }
+                
+                ShowcaseDemo(
+                    title: "Custom Payment Selection Screen",
+                    description: "Complete UI customization with gradient backgrounds and animations"
+                ) {
+                    CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
+                }
             }
         }
     }

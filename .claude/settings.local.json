@@ -71,7 +71,10 @@
       "Bash(python3:*)",
       "WebFetch(domain:primerapi.atlassian.net)",
       "mcp__atlassian__getJiraIssue",
-      "mcp__atlassian__addCommentToJiraIssue"
+      "mcp__atlassian__addCommentToJiraIssue",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_click"
     ],
     "deny": []
   }

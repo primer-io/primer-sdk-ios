@@ -128,7 +128,6 @@ struct SingleFieldCustomisationDemo: View {
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         // Get the card form scope
         if let cardScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
-            
             // IMPORTANT: We're ONLY customizing the cardholder name field
             // All other fields (card number, expiry, CVV, billing address) will use default UI
             

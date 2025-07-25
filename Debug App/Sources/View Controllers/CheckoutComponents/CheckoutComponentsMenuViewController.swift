@@ -198,6 +198,7 @@ class CheckoutComponentsMenuViewController: UIViewController {
             
             let hostingController = UIHostingController(rootView: examplesView)
             hostingController.title = "CheckoutComponents Examples"
+            hostingController.view.backgroundColor = .clear
             print("🔍 [MenuViewController] UIHostingController created")
             
             if let navController = navigationController {

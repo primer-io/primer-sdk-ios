@@ -17,6 +17,7 @@ struct CheckoutExampleView: View {
     let configuredClientSession: ClientSessionRequestBody?
     
     @SwiftUI.Environment(\.dismiss) private var dismiss
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
@@ -246,6 +247,10 @@ struct CheckoutContentView: View {
             PropertyReassignmentDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         case "Conditional Customization":
             RuntimeCustomizationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+        case "GetYourGuide Demo":
+            GYGDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
+        case "Custom Payment Selection Screen":
+            CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         default:
             // Fallback to default implementation
             VStack {
