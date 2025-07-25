@@ -1,8 +1,8 @@
 @testable import PrimerSDK
 import XCTest
 
-class PrimerRawCardDataManagerCVVTests: XCTestCase {
-    static let validationTimeout = 3.0
+final class PrimerRawCardDataManagerCVVTests: XCTestCase {
+    private let validationTimeout = 3.0
 
     override func setUp() {
         SDKSessionHelper.setUp()
@@ -33,7 +33,7 @@ class PrimerRawCardDataManagerCVVTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cvv_in_raw_card_data_2() throws {
@@ -60,7 +60,7 @@ class PrimerRawCardDataManagerCVVTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cvv_in_raw_card_data_3() throws {
@@ -87,7 +87,7 @@ class PrimerRawCardDataManagerCVVTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cvv_in_raw_card_data_4() throws {
@@ -114,7 +114,7 @@ class PrimerRawCardDataManagerCVVTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cvv_in_raw_card_data_5() throws {
@@ -141,6 +141,6 @@ class PrimerRawCardDataManagerCVVTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 }

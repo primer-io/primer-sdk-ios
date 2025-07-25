@@ -1,8 +1,8 @@
 @testable import PrimerSDK
 import XCTest
 
-class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
-    static let validationTimeout = 3.0
+final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
+    private let validationTimeout = 3.0
 
     override func setUp() {
         SDKSessionHelper.setUp()
@@ -36,7 +36,7 @@ class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cardnumber_in_raw_card_data_2() throws {
@@ -63,7 +63,7 @@ class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cardnumber_in_raw_card_data_3() throws {
@@ -90,7 +90,7 @@ class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_cardnumber_in_raw_card_data_4() throws {
@@ -117,6 +117,6 @@ class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 }

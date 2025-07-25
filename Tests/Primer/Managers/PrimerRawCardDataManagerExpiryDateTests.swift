@@ -1,8 +1,8 @@
 @testable import PrimerSDK
 import XCTest
 
-class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
-    static let validationTimeout = 3.0
+final class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
+    private let validationTimeout = 3.0
 
     override func setUp() {
         SDKSessionHelper.setUp()
@@ -35,7 +35,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_2() throws {
@@ -62,7 +62,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_3() throws {
@@ -89,7 +89,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_4() throws {
@@ -116,7 +116,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_5() throws {
@@ -143,7 +143,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_6() throws {
@@ -170,7 +170,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_7() throws {
@@ -197,7 +197,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_8() throws {
@@ -224,7 +224,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_9() throws {
@@ -251,7 +251,7 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 
     func test_invalid_expiry_date_in_raw_card_data_10() throws {
@@ -278,6 +278,6 @@ class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: Self.validationTimeout)
+        wait(for: [exp], timeout: validationTimeout)
     }
 }
