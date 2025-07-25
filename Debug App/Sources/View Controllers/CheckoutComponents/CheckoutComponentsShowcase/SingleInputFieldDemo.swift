@@ -190,7 +190,7 @@ private struct SingleInputFieldCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
     @State private var currentFieldIndex = 0
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
     
     var body: some View {

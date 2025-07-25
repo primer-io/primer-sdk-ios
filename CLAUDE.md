@@ -133,7 +133,7 @@ bundle exec fastlane build_spm
 #### 3. CheckoutComponents Integration ✨
 - **Entry**: `CheckoutComponentsPrimer.presentCheckout()` (UIKit) or `PrimerCheckout()` (SwiftUI)
 - **Pattern**: Scope-based architecture with exact Android API parity
-- **Customization**: Full component customization via `@ViewBuilder`
+- **Customization**: Full component customization via closure properties
 - **DI**: Modern actor-based container with AsyncStream state management
 
 ### Dependency Injection Systems
@@ -204,7 +204,7 @@ The CheckoutComponents framework is **production-ready** with comprehensive feat
 - **AsyncStream state management** for reactive updates without Combine dependency
 - **Comprehensive validation system** with rules-based validation and country-specific logic
 - **Layered architecture** (Presentation → Interactors → Repositories → Network)
-- **Full UI customization** via @ViewBuilder patterns and theme support
+- **Full UI customization** via closure properties and theme support (Android parity)
 - **Self-contained integration** independent from Drop-in/Headless systems
 
 ### All Scopes Completed ✅
@@ -241,7 +241,7 @@ The CheckoutComponents framework is **production-ready** with comprehensive feat
 2. Define scope protocol extending base scope with associated types
 3. Implement `PaymentMethodProtocol` with associated scope type
 4. Create ViewModel implementing the scope with AsyncStream state management
-5. Build SwiftUI views with customization points using @ViewBuilder
+5. Build SwiftUI views with customization points using closure properties
 6. Register in DI container with appropriate retention policy
 7. Add validation rules to `ValidationService` and `RulesFactory`
 
@@ -394,6 +394,15 @@ The SDK supports multiple Package.swift configurations:
 - **Search functionality**: Added comprehensive search with filtering capabilities
 - **Bug fixes**: Resolved string interpolation issues showing literal placeholders
 - **UI improvements**: Enhanced country picker presentation and dismissal
+
+### CheckoutComponents Recent Enhancements (July 25, 2025) ✅
+
+#### UI Customization API Simplification
+- **Removed ViewBuilder methods**: Eliminated confusing dual-approach pattern (ViewBuilder methods + closure properties)
+- **Single customization approach**: Now only using closure properties to match Android's clean API exactly
+- **Improved consistency**: All field customizations use the same pattern: `scope.fieldNameField = { label, styling in AnyView(...) }`
+- **Better Android parity**: iOS now matches Android's single property assignment approach
+- **Updated components**: CardFormScreen and BillingAddressView now use closure properties with fallback defaults
 
 ### CheckoutComponents Showcase Implementation ✅
 - **Comprehensive Demo Suite**: 18 demo components showcasing CheckoutComponents flexibility

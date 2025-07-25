@@ -200,7 +200,7 @@ private struct DynamicLayoutCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
     @State private var selectedLayout: CardFormLayout = .vertical
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
     
     var body: some View {

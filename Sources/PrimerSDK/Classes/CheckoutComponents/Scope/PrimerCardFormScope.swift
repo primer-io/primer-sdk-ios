@@ -14,10 +14,10 @@ import UIKit
 /// Inherits from PrimerPaymentMethodScope for unified payment method architecture.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == PrimerCardFormState {
+public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == StructuredCardFormState {
 
     /// The current state of the card form as an async stream.
-    var state: AsyncStream<PrimerCardFormState> { get }
+    var state: AsyncStream<StructuredCardFormState> { get }
 
     /// The presentation context determining navigation behavior.
     var presentationContext: PresentationContext { get }
@@ -244,89 +244,32 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     /// to the scope, ensuring button state synchronization.
     func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
 
-}
+    // MARK: - Structured State Support (Android Parity)
 
-// MARK: - State Definition
+    /// Updates field value using the type-safe field type enum
+    /// Matches Android's updateField(fieldType, value) pattern
+    func updateField(_ fieldType: PrimerInputElementType, value: String)
 
-/// Represents the current state of all form fields and submission status for PrimerCardFormScope.
-@available(iOS 15.0, *)
-public struct PrimerCardFormState: Equatable {
-    public var cardNumber: String = ""
-    public var cvv: String = ""
-    public var expiryDate: String = ""
-    public var cardholderName: String = ""
-    public var postalCode: String = ""
-    public var countryCode: String = ""
-    public var city: String = ""
-    public var state: String = ""
-    public var addressLine1: String = ""
-    public var addressLine2: String = ""
-    public var phoneNumber: String = ""
-    public var firstName: String = ""
-    public var lastName: String = ""
-    public var retailOutlet: String = ""
-    public var otpCode: String = ""
-    public var email: String = ""
-    public var isSubmitting: Bool = false
-    public var isValid: Bool = false
-    public var error: String?
-    public var expiryMonth: String = ""
-    public var expiryYear: String = ""
-    public var selectedCardNetwork: String?
-    public var availableCardNetworks: [String] = []
-    public var surchargeAmount: String?
+    /// Gets field value using the type-safe field type enum
+    /// Matches Android's getFieldValue(fieldType) pattern
+    func getFieldValue(_ fieldType: PrimerInputElementType) -> String
 
-    public init(
-        cardNumber: String = "",
-        cvv: String = "",
-        expiryDate: String = "",
-        cardholderName: String = "",
-        postalCode: String = "",
-        countryCode: String = "",
-        city: String = "",
-        state: String = "",
-        addressLine1: String = "",
-        addressLine2: String = "",
-        phoneNumber: String = "",
-        firstName: String = "",
-        lastName: String = "",
-        retailOutlet: String = "",
-        otpCode: String = "",
-        email: String = "",
-        isSubmitting: Bool = false,
-        isValid: Bool = false,
-        error: String? = nil,
-        expiryMonth: String = "",
-        expiryYear: String = "",
-        selectedCardNetwork: String? = nil,
-        availableCardNetworks: [String] = [],
-        surchargeAmount: String? = nil
-    ) {
-        self.cardNumber = cardNumber
-        self.cvv = cvv
-        self.expiryDate = expiryDate
-        self.cardholderName = cardholderName
-        self.postalCode = postalCode
-        self.countryCode = countryCode
-        self.city = city
-        self.state = state
-        self.addressLine1 = addressLine1
-        self.addressLine2 = addressLine2
-        self.phoneNumber = phoneNumber
-        self.firstName = firstName
-        self.lastName = lastName
-        self.retailOutlet = retailOutlet
-        self.otpCode = otpCode
-        self.email = email
-        self.isSubmitting = isSubmitting
-        self.isValid = isValid
-        self.error = error
-        self.expiryMonth = expiryMonth
-        self.expiryYear = expiryYear
-        self.selectedCardNetwork = selectedCardNetwork
-        self.availableCardNetworks = availableCardNetworks
-        self.surchargeAmount = surchargeAmount
-    }
+    /// Sets field-specific error using structured error approach
+    /// Matches Android's setFieldError(fieldType, error) pattern
+    func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String?)
+
+    /// Clears field-specific error
+    /// Matches Android's clearFieldError(fieldType) pattern
+    func clearFieldError(_ fieldType: PrimerInputElementType)
+
+    /// Gets field-specific error message
+    /// Matches Android's getFieldError(fieldType) pattern
+    func getFieldError(_ fieldType: PrimerInputElementType) -> String?
+
+    /// Gets the current form configuration (which fields are displayed)
+    /// Matches Android's getFormConfiguration() pattern
+    func getFormConfiguration() -> CardFormConfiguration
+
 }
 
 // MARK: - Default Implementation for Payment Method Lifecycle
@@ -348,6 +291,86 @@ extension PrimerCardFormScope {
     /// Default implementation maps to existing onCancel() method
     public func cancel() {
         onCancel()
+    }
+}
+
+// MARK: - Structured State Default Implementations
+
+@available(iOS 15.0, *)
+extension PrimerCardFormScope {
+
+    /// Default implementation for updateField using type-safe enum
+    public func updateField(_ fieldType: PrimerInputElementType, value: String) {
+        // Map to individual update methods
+        switch fieldType {
+        case .cardNumber:
+            updateCardNumber(value)
+        case .cvv:
+            updateCvv(value)
+        case .expiryDate:
+            updateExpiryDate(value)
+        case .cardholderName:
+            updateCardholderName(value)
+        case .postalCode:
+            updatePostalCode(value)
+        case .countryCode:
+            updateCountryCode(value)
+        case .city:
+            updateCity(value)
+        case .state:
+            updateState(value)
+        case .addressLine1:
+            updateAddressLine1(value)
+        case .addressLine2:
+            updateAddressLine2(value)
+        case .phoneNumber:
+            updatePhoneNumber(value)
+        case .firstName:
+            updateFirstName(value)
+        case .lastName:
+            updateLastName(value)
+        case .email:
+            updateEmail(value)
+        case .retailer:
+            updateRetailOutlet(value)
+        case .otp:
+            updateOtpCode(value)
+        case .unknown, .all:
+            break // Not implemented for these special cases
+        }
+    }
+
+    /// Default implementation for getFieldValue using current state
+    /// Implementations should override this to use their actual state
+    public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
+        // This is a placeholder - implementations should override with their actual state
+        return ""
+    }
+
+    /// Default implementation for setFieldError
+    /// Implementations should override this to support structured errors
+    public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
+        // Default implementation does nothing - implementations should override
+    }
+
+    /// Default implementation for clearFieldError
+    /// Implementations should override this to support structured errors
+    public func clearFieldError(_ fieldType: PrimerInputElementType) {
+        // Default implementation does nothing - implementations should override
+    }
+
+    /// Default implementation for getFieldError
+    /// Implementations should override this to support structured errors
+    public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
+        // Default implementation returns nil - implementations should override
+        return nil
+    }
+
+    /// Default implementation for getFormConfiguration
+    /// Implementations should override this to return their actual configuration
+    public func getFormConfiguration() -> CardFormConfiguration {
+        // Default basic card form configuration
+        return CardFormConfiguration.default
     }
 }
 

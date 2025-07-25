@@ -63,11 +63,8 @@ internal struct PostalCodeInputField: View, LogReporter {
     /// Country code for validation (optional)
     let countryCode: String?
 
-    /// Callback when the postal code changes
-    let onPostalCodeChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
@@ -124,16 +121,14 @@ internal struct PostalCodeInputField: View, LogReporter {
         label: String,
         placeholder: String,
         countryCode: String? = nil,
-        styling: PrimerFieldStyling? = nil,
-        onPostalCodeChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.countryCode = countryCode
+        self.scope = scope
         self.styling = styling
-        self.onPostalCodeChange = onPostalCodeChange
-        self.onValidationChange = onValidationChange
     }
 
     // MARK: - Body
@@ -170,8 +165,7 @@ internal struct PostalCodeInputField: View, LogReporter {
                             keyboardType: keyboardTypeForCountry,
                             styling: styling,
                             validationService: validationService,
-                            onPostalCodeChange: onPostalCodeChange,
-                            onValidationChange: onValidationChange
+                            scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                         .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
@@ -246,8 +240,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
     let keyboardType: UIKeyboardType
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
-    let onPostalCodeChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
+    let scope: any PrimerCardFormScope
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -327,8 +320,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             countryCode: countryCode,
-            onPostalCodeChange: onPostalCodeChange,
-            onValidationChange: onValidationChange
+            scope: scope
         )
     }
 
@@ -339,8 +331,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
         private let countryCode: String?
-        private let onPostalCodeChange: ((String) -> Void)?
-        private let onValidationChange: ((Bool) -> Void)?
+        private let scope: any PrimerCardFormScope
 
         init(
             validationService: ValidationService,
@@ -349,8 +340,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
             countryCode: String?,
-            onPostalCodeChange: ((String) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
             self._postalCode = postalCode
@@ -358,8 +348,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             self._errorMessage = errorMessage
             self._isFocused = isFocused
             self.countryCode = countryCode
-            self.onPostalCodeChange = onPostalCodeChange
-            self.onValidationChange = onValidationChange
+            self.scope = scope
         }
 
         @objc func doneButtonTapped() {
@@ -370,6 +359,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope.clearFieldError(.postalCode)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -396,7 +386,7 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             postalCode = newText
-            onPostalCodeChange?(newText)
+            scope.updatePostalCode(newText)
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -411,7 +401,6 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             if trimmedPostalCode.isEmpty {
                 isValid = false // Postal code is required
                 errorMessage = nil // Never show error message for empty fields
-                onValidationChange?(false)
                 return
             }
 
@@ -422,7 +411,13 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
 
             isValid = result.isValid
             errorMessage = result.errorMessage
-            onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if result.isValid {
+                scope.clearFieldError(.postalCode)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.postalCode, message: message, errorCode: result.errorCode)
+            }
         }
     }
 }

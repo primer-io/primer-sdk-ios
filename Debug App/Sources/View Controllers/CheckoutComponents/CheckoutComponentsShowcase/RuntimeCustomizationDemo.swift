@@ -189,7 +189,7 @@ struct RuntimeCustomizationDemo: View {
 private struct ConditionalCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var detectedCardType: String = "Unknown"
     @State private var showSecurityBadge = false
     @State private var isAmex = false
@@ -410,7 +410,7 @@ private struct ConditionalCardFormView: View {
             return Color.clear
         }
         
-        let nameValue = state.cardholderName
+        let nameValue = state.data[.cardholderName]
         
         if nameValue.isEmpty {
             return Color.clear
@@ -426,9 +426,9 @@ private struct ConditionalCardFormView: View {
         return .gray.opacity(0.3)
     }
     
-    private func updateCardType(from state: PrimerCardFormState) {
+    private func updateCardType(from state: StructuredCardFormState) {
         // Detect card type from card number
-        let cardNumber = state.cardNumber
+        let cardNumber = state.data[.cardNumber]
         
         if cardNumber.starts(with: "4") && cardNumber.count >= 1 {
             detectedCardType = "Visa"
@@ -462,9 +462,20 @@ private struct ConditionalCardFormView: View {
             
             let effectiveStyling = styling ?? PrimerFieldStyling()
             
-            RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
-                .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
-                .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
+            Group {
+                if #available(iOS 17.0, *) {
+                    RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                        .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
+                        .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
+                } else {
+                    RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                        .fill(effectiveStyling.backgroundColor ?? Color.gray.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: effectiveStyling.cornerRadius ?? 8)
+                                .stroke(effectiveStyling.borderColor ?? Color.gray.opacity(0.3), lineWidth: effectiveStyling.borderWidth ?? 1)
+                        )
+                }
+            }
                 .frame(height: 50)
                 .overlay(
                     Text(placeholder)

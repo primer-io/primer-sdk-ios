@@ -229,38 +229,28 @@ internal struct BillingAddressView: View, LogReporter {
             }
         }
     }
-    
+
     // MARK: - Default Field Implementations
-    
+
     @ViewBuilder
     private func defaultFirstNameField() -> some View {
         NameInputField(
             label: CheckoutComponentsStrings.firstNameLabel,
             placeholder: "John",
             inputType: .firstName,
-            styling: styling,
-            onNameChange: { [weak cardFormScope] name in
-                cardFormScope?.updateFirstName(name)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultLastNameField() -> some View {
         NameInputField(
             label: CheckoutComponentsStrings.lastNameLabel,
             placeholder: "Smith",
             inputType: .lastName,
-            styling: styling,
-            onNameChange: { [weak cardFormScope] name in
-                cardFormScope?.updateLastName(name)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
 
@@ -269,20 +259,15 @@ internal struct BillingAddressView: View, LogReporter {
         CountryInputField(
             label: CheckoutComponentsStrings.countryLabel,
             placeholder: CheckoutComponentsStrings.countrySelectorPlaceholder,
+            scope: cardFormScope,
             selectedCountry: selectedCountry,
-            styling: styling,
-            onCountryChange: { [weak cardFormScope] countryCode in
-                cardFormScope?.updateCountryCode(countryCode)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            styling: styling
         )
         .onTapGesture {
             showCountrySelector = true
         }
     }
-    
+
     @ViewBuilder
     private func defaultAddressLine1Field() -> some View {
         AddressLineInputField(
@@ -290,16 +275,11 @@ internal struct BillingAddressView: View, LogReporter {
             placeholder: "123 Main St",
             isRequired: true,
             inputType: .addressLine1,
-            styling: styling,
-            onAddressChange: { [weak cardFormScope] address in
-                cardFormScope?.updateAddressLine1(address)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultAddressLine2Field() -> some View {
         AddressLineInputField(
@@ -307,76 +287,51 @@ internal struct BillingAddressView: View, LogReporter {
             placeholder: "Apt 4B",
             isRequired: false,
             inputType: .addressLine2,
-            styling: styling,
-            onAddressChange: { [weak cardFormScope] address in
-                cardFormScope?.updateAddressLine2(address)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultCityField() -> some View {
         CityInputField(
             label: CheckoutComponentsStrings.cityLabel,
             placeholder: "New York",
-            styling: styling,
-            onCityChange: { [weak cardFormScope] city in
-                cardFormScope?.updateCity(city)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultStateField() -> some View {
         StateInputField(
             label: CheckoutComponentsStrings.stateLabel,
             placeholder: "NY",
-            styling: styling,
-            onStateChange: { [weak cardFormScope] state in
-                cardFormScope?.updateState(state)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultPostalCodeField() -> some View {
         PostalCodeInputField(
             label: CheckoutComponentsStrings.postalCodeLabel,
             placeholder: "10001",
-            styling: styling,
-            onPostalCodeChange: { [weak cardFormScope] postalCode in
-                cardFormScope?.updatePostalCode(postalCode)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultEmailField() -> some View {
         EmailInputField(
             label: CheckoutComponentsStrings.emailLabel,
             placeholder: "john.smith@example.com",
-            styling: styling,
-            onEmailChange: { [weak cardFormScope] email in
-                cardFormScope?.updateEmail(email)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
-    
+
     @ViewBuilder
     private func defaultPhoneNumberField() -> some View {
         // Using NameInputField with phoneNumber type for phone number input
@@ -384,13 +339,8 @@ internal struct BillingAddressView: View, LogReporter {
             label: CheckoutComponentsStrings.phoneNumberLabel,
             placeholder: "+1 (555) 123-4567",
             inputType: .phoneNumber,
-            styling: styling,
-            onNameChange: { [weak cardFormScope] phoneNumber in
-                cardFormScope?.updatePhoneNumber(phoneNumber)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field
-            }
+            scope: cardFormScope,
+            styling: styling
         )
     }
 

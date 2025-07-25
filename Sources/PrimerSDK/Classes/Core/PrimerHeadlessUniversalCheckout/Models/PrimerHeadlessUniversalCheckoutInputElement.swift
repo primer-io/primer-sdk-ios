@@ -197,4 +197,90 @@ public enum PrimerInputElementType: Int {
             return UIKeyboardType.default
         }
     }
+    
+    // MARK: - Structured State Support
+    
+    /// Indicates if this field is a card-related field
+    internal var isCardField: Bool {
+        switch self {
+        case .cardNumber, .expiryDate, .cvv, .cardholderName:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    /// Indicates if this field is a billing address field
+    internal var isBillingField: Bool {
+        switch self {
+        case .firstName, .lastName, .addressLine1, .addressLine2, .city, .state, .postalCode, .countryCode, .phoneNumber, .email:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    /// Indicates if this field is required for basic card form validation
+    internal var isRequired: Bool {
+        switch self {
+        case .cardNumber, .expiryDate, .cvv, .cardholderName:
+            return true
+        case .postalCode, .countryCode: // Required if billing address is enabled
+            return true
+        default:
+            return false
+        }
+    }
+    
+    /// Field display order for UI layout
+    internal var displayOrder: Int {
+        switch self {
+        // Card fields
+        case .cardNumber: return 1
+        case .expiryDate: return 2
+        case .cvv: return 3
+        case .cardholderName: return 4
+        
+        // Billing address fields (matching Drop-in order)
+        case .countryCode: return 10
+        case .addressLine1: return 11
+        case .postalCode: return 12
+        case .state: return 13
+        case .city: return 14
+        case .addressLine2: return 15
+        case .firstName: return 16
+        case .lastName: return 17
+        case .email: return 18
+        case .phoneNumber: return 19
+        
+        // Other fields
+        case .otp: return 20
+        case .retailer: return 21
+        case .unknown, .all: return 999
+        }
+    }
+    
+    /// Human-readable field name for display
+    internal var displayName: String {
+        switch self {
+        case .cardNumber: return "Card Number"
+        case .expiryDate: return "Expiry Date"
+        case .cvv: return "CVV"
+        case .cardholderName: return "Cardholder Name"
+        case .firstName: return "First Name"
+        case .lastName: return "Last Name"
+        case .addressLine1: return "Address Line 1"
+        case .addressLine2: return "Address Line 2"
+        case .city: return "City"
+        case .state: return "State"
+        case .postalCode: return "Postal Code"
+        case .countryCode: return "Country"
+        case .phoneNumber: return "Phone Number"
+        case .email: return "Email"
+        case .otp: return "OTP Code"
+        case .retailer: return "Retail Outlet"
+        case .unknown: return "Unknown"
+        case .all: return "All Fields"
+        }
+    }
 }

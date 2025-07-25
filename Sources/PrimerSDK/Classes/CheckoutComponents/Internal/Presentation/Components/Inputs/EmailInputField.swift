@@ -60,6 +60,9 @@ internal struct EmailInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
+    /// The card form scope for state management
+    let scope: (any PrimerCardFormScope)?
+
     /// Callback when the email changes
     let onEmailChange: ((String) -> Void)?
 
@@ -104,7 +107,22 @@ internal struct EmailInputField: View, LogReporter {
 
     // MARK: - Initialization
 
-    /// Creates a new EmailInputField with comprehensive customization support
+    /// Creates a new EmailInputField with comprehensive customization support (scope-based)
+    internal init(
+        label: String,
+        placeholder: String,
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.scope = scope
+        self.styling = styling
+        self.onEmailChange = nil
+        self.onValidationChange = nil
+    }
+
+    /// Creates a new EmailInputField with comprehensive customization support (callback-based)
     internal init(
         label: String,
         placeholder: String,
@@ -114,6 +132,7 @@ internal struct EmailInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = nil
         self.styling = styling
         self.onEmailChange = onEmailChange
         self.onValidationChange = onValidationChange
@@ -150,6 +169,7 @@ internal struct EmailInputField: View, LogReporter {
                             placeholder: placeholder,
                             styling: styling,
                             validationService: validationService,
+                            scope: scope,
                             onEmailChange: onEmailChange,
                             onValidationChange: onValidationChange
                         )
@@ -226,6 +246,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
+    let scope: (any PrimerCardFormScope)?
     let onEmailChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
 
@@ -307,6 +328,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
             isValid: $isValid,
             errorMessage: $errorMessage,
             isFocused: $isFocused,
+            scope: scope,
             onEmailChange: onEmailChange,
             onValidationChange: onValidationChange
         )
@@ -318,6 +340,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
+        private let scope: (any PrimerCardFormScope)?
         private let onEmailChange: ((String) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
 
@@ -327,6 +350,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
             isValid: Binding<Bool>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
+            scope: (any PrimerCardFormScope)?,
             onEmailChange: ((String) -> Void)?,
             onValidationChange: ((Bool) -> Void)?
         ) {
@@ -335,6 +359,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
             self._isValid = isValid
             self._errorMessage = errorMessage
             self._isFocused = isFocused
+            self.scope = scope
             self.onEmailChange = onEmailChange
             self.onValidationChange = onValidationChange
         }
@@ -347,6 +372,7 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope?.clearFieldError(.email)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -373,7 +399,11 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             email = newText
-            onEmailChange?(newText)
+            if let scope = scope {
+                scope.updateEmail(newText)
+            } else {
+                onEmailChange?(newText)
+            }
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
@@ -400,6 +430,15 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if let scope = scope {
+                if result.isValid {
+                    scope.clearFieldError(.email)
+                } else if let message = result.errorMessage {
+                    scope.setFieldError(.email, message: message, errorCode: result.errorCode)
+                }
+            }
         }
     }
 }

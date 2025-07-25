@@ -60,11 +60,8 @@ internal struct CardholderNameInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
-    /// Callback when the cardholder name changes
-    let onCardholderNameChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
@@ -109,15 +106,13 @@ internal struct CardholderNameInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
-        styling: PrimerFieldStyling? = nil,
-        onCardholderNameChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = scope
         self.styling = styling
-        self.onCardholderNameChange = onCardholderNameChange
-        self.onValidationChange = onValidationChange
     }
 
     // MARK: - Body
@@ -151,8 +146,7 @@ internal struct CardholderNameInputField: View, LogReporter {
                             placeholder: placeholder,
                             styling: styling,
                             validationService: validationService,
-                            onCardholderNameChange: onCardholderNameChange,
-                            onValidationChange: onValidationChange
+                            scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                         .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
@@ -225,8 +219,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
-    let onCardholderNameChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
+    let scope: any PrimerCardFormScope
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -304,8 +297,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             isValid: $isValid,
             errorMessage: $errorMessage,
             isFocused: $isFocused,
-            onCardholderNameChange: onCardholderNameChange,
-            onValidationChange: onValidationChange
+            scope: scope
         )
     }
 
@@ -315,8 +307,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let onCardholderNameChange: ((String) -> Void)?
-        private let onValidationChange: ((Bool) -> Void)?
+        private let scope: any PrimerCardFormScope
 
         init(
             validationService: ValidationService,
@@ -324,16 +315,14 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             isValid: Binding<Bool>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
-            onCardholderNameChange: ((String) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
             self._cardholderName = cardholderName
             self._isValid = isValid
             self._errorMessage = errorMessage
             self._isFocused = isFocused
-            self.onCardholderNameChange = onCardholderNameChange
-            self.onValidationChange = onValidationChange
+            self.scope = scope
         }
 
         @objc func doneButtonTapped() {
@@ -344,6 +333,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope.clearFieldError(.cardholderName)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -379,7 +369,7 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             cardholderName = newText
-            onCardholderNameChange?(newText)
+            scope.updateCardholderName(newText)
 
             // Simple validation while typing
             isValid = newText.count >= 2
@@ -394,7 +384,6 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             if trimmedName.isEmpty {
                 isValid = false // Cardholder name is required
                 errorMessage = nil // Never show error message for empty fields
-                onValidationChange?(false)
                 return
             }
 
@@ -405,7 +394,14 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
             isValid = result.isValid
             errorMessage = result.errorMessage
-            onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if result.isValid {
+                scope.clearFieldError(.cardholderName)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
+            }
+
         }
     }
 }

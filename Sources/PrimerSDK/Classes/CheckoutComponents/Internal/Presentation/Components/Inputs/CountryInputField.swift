@@ -18,17 +18,8 @@ internal struct CountryInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
-    /// Callback when the country changes
-    let onCountryChange: ((String) -> Void)?
-
-    /// Callback when the country code changes
-    let onCountryCodeChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
-
-    /// Callback to open country selector
-    let onOpenCountrySelector: (() -> Void)?
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
 
     /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
@@ -97,21 +88,15 @@ internal struct CountryInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
+        scope: any PrimerCardFormScope,
         selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
-        styling: PrimerFieldStyling? = nil,
-        onCountryChange: ((String) -> Void)? = nil,
-        onCountryCodeChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil,
-        onOpenCountrySelector: (() -> Void)? = nil
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = scope
         self.selectedCountry = selectedCountry
         self.styling = styling
-        self.onCountryChange = onCountryChange
-        self.onCountryCodeChange = onCountryCodeChange
-        self.onValidationChange = onValidationChange
-        self.onOpenCountrySelector = onOpenCountrySelector
     }
 
     // MARK: - Body
@@ -134,7 +119,7 @@ internal struct CountryInputField: View, LogReporter {
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                 impactFeedback.impactOccurred()
 
-                onOpenCountrySelector?()
+                scope.navigateToCountrySelection()
 
                 // Reset after shorter timeout - 1 second should be enough
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -233,8 +218,7 @@ internal struct CountryInputField: View, LogReporter {
     func updateCountry(name: String, code: String) {
         countryName = name
         countryCode = code
-        onCountryChange?(name)
-        onCountryCodeChange?(code)
+        scope.updateCountryCode(code)
         validateCountry()
     }
 
@@ -248,6 +232,12 @@ internal struct CountryInputField: View, LogReporter {
 
         isValid = result.isValid
         errorMessage = result.errorMessage
-        onValidationChange?(result.isValid)
+
+        // Update scope state based on validation
+        if result.isValid {
+            scope.clearFieldError(.countryCode)
+        } else if let message = result.errorMessage {
+            scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
+        }
     }
 }

@@ -60,17 +60,8 @@ internal struct ExpiryDateInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
-    /// Callback when the expiry date changes
-    let onExpiryDateChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
-
-    /// Callback when month value changes
-    let onMonthChange: ((String) -> Void)?
-
-    /// Callback when year value changes
-    let onYearChange: ((String) -> Void)?
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
@@ -123,19 +114,13 @@ internal struct ExpiryDateInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
-        styling: PrimerFieldStyling? = nil,
-        onExpiryDateChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil,
-        onMonthChange: ((String) -> Void)? = nil,
-        onYearChange: ((String) -> Void)? = nil
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = scope
         self.styling = styling
-        self.onExpiryDateChange = onExpiryDateChange
-        self.onValidationChange = onValidationChange
-        self.onMonthChange = onMonthChange
-        self.onYearChange = onYearChange
     }
 
     // MARK: - Body
@@ -171,10 +156,7 @@ internal struct ExpiryDateInputField: View, LogReporter {
                             placeholder: placeholder,
                             styling: styling,
                             validationService: validationService,
-                            onExpiryDateChange: onExpiryDateChange,
-                            onMonthChange: onMonthChange,
-                            onYearChange: onYearChange,
-                            onValidationChange: onValidationChange
+                            scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                         .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
@@ -251,10 +233,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
-    let onExpiryDateChange: ((String) -> Void)?
-    let onMonthChange: ((String) -> Void)?
-    let onYearChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
+    let scope: any PrimerCardFormScope
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -332,10 +311,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             isValid: $isValid,
             errorMessage: $errorMessage,
             isFocused: $isFocused,
-            onExpiryDateChange: onExpiryDateChange,
-            onMonthChange: onMonthChange,
-            onYearChange: onYearChange,
-            onValidationChange: onValidationChange
+            scope: scope
         )
     }
 
@@ -347,10 +323,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         @Binding private var isValid: Bool?
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let onExpiryDateChange: ((String) -> Void)?
-        private let onMonthChange: ((String) -> Void)?
-        private let onYearChange: ((String) -> Void)?
-        private let onValidationChange: ((Bool) -> Void)?
+        private let scope: any PrimerCardFormScope
 
         init(
             validationService: ValidationService,
@@ -360,10 +333,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             isValid: Binding<Bool?>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
-            onExpiryDateChange: ((String) -> Void)?,
-            onMonthChange: ((String) -> Void)?,
-            onYearChange: ((String) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
             self._expiryDate = expiryDate
@@ -372,10 +342,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             self._isValid = isValid
             self._errorMessage = errorMessage
             self._isFocused = isFocused
-            self.onExpiryDateChange = onExpiryDateChange
-            self.onMonthChange = onMonthChange
-            self.onYearChange = onYearChange
-            self.onValidationChange = onValidationChange
+            self.scope = scope
         }
 
         @objc func doneButtonTapped() {
@@ -386,6 +353,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope.clearFieldError(.expiryDate)
             }
         }
 
@@ -421,8 +389,8 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             // Extract month and year
             extractMonthAndYear(from: newText)
 
-            // Notify changes
-            onExpiryDateChange?(newText)
+            // Update scope state
+            scope.updateExpiryDate(newText)
 
             // Validate if complete
             if newText.count == 5 { // MM/YY format
@@ -487,8 +455,8 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             month = parts.count > 0 ? parts[0] : ""
             year = parts.count > 1 ? parts[1] : ""
 
-            onMonthChange?(month)
-            onYearChange?(year)
+            scope.updateExpiryMonth(month)
+            scope.updateExpiryYear(year)
         }
 
         private func validateExpiryDate() {
@@ -497,7 +465,6 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             if trimmedExpiry.isEmpty {
                 isValid = false // Expiry date is required
                 errorMessage = nil // Never show error message for empty fields
-                onValidationChange?(false)
                 return
             }
 
@@ -507,7 +474,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             guard components.count == 2 else {
                 isValid = false
                 errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
-                onValidationChange?(false)
+                scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
                 return
             }
 
@@ -522,7 +489,13 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             isValid = result.isValid
             errorMessage = result.errorMessage
-            onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if result.isValid {
+                scope.clearFieldError(.expiryDate)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
+            }
         }
     }
 }

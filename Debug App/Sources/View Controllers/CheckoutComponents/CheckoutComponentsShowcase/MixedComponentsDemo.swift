@@ -189,7 +189,7 @@ struct MixedComponentsDemo: View {
 private struct MixedStyleCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var isCardFlipped = false
     @State private var showTooltip = false
     @State private var stateTask: Task<Void, Never>?
@@ -234,9 +234,9 @@ private struct MixedStyleCardFormView: View {
                 
                 // Card visualization (custom)
                 CardVisualization(
-                    cardNumber: cardState?.cardNumber ?? "",
-                    expiryDate: cardState?.expiryDate ?? "",
-                    cardholderName: cardState?.cardholderName ?? "",
+                    cardNumber: cardState?.data[.cardNumber] ?? "",
+                    expiryDate: cardState?.data[.expiryDate] ?? "",
+                    cardholderName: cardState?.data[.cardholderName] ?? "",
                     isFlipped: $isCardFlipped
                 )
                 .padding(.horizontal)
@@ -254,7 +254,7 @@ private struct MixedStyleCardFormView: View {
                         }
                         
                         // Mock card number field with custom fancy styling
-                        fancyCardNumberField()
+                        self.fancyCardNumberField()
                         .background(
                             LinearGradient(
                                 colors: [Color.blue.opacity(0.05), Color.purple.opacity(0.05)],
@@ -284,7 +284,7 @@ private struct MixedStyleCardFormView: View {
                                 .foregroundColor(.secondary)
                             
                             // Mock expiry date field with default styling
-                            defaultStyleField(placeholder: "MM/YY", label: nil)
+                            self.defaultStyleField(placeholder: "MM/YY", label: nil)
                         }
                         
                         // CVV - Custom interactive style using real SDK component
@@ -299,7 +299,7 @@ private struct MixedStyleCardFormView: View {
                             
                             HStack {
                                 // Mock CVV field with custom interactive styling
-                                interactiveCvvField()
+                                self.interactiveCvvField()
                                 .onTapGesture {
                                     withAnimation(.spring()) {
                                         isCardFlipped = true
@@ -325,7 +325,7 @@ private struct MixedStyleCardFormView: View {
                             .foregroundColor(.secondary)
                         
                         // Mock cardholder name field with default styling
-                        defaultStyleField(placeholder: "John Smith", label: nil)
+                        self.defaultStyleField(placeholder: "John Smith", label: nil)
                     }
                 }
                 .padding()
@@ -408,6 +408,51 @@ private struct MixedStyleCardFormView: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    private func fancyCardNumberField() -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.clear)
+                .frame(height: 50)
+                .overlay(
+                    Text("1234 5678 9012 3456")
+                        .font(.system(size: 18, weight: .medium, design: .monospaced))
+                        .foregroundColor(.black.opacity(0.3))
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
+        }
+    }
+    
+    @ViewBuilder
+    private func defaultStyleField(placeholder: String, label: String?) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.1))
+                .frame(height: 50)
+                .overlay(
+                    Text(placeholder)
+                        .foregroundColor(.gray.opacity(0.5))
+                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                )
+        }
+    }
+    
+    @ViewBuilder
+    private func interactiveCvvField() -> some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.orange.opacity(0.1))
+            .frame(height: 50)
+            .overlay(
+                Text("123")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            )
     }
 }
 
@@ -538,50 +583,6 @@ private struct CardVisualization: View {
         return formatted
     }
     
-    @ViewBuilder
-    private func fancyCardNumberField() -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.clear)
-                .frame(height: 50)
-                .overlay(
-                    Text("1234 5678 9012 3456")
-                        .font(.system(size: 18, weight: .medium, design: .monospaced))
-                        .foregroundColor(.black.opacity(0.3))
-                        .padding(.horizontal, 16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
-        }
-    }
-    
-    @ViewBuilder
-    private func defaultStyleField(placeholder: String, label: String?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.1))
-                .frame(height: 50)
-                .overlay(
-                    Text(placeholder)
-                        .foregroundColor(.gray.opacity(0.5))
-                        .padding(.horizontal, 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
-        }
-    }
-    
-    @ViewBuilder
-    private func interactiveCvvField() -> some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.orange.opacity(0.1))
-            .frame(height: 50)
-            .overlay(
-                Text("123")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
-                    .padding(.horizontal, 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            )
-    }
 }
 
 /// Shimmer effect modifier

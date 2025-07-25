@@ -132,7 +132,7 @@ cardFormScope.billingAddressSection = {
 
 ## Field-Level Customization
 
-Customize individual input fields:
+Customize individual input fields using closure properties:
 
 ```swift
 // Custom card number field
@@ -145,7 +145,30 @@ cardFormScope.cardNumberField = { label, styling in
         )
     )
 }
+
+// Custom expiry date field
+cardFormScope.expiryDateField = { label, styling in
+    AnyView(
+        CustomExpiryField(
+            label: label,
+            onMonthChange: cardFormScope.updateExpiryMonth,
+            onYearChange: cardFormScope.updateExpiryYear
+        )
+    )
+}
+
+// Custom CVV field
+cardFormScope.cvvField = { label, styling in
+    AnyView(
+        CustomCVVField(
+            label: label,
+            onChange: cardFormScope.updateCvv
+        )
+    )
+}
 ```
+
+**Note**: CheckoutComponents uses a single, consistent approach for UI customization through closure properties. This provides a clean API that matches Android's pattern exactly.
 
 ## Styling Without Full Replacement
 

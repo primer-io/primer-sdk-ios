@@ -59,14 +59,11 @@ internal struct CVVInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
+
     /// The card network to validate against (determines CVV length requirements)
     let cardNetwork: CardNetwork
-
-    /// Callback when the CVV changes
-    let onCvvChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
@@ -113,17 +110,15 @@ internal struct CVVInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
+        scope: any PrimerCardFormScope,
         cardNetwork: CardNetwork,
-        styling: PrimerFieldStyling? = nil,
-        onCvvChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = scope
         self.cardNetwork = cardNetwork
         self.styling = styling
-        self.onCvvChange = onCvvChange
-        self.onValidationChange = onValidationChange
     }
 
     // MARK: - Body
@@ -158,8 +153,7 @@ internal struct CVVInputField: View, LogReporter {
                             cardNetwork: cardNetwork,
                             styling: styling,
                             validationService: validationService,
-                            onCvvChange: onCvvChange,
-                            onValidationChange: onValidationChange
+                            scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                         .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
@@ -235,8 +229,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
     let cardNetwork: CardNetwork
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
-    let onCvvChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
+    let scope: any PrimerCardFormScope
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -313,8 +306,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             isValid: $isValid,
             errorMessage: $errorMessage,
             isFocused: $isFocused,
-            onCvvChange: onCvvChange,
-            onValidationChange: onValidationChange
+            scope: scope
         )
     }
 
@@ -325,8 +317,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         @Binding private var isValid: Bool?
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let onCvvChange: ((String) -> Void)?
-        private let onValidationChange: ((Bool) -> Void)?
+        private let scope: any PrimerCardFormScope
 
         private var expectedCVVLength: Int {
             cardNetwork.validation?.code.length ?? 3
@@ -339,8 +330,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             isValid: Binding<Bool?>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
-            onCvvChange: ((String) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
             self.cardNetwork = cardNetwork
@@ -348,8 +338,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             self._isValid = isValid
             self._errorMessage = errorMessage
             self._isFocused = isFocused
-            self.onCvvChange = onCvvChange
-            self.onValidationChange = onValidationChange
+            self.scope = scope
         }
 
         @objc func doneButtonTapped() {
@@ -360,6 +349,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope.clearFieldError(.cvv)
             }
         }
 
@@ -390,7 +380,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             cvv = newText
-            onCvvChange?(newText)
+            scope.updateCvv(newText)
 
             // Validate while typing
             if newText.count == expectedCVVLength {
@@ -409,7 +399,6 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             if trimmedCVV.isEmpty {
                 isValid = false // CVV is required
                 errorMessage = nil // Never show error message for empty fields
-                onValidationChange?(false)
                 return
             }
 
@@ -419,7 +408,13 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
 
             isValid = result.isValid
             errorMessage = result.errorMessage
-            onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if result.isValid {
+                scope.clearFieldError(.cvv)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
+            }
         }
     }
 }

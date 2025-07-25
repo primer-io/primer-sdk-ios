@@ -189,7 +189,7 @@ struct PropertyReassignmentDemo: View {
 private struct DynamicPropertiesCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var isDarkMode = false
     @State private var showLabels = true
     @State private var fieldStyle: FieldStyle = .rounded
@@ -374,16 +374,18 @@ private struct DynamicPropertiesCardFormView: View {
                     .foregroundColor(isDarkMode ? .white.opacity(0.7) : .black.opacity(0.7))
             }
             
-            RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
-                .fill(dynamicFieldStyling().backgroundColor ?? .clear)
-                .stroke(dynamicFieldStyling().borderColor ?? .gray.opacity(0.5), lineWidth: dynamicFieldStyling().borderWidth ?? 1)
-                .frame(height: 50)
-                .overlay(
-                    Text(placeholder)
-                        .foregroundColor((dynamicFieldStyling().placeholderColor ?? dynamicFieldStyling().textColor ?? .gray).opacity(0.5))
-                        .padding(.horizontal, dynamicFieldStyling().padding?.leading ?? 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
+            ZStack {
+                RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
+                    .fill(dynamicFieldStyling().backgroundColor ?? .clear)
+                    .frame(height: 50)
+                RoundedRectangle(cornerRadius: dynamicFieldStyling().cornerRadius ?? 8)
+                    .stroke(dynamicFieldStyling().borderColor ?? .gray.opacity(0.5), lineWidth: dynamicFieldStyling().borderWidth ?? 1)
+                    .frame(height: 50)
+                Text(placeholder)
+                    .foregroundColor((dynamicFieldStyling().placeholderColor ?? dynamicFieldStyling().textColor ?? .gray).opacity(0.5))
+                    .padding(.horizontal, dynamicFieldStyling().padding?.leading ?? 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 }

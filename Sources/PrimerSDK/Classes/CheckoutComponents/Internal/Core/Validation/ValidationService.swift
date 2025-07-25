@@ -108,6 +108,22 @@ public protocol ValidationService {
 
     /// Validates a field using a specific validation rule
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T
+
+    // MARK: - Structured State Support (Android Parity)
+
+    /// Validates form data using structured state approach
+    /// Returns structured field errors for granular error handling
+    @available(iOS 15.0, *)
+    func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError]
+
+    /// Validates form data for specific fields only
+    /// Useful for partial validation during user input
+    @available(iOS 15.0, *)
+    func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError]
+
+    /// Validates a single field and returns structured error
+    @available(iOS 15.0, *)
+    func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError?
 }
 
 /**
@@ -515,5 +531,45 @@ extension DefaultValidationService {
 
     public func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
         return rule.validate(input)
+    }
+
+    // MARK: - Structured State Support Implementation
+
+    /// Implementation of validateFormData for structured state
+    @available(iOS 15.0, *)
+    public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
+        return validateFields(configuration.allFields, formData: formData)
+    }
+
+    /// Implementation of validateFields for partial validation
+    @available(iOS 15.0, *)
+    public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
+        var fieldErrors: [FieldError] = []
+
+        for fieldType in fieldTypes {
+            let value = formData[fieldType]
+            if let error = validateFieldWithStructuredResult(type: fieldType, value: value.isEmpty ? nil : value) {
+                fieldErrors.append(error)
+            }
+        }
+
+        return fieldErrors
+    }
+
+    /// Implementation of validateFieldWithStructuredResult
+    @available(iOS 15.0, *)
+    public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
+        let result = validateField(type: type, value: value)
+
+        // Convert ValidationResult to FieldError if invalid
+        if !result.isValid, let message = result.errorMessage {
+            return FieldError(
+                fieldType: type,
+                message: message,
+                errorCode: result.errorCode
+            )
+        }
+
+        return nil
     }
 }

@@ -66,6 +66,9 @@ internal struct AddressLineInputField: View, LogReporter {
     /// The input element type for validation
     let inputType: PrimerInputElementType
 
+    /// The card form scope for state management
+    let scope: (any PrimerCardFormScope)?
+
     /// Callback when the address line changes
     let onAddressChange: ((String) -> Void)?
 
@@ -112,7 +115,26 @@ internal struct AddressLineInputField: View, LogReporter {
 
     // MARK: - Initialization
 
-    /// Creates a new AddressLineInputField with comprehensive customization support
+    /// Creates a new AddressLineInputField with comprehensive customization support (scope-based)
+    internal init(
+        label: String,
+        placeholder: String,
+        isRequired: Bool,
+        inputType: PrimerInputElementType,
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.isRequired = isRequired
+        self.inputType = inputType
+        self.scope = scope
+        self.styling = styling
+        self.onAddressChange = nil
+        self.onValidationChange = nil
+    }
+
+    /// Creates a new AddressLineInputField with comprehensive customization support (callback-based)
     internal init(
         label: String,
         placeholder: String,
@@ -126,6 +148,7 @@ internal struct AddressLineInputField: View, LogReporter {
         self.placeholder = placeholder
         self.isRequired = isRequired
         self.inputType = inputType
+        self.scope = nil
         self.styling = styling
         self.onAddressChange = onAddressChange
         self.onValidationChange = onValidationChange
@@ -165,6 +188,7 @@ internal struct AddressLineInputField: View, LogReporter {
                             inputType: inputType,
                             styling: styling,
                             validationService: validationService,
+                            scope: scope,
                             onAddressChange: onAddressChange,
                             onValidationChange: onValidationChange
                         )
@@ -240,6 +264,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
     let inputType: PrimerInputElementType
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
+    let scope: (any PrimerCardFormScope)?
     let onAddressChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
 
@@ -321,6 +346,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             isFocused: $isFocused,
             isRequired: isRequired,
             inputType: inputType,
+            scope: scope,
             onAddressChange: onAddressChange,
             onValidationChange: onValidationChange
         )
@@ -334,6 +360,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
         @Binding private var isFocused: Bool
         private let isRequired: Bool
         private let inputType: PrimerInputElementType
+        private let scope: (any PrimerCardFormScope)?
         private let onAddressChange: ((String) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
 
@@ -345,6 +372,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             isFocused: Binding<Bool>,
             isRequired: Bool,
             inputType: PrimerInputElementType,
+            scope: (any PrimerCardFormScope)?,
             onAddressChange: ((String) -> Void)?,
             onValidationChange: ((Bool) -> Void)?
         ) {
@@ -355,6 +383,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             self._isFocused = isFocused
             self.isRequired = isRequired
             self.inputType = inputType
+            self.scope = scope
             self.onAddressChange = onAddressChange
             self.onValidationChange = onValidationChange
         }
@@ -367,6 +396,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope?.clearFieldError(self.inputType)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -393,7 +423,20 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             addressLine = newText
-            onAddressChange?(newText)
+
+            // Update scope or use callback
+            if let scope = scope {
+                switch inputType {
+                case .addressLine1:
+                    scope.updateAddressLine1(newText)
+                case .addressLine2:
+                    scope.updateAddressLine2(newText)
+                default:
+                    break
+                }
+            } else {
+                onAddressChange?(newText)
+            }
 
             // Simple validation while typing (don't show errors until focus loss)
             if isRequired {
@@ -413,6 +456,9 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 isValid = isRequired ? false : true // Required fields are invalid when empty, optional fields are valid
                 errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(isValid)
+
+                // Clear any scope errors for empty fields
+                scope?.clearFieldError(inputType)
                 return
             }
 
@@ -436,6 +482,16 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if let scope = scope {
+                if result.isValid {
+                    scope.clearFieldError(inputType)
+                } else if let message = result.errorMessage {
+                    scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
+                }
+
+            }
         }
     }
 }

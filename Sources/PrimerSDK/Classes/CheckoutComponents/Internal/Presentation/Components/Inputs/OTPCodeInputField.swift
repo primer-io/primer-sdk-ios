@@ -21,6 +21,9 @@ internal struct OTPCodeInputField: View, LogReporter {
     /// Expected length of the OTP code
     let expectedLength: Int
 
+    /// The card form scope for state management
+    let scope: (any PrimerCardFormScope)?
+
     /// Callback when the OTP code changes
     let onOTPCodeChange: ((String) -> Void)?
 
@@ -55,7 +58,22 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     // MARK: - Initialization
 
-    /// Creates a new OTPCodeInputField with comprehensive customization support
+    /// Creates a new OTPCodeInputField with comprehensive customization support (scope-based)
+    internal init(
+        label: String,
+        placeholder: String,
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.expectedLength = 6 // Default OTP length
+        self.scope = scope
+        self.onOTPCodeChange = nil
+        self.onValidationChange = nil
+    }
+
+    /// Creates a new OTPCodeInputField with comprehensive customization support (callback-based)
     internal init(
         label: String,
         placeholder: String,
@@ -66,6 +84,7 @@ internal struct OTPCodeInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.expectedLength = expectedLength
+        self.scope = nil
         self.onOTPCodeChange = onOTPCodeChange
         self.onValidationChange = onValidationChange
     }
@@ -102,7 +121,11 @@ internal struct OTPCodeInputField: View, LogReporter {
                     if newValue.count > expectedLength {
                         otpCode = String(newValue.prefix(expectedLength))
                     } else {
-                        onOTPCodeChange?(newValue)
+                        if let scope = scope {
+                            scope.updateOtpCode(newValue)
+                        } else {
+                            onOTPCodeChange?(newValue)
+                        }
                         validateOTPCode()
                     }
                 }
@@ -143,5 +166,14 @@ internal struct OTPCodeInputField: View, LogReporter {
         isValid = result.isValid
         errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
+
+        // Update scope state based on validation
+        if let scope = scope {
+            if result.isValid {
+                scope.clearFieldError(.otp)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.otp, message: message, errorCode: result.errorCode)
+            }
+        }
     }
 }

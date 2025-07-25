@@ -60,11 +60,8 @@ internal struct StateInputField: View, LogReporter {
     /// Placeholder text for the input field
     let placeholder: String
 
-    /// Callback when the state changes
-    let onStateChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
-    let onValidationChange: ((Bool) -> Void)?
+    /// The card form scope for state management
+    let scope: any PrimerCardFormScope
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
@@ -108,15 +105,13 @@ internal struct StateInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
-        styling: PrimerFieldStyling? = nil,
-        onStateChange: ((String) -> Void)? = nil,
-        onValidationChange: ((Bool) -> Void)? = nil
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.scope = scope
         self.styling = styling
-        self.onStateChange = onStateChange
-        self.onValidationChange = onValidationChange
     }
 
     // MARK: - Body
@@ -150,8 +145,7 @@ internal struct StateInputField: View, LogReporter {
                             placeholder: placeholder,
                             styling: styling,
                             validationService: validationService,
-                            onStateChange: onStateChange,
-                            onValidationChange: onValidationChange
+                            scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
                         .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
@@ -223,8 +217,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
-    let onStateChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
+    let scope: any PrimerCardFormScope
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -302,8 +295,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             isValid: $isValid,
             errorMessage: $errorMessage,
             isFocused: $isFocused,
-            onStateChange: onStateChange,
-            onValidationChange: onValidationChange
+            scope: scope
         )
     }
 
@@ -313,8 +305,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let onStateChange: ((String) -> Void)?
-        private let onValidationChange: ((Bool) -> Void)?
+        private let scope: any PrimerCardFormScope
 
         init(
             validationService: ValidationService,
@@ -322,16 +313,14 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             isValid: Binding<Bool>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
-            onStateChange: ((String) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
             self._state = state
             self._isValid = isValid
             self._errorMessage = errorMessage
             self._isFocused = isFocused
-            self.onStateChange = onStateChange
-            self.onValidationChange = onValidationChange
+            self.scope = scope
         }
 
         @objc func doneButtonTapped() {
@@ -342,6 +331,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope.clearFieldError(.state)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -368,7 +358,7 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             state = newText
-            onStateChange?(newText)
+            scope.updateState(newText)
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -383,7 +373,6 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             if trimmedState.isEmpty {
                 isValid = false // State is required
                 errorMessage = nil // Never show error message for empty fields
-                onValidationChange?(false)
                 return
             }
 
@@ -394,7 +383,13 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
 
             isValid = result.isValid
             errorMessage = result.errorMessage
-            onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if result.isValid {
+                scope.clearFieldError(.state)
+            } else if let message = result.errorMessage {
+                scope.setFieldError(.state, message: message, errorCode: result.errorCode)
+            }
         }
     }
 }

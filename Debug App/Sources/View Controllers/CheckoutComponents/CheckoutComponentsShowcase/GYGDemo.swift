@@ -238,7 +238,7 @@ private struct GYGCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     let isDarkMode: Bool
     
-    @State private var cardState: PrimerCardFormState?
+    @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
     
     // GYG Brand Colors - Light Mode
@@ -342,7 +342,7 @@ private struct GYGCardFormView: View {
         .background(cardBackgroundColor)
         .cornerRadius(16)
     }
-    
+
     @ViewBuilder
     private var paymentDetailsSection: some View {
                 VStack(alignment: .leading, spacing: 20) {
@@ -356,7 +356,7 @@ private struct GYGCardFormView: View {
                         gygMockField(label: "Card Number", placeholder: "1234 5678 9012 3456", color: gygOrange)
                         
                         // Co-badged Card Network Selection (if multiple networks detected)
-                        if let availableNetworks = cardState?.availableCardNetworks,
+                        if let availableNetworks = cardState?.availableNetworks,
                            availableNetworks.count > 1 {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Select Card Network")
@@ -365,28 +365,7 @@ private struct GYGCardFormView: View {
                                 
                                 HStack(spacing: 12) {
                                     ForEach(availableNetworks, id: \.self) { network in
-                                        Button(action: {
-                                            cardFormScope.updateSelectedCardNetwork(network)
-                                        }) {
-                                            HStack {
-                                                Image(systemName: cardState?.selectedCardNetwork == network ? "checkmark.circle.fill" : "circle")
-                                                    .foregroundColor(cardState?.selectedCardNetwork == network ? gygOrange : .gray)
-                                                Text(network.uppercased())
-                                                    .font(.system(size: 14, weight: .medium))
-                                                    .foregroundColor(textColor)
-                                            }
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 12)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(cardState?.selectedCardNetwork == network ? gygOrange.opacity(0.1) : Color.gray.opacity(0.1))
-                                            )
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(cardState?.selectedCardNetwork == network ? gygOrange : Color.gray.opacity(0.3), lineWidth: 1)
-                                            )
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
+                                        networkSelectionButton(for: network)
                                     }
                                 }
                             }
@@ -525,6 +504,34 @@ private struct GYGCardFormView: View {
             borderWidth: 1,
             padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
         )
+    }
+    
+    @ViewBuilder
+    private func networkSelectionButton(for network: PrimerCardNetwork) -> some View {
+        let isSelected = cardState?.selectedNetwork == network
+        
+        Button(action: {
+            cardFormScope.updateSelectedCardNetwork(network.network.rawValue)
+        }) {
+            HStack {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isSelected ? gygOrange : .gray)
+                Text(network.network.rawValue.uppercased())
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(textColor)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? gygOrange.opacity(0.1) : Color.gray.opacity(0.1))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? gygOrange : Color.gray.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     @ViewBuilder

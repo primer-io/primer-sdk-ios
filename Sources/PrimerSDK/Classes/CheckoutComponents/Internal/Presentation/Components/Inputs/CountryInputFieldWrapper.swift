@@ -21,19 +21,16 @@ internal struct CountryInputFieldWrapper: View, LogReporter {
         CountryInputField(
             label: label,
             placeholder: placeholder,
+            scope: scope,
             selectedCountry: selectedCountryFromCode,
-            styling: styling,
-            onCountryCodeChange: { countryCode in
-                scope.updateCountryCode(countryCode)
-            },
-            onValidationChange: onValidationChange,
-            onOpenCountrySelector: onOpenCountrySelector
+            styling: styling
         )
     }
 
     /// Convert country code to CountryCode.PhoneNumberCountryCode
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
-        let code = scope.debugInternalState.countryCode
+        // Access country code from structured state
+        let code = scope.structuredState.data[.countryCode]
 
         guard !code.isEmpty else {
             return nil

@@ -63,6 +63,9 @@ internal struct NameInputField: View, LogReporter {
     /// The input element type for validation
     let inputType: PrimerInputElementType
 
+    /// The card form scope for state management
+    let scope: (any PrimerCardFormScope)?
+
     /// Callback when the name changes
     let onNameChange: ((String) -> Void)?
 
@@ -109,7 +112,24 @@ internal struct NameInputField: View, LogReporter {
 
     // MARK: - Initialization
 
-    /// Creates a new NameInputField with comprehensive customization support
+    /// Creates a new NameInputField with comprehensive customization support (scope-based)
+    internal init(
+        label: String,
+        placeholder: String,
+        inputType: PrimerInputElementType,
+        scope: any PrimerCardFormScope,
+        styling: PrimerFieldStyling? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.inputType = inputType
+        self.scope = scope
+        self.styling = styling
+        self.onNameChange = nil
+        self.onValidationChange = nil
+    }
+
+    /// Creates a new NameInputField with comprehensive customization support (callback-based)
     internal init(
         label: String,
         placeholder: String,
@@ -121,6 +141,7 @@ internal struct NameInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.inputType = inputType
+        self.scope = nil
         self.styling = styling
         self.onNameChange = onNameChange
         self.onValidationChange = onValidationChange
@@ -159,6 +180,7 @@ internal struct NameInputField: View, LogReporter {
                             inputType: inputType,
                             styling: styling,
                             validationService: validationService,
+                            scope: scope,
                             onNameChange: onNameChange,
                             onValidationChange: onValidationChange
                         )
@@ -234,6 +256,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
     let inputType: PrimerInputElementType
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
+    let scope: (any PrimerCardFormScope)?
     let onNameChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
 
@@ -314,6 +337,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             inputType: inputType,
+            scope: scope,
             onNameChange: onNameChange,
             onValidationChange: onValidationChange
         )
@@ -326,6 +350,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
         private let inputType: PrimerInputElementType
+        private let scope: (any PrimerCardFormScope)?
         private let onNameChange: ((String) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
 
@@ -336,6 +361,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
             inputType: PrimerInputElementType,
+            scope: (any PrimerCardFormScope)?,
             onNameChange: ((String) -> Void)?,
             onValidationChange: ((Bool) -> Void)?
         ) {
@@ -345,6 +371,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
             self._errorMessage = errorMessage
             self._isFocused = isFocused
             self.inputType = inputType
+            self.scope = scope
             self.onNameChange = onNameChange
             self.onValidationChange = onValidationChange
         }
@@ -357,6 +384,7 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
+                self.scope?.clearFieldError(self.inputType)
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
@@ -383,7 +411,22 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
 
             // Update state
             name = newText
-            onNameChange?(newText)
+
+            // Update scope or use callback
+            if let scope = scope {
+                switch inputType {
+                case .firstName:
+                    scope.updateFirstName(newText)
+                case .lastName:
+                    scope.updateLastName(newText)
+                case .phoneNumber:
+                    scope.updatePhoneNumber(newText)
+                default:
+                    break
+                }
+            } else {
+                onNameChange?(newText)
+            }
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -422,6 +465,15 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
+
+            // Update scope state based on validation
+            if let scope = scope {
+                if result.isValid {
+                    scope.clearFieldError(inputType)
+                } else if let message = result.errorMessage {
+                    scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
+                }
+            }
         }
     }
 }

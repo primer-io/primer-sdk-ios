@@ -38,23 +38,15 @@ private struct FieldValidationStates: Equatable {
 public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
-    /// The current card form state
-    @Published private var internalState = PrimerCardFormState()
-
-    /// Debug getter for internal state
-    internal var debugInternalState: PrimerCardFormState {
-        internalState
-    }
-
     /// The presentation context determining navigation behavior
     public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerCardFormState> {
+    public var state: AsyncStream<StructuredCardFormState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
-                for await value in $internalState.values {
-                    continuation.yield(value)
+                for await _ in $structuredState.values {
+                    continuation.yield(structuredState)
                 }
                 continuation.finish()
             }
@@ -66,13 +58,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     // MARK: - UI Customization Properties
-    
+
     // MARK: - Screen Customization
-    
+
     public var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)?
     public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
     public var errorView: ((_ error: String) -> AnyView)?
-    
+
     // MARK: - Field-Level Customization Properties
     public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
     public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
@@ -91,12 +83,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
     public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
     public var submitButton: ((_ text: String) -> AnyView)?
-    
+
     // MARK: - Section-Level Customization Properties
     public var cardInputSection: (() -> AnyView)?
     public var billingAddressSection: (() -> AnyView)?
     public var submitButtonSection: (() -> AnyView)?
-    
+
     // MARK: - Default Styling Properties
     public var defaultFieldStyling: [String: PrimerFieldStyling]?
 
@@ -113,23 +105,27 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Store the current card data
     private var currentCardData: PrimerCardData?
 
-    /// Available card networks for co-badged cards
-    @Published private var availableCardNetworks: [CardNetwork] = []
-
     /// HeadlessRepository for network detection
     private var headlessRepository: HeadlessRepository?
 
     /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
 
+    /// Structured state for Android parity
+    @Published internal var structuredState = StructuredCardFormState()
+
+    /// Form configuration determining which fields are displayed
+    private var formConfiguration: CardFormConfiguration = .default
+
     /// Computed property to get the selected country from the country code
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
-        logger.debug(message: "🔍 [CountryField] Computing selectedCountryFromCode - current code: '\(internalState.countryCode)'")
-        guard !internalState.countryCode.isEmpty else {
+        let countryCode = structuredState.data[.countryCode]
+        logger.debug(message: "🔍 [CountryField] Computing selectedCountryFromCode - current code: '\(countryCode)'")
+        guard !countryCode.isEmpty else {
             logger.debug(message: "🔍 [CountryField] Country code is empty, returning nil")
             return nil
         }
-        let country = CountryCode.phoneNumberCountryCodes.first { $0.code.uppercased() == internalState.countryCode.uppercased() }
+        let country = CountryCode.phoneNumberCountryCodes.first { $0.code.uppercased() == countryCode.uppercased() }
         logger.debug(message: "🔍 [CountryField] Found country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
         return country
     }
@@ -172,11 +168,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     private func getCardNetworkForCvv() -> CardNetwork {
-        if let selectedNetworkString = internalState.selectedCardNetwork,
-           let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
-            return selectedNetwork
+        if let selectedNetwork = structuredState.selectedNetwork {
+            return selectedNetwork.network
         } else {
-            return CardNetwork(cardNumber: internalState.cardNumber)
+            return CardNetwork(cardNumber: structuredState.data[.cardNumber])
         }
     }
 
@@ -200,18 +195,17 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             for await networks in repository.getNetworkDetectionStream() {
                 await MainActor.run {
                     logger.info(message: "🌐 [CardForm] Received networks from stream: \(networks.map { $0.displayName })")
-                    self.availableCardNetworks = networks
-                    self.internalState.availableCardNetworks = networks.map { $0.rawValue }
+                    self.structuredState.availableNetworks = networks.map { PrimerCardNetwork(network: $0) }
 
                     // If multiple networks detected, clear any automatic selection
                     if networks.count > 1 {
-                        self.internalState.selectedCardNetwork = nil
+                        self.structuredState.selectedNetwork = nil
                         self.updateSurchargeAmount(for: nil)
                         logger.debug(message: "🌐 [CardForm] Multiple networks detected, clearing selection")
                     } else if networks.count == 1 {
                         // Single network - auto-select it
                         let network = networks[0]
-                        self.internalState.selectedCardNetwork = network.rawValue
+                        self.structuredState.selectedNetwork = PrimerCardNetwork(network: network)
                         self.updateSurchargeAmount(for: network)
                         logger.debug(message: "🌐 [CardForm] Single network detected, auto-selecting: \(network.displayName)")
                     } else {
@@ -225,9 +219,52 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Update Methods
 
+    /// Generic field update method for internal use
+    public func updateField(_ fieldType: PrimerInputElementType, value: String) {
+        structuredState.data[fieldType] = value
+        
+        // Call specific update method if needed for additional logic
+        switch fieldType {
+        case .cardNumber:
+            updateCardNumber(value)
+        case .cvv:
+            updateCvv(value)
+        case .expiryDate:
+            updateExpiryDate(value)
+        case .cardholderName:
+            updateCardholderName(value)
+        case .postalCode:
+            updatePostalCode(value)
+        case .countryCode:
+            updateCountryCode(value)
+        case .city:
+            updateCity(value)
+        case .state:
+            updateState(value)
+        case .addressLine1:
+            updateAddressLine1(value)
+        case .addressLine2:
+            updateAddressLine2(value)
+        case .phoneNumber:
+            updatePhoneNumber(value)
+        case .firstName:
+            updateFirstName(value)
+        case .lastName:
+            updateLastName(value)
+        case .email:
+            updateEmail(value)
+        case .retailer:
+            updateRetailOutlet(value)
+        case .otp:
+            updateOtpCode(value)
+        default:
+            break
+        }
+    }
+
     public func updateCardNumber(_ cardNumber: String) {
         logger.debug(message: "Updating card number")
-        internalState.cardNumber = cardNumber
+        structuredState.data[.cardNumber] = cardNumber
         updateCardData()
 
         // Trigger network detection via HeadlessRepository
@@ -246,19 +283,19 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateCvv(_ cvv: String) {
         logger.debug(message: "Updating CVV")
-        internalState.cvv = cvv
+        structuredState.data[.cvv] = cvv
         updateCardData()
     }
 
     public func updateExpiryDate(_ expiryDate: String) {
         logger.debug(message: "Updating expiry date: \(expiryDate)")
-        internalState.expiryDate = expiryDate
+        structuredState.data[.expiryDate] = expiryDate
 
         // Parse month and year from the expiry date
         let components = expiryDate.components(separatedBy: "/")
         if components.count == 2 {
-            internalState.expiryMonth = components[0]
-            internalState.expiryYear = components[1]
+            structuredState.data[.expiryMonth] = components[0]
+            structuredState.data[.expiryYear] = components[1]
         }
 
         updateCardData()
@@ -266,87 +303,97 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateExpiryMonth(_ month: String) {
         logger.debug(message: "Updating expiry month: \(month)")
-        internalState.expiryMonth = month
+        structuredState.data[.expiryMonth] = month
         updateExpiryDateFromComponents()
         updateCardData()
     }
 
     public func updateExpiryYear(_ year: String) {
         logger.debug(message: "Updating expiry year: \(year)")
-        internalState.expiryYear = year
+        structuredState.data[.expiryYear] = year
         updateExpiryDateFromComponents()
         updateCardData()
     }
 
     public func updateCardholderName(_ name: String) {
         logger.debug(message: "Updating cardholder name")
-        internalState.cardholderName = name
+        structuredState.data[.cardholderName] = name
         updateCardData()
     }
 
     public func updateFirstName(_ firstName: String) {
         logger.debug(message: "Updating first name")
-        internalState.firstName = firstName
+        structuredState.data[.firstName] = firstName
     }
 
     public func updateLastName(_ lastName: String) {
         logger.debug(message: "Updating last name")
-        internalState.lastName = lastName
+        structuredState.data[.lastName] = lastName
     }
 
     public func updateEmail(_ email: String) {
         logger.debug(message: "Updating email")
-        internalState.email = email
+        structuredState.data[.email] = email
     }
 
     public func updatePhoneNumber(_ phoneNumber: String) {
         logger.debug(message: "Updating phone number")
-        internalState.phoneNumber = phoneNumber
+        structuredState.data[.phoneNumber] = phoneNumber
     }
 
     public func updateAddressLine1(_ addressLine1: String) {
         logger.debug(message: "Updating address line 1")
-        internalState.addressLine1 = addressLine1
+        structuredState.data[.addressLine1] = addressLine1
     }
 
     public func updateAddressLine2(_ addressLine2: String) {
         logger.debug(message: "Updating address line 2")
-        internalState.addressLine2 = addressLine2
+        structuredState.data[.addressLine2] = addressLine2
     }
 
     public func updateCity(_ city: String) {
         logger.debug(message: "Updating city")
-        internalState.city = city
+        structuredState.data[.city] = city
     }
 
     public func updateState(_ state: String) {
         logger.debug(message: "Updating state")
-        internalState.state = state
+        structuredState.data[.state] = state
     }
 
     public func updatePostalCode(_ postalCode: String) {
         logger.debug(message: "Updating postal code")
-        internalState.postalCode = postalCode
+        structuredState.data[.postalCode] = postalCode
     }
 
     public func updateCountryCode(_ countryCode: String) {
         logger.debug(message: "Updating country code: \(countryCode)")
-        internalState.countryCode = countryCode
+        structuredState.data[.countryCode] = countryCode
+
+        // Update selected country in structured state
+        if let country = CountryCode.phoneNumberCountryCodes.first(where: { $0.code.uppercased() == countryCode.uppercased() }) {
+            structuredState.selectedCountry = PrimerCountry(
+                code: country.code,
+                name: country.name,
+                dialCode: country.dialCode
+            )
+        }
+
         // Force UI update by publishing the change
         objectWillChange.send()
     }
 
     public func updateOtpCode(_ otpCode: String) {
         logger.debug(message: "Updating OTP code")
-        internalState.otpCode = otpCode
+        structuredState.data[.otp] = otpCode
     }
 
     public func updateSelectedCardNetwork(_ network: String) {
         logger.info(message: "🌐 [CardForm] User selected card network: \(network)")
-        internalState.selectedCardNetwork = network
-
-        // Update surcharge for selected network
+        
+        // Update structured state
         if let cardNetwork = CardNetwork(rawValue: network) {
+            structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
             updateSurchargeAmount(for: cardNetwork)
         }
 
@@ -376,7 +423,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateRetailOutlet(_ retailOutlet: String) {
         logger.debug(message: "Updating retail outlet")
-        internalState.retailOutlet = retailOutlet
+        structuredState.data[.retailer] = retailOutlet
     }
 
     // MARK: - Navigation Methods
@@ -440,27 +487,26 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Private Methods
 
     private func updateExpiryDateFromComponents() {
-        let month = internalState.expiryMonth
-        let year = internalState.expiryYear
+        let month = structuredState.data[.expiryMonth]
+        let year = structuredState.data[.expiryYear]
 
         if !month.isEmpty && !year.isEmpty {
-            internalState.expiryDate = "\(month)/\(year)"
+            structuredState.data[.expiryDate] = "\(month)/\(year)"
         }
     }
 
     private func updateCardData() {
         // Create PrimerCardData
         let cardData = PrimerCardData(
-            cardNumber: internalState.cardNumber.replacingOccurrences(of: " ", with: ""),
-            expiryDate: internalState.expiryDate,
-            cvv: internalState.cvv,
-            cardholderName: internalState.cardholderName.isEmpty ? nil : internalState.cardholderName
+            cardNumber: structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: ""),
+            expiryDate: structuredState.data[.expiryDate],
+            cvv: structuredState.data[.cvv],
+            cardholderName: structuredState.data[.cardholderName].isEmpty ? nil : structuredState.data[.cardholderName]
         )
 
         // Set card network if selected (for co-badged cards)
-        if let selectedNetwork = internalState.selectedCardNetwork,
-           let cardNetwork = CardNetwork(rawValue: selectedNetwork) {
-            cardData.cardNetwork = cardNetwork
+        if let selectedNetwork = structuredState.selectedNetwork {
+            cardData.cardNetwork = selectedNetwork.network
         }
 
         currentCardData = cardData
@@ -470,37 +516,36 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     // Network detection is now handled by HeadlessRepository and RawDataManager
-    // Old detectAvailableNetworks and isCartesBancairesBIN methods removed
 
     private func createBillingAddress() -> ClientSession.Address? {
         // Only create address if we have required fields
-        guard !internalState.postalCode.isEmpty else { return nil }
+        guard !structuredState.data[.postalCode].isEmpty else { return nil }
 
         return ClientSession.Address(
-            firstName: internalState.firstName.isEmpty ? nil : internalState.firstName,
-            lastName: internalState.lastName.isEmpty ? nil : internalState.lastName,
-            addressLine1: internalState.addressLine1.isEmpty ? nil : internalState.addressLine1,
-            addressLine2: internalState.addressLine2.isEmpty ? nil : internalState.addressLine2,
-            city: internalState.city.isEmpty ? nil : internalState.city,
-            postalCode: internalState.postalCode,
-            state: internalState.state.isEmpty ? nil : internalState.state,
-            countryCode: internalState.countryCode.isEmpty ? nil : CountryCode(rawValue: internalState.countryCode)
+            firstName: structuredState.data[.firstName].isEmpty ? nil : structuredState.data[.firstName],
+            lastName: structuredState.data[.lastName].isEmpty ? nil : structuredState.data[.lastName],
+            addressLine1: structuredState.data[.addressLine1].isEmpty ? nil : structuredState.data[.addressLine1],
+            addressLine2: structuredState.data[.addressLine2].isEmpty ? nil : structuredState.data[.addressLine2],
+            city: structuredState.data[.city].isEmpty ? nil : structuredState.data[.city],
+            postalCode: structuredState.data[.postalCode],
+            state: structuredState.data[.state].isEmpty ? nil : structuredState.data[.state],
+            countryCode: structuredState.data[.countryCode].isEmpty ? nil : CountryCode(rawValue: structuredState.data[.countryCode])
         )
     }
 
     private func createInteractorBillingAddress() -> BillingAddress? {
         // Only create address if we have required fields
-        guard !internalState.postalCode.isEmpty else { return nil }
+        guard !structuredState.data[.postalCode].isEmpty else { return nil }
 
         return BillingAddress(
-            firstName: internalState.firstName.isEmpty ? nil : internalState.firstName,
-            lastName: internalState.lastName.isEmpty ? nil : internalState.lastName,
-            addressLine1: internalState.addressLine1.isEmpty ? nil : internalState.addressLine1,
-            addressLine2: internalState.addressLine2.isEmpty ? nil : internalState.addressLine2,
-            city: internalState.city.isEmpty ? nil : internalState.city,
-            state: internalState.state.isEmpty ? nil : internalState.state,
-            postalCode: internalState.postalCode.isEmpty ? nil : internalState.postalCode,
-            countryCode: internalState.countryCode.isEmpty ? nil : internalState.countryCode,
+            firstName: structuredState.data[.firstName].isEmpty ? nil : structuredState.data[.firstName],
+            lastName: structuredState.data[.lastName].isEmpty ? nil : structuredState.data[.lastName],
+            addressLine1: structuredState.data[.addressLine1].isEmpty ? nil : structuredState.data[.addressLine1],
+            addressLine2: structuredState.data[.addressLine2].isEmpty ? nil : structuredState.data[.addressLine2],
+            city: structuredState.data[.city].isEmpty ? nil : structuredState.data[.city],
+            state: structuredState.data[.state].isEmpty ? nil : structuredState.data[.state],
+            postalCode: structuredState.data[.postalCode].isEmpty ? nil : structuredState.data[.postalCode],
+            countryCode: structuredState.data[.countryCode].isEmpty ? nil : structuredState.data[.countryCode],
             phoneNumber: nil // Not currently collected in this form
         )
     }
@@ -509,7 +554,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     func submit() async {
         logger.debug(message: "Card form submit initiated")
-        internalState.isSubmitting = true
+        structuredState.isLoading = true
 
         do {
             try await sendBillingAddressIfNeeded()
@@ -551,21 +596,21 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         let selectedNetwork = getSelectedCardNetwork()
         let billingAddress = createInteractorBillingAddress()
 
-        logger.debug(message: "Processing payment: card=***\(String(internalState.cardNumber.suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
+        logger.debug(message: "Processing payment: card=***\(String(structuredState.data[.cardNumber].suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
 
         return CardPaymentData(
-            cardNumber: internalState.cardNumber,
-            cvv: internalState.cvv,
+            cardNumber: structuredState.data[.cardNumber],
+            cvv: structuredState.data[.cvv],
             expiryMonth: expiryMonth,
             expiryYear: fullYear,
-            cardholderName: internalState.cardholderName,
+            cardholderName: structuredState.data[.cardholderName],
             selectedNetwork: selectedNetwork,
             billingAddress: billingAddress
         )
     }
 
     private func parseExpiryComponents() throws -> (month: String, year: String) {
-        let expiryComponents = internalState.expiryDate.components(separatedBy: "/")
+        let expiryComponents = structuredState.data[.expiryDate].components(separatedBy: "/")
         guard expiryComponents.count == 2 else {
             throw PrimerError.unknown(
                 userInfo: ["error": "Invalid expiry date format"],
@@ -581,8 +626,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     private func getSelectedCardNetwork() -> CardNetwork? {
-        guard let networkString = internalState.selectedCardNetwork else { return nil }
-        return CardNetwork(rawValue: networkString)
+        return structuredState.selectedNetwork?.network
     }
 
     private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
@@ -602,7 +646,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     private func handlePaymentError(_ error: Error) async {
         logger.error(message: "Card form submission failed: \(error)")
-        internalState.isSubmitting = false
+        structuredState.isLoading = false
         let primerError = error as? PrimerError ?? PrimerError.unknown(
             userInfo: nil,
             diagnosticsId: UUID().uuidString
@@ -612,7 +656,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     private func handlePaymentSuccess(_ result: PaymentResult) async {
         logger.info(message: "Payment processed successfully: \(result.paymentId)")
-        internalState.isSubmitting = false
+        structuredState.isLoading = false
 
         // Notify the checkout scope about the success
         await MainActor.run {
@@ -626,7 +670,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Updates the surcharge amount based on the selected card network
     private func updateSurchargeAmount(for network: CardNetwork?) {
         guard let network = network else {
-            internalState.surchargeAmount = nil
+            structuredState.surchargeAmount = nil
             logger.debug(message: "💰 [CardForm] Clearing surcharge (no network)")
             return
         }
@@ -635,14 +679,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         guard let surcharge = network.surcharge,
               PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
               let currency = AppState.current.currency else {
-            internalState.surchargeAmount = nil
+            structuredState.surchargeAmount = nil
             logger.debug(message: "💰 [CardForm] No surcharge for network: \(network.displayName)")
             return
         }
 
         // Format surcharge amount similar to Drop-in implementation
         let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
-        internalState.surchargeAmount = formattedSurcharge
+        structuredState.surchargeAmount = formattedSurcharge
         logger.info(message: "💰 [CardForm] Updated surcharge for \(network.displayName): \(formattedSurcharge)")
     }
 
@@ -654,21 +698,59 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         logger.debug(message: "🔍 [CardForm] Field validation states - Card: \(cardNumber), CVV: \(cvv), Expiry: \(expiry), Cardholder: \(cardholderName)")
 
         // Check that we have complete, valid data for all required fields
-        let hasValidCardNumber = cardNumber && !internalState.cardNumber.replacingOccurrences(of: " ", with: "").isEmpty
-        let hasValidCvv = cvv && !internalState.cvv.isEmpty
-        let hasValidExpiry = expiry && !internalState.expiryDate.isEmpty
-        let hasValidCardholderName = cardholderName && !internalState.cardholderName.isEmpty
+        let hasValidCardNumber = cardNumber && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty
+        let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
+        let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
+        let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
         // Update the form validation state - only valid if all required fields are complete and valid
-        internalState.isValid = hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
+        structuredState.isValid = hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
 
-        logger.debug(message: "🔍 [CardForm] Form validation updated - Overall: \(internalState.isValid) (cardNum: \(hasValidCardNumber), cvv: \(hasValidCvv), expiry: \(hasValidExpiry), name: \(hasValidCardholderName))")
+        logger.debug(message: "🔍 [CardForm] Form validation updated - Overall: \(structuredState.isValid) (cardNum: \(hasValidCardNumber), cvv: \(hasValidCvv), expiry: \(hasValidExpiry), name: \(hasValidCardholderName))")
 
-        // Clear any previous error when all fields are valid
-        if internalState.isValid {
-            internalState.error = nil
+        // Clear any previous field errors when all fields are valid
+        if structuredState.isValid {
+            structuredState.fieldErrors.removeAll()
         }
     }
+
+    // MARK: - Structured State Implementation (Android Parity)
+
+    /// Implementation of getFieldValue using structured state
+    public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
+        return structuredState.data[fieldType]
+    }
+
+    /// Implementation of setFieldError using structured state
+    public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
+        structuredState.setError(message, for: fieldType, errorCode: errorCode)
+        logger.debug(message: "🔍 [StructuredState] Set error for \(fieldType.displayName): \(message)")
+    }
+
+    /// Implementation of clearFieldError using structured state
+    public func clearFieldError(_ fieldType: PrimerInputElementType) {
+        structuredState.clearError(for: fieldType)
+        logger.debug(message: "🔍 [StructuredState] Cleared error for \(fieldType.displayName)")
+    }
+
+    /// Implementation of getFieldError using structured state
+    public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
+        return structuredState.errorMessage(for: fieldType)
+    }
+
+    /// Implementation of getFormConfiguration
+    public func getFormConfiguration() -> CardFormConfiguration {
+        return formConfiguration
+    }
+
+    /// Update form configuration (for dynamic field management)
+    func updateFormConfiguration(_ configuration: CardFormConfiguration) {
+        formConfiguration = configuration
+        structuredState.configuration = configuration
+        logger.info(message: "🔍 [StructuredState] Updated form configuration: \(configuration.allFields.map { $0.displayName })")
+    }
 }
+
+
 // swiftlint:enable identifier_name
 // swiftlint:enable file_length

@@ -7,43 +7,16 @@
 
 import SwiftUI
 
-/// Default card form screen for CheckoutComponents
+/// Default card form screen for CheckoutComponents with dynamic field rendering
 @available(iOS 15.0, *)
 internal struct CardFormScreen: View, LogReporter {
     let scope: any PrimerCardFormScope
 
     @Environment(\.designTokens) private var tokens
-    @State private var cardFormState: PrimerCardFormState = .init()
+    @State private var cardFormState: StructuredCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
-    @State private var refreshTrigger = UUID() // Force refresh trigger
-
-    /// Check if billing address fields are required based on API configuration
-    private var isShowingBillingAddressFieldsRequired: Bool {
-        let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
-            .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
-        return billingAddressModuleOptions != nil
-    }
-
-    /// Get billing address configuration from API configuration
-    private var billingAddressConfiguration: BillingAddressConfiguration {
-        guard let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
-                .first(where: { $0.type == "BILLING_ADDRESS" })?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions else {
-            return BillingAddressConfiguration.none
-        }
-
-        return BillingAddressConfiguration(
-            showFirstName: billingAddressModuleOptions.firstName != false,
-            showLastName: billingAddressModuleOptions.lastName != false,
-            showEmail: false, // Email is not part of billing address module, left here for possible future use
-            showPhoneNumber: billingAddressModuleOptions.phoneNumber != false,
-            showAddressLine1: billingAddressModuleOptions.addressLine1 != false,
-            showAddressLine2: billingAddressModuleOptions.addressLine2 != false,
-            showCity: billingAddressModuleOptions.city != false,
-            showState: billingAddressModuleOptions.state != false,
-            showPostalCode: billingAddressModuleOptions.postalCode != false,
-            showCountry: billingAddressModuleOptions.countryCode != false
-        )
-    }
+    @State private var refreshTrigger = UUID()
+    @State private var formConfiguration: CardFormConfiguration = .default
 
     var body: some View {
         VStack(spacing: 0) {
@@ -88,10 +61,7 @@ internal struct CardFormScreen: View, LogReporter {
         ScrollView {
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
                 titleSection
-                cardDetailsSection
-                if isShowingBillingAddressFieldsRequired {
-                    billingAddressSection
-                }
+                dynamicFieldsSection
                 submitButtonSection
             }
             .padding(.top)
@@ -111,63 +81,42 @@ internal struct CardFormScreen: View, LogReporter {
             .padding(.horizontal)
     }
 
-    private var cardDetailsSection: some View {
-        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-            cardInputSection
-            cobadgedCardsSection
+    @ViewBuilder
+    private var dynamicFieldsSection: some View {
+        // Check for complete screen override first
+        if let customScreen = scope.screen {
+            customScreen(scope)
+        } else {
+            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                // Render card fields dynamically based on configuration
+                cardFieldsSection
+
+                // Co-badged cards selection
+                cobadgedCardsSection
+
+                // Billing address fields if configured
+                billingAddressSection
+            }
         }
     }
 
     @ViewBuilder
-    private var cardInputSection: some View {
+    private var cardFieldsSection: some View {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
             customSection()
                 .padding(.horizontal)
         } else {
-            // Use individual field builders from scope for flexible customization
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-                // Card Number - use closure property or default
-                if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
-                    customField("Card Number", nil)
-                } else {
-                    defaultCardNumberField()
+                // Render fields dynamically based on configuration
+                ForEach(formConfiguration.cardFields, id: \.self) { fieldType in
+                    renderField(fieldType)
                 }
 
-                // Allowed Card Networks Display (Android parity)
+                // Show allowed card networks
                 let allowedNetworks = [CardNetwork].allowedCardNetworks
                 if !allowedNetworks.isEmpty {
-                    AllowedCardNetworksView(
-                        allowedCardNetworks: allowedNetworks
-                    )
-                }
-
-                // Expiry Date and CVV row
-                HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
-                    // Expiry Date
-                    if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
-                        customField("Expiry Date", nil)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        defaultExpiryDateField()
-                            .frame(maxWidth: .infinity)
-                    }
-
-                    // CVV
-                    if let customField = (scope as? DefaultCardFormScope)?.cvvField {
-                        customField("CVV", nil)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        defaultCvvField()
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-
-                // Cardholder Name
-                if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
-                    customField("Cardholder Name", nil)
-                } else {
-                    defaultCardholderNameField()
+                    AllowedCardNetworksView(allowedCardNetworks: allowedNetworks)
                 }
             }
             .padding(.horizontal)
@@ -176,9 +125,9 @@ internal struct CardFormScreen: View, LogReporter {
 
     @ViewBuilder
     private var cobadgedCardsSection: some View {
-        if cardFormState.availableCardNetworks.count > 1 {
+        if cardFormState.availableNetworks.count > 1 {
             if let customCobadgedCardsView = scope.cobadgedCardsView {
-                customCobadgedCardsView(cardFormState.availableCardNetworks) { network in
+                customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
                     scope.updateSelectedCardNetwork(network)
                 }
                 .padding(.horizontal)
@@ -196,7 +145,7 @@ internal struct CardFormScreen: View, LogReporter {
                 .padding(.horizontal)
 
             CardNetworkSelector(
-                availableNetworks: cardFormState.availableCardNetworks.compactMap { CardNetwork(rawValue: $0) },
+                availableNetworks: cardFormState.availableNetworks.map { $0.network },
                 selectedNetwork: $selectedCardNetwork,
                 onNetworkSelected: { network in
                     selectedCardNetwork = network
@@ -209,18 +158,31 @@ internal struct CardFormScreen: View, LogReporter {
 
     @ViewBuilder
     private var billingAddressSection: some View {
-        // Check for section-level override first
-        if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
-            customSection()
-                .padding(.horizontal)
-                .id(refreshTrigger) // Force rebuild when state changes
-        } else {
-            BillingAddressView(
-                cardFormScope: scope,
-                configuration: billingAddressConfiguration
-            )
-            .padding(.horizontal)
-            .id(refreshTrigger) // Force rebuild when state changes
+        // Only show if configuration includes billing fields
+        if !formConfiguration.billingFields.isEmpty {
+            // Check for section-level override first
+            if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
+                customSection()
+                    .padding(.horizontal)
+                    .id(refreshTrigger)
+            } else {
+                VStack(alignment: .leading, spacing: FigmaDesignConstants.sectionSpacing) {
+                    // Billing address section title
+                    Text("Billing Address")
+                        .font(.headline)
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+                        .padding(.horizontal)
+
+                    // Render billing fields dynamically
+                    VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                        ForEach(formConfiguration.billingFields, id: \.self) { fieldType in
+                            renderField(fieldType)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .id(refreshTrigger)
+            }
         }
     }
 
@@ -236,20 +198,16 @@ internal struct CardFormScreen: View, LogReporter {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
                     customButton(submitButtonText)
                         .onTapGesture {
-                            if cardFormState.isValid && !cardFormState.isSubmitting {
+                            if cardFormState.isValid && !cardFormState.isLoading {
                                 submitAction()
                             }
                         }
                 } else {
-                    defaultSubmitButton()
+                    Button(action: submitAction) {
+                        submitButtonContent
+                    }
+                    .disabled(!cardFormState.isValid || cardFormState.isLoading)
                 }
-                /*
-                 // Legacy fallback logic
-                 Button(action: submitAction) {
-                 submitButtonContent
-                 }
-                 .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
-                 */
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -258,7 +216,7 @@ internal struct CardFormScreen: View, LogReporter {
 
     private var submitButtonContent: some View {
         HStack {
-            if cardFormState.isSubmitting {
+            if cardFormState.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .scaleEffect(0.8)
@@ -286,7 +244,7 @@ internal struct CardFormScreen: View, LogReporter {
         // Check if there's a surcharge from the detected card network
         if let surchargeAmountString = cardFormState.surchargeAmount,
            !surchargeAmountString.isEmpty,
-           let selectedNetwork = cardFormState.selectedCardNetwork {
+           let selectedNetwork = cardFormState.selectedNetwork {
 
             // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
             // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
@@ -316,7 +274,7 @@ internal struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonBackground: Color {
-        cardFormState.isValid && !cardFormState.isSubmitting
+        cardFormState.isValid && !cardFormState.isLoading
             ? (tokens?.primerColorTextPrimary ?? .blue)
             : (tokens?.primerColorGray300 ?? Color(.systemGray3))
     }
@@ -327,140 +285,267 @@ internal struct CardFormScreen: View, LogReporter {
         }
     }
 
-    // Removed: createBillingAddressModifier() - no longer needed with ViewBuilder approach
-
     private func observeState() {
         Task {
+            // Get initial form configuration
+            formConfiguration = scope.getFormConfiguration()
+
             for await state in scope.state {
                 await MainActor.run {
                     self.cardFormState = state
-
-                    // Force UI refresh when state changes
                     self.refreshTrigger = UUID()
 
+                    // Update form configuration in case it changed
+                    self.formConfiguration = scope.getFormConfiguration()
+
                     // Update selected network if changed
-                    if let selectedNetwork = state.selectedCardNetwork,
-                       let network = CardNetwork(rawValue: selectedNetwork) {
-                        self.selectedCardNetwork = network
-                    } else if state.availableCardNetworks.count == 1,
-                              let firstNetwork = state.availableCardNetworks.first,
-                              let network = CardNetwork(rawValue: firstNetwork) {
-                        // Auto-select if only one network available
-                        self.selectedCardNetwork = network
-                    } else if state.availableCardNetworks.count > 1 {
-                        // Multiple networks available - use first as default if none selected
-                        if let firstNetwork = state.availableCardNetworks.first,
-                           let network = CardNetwork(rawValue: firstNetwork),
+                    if let selectedNetwork = state.selectedNetwork {
+                        self.selectedCardNetwork = selectedNetwork.network
+                    } else if state.availableNetworks.count == 1,
+                              let firstNetwork = state.availableNetworks.first {
+                        self.selectedCardNetwork = firstNetwork.network
+                    } else if state.availableNetworks.count > 1 {
+                        if let firstNetwork = state.availableNetworks.first,
                            self.selectedCardNetwork == .unknown {
-                            self.selectedCardNetwork = network
+                            self.selectedCardNetwork = firstNetwork.network
                         }
                     }
                 }
             }
         }
     }
-    
-    // MARK: - Default Field Implementations
-    
-    @ViewBuilder
-    private func defaultCardNumberField() -> some View {
-        let selectedNetwork: CardNetwork? = {
-            if let networkString = cardFormState.selectedCardNetwork {
-                return CardNetwork(rawValue: networkString)
-            }
-            return nil
-        }()
 
-        CardNumberInputField(
-            label: "Card Number",
-            placeholder: "1234 1234 1234 1234",
-            selectedNetwork: selectedNetwork,
-            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cardNumber"],
-            onCardNumberChange: { [weak scope] number in
-                scope?.updateCardNumber(number)
-            },
-            onCardNetworkChange: { _ in
-                // Network changes handled by HeadlessRepository stream
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field and scope
-            },
-            onNetworksDetected: { [weak scope] networks in
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.handleDetectedNetworks(networks)
-                }
-            }
-        )
-    }
-    
+    // MARK: - Dynamic Field Rendering
+
+    // swiftlint:disable cyclomatic_complexity function_body_length
     @ViewBuilder
-    private func defaultExpiryDateField() -> some View {
-        ExpiryDateInputField(
-            label: "Expiry Date",
-            placeholder: "MM/YY",
-            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["expiryDate"],
-            onExpiryDateChange: { _ in
-                // Handled by month/year callbacks
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field and scope
-            },
-            onMonthChange: { [weak scope] month in
-                scope?.updateExpiryMonth(month)
-            },
-            onYearChange: { [weak scope] year in
-                scope?.updateExpiryYear(year)
+    private func renderField(_ fieldType: PrimerInputElementType) -> some View {
+        let fieldLabel: String? = fieldType.displayName
+        let defaultStyling = (scope as? DefaultCardFormScope)?.defaultFieldStyling?[String(fieldType.rawValue)]
+
+        switch fieldType {
+        case .cardNumber:
+            if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                CardNumberInputField(
+                    label: fieldLabel ?? "Card Number",
+                    placeholder: "1234 1234 1234 1234",
+                    scope: scope,
+                    selectedNetwork: getSelectedCardNetwork(),
+                    styling: defaultStyling
+                )
             }
-        )
-    }
-    
-    @ViewBuilder
-    private func defaultCvvField() -> some View {
-        let cardNetwork = getCardNetworkForCvv()
-        
-        CVVInputField(
-            label: "CVV",
-            placeholder: cardNetwork == .amex ? "1234" : "123",
-            cardNetwork: cardNetwork,
-            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cvv"],
-            onCvvChange: { [weak scope] cvv in
-                scope?.updateCvv(cvv)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field and scope
+
+        case .expiryDate:
+            if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                ExpiryDateInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "MM/YY",
+                    scope: scope,
+                    styling: defaultStyling
+                )
             }
-        )
-    }
-    
-    @ViewBuilder
-    private func defaultCardholderNameField() -> some View {
-        CardholderNameInputField(
-            label: "Cardholder Name",
-            placeholder: "John Smith",
-            styling: (scope as? DefaultCardFormScope)?.defaultFieldStyling?["cardholderName"],
-            onCardholderNameChange: { [weak scope] name in
-                scope?.updateCardholderName(name)
-            },
-            onValidationChange: { _ in
-                // Validation is handled internally by the field and scope
+
+        case .cvv:
+            if let customField = (scope as? DefaultCardFormScope)?.cvvField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                CVVInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: getCardNetworkForCvv() == .amex ? "1234" : "123",
+                    scope: scope,
+                    cardNetwork: getCardNetworkForCvv(),
+                    styling: defaultStyling
+                )
             }
-        )
-    }
-    
-    @ViewBuilder
-    private func defaultSubmitButton() -> some View {
-        Button(action: submitAction) {
-            submitButtonContent
+
+        case .cardholderName:
+            if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                CardholderNameInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "John Smith",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .postalCode:
+            if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                PostalCodeInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "12345",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .countryCode:
+            if let customField = (scope as? DefaultCardFormScope)?.countryField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                CountryInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "Select Country",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .city:
+            if let customField = (scope as? DefaultCardFormScope)?.cityField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                CityInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "City",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .state:
+            if let customField = (scope as? DefaultCardFormScope)?.stateField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                StateInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "State",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .addressLine1:
+            if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                AddressLineInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "123 Main St",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .addressLine2:
+            if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                AddressLineInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "Apt 4B",
+                    isRequired: false,
+                    inputType: .addressLine2,
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .phoneNumber:
+            if let customField = (scope as? DefaultCardFormScope)?.phoneNumberField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                NameInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "+1 (555) 123-4567",
+                    inputType: .phoneNumber,
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .firstName:
+            if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                NameInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "John",
+                    inputType: .firstName,
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .lastName:
+            if let customField = (scope as? DefaultCardFormScope)?.lastNameField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                NameInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "Smith",
+                    inputType: .lastName,
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .email:
+            if let customField = (scope as? DefaultCardFormScope)?.emailField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                EmailInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "john@example.com",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .retailer:
+            if let customField = (scope as? DefaultCardFormScope)?.retailOutletField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                // TODO: Implement RetailOutletInputField
+                Text("Retail outlet selection not yet implemented")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+
+        case .otp:
+            if let customField = (scope as? DefaultCardFormScope)?.otpCodeField {
+                customField(fieldLabel, defaultStyling)
+            } else {
+                OTPCodeInputField(
+                    label: fieldLabel ?? "",
+                    placeholder: "123456",
+                    scope: scope,
+                    styling: defaultStyling
+                )
+            }
+
+        case .unknown, .all:
+            EmptyView()
         }
-        .disabled(!cardFormState.isValid || cardFormState.isSubmitting)
     }
-    
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
+    // MARK: - Helper Methods
+
+    private func getSelectedCardNetwork() -> CardNetwork? {
+        if let network = cardFormState.selectedNetwork {
+            return network.network
+        }
+        return nil
+    }
+
     private func getCardNetworkForCvv() -> CardNetwork {
-        if let selectedNetworkString = cardFormState.selectedCardNetwork,
-           let selectedNetwork = CardNetwork(rawValue: selectedNetworkString) {
-            return selectedNetwork
+        if let network = cardFormState.selectedNetwork {
+            return network.network
         } else {
-            return CardNetwork(cardNumber: cardFormState.cardNumber)
+            // Get card number from structured data
+            let cardNumber = cardFormState.data[.cardNumber]
+            return CardNetwork(cardNumber: cardNumber)
         }
     }
 }
