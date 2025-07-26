@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable function_body_length
+// swiftlint:disable file_length
 
 import SafariServices
 import UIKit
@@ -23,10 +24,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
     }
 
@@ -62,7 +60,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
 
     override func performPreTokenizationSteps() async throws {
-        try await Analytics.Service.record(event: Analytics.Event.ui(
+        Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
@@ -104,10 +102,9 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
 
     override func performTokenizationStep() async throws {
-        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
-
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-        self.paymentMethodTokenData = try await tokenize()
+        paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
@@ -172,21 +169,17 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     override func awaitUserInput() async throws {
         let pollingModule = PollingModule(url: statusUrl)
-        self.didCancel = {
-            let err = PrimerError.cancelled(
-                paymentMethodType: self.config.type,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            pollingModule.cancel(withError: err)
+
+        didCancel = {
+            pollingModule.cancel(withError: handled(primerError:
+                .cancelled(paymentMethodType: self.config.type)))
         }
 
         defer {
             self.didCancel = nil
         }
 
-        self.resumeToken = try await pollingModule.start()
+        resumeToken = try await pollingModule.start()
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -224,12 +217,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let configId = config.id else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
@@ -275,29 +263,30 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
-        if let statusUrlStr = decodedJWTToken.statusUrl,
-           let statusUrl = URL(string: statusUrlStr),
-           decodedJWTToken.intent != nil {
-            self.statusUrl = statusUrl
-            self.qrCode = decodedJWTToken.qrCode
-
-            try await evaluateFireDidReceiveAdditionalInfoEvent()
-            try await evaluatePresentUserInterface()
-            try await awaitUserInput()
-
-            return self.resumeToken
-        } else {
-            let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-            throw error
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
+        guard
+            let statusUrlStr = decodedJWTToken.statusUrl,
+            let statusUrl = URL(string: statusUrlStr),
+            decodedJWTToken.intent != nil else {
+            throw PrimerError.invalidClientToken()
         }
+
+        self.statusUrl = statusUrl
+        self.qrCode = decodedJWTToken.qrCode
+
+        try await evaluateFireDidReceiveAdditionalInfoEvent()
+        try await evaluatePresentUserInterface()
+        try await awaitUserInput()
+
+        return resumeToken
     }
 
     override func cancel() {
-        self.didCancelPolling?()
-        self.didCancelPolling = nil
+        didCancelPolling?()
+        didCancelPolling = nil
         super.cancel()
     }
 }
@@ -333,13 +322,7 @@ extension QRCodeTokenizationViewModel {
     }
 
     private func evaluatePresentUserInterface() async throws {
-        let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-
-        /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
-        /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
-        /// Xfers is among them so it won't be loaded
-
-        guard !isHeadlessCheckoutDelegateImplemented else {
+        guard PrimerHeadlessUniversalCheckout.current.delegate == nil else {
             return
         }
 
@@ -468,18 +451,12 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
         ///
         /// This function only fires event in case of Headless support ad its been designed ad-hoc for this purpose
 
-        let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-
-        guard isHeadlessCheckoutDelegateImplemented else {
-            // We are not in Headless, so no need to go through this logic
+        guard let delegate = PrimerHeadlessUniversalCheckout.current.delegate else {
             return
         }
 
-        let delegate = PrimerHeadlessUniversalCheckout.current.delegate
         // swiftlint:disable:next identifier_name
-        let isHeadlessDidReceiveAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
-
-        if !isHeadlessDidReceiveAdditionalInfoImplemented {
+        guard delegate.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil else {
             let logMessage =
                 """
                 Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
@@ -488,13 +465,10 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             logger.warn(message: logMessage)
 
             let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-            let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type,
-                                                                 userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                     "message": message
-                                                                 ]),
-                                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            throw error
+            throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type,
+                                                                     userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                         "message": message
+                                                                     ])))
         }
 
         /// We don't want to put a lot of conditions for already unhandled payment methods
@@ -511,28 +485,15 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
         case PrimerPaymentMethodType.rapydPromptPay.rawValue,
              PrimerPaymentMethodType.omisePromptPay.rawValue:
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidClientToken())
             }
 
             guard let expiresAt = decodedJWTToken.expDate else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt",
-                                                   value: decodedJWTToken.expiresAt,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "decodedClientToken.expiresAt"))
             }
 
             guard let qrCodeString = decodedJWTToken.qrCode else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode",
-                                                   value: decodedJWTToken.qrCode,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "decodedClientToken.qrCode"))
             }
 
             let formatter = DateFormatter().withExpirationDisplayDateFormat()
@@ -552,16 +513,13 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             self.logger.info(message: self.config.type)
         }
 
-        if let additionalInfo {
-            PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
-        } else {
-            let err = PrimerError.invalidValue(key: "additionalInfo",
-                                               value: additionalInfo,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+        guard let additionalInfo else {
+            throw handled(primerError: .invalidValue(key: "additionalInfo"))
         }
+
+        await PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
     }
 }
+
 // swiftlint:enable function_body_length
+// swiftlint:enable file_length
