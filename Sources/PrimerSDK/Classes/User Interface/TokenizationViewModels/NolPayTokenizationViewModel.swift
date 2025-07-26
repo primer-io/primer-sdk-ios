@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import Foundation
 import SafariServices
@@ -21,34 +22,19 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var mobileCountryCode: String!
     var mobileNumber: String!
     var nolPayCardNumber: String!
-
     var triggerAsyncAction: ((String, ((Result<Bool, Error>) -> Void)?) -> Void)!
 
     override func validate() throws {
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl"))
         }
 
         guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
     }
 
@@ -83,6 +69,25 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        Analytics.Service.fire(event: Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .bankSelectionList
+        ))
+
+        try validate()
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -104,6 +109,13 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
         }
+    }
+
+    override func performTokenizationStep() async throws {
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        paymentMethodTokenData = try await tokenize()
+        try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -144,10 +156,37 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let configId = config.id else {
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
+        }
+
+        let sessionInfo = await NolPaySessionInfo(platform: "IOS",
+                                                  mobileCountryCode: mobileCountryCode,
+                                                  mobileNumber: mobileNumber,
+                                                  nolPayCardNumber: nolPayCardNumber,
+                                                  phoneVendor: "Apple",
+                                                  phoneModel: UIDevice.modelIdentifier ?? "iPhone")
+
+        return try await tokenizationService.tokenize(
+            requestBody: Request.Body.Tokenization(
+                paymentInstrument: OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo
+                )
+            )
+        )
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -195,6 +234,30 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func presentPaymentMethodUserInterface() async throws {
+        guard let transactionNo else {
+            throw handled(primerError: .invalidValue(key: "transactionNo"))
+        }
+
+        _ = try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                self.triggerAsyncAction(transactionNo) { result in
+                    continuation.resume(with: result)
+                }
+            }
+        }
+
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            throw handled(primerError: .invalidClientToken())
+        }
+
+        guard let redirectUrl else {
+            throw handled(primerError: .invalidUrl(url: redirectUrl?.absoluteString))
+        }
+
+        _ = try await PrimerAPIClient().genericAPICall(clientToken: decodedJWTToken, url: redirectUrl)
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
 
@@ -237,6 +300,33 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
         }
+    }
+
+    override func awaitUserInput() async throws {
+        guard let statusUrl else {
+            throw handled(primerError: .invalidUrl(url: statusUrl?.absoluteString))
+        }
+
+        let pollingModule = PollingModule(url: statusUrl)
+        didCancel = {
+            let err = PrimerError.cancelled(
+                paymentMethodType: self.config.type,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            pollingModule.cancel(withError: err)
+        }
+
+        defer {
+            self.didCancel = nil
+        }
+
+        if isCancelled {
+            throw PrimerError.cancelled(paymentMethodType: config.type)
+        }
+
+        resumeToken = try await pollingModule.start()
     }
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -283,8 +373,35 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
+        guard decodedJWTToken.intent?.contains("NOL_PAY_REDIRECTION") == true else {
+            return nil
+        }
+        guard let transactionNo = decodedJWTToken.nolPayTransactionNo,
+              let redirectUrlStr = decodedJWTToken.redirectUrl,
+              let redirectUrl = URL(string: redirectUrlStr),
+              let statusUrlStr = decodedJWTToken.statusUrl,
+              let statusUrl = URL(string: statusUrlStr),
+              decodedJWTToken.intent != nil else {
+            throw handled(primerError: .invalidClientToken())
+        }
+        await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+
+        self.transactionNo = transactionNo
+        self.redirectUrl = redirectUrl
+        self.statusUrl = statusUrl
+
+        try await presentPaymentMethodUserInterface()
+        try await awaitUserInput()
+        return resumeToken
+    }
+
     override func submitButtonTapped() {
         // no-op
     }
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length
