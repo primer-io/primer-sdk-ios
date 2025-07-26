@@ -1,10 +1,3 @@
-//
-//  QRCodeTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
-
 import XCTest
 @testable import PrimerSDK
 
@@ -112,7 +105,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
+            return .success(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
