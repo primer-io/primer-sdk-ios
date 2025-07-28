@@ -202,7 +202,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func processPaymentMethodTokenData() async {
         guard let paymentMethodTokenData else {
-            _ = await PrimerDelegateProxy.raisePrimerDidFailWithError(PrimerError.invalidValue(key: "paymentMethodTokenData"), data: nil)
+            _ = await PrimerDelegateProxy.raisePrimerDidFailWithError(
+                PrimerError.invalidValue(key: "paymentMethodTokenData"),
+                data: nil
+            )
             return
         }
 

@@ -77,7 +77,7 @@ final class DefaultBanksComponent: BanksComponent {
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
         tokenizationProvidingModel.retrieveListOfBanks()
             .done { banks -> Void in
-                self.banks = banks.map { IssuingBank(bank: $0) }
+                self.banks = banks.map(IssuingBank.init)
                 let step = BanksStep.banksRetrieved(banks: self.banks)
                 self.nextDataStep = step
                 self.stepDelegate?.didReceiveStep(step: step)
@@ -92,7 +92,7 @@ final class DefaultBanksComponent: BanksComponent {
         Task {
             do {
                 let banks = try await tokenizationProvidingModel.retrieveListOfBanks()
-                self.banks = banks.map { IssuingBank(bank: $0) }
+                self.banks = banks.map(IssuingBank.init)
                 let step = BanksStep.banksRetrieved(banks: self.banks)
                 self.nextDataStep = step
                 self.stepDelegate?.didReceiveStep(step: step)
@@ -107,7 +107,7 @@ final class DefaultBanksComponent: BanksComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved:
-            guard let bankId = self.bankId else { return }
+            guard let bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
             tokenizationProvidingModel.tokenize(bankId: bankId)
