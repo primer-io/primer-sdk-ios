@@ -122,9 +122,7 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
             #else
-            let error = KlarnaHelpers.getMissingSDKError()
-            ErrorHandler.handle(error: error)
-            seal.reject(error)
+            seal.reject(handled(error: KlarnaHelpers.getMissingSDKError()))
             #endif
         }
     }
