@@ -25,17 +25,18 @@ final class QRCodeTokenizationViewModelAsyncTests: XCTestCase {
         vaultData: nil
     )
 
+    // TODO: Extract to helper
     private let paymentResponseBody = Response.Body.Payment(
         id: "id",
         paymentId: "payment_id",
         amount: 123,
         currencyCode: "GBP",
-        customer: .init(
+        customer: Request.Body.ClientSession.Customer(
             firstName: "first_name",
             lastName: "last_name",
             emailAddress: "email_address",
             mobileNumber: "+44(0)7891234567",
-            billingAddress: .init(
+            billingAddress: PaymentAPIModelAddress(
                 firstName: "billing_first_name",
                 lastName: "billing_last_name",
                 addressLine1: "billing_line_1",
@@ -45,7 +46,7 @@ final class QRCodeTokenizationViewModelAsyncTests: XCTestCase {
                 countryCode: "billing_country_code",
                 postalCode: "billing_postal_code"
             ),
-            shippingAddress: .init(
+            shippingAddress: PaymentAPIModelAddress(
                 firstName: "shipping_first_name",
                 lastName: "shipping_last_name",
                 addressLine1: "shipping_line_1",

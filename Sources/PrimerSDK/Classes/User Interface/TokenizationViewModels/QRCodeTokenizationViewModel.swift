@@ -17,6 +17,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     internal var qrCode: String?
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
+    private var isHeadlessCheckoutDelegateImplemented: Bool { PrimerHeadlessUniversalCheckout.current.delegate != nil }
 
     deinit {
         qrCode = nil
@@ -238,7 +239,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                decodedJWTToken.intent != nil {
 
                 self.statusUrl = statusUrl
-                self.qrCode = decodedJWTToken.qrCode
+                qrCode = decodedJWTToken.qrCode
 
                 firstly {
                     self.evaluateFireDidReceiveAdditionalInfoEvent()
@@ -295,14 +296,10 @@ extension QRCodeTokenizationViewModel {
 
     private func evaluatePresentUserInterface() -> Promise<Void> {
         return Promise { seal in
-
-            let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-
             /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
             /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
-
-            guard isHeadlessCheckoutDelegateImplemented == false else {
+            guard !isHeadlessCheckoutDelegateImplemented else {
                 seal.fulfill()
                 return
             }
@@ -322,7 +319,7 @@ extension QRCodeTokenizationViewModel {
     }
 
     private func evaluatePresentUserInterface() async throws {
-        guard PrimerHeadlessUniversalCheckout.current.delegate == nil else {
+        guard !isHeadlessCheckoutDelegateImplemented else {
             return
         }
 
@@ -331,15 +328,11 @@ extension QRCodeTokenizationViewModel {
 
     private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
         return Promise { seal in
-
             /// There is no need to check whether the Headless is implemented as the unsupported payment methods
             /// will be listed into PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
             ///
             /// This Promise only fires event in case of Headless support ad its been designed ad-hoc for this purpose
-
-            let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-
             guard isHeadlessCheckoutDelegateImplemented else {
                 // We are not in Headless, so no need to go through this logic
                 seal.fulfill()
@@ -450,13 +443,12 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
         /// Xfers is among them so it won't be loaded
         ///
         /// This function only fires event in case of Headless support ad its been designed ad-hoc for this purpose
-
-        guard let delegate = PrimerHeadlessUniversalCheckout.current.delegate else {
+        guard isHeadlessCheckoutDelegateImplemented else {
             return
         }
 
         // swiftlint:disable:next identifier_name
-        guard delegate.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil else {
+        guard PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil else {
             let logMessage =
                 """
                 Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
@@ -509,8 +501,8 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                                                                  qrCodeBase64: qrCodeString)
             }
         default:
-            self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
-            self.logger.info(message: self.config.type)
+            logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
+            logger.info(message: self.config.type)
         }
 
         guard let additionalInfo else {
