@@ -1,6 +1,8 @@
 @testable import PrimerSDK
 
 final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding {
+    static let bankNameToBeFiltered = "Bank filtered"
+
     var didFinishPayment: ((Error?) -> Void)?
     var didPresentPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
@@ -10,14 +12,17 @@ final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding
     var didCallFilter: Bool = false
     var didCallCancel: Bool = false
     var useSuccess: Bool = false
-    static let bankNameToBeFiltered = "Bank filtered"
+
+    let mockBanks: [AdyenBank] = [
+        AdyenBank(id: "0", name: "Bank_0", iconUrlStr: nil, disabled: false),
+        AdyenBank(id: "1", name: "Bank_1", iconUrlStr: nil, disabled: false),
+        AdyenBank(id: "2", name: MockBankSelectorTokenizationModel.bankNameToBeFiltered, iconUrlStr: nil, disabled: false)
+    ]
+
     init(paymentMethodType: PrimerPaymentMethodType) {
         self.paymentMethodType = paymentMethodType
     }
 
-    let mockBanks: [AdyenBank] = [AdyenBank(id: "0", name: "Bank_0", iconUrlStr: nil, disabled: false),
-                                  AdyenBank(id: "1", name: "Bank_1", iconUrlStr: nil, disabled: false),
-                                  AdyenBank(id: "2", name: MockBankSelectorTokenizationModel.bankNameToBeFiltered, iconUrlStr: nil, disabled: false)]
     func validateReturningPromise() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
