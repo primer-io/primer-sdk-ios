@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.
 /// This protocol enables unified payment method handling with type-safe scope associations.
@@ -81,7 +82,7 @@ public protocol PaymentMethodProtocol {
     @MainActor
     static func createScope(
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> ScopeType
 
     /// Provides custom UI for this payment method using ViewBuilder.
@@ -123,10 +124,10 @@ extension PrimerPaymentMethodType {
 /// Provides dynamic scope creation based on payment method types.
 @available(iOS 15.0, *)
 @MainActor
-internal class PaymentMethodRegistry {
+internal class PaymentMethodRegistry: LogReporter {
 
     /// Type-erased payment method creator function
-    private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, DIContainer) throws -> any PrimerPaymentMethodScope
+    private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope
 
     /// Registry mapping payment method types to their scope creators
     private var creators: [String: ScopeCreator] = [:]
@@ -150,6 +151,20 @@ internal class PaymentMethodRegistry {
         // Register type-to-identifier mapping for type-safe lookups
         let scopeTypeName = String(describing: T.ScopeType.self)
         typeToIdentifier[scopeTypeName] = typeKey
+
+        // PAYMENT METHOD OPTIONS INTEGRATION: Log when payment methods requiring settings are registered
+        if typeKey == PrimerPaymentMethodType.applePay.rawValue {
+            // Apple Pay payment method registered - will require ApplePayOptions from settings
+            logger.info(message: "✅ [PaymentMethodRegistry] Apple Pay payment method registered - requires PrimerSettings.paymentMethodOptions.applePayOptions configuration")
+        } else if typeKey == PrimerPaymentMethodType.googlePay.rawValue {
+            // Google Pay payment method registered - could use URL scheme for redirects
+            logger.info(message: "✅ [PaymentMethodRegistry] Google Pay payment method registered - may use URL scheme from PrimerSettings")
+        } else if typeKey.contains("STRIPE") {
+            // Stripe payment method registered - will require StripeOptions from settings
+            logger.info(message: "✅ [PaymentMethodRegistry] Stripe payment method (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions configuration")
+        } else {
+            logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(typeKey) registered")
+        }
     }
 
     /// Creates a scope for the specified payment method type (type-erased)
@@ -161,7 +176,7 @@ internal class PaymentMethodRegistry {
     func createScope(
         for paymentMethodType: String,
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> (any PrimerPaymentMethodScope)? {
         guard let creator = creators[paymentMethodType] else {
             return nil
@@ -179,7 +194,7 @@ internal class PaymentMethodRegistry {
     func createScope<T: PrimerPaymentMethodScope>(
         for paymentMethodType: String,
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> T? {
         guard let creator = creators[paymentMethodType] else {
             return nil
@@ -198,7 +213,7 @@ internal class PaymentMethodRegistry {
     func createScope<T: PrimerPaymentMethodScope>(
         _ scopeType: T.Type,
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> T? {
         let typeName = String(describing: scopeType)
         guard let paymentMethodType = typeToIdentifier[typeName] else {
@@ -217,7 +232,7 @@ internal class PaymentMethodRegistry {
     func createScope<T: PrimerPaymentMethodScope>(
         for methodType: PrimerPaymentMethodType,
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> T? {
         return try createScope(for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
     }

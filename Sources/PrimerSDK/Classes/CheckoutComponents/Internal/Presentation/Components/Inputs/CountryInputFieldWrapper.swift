@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CountryInputFieldWrapper: View, LogReporter {
     @ObservedObject var scope: DefaultCardFormScope
-    let label: String
+    let label: String?
     let placeholder: String
     let styling: PrimerFieldStyling?
     let onValidationChange: ((Bool) -> Void)?

@@ -134,11 +134,21 @@ struct MixedComponentsDemo: View {
         
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
+            // Configure custom fields for mixed styling demo
+            customizeScope(cardFormScope: cardFormScope)
+            
             // Override the card form screen with mixed components demo
             cardFormScope.screen = { _ in
                 AnyView(MixedStyleCardFormView(cardFormScope: cardFormScope))
             }
         }
+    }
+    
+    // MARK: - Scope Customization
+    
+    /// Configure custom fields for mixed styling demonstration
+    private func customizeScope(cardFormScope: DefaultCardFormScope) {
+        // No longer setting custom fields via closures since we'll use ViewBuilder methods directly in the view
     }
     
     // MARK: - Session Creation
@@ -190,8 +200,8 @@ private struct MixedStyleCardFormView: View {
     let cardFormScope: DefaultCardFormScope
     
     @State private var cardState: StructuredCardFormState?
-    @State private var isCardFlipped = false
     @State private var showTooltip = false
+    @State private var isCardFlipped = false
     @State private var stateTask: Task<Void, Never>?
     
     var body: some View {
@@ -243,7 +253,7 @@ private struct MixedStyleCardFormView: View {
                 
                 // Form fields
                 VStack(spacing: 20) {
-                    // Card number - Custom fancy style using real SDK component
+                    // Card number - Custom fancy style using ViewBuilder method
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Card Number")
@@ -253,20 +263,20 @@ private struct MixedStyleCardFormView: View {
                                 .foregroundColor(.red)
                         }
                         
-                        // Real SDK card number field with custom fancy styling
-                        CardNumberInputField(
-                            scope: cardFormScope,
-                            styling: PrimerFieldStyling(
-                                textColor: .black,
-                                backgroundColor: .clear,
-                                borderColor: .clear,
-                                cornerRadius: 12,
-                                borderWidth: 0,
-                                font: .system(size: 18, weight: .medium, design: .monospaced),
-                                padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+                        // Use ViewBuilder method with custom gradient styling
+                        AnyView(
+                            cardFormScope.PrimerCardNumberField(
+                                label: nil,
+                                styling: PrimerFieldStyling(
+                                    font: .system(size: 18, weight: .medium, design: .monospaced),
+                                    backgroundColor: Color.clear,
+                                    borderColor: Color.clear,
+                                    cornerRadius: 12,
+                                    borderWidth: 0,
+                                    padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+                                )
                             )
                         )
-                        .frame(height: 50)
                         .background(
                             LinearGradient(
                                 colors: [Color.blue.opacity(0.05), Color.purple.opacity(0.05)],
@@ -285,31 +295,27 @@ private struct MixedStyleCardFormView: View {
                                     lineWidth: 2
                                 )
                         )
-                        .cornerRadius(12)
+                        .frame(height: 50)
                     }
                     
                     HStack(spacing: 16) {
-                        // Expiry date - Default style using real SDK component
+                        // Expiry date - Default style using ViewBuilder method
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Expiry Date")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            // Real SDK expiry date field with default styling
-                            ExpiryDateInputField(
-                                scope: cardFormScope,
-                                styling: PrimerFieldStyling(
-                                    backgroundColor: Color.gray.opacity(0.1),
-                                    borderColor: .clear,
-                                    cornerRadius: 8,
-                                    borderWidth: 0,
-                                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                            // Use ViewBuilder method with default styling
+                            AnyView(
+                                cardFormScope.PrimerExpiryDateField(
+                                    label: nil,
+                                    styling: nil  // Use default styling
                                 )
                             )
                             .frame(height: 50)
                         }
                         
-                        // CVV - Custom interactive style using real SDK component
+                        // CVV - Custom interactive style using ViewBuilder method
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("CVV")
@@ -320,16 +326,18 @@ private struct MixedStyleCardFormView: View {
                             }
                             
                             HStack {
-                                // Real SDK CVV field with custom interactive styling
-                                CVVInputField(
-                                    scope: cardFormScope,
-                                    styling: PrimerFieldStyling(
-                                        backgroundColor: Color.orange.opacity(0.1),
-                                        borderColor: .clear,
-                                        cornerRadius: 8,
-                                        borderWidth: 0,
-                                        font: .system(.body, design: .monospaced),
-                                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                                // Use ViewBuilder method with custom orange styling
+                                AnyView(
+                                    cardFormScope.PrimerCvvField(
+                                        label: nil,
+                                        styling: PrimerFieldStyling(
+                                            font: .system(.body, design: .monospaced),
+                                            backgroundColor: Color.orange.opacity(0.05),
+                                            borderColor: Color.orange.opacity(0.3),
+                                            cornerRadius: 8,
+                                            borderWidth: 1,
+                                            padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+                                        )
                                     )
                                 )
                                 .frame(height: 50)
@@ -351,21 +359,17 @@ private struct MixedStyleCardFormView: View {
                         }
                     }
                     
-                    // Cardholder name - Default style using real SDK component
+                    // Cardholder name - Default style using ViewBuilder method
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Cardholder Name")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        // Real SDK cardholder name field with default styling
-                        CardholderNameInputField(
-                            scope: cardFormScope,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.gray.opacity(0.1),
-                                borderColor: .clear,
-                                cornerRadius: 8,
-                                borderWidth: 0,
-                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                        // Use ViewBuilder method with default styling
+                        AnyView(
+                            cardFormScope.PrimerCardholderNameField(
+                                label: nil,
+                                styling: nil  // Use default styling
                             )
                         )
                         .frame(height: 50)

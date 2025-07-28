@@ -55,7 +55,7 @@ internal struct EmailInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -109,7 +109,7 @@ internal struct EmailInputField: View, LogReporter {
 
     /// Creates a new EmailInputField with comprehensive customization support (scope-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         styling: PrimerFieldStyling? = nil
@@ -124,7 +124,7 @@ internal struct EmailInputField: View, LogReporter {
 
     /// Creates a new EmailInputField with comprehensive customization support (callback-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         styling: PrimerFieldStyling? = nil,
         onEmailChange: ((String) -> Void)? = nil,
@@ -143,9 +143,11 @@ internal struct EmailInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // Email input field with ZStack architecture
             ZStack {
@@ -174,7 +176,9 @@ internal struct EmailInputField: View, LogReporter {
                             onValidationChange: onValidationChange
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, errorMessage != nil ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -407,6 +411,11 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
+
+            // Update scope validation state while typing
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateEmailValidationState(isValid)
+            }
 
             return false
         }

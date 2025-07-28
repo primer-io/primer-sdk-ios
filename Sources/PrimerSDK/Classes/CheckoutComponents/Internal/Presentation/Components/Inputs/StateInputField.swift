@@ -55,7 +55,7 @@ internal struct StateInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -103,7 +103,7 @@ internal struct StateInputField: View, LogReporter {
 
     /// Creates a new StateInputField with comprehensive customization support
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         styling: PrimerFieldStyling? = nil
@@ -119,9 +119,11 @@ internal struct StateInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // State input field with ZStack architecture
             ZStack {
@@ -148,7 +150,9 @@ internal struct StateInputField: View, LogReporter {
                             scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, errorMessage != nil ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -363,6 +367,11 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
+            // Update scope validation state while typing
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateStateValidationState(isValid)
+            }
+
             return false
         }
 
@@ -373,6 +382,10 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             if trimmedState.isEmpty {
                 isValid = false // State is required
                 errorMessage = nil // Never show error message for empty fields
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(false)
+                }
                 return
             }
 
@@ -387,8 +400,16 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
             // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.state)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(true)
+                }
             } else if let message = result.errorMessage {
                 scope.setFieldError(.state, message: message, errorCode: result.errorCode)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(false)
+                }
             }
         }
     }

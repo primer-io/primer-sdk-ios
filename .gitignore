@@ -104,3 +104,6 @@ launch.json
 **/node_modules/
 **/.claude/settings.local.json
 .claude/settings.local.json
+.claude/agents/ultra-senior-mobile-engineer.md
+CLAUDE.local.md
+CLAUDE.local.md

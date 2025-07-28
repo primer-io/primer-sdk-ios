@@ -23,13 +23,18 @@ extension DIContainer {
     ) -> StateObject<T> {
         let instance: T
 
+        // Access currentSync is now properly MainActor-isolated
         if let container = currentSync {
             do {
                 instance = try container.resolveSync(type, name: name)
             } catch {
+                // Log resolution failure for debugging
+                logger.warn(message: "Failed to resolve \(String(describing: type)) from DI container: \(error), using fallback")
                 instance = fallback()
             }
         } else {
+            // Log container unavailability for debugging
+            logger.warn(message: "DI Container not available for \(String(describing: type)), using fallback")
             instance = fallback()
         }
 
@@ -53,10 +58,16 @@ extension DIContainer {
         from environment: EnvironmentValues,
         default fallback: @autoclosure @escaping () -> T
     ) -> StateObject<T> {
-        if let container = environment.diContainer,
-           let resolved = try? container.resolveSync(type, name: name) {
-            return StateObject(wrappedValue: resolved)
+        if let container = environment.diContainer {
+            do {
+                let resolved = try container.resolveSync(type, name: name)
+                return StateObject(wrappedValue: resolved)
+            } catch {
+                logger.warn(message: "Failed to resolve \(String(describing: type)) from environment DI container: \(error), using fallback")
+                return StateObject(wrappedValue: fallback())
+            }
         } else {
+            logger.debug(message: "No DI container in environment for \(String(describing: type)), using fallback")
             return StateObject(wrappedValue: fallback())
         }
     }

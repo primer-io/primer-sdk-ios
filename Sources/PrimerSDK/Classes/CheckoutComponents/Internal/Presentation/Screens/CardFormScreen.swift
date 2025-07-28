@@ -109,14 +109,37 @@ internal struct CardFormScreen: View, LogReporter {
         } else {
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
                 // Render fields dynamically based on configuration
-                ForEach(formConfiguration.cardFields, id: \.self) { fieldType in
-                    renderField(fieldType)
-                }
+                ForEach(0..<formConfiguration.cardFields.count, id: \.self) { index in
+                    let fieldType = formConfiguration.cardFields[index]
 
-                // Show allowed card networks
-                let allowedNetworks = [CardNetwork].allowedCardNetworks
-                if !allowedNetworks.isEmpty {
-                    AllowedCardNetworksView(allowedCardNetworks: allowedNetworks)
+                    // Check if this is expiry date followed by CVV - render them horizontally
+                    if fieldType == .expiryDate,
+                       index + 1 < formConfiguration.cardFields.count,
+                       formConfiguration.cardFields[index + 1] == .cvv {
+                        HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
+                            renderField(.expiryDate)
+                            renderField(.cvv)
+                        }
+                    } else if index > 0,
+                              formConfiguration.cardFields[index - 1] == .expiryDate,
+                              fieldType == .cvv {
+                        // Skip CVV if it was already rendered with expiry date
+                        EmptyView()
+                    } else if fieldType == .cardNumber {
+                        // Render card number field with allowed networks below it
+                        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                            renderField(fieldType)
+
+                            // Show allowed card networks directly below card number
+                            let allowedNetworks = [CardNetwork].allowedCardNetworks
+                            if !allowedNetworks.isEmpty {
+                                AllowedCardNetworksView(allowedCardNetworks: allowedNetworks)
+                            }
+                        }
+                    } else {
+                        // Render other fields normally
+                        renderField(fieldType)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -244,7 +267,7 @@ internal struct CardFormScreen: View, LogReporter {
         // Check if there's a surcharge from the detected card network
         if let surchargeAmountString = cardFormState.surchargeAmount,
            !surchargeAmountString.isEmpty,
-           let selectedNetwork = cardFormState.selectedNetwork {
+           cardFormState.selectedNetwork != nil {
 
             // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
             // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
@@ -368,7 +391,7 @@ internal struct CardFormScreen: View, LogReporter {
             } else {
                 CardholderNameInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "John Smith",
+                    placeholder: "Full name",
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -505,7 +528,6 @@ internal struct CardFormScreen: View, LogReporter {
             if let customField = (scope as? DefaultCardFormScope)?.retailOutletField {
                 customField(fieldLabel, defaultStyling)
             } else {
-                // TODO: Implement RetailOutletInputField
                 Text("Retail outlet selection not yet implemented")
                     .font(.caption)
                     .foregroundColor(.gray)

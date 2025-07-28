@@ -84,6 +84,9 @@ public extension CheckoutComponentsDelegate {
     /// Store the latest payment result for delegate callbacks
     private var lastPaymentResult: PaymentResult?
 
+    /// Settings observer for dynamic settings updates
+    private var settingsObserver: SettingsObserver?
+
     // MARK: - Private Init
 
     private override init() {
@@ -592,13 +595,43 @@ extension CheckoutComponentsPrimer {
            let top = navigation.topViewController {
             return findTopViewController(from: top)
         }
-
         if let tab = viewController as? UITabBarController,
            let selected = tab.selectedViewController {
             return findTopViewController(from: selected)
         }
 
         return viewController
+    }
+
+    // MARK: - Settings Change Handling
+
+    /// Notify CheckoutComponents about PrimerSettings changes for dynamic updates
+    /// Call this method whenever PrimerSettings.current is updated to ensure
+    /// CheckoutComponents reflects the new configuration immediately
+    /// - Parameter newSettings: The updated PrimerSettings configuration
+    public static func notifySettingsChanged(_ newSettings: PrimerSettings) {
+        shared.logger.info(message: "🔧 [CheckoutComponentsPrimer] Settings change notification received")
+
+        Task {
+            // Get settings observer from DI container if available
+            if let container = await DIContainer.current {
+                do {
+                    let observer = try await container.resolve(SettingsObserver.self)
+                    await observer.settingsDidUpdate(newSettings)
+                    shared.logger.info(message: "✅ [CheckoutComponentsPrimer] Settings change propagated to CheckoutComponents")
+                } catch {
+                    shared.logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to resolve settings observer: \(error)")
+                }
+            } else {
+                shared.logger.warn(message: "⚠️ [CheckoutComponentsPrimer] DI container not available for settings change notification")
+            }
+        }
+    }
+
+    /// Convenience method to notify settings changed using current global settings
+    /// This is useful when you know settings have changed but don't have the specific instance
+    @objc public static func notifySettingsChanged() {
+        notifySettingsChanged(PrimerSettings.current)
     }
 }
 

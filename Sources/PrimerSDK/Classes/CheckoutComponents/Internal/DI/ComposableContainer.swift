@@ -13,9 +13,11 @@ import Foundation
 internal final class ComposableContainer: LogReporter {
 
     private let container: Container
+    private let settings: PrimerSettings
 
-    init() {
+    init(settings: PrimerSettings) {
         self.container = Container()
+        self.settings = settings
     }
 
     /// Configure and register all dependencies for CheckoutComponents.
@@ -61,6 +63,15 @@ private extension ComposableContainer {
     /// Register infrastructure components.
     func registerInfrastructure() async {
         logger.debug(message: "🔧 [ComposableContainer] Registering infrastructure...")
+
+        // Settings service
+        await CheckoutComponentsSettingsService.register(in: container, with: settings)
+
+        // Locale service (depends on settings service)
+        await LocaleService.register(in: container)
+
+        // Settings observer for dynamic updates
+        await SettingsObserver.register(in: container, with: settings)
 
         // Design tokens manager
         _ = try? await container.register(DesignTokensManager.self)

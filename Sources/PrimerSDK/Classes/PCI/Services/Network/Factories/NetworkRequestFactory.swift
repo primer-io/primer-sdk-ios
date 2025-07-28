@@ -79,12 +79,12 @@ final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
     }
 
     private func log(request: URLRequest) {
-        let method = request.httpMethod?.uppercased() ?? "Unknown Method"
-        let url = request.url?.absoluteString ?? "Unknown URL"
-        let headersDescription = request.allHTTPHeaderFields?.map { (key, value) in
+        _ = request.httpMethod?.uppercased() ?? "Unknown Method"
+        _ = request.url?.absoluteString ?? "Unknown URL"
+        _ = request.allHTTPHeaderFields?.map { (key, value) in
             "  ► \(key): \(value)"
         } ?? ["No headers found"]
-        let body = {
+        _ = {
             guard let body = request.httpBody else { return "N/A" }
             return String(data: body, encoding: .utf8) ?? "N/A"
         }()

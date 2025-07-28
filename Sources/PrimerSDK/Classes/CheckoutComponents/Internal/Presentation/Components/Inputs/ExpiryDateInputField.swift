@@ -55,7 +55,7 @@ internal struct ExpiryDateInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -107,12 +107,10 @@ internal struct ExpiryDateInputField: View, LogReporter {
         }
         return color
     }
-
     // MARK: - Initialization
-
     /// Creates a new ExpiryDateInputField with comprehensive customization support
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         styling: PrimerFieldStyling? = nil
@@ -128,9 +126,11 @@ internal struct ExpiryDateInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // Expiry date input field with ZStack architecture
             ZStack {
@@ -159,7 +159,9 @@ internal struct ExpiryDateInputField: View, LogReporter {
                             scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, errorMessage != nil ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -465,6 +467,10 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             if trimmedExpiry.isEmpty {
                 isValid = false // Expiry date is required
                 errorMessage = nil // Never show error message for empty fields
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateExpiryValidationState(false)
+                }
                 return
             }
 
@@ -475,6 +481,10 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 isValid = false
                 errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
                 scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateExpiryValidationState(false)
+                }
                 return
             }
 
@@ -493,8 +503,18 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.expiryDate)
-            } else if let message = result.errorMessage {
-                scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateExpiryValidationState(true)
+                }
+            } else {
+                if let message = result.errorMessage {
+                    scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
+                }
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateExpiryValidationState(false)
+                }
             }
         }
     }

@@ -55,18 +55,31 @@ public final class DIContainer: LogReporter {
 
     /// Access to the current container (synchronous)
     /// Note: This uses a cached reference that is updated when the container changes
+    /// MainActor isolation ensures thread safety for SwiftUI integration
+    @MainActor
     public static var currentSync: (any ContainerProtocol)? {
-        return shared.cachedContainer
+        let container = shared.cachedContainer
+        if container == nil {
+            logger.debug(message: "[DI] currentSync accessed but no container available")
+        }
+        return container
     }
 
     /// Cached reference to the current container for synchronous access
+    /// MainActor isolation prevents race conditions during updates
+    @MainActor
     private var cachedContainer: (any ContainerProtocol)?
 
     /// Private initializer for singleton
     private init() {
         let container = Container()
-        self.cachedContainer = container
         self.storage = ContainerStorage(container: container)
+
+        // Initialize cached container on MainActor to prevent race conditions
+        Task { @MainActor in
+            self.cachedContainer = container
+        }
+
         logger.debug(message: "DIContainer initialized")
     }
 
@@ -80,8 +93,11 @@ public final class DIContainer: LogReporter {
     public static func setContainer(_ container: any ContainerProtocol) async {
         logger.debug(message: "Setting global container")
         await shared.storage.setContainer(container)
-        // Update cached reference for synchronous access
-        shared.cachedContainer = container
+
+        // Update cached reference for synchronous access on MainActor
+        await MainActor.run {
+            shared.cachedContainer = container
+        }
     }
 
     /// Set up a container with the application's dependencies
@@ -107,22 +123,28 @@ public final class DIContainer: LogReporter {
     ) async rethrows -> T {
         logger.debug(message: "Switching to temporary container")
         let previous = await shared.storage.getContainer()
-        let previousSync = shared.cachedContainer
+        let previousSync = await MainActor.run { shared.cachedContainer }
 
-        // Swap in immediately
+        // Swap in immediately with proper MainActor isolation (thread-safe)
         await shared.storage.setContainer(container)
-        shared.cachedContainer = container
+        await MainActor.run {
+            shared.cachedContainer = container
+        }
 
         do {
             let result = try await action()
             logger.debug(message: "Restoring previous container")
             await shared.storage.setContainer(previous)
-            shared.cachedContainer = previousSync
+            await MainActor.run {
+                shared.cachedContainer = previousSync  // Thread-safe restoration
+            }
             return result
         } catch {
             logger.debug(message: "Restoring previous container after error")
             await shared.storage.setContainer(previous)
-            shared.cachedContainer = previousSync
+            await MainActor.run {
+                shared.cachedContainer = previousSync  // Thread-safe restoration after error
+            }
             throw error
         }
     }

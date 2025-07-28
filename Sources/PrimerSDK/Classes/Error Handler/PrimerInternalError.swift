@@ -82,21 +82,21 @@ enum InternalError: PrimerErrorProtocol {
     var diagnosticsId: String {
         switch self {
         case .failedToDecode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidResponse(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .noData(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .serverError(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unauthorized(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToPerform3dsButShouldContinue,
              .failedToPerform3dsAndShouldBreak,
              .noNeedToPerform3ds:
@@ -149,7 +149,7 @@ enum InternalError: PrimerErrorProtocol {
              .serverError(_, _, let userInfo, _),
              .unauthorized(_, let userInfo, _),
              .underlyingErrors(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+            tmpUserInfo = tmpUserInfo.merging(userInfo) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         case .failedToPerform3dsButShouldContinue,
              .failedToPerform3dsAndShouldBreak,

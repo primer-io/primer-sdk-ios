@@ -25,7 +25,7 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
     @MainActor
     internal static func createScope(
         checkoutScope: PrimerCheckoutScope,
-        diContainer: DIContainer
+        diContainer: any ContainerProtocol
     ) throws -> DefaultCardFormScope {
 
         // Check if checkoutScope is DefaultCheckoutScope to access internal methods

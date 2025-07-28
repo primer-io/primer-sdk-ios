@@ -187,105 +187,20 @@ struct GYGDemo: View {
         
         // Get the card form scope and apply GYG styling
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
-            // Apply GYG field customizations to use real SDK components
+            // Apply GYG field customizations using ViewBuilder methods
             let gygStyling = createGYGFieldStyling()
             
-            // Customize individual fields with GYG branding
-            cardFormScope.cardNumberField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Card Number",
-                        styling: gygStyling,
-                        fieldType: .cardNumber,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.expiryDateField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Expiry",
-                        styling: gygStyling,
-                        fieldType: .expiryDate,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.cvvField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "CVV",
-                        styling: gygStyling,
-                        fieldType: .cvv,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.cardholderNameField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Cardholder Name",
-                        styling: gygStyling,
-                        fieldType: .cardholderName,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.countryField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Country",
-                        styling: gygStyling,
-                        fieldType: .countryCode,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.addressLine1Field = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Address",
-                        styling: gygStyling,
-                        fieldType: .addressLine1,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.postalCodeField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "Postal Code",
-                        styling: gygStyling,
-                        fieldType: .postalCode,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
-            
-            cardFormScope.stateField = { label, _ in
-                AnyView(
-                    GYGStyledField(
-                        label: label ?? "State",
-                        styling: gygStyling,
-                        fieldType: .state,
-                        scope: cardFormScope,
-                        isDarkMode: isDarkMode
-                    )
-                )
-            }
+            // Set default field styling for all fields
+            cardFormScope.defaultFieldStyling = [
+                "cardNumber": gygStyling,
+                "expiryDate": gygStyling,
+                "cvv": gygStyling,
+                "cardholderName": gygStyling,
+                "country": gygStyling,
+                "addressLine1": gygStyling,
+                "postalCode": gygStyling,
+                "state": gygStyling
+            ]
             
             // Customize co-badged cards view with GYG styling
             cardFormScope.cobadgedCardsView = { availableNetworks, selectNetwork in
@@ -397,10 +312,63 @@ private struct GYGCardFormView: View {
             VStack(spacing: 24) {
                 experienceSummaryCard
                 
-                // Use the default CardFormScreen but within our GYG styling
-                CardFormScreen(scope: cardFormScope)
-                    .background(isDarkMode ? Color(red: 0.11, green: 0.11, blue: 0.11) : Color.white)
-                    .cornerRadius(16)
+                // Card form with GYG styling using ViewBuilder methods
+                VStack(spacing: 16) {
+                    Text("Payment Information")
+                        .font(.headline)
+                        .foregroundColor(isDarkMode ? .white : .black)
+                    
+                    // Card fields using ViewBuilder methods
+                    VStack(spacing: 12) {
+                        AnyView(cardFormScope.PrimerCardNumberField(label: "Card Number", styling: nil))
+                            .padding(.horizontal, 4)
+                        
+                        HStack(spacing: 12) {
+                            AnyView(cardFormScope.PrimerExpiryDateField(label: "Expiry", styling: nil))
+                            AnyView(cardFormScope.PrimerCvvField(label: "CVV", styling: nil))
+                                .frame(width: 100)
+                        }
+                        .padding(.horizontal, 4)
+                        
+                        AnyView(cardFormScope.PrimerCardholderNameField(label: "Cardholder Name", styling: nil))
+                            .padding(.horizontal, 4)
+                    }
+                    
+                    // GYG Submit Button
+                    Button(action: {
+                        cardFormScope.onSubmit()
+                    }) {
+                        HStack(spacing: 8) {
+                            if cardState?.isLoading == true {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(0.8)
+                                Text("Processing...")
+                            } else {
+                                Image(systemName: "creditcard.fill")
+                                Text("Complete Booking")
+                            }
+                        }
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(
+                                    (cardState?.isValid == true && cardState?.isLoading != true) 
+                                        ? gygOrange 
+                                        : Color.gray.opacity(0.6)
+                                )
+                        )
+                    }
+                    .disabled(cardState?.isValid != true || cardState?.isLoading == true)
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.top, 8)
+                }
+                .padding()
+                .background(isDarkMode ? Color(red: 0.11, green: 0.11, blue: 0.11) : Color.white)
+                .cornerRadius(16)
                 
                 securityAssuranceView
                 footerText
@@ -513,49 +481,6 @@ private struct GYGCardFormView: View {
     }
 }
 
-/// GYG-styled field component that wraps real SDK input fields
-@available(iOS 15.0, *)
-private struct GYGStyledField: View {
-    let label: String
-    let styling: PrimerFieldStyling
-    let fieldType: PrimerInputElementType
-    let scope: DefaultCardFormScope
-    let isDarkMode: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .font(.caption)
-                .foregroundColor(styling.labelColor ?? .primary)
-            
-            // Use the actual SDK input fields based on type
-            Group {
-                switch fieldType {
-                case .cardNumber:
-                    CardNumberInputField(scope: scope, styling: styling)
-                case .expiryDate:
-                    ExpiryDateInputField(scope: scope, styling: styling)
-                case .cvv:
-                    CVVInputField(scope: scope, styling: styling)
-                case .cardholderName:
-                    CardholderNameInputField(scope: scope, styling: styling)
-                case .countryCode:
-                    CountryInputField(scope: scope, styling: styling)
-                case .addressLine1:
-                    AddressLineInputField(scope: scope, styling: styling, fieldType: .addressLine1)
-                case .postalCode:
-                    PostalCodeInputField(scope: scope, styling: styling)
-                case .state:
-                    StateInputField(scope: scope, styling: styling)
-                default:
-                    // Fallback for other field types
-                    CardNumberInputField(scope: scope, styling: styling)
-                }
-            }
-            .frame(height: 50)
-        }
-    }
-}
 
 /// GYG-themed co-badged cards view
 @available(iOS 15.0, *)
@@ -625,3 +550,4 @@ private struct GYGButtonStyle: ButtonStyle {
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
+

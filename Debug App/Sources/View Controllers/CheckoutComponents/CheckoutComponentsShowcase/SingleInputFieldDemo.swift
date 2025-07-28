@@ -193,6 +193,10 @@ private struct SingleInputFieldCardFormView: View {
     @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
     
+    // Create all fields once to preserve state
+    @State private var allFields: [AnyView] = []
+    @State private var fieldsInitialized = false
+    
     var body: some View {
         VStack(spacing: 0) {
             if let state = cardState {
@@ -214,10 +218,18 @@ private struct SingleInputFieldCardFormView: View {
                 
                 // Current field container
                 VStack(spacing: 24) {
-                    // Display only the current field using real SDK components
+                    // Display only the current field using persistent SDK components
                     VStack(alignment: .leading, spacing: 12) {
                         currentFieldTitle
-                        currentFieldView
+                        
+                        // Show only the current field, but keep all fields in memory to preserve state
+                        ZStack {
+                            ForEach(0..<allFields.count, id: \.self) { index in
+                                allFields[index]
+                                    .opacity(index == currentFieldIndex ? 1.0 : 0.0)
+                            }
+                        }
+                        .frame(height: 50)
                     }
                     .frame(height: 120, alignment: .top)
                     .frame(maxWidth: .infinity)
@@ -284,10 +296,77 @@ private struct SingleInputFieldCardFormView: View {
         }
         .onAppear {
             startObservingState()
+            initializeFields()
         }
         .onDisappear {
             stateTask?.cancel()
         }
+    }
+    
+    private func initializeFields() {
+        guard !fieldsInitialized else { return }
+        
+        allFields = [
+            // Card number field with step-specific styling
+            AnyView(
+                cardFormScope.PrimerCardNumberField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        font: .system(.body, design: .monospaced),
+                        backgroundColor: Color.blue.opacity(0.05),
+                        borderColor: .blue,
+                        cornerRadius: 8,
+                        borderWidth: 2,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    )
+                )
+            ),
+            
+            // Expiry date field with step-specific styling
+            AnyView(
+                cardFormScope.PrimerExpiryDateField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.green.opacity(0.05),
+                        borderColor: .green,
+                        cornerRadius: 8,
+                        borderWidth: 2,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    )
+                )
+            ),
+            
+            // CVV field with step-specific styling
+            AnyView(
+                cardFormScope.PrimerCvvField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        font: .system(.body, design: .monospaced),
+                        backgroundColor: Color.orange.opacity(0.05),
+                        borderColor: .orange,
+                        cornerRadius: 8,
+                        borderWidth: 2,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    )
+                )
+            ),
+            
+            // Cardholder name field with step-specific styling
+            AnyView(
+                cardFormScope.PrimerCardholderNameField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.purple.opacity(0.05),
+                        borderColor: .purple,
+                        cornerRadius: 8,
+                        borderWidth: 2,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    )
+                )
+            )
+        ]
+        
+        fieldsInitialized = true
     }
     
     private func startObservingState() {
@@ -331,68 +410,5 @@ private struct SingleInputFieldCardFormView: View {
             EmptyView()
         }
     }
-    
-    @ViewBuilder
-    private var currentFieldView: some View {
-        switch currentFieldIndex {
-        case 0:
-            // Real card number field from SDK with step-specific styling
-            CardNumberInputField(
-                scope: cardFormScope,
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.blue.opacity(0.05),
-                    borderColor: .blue,
-                    focusedBorderColor: .blue,
-                    cornerRadius: 8,
-                    borderWidth: 2,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                )
-            )
-            .frame(height: 50)
-        case 1:
-            // Real expiry date field from SDK with step-specific styling
-            ExpiryDateInputField(
-                scope: cardFormScope,
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.green.opacity(0.05),
-                    borderColor: .green,
-                    focusedBorderColor: .green,
-                    cornerRadius: 8,
-                    borderWidth: 2,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                )
-            )
-            .frame(height: 50)
-        case 2:
-            // Real CVV field from SDK with step-specific styling
-            CVVInputField(
-                scope: cardFormScope,
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.orange.opacity(0.05),
-                    borderColor: .orange,
-                    focusedBorderColor: .orange,
-                    cornerRadius: 8,
-                    borderWidth: 2,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                )
-            )
-            .frame(height: 50)
-        case 3:
-            // Real cardholder name field from SDK with step-specific styling
-            CardholderNameInputField(
-                scope: cardFormScope,
-                styling: PrimerFieldStyling(
-                    backgroundColor: Color.purple.opacity(0.05),
-                    borderColor: .purple,
-                    focusedBorderColor: .purple,
-                    cornerRadius: 8,
-                    borderWidth: 2,
-                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                )
-            )
-            .frame(height: 50)
-        default:
-            EmptyView()
-        }
-    }
+
 }

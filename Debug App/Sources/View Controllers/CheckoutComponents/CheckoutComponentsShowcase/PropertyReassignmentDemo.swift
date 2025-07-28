@@ -236,42 +236,50 @@ private struct DynamicPropertiesCardFormView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(12)
                 
-                // Card form with dynamic properties using real SDK fields
+                // Card form with dynamic properties using ViewBuilder methods
                 VStack(spacing: fieldSpacing) {
                     fieldWrapper(label: "Card Number") {
-                        // Real SDK card number field with dynamic styling
-                        CardNumberInputField(
-                            scope: cardFormScope,
-                            styling: dynamicFieldStyling()
+                        // Use ViewBuilder method with dynamic styling
+                        AnyView(
+                            cardFormScope.PrimerCardNumberField(
+                                label: nil,
+                                styling: dynamicFieldStyling()
+                            )
                         )
                         .frame(height: 50)
                     }
                     
                     HStack(spacing: fieldSpacing) {
                         fieldWrapper(label: "Expiry") {
-                            // Real SDK expiry date field with dynamic styling
-                            ExpiryDateInputField(
-                                scope: cardFormScope,
-                                styling: dynamicFieldStyling()
+                            // Use ViewBuilder method with dynamic styling
+                            AnyView(
+                                cardFormScope.PrimerExpiryDateField(
+                                    label: nil,
+                                    styling: dynamicFieldStyling()
+                                )
                             )
                             .frame(height: 50)
                         }
                         
                         fieldWrapper(label: "CVV") {
-                            // Real SDK CVV field with dynamic styling
-                            CVVInputField(
-                                scope: cardFormScope,
-                                styling: dynamicFieldStyling()
+                            // Use ViewBuilder method with dynamic styling
+                            AnyView(
+                                cardFormScope.PrimerCvvField(
+                                    label: nil,
+                                    styling: dynamicFieldStyling()
+                                )
                             )
                             .frame(height: 50)
                         }
                     }
                     
                     fieldWrapper(label: "Cardholder Name") {
-                        // Real SDK cardholder name field with dynamic styling
-                        CardholderNameInputField(
-                            scope: cardFormScope,
-                            styling: dynamicFieldStyling()
+                        // Use ViewBuilder method with dynamic styling
+                        AnyView(
+                            cardFormScope.PrimerCardholderNameField(
+                                label: nil,
+                                styling: dynamicFieldStyling()
+                            )
                         )
                         .frame(height: 50)
                     }

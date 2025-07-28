@@ -285,69 +285,77 @@ private struct DynamicLayoutCardFormView: View {
     @ViewBuilder
     private var verticalLayout: some View {
         VStack(spacing: 16) {
+            // Card number with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("Card Number")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK card number field
-                CardNumberInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.blue.opacity(0.05),
-                        borderColor: .blue,
-                        cornerRadius: 8,
-                        borderWidth: 1
+                AnyView(
+                    cardFormScope.PrimerCardNumberField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.blue.opacity(0.05),
+                            borderColor: .blue,
+                            cornerRadius: 8,
+                            borderWidth: 1
+                        )
                     )
                 )
                 .frame(height: 50)
             }
             
+            // Expiry date with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("Expiry Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK expiry date field
-                ExpiryDateInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.green.opacity(0.05),
-                        borderColor: .green,
-                        cornerRadius: 8,
-                        borderWidth: 1
+                AnyView(
+                    cardFormScope.PrimerExpiryDateField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.green.opacity(0.05),
+                            borderColor: .green,
+                            cornerRadius: 8,
+                            borderWidth: 1
+                        )
                     )
                 )
                 .frame(height: 50)
             }
             
+            // CVV with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("CVV")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK CVV field
-                CVVInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.orange.opacity(0.05),
-                        borderColor: .orange,
-                        cornerRadius: 8,
-                        borderWidth: 1
+                AnyView(
+                    cardFormScope.PrimerCvvField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.orange.opacity(0.05),
+                            borderColor: .orange,
+                            cornerRadius: 8,
+                            borderWidth: 1
+                        )
                     )
                 )
                 .frame(height: 50)
             }
             
+            // Cardholder name with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("Cardholder Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK cardholder name field
-                CardholderNameInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.purple.opacity(0.05),
-                        borderColor: .purple,
-                        cornerRadius: 8,
-                        borderWidth: 1
+                AnyView(
+                    cardFormScope.PrimerCardholderNameField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.purple.opacity(0.05),
+                            borderColor: .purple,
+                            cornerRadius: 8,
+                            borderWidth: 1
+                        )
                     )
                 )
                 .frame(height: 50)
@@ -363,14 +371,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK card number field
-                    CardNumberInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.blue.opacity(0.05),
-                            borderColor: .blue,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCardNumberField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.blue.opacity(0.05),
+                                borderColor: .blue,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(width: 200, height: 50)
@@ -380,14 +390,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK expiry date field
-                    ExpiryDateInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.green.opacity(0.05),
-                            borderColor: .green,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerExpiryDateField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.green.opacity(0.05),
+                                borderColor: .green,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(width: 100, height: 50)
@@ -397,14 +409,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK CVV field
-                    CVVInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.orange.opacity(0.05),
-                            borderColor: .orange,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCvvField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.orange.opacity(0.05),
+                                borderColor: .orange,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(width: 80, height: 50)
@@ -414,14 +428,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Name")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK cardholder name field
-                    CardholderNameInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.purple.opacity(0.05),
-                            borderColor: .purple,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCardholderNameField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.purple.opacity(0.05),
+                                borderColor: .purple,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(width: 150, height: 50)
@@ -438,14 +454,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Card Number")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK card number field
-                    CardNumberInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.blue.opacity(0.05),
-                            borderColor: .blue,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCardNumberField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.blue.opacity(0.05),
+                                borderColor: .blue,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -455,14 +473,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK expiry date field
-                    ExpiryDateInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.green.opacity(0.05),
-                            borderColor: .green,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerExpiryDateField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.green.opacity(0.05),
+                                borderColor: .green,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -474,14 +494,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK CVV field
-                    CVVInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.orange.opacity(0.05),
-                            borderColor: .orange,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCvvField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.orange.opacity(0.05),
+                                borderColor: .orange,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -491,14 +513,16 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Cardholder")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK cardholder name field
-                    CardholderNameInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.purple.opacity(0.05),
-                            borderColor: .purple,
-                            cornerRadius: 8,
-                            borderWidth: 1
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCardholderNameField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.purple.opacity(0.05),
+                                borderColor: .purple,
+                                cornerRadius: 8,
+                                borderWidth: 1
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -514,15 +538,17 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Card Number")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK card number field
-                CardNumberInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.blue.opacity(0.05),
-                        borderColor: .blue,
-                        cornerRadius: 8,
-                        borderWidth: 1,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                // Use ViewBuilder method
+                AnyView(
+                    cardFormScope.PrimerCardNumberField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.blue.opacity(0.05),
+                            borderColor: .blue,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                        )
                     )
                 )
                 .frame(height: 50)
@@ -533,15 +559,17 @@ private struct DynamicLayoutCardFormView: View {
                     Text("Expiry")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK expiry date field
-                    ExpiryDateInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.green.opacity(0.05),
-                            borderColor: .green,
-                            cornerRadius: 8,
-                            borderWidth: 1,
-                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerExpiryDateField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.green.opacity(0.05),
+                                borderColor: .green,
+                                cornerRadius: 8,
+                                borderWidth: 1,
+                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -551,15 +579,17 @@ private struct DynamicLayoutCardFormView: View {
                     Text("CVV")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    // Real SDK CVV field
-                    CVVInputField(
-                        scope: cardFormScope,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.orange.opacity(0.05),
-                            borderColor: .orange,
-                            cornerRadius: 8,
-                            borderWidth: 1,
-                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                    // Use ViewBuilder method
+                    AnyView(
+                        cardFormScope.PrimerCvvField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: Color.orange.opacity(0.05),
+                                borderColor: .orange,
+                                cornerRadius: 8,
+                                borderWidth: 1,
+                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                            )
                         )
                     )
                     .frame(height: 50)
@@ -570,15 +600,17 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Cardholder Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                // Real SDK cardholder name field
-                CardholderNameInputField(
-                    scope: cardFormScope,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.purple.opacity(0.05),
-                        borderColor: .purple,
-                        cornerRadius: 8,
-                        borderWidth: 1,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                // Use ViewBuilder method
+                AnyView(
+                    cardFormScope.PrimerCardholderNameField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.purple.opacity(0.05),
+                            borderColor: .purple,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+                        )
                     )
                 )
                 .frame(height: 50)

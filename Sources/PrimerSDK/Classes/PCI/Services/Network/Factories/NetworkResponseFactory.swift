@@ -88,11 +88,11 @@ final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
     }
 
     func log(data: Data, metadata: ResponseMetadata) {
-        let url = metadata.responseUrl ?? "Unknown URL"
-        let headersDescription = metadata.headers?.map { (key, value) in
+        _ = metadata.responseUrl ?? "Unknown URL"
+        _ = metadata.headers?.map { (key, value) in
             "  ► \(key): \(value)"
         } ?? ["No headers found"]
-        let body = String(data: data, encoding: .utf8) ?? "N/A"
+        _ = String(data: data, encoding: .utf8) ?? "N/A"
 
         //        logger.debug(message: """
         //

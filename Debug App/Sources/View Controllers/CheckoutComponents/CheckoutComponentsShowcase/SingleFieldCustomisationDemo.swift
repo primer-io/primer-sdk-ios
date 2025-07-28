@@ -147,6 +147,16 @@ struct SingleFieldCustomisationDemo: View {
                 )
             ]
             
+            // Also ensure we have a custom label for the cardholder name field to make it more visible
+            cardScope.cardholderNameField = { label, styling in
+                AnyView(
+                    cardScope.PrimerCardholderNameField(
+                        label: "🎨 Custom Cardholder Name",
+                        styling: styling
+                    )
+                )
+            }
+            
             // That's it! We're NOT setting:
             // - cardScope.cardNumberField
             // - cardScope.expiryDateField  

@@ -67,11 +67,11 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
                 if checkoutScope.availablePaymentMethods.count == 1,
                    let singleMethod = checkoutScope.availablePaymentMethods.first {
                     // Return to single payment method
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type ?? "PAYMENT_CARD")
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
                     // Assume we came from a payment method form, find which one
-                    let cardMethodType = checkoutScope.availablePaymentMethods.first { $0.type == "PAYMENT_CARD" }?.type ?? "PAYMENT_CARD"
+                    let cardMethodType = "PAYMENT_CARD"
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }
@@ -90,11 +90,11 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
                 if checkoutScope.availablePaymentMethods.count == 1,
                    let singleMethod = checkoutScope.availablePaymentMethods.first {
                     // Return to single payment method
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type ?? "PAYMENT_CARD")
+                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
                     // Assume we came from a payment method form, find which one
-                    let cardMethodType = checkoutScope.availablePaymentMethods.first { $0.type == "PAYMENT_CARD" }?.type ?? "PAYMENT_CARD"
+                    let cardMethodType = "PAYMENT_CARD"
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }

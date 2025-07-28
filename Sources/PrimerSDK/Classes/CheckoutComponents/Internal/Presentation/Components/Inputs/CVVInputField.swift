@@ -54,7 +54,7 @@ internal struct CVVInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -108,7 +108,7 @@ internal struct CVVInputField: View, LogReporter {
 
     /// Creates a new CVVInputField with comprehensive customization support
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         cardNetwork: CardNetwork,
@@ -126,9 +126,11 @@ internal struct CVVInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // CVV input field with ZStack architecture
             ZStack {
@@ -156,7 +158,9 @@ internal struct CVVInputField: View, LogReporter {
                             scope: scope
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, errorMessage != nil ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -388,6 +392,10 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             } else {
                 isValid = nil
                 errorMessage = nil
+                // Update scope validation state for incomplete CVV
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
             }
 
             return false
@@ -399,6 +407,10 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             if trimmedCVV.isEmpty {
                 isValid = false // CVV is required
                 errorMessage = nil // Never show error message for empty fields
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
                 return
             }
 
@@ -412,8 +424,18 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.cvv)
-            } else if let message = result.errorMessage {
-                scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(true)
+                }
+            } else {
+                if let message = result.errorMessage {
+                    scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
+                }
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
             }
         }
     }

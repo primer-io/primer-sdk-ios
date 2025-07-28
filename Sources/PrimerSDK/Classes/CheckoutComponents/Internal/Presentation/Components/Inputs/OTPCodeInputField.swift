@@ -13,7 +13,7 @@ internal struct OTPCodeInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -60,7 +60,7 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (scope-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         styling: PrimerFieldStyling? = nil
@@ -75,7 +75,7 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (callback-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         expectedLength: Int,
         onOTPCodeChange: ((String) -> Void)? = nil,
@@ -94,9 +94,11 @@ internal struct OTPCodeInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: tokens?.primerSpaceXsmall ?? 4) {
             // Label
-            Text(label)
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
+                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // OTP input field
             TextField(placeholder, text: $otpCode)
@@ -157,8 +159,6 @@ internal struct OTPCodeInputField: View, LogReporter {
     }
 
     private func validateOTPCode() {
-        guard let validationService = validationService else { return }
-
         // Use OTPCodeRule with expected length
         let otpRule = OTPCodeRule(expectedLength: expectedLength)
         let result = otpRule.validate(otpCode)

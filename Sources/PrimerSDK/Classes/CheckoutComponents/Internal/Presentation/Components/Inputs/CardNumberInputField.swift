@@ -47,7 +47,7 @@ private func convertSwiftUIFontToUIFont(_ font: Font) -> UIFont {
 
 @available(iOS 15.0, *)
 internal struct CardNumberInputField: View, LogReporter {
-    let label: String
+    let label: String?
     let placeholder: String
     let scope: any PrimerCardFormScope
     let selectedNetwork: CardNetwork?
@@ -64,7 +64,7 @@ internal struct CardNumberInputField: View, LogReporter {
     @Environment(\.designTokens) private var tokens
 
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         selectedNetwork: CardNetwork? = nil,
@@ -95,9 +95,11 @@ internal struct CardNumberInputField: View, LogReporter {
 
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             ZStack {
                 RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
@@ -122,7 +124,9 @@ internal struct CardNumberInputField: View, LogReporter {
                             validationService: validationService
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, displayNetwork != .unknown ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, displayNetwork != .unknown ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         TextField(placeholder, text: .constant(""))
@@ -364,65 +368,141 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
             let currentText = cardNumber
             let isDeletion = string.isEmpty
+
+            // Process the text change
+            let newCardNumber = processTextFieldChange(
+                currentText: currentText,
+                range: range,
+                replacementString: string,
+                formattedText: textField.text ?? "",
+                isDeletion: isDeletion
+            )
+
+            // Early return if no change needed
+            guard newCardNumber != currentText || isDeletion else {
+                return false
+            }
+
+            // Update model
+            cardNumber = newCardNumber
+            scope.updateCardNumber(newCardNumber)
+
+            // Update network if needed
+            updateCardNetworkIfNeeded(newCardNumber)
+
+            // Format and update text field
+            let formattedText = formatCardNumber(newCardNumber, for: cardNetwork)
+            textField.text = formattedText
+
+            restoreCursorPosition(
+                textField: textField,
+                formattedText: formattedText,
+                originalCursorPos: savedCursorPosition,
+                isDeletion: isDeletion,
+                insertedLength: isDeletion ? 0 : string.count
+            )
+
+            // Update validation state
+            updateValidationState(newCardNumber)
+
+            return false
+        }
+
+        private func processTextFieldChange(
+            currentText: String,
+            range: NSRange,
+            replacementString string: String,
+            formattedText: String,
+            isDeletion: Bool
+        ) -> String {
             var newCardNumber: String
 
             if isDeletion {
-                if range.length > 0 {
-                    let unformattedRange = getUnformattedRange(
-                        formattedRange: range,
-                        formattedText: textField.text ?? "",
-                        unformattedText: currentText
-                    )
-                    newCardNumber = handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
-                } else if range.location > 0 {
-                    var unformattedPos = 0
-                    for i in 0..<range.location where i < (textField.text?.count ?? 0) {
-                        let textString = textField.text!
-                        let charIndex = textString.index(textString.startIndex, offsetBy: i)
-                        if textString[charIndex].isNumber {
-                            unformattedPos += 1
-                        }
-                    }
-
-                    if unformattedPos > 0 && unformattedPos <= currentText.count {
-                        let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
-                        newCardNumber = currentText.removing(at: index)
-                    } else {
-                        newCardNumber = currentText
-                    }
-                } else {
-                    newCardNumber = currentText
-                }
+                newCardNumber = processDeletion(
+                    currentText: currentText,
+                    range: range,
+                    formattedText: formattedText
+                )
             } else {
                 let filteredText = string.filter { $0.isNumber }
                 if filteredText.isEmpty {
-                    return false
+                    return currentText
                 }
 
-                var unformattedPos = 0
-                for i in 0..<range.location where i < (textField.text?.count ?? 0) {
-                    let textString = textField.text!
-                    let charIndex = textString.index(textString.startIndex, offsetBy: i)
-                    if textString[charIndex].isNumber {
-                        unformattedPos += 1
-                    }
-                }
-
-                if unformattedPos <= currentText.count {
-                    let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos)
-                    newCardNumber = currentText.inserting(contentsOf: filteredText, at: index)
-                } else {
-                    newCardNumber = currentText + filteredText
-                }
+                newCardNumber = processInsertion(
+                    currentText: currentText,
+                    range: range,
+                    formattedText: formattedText,
+                    insertText: filteredText
+                )
             }
 
+            // Limit to 19 digits
             if newCardNumber.count > 19 {
                 newCardNumber = String(newCardNumber.prefix(19))
             }
 
-            cardNumber = newCardNumber
-            scope.updateCardNumber(newCardNumber)
+            return newCardNumber
+        }
 
+        private func processDeletion(
+            currentText: String,
+            range: NSRange,
+            formattedText: String
+        ) -> String {
+            if range.length > 0 {
+                let unformattedRange = getUnformattedRange(
+                    formattedRange: range,
+                    formattedText: formattedText,
+                    unformattedText: currentText
+                )
+                return handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
+            } else if range.location > 0 {
+                let unformattedPos = calculateUnformattedPosition(
+                    upToIndex: range.location,
+                    in: formattedText
+                )
+
+                if unformattedPos > 0 && unformattedPos <= currentText.count {
+                    let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
+                    return currentText.removing(at: index)
+                }
+            }
+
+            return currentText
+        }
+
+        private func processInsertion(
+            currentText: String,
+            range: NSRange,
+            formattedText: String,
+            insertText: String
+        ) -> String {
+            let unformattedPos = calculateUnformattedPosition(
+                upToIndex: range.location,
+                in: formattedText
+            )
+
+            if unformattedPos <= currentText.count {
+                let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos)
+                return currentText.inserting(contentsOf: insertText, at: index)
+            } else {
+                return currentText + insertText
+            }
+        }
+
+        private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int {
+            var unformattedPos = 0
+            for i in 0..<index where i < formattedText.count {
+                let charIndex = formattedText.index(formattedText.startIndex, offsetBy: i)
+                if formattedText[charIndex].isNumber {
+                    unformattedPos += 1
+                }
+            }
+            return unformattedPos
+        }
+
+        private func updateCardNetworkIfNeeded(_ newCardNumber: String) {
             let newNetwork = CardNetwork(cardNumber: newCardNumber)
             if newNetwork != cardNetwork {
                 cardNetwork = newNetwork
@@ -430,16 +510,9 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     scope.updateSelectedCardNetwork(newNetwork.rawValue)
                 }
             }
+        }
 
-            let formattedText = formatCardNumber(newCardNumber, for: cardNetwork)
-            textField.text = formattedText
-
-            restoreCursorPosition(textField: textField,
-                                  formattedText: formattedText,
-                                  originalCursorPos: savedCursorPosition,
-                                  isDeletion: isDeletion,
-                                  insertedLength: isDeletion ? 0 : string.count)
-
+        private func updateValidationState(_ newCardNumber: String) {
             if newCardNumber.count >= 6 {
                 debouncedNetworkDetection(newCardNumber)
             }
@@ -450,9 +523,11 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 isValid = nil
                 errorMessage = nil
                 scope.clearFieldError(.cardNumber)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(false)
+                }
             }
-
-            return false
         }
 
         private func saveCursorPosition(_ textField: UITextField) {
@@ -573,6 +648,10 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if number.count < 13 {
                 isValid = nil
                 errorMessage = nil
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(false)
+                }
                 return
             }
 
@@ -584,9 +663,17 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 if validationResult.isValid {
                     isValid = true
                     errorMessage = nil
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        scope.updateCardNumberValidationState(true)
+                    }
                 } else {
                     isValid = nil
                     errorMessage = nil
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        scope.updateCardNumberValidationState(false)
+                    }
                 }
             } else if number.count >= 16 {
                 let validationResult = validationService.validateCardNumber(number)
@@ -594,13 +681,25 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 if validationResult.isValid {
                     isValid = true
                     errorMessage = nil
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        scope.updateCardNumberValidationState(true)
+                    }
                 } else {
                     isValid = nil
                     errorMessage = nil
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        scope.updateCardNumberValidationState(false)
+                    }
                 }
             } else {
                 isValid = nil
                 errorMessage = nil
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(false)
+                }
             }
         }
 
@@ -611,6 +710,10 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if trimmedNumber.isEmpty {
                 isValid = false
                 errorMessage = nil
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(false)
+                }
                 return
             }
 
@@ -620,10 +723,18 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if validationResult.isValid {
                 errorMessage = nil
                 scope.clearFieldError(.cardNumber)
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(true)
+                }
             } else {
                 errorMessage = validationResult.errorMessage
                 if let errorMessage = validationResult.errorMessage {
                     scope.setFieldError(.cardNumber, message: errorMessage, errorCode: validationResult.errorCode)
+                }
+                // Update scope validation state
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardNumberValidationState(false)
                 }
             }
         }

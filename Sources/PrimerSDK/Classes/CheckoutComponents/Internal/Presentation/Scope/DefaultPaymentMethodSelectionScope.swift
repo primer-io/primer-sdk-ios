@@ -43,13 +43,11 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     // MARK: - Private Properties
 
     private weak var checkoutScope: DefaultCheckoutScope?
-    private let diContainer: DIContainer
 
     // MARK: - Initialization
 
     init(checkoutScope: DefaultCheckoutScope) {
         self.checkoutScope = checkoutScope
-        self.diContainer = checkoutScope.diContainer
 
         Task {
             await loadPaymentMethods()
@@ -82,7 +80,6 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                         throw NSError(domain: "DIContainer", code: 1, userInfo: [NSLocalizedDescriptionKey: "DIContainer.current is nil"])
                     }
                     mapper = try await container.resolve(PaymentMethodMapper.self)
-                    logger.debug(message: "💰🪲 [PaymentMethodSelection] PaymentMethodMapper resolved from DI container")
                 } catch {
                     logger.error(message: "❌ [PaymentMethodSelection] Failed to resolve PaymentMethodMapper: \(error)")
                     // Fallback to manual creation without surcharge data
@@ -104,7 +101,6 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
                 // Use PaymentMethodMapper to properly format surcharge data
                 let composablePaymentMethods = mapper.mapToPublic(paymentMethods)
-                logger.debug(message: "💰🪲 [PaymentMethodSelection] PaymentMethodMapper.mapToPublic() completed for \(composablePaymentMethods.count) methods")
 
                 internalState.paymentMethods = composablePaymentMethods
                 internalState.filteredPaymentMethods = composablePaymentMethods

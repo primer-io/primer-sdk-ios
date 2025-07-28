@@ -13,7 +13,7 @@ internal struct CountryInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -86,7 +86,7 @@ internal struct CountryInputField: View, LogReporter {
 
     /// Creates a new CountryInputField with comprehensive customization support
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
@@ -104,9 +104,11 @@ internal struct CountryInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // Country field with selector button using Button with HStack layout
             Button(action: {
@@ -125,7 +127,7 @@ internal struct CountryInputField: View, LogReporter {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.isNavigating = false
                 }
-            }) {
+            }, label: {
                 ZStack {
                     // Background and border styling
                     RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
@@ -163,7 +165,7 @@ internal struct CountryInputField: View, LogReporter {
                     .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
                     .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                 }
-            }
+            })
             .buttonStyle(PlainButtonStyle())
             .disabled(isNavigating)
             .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
@@ -236,8 +238,16 @@ internal struct CountryInputField: View, LogReporter {
         // Update scope state based on validation
         if result.isValid {
             scope.clearFieldError(.countryCode)
+            // Update scope validation state
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateCountryCodeValidationState(true)
+            }
         } else if let message = result.errorMessage {
             scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
+            // Update scope validation state
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateCountryCodeValidationState(false)
+            }
         }
     }
 }

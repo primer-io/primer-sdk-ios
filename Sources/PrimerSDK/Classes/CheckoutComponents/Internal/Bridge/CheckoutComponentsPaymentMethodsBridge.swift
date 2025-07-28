@@ -35,7 +35,7 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
         logger.info(message: "📊 [PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration")
 
         // Filter payment methods based on CheckoutComponents support (only show implemented payment methods)
-        let filteredMethods = filterPaymentMethodsBySupport(paymentMethods)
+        let filteredMethods = await filterPaymentMethodsBySupport(paymentMethods)
         logger.info(message: "🔍 [PaymentMethodsBridge] Filtered to \(filteredMethods.count) payment methods based on CheckoutComponents support")
 
         // Convert filtered PrimerPaymentMethod to InternalPaymentMethod with surcharge data
@@ -173,32 +173,51 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
     }
 
     /// Filter payment methods based on CheckoutComponents support (only show implemented payment methods)
-    private func filterPaymentMethodsBySupport(_ paymentMethods: [PrimerPaymentMethod]) -> [PrimerPaymentMethod] {
-        // For iOS 15+, use PaymentMethodRegistry to get supported payment methods
+    private func filterPaymentMethodsBySupport(_ paymentMethods: [PrimerPaymentMethod]) async -> [PrimerPaymentMethod] {
         if #available(iOS 15.0, *) {
-            // Get payment methods that CheckoutComponents can actually handle
-            // Note: We need to access this synchronously since we can't make this method async
-            // PaymentMethodRegistry.shared.registeredTypes is currently ["PAYMENT_CARD"]
-            let supportedPaymentMethods = ["PAYMENT_CARD", "PAYPAL"] // Hardcoded for now since only card is implemented
-
-            logger.debug(message: "🔍 [PaymentMethodsBridge] CheckoutComponents supports: \(supportedPaymentMethods.joined(separator: ", "))")
-
-            // Filter payment methods to only include those CheckoutComponents can handle
-            let filteredMethods = paymentMethods.filter { primerMethod in
-                let isSupported = supportedPaymentMethods.contains(primerMethod.type)
-                if !isSupported {
-                    logger.debug(message: "🔍 [PaymentMethodsBridge] Filtering out: \(primerMethod.type) - not implemented in CheckoutComponents")
-                } else {
-                    logger.debug(message: "🔍 [PaymentMethodsBridge] Including: \(primerMethod.type) - supported by CheckoutComponents")
-                }
-                return isSupported
+            // ⚠️ WARNING: DEMO ONLY - REMOVE BEFORE PRODUCTION ⚠️
+            // TODO: Delete this entire hardcoded section and uncomment the proper filtering below
+            // This is temporarily hardcoded to show both Card and PayPal for demo purposes
+            // PayPal is NOT implemented in CheckoutComponents and will cause runtime errors if selected
+            let demoPaymentMethods = ["PAYMENT_CARD", "PAYPAL"]
+            let filtered = paymentMethods.filter { method in
+                demoPaymentMethods.contains(method.type)
             }
+            logger.warn(message: "⚠️ [PaymentMethodsBridge] DEMO MODE: Hardcoded to show Card and PayPal. REMOVE BEFORE PRODUCTION!")
+            logger.debug(message: "🔍 [PaymentMethodsBridge] Demo filtering: \(paymentMethods.count) methods to \(filtered.count) demo types")
+            return filtered
+            // ⚠️ END OF DEMO CODE - DELETE ABOVE AND UNCOMMENT BELOW ⚠️
 
-            return filteredMethods
+            /*
+             // PRODUCTION CODE - UNCOMMENT THIS SECTION
+             // Get registered payment methods from the registry
+             let registeredTypesArray = await PaymentMethodRegistry.shared.registeredTypes
+             let registeredTypes = Set(registeredTypesArray)
+
+             logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
+
+             // Filter to only include registered payment methods
+             let filtered = paymentMethods.filter { method in
+             let isRegistered = registeredTypes.contains(method.type)
+             if !isRegistered {
+             logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
+             }
+             return isRegistered
+             }
+
+             logger.debug(message: "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types")
+
+             // Log each filtered method
+             for method in filtered {
+             logger.debug(message: "✅ [PaymentMethodsBridge] Keeping registered payment method: \(method.type)")
+             }
+
+             return filtered
+             */
         } else {
-            // For iOS < 15.0, CheckoutComponents is not available, return all payment methods
-            logger.debug(message: "🔍 [PaymentMethodsBridge] iOS < 15.0, CheckoutComponents not available, returning all payment methods")
-            return paymentMethods
+            // For iOS < 15.0, CheckoutComponents is not available, return empty array
+            logger.debug(message: "🔍 [PaymentMethodsBridge] iOS < 15.0, CheckoutComponents not available, returning empty array")
+            return []
         }
     }
 }

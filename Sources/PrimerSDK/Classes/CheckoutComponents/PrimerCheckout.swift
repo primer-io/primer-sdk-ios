@@ -52,9 +52,6 @@ public struct PrimerCheckout: View {
     /// Optional completion callback for dismissal handling
     private let onCompletion: (() -> Void)?
 
-    /// DI container (internal use only)
-    internal let diContainer: DIContainer
-
     /// Navigator (internal use only)
     internal let navigator: CheckoutNavigator
 
@@ -78,7 +75,6 @@ public struct PrimerCheckout: View {
         self.scope = scope
         self.customContent = nil
         self.onCompletion = onCompletion
-        self.diContainer = DIContainer.shared
         self.navigator = CheckoutNavigator()
         self.presentationContext = .fromPaymentSelection // Default context
     }
@@ -97,7 +93,6 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = { scope in AnyView(customContent(scope)) }
         self.onCompletion = onCompletion
-        self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = .fromPaymentSelection // Default context
     }
@@ -115,7 +110,6 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = nil
         self.onCompletion = onCompletion
-        self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = .fromPaymentSelection // Default context
     }
@@ -134,7 +128,6 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion
-        self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = .fromPaymentSelection // Default context
     }
@@ -153,7 +146,6 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = nil
         self.onCompletion = onCompletion
-        self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
     }
@@ -173,7 +165,6 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion
-        self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
     }
@@ -182,7 +173,7 @@ public struct PrimerCheckout: View {
         InternalCheckout(
             clientToken: clientToken,
             settings: settings,
-            diContainer: diContainer,
+            diContainer: DIContainer.shared,
             navigator: navigator,
             scope: scope,
             customContent: customContent,
@@ -283,7 +274,7 @@ internal struct InternalCheckout: View {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         try await initializeAPIConfiguration()
 
-        let composableContainer = ComposableContainer()
+        let composableContainer = ComposableContainer(settings: settings)
         await composableContainer.configure()
     }
 

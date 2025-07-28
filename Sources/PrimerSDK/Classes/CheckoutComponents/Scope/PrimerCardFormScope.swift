@@ -223,19 +223,125 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     // The following features are placeholders for future vaulting functionality.
     // They are commented out to indicate planned support but are not yet implemented.
 
-    /// Save card toggle for vaulting (Future feature).
-    /// When enabled, allows users to save their card for future payments.
+    // Future features for card vaulting:
     // @ViewBuilder func PrimerSaveCardToggle(isOn: Binding<Bool>) -> any View
-
-    /// Saved cards selector (Future feature).
-    /// When enabled, shows previously saved cards for selection.
     // var savedCardsSelector: (@ViewBuilder (_ savedCards: [SavedCard], _ onSelect: @escaping (SavedCard) -> Void) -> any View)? { get set }
-
-    /// Update method for save card preference (Future feature).
     // func updateSaveCard(_ save: Bool)
-
-    /// Select a saved card (Future feature).
     // func selectSavedCard(_ cardId: String)
+
+    // MARK: - ViewBuilder Methods for SDK Components
+
+    /// Returns a Primer card number input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the card number input field.
+    @ViewBuilder func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer expiry date input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the expiry date input field.
+    @ViewBuilder func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer CVV input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the CVV input field.
+    @ViewBuilder func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer cardholder name input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the cardholder name input field.
+    @ViewBuilder func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer country selection field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the country selection field.
+    @ViewBuilder func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer postal code input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the postal code input field.
+    @ViewBuilder func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer city input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the city input field.
+    @ViewBuilder func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer state/province input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the state input field.
+    @ViewBuilder func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer address line 1 input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the address line 1 input field.
+    @ViewBuilder func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer address line 2 input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the address line 2 input field.
+    @ViewBuilder func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer first name input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the first name input field.
+    @ViewBuilder func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer last name input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the last name input field.
+    @ViewBuilder func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer email input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the email input field.
+    @ViewBuilder func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer phone number input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the phone number input field.
+    @ViewBuilder func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer retail outlet input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the retail outlet input field.
+    @ViewBuilder func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> any View
+
+    /// Returns a Primer OTP code input field component that can be customized with SwiftUI modifiers.
+    /// - Parameters:
+    ///   - label: Optional label text for the field. If not specified, a default label will be used.
+    ///   - styling: Optional styling configuration for the field.
+    /// - Returns: A view representing the OTP code input field.
+    @ViewBuilder func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
 
     // MARK: - Validation State Communication
 

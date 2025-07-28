@@ -55,7 +55,7 @@ internal struct AddressLineInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
-    let label: String
+    let label: String?
 
     /// Placeholder text for the input field
     let placeholder: String
@@ -117,7 +117,7 @@ internal struct AddressLineInputField: View, LogReporter {
 
     /// Creates a new AddressLineInputField with comprehensive customization support (scope-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         isRequired: Bool,
         inputType: PrimerInputElementType,
@@ -136,7 +136,7 @@ internal struct AddressLineInputField: View, LogReporter {
 
     /// Creates a new AddressLineInputField with comprehensive customization support (callback-based)
     internal init(
-        label: String,
+        label: String?,
         placeholder: String,
         isRequired: Bool,
         inputType: PrimerInputElementType,
@@ -159,9 +159,11 @@ internal struct AddressLineInputField: View, LogReporter {
     var body: some View {
         VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
             // Label with custom styling support
-            Text(label)
-                .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            if let label = label {
+                Text(label)
+                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
+                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+            }
 
             // Address input field with ZStack architecture
             ZStack {
@@ -193,7 +195,9 @@ internal struct AddressLineInputField: View, LogReporter {
                             onValidationChange: onValidationChange
                         )
                         .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, errorMessage != nil ?
+                                    (tokens?.primerSizeXxlarge ?? 60) :
+                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -445,6 +449,18 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 isValid = true // Optional fields are always valid while typing
             }
 
+            // Update scope validation state while typing
+            if let scope = scope as? DefaultCardFormScope {
+                switch inputType {
+                case .addressLine1:
+                    scope.updateAddressLine1ValidationState(isValid)
+                case .addressLine2:
+                    scope.updateAddressLine2ValidationState(isValid)
+                default:
+                    break
+                }
+            }
+
             return false
         }
 
@@ -459,6 +475,18 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
                 // Clear any scope errors for empty fields
                 scope?.clearFieldError(inputType)
+
+                // Update scope validation state for empty fields
+                if let scope = scope as? DefaultCardFormScope {
+                    switch inputType {
+                    case .addressLine1:
+                        scope.updateAddressLine1ValidationState(isValid)
+                    case .addressLine2:
+                        scope.updateAddressLine2ValidationState(isValid)
+                    default:
+                        break
+                    }
+                }
                 return
             }
 
@@ -487,8 +515,30 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
             if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .addressLine1:
+                            scope.updateAddressLine1ValidationState(true)
+                        case .addressLine2:
+                            scope.updateAddressLine2ValidationState(true)
+                        default:
+                            break
+                        }
+                    }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
+                    // Update scope validation state
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .addressLine1:
+                            scope.updateAddressLine1ValidationState(false)
+                        case .addressLine2:
+                            scope.updateAddressLine2ValidationState(false)
+                        default:
+                            break
+                        }
+                    }
                 }
 
             }

@@ -95,7 +95,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Private Properties
 
     private weak var checkoutScope: DefaultCheckoutScope?
-    private let diContainer: DIContainer
     private var processCardPaymentInteractor: ProcessCardPaymentInteractor?
     private var validateInputInteractor: ValidateInputInteractor?
 
@@ -134,7 +133,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     init(checkoutScope: DefaultCheckoutScope, presentationContext: PresentationContext = .fromPaymentSelection) {
         self.checkoutScope = checkoutScope
-        self.diContainer = DIContainer.shared
         self.presentationContext = presentationContext
 
         // Log the presentation context initialization
@@ -294,16 +292,22 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     public func updateExpiryMonth(_ month: String) {
-        logger.debug(message: "Updating expiry month: \(month)")
-        structuredState.data[.expiryMonth] = month
-        updateExpiryDateFromComponents()
+        logger.debug(message: "Updating expiry month")
+        // Parse current expiry date and update month component
+        let currentExpiry = structuredState.data[.expiryDate]
+        let components = currentExpiry.components(separatedBy: "/")
+        let year = components.count >= 2 ? components[1] : ""
+        structuredState.data[.expiryDate] = "\(month)/\(year)"
         updateCardData()
     }
 
     public func updateExpiryYear(_ year: String) {
-        logger.debug(message: "Updating expiry year: \(year)")
-        structuredState.data[.expiryYear] = year
-        updateExpiryDateFromComponents()
+        logger.debug(message: "Updating expiry year")
+        // Parse current expiry date and update year component
+        let currentExpiry = structuredState.data[.expiryDate]
+        let components = currentExpiry.components(separatedBy: "/")
+        let month = components.count >= 1 ? components[0] : ""
+        structuredState.data[.expiryDate] = "\(month)/\(year)"
         updateCardData()
     }
 
@@ -410,7 +414,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     func handleDetectedNetworks(_ networks: [CardNetwork]) {
         logger.debug(message: "🌐 [CardForm] CardDetailsView detected networks: \(networks.map { $0.displayName })")
         // The actual network detection is handled via the stream in setupNetworkDetectionStream
-        // This method is kept for compatibility but the real work happens in the stream
     }
 
     public func updateRetailOutlet(_ retailOutlet: String) {
@@ -702,6 +705,106 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
+    // MARK: - Individual Field Validation Methods
+
+    /// Updates validation state for card number field specifically
+    public func updateCardNumberValidationState(_ isValid: Bool) {
+        fieldValidationStates.cardNumber = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [CardNumber] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for CVV field specifically
+    public func updateCvvValidationState(_ isValid: Bool) {
+        fieldValidationStates.cvv = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [CVV] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for expiry date field specifically
+    public func updateExpiryValidationState(_ isValid: Bool) {
+        fieldValidationStates.expiry = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [Expiry] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for cardholder name field specifically
+    public func updateCardholderNameValidationState(_ isValid: Bool) {
+        fieldValidationStates.cardholderName = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [CardholderName] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for postal code field specifically
+    public func updatePostalCodeValidationState(_ isValid: Bool) {
+        fieldValidationStates.postalCode = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [PostalCode] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for city field specifically
+    public func updateCityValidationState(_ isValid: Bool) {
+        fieldValidationStates.city = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [City] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for state field specifically
+    public func updateStateValidationState(_ isValid: Bool) {
+        fieldValidationStates.state = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [State] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for address line 1 field specifically
+    public func updateAddressLine1ValidationState(_ isValid: Bool) {
+        fieldValidationStates.addressLine1 = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [AddressLine1] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for address line 2 field specifically
+    public func updateAddressLine2ValidationState(_ isValid: Bool) {
+        fieldValidationStates.addressLine2 = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [AddressLine2] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for first name field specifically
+    public func updateFirstNameValidationState(_ isValid: Bool) {
+        fieldValidationStates.firstName = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [FirstName] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for last name field specifically
+    public func updateLastNameValidationState(_ isValid: Bool) {
+        fieldValidationStates.lastName = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [LastName] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for email field specifically
+    public func updateEmailValidationState(_ isValid: Bool) {
+        fieldValidationStates.email = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [Email] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for phone number field specifically
+    public func updatePhoneNumberValidationState(_ isValid: Bool) {
+        fieldValidationStates.phoneNumber = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [PhoneNumber] Validation state updated: \(isValid)")
+    }
+
+    /// Updates validation state for country code field specifically
+    public func updateCountryCodeValidationState(_ isValid: Bool) {
+        fieldValidationStates.countryCode = isValid
+        updateFieldValidationState()
+        logger.debug(message: "🔍 [CountryCode] Validation state updated: \(isValid)")
+    }
+
     // MARK: - Structured State Implementation (Android Parity)
 
     /// Implementation of getFieldValue using structured state
@@ -736,6 +839,181 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         formConfiguration = configuration
         structuredState.configuration = configuration
         logger.info(message: "🔍 [StructuredState] Updated form configuration: \(configuration.allFields.map { $0.displayName })")
+    }
+
+    // MARK: - ViewBuilder Method Implementations
+
+    @ViewBuilder
+    public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        CardNumberInputField(
+            label: label,
+            placeholder: "1234 1234 1234 1234",
+            scope: self,
+            selectedNetwork: structuredState.selectedNetwork?.network,
+            styling: styling ?? defaultFieldStyling?["cardNumber"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        ExpiryDateInputField(
+            label: label,
+            placeholder: "12/25",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["expiryDate"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        CVVInputField(
+            label: label,
+            placeholder: getCardNetworkForCvv() == .amex ? "1234" : "123",
+            scope: self,
+            cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
+            styling: styling ?? defaultFieldStyling?["cvv"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        CardholderNameInputField(
+            label: label,
+            placeholder: "Full name",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["cardholderName"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        CountryInputFieldWrapper(
+            scope: self,
+            label: label,
+            placeholder: "Select Country",
+            styling: styling ?? defaultFieldStyling?["country"],
+            onValidationChange: nil,
+            onOpenCountrySelector: nil
+        )
+    }
+    @ViewBuilder
+    public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        PostalCodeInputField(
+            label: label,
+            placeholder: "Postal Code",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["postalCode"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        CityInputField(
+            label: label,
+            placeholder: "City",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["city"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        StateInputField(
+            label: label,
+            placeholder: "State",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["state"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> any View {
+        AddressLineInputField(
+            label: label,
+            placeholder: "Address Line 1",
+            isRequired: true,
+            inputType: .addressLine1,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["addressLine1"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> any View {
+        AddressLineInputField(
+            label: label,
+            placeholder: "Address Line 2",
+            isRequired: false,
+            inputType: .addressLine2,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["addressLine2"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        NameInputField(
+            label: label,
+            placeholder: "First Name",
+            inputType: .firstName,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["firstName"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        NameInputField(
+            label: label,
+            placeholder: "Last Name",
+            inputType: .lastName,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["lastName"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        EmailInputField(
+            label: label,
+            placeholder: "Email",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["email"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        // Note: PhoneNumberInputField might not exist, using NameInputField as placeholder
+        NameInputField(
+            label: label,
+            placeholder: "Phone Number",
+            inputType: .phoneNumber,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["phoneNumber"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        // Note: RetailOutletInputField might not exist, using NameInputField as placeholder
+        NameInputField(
+            label: label,
+            placeholder: "Retail Outlet",
+            inputType: .retailer,
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["retailOutlet"]
+        )
+    }
+
+    @ViewBuilder
+    public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> any View {
+        OTPCodeInputField(
+            label: label,
+            placeholder: "OTP Code",
+            scope: self,
+            styling: styling ?? defaultFieldStyling?["otpCode"]
+        )
     }
 }
 
