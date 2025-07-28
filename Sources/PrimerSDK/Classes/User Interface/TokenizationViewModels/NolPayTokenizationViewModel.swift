@@ -155,12 +155,14 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
-        let sessionInfo = await NolPaySessionInfo(platform: "IOS",
-                                                  mobileCountryCode: mobileCountryCode,
-                                                  mobileNumber: mobileNumber,
-                                                  nolPayCardNumber: nolPayCardNumber,
-                                                  phoneVendor: "Apple",
-                                                  phoneModel: UIDevice.modelIdentifier ?? "iPhone")
+        let sessionInfo = await NolPaySessionInfo(
+            platform: "IOS",
+            mobileCountryCode: mobileCountryCode,
+            mobileNumber: mobileNumber,
+            nolPayCardNumber: nolPayCardNumber,
+            phoneVendor: "Apple",
+            phoneModel: UIDevice.modelIdentifier ?? "iPhone"
+        )
 
         return try await tokenizationService.tokenize(
             requestBody: Request.Body.Tokenization(
