@@ -239,13 +239,14 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     switch result {
                     case .success(let res):
                         guard let url = URL(string: res.approvalUrl) else {
-                            let err = PrimerError.invalidValue(key: "res.approvalUrl",
-                                                               value: res.approvalUrl,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            return seal.reject(
+                                handled(
+                                    primerError: .invalidValue(
+                                        key: "res.approvalUrl",
+                                        value: res.approvalUrl
+                                    )
+                                )
+                            )
                         }
 
                         self.orderId = res.orderId
@@ -260,13 +261,8 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
-                            let err = PrimerError.invalidValue(key: "billingAgreement.response.url",
-                                                               value: urlStr,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
+                            let error = handled(primerError: .invalidValue(key: "billingAgreement.response.url", value: urlStr))
+                            return seal.reject(error)
                         }
 
                         seal.fulfill(url)
@@ -368,14 +364,8 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             } else {
-                guard let orderId = orderId else {
-                    let err = PrimerError.invalidValue(key: "orderId",
-                                                       value: orderId,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                guard let orderId else {
+                    return seal.reject(handled(primerError: .invalidValue(key: "orderId")))
                 }
 
                 firstly {
@@ -539,11 +529,7 @@ final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         payPalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):
-                let contaiinerErr = PrimerError.failedToCreateSession(error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                completion(nil, contaiinerErr)
+                completion(nil, handled(primerError: .failedToCreateSession(error: err)))
             case .success(let res):
                 self.confirmBillingAgreementResponse = res
                 completion(res, nil)
