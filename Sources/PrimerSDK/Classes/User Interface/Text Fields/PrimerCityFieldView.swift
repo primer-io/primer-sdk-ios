@@ -13,10 +13,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCity
-        validationError = .invalidCity(
-            message: "City is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidCity(message: "City is not valid.")
         isValid = { text in
             return text.isValidNonDecimalString
         }
