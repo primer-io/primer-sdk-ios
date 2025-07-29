@@ -161,34 +161,6 @@ public extension CheckoutComponentsDelegate {
         shared.dismiss(animated: animated, completion: completion)
     }
 
-    /// Internal dismiss method that doesn't call delegate (to avoid circular calls)
-    /// Used by PrimerUIManager to prevent circular delegate calls
-    internal func dismissWithoutDelegate(animated: Bool = true, completion: (() -> Void)? = nil) {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout (without delegate) through traditional UI")
-
-        guard activeCheckoutController != nil else {
-            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] No active checkout to dismiss")
-            completion?()
-            return
-        }
-
-        // Reset the presenting flag immediately
-        isPresentingCheckout = false
-
-        // Dismiss the modal presentation
-        if let controller = activeCheckoutController {
-            controller.dismiss(animated: animated) { [weak self] in
-                self?.activeCheckoutController = nil
-                self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Modal checkout dismissed (without delegate)")
-                completion?()
-            }
-        } else {
-            // Clean up references if controller is nil
-            activeCheckoutController = nil
-            logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
-            completion?()
-        }
-    }
 
     // MARK: - Instance Methods
 
@@ -219,11 +191,6 @@ public extension CheckoutComponentsDelegate {
         }
     }
 
-    /// Internal method for handling payment success (without result)
-    internal func handlePaymentSuccess() {
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
-        handlePaymentSuccess(PaymentResult(paymentId: "unknown", status: .success))
-    }
 
     /// Internal method for handling payment failure
     internal func handlePaymentFailure(_ error: PrimerError) {
@@ -544,12 +511,6 @@ extension CheckoutComponentsPrimer {
         )
     }
 
-    /// Configure CheckoutComponents before presentation
-    /// - Parameter configuration: Configuration closure
-    public static func configure(_ configuration: () -> Void) {
-        // Future: Add configuration options
-        configuration()
-    }
 }
 
 // MARK: - Integration Helpers
@@ -567,12 +528,6 @@ extension CheckoutComponentsPrimer {
         return shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
 
-    /// Reset presentation state (useful for error recovery)
-    @objc public static func resetPresentationState() {
-        shared.logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Resetting presentation state")
-        shared.isPresentingCheckout = false
-        shared.activeCheckoutController = nil
-    }
 
     private func findPresentingViewController() -> UIViewController? {
         // Find the topmost view controller
@@ -601,37 +556,6 @@ extension CheckoutComponentsPrimer {
         }
 
         return viewController
-    }
-
-    // MARK: - Settings Change Handling
-
-    /// Notify CheckoutComponents about PrimerSettings changes for dynamic updates
-    /// Call this method whenever PrimerSettings.current is updated to ensure
-    /// CheckoutComponents reflects the new configuration immediately
-    /// - Parameter newSettings: The updated PrimerSettings configuration
-    public static func notifySettingsChanged(_ newSettings: PrimerSettings) {
-        shared.logger.info(message: "🔧 [CheckoutComponentsPrimer] Settings change notification received")
-
-        Task {
-            // Get settings observer from DI container if available
-            if let container = await DIContainer.current {
-                do {
-                    let observer = try await container.resolve(SettingsObserver.self)
-                    await observer.settingsDidUpdate(newSettings)
-                    shared.logger.info(message: "✅ [CheckoutComponentsPrimer] Settings change propagated to CheckoutComponents")
-                } catch {
-                    shared.logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to resolve settings observer: \(error)")
-                }
-            } else {
-                shared.logger.warn(message: "⚠️ [CheckoutComponentsPrimer] DI container not available for settings change notification")
-            }
-        }
-    }
-
-    /// Convenience method to notify settings changed using current global settings
-    /// This is useful when you know settings have changed but don't have the specific instance
-    @objc public static func notifySettingsChanged() {
-        notifySettingsChanged(PrimerSettings.current)
     }
 }
 
