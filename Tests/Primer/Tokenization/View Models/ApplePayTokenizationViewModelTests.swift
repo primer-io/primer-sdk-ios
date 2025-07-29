@@ -1,10 +1,3 @@
-//
-//  ApplePayTokenizationViewModelTests.swift
-//
-//
-//  Created by Jack Newcombe on 23/05/2024.
-//
-
 import XCTest
 import PassKit
 @testable import PrimerSDK
@@ -161,23 +154,21 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 
         let expectDidPresent = self.expectation(description: "Did present ApplePay")
         applePayPresentationManager.onPresent = { _, delegate in
-            Promise { seal in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    let dummyController = PKPaymentAuthorizationController()
-                    delegate.paymentAuthorizationController?(dummyController,
-                                                             didAuthorizePayment: MockPKPayment(),
-                                                             handler: { _ in })
-                    delegate.paymentAuthorizationControllerDidFinish(dummyController)
-                }
-                expectDidPresent.fulfill()
-                seal.fulfill()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                let dummyController = PKPaymentAuthorizationController()
+                delegate.paymentAuthorizationController?(dummyController,
+                                                         didAuthorizePayment: MockPKPayment(),
+                                                         handler: { _ in })
+                delegate.paymentAuthorizationControllerDidFinish(dummyController)
             }
+            expectDidPresent.fulfill()
+            return .success(())
         }
 
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
+            return .success(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
@@ -690,21 +681,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                                                                   selectedShippingMethod: "default")
         )
     ]
-
-}
-
-private class MockApplePayPresentationManager: ApplePayPresenting {
-    var isPresentable: Bool = true
-
-    var errorForDisplay: Error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
-                                                                          userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-
-    var onPresent: ((ApplePayRequest, PKPaymentAuthorizationControllerDelegate) -> Promise<Void>)?
-
-    func present(withRequest applePayRequest: ApplePayRequest, delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
-        return onPresent?(applePayRequest, delegate) ?? Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-    }
 
 }
 

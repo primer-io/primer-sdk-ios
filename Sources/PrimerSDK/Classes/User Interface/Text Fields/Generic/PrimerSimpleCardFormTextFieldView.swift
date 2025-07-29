@@ -43,9 +43,8 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            if let validationError = validationError {
-                ErrorHandler.handle(error: validationError)
-                validation = .invalid(validationError)
+            if let validationError {
+                validation = .invalid(handled(primerValidationError: validationError))
             }
         default:
             validation = .notAvailable

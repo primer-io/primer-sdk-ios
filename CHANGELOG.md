@@ -1,3 +1,21 @@
+## 2.39.1 (2025-07-23)
+
+### Fix
+
+- Convert 2-digit expiry years to 4-digit in headless checkout (#1261)
+- Fix Klarna payment method manager category (#1254)
+
+### Refactor
+
+- Migrate StripeAchTokenizationViewModel (#1255)
+- Clean up error handling in UserInterface (#1259)
+- Migrate CardFormPaymentMethodTokenizationViewModel (#1227)
+- Migrate PaymentMethodTokenizationViewModel (#1257)
+- Clean up error handling in Core (#1253)
+- Improve PrimerUIManager threading (#1249)
+- Introduce `handled` + use in Data Models (#1245)
+- Improve TokenizationProtocols threading (#1246)
+
 ## 2.39.0 (2025-07-15)
 
 ### Feat

@@ -10,10 +10,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         isValid = { text in
             return !text.isEmpty
         }
-        validationError = .invalidAddress(
-            message: "Address is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidAddress(message: "Address is not valid.")
     }
 }
 
