@@ -47,7 +47,7 @@ final class ErrorHandler: LogReporter {
                 context: primerError.analyticsContext
             )
 
-            if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
+            if let createdAt = (primerError.errorUserInfo["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
         } else {

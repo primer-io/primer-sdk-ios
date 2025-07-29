@@ -254,39 +254,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         }
     }
 
-    var info: [String: Any]? {
-        var tmpUserInfo: [String: Any] = errorUserInfo
-
-        switch self {
-        case .invalidCardholderName(_, let userInfo, _),
-             .invalidCardnumber(_, let userInfo, _),
-             .invalidCvv(_, let userInfo, _),
-             .invalidExpiryDate(_, let userInfo, _),
-             .invalidPostalCode(_, let userInfo, _),
-             .invalidFirstName(_, let userInfo, _),
-             .invalidLastName(_, let userInfo, _),
-             .invalidAddress(_, let userInfo, _),
-             .invalidCity(_, let userInfo, _),
-             .invalidState(_, let userInfo, _),
-             .invalidCountry(_, let userInfo, _),
-             .invalidPhoneNumber(_, let userInfo, _),
-             .invalidRawData(let userInfo, _),
-             .invalidRetailer(_, let userInfo, _),
-             .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
-             .invalidOTPCode(_, let userInfo, _),
-             .invalidCardType(_, let userInfo, _),
-             .invalidBankId(_, let userInfo, _),
-             .banksNotLoaded(let userInfo, _),
-             .sessionNotCreated(let userInfo, _),
-             .invalidPaymentCategory(let userInfo, _),
-             .paymentAlreadyFinalized(let userInfo, _),
-             .invalidUserDetails(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        }
-
-        return tmpUserInfo
-    }
-
     public var errorUserInfo: [String: Any] {
         var tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
