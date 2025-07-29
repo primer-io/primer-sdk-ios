@@ -68,7 +68,6 @@ private struct CardNetworkBadge: View, LogReporter {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: FigmaDesignConstants.cardBadgeWidth, height: FigmaDesignConstants.cardBadgeHeight)
                     .padding(2)
-                    .background(backgroundColorForNetwork(network))
                     .cornerRadius(FigmaDesignConstants.cardBadgeRadius)
                     .overlay(
                         RoundedRectangle(cornerRadius: FigmaDesignConstants.cardBadgeRadius)
@@ -80,52 +79,12 @@ private struct CardNetworkBadge: View, LogReporter {
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(.primary)
                     .frame(width: FigmaDesignConstants.cardBadgeWidth, height: FigmaDesignConstants.cardBadgeHeight)
-                    .background(Color(FigmaDesignConstants.CardNetworkColors.defaultBadge))
                     .cornerRadius(FigmaDesignConstants.cardBadgeRadius)
                     .overlay(
                         RoundedRectangle(cornerRadius: FigmaDesignConstants.cardBadgeRadius)
                             .stroke(Color.black.opacity(0.1), lineWidth: 0.5)
                     )
             }
-        }
-    }
-
-    // MARK: - Private Methods
-
-    /// Returns the appropriate background color for the given card network
-    /// based on Figma design specifications
-    private func backgroundColorForNetwork(_ network: CardNetwork) -> Color {
-        switch network {
-        case .visa:
-            return Color(FigmaDesignConstants.CardNetworkColors.visa)
-        case .masterCard:
-            return Color(FigmaDesignConstants.CardNetworkColors.mastercard)
-        case .amex:
-            return Color(FigmaDesignConstants.CardNetworkColors.amex)
-        case .cartesBancaires:
-            return Color(FigmaDesignConstants.CardNetworkColors.cartesBancaires)
-        case .discover:
-            return Color(FigmaDesignConstants.CardNetworkColors.discover)
-        case .diners:
-            return Color(FigmaDesignConstants.CardNetworkColors.dinersClub)
-        case .unionpay:
-            return Color(FigmaDesignConstants.CardNetworkColors.unionPay)
-        case .mir:
-            return Color(FigmaDesignConstants.CardNetworkColors.mir)
-        case .maestro:
-            return Color(FigmaDesignConstants.CardNetworkColors.maestro)
-        case .jcb:
-            return Color(FigmaDesignConstants.CardNetworkColors.jcb)
-        case .bancontact:
-            return Color(FigmaDesignConstants.CardNetworkColors.defaultBadge)
-        case .elo:
-            return Color(FigmaDesignConstants.CardNetworkColors.defaultBadge)
-        case .hiper:
-            return Color(FigmaDesignConstants.CardNetworkColors.defaultBadge)
-        case .hipercard:
-            return Color(FigmaDesignConstants.CardNetworkColors.defaultBadge)
-        case .unknown:
-            return Color(FigmaDesignConstants.CardNetworkColors.defaultBadge)
         }
     }
 }

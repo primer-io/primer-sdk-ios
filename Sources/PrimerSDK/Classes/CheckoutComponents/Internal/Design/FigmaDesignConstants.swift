@@ -61,22 +61,6 @@ internal struct FigmaDesignConstants {
     /// Letter spacing for input text (-0.2px)
     static let inputLetterSpacing: CGFloat = -0.2
 
-    // MARK: - Card Network Brand Colors
-    /// Brand colors for card network badges as per Figma design
-    struct CardNetworkColors {
-        static let visa = UIColor(red: 20/255, green: 52/255, blue: 203/255, alpha: 1.0) // #1434CB
-        static let mastercard = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let amex = UIColor(red: 17/255, green: 109/255, blue: 208/255, alpha: 1.0) // #116DD0
-        static let cartesBancaires = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let discover = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let dinersClub = UIColor(red: 37/255, green: 74/255, blue: 155/255, alpha: 1.0) // #254A9B
-        static let unionPay = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let mir = UIColor(red: 15/255, green: 117/255, blue: 78/255, alpha: 1.0) // #0F754E
-        static let maestro = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let jcb = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-        static let defaultBadge = UIColor(red: 250/255, green: 250/255, blue: 250/255, alpha: 1.0) // #FAFAFA
-    }
-
     // MARK: - Card Network Icon Dimensions
     /// Size for card network icon in input field trailing icon (28x20px)
     static let cardNetworkIconWidth: CGFloat = 28
