@@ -2,15 +2,12 @@
 //  StructuredCardFormState.swift
 //  PrimerSDK - CheckoutComponents
 //
-//  Created for Android parity refactoring
-//
 
 import Foundation
 
 // MARK: - Field Configuration
 
 /// Defines which fields are required for the card form
-/// Matches Android's dynamic field configuration approach
 @available(iOS 15.0, *)
 public struct CardFormConfiguration: Equatable {
     /// List of card-specific fields (card number, CVV, expiry, cardholder name)
@@ -29,12 +26,6 @@ public struct CardFormConfiguration: Equatable {
         requiresBillingAddress: false
     )
 
-    /// Configuration with billing address enabled
-    public static let withBillingAddress = CardFormConfiguration(
-        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-        billingFields: [.countryCode, .addressLine1, .postalCode, .state, .firstName, .lastName],
-        requiresBillingAddress: true
-    )
 
     public init(
         cardFields: [PrimerInputElementType],
@@ -55,7 +46,6 @@ public struct CardFormConfiguration: Equatable {
 // MARK: - Field Error
 
 /// Represents a validation error for a specific field
-/// Matches Android's SyncValidationError structure
 @available(iOS 15.0, *)
 public struct FieldError: Equatable, Identifiable {
     public let id = UUID()
@@ -77,7 +67,6 @@ public struct FieldError: Equatable, Identifiable {
 // MARK: - Form Data
 
 /// Type-safe container for form field data
-/// Matches Android's Map<PrimerInputElementType, String> approach
 @available(iOS 15.0, *)
 public struct FormData: Equatable {
     private var data: [PrimerInputElementType: String] = [:]
@@ -98,33 +87,11 @@ public struct FormData: Equatable {
     public var dictionary: [PrimerInputElementType: String] {
         data
     }
-
-    /// Check if field has non-empty value
-    public func hasValue(for fieldType: PrimerInputElementType) -> Bool {
-        !self[fieldType].isEmpty
-    }
-
-    /// Clear value for specific field
-    public mutating func clearValue(for fieldType: PrimerInputElementType) {
-        data[fieldType] = ""
-    }
-
-    /// Clear all values
-    public mutating func clearAll() {
-        data.removeAll()
-    }
-
-    /// Get values for specific field types
-    public func values(for fieldTypes: [PrimerInputElementType]) -> [PrimerInputElementType: String] {
-        fieldTypes.reduce(into: [:]) { result, fieldType in
-            result[fieldType] = self[fieldType]
-        }
-    }
 }
 
 // MARK: - Country Information
 
-/// Enhanced country information to match Android's PrimerCountry
+/// Country information
 @available(iOS 15.0, *)
 public struct PrimerCountry: Equatable, Identifiable {
     public let id = UUID()
@@ -141,22 +108,21 @@ public struct PrimerCountry: Equatable, Identifiable {
     }
 }
 
-// MARK: - New Structured State
+// MARK: - Structured State
 
-/// Structured card form state matching Android's approach
-/// This is now the primary state structure for card forms
+/// Structured card form state
 @available(iOS 15.0, *)
 public struct StructuredCardFormState: Equatable {
 
     // MARK: - Core Configuration
 
-    /// Dynamic field configuration (replaces hardcoded fields)
+    /// Dynamic field configuration
     public var configuration: CardFormConfiguration
 
-    /// Type-safe form data map (replaces individual String properties)
+    /// Type-safe form data map
     public var data: FormData
 
-    /// Field-specific validation errors (replaces single error string)
+    /// Field-specific validation errors
     public var fieldErrors: [FieldError]
 
     // MARK: - Loading and Validation States
@@ -235,15 +201,5 @@ public struct StructuredCardFormState: Equatable {
     /// Clear error for specific field
     public mutating func clearError(for fieldType: PrimerInputElementType) {
         fieldErrors.removeAll { $0.fieldType == fieldType }
-    }
-
-    /// Clear all errors
-    public mutating func clearAllErrors() {
-        fieldErrors.removeAll()
-    }
-
-    /// Check if co-badged card selection is needed
-    public var needsNetworkSelection: Bool {
-        availableNetworks.count > 1 && selectedNetwork == nil
     }
 }
