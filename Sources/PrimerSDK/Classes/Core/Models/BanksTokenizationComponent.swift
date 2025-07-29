@@ -4,7 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
@@ -256,9 +255,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
-        return Promise { seal in
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<PrimerCheckoutData?> {
+        Promise { seal in
             var cancelledError: PrimerError?
+
             self.didCancel = {
                 self.isCancelled = true
                 cancelledError = handled(primerError: .cancelled(paymentMethodType: self.config.type))
@@ -266,66 +268,31 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 self.isCancelled = false
             }
 
-            firstly { () -> Promise<DecodedJWTToken?> in
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-                return self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+            firstly {
+                startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
-            .done { decodedJWTToken in
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-
-                if let decodedJWTToken = decodedJWTToken {
-                    firstly { () -> Promise<String?> in
-                        if let cancelledError = cancelledError {
-                            throw cancelledError
-                        }
-                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
-                    }
-                    .done { resumeToken in
-                        if let cancelledError = cancelledError {
-                            throw cancelledError
-                        }
-
-                        if let resumeToken = resumeToken {
-                            firstly { () -> Promise<PrimerCheckoutData?> in
-                                if let cancelledError = cancelledError {
-                                    throw cancelledError
-                                }
-                                return self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-                            }
-                            .done { checkoutData in
-                                if let cancelledError = cancelledError {
-                                    throw cancelledError
-                                }
-                                seal.fulfill(checkoutData)
-                            }
-                            .catch { err in
-                                if cancelledError == nil {
-                                    seal.reject(err)
-                                }
-                            }
-                        } else if let checkoutData = self.paymentCheckoutData {
-                            seal.fulfill(checkoutData)
-                        } else {
-                            seal.fulfill(nil)
-                        }
-                    }
-                    .catch { err in
-                        if cancelledError == nil {
-                            seal.reject(err)
-                        }
-                    }
+            .then { decodedJWTToken -> Promise<String?> in
+                if let cancelledError { throw cancelledError }
+                guard let decodedJWTToken else { return .value(nil) }
+                return self.handleDecodedClientTokenIfNeeded(
+                    decodedJWTToken,
+                    paymentMethodTokenData: paymentMethodTokenData
+                )
+            }
+            .then { resumeToken -> Promise<PrimerCheckoutData?> in
+                if let cancelledError { throw cancelledError }
+                if let resumeToken {
+                    return self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                 } else {
-                    seal.fulfill(self.paymentCheckoutData)
+                    return .value(self.paymentCheckoutData)
                 }
+            }
+            .done { checkoutData in
+                if let cancelledError { throw cancelledError }
+                seal.fulfill(checkoutData)
             }
             .catch { err in
-                if cancelledError == nil {
-                    seal.reject(err)
-                }
+                if cancelledError == nil { seal.reject(err) }
             }
         }
     }
@@ -1526,7 +1493,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         awaitUserInputTask = nil
     }
 }
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length
