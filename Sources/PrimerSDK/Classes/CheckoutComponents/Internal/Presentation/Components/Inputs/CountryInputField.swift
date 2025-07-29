@@ -202,11 +202,13 @@ internal struct CountryInputField: View, LogReporter {
     }
 
     /// Updates the field from external state changes using the property
+    @MainActor
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountry)
     }
 
     /// Updates the field from external state changes using the provided country
+    @MainActor
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
         // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
         if let country = country, !country.name.isEmpty, !country.code.isEmpty {
@@ -217,6 +219,7 @@ internal struct CountryInputField: View, LogReporter {
     }
 
     /// Updates the selected country
+    @MainActor
     func updateCountry(name: String, code: String) {
         countryName = name
         countryCode = code
@@ -224,6 +227,7 @@ internal struct CountryInputField: View, LogReporter {
         validateCountry()
     }
 
+    @MainActor
     private func validateCountry() {
         guard let validationService = validationService else { return }
 

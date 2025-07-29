@@ -14,6 +14,25 @@ final class WeakBox<T: AnyObject> {
     init(_ inst: T) { self.instance = inst }
 }
 
+/// Thread-safe container for storing values across async boundaries
+final class ThreadSafeContainer<T>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value: T?
+    
+    var value: T? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _value
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _value = newValue
+        }
+    }
+}
+
 /// Main implementation of the dependency injection container
 public actor Container: ContainerProtocol, Sendable, LogReporter {
     /// Internal factory structure
@@ -235,14 +254,14 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
     /// Note: This method uses a timeout to prevent indefinite blocking
     public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
         let semaphore = DispatchSemaphore(value: 0)
-        var result: Result<T, Error>?
+        let resultContainer = ThreadSafeContainer<Result<T, Error>>()
 
         Task {
             do {
                 let resolved = try await self.resolve(type, name: name)
-                result = .success(resolved)
+                resultContainer.value = .success(resolved)
             } catch {
-                result = .failure(error)
+                resultContainer.value = .failure(error)
             }
             semaphore.signal()
         }
@@ -250,7 +269,9 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         // Wait with a reasonable timeout (500ms)
         let timeoutResult = semaphore.wait(timeout: .now() + 0.5)
 
-        guard timeoutResult == .success, let finalResult = result else {
+        let finalResult = resultContainer.value
+
+        guard timeoutResult == .success, let finalResult = finalResult else {
             throw ContainerError.factoryFailed(
                 TypeKey(type, name: name),
                 underlyingError: NSError(domain: "DIContainer", code: -1, userInfo: [

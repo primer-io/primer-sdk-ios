@@ -158,6 +158,7 @@ internal struct OTPCodeInputField: View, LogReporter {
         }
     }
 
+    @MainActor
     private func validateOTPCode() {
         // Use OTPCodeRule with expected length
         let otpRule = OTPCodeRule(expectedLength: expectedLength)

@@ -142,7 +142,7 @@ internal struct SelectCountryScreen: View {
 
     private func observeState() {
         Task {
-            for await state in await scope.state {
+            for await state in scope.state {
                 await MainActor.run {
                     self.countryState = state
                 }

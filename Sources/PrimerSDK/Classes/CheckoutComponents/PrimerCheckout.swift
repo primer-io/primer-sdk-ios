@@ -254,7 +254,7 @@ internal struct InternalCheckout: View {
     private func finalizeSDKInitialization() async {
         // Create settings service
         let settingsService = CheckoutComponentsSettingsService(settings: settings)
-        
+
         let defaultScope = DefaultCheckoutScope(
             clientToken: clientToken,
             settingsService: settingsService,

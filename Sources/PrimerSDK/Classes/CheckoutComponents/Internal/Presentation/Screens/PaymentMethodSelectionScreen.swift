@@ -106,6 +106,7 @@ internal struct PaymentMethodSelectionScreen: View {
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))
     }
 
+    @MainActor
     @ViewBuilder
     private var emptyStateView: some View {
         if let customEmptyState = scope.emptyStateView {
@@ -288,7 +289,7 @@ internal struct PaymentMethodSelectionScreen: View {
 
     private func observeState() {
         Task {
-            for await state in await scope.state {
+            for await state in scope.state {
                 await MainActor.run {
                     self.selectionState = state
                 }

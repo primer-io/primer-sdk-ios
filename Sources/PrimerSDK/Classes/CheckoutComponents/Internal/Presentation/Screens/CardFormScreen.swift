@@ -26,6 +26,7 @@ internal struct CardFormScreen: View, LogReporter {
         .navigationBarHidden(true)
     }
 
+    @MainActor
     private var customHeader: some View {
         HStack {
             // Back button - only show if context allows it
@@ -57,6 +58,7 @@ internal struct CardFormScreen: View, LogReporter {
         )
     }
 
+    @MainActor
     private var mainContent: some View {
         ScrollView {
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
@@ -81,6 +83,7 @@ internal struct CardFormScreen: View, LogReporter {
             .padding(.horizontal)
     }
 
+    @MainActor
     @ViewBuilder
     private var dynamicFieldsSection: some View {
         // Check for complete screen override first
@@ -100,6 +103,7 @@ internal struct CardFormScreen: View, LogReporter {
         }
     }
 
+    @MainActor
     @ViewBuilder
     private var cardFieldsSection: some View {
         // Check for section-level override first
@@ -146,6 +150,7 @@ internal struct CardFormScreen: View, LogReporter {
         }
     }
 
+    @MainActor
     @ViewBuilder
     private var cobadgedCardsSection: some View {
         if cardFormState.availableNetworks.count > 1 {
@@ -180,6 +185,7 @@ internal struct CardFormScreen: View, LogReporter {
     }
 
     @ViewBuilder
+    @MainActor
     private var billingAddressSection: some View {
         // Only show if configuration includes billing fields
         if !formConfiguration.billingFields.isEmpty {
@@ -209,6 +215,7 @@ internal struct CardFormScreen: View, LogReporter {
         }
     }
 
+    @MainActor
     @ViewBuilder
     private var submitButtonSection: some View {
         // Check for section-level override first
@@ -311,15 +318,22 @@ internal struct CardFormScreen: View, LogReporter {
     private func observeState() {
         Task {
             // Get initial form configuration
-            formConfiguration = scope.getFormConfiguration()
+            await MainActor.run {
+                formConfiguration = scope.getFormConfiguration()
+            }
 
             for await state in scope.state {
+                // Get form configuration outside of MainActor.run
+                let updatedFormConfig = await MainActor.run {
+                    scope.getFormConfiguration()
+                }
+
                 await MainActor.run {
                     self.cardFormState = state
                     self.refreshTrigger = UUID()
 
                     // Update form configuration in case it changed
-                    self.formConfiguration = scope.getFormConfiguration()
+                    self.formConfiguration = updatedFormConfig
 
                     // Update selected network if changed
                     if let selectedNetwork = state.selectedNetwork {
@@ -341,6 +355,7 @@ internal struct CardFormScreen: View, LogReporter {
     // MARK: - Dynamic Field Rendering
 
     // swiftlint:disable cyclomatic_complexity function_body_length
+    @MainActor
     @ViewBuilder
     private func renderField(_ fieldType: PrimerInputElementType) -> some View {
         let fieldLabel: String? = fieldType.displayName
