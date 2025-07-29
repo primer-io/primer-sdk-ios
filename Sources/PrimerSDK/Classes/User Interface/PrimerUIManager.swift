@@ -89,7 +89,8 @@ final class PrimerUIManager: PrimerUIManaging {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
-            presentDropInCheckout()
+            let pucvc = PrimerUniversalCheckoutViewController()
+            PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
         } else if PrimerInternal.shared.intent == .vault {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
@@ -101,11 +102,6 @@ final class PrimerUIManager: PrimerUIManaging {
             ErrorHandler.handle(error: err)
             PrimerUIManager.handleErrorBasedOnSDKSettings(err)
         }
-    }
-
-    private func presentDropInCheckout() {
-        let pucvc = PrimerUniversalCheckoutViewController()
-        PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
     }
 
     func presentPaymentMethod(type: String) {
@@ -345,7 +341,6 @@ final class PrimerUIManager: PrimerUIManaging {
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
-
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
             showResultScreenForResultType(type: .failure, message: message)
@@ -373,14 +368,10 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
-
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
         resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-
-        if let rootViewController = PrimerUIManager.primerRootViewController {
-            rootViewController.show(viewController: resultViewController)
-        }
+        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
     }
 }
 
