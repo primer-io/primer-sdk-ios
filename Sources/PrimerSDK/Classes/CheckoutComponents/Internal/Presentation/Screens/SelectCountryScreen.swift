@@ -41,6 +41,7 @@ internal struct SelectCountryScreen: View {
         )
     }
 
+    @MainActor
     private var searchBarSection: some View {
         Group {
             if let customSearchBar = scope.searchBar {
@@ -53,6 +54,7 @@ internal struct SelectCountryScreen: View {
         }
     }
 
+    @MainActor
     private var defaultSearchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -104,6 +106,7 @@ internal struct SelectCountryScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    @MainActor
     private var countryListView: some View {
         List {
             ForEach(countryState.filteredCountries, id: \.code) { country in
@@ -129,6 +132,7 @@ internal struct SelectCountryScreen: View {
         .listStyle(PlainListStyle())
     }
 
+    @MainActor
     private func selectCountry(_ country: PrimerCountry) {
         scope.onCountrySelected(countryCode: country.code, countryName: country.name)
         onDismiss?()
@@ -136,7 +140,7 @@ internal struct SelectCountryScreen: View {
 
     private func observeState() {
         Task {
-            for await state in scope.state {
+            for await state in await scope.state {
                 await MainActor.run {
                     self.countryState = state
                 }

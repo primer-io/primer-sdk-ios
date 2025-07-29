@@ -247,6 +247,7 @@ internal struct PaymentMethodSelectionScreen: View {
         }
     }
 
+    @MainActor
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
         if let customPaymentMethodItem = scope.paymentMethodItem {
@@ -278,7 +279,7 @@ internal struct PaymentMethodSelectionScreen: View {
 
     private func observeState() {
         Task {
-            for await state in scope.state {
+            for await state in await scope.state {
                 await MainActor.run {
                     self.selectionState = state
                 }
