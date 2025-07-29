@@ -25,6 +25,7 @@ internal struct SelectCountryScreen: View {
         }
     }
 
+    @MainActor
     private var mainContent: some View {
         VStack(spacing: 0) {
             searchBarSection
@@ -82,6 +83,7 @@ internal struct SelectCountryScreen: View {
         .padding()
     }
 
+    @MainActor
     private var countryListSection: some View {
         Group {
             if countryState.filteredCountries.isEmpty {

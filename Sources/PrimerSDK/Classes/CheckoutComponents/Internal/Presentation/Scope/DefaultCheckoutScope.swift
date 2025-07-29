@@ -114,37 +114,36 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Other Properties
 
     private let clientToken: String
-    private let settings: PrimerSettings
-    private var settingsService: CheckoutComponentsSettingsServiceProtocol?
+    private let settingsService: CheckoutComponentsSettingsServiceProtocol
     internal var availablePaymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - UI Settings Access (for settings-based screen control)
 
     /// Whether the initialization loading screen should be shown
     internal var isInitScreenEnabled: Bool {
-        settingsService?.isInitScreenEnabled ?? settings.uiOptions.isInitScreenEnabled
+        settingsService.isInitScreenEnabled
     }
 
     /// Whether the success screen should be shown after successful payment
     internal var isSuccessScreenEnabled: Bool {
-        settingsService?.isSuccessScreenEnabled ?? settings.uiOptions.isSuccessScreenEnabled
+        settingsService.isSuccessScreenEnabled
     }
 
     /// Whether the error screen should be shown after failed payment
     internal var isErrorScreenEnabled: Bool {
-        settingsService?.isErrorScreenEnabled ?? settings.uiOptions.isErrorScreenEnabled
+        settingsService.isErrorScreenEnabled
     }
 
     /// Available dismissal mechanisms (gestures, close button)
     internal var dismissalMechanism: [DismissalMechanism] {
-        settingsService?.dismissalMechanism ?? settings.uiOptions.dismissalMechanism
+        settingsService.dismissalMechanism
     }
 
     // MARK: - Debug Settings Access (critical for 3DS security)
 
     /// Whether 3DS sanity checks are enabled (CRITICAL for security in production)
     internal var is3DSSanityCheckEnabled: Bool {
-        settingsService?.is3DSSanityCheckEnabled ?? settings.debugOptions.is3DSSanityCheckEnabled
+        settingsService.is3DSSanityCheckEnabled
     }
 
     /// The presentation context for navigation behavior
@@ -152,9 +151,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     // MARK: - Initialization
 
-    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
+    init(clientToken: String, settingsService: CheckoutComponentsSettingsServiceProtocol, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.settingsService = settingsService
         self.navigator = navigator
         self.presentationContext = presentationContext
 
@@ -192,10 +191,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             }
             logger.info(message: "✅ [CheckoutComponents] DI Container found")
 
-            // Inject settings service
-            settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-            logger.info(message: "✅ [CheckoutComponents] Settings service injected")
-
             logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
 
@@ -216,7 +211,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         logger.info(message: "🔄 [CheckoutComponents] Starting payment methods loading...")
 
         // Only show loading screen if enabled in settings (UI Options integration)
-        if settingsService?.isInitScreenEnabled == true {
+        if settingsService.isInitScreenEnabled {
             updateNavigationState(.loading)
             logger.debug(message: "✅ [CheckoutComponents] Init screen enabled - showing loading state")
         } else {
@@ -450,15 +445,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 // Cache the scope using its identifier for future use
                 let scopeTypeName = String(describing: type(of: scope))
                 paymentMethodScopeCache[scopeTypeName] = scope
-                logger.debug(message: "Created and cached new scope for type: \\(typeName)")
+                logger.debug(message: "Created and cached new scope for type: \\(scopeTypeName)")
                 return scope
             } else {
-                logger.warn(message: "No scope registered for type: \\(typeName)")
+                logger.warn(message: "No scope registered for type: \\(String(describing: scopeType))")
                 return nil
             }
 
         } catch {
-            logger.error(message: "Failed to create scope for type \\(typeName): \\(error)")
+            logger.error(message: "Failed to create scope for type \\(String(describing: scopeType)): \\(error)")
             return nil
         }
     }
@@ -624,10 +619,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     func settingsDidChange(from oldSettings: PrimerSettings, to newSettings: PrimerSettings) async {
         logger.info(message: "🔧 [CheckoutScope] Settings changed notification received")
 
-        // Update settings service with new settings (this will propagate to other services)
-        if let container = await DIContainer.current {
-            settingsService = try? await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-        }
+        // Note: Settings service is immutable and will be updated at the container level
+        // The settings service itself wraps PrimerSettings, so changes are reflected automatically
 
         // Log significant changes
         if oldSettings.uiOptions.isInitScreenEnabled != newSettings.uiOptions.isInitScreenEnabled {

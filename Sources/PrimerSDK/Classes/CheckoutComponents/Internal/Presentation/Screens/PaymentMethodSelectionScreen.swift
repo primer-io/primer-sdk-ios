@@ -24,6 +24,7 @@ internal struct PaymentMethodSelectionScreen: View {
         mainContent
     }
 
+    @MainActor
     private var mainContent: some View {
         VStack(spacing: 0) {
             headerSection
@@ -34,6 +35,7 @@ internal struct PaymentMethodSelectionScreen: View {
         }
     }
 
+    @MainActor
     private var headerSection: some View {
         VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
             paymentAmountHeader
@@ -43,6 +45,7 @@ internal struct PaymentMethodSelectionScreen: View {
         .padding(.top, tokens?.primerSpaceLarge ?? 16)
     }
 
+    @MainActor
     private var paymentAmountHeader: some View {
         HStack {
             // Get payment amount from app state or default
@@ -67,12 +70,14 @@ internal struct PaymentMethodSelectionScreen: View {
         }
     }
 
+    @MainActor
     private var contentContainer: some View {
         VStack(spacing: 0) {
             paymentMethodsList
         }
     }
 
+    @MainActor
     private var titleSection: some View {
         // Break up complex font expression to avoid compiler timeout
         let fontSize = tokens?.primerTypographyTitleLargeSize ?? 16
@@ -85,6 +90,7 @@ internal struct PaymentMethodSelectionScreen: View {
             .padding(.bottom, tokens?.primerSpaceSmall ?? 8)
     }
 
+    @MainActor
     private var paymentMethodsList: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -119,6 +125,7 @@ internal struct PaymentMethodSelectionScreen: View {
         }
     }
 
+    @MainActor
     private var paymentMethodsContent: some View {
         LazyVStack(spacing: tokens?.primerSpaceLarge ?? 16) {
             ForEach(groupedPaymentMethods, id: \.group) { group in
@@ -197,6 +204,7 @@ internal struct PaymentMethodSelectionScreen: View {
         return groups
     }
 
+    @MainActor
     @ViewBuilder
     private func paymentMethodGroup(_ group: PaymentMethodGroup) -> some View {
         VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
@@ -267,6 +275,7 @@ internal struct PaymentMethodSelectionScreen: View {
         }
     }
 
+    @MainActor
     @ViewBuilder
     private var errorSection: some View {
         if let error = selectionState.error {
