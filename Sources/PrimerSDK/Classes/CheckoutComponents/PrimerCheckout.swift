@@ -78,59 +78,6 @@ public struct PrimerCheckout: View {
         self.presentationContext = .fromPaymentSelection // Default context
     }
 
-    /// Internal initializer with custom content
-    internal init(
-        clientToken: String,
-        settings: PrimerSettings = PrimerSettings(),
-        diContainer: DIContainer,
-        navigator: CheckoutNavigator,
-        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> some View,
-        onCompletion: (() -> Void)? = nil
-    ) {
-        self.clientToken = clientToken
-        self.settings = settings
-        self.scope = nil
-        self.customContent = { scope in AnyView(customContent(scope)) }
-        self.onCompletion = onCompletion
-        self.navigator = navigator
-        self.presentationContext = .fromPaymentSelection // Default context
-    }
-
-    /// Internal initializer with DI container and navigator
-    internal init(
-        clientToken: String,
-        settings: PrimerSettings,
-        diContainer: DIContainer,
-        navigator: CheckoutNavigator,
-        onCompletion: (() -> Void)? = nil
-    ) {
-        self.clientToken = clientToken
-        self.settings = settings
-        self.scope = nil
-        self.customContent = nil
-        self.onCompletion = onCompletion
-        self.navigator = navigator
-        self.presentationContext = .fromPaymentSelection // Default context
-    }
-
-    /// Internal initializer with custom content as AnyView function
-    internal init(
-        clientToken: String,
-        settings: PrimerSettings,
-        diContainer: DIContainer,
-        navigator: CheckoutNavigator,
-        customContent: ((PrimerCheckoutScope) -> AnyView)?,
-        onCompletion: (() -> Void)? = nil
-    ) {
-        self.clientToken = clientToken
-        self.settings = settings
-        self.scope = nil
-        self.customContent = customContent
-        self.onCompletion = onCompletion
-        self.navigator = navigator
-        self.presentationContext = .fromPaymentSelection // Default context
-    }
-
     /// Internal initializer with presentation context
     internal init(
         clientToken: String,
