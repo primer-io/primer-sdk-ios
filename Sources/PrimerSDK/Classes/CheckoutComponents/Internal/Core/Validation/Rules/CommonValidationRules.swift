@@ -40,7 +40,6 @@ internal class NameRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
@@ -107,7 +106,6 @@ internal class AddressRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             if isRequired {
@@ -161,7 +159,6 @@ internal class CityRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .city)
@@ -192,7 +189,6 @@ internal class StateRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .state)
@@ -258,7 +254,6 @@ internal class PostalCodeRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
@@ -268,7 +263,7 @@ internal class PostalCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for postal codes - convenience wrapper for backward compatibility
+/// Validation rule for postal codes - convenience wrapper
 internal class BillingPostalCodeRule: ValidationRule {
     typealias Input = String?
     private let postalCodeRule = PostalCodeRule()
@@ -299,7 +294,6 @@ internal class CountryCodeRule: ValidationRule {
         return .valid
     }
 
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
@@ -309,7 +303,7 @@ internal class CountryCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for country codes - convenience wrapper for backward compatibility
+/// Validation rule for country codes - convenience wrapper
 internal class BillingCountryCodeRule: ValidationRule {
     typealias Input = String?
     private let countryCodeRule = CountryCodeRule()
@@ -347,7 +341,6 @@ internal class EmailRule: ValidationRule {
         return .valid
     }
     
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
@@ -357,7 +350,7 @@ internal class EmailRule: ValidationRule {
     }
 }
 
-/// Validation rule for email addresses - backward compatibility wrapper
+/// Validation rule for email addresses - convenience wrapper
 internal class EmailValidationRule: ValidationRule {
     typealias Input = String?
     private let emailRule = EmailRule()
@@ -398,7 +391,6 @@ internal class PhoneNumberRule: ValidationRule {
         return .valid
     }
     
-    // Optional string support for backward compatibility
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
@@ -408,7 +400,7 @@ internal class PhoneNumberRule: ValidationRule {
     }
 }
 
-/// Validation rule for phone numbers - backward compatibility wrapper
+/// Validation rule for phone numbers - convenience wrapper
 internal class PhoneNumberValidationRule: ValidationRule {
     typealias Input = String?
     private let phoneNumberRule = PhoneNumberRule()

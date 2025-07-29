@@ -101,7 +101,6 @@ struct NavigationStackApproach: View {
 **Problems:**
 - ❌ **iOS 16+ Only**: Excludes significant user base (iOS 15 devices)
 - ❌ **SDK Constraint**: Can't use latest APIs in SDK targeting older iOS
-- ❌ **Migration Complexity**: Would require dual implementation
 
 ### ❌ Approach 4: Combine-based Navigation
 
@@ -330,28 +329,6 @@ struct CardFormScreen: View {
 }
 ```
 
-## Migration from Current Implementation
-
-### Current Issue (CheckoutNavigator.swift)
-```swift
-// CURRENT - Violates architecture
-import Combine  // ❌ Forbidden by plan
-private let navigationSubject = PassthroughSubject<NavigationEvent, Never>()
-public var navigationEvents: AnyPublisher<NavigationEvent, Never>
-```
-
-### Fixed Implementation
-```swift
-// FIXED - Compliant with plan
-// NO Combine import
-@Published var navigationStack: [CheckoutRoute] = []
-
-public var navigationEvents: AsyncStream<CheckoutRoute> {
-    AsyncStream { continuation in
-        // AsyncStream implementation
-    }
-}
-```
 
 ## Why This Approach Wins for CheckoutComponents
 
