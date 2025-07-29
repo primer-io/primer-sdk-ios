@@ -6,6 +6,10 @@
 
 import Foundation
 
+public extension String {
+    static var uuid: String {  UUID().uuidString }
+}
+
 internal extension String {
 
     var withoutWhiteSpace: String {
