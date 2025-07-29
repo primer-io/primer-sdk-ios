@@ -97,15 +97,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private weak var checkoutScope: DefaultCheckoutScope?
     private var processCardPaymentInteractor: ProcessCardPaymentInteractor?
     private var validateInputInteractor: ValidateInputInteractor?
+    private var cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
 
     /// Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
 
     /// Store the current card data
     private var currentCardData: PrimerCardData?
-
-    /// HeadlessRepository for network detection
-    private var headlessRepository: HeadlessRepository?
 
     /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
@@ -148,20 +146,20 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Setup
     private func setupInteractors() async {
         do {
-            guard await DIContainer.current != nil else {
+            guard let container = await DIContainer.current else {
                 throw ContainerError.containerUnavailable
             }
 
-            // Setup interactors (proper layered architecture)
-            let repository = HeadlessRepositoryImpl()
-            headlessRepository = repository
-            processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
-            logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
+            // Resolve interactors from DI container (proper dependency injection)
+            processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
+            cardNetworkDetectionInteractor = try await container.resolve(CardNetworkDetectionInteractor.self)
+            
+            logger.debug(message: "Interactors resolved from DI container successfully")
 
-            // Setup network detection stream
+            // Setup network detection stream through the interactor
             setupNetworkDetectionStream()
         } catch {
-            logger.error(message: "Failed to setup interactors: \(error)")
+            logger.error(message: "Failed to resolve interactors from DI container: \(error)")
         }
     }
 
@@ -187,10 +185,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Setup network detection stream for co-badged cards
     private func setupNetworkDetectionStream() {
-        guard let repository = headlessRepository else { return }
+        guard let interactor = cardNetworkDetectionInteractor else { 
+            logger.error(message: "CardNetworkDetectionInteractor not initialized")
+            return 
+        }
 
         Task {
-            for await networks in repository.getNetworkDetectionStream() {
+            for await networks in interactor.networkDetectionStream {
                 await MainActor.run {
                     logger.info(message: "🌐 [CardForm] Received networks from stream: \(networks.map { $0.displayName })")
                     self.structuredState.availableNetworks = networks.map { PrimerCardNetwork(network: $0) }
@@ -265,7 +266,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         structuredState.data[.cardNumber] = cardNumber
         updateCardData()
 
-        // Trigger network detection via HeadlessRepository
+        // Trigger network detection via interactor
         Task {
             await triggerNetworkDetection(for: cardNumber)
         }
@@ -273,10 +274,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Trigger network detection for the given card number
     private func triggerNetworkDetection(for cardNumber: String) async {
-        guard let repository = headlessRepository, cardNumber.count >= 6 else { return }
+        guard let interactor = cardNetworkDetectionInteractor else {
+            logger.error(message: "CardNetworkDetectionInteractor not initialized")
+            return
+        }
 
         logger.debug(message: "🌐 [CardForm] Triggering network detection")
-        await repository.updateCardNumberInRawDataManager(cardNumber)
+        await interactor.detectNetworks(for: cardNumber)
     }
 
     public func updateCvv(_ cvv: String) {
@@ -395,7 +399,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
         updateCardData()
 
-        // Notify HeadlessRepository about the selection
+        // Notify interactor about the selection
         Task {
             await handleNetworkSelection(network)
         }
@@ -403,11 +407,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Handle user selection of a card network for co-badged cards
     private func handleNetworkSelection(_ networkString: String) async {
-        guard let repository = headlessRepository,
+        guard let interactor = cardNetworkDetectionInteractor,
               let cardNetwork = CardNetwork(rawValue: networkString) else { return }
 
         logger.info(message: "🌐 [CardForm] Handling network selection: \(cardNetwork.displayName)")
-        await repository.selectCardNetwork(cardNetwork)
+        await interactor.selectNetwork(cardNetwork)
     }
 
     /// Handle detected networks from CardDetailsView
@@ -506,7 +510,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // called from CardDetailsView when each field updates its validation state
     }
 
-    // Network detection is now handled by HeadlessRepository and RawDataManager
+    // Network detection is now handled by CardNetworkDetectionInteractor
 
     private func createBillingAddress() -> ClientSession.Address? {
         // Only create address if we have required fields

@@ -125,6 +125,14 @@ private extension ComposableContainer {
                     validationService: try await resolver.resolve(ValidationService.self)
                 )
             }
+
+        _ = try? await container.register(CardNetworkDetectionInteractor.self)
+            .asTransient()
+            .with { resolver in
+                CardNetworkDetectionInteractorImpl(
+                    repository: try await resolver.resolve(HeadlessRepository.self)
+                )
+            }
     }
 
     /// Register data layer (repositories, mappers).
