@@ -1,9 +1,8 @@
 //
 //  PrimerIPay88Error+Extension.swift
-//  PrimerSDK
 //
-//  Created by Niall Quinn on 06/12/23.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 

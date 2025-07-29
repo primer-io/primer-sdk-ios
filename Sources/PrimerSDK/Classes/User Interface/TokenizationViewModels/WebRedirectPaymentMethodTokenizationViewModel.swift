@@ -1,9 +1,8 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModel.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 11/10/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 // swiftlint:disable file_length

@@ -1,10 +1,8 @@
 //
-//  MerchantHUCRawPhoneNumberDataViewController.swift
-//  Debug App
+//  MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift
 //
-//  Created by Evangelos on 17/1/23.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
 import UIKit

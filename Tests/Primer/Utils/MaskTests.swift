@@ -1,9 +1,8 @@
 //
-//  VeilTests.swift
-//  PrimerSDKTests
+//  MaskTests.swift
 //
-//  Created by Carl Eriksson on 09/01/2021.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK

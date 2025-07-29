@@ -1,9 +1,8 @@
 //
 //  CardButton.swift
-//  PrimerSDK
 //
-//  Created by Carl Eriksson on 26/01/2021.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 

@@ -1,9 +1,8 @@
 //
 //  PrimerCardNumberFieldViewTests.swift
 //
-//
-//  Created by Jack Newcombe on 21/05/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK

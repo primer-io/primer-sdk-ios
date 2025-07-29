@@ -1,10 +1,8 @@
 //
 //  PrimerHeadlessKlarnaComponentTests.swift
-//  Debug App Tests
 //
-//  Created by Stefan Vrancianu on 28.01.2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
 @testable import PrimerSDK
