@@ -60,7 +60,7 @@ public final class DIContainer: LogReporter {
     public static var currentSync: (any ContainerProtocol)? {
         let container = shared.cachedContainer
         if container == nil {
-            logger.debug(message: "[DI] currentSync accessed but no container available")
+            // No container available
         }
         return container
     }
@@ -80,18 +80,18 @@ public final class DIContainer: LogReporter {
             self.cachedContainer = container
         }
 
-        logger.debug(message: "DIContainer initialized")
+        // DIContainer initialized
     }
 
     /// Create a new container instance
     public static func createContainer() -> any ContainerProtocol {
-        logger.debug(message: "Creating new container")
+        // Creating new container
         return Container()
     }
 
     /// Set the global container instance
     public static func setContainer(_ container: any ContainerProtocol) async {
-        logger.debug(message: "Setting global container")
+        // Setting global container
         await shared.storage.setContainer(container)
 
         // Update cached reference for synchronous access on MainActor
@@ -102,7 +102,7 @@ public final class DIContainer: LogReporter {
 
     /// Set up a container with the application's dependencies
     public static func setupMainContainer() async {
-        logger.debug(message: "Setting up main container")
+        // Setting up main container
         let container = Container()
         await registerDependencies(in: container)
         await setContainer(container)
@@ -121,7 +121,7 @@ public final class DIContainer: LogReporter {
         _ container: any ContainerProtocol,
         perform action: () async throws -> T
     ) async rethrows -> T {
-        logger.debug(message: "Switching to temporary container")
+        // Switching to temporary container
         let previous = await shared.storage.getContainer()
         let previousSync = await MainActor.run { shared.cachedContainer }
 
@@ -133,14 +133,14 @@ public final class DIContainer: LogReporter {
 
         do {
             let result = try await action()
-            logger.debug(message: "Restoring previous container")
+            // Restoring previous container
             await shared.storage.setContainer(previous)
             await MainActor.run {
                 shared.cachedContainer = previousSync  // Thread-safe restoration
             }
             return result
         } catch {
-            logger.debug(message: "Restoring previous container after error")
+            // Restoring previous container after error
             await shared.storage.setContainer(previous)
             await MainActor.run {
                 shared.cachedContainer = previousSync  // Thread-safe restoration after error
@@ -151,7 +151,7 @@ public final class DIContainer: LogReporter {
 
     /// Add a scoped container
     public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) async {
-        logger.debug(message: "Setting scoped container for: \(scopeId)")
+        // Setting scoped container
         await shared.storage.setScopedContainer(container, for: scopeId)
     }
 
@@ -162,13 +162,13 @@ public final class DIContainer: LogReporter {
 
     /// Remove a scoped container
     public static func removeScopedContainer(for scopeId: String) async {
-        logger.debug(message: "Removing scoped container for: \(scopeId)")
+        // Removing scoped container
         await shared.storage.removeScopedContainer(for: scopeId)
     }
 
     /// Register the application's dependencies in the provided container
     private static func registerDependencies(in container: Container) async {
-        logger.debug(message: "Registering application dependencies")
+        // Registering application dependencies
 
         // Register the container itself
         Task {
@@ -180,7 +180,7 @@ public final class DIContainer: LogReporter {
 
     /// Create a container with mock dependencies for testing
     public static func createMockContainer() async -> any ContainerProtocol {
-        logger.debug(message: "Creating mock container")
+        // Creating mock container
         let container = Container()
         await registerMockDependencies(in: container)
         return container
@@ -188,7 +188,7 @@ public final class DIContainer: LogReporter {
 
     /// Register mock dependencies for testing
     private static func registerMockDependencies(in container: Container) async {
-        logger.debug(message: "Registering mock dependencies")
+        // Registering mock dependencies
 
         // Register mocks using separate functions for better organization
         await registerMockRepositories(container)
@@ -198,19 +198,19 @@ public final class DIContainer: LogReporter {
 
     /// Register mock repositories
     private static func registerMockRepositories(_ container: Container) async {
-        logger.debug(message: "Registering mock repositories")
+        // Registering mock repositories
         // Register mock repositories here
     }
 
     /// Register mock use cases
     private static func registerMockUseCases(_ container: Container) async {
-        logger.debug(message: "Registering mock use cases")
+        // Registering mock use cases
         // Register mock use cases here
     }
 
     /// Register mock services
     private static func registerMockServices(_ container: Container) async {
-        logger.debug(message: "Registering mock services")
+        // Registering mock services
         // Register mock services here
     }
 }

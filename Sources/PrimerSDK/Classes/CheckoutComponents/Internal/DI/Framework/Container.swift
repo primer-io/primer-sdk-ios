@@ -18,7 +18,7 @@ final class WeakBox<T: AnyObject> {
 final class ThreadSafeContainer<T>: @unchecked Sendable {
     private let lock = NSLock()
     private var _value: T?
-    
+
     var value: T? {
         get {
             lock.lock()
@@ -160,7 +160,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
             try await factory(container)
         }
 
-        logger.debug(message: "Registered \(policy) dependency: \(key)")
+        // Registered dependency
     }
 
     /// Register only if not already registered
@@ -169,7 +169,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         let isRegistered = await isRegistered(key)
 
         guard !isRegistered else {
-            logger.debug(message: "Skipping registration - already exists: \(key)")
+            // Already registered
             return nil
         }
 
@@ -200,7 +200,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         instances.removeValue(forKey: key)
         weakBoxes.removeValue(forKey: key)
 
-        logger.debug(message: "Unregistered dependency: \(key)")
+        // Unregistered dependency
     }
 
     // MARK: - Resolution
@@ -238,9 +238,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
             }
 
             let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-            if duration > 100 {
-                logger.info(message: "[PERF] DI resolution slow for \(String(describing: type)): \(String(format: "%.0f", duration))ms")
-            }
+            // Performance monitoring removed for DI resolution
 
             return typed
         } catch let containerError as ContainerError {
@@ -377,7 +375,7 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
             factories.removeValue(forKey: key)
         }
 
-        logger.debug(message: "Container reset (ignored \(keysToIgnore.count) dependencies)")
+        // Container reset
     }
 
     // MARK: - Memory Management
@@ -389,15 +387,13 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
             return box.instance != nil ? box : nil
         }
         let cleanedCount = initialCount - weakBoxes.count
-        if cleanedCount > 0 {
-            logger.debug(message: "Cleaned up \(cleanedCount) dead weak references")
-        }
+        // Weak references cleaned
     }
 
     /// Periodic cleanup - call this during low-memory warnings
     public func performMaintenanceCleanup() {
         cleanupWeakReferences()
-        logger.debug(message: "Performed maintenance cleanup. Active weak boxes: \(weakBoxes.count)")
+        // Maintenance cleanup performed
     }
 
     // MARK: - Factory Registration

@@ -91,7 +91,7 @@ public extension CheckoutComponentsDelegate {
 
     private override init() {
         super.init()
-        logger.info(message: "🚀 [CheckoutComponentsPrimer] Initialized")
+        // Initialization complete
     }
 
     // MARK: - Public API
@@ -171,7 +171,7 @@ public extension CheckoutComponentsDelegate {
 
     /// Internal method for handling payment success
     internal func handlePaymentSuccess(_ result: PaymentResult) {
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully: \(result.paymentId)")
+        logger.info(message: "Payment completed: \(result.paymentId)")
 
         // Store the payment result for delegate callback
         lastPaymentResult = result
@@ -182,17 +182,16 @@ public extension CheckoutComponentsDelegate {
         // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             if let delegate = self?.delegate, let paymentResult = self?.lastPaymentResult {
-                self?.logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidCompleteWithSuccess with result: \(paymentResult.paymentId)")
                 delegate.checkoutComponentsDidCompleteWithSuccess(paymentResult)
             } else {
-                self?.logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set or payment result missing - cannot handle payment success")
+                self?.logger.error(message: "No delegate set or payment result missing")
             }
         }
     }
 
     /// Internal method for handling payment failure
     internal func handlePaymentFailure(_ error: PrimerError) {
-        logger.error(message: "❌ [CheckoutComponentsPrimer] Payment failed: \(error)")
+        logger.error(message: "Payment failed: \(error)")
 
         // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
         dismissDirectly()
@@ -200,23 +199,20 @@ public extension CheckoutComponentsDelegate {
         // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             if let delegate = self?.delegate {
-                self?.logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidFailWithError after dismissal")
                 delegate.checkoutComponentsDidFailWithError(error)
             } else {
-                self?.logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set - cannot handle payment failure")
+                self?.logger.error(message: "No delegate set for payment failure")
             }
         }
     }
 
     /// Internal method for handling checkout dismissal
     internal func handleCheckoutDismiss() {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed")
         delegate?.checkoutComponentsDidDismiss()
     }
 
     /// Internal method for storing payment result (called by DefaultCheckoutScope)
     internal func storePaymentResult(_ result: PaymentResult) {
-        logger.info(message: "💾 [CheckoutComponentsPrimer] Storing payment result: \(result.paymentId)")
         lastPaymentResult = result
     }
 
@@ -225,11 +221,11 @@ public extension CheckoutComponentsDelegate {
         from viewController: UIViewController,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "💳 [CheckoutComponentsPrimer] Presenting card form directly")
+        // Presenting card form
 
         // Check if already presenting
         guard !isPresentingCheckout else {
-            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Already presenting checkout. Ignoring duplicate request.")
+            logger.debug(message: "Already presenting checkout")
             completion?()
             return
         }
@@ -244,7 +240,7 @@ public extension CheckoutComponentsDelegate {
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 onCompletion: { [weak self] in
-                    self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Card form completion callback triggered")
+                    // Card form completion
                     if let paymentResult = self?.lastPaymentResult {
                         self?.handlePaymentSuccess(paymentResult)
                     } else {
@@ -280,7 +276,7 @@ public extension CheckoutComponentsDelegate {
             viewController.present(bridgeController, animated: true)
             isPresentingCheckout = false
 
-            logger.info(message: "✅ [CheckoutComponentsPrimer] Card form presented successfully")
+            // Card form presented
             completion?()
         }
     }
@@ -290,11 +286,11 @@ public extension CheckoutComponentsDelegate {
         from viewController: UIViewController,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout through UIKit Integration")
+        // Presenting checkout
 
         // Check if already presenting
         guard !isPresentingCheckout else {
-            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Already presenting checkout. Ignoring duplicate request.")
+            logger.debug(message: "Already presenting checkout")
             completion?()
             return
         }
@@ -312,15 +308,15 @@ public extension CheckoutComponentsDelegate {
                 presentationContext: .direct,
                 onCompletion: { [weak self] in
                     // Handle checkout completion (success or dismissal)
-                    self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Checkout completion callback triggered")
+                    // Checkout completion
 
                     // Check if we have a payment result from the success flow
                     if let paymentResult = self?.lastPaymentResult {
-                        self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                        // Payment completed
                         self?.handlePaymentSuccess(paymentResult)
                     } else {
                         // No payment result means user dismissed or cancelled
-                        self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                        // Checkout dismissed
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
                     }
@@ -331,7 +327,7 @@ public extension CheckoutComponentsDelegate {
             activeCheckoutController = bridgeController
 
             // Present CheckoutComponents modally
-            logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting CheckoutComponents modally")
+            // Present modally
 
             // Create modal presentation with dynamic sizing
             bridgeController.modalPresentationStyle = .pageSheet
@@ -362,7 +358,7 @@ public extension CheckoutComponentsDelegate {
             // Reset presenting flag after successful presentation
             isPresentingCheckout = false
 
-            logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents presented successfully")
+            // Presentation complete
             completion?()
         }
     }
@@ -373,11 +369,11 @@ public extension CheckoutComponentsDelegate {
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with custom content through UIKit Integration")
+        // Presenting checkout with custom content
 
         // Check if already presenting
         guard !isPresentingCheckout else {
-            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] Already presenting checkout. Ignoring duplicate request.")
+            logger.debug(message: "Already presenting checkout")
             completion?()
             return
         }
@@ -401,15 +397,15 @@ public extension CheckoutComponentsDelegate {
                 customContent: customContentWrapper,
                 onCompletion: { [weak self] in
                     // Handle checkout completion (success or dismissal)
-                    self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Custom content completion callback triggered")
+                    // Custom content completion
 
                     // Check if we have a payment result from the success flow
                     if let paymentResult = self?.lastPaymentResult {
-                        self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                        // Payment completed
                         self?.handlePaymentSuccess(paymentResult)
                     } else {
                         // No payment result means user dismissed or cancelled
-                        self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                        // Checkout dismissed
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
                     }
@@ -420,13 +416,13 @@ public extension CheckoutComponentsDelegate {
             activeCheckoutController = bridgeController
 
             // Present modally from the provided view controller
-            logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting custom content modally")
+            // Present custom content
             viewController.present(bridgeController, animated: true)
 
             // Reset presenting flag after successful presentation
             isPresentingCheckout = false
 
-            logger.info(message: "✅ [CheckoutComponentsPrimer] Custom CheckoutComponents presented successfully")
+            // Custom presentation complete
             completion?()
         }
     }
@@ -435,22 +431,22 @@ public extension CheckoutComponentsDelegate {
 
     /// Internal method for dismissing checkout directly
     internal func dismissDirectly() {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing CheckoutComponents directly")
+        // Dismissing checkout
 
         // Dismiss the modal directly
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
                 self?.activeCheckoutController = nil
-                self?.logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
+                // Dismissed
             }
         }
     }
 
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout through traditional UI")
+        // Dismissing checkout
 
         guard activeCheckoutController != nil else {
-            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] No active checkout to dismiss")
+            logger.debug(message: "No active checkout to dismiss")
             completion?()
             return
         }
@@ -464,7 +460,7 @@ public extension CheckoutComponentsDelegate {
         // Clean up references
         activeCheckoutController = nil
 
-        logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
+        // Dismissed
 
         // Notify delegate about dismissal
         handleCheckoutDismiss()

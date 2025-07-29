@@ -34,9 +34,7 @@ struct DependencyInjectionModifier: ViewModifier {
         content
             .onAppear {
                 guard container != nil else {
-                    PrimerLogging.shared.logger.error(
-                        message: "DIContainer not available in environment"
-                    )
+                    // DIContainer not available in environment
                     return
                 }
             }
@@ -56,9 +54,7 @@ struct DependencyResolutionModifier<T>: ViewModifier {
         content
             .onAppear {
                 guard let container = container else {
-                    PrimerLogging.shared.logger.error(
-                        message: "DIContainer not available for resolving \(type)"
-                    )
+                    // DIContainer not available
                     return
                 }
 
@@ -66,9 +62,7 @@ struct DependencyResolutionModifier<T>: ViewModifier {
                     let resolved = try container.resolveSync(type, name: name)
                     action(resolved)
                 } catch {
-                    PrimerLogging.shared.logger.error(
-                        message: "Failed to resolve \(type): \(error)"
-                    )
+                    // Failed to resolve dependency
                 }
             }
     }

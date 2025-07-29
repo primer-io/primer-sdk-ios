@@ -176,28 +176,28 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         // Register card payment method
         CardPaymentMethod.register()
 
-        logger.debug(message: "Registered payment methods: \\(PaymentMethodRegistry.shared.registeredTypes)")
+        // Registered payment methods
     }
 
     // MARK: - Setup
 
     private func setupInteractors() async {
-        logger.info(message: "🔧 [CheckoutComponents] Setting up interactors...")
+        // Setting up interactors...
         do {
-            logger.debug(message: "🔍 [CheckoutComponents] Checking DI container availability...")
+            // Checking DI container availability...
             guard let _ = await DIContainer.current else {
-                logger.error(message: "❌ [CheckoutComponents] DI Container is not available")
+                // DI Container is not available
                 throw ContainerError.containerUnavailable
             }
-            logger.info(message: "✅ [CheckoutComponents] DI Container found")
+            // DI Container found
 
-            logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
+            // Creating bridge to existing SDK payment methods
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
 
-            logger.info(message: "✅ [CheckoutComponents] Interactor setup completed with bridge")
+            // Interactor setup completed with bridge
         } catch {
-            logger.error(message: "❌ [CheckoutComponents] Failed to setup interactors: \(error)")
-            logger.error(message: "❌ [CheckoutComponents] Error type: \(type(of: error))")
+            // Failed to setup interactors
+            // Error type logged
             let primerError = PrimerError.unknown(
                 userInfo: ["setupError": error.localizedDescription],
                 diagnosticsId: UUID().uuidString
@@ -208,42 +208,42 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     private func loadPaymentMethods() async {
-        logger.info(message: "🔄 [CheckoutComponents] Starting payment methods loading...")
+        // Starting payment methods loading...
 
         // Only show loading screen if enabled in settings (UI Options integration)
         if settingsService.isInitScreenEnabled {
             updateNavigationState(.loading)
-            logger.debug(message: "✅ [CheckoutComponents] Init screen enabled - showing loading state")
+            // Init screen enabled - showing loading state
         } else {
-            logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading state")
+            // Init screen disabled - skipping loading state
         }
 
         do {
             // Add a small delay to ensure SDK configuration is fully loaded
-            logger.debug(message: "⏳ [CheckoutComponents] Waiting for SDK configuration to be ready...")
+            // Waiting for SDK configuration to be ready...
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
-            logger.debug(message: "🔍 [CheckoutComponents] Checking payment methods interactor...")
+            // Checking payment methods interactor...
             guard let interactor = paymentMethodsInteractor else {
-                logger.error(message: "❌ [CheckoutComponents] GetPaymentMethodsInteractor is nil - DI resolution failed")
+                // GetPaymentMethodsInteractor is nil - DI resolution failed
                 throw PrimerError.unknown(
                     userInfo: ["error": "GetPaymentMethodsInteractor not resolved"],
                     diagnosticsId: UUID().uuidString
                 )
             }
 
-            logger.info(message: "✅ [CheckoutComponents] Payment methods interactor found, executing...")
+            // Payment methods interactor found, executing...
             availablePaymentMethods = try await interactor.execute()
 
-            logger.info(message: "📊 [CheckoutComponents] Retrieved \(availablePaymentMethods.count) payment methods")
+            // Retrieved payment methods
 
             // Log each payment method for debugging
             for (index, method) in availablePaymentMethods.enumerated() {
-                logger.debug(message: "💳 [CheckoutComponents] Payment Method \(index + 1): \(method.type) - \(method.name)")
+                // Payment Method details
             }
 
             if availablePaymentMethods.isEmpty {
-                logger.error(message: "❌ [CheckoutComponents] No payment methods available")
+                // No payment methods available
                 let error = PrimerError.unknown(
                     userInfo: ["error": "No payment methods available"],
                     diagnosticsId: UUID().uuidString
@@ -251,23 +251,23 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
-                logger.info(message: "✅ [CheckoutComponents] Payment methods loaded successfully")
+                // Payment methods loaded successfully
                 updateState(.ready)
 
                 // Check if we have only one payment method (any type)
                 if availablePaymentMethods.count == 1,
                    let singlePaymentMethod = availablePaymentMethods.first {
-                    logger.info(message: "🎯 [CheckoutComponents] Single payment method detected: \(singlePaymentMethod.type), navigating directly to payment method")
+                    // Single payment method detected, navigating directly
                     updateNavigationState(.paymentMethod(singlePaymentMethod.type))
                 } else {
-                    logger.info(message: "🎯 [CheckoutComponents] Multiple payment methods available, showing selection screen")
+                    // Multiple payment methods available, showing selection screen
                     updateNavigationState(.paymentMethodSelection)
                 }
             }
         } catch {
-            logger.error(message: "❌ [CheckoutComponents] Failed to load payment methods: \(error)")
-            logger.error(message: "❌ [CheckoutComponents] Error type: \(type(of: error))")
-            logger.error(message: "❌ [CheckoutComponents] Error description: \(error.localizedDescription)")
+            // Failed to load payment methods
+            // Error type logged
+            // Error description logged
 
             let primerError = error as? PrimerError ?? PrimerError.unknown(
                 userInfo: ["originalError": error.localizedDescription],
@@ -281,14 +281,14 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - State Management
 
     private func updateState(_ newState: PrimerCheckoutState) {
-        logger.debug(message: "Checkout state updating to: \(newState)")
-        logger.debug(message: "Previous state was: \(internalState)")
+        // Checkout state updating
+        // Previous state logged
         internalState = newState
-        logger.debug(message: "State update completed. Current state: \(internalState)")
+        // State update completed
     }
 
     internal func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
-        logger.debug(message: "Navigation state updating to: \(newState)")
+        // Navigation state updating
         navigationState = newState
 
         // Update navigation based on state (only if not syncing from navigator to avoid loops)
@@ -304,12 +304,12 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 navigator.navigateToCountrySelection()
             case .success:
                 // Success handling is now done via the view's switch statement, not the navigator
-                logger.info(message: "Success navigation handled by view layer")
+                break
             case .failure(let error):
                 navigator.navigateToError(error.localizedDescription)
             case .dismissed:
                 // Dismissal is handled by the view layer through onCompletion callback
-                logger.info(message: "Dismissal navigation handled by view layer")
+                break
             }
         }
     }
@@ -318,9 +318,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     private func observeNavigationEvents() {
         Task { @MainActor in
-            logger.debug(message: "🔍 [CheckoutComponents] Starting navigation events observer")
+            // Starting navigation events observer
             for await route in navigator.navigationEvents {
-                logger.debug(message: "🧭 [CheckoutComponents] Received navigation event: \(route)")
+                // Received navigation event
 
                 // Sync internal navigation state with the navigator's current route
                 let newNavigationState: NavigationState
@@ -349,11 +349,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                    case let .failure(newError) = newNavigationState {
                     // For error states, compare messages to avoid redundant updates
                     if currentError.localizedDescription != newError.localizedDescription {
-                        logger.debug(message: "🔄 [CheckoutComponents] Navigation state synced from navigator: \(newNavigationState)")
+                        // Navigation state synced from navigator
                         updateNavigationState(newNavigationState, syncToNavigator: false)
                     }
                 } else if !navigationStateEquals(navigationState, newNavigationState) {
-                    logger.debug(message: "🔄 [CheckoutComponents] Navigation state synced from navigator: \(newNavigationState)")
+                    // Navigation state synced from navigator
                     updateNavigationState(newNavigationState, syncToNavigator: false)
                 }
             }
@@ -380,11 +380,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
         for paymentMethodType: String
     ) -> T? {
-        logger.debug(message: "Getting payment method scope for type: \\(paymentMethodType)")
+        // Getting payment method scope for type
 
         // Check cache first
         if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
-            logger.debug(message: "Found cached scope for payment method: \\(paymentMethodType)")
+            // Found cached scope for payment method
             return cachedScope
         }
 
@@ -392,7 +392,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         do {
             // Get current container for thread-safe access
             guard let container = DIContainer.currentSync else {
-                logger.error(message: "No DI container available for payment method scope creation")
+                // No DI container available for payment method scope creation
                 return nil
             }
 
@@ -405,25 +405,25 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             if let scope = scope {
                 // Cache the scope for future use
                 paymentMethodScopeCache[paymentMethodType] = scope
-                logger.debug(message: "Created and cached new scope for payment method: \\(paymentMethodType)")
+                // Created and cached new scope for payment method
                 return scope
             } else {
-                logger.warn(message: "No scope registered for payment method: \\(paymentMethodType)")
+                // No scope registered for payment method
                 return nil
             }
 
         } catch {
-            logger.error(message: "Failed to create scope for payment method \\(paymentMethodType): \\(error)")
+            // Failed to create scope for payment method
             return nil
         }
     }
 
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
-        logger.debug(message: "Getting payment method scope for type: \\(String(describing: scopeType))")
+        // Getting payment method scope for type
 
         // Check cache first using type name
         if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType }) as? T {
-            logger.debug(message: "Found cached scope for type: \\(String(describing: scopeType))")
+            // Found cached scope for type
             return cachedScope
         }
 
@@ -431,7 +431,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         do {
             // Get current container for thread-safe access
             guard let container = DIContainer.currentSync else {
-                logger.error(message: "No DI container available for payment method scope creation")
+                // No DI container available for payment method scope creation
                 return nil
             }
 
@@ -445,21 +445,21 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 // Cache the scope using its identifier for future use
                 let scopeTypeName = String(describing: type(of: scope))
                 paymentMethodScopeCache[scopeTypeName] = scope
-                logger.debug(message: "Created and cached new scope for type: \\(scopeTypeName)")
+                // Created and cached new scope for type
                 return scope
             } else {
-                logger.warn(message: "No scope registered for type: \\(String(describing: scopeType))")
+                // No scope registered for type
                 return nil
             }
 
         } catch {
-            logger.error(message: "Failed to create scope for type \\(String(describing: scopeType)): \\(error)")
+            // Failed to create scope for type
             return nil
         }
     }
 
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? {
-        logger.debug(message: "Getting payment method scope for enum type: \\(methodType)")
+        // Getting payment method scope for enum type
 
         // Delegate to string-based method
         return getPaymentMethodScope(for: methodType.rawValue)
@@ -479,7 +479,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // Removed: getPaymentMethodScreenByIdentifier - now using PaymentMethodProtocol.content()
 
     public func onDismiss() {
-        logger.debug(message: "Checkout dismissed")
+        // Checkout dismissed
 
         // Update both state and navigation state to dismissed
         updateState(.dismissed)
@@ -498,15 +498,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Internal Methods
 
     internal func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
-        logger.info(message: "🧭 [CheckoutScope] Payment method selected: \(method.type)")
-        logger.info(message: "🧭 [CheckoutScope]   - Available methods count: \(availablePaymentMethods.count)")
-        logger.info(message: "🧭 [CheckoutScope]   - Checkout context: \(presentationContext)")
+        // Payment method selected
+        // Available methods count logged
+        // Checkout context logged
 
         // Use dynamic scope creation instead of hardcoded switch statement
         do {
             // Get current container for thread-safe access
             guard let container = DIContainer.currentSync else {
-                logger.error(message: "No DI container available for payment method scope creation")
+                // No DI container available for payment method scope creation
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Dependency injection container not available",
                     recoverSuggestion: "Ensure DI container is properly initialized",
@@ -524,7 +524,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             )
 
             if let scope = scope {
-                logger.debug(message: "Successfully created scope for payment method: \\(method.type)")
+                // Successfully created scope for payment method
 
                 // Store the current payment method scope for navigation
                 currentPaymentMethodScope = scope
@@ -536,7 +536,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateNavigationState(.paymentMethod(method.type))
 
             } else {
-                logger.warn(message: "No scope registered for payment method: \\(method.type)")
+                // No scope registered for payment method
                 // Fallback: show error or stay on payment method selection
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Payment method \\(method.type) is not supported",
@@ -547,7 +547,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             }
 
         } catch {
-            logger.error(message: "Failed to create scope for payment method \\(method.type): \\(error)")
+            // Failed to create scope for payment method
             updateNavigationState(.failure(PrimerError.invalidArchitecture(
                 description: "Failed to initialize payment method",
                 recoverSuggestion: "Check payment method implementation",
@@ -558,7 +558,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     internal func handlePaymentSuccess(_ result: PaymentResult) {
-        logger.info(message: "Payment successful: \(result.paymentId)")
+        // Payment successful
 
         // Store the payment result in CheckoutComponentsPrimer for later retrieval in completion callback
         CheckoutComponentsPrimer.shared.storePaymentResult(result)
@@ -576,7 +576,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     internal func handlePaymentError(_ error: PrimerError) {
-        logger.error(message: "Payment error: \\(error)")
+        // Payment error
 
         // Update state and navigate to error screen
         updateState(.failure(error))
@@ -585,14 +585,14 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     /// Handle auto-dismiss from success or error screens
     internal func handleAutoDismiss() {
-        logger.info(message: "Auto-dismiss triggered, completing checkout")
-        logger.info(message: "Current state before auto-dismiss: \(internalState)")
+        // Auto-dismiss triggered, completing checkout
+        // Current state before auto-dismiss
         // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
         Task { @MainActor in
             // Notify any parent view that the checkout should be dismissed
-            logger.info(message: "Updating state to dismissed")
+            // Updating state to dismissed
             updateState(.dismissed)
-            logger.info(message: "State updated to dismissed: \(internalState)")
+            // State updated to dismissed
         }
     }
 
@@ -602,98 +602,98 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private func registerAsSettingsObserver() async {
         do {
             guard let container = await DIContainer.current else {
-                logger.warn(message: "🔧 [CheckoutScope] DI Container not available for settings observer registration")
+                // DI Container not available for settings observer registration
                 return
             }
 
             let settingsObserver = try await container.resolve(SettingsObserver.self)
             settingsObserver.addObserver(self)
-            logger.info(message: "🔧 [CheckoutScope] Registered as settings observer")
+            // Registered as settings observer
         } catch {
-            logger.error(message: "🔧 [CheckoutScope] Failed to register as settings observer: \(error)")
+            // Failed to register as settings observer
         }
     }
 
     // MARK: - SettingsObserverProtocol Implementation
 
     func settingsDidChange(from oldSettings: PrimerSettings, to newSettings: PrimerSettings) async {
-        logger.info(message: "🔧 [CheckoutScope] Settings changed notification received")
+        // Settings changed notification received
 
         // Note: Settings service is immutable and will be updated at the container level
         // The settings service itself wraps PrimerSettings, so changes are reflected automatically
 
         // Log significant changes
         if oldSettings.uiOptions.isInitScreenEnabled != newSettings.uiOptions.isInitScreenEnabled {
-            logger.info(message: "🔧 [CheckoutScope] Init screen setting changed: \(oldSettings.uiOptions.isInitScreenEnabled) → \(newSettings.uiOptions.isInitScreenEnabled)")
+            // Init screen setting changed
         }
 
         if oldSettings.debugOptions.is3DSSanityCheckEnabled != newSettings.debugOptions.is3DSSanityCheckEnabled {
-            logger.info(message: "🔧 [CheckoutScope] 3DS sanity check setting changed: \(oldSettings.debugOptions.is3DSSanityCheckEnabled) → \(newSettings.debugOptions.is3DSSanityCheckEnabled)")
+            // 3DS sanity check setting changed
         }
 
-        logger.info(message: "🔧 [CheckoutScope] Settings update completed")
+        // Settings update completed
     }
 
     func uiOptionsDidChange(from oldOptions: PrimerUIOptions, to newOptions: PrimerUIOptions) async {
-        logger.info(message: "🔧 [CheckoutScope] UI options changed")
+        // UI options changed
 
         // Specific UI option handling
         if oldOptions.isInitScreenEnabled != newOptions.isInitScreenEnabled {
-            logger.info(message: "🔧 [CheckoutScope] Init screen enabled changed: \(oldOptions.isInitScreenEnabled) → \(newOptions.isInitScreenEnabled)")
+            // Init screen enabled changed
 
             // If currently in loading state and init screen was disabled, skip to payment method selection
             if !newOptions.isInitScreenEnabled && navigationState == .loading {
-                logger.info(message: "🔧 [CheckoutScope] Init screen disabled during loading - skipping to payment method selection")
+                // Init screen disabled during loading - skipping to payment method selection
                 updateNavigationState(.paymentMethodSelection)
             }
         }
 
         if oldOptions.isSuccessScreenEnabled != newOptions.isSuccessScreenEnabled {
-            logger.info(message: "🔧 [CheckoutScope] Success screen enabled changed: \(oldOptions.isSuccessScreenEnabled) → \(newOptions.isSuccessScreenEnabled)")
+            // Success screen enabled changed
         }
 
         if oldOptions.isErrorScreenEnabled != newOptions.isErrorScreenEnabled {
-            logger.info(message: "🔧 [CheckoutScope] Error screen enabled changed: \(oldOptions.isErrorScreenEnabled) → \(newOptions.isErrorScreenEnabled)")
+            // Error screen enabled changed
         }
     }
 
     func debugOptionsDidChange(from oldOptions: PrimerDebugOptions, to newOptions: PrimerDebugOptions) async {
-        logger.info(message: "🔧 [CheckoutScope] Debug options changed")
+        // Debug options changed
 
         if oldOptions.is3DSSanityCheckEnabled != newOptions.is3DSSanityCheckEnabled {
-            logger.info(message: "🔧 [CheckoutScope] 3DS sanity check changed: \(oldOptions.is3DSSanityCheckEnabled) → \(newOptions.is3DSSanityCheckEnabled)")
+            // 3DS sanity check changed
             // Note: 3DS sanity check changes require payment method reinitialization in most cases
             // For now, just log the change - full implementation would require payment method restart
         }
     }
 
     func localeDataDidChange(from oldLocale: PrimerLocaleData, to newLocale: PrimerLocaleData) async {
-        logger.info(message: "🔧 [CheckoutScope] Locale data changed: \(oldLocale.localeCode) → \(newLocale.localeCode)")
+        // Locale data changed
         // Locale changes are handled by the standard iOS localization system
     }
 
     func paymentMethodOptionsDidChange(from oldOptions: PrimerPaymentMethodOptions, to newOptions: PrimerPaymentMethodOptions) async {
-        logger.info(message: "🔧 [CheckoutScope] Payment method options changed")
+        // Payment method options changed
 
         // URL scheme changes
         let oldUrlScheme = try? oldOptions.validSchemeForUrlScheme()
         let newUrlScheme = try? newOptions.validSchemeForUrlScheme()
         if oldUrlScheme != newUrlScheme {
-            logger.info(message: "🔧 [CheckoutScope] URL scheme changed: \(oldUrlScheme ?? "none") → \(newUrlScheme ?? "none")")
+            // URL scheme changed
         }
 
         // Apple Pay changes
         let oldApplePayId = oldOptions.applePayOptions?.merchantIdentifier
         let newApplePayId = newOptions.applePayOptions?.merchantIdentifier
         if oldApplePayId != newApplePayId {
-            logger.info(message: "🔧 [CheckoutScope] Apple Pay merchant ID changed: \(oldApplePayId ?? "none") → \(newApplePayId ?? "none")")
+            // Apple Pay merchant ID changed
         }
 
         // 3DS changes
         let oldThreeDsUrl = oldOptions.threeDsOptions?.threeDsAppRequestorUrl
         let newThreeDsUrl = newOptions.threeDsOptions?.threeDsAppRequestorUrl
         if oldThreeDsUrl != newThreeDsUrl {
-            logger.info(message: "🔧 [CheckoutScope] 3DS app requestor URL changed: \(oldThreeDsUrl ?? "none") → \(newThreeDsUrl ?? "none")")
+            // 3DS app requestor URL changed
         }
     }
 }

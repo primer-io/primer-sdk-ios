@@ -29,12 +29,12 @@ extension DIContainer {
                 instance = try container.resolveSync(type, name: name)
             } catch {
                 // Log resolution failure for debugging
-                logger.warn(message: "Failed to resolve \(String(describing: type)) from DI container: \(error), using fallback")
+                logger.debug(message: "Failed to resolve \(String(describing: type)) from DI container")
                 instance = fallback()
             }
         } else {
             // Log container unavailability for debugging
-            logger.warn(message: "DI Container not available for \(String(describing: type)), using fallback")
+            logger.debug(message: "DI Container not available for \(String(describing: type))")
             instance = fallback()
         }
 
@@ -63,11 +63,11 @@ extension DIContainer {
                 let resolved = try container.resolveSync(type, name: name)
                 return StateObject(wrappedValue: resolved)
             } catch {
-                logger.warn(message: "Failed to resolve \(String(describing: type)) from environment DI container: \(error), using fallback")
+                logger.debug(message: "Failed to resolve \(String(describing: type)) from environment DI container")
                 return StateObject(wrappedValue: fallback())
             }
         } else {
-            logger.debug(message: "No DI container in environment for \(String(describing: type)), using fallback")
+            // No DI container in environment
             return StateObject(wrappedValue: fallback())
         }
     }

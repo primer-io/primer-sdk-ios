@@ -57,11 +57,11 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     // MARK: - Setup
 
     private func loadPaymentMethods() async {
-        logger.info(message: "🔄 [PaymentMethodSelection] Loading payment methods from checkout scope...")
+        // Loading payment methods from checkout scope...
 
         // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
-            logger.error(message: "❌ [PaymentMethodSelection] Checkout scope not available")
+            // Checkout scope not available
             internalState.error = "Checkout scope not available"
             return
         }
@@ -71,7 +71,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
             if case .ready = checkoutState {
                 // Get payment methods directly from the checkout scope
                 let paymentMethods = checkoutScope.availablePaymentMethods
-                logger.info(message: "✅ [PaymentMethodSelection] Retrieved \(paymentMethods.count) payment methods from checkout scope")
+                // Retrieved payment methods from checkout scope
 
                 // Convert internal payment methods to composable payment methods using PaymentMethodMapper
                 let mapper: PaymentMethodMapper
@@ -81,7 +81,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                     }
                     mapper = try await container.resolve(PaymentMethodMapper.self)
                 } catch {
-                    logger.error(message: "❌ [PaymentMethodSelection] Failed to resolve PaymentMethodMapper: \(error)")
+                    // Failed to resolve PaymentMethodMapper
                     // Fallback to manual creation without surcharge data
                     let composablePaymentMethods = paymentMethods.map { method in
                         PrimerComposablePaymentMethod(
@@ -95,7 +95,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                     internalState.paymentMethods = composablePaymentMethods
                     internalState.filteredPaymentMethods = composablePaymentMethods
                     updateCategories()
-                    logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully (without surcharge)")
+                    // Payment methods loaded and categorized successfully (without surcharge)
                     break
                 }
 
@@ -108,10 +108,10 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                 // Group by category if needed
                 updateCategories()
 
-                logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully with surcharge data")
+                // Payment methods loaded and categorized successfully with surcharge data
                 break
             } else if case .failure(let error) = checkoutState {
-                logger.error(message: "❌ [PaymentMethodSelection] Checkout scope has error: \(error)")
+                // Checkout scope has error
                 internalState.error = error.localizedDescription
                 break
             }
@@ -121,7 +121,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     // MARK: - Public Methods
 
     public func onPaymentMethodSelected(paymentMethod: PrimerComposablePaymentMethod) {
-        logger.debug(message: "Payment method selected: \\(paymentMethod.type)")
+        // Payment method selected
 
         internalState.selectedPaymentMethod = paymentMethod
 
@@ -137,13 +137,13 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     }
 
     public func onCancel() {
-        logger.debug(message: "Payment method selection cancelled")
+        // Payment method selection cancelled
         // Navigate back or dismiss
         checkoutScope?.onDismiss()
     }
 
     public func searchPaymentMethods(_ query: String) {
-        logger.debug(message: "Searching payment methods with query: \\(query)")
+        // Searching payment methods
 
         internalState.searchQuery = query
 

@@ -289,7 +289,7 @@ internal struct PaymentMethodSelectionScreen: View {
 
     private func observeState() {
         Task {
-            for await state in scope.state {
+            for await state in await scope.state {
                 await MainActor.run {
                     self.selectionState = state
                 }

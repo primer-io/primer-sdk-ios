@@ -46,7 +46,7 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     init(coordinator: CheckoutCoordinator? = nil) {
         self.coordinator = coordinator ?? CheckoutCoordinator()
-        logger.info(message: "🧭 [CheckoutNavigator] Initialized with state-driven navigation")
+        // Initialized with state-driven navigation
     }
 
     // MARK: - Navigation Methods
@@ -73,16 +73,12 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     /// Navigate to country selection
     func navigateToCountrySelection() {
-        logger.debug(message: "🧭 [CheckoutNavigator] navigateToCountrySelection called")
-        logger.debug(message: "🧭 [CheckoutNavigator] Current route before navigation: \(coordinator.currentRoute)")
         coordinator.navigate(to: .selectCountry)
-        logger.debug(message: "🧭 [CheckoutNavigator] Current route after navigation: \(coordinator.currentRoute)")
-        logger.debug(message: "🧭 [CheckoutNavigator] Navigation call completed")
     }
 
     /// Navigate to success screen with payment result
     func navigateToSuccess(_ result: PaymentResult) {
-        logger.info(message: "Navigating to success screen for payment: \(result.paymentId)")
+        // Navigating to success screen
 
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
@@ -94,7 +90,7 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     /// Navigate to success screen
     func navigateToSuccess() {
-        logger.info(message: "Success navigation - handled by CheckoutComponentsPrimer delegate")
+        // Success navigation - handled by delegate
 
         // Success handling is now managed by CheckoutComponentsPrimer delegate
         // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately
@@ -110,7 +106,7 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.handlePaymentFailure(error)
 
         // Error handling is now managed by CheckoutComponentsPrimer delegate
-        logger.info(message: "Error navigation - handled by CheckoutComponentsPrimer delegate")
+        // Error navigation - handled by delegate
     }
 
     /// Navigate back
@@ -182,7 +178,7 @@ internal struct CheckoutNavigatorKey: EnvironmentKey {
             CheckoutNavigator()
         }
         return navigator
-    }() 
+    }()
 }
 
 @available(iOS 15.0, *)

@@ -22,7 +22,7 @@ internal final class ComposableContainer: LogReporter {
 
     /// Configure and register all dependencies for CheckoutComponents.
     func configure() async {
-        logger.info(message: "🚀 [ComposableContainer] Starting CheckoutComponents DI configuration")
+        // Starting CheckoutComponents DI configuration
 
         // Register core infrastructure
         await registerInfrastructure()
@@ -42,7 +42,7 @@ internal final class ComposableContainer: LogReporter {
         // Set as global container
         await DIContainer.setContainer(container)
 
-        logger.info(message: "✅ [ComposableContainer] DI configuration completed")
+        // DI configuration completed
 
         #if DEBUG
         await performHealthCheck()
@@ -62,7 +62,7 @@ private extension ComposableContainer {
 
     /// Register infrastructure components.
     func registerInfrastructure() async {
-        logger.debug(message: "🔧 [ComposableContainer] Registering infrastructure...")
+        // Registering infrastructure
 
         // Settings service
         await CheckoutComponentsSettingsService.register(in: container, with: settings)
@@ -78,7 +78,7 @@ private extension ComposableContainer {
 
     /// Register validation framework.
     func registerValidation() async {
-        logger.debug(message: "✅ [ComposableContainer] Registering validation...")
+        // Registering validation
 
         // Rules factory
         _ = try? await container.register(RulesFactory.self)
@@ -96,7 +96,7 @@ private extension ComposableContainer {
 
     /// Register domain layer (interactors, models).
     func registerDomain() async {
-        logger.debug(message: "🎯 [ComposableContainer] Registering domain layer...")
+        // Registering domain layer
 
         // Register interactors
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
@@ -134,7 +134,7 @@ private extension ComposableContainer {
 
     /// Register data layer (repositories, mappers).
     func registerData() async {
-        logger.debug(message: "📚 [ComposableContainer] Registering data layer...")
+        // Registering data layer
 
         // Register repository
         _ = try? await container.register(HeadlessRepository.self)
@@ -149,22 +149,22 @@ private extension ComposableContainer {
 
     /// Register presentation layer (scopes, view models).
     func registerPresentation() async {
-        logger.debug(message: "Registering presentation layer...")
+        // Registering presentation layer
     }
 
     #if DEBUG
     /// Perform health check on the container.
     func performHealthCheck() async {
-        logger.debug(message: "🏥 [ComposableContainer] Performing health check...")
+        // Performing health check
 
         let diagnostics = await container.getDiagnostics()
-        logger.debug(message: "📊 [ComposableContainer] Registrations: \(diagnostics.totalRegistrations)")
+        // Total registrations: \(diagnostics.totalRegistrations)
 
         let healthReport = await container.performHealthCheck()
         if healthReport.status == .healthy {
-            logger.info(message: "✅ [ComposableContainer] Container is healthy")
+            // Container is healthy
         } else {
-            logger.warn(message: "⚠️ [ComposableContainer] Health issues: \(healthReport.issues)")
+            logger.warn(message: "Health issues: \(healthReport.issues)")
         }
     }
     #endif

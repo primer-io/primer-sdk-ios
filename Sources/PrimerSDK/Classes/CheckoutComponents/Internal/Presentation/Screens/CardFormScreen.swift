@@ -156,7 +156,9 @@ internal struct CardFormScreen: View, LogReporter {
         if cardFormState.availableNetworks.count > 1 {
             if let customCobadgedCardsView = scope.cobadgedCardsView {
                 customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
-                    scope.updateSelectedCardNetwork(network)
+                    Task { @MainActor in
+                        scope.updateSelectedCardNetwork(network)
+                    }
                 }
                 .padding(.horizontal)
             } else {
@@ -177,7 +179,9 @@ internal struct CardFormScreen: View, LogReporter {
                 selectedNetwork: $selectedCardNetwork,
                 onNetworkSelected: { network in
                     selectedCardNetwork = network
-                    scope.updateSelectedCardNetwork(network.rawValue)
+                    Task { @MainActor in
+                        scope.updateSelectedCardNetwork(network.rawValue)
+                    }
                 }
             )
             .padding(.horizontal)
@@ -322,7 +326,7 @@ internal struct CardFormScreen: View, LogReporter {
                 formConfiguration = scope.getFormConfiguration()
             }
 
-            for await state in scope.state {
+            for await state in await scope.state {
                 // Get form configuration outside of MainActor.run
                 let updatedFormConfig = await MainActor.run {
                     scope.getFormConfiguration()

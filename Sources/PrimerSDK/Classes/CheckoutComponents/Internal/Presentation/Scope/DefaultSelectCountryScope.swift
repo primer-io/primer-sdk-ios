@@ -51,13 +51,13 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     // MARK: - Navigation Methods
 
     public func onCountrySelected(countryCode: String, countryName: String) {
-        logger.debug(message: "Country selected: \(countryName) (\(countryCode))")
+        // Country selected
 
         // Update the card form scope with selected country
         if let cardFormScope = cardFormScope {
             cardFormScope.updateCountryCode(countryCode)
         } else {
-            logger.error(message: "CardFormScope is nil, cannot update country code")
+            // CardFormScope is nil, cannot update country code
         }
 
         // For modal presentation, dismiss by restoring previous navigation state
@@ -83,7 +83,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     }
 
     public func onCancel() {
-        logger.debug(message: "Country selection cancelled")
+        // Country selection cancelled
         if let checkoutScope = checkoutScope {
             // For modal presentation, dismiss by restoring previous navigation state (same logic as onCountrySelected)
             if !checkoutScope.availablePaymentMethods.isEmpty {
@@ -108,7 +108,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     }
 
     public func onSearch(query: String) {
-        logger.debug(message: "Country search: \(query)")
+        // Country search
         internalState.searchQuery = query
         filterCountries(with: query)
     }
@@ -121,7 +121,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
             convertCountryCodeToPrimerCountry(countryCode)
         }.sorted { $0.name < $1.name } // Sort alphabetically by localized name
 
-        logger.debug(message: "Loaded \(allCountries.count) countries for selection")
+        // Loaded countries for selection
 
         internalState.countries = allCountries
         internalState.filteredCountries = allCountries

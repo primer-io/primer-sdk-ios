@@ -27,12 +27,12 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         // Prevent multiple completions
         guard !hasCompleted else {
-            logger.warn(message: "Payment completion delegate called multiple times - ignoring duplicate")
+            // Payment completion delegate called multiple times
             return
         }
         hasCompleted = true
 
-        logger.info(message: "Payment completed successfully via delegate")
+        // Payment completed successfully
 
         let result = PaymentResult(
             paymentId: data.payment?.id ?? UUID().uuidString,
@@ -47,12 +47,12 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
         // Prevent multiple completions
         guard !hasCompleted else {
-            logger.warn(message: "Payment failure delegate called after completion - ignoring")
+            // Payment failure delegate called after completion
             return
         }
         hasCompleted = true
 
-        logger.error(message: "Payment failed via delegate: \(err.localizedDescription)")
+        // Payment failed via delegate
         completion(.failure(err))
     }
 
@@ -60,7 +60,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ data: PrimerCheckoutPaymentMethodData,
         decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
     ) {
-        logger.debug(message: "Will create payment - allowing to proceed")
+        // Will create payment
         // Allow payment creation to proceed
         decisionHandler(.continuePaymentCreation())
     }
@@ -71,12 +71,12 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        logger.info(message: "Payment method tokenized - proceeding to completion")
+        // Payment method tokenized
 
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
         // This follows the pattern from MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
-        logger.debug(message: "Completing tokenization, 3DS will be handled during payment creation")
+        // Completing tokenization
         decisionHandler(.complete())
     }
 
@@ -84,7 +84,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ resumeToken: String,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        logger.info(message: "Payment resumed with token, proceeding to completion")
+        // Payment resumed with token
         decisionHandler(.complete())
     }
 
@@ -93,12 +93,12 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        logger.debug(message: "RawDataManager validation state: \(isValid)")
+        // RawDataManager validation state: \(isValid)
 
         // Handle validation failures only if we haven't completed yet
         if !isValid, let errors = errors, !errors.isEmpty, !hasCompleted {
             hasCompleted = true
-            logger.error(message: "RawDataManager validation failed: \(errors)")
+            // RawDataManager validation failed
             completion(.failure(errors.first!))
         }
     }
@@ -106,7 +106,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState state: PrimerValidationState) {
-        logger.debug(message: "RawDataManager received metadata for state: \(state)")
+        // RawDataManager received metadata
         // Handle card network detection and metadata updates if needed
     }
 }
@@ -148,7 +148,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
 
     init() {
-        logger.debug(message: "HeadlessRepositoryImpl initialized")
+        // HeadlessRepositoryImpl initialized
         // Don't inject settings service in init to avoid circular dependency
         // It will be injected lazily when first needed
     }
@@ -161,14 +161,14 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         do {
             guard let container = await DIContainer.current else {
-                logger.warn(message: "DI Container not available for settings service injection")
+                // DI Container not available
                 return
             }
 
             settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-            logger.debug(message: "Settings service injected successfully")
+            // Settings service injected
         } catch {
-            logger.error(message: "Failed to inject settings service: \(error)")
+            // Failed to inject settings service
         }
     }
 
@@ -181,13 +181,13 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func initialize(clientToken: String) async throws {
-        logger.info(message: "Initializing headless checkout")
+        // Initializing headless checkout
         self.clientToken = clientToken
-        logger.info(message: "Headless checkout initialized successfully")
+        // Headless checkout initialized
     }
 
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
-        logger.info(message: "Fetching payment methods from headless SDK")
+        // Fetching payment methods
 
         // Get payment methods from PrimerAPIConfigurationModule
         let primerMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods ?? []
@@ -215,7 +215,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
 
         paymentMethods = mappedMethods
-        logger.info(message: "Mapped \(mappedMethods.count) payment methods with surcharge data")
+        // Mapped payment methods with surcharge data
         return paymentMethods
     }
 
@@ -319,7 +319,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         cardholderName: String,
         selectedNetwork: CardNetwork?
     ) async throws -> PaymentResult {
-        logger.info(message: "Processing card payment via RawDataManager with proper delegate handling")
+        // Processing card payment via RawDataManager with proper delegate handling
 
         // PAYMENT METHOD OPTIONS INTEGRATION: Validate URL scheme if configured
         try await validatePaymentMethodOptions()
@@ -359,7 +359,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             continuation: continuation
                         )
                     } catch {
-                        self.logger.error(message: "Failed to setup payment: \(error)")
+                        // Failed to setup payment
                         continuation.resume(throwing: error)
                     }
                 } else {
@@ -390,7 +390,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             cardData.cardNetwork = selectedNetwork
         }
 
-        logger.debug(message: "Card data prepared for payment processing")
+        // Card data prepared for payment processing
         return cardData
     }
 
@@ -401,18 +401,18 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        logger.debug(message: "Created RawDataManager with delegate, configuring...")
+        // Created RawDataManager with delegate, configuring...
 
         rawDataManager.configure { [weak self] _, error in
             guard let self = self else { return }
 
             if let error = error {
-                self.logger.error(message: "RawDataManager configuration failed: \(error)")
+                // RawDataManager configuration failed
                 continuation.resume(throwing: error)
                 return
             }
 
-            self.logger.debug(message: "RawDataManager configured successfully")
+            // RawDataManager configured successfully
 
             // Set the raw data (this triggers validation automatically)
             rawDataManager.rawData = cardData
@@ -434,24 +434,23 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        logger.debug(message: "Checking validation status...")
-        logger.debug(message: "RawDataManager isDataValid: \(rawDataManager.isDataValid)")
+        // Checking validation status...
 
         // Verify data is valid before submitting
         if rawDataManager.isDataValid {
-            logger.debug(message: "Raw data is valid, updating client session before payment submission...")
+            // Raw data is valid, updating client session before payment submission...
 
             // Update client session with payment method selection
             updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
                 guard let self = self else { return }
 
                 if let error = error {
-                    self.logger.error(message: "Client session update failed: \(error)")
+                    // Client session update failed
                     continuation.resume(throwing: error)
                     return
                 }
 
-                self.logger.debug(message: "Client session updated successfully, now submitting payment...")
+                // Client session updated successfully, now submitting payment...
 
                 // Submit payment
                 Task {
@@ -474,28 +473,27 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             paymentHandlingMode = .auto
         }
 
-        logger.info(message: "🔄 [PaymentHandling] Processing payment in \(paymentHandlingMode.rawValue) mode")
+        // Processing payment in specified mode
 
         // CheckoutComponents currently only supports auto mode, but log the setting
         if paymentHandlingMode == .manual {
-            logger.warn(message:
-                            "⚠️ [PaymentHandling] Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode")
+            // Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode
         }
 
         // This will trigger async payment processing and delegate callbacks
         rawDataManager.submit()
-        logger.info(message: "Card payment submitted - waiting for completion via delegate...")
+        // Card payment submitted - waiting for completion via delegate...
     }
 
     private func handleValidationFailure(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        logger.error(message: "Raw data validation failed")
+        // Raw data validation failed
 
         // Check required input types for debugging
         let requiredInputs = rawDataManager.requiredInputElementTypes
-        logger.error(message: "Required input element types: \(requiredInputs)")
+        // Required input element types validation failed
 
         let error = PrimerError.unknown(
             userInfo: [
@@ -508,7 +506,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     private func handleiOS14Fallback(continuation: CheckedContinuation<PaymentResult, Error>) {
-        logger.error(message: "CheckoutComponents requires iOS 15.0 or later")
+        // CheckoutComponents requires iOS 15.0 or later
         let error = PrimerError.unknown(
             userInfo: ["error": "CheckoutComponents requires iOS 15.0 or later"],
             diagnosticsId: UUID().uuidString
@@ -517,12 +515,11 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func setBillingAddress(_ billingAddress: BillingAddress) async throws {
-        logger.info(message: "Setting billing address via Client Session Actions")
-        logger.debug(message: "Billing address set successfully")
+        // Setting billing address via Client Session Actions
     }
 
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]? {
-        logger.debug(message: "Detecting card networks")
+        // Detecting card networks
 
         // Use RawDataManager for real network detection
         await updateCardNumberInRawDataManager(cardNumber)
@@ -544,14 +541,14 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Update card number in RawDataManager to trigger network detection
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-        logger.debug(message: "Updating card number in RawDataManager")
+        // Updating card number in RawDataManager
 
         // Configure RawDataManager if needed
         rawDataManager?.configure { [weak self] _, error in
             if let error = error {
-                self?.logger.error(message: "RawDataManager configuration failed: \(error)")
+                // RawDataManager configuration failed
             } else {
-                self?.logger.debug(message: "RawDataManager configured successfully")
+                // RawDataManager configured successfully
             }
         }
 
@@ -561,12 +558,12 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         // Trigger network detection by setting raw data
         rawDataManager?.rawData = rawCardData
 
-        logger.debug(message: "Updated RawDataManager with card data")
+        // Updated RawDataManager with card data
     }
 
     /// Handle user selection of a specific card network (for co-badged cards)
     func selectCardNetwork(_ cardNetwork: CardNetwork) async {
-        logger.info(message: "User selected card network: \(cardNetwork.displayName)")
+        // User selected card network
 
         // Update the raw card data with selected network
         rawCardData.cardNetwork = cardNetwork
@@ -583,7 +580,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Create user-friendly 3DS error using centralized strings
     private func createUserFriendly3DSError(from error: Error) -> Error {
-        logger.debug(message: "Creating user-friendly error from: \(error)")
+        // Creating user-friendly error
 
         // Check for specific 3DS error types
         if let primer3DSError = error as? Primer3DSErrorContainer {
@@ -767,7 +764,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         if #available(iOS 15.0, *) {
             await ensureSettingsService()
             guard let settingsService = settingsService as? CheckoutComponentsSettingsServiceProtocol else {
-                logger.debug(message: "Settings service not available for payment method options validation")
+                // Settings service not available for payment method options validation
                 return
             }
 
@@ -775,9 +772,9 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             if let urlScheme = settingsService.urlScheme {
                 do {
                     let validUrl = try settingsService.validUrlForUrlScheme()
-                    logger.info(message: "✅ [PaymentMethodOptions] URL scheme validated: \(validUrl.absoluteString)")
+                    // URL scheme validated successfully
                 } catch {
-                    logger.error(message: "❌ [PaymentMethodOptions] Invalid URL scheme configuration: \(error)")
+                    // Invalid URL scheme configuration
                     throw PrimerError.invalidValue(
                         key: "urlScheme",
                         value: urlScheme,
@@ -793,27 +790,27 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
             // Log Apple Pay configuration for payment method registry
             if let applePayOptions = settingsService.applePayOptions {
-                logger.info(message: "✅ [PaymentMethodOptions] Apple Pay configured with merchant ID: \(applePayOptions.merchantIdentifier)")
+                // Apple Pay configured with merchant ID
                 // Apple Pay validation will be handled by the payment method itself when selected
             }
 
             // Log 3DS configuration for security compliance
             if let threeDsOptions = settingsService.threeDsOptions {
-                logger.info(message: "✅ [PaymentMethodOptions] 3DS configuration found with app requestor URL: \(threeDsOptions.threeDsAppRequestorUrl ?? "default")")
+                // 3DS configuration found
             }
 
             // Log Stripe configuration if present
             if let stripeOptions = settingsService.stripeOptions {
-                logger.info(message: "✅ [PaymentMethodOptions] Stripe configuration found with publishable key: \(String(stripeOptions.publishableKey.prefix(10)))...")
+                // Stripe configuration found
             }
 
             // Log 3DS sanity check setting (critical for security)
             let is3DSSanityEnabled = settingsService.is3DSSanityCheckEnabled
-            logger.info(message: "🔐 [PaymentMethodOptions] 3DS sanity check enabled: \(is3DSSanityEnabled)")
+            // 3DS sanity check configuration
 
-            logger.debug(message: "✅ [PaymentMethodOptions] Payment method options validation completed")
+            // Payment method options validation completed
         } else {
-            logger.debug(message: "Settings service not available on iOS < 15.0")
+            // Settings service not available on iOS < 15.0
             return
         }
     }
@@ -827,21 +824,21 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
         let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
-        logger.debug(message: "RawDataManager dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
+        // RawDataManager validation state updated
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               metadataDidChange metadata: [String: Any]?) {
-        logger.debug(message: "RawDataManager metadataDidChange: \(metadata ?? [:])")
+        // RawDataManager metadata changed
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState cardState: PrimerValidationState) {
         guard cardState is PrimerCardNumberEntryState else {
-            logger.error(message: "Received non-card metadata. Ignoring ...")
+            // Received non-card metadata
             return
         }
-        logger.debug(message: "RawDataManager fetching metadata for card state")
+        // RawDataManager fetching metadata for card state
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
@@ -849,14 +846,14 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
                               forState cardState: PrimerValidationState) {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
               cardState is PrimerCardNumberEntryState else {
-            logger.error(message: "Received non-card metadata. Ignoring ...")
+            // Received non-card metadata
             return
         }
 
         let metadataDescription = metadataModel.selectableCardNetworks?.items
             .map { $0.displayName }
             .joined(separator: ", ") ?? "n/a"
-        logger.debug(message: "RawDataManager didReceiveMetadata: (selectable ->) \(metadataDescription)")
+        // RawDataManager received metadata
 
         // Extract networks following traditional SDK pattern
         var primerNetworks: [PrimerCardNetwork]
@@ -880,7 +877,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
         // Only emit if networks changed to avoid duplicate notifications
         if cardNetworks != lastDetectedNetworks {
             lastDetectedNetworks = cardNetworks
-            logger.info(message: "Co-badged networks detected: \(cardNetworks.map { $0.displayName })")
+            // Co-badged networks detected
 
             // Emit networks via AsyncStream for SwiftUI consumption
             networkDetectionContinuation.yield(cardNetworks)
