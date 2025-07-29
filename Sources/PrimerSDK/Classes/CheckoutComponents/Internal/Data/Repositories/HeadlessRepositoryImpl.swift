@@ -828,18 +828,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             let is3DSSanityEnabled = settingsService.is3DSSanityCheckEnabled
             logger.info(message: "🔐 [PaymentMethodOptions] 3DS sanity check enabled: \(is3DSSanityEnabled)")
 
-            // LOCALE DATA INTEGRATION: Log locale configuration for CheckoutComponents
-            let localeData = settingsService.localeData
-            logger.info(message: "🌐 [LocaleData] CheckoutComponents locale configuration:")
-            logger.info(message: "🌐 [LocaleData]   - Language code: \(localeData.languageCode)")
-            logger.info(message: "🌐 [LocaleData]   - Region code: \(localeData.regionCode ?? "none")")
-            logger.info(message: "🌐 [LocaleData]   - Locale code: \(localeData.localeCode)")
-
-            // Test locale bundle availability
-            let localizedBundle = settingsService.localizedBundle()
-            let bundlePath = localizedBundle.bundlePath
-            logger.info(message: "🌐 [LocaleData]   - Using bundle: \(bundlePath)")
-
             logger.debug(message: "✅ [PaymentMethodOptions] Payment method options validation completed")
         } else {
             logger.debug(message: "Settings service not available on iOS < 15.0")

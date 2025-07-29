@@ -67,9 +67,6 @@ private extension ComposableContainer {
         // Settings service
         await CheckoutComponentsSettingsService.register(in: container, with: settings)
 
-        // Locale service (depends on settings service)
-        await LocaleService.register(in: container)
-
         // Settings observer for dynamic updates
         await SettingsObserver.register(in: container, with: settings)
 

@@ -116,7 +116,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private let clientToken: String
     private let settings: PrimerSettings
     private var settingsService: CheckoutComponentsSettingsServiceProtocol?
-    private var localeService: LocaleServiceProtocol?
     internal var availablePaymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - UI Settings Access (for settings-based screen control)
@@ -196,10 +195,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             // Inject settings service
             settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
             logger.info(message: "✅ [CheckoutComponents] Settings service injected")
-
-            // LOCALE DATA INTEGRATION: Inject locale service for localized strings
-            localeService = try await container.resolve(LocaleServiceProtocol.self)
-            logger.info(message: "🌐 [CheckoutComponents] Locale service injected - using locale: \(localeService?.currentLocale.identifier ?? "default")")
 
             logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
@@ -681,13 +676,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     func localeDataDidChange(from oldLocale: PrimerLocaleData, to newLocale: PrimerLocaleData) async {
         logger.info(message: "🔧 [CheckoutScope] Locale data changed: \(oldLocale.localeCode) → \(newLocale.localeCode)")
-
-        // Reinject locale service to pick up new locale configuration
-        if let container = await DIContainer.current {
-            localeService = try? await container.resolve(LocaleServiceProtocol.self)
-        }
-
-        logger.info(message: "🔧 [CheckoutScope] Locale service reinjected with new locale data")
+        // Locale changes are handled by the standard iOS localization system
     }
 
     func paymentMethodOptionsDidChange(from oldOptions: PrimerPaymentMethodOptions, to newOptions: PrimerPaymentMethodOptions) async {

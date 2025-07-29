@@ -60,23 +60,6 @@ internal protocol CheckoutComponentsSettingsServiceProtocol {
     /// Payment handling mode (auto vs manual)
     var paymentHandling: PrimerPaymentHandling { get }
 
-    // MARK: - Locale Data
-
-    /// Language code for localization
-    var languageCode: String? { get }
-
-    /// Region code for localization
-    var regionCode: String? { get }
-
-    /// Complete locale code (language + region)
-    var localeCode: String { get }
-
-    /// Complete locale data for localization
-    var localeData: PrimerLocaleData { get }
-
-    /// Locale-aware bundle for string localization based on configured locale
-    func localizedBundle() -> Bundle
-
     // MARK: - Other Options
 
     /// API version for backend communication
@@ -171,52 +154,6 @@ internal final class CheckoutComponentsSettingsService: CheckoutComponentsSettin
 
     var paymentHandling: PrimerPaymentHandling {
         settings.paymentHandling
-    }
-
-    // MARK: - Locale Data
-
-    var languageCode: String? {
-        settings.localeData.languageCode
-    }
-
-    var regionCode: String? {
-        settings.localeData.regionCode
-    }
-
-    var localeCode: String {
-        settings.localeData.localeCode
-    }
-
-    var localeData: PrimerLocaleData {
-        settings.localeData
-    }
-
-    func localizedBundle() -> Bundle {
-        // LOCALE DATA INTEGRATION: Get locale-aware bundle for CheckoutComponents
-        // This respects the PrimerSettings.localeData configuration
-
-        // If a specific language code is configured, try to get that bundle
-        if let languageCode = settings.localeData.languageCode.isEmpty ? nil : settings.localeData.languageCode,
-           languageCode != "en" { // Only apply custom localization for non-English
-
-            // Try to get localized bundle for the configured language
-            if let localizedPath = Bundle.primerResources.path(forResource: languageCode, ofType: "lproj"),
-               let localizedBundle = Bundle(path: localizedPath) {
-                return localizedBundle
-            }
-
-            // If region code is available, try language-region combo (e.g., "en-US")
-            if let regionCode = settings.localeData.regionCode {
-                let localeString = "\(languageCode)-\(regionCode)"
-                if let localizedPath = Bundle.primerResources.path(forResource: localeString, ofType: "lproj"),
-                   let localizedBundle = Bundle(path: localizedPath) {
-                    return localizedBundle
-                }
-            }
-        }
-
-        // Fallback to default bundle if no localization found or if default language
-        return Bundle.primerResources
     }
 
     // MARK: - Other Options

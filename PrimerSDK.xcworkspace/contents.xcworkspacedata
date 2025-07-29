@@ -172,9 +172,6 @@
                            location = "group:ProcessCardPaymentInteractor.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:TokenizeCardInteractor.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:GetPaymentMethodsInteractor.swift">
                         </FileRef>
                         <FileRef
