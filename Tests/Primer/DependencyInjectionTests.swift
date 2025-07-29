@@ -266,7 +266,9 @@ final class DIFrameworkTests: XCTestCase {
         await DIContainer.setContainer(newContainer)
         let current = await DIContainer.current
         XCTAssertTrue(current! as AnyObject === newContainer as AnyObject)
-        XCTAssertTrue(DIContainer.currentSync! as AnyObject === newContainer as AnyObject)
+        await MainActor.run {
+            XCTAssertTrue(DIContainer.currentSync! as AnyObject === newContainer as AnyObject)
+        }
     }
 
     func testScopedContainerLifecycle() async throws {
