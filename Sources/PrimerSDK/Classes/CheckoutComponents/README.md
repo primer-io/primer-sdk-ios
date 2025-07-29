@@ -11,10 +11,13 @@ CheckoutComponents is the newest payment integration approach in the Primer iOS 
 - 🎯 **Exact Android API Parity**: Same methods, properties, and patterns across platforms
 - 🎨 **Full UI Customization**: Replace any UI component while keeping others
 - 🔄 **Reactive State Management**: AsyncStream-based state observation
-- 💳 **Co-Badged Cards**: Automatic network detection with user selection
-- 🏠 **Dynamic Billing Address**: API-driven field configuration
-- 🔐 **Built-in 3DS**: Automatic 3D Secure handling
-- 📱 **SwiftUI Native**: Modern Swift with async/await
+- 💳 **Co-Badged Cards**: Automatic network detection with user selection and surcharge support
+- 🏠 **Dynamic Billing Address**: API-driven field configuration with smart visibility
+- 🔐 **Built-in 3DS**: Automatic 3D Secure handling with delegate callbacks
+- 📱 **SwiftUI Native**: Modern Swift with async/await and ViewBuilder patterns
+- 🎯 **Type-Safe API**: Structured state management with comprehensive field validation
+- 🧩 **Modular Architecture**: Mix and match SDK components with custom UI
+- 🚀 **Smart Navigation**: Context-aware presentation and dismissal
 
 ## Requirements
 
@@ -33,11 +36,26 @@ CheckoutComponents is included in the main PrimerSDK. Follow the standard [SDK i
 ```swift
 import PrimerSDK
 
-// Present with automatic view controller detection
-CheckoutComponentsPrimer.presentCheckout(with: clientToken)
-
-// Present from specific view controller
+// Present default checkout UI
 CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController
+) { 
+    // Optional completion
+}
+
+// Present with custom UI
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController,
+    customContent: { scope in
+        // Your custom SwiftUI content using the scope
+        CustomCheckoutView(scope: scope)
+    }
+)
+
+// Present card form directly
+CheckoutComponentsPrimer.presentCardForm(
     with: clientToken,
     from: viewController
 )
@@ -54,10 +72,8 @@ import PrimerSDK
 
 struct ContentView: View {
     var body: some View {
-        PrimerCheckout(
-            clientToken: "your_client_token",
-            settings: PrimerSettings()
-        )
+        // Use the checkout scope directly in your SwiftUI view
+        CheckoutView(clientToken: "your_client_token")
     }
 }
 ```
@@ -66,45 +82,83 @@ struct ContentView: View {
 
 ### Scope-Based Architecture
 
-CheckoutComponents uses a scope-based API where each major component exposes a scope interface:
+CheckoutComponents uses a hierarchical scope-based API where each major component exposes a scope interface:
 
-- `PrimerCheckoutScope`: Main checkout lifecycle and screens
-- `PrimerCardFormScope`: Card payment form with validation
-- `PrimerPaymentMethodSelectionScope`: Payment method selection
-- `PrimerSelectCountryScope`: Country selection with search
+- **`PrimerCheckoutScope`**: Main checkout lifecycle, navigation, and screen customization
+- **`PrimerPaymentMethodSelectionScope`**: Payment method grid and selection UI
+- **`PrimerCardFormScope`**: Comprehensive card form with field-level customization
+- **`PrimerPaymentMethodScope`**: Base protocol for all payment method implementations
+
+Each scope provides:
+- State observation via AsyncStream
+- UI component customization closures
+- SDK component access via ViewBuilder methods
+- Navigation and action methods
 
 ### Customizing Individual Components
 
 Replace specific UI components while keeping default behavior:
 
 ```swift
-PrimerCheckout(
-    clientToken: clientToken,
-    settings: settings,
-    scope: { checkoutScope in
-        // Get the card form scope
-        if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? DefaultCardFormScope {
-            // Customize card number field using closure property
-            cardScope.cardNumberField = { label, styling in
-                AnyView(CustomCardNumberField(
-                    label: label,
-                    styling: styling,
-                    onChange: cardScope.updateCardNumber
-                ))
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController,
+    customContent: { checkoutScope in
+        // Default UI with customizations
+        VStack {
+            // Access payment method scopes dynamically
+            if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
+                // Customize individual fields
+                cardScope.cardNumberField = { label, styling in
+                    AnyView(CustomCardNumberField(
+                        label: label,
+                        styling: styling,
+                        onChange: cardScope.updateCardNumber
+                    ))
+                }
+                
+                // Or use SDK components with custom styling
+                cardScope.PrimerCardNumberField(
+                    label: "Card Number",
+                    styling: PrimerFieldStyling(
+                        backgroundColor: .gray.opacity(0.1),
+                        cornerRadius: 12
+                    )
+                )
             }
-        }
-        
-        // Customize loading screen
-        checkoutScope.loadingScreen = {
-            AnyView(CustomLoadingView())
-        }
-        
-        // Customize error screen
-        checkoutScope.errorScreen = { error in
-            AnyView(CustomErrorView(message: error))
         }
     }
 )
+```
+
+### Using SDK Components with Custom Styling
+
+The ViewBuilder pattern allows you to use SDK components with custom styling:
+
+```swift
+// Inside your custom content
+cardScope.PrimerCardNumberField(
+    label: "Card Number",
+    styling: PrimerFieldStyling(
+        font: .system(size: 16),
+        textColor: .primary,
+        backgroundColor: .gray.opacity(0.05),
+        borderColor: .gray.opacity(0.3),
+        focusedBorderColor: .blue,
+        errorBorderColor: .red,
+        cornerRadius: 8,
+        borderWidth: 1,
+        padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16),
+        fieldHeight: 56
+    )
+)
+.overlay(alignment: .trailing) {
+    // Add custom overlays
+    cardScope.state.detectedCardNetwork.map { network in
+        Image(network.logo)
+            .padding(.trailing, 16)
+    }
+}
 ```
 
 ### Complete Custom UI
@@ -114,147 +168,274 @@ Replace the entire checkout UI while using the scope for logic:
 ```swift
 CheckoutComponentsPrimer.presentCheckout(
     with: clientToken,
-    from: viewController
-) { scope in
-    VStack {
-        // Custom header
-        CustomHeaderView()
-        
-        // Use scope to show appropriate content
-        switch scope.state {
-        case .ready:
-            // Access nested scopes
-            CustomCardForm(scope: scope.cardForm)
-        case .error(let error):
-            CustomErrorView(error: error)
-        default:
-            ProgressView()
+    from: viewController,
+    customContent: { scope in
+        VStack {
+            // Custom header with navigation
+            HStack {
+                Button("Cancel") {
+                    scope.onCancel()
+                }
+                Spacer()
+                Text("Checkout")
+                Spacer()
+            }
+            
+            // Use scope state for content
+            switch scope.state {
+            case .initializing:
+                ProgressView("Loading payment methods...")
+            
+            case .ready:
+                // Show payment method selection
+                if let selectionScope = scope.paymentMethodSelection {
+                    CustomPaymentMethodGrid(scope: selectionScope)
+                }
+                
+            case .error(let error):
+                CustomErrorView(error: error) {
+                    scope.retry()
+                }
+                
+            case .dismissed:
+                EmptyView()
+            }
         }
     }
-}
+)
 ```
 
 ## Card Form Customization
 
-The card form scope provides 15 update methods and 18 customizable UI components:
+The card form scope provides comprehensive customization with:
+- Type-safe update methods for all fields
+- Field-level and section-level UI customization
+- Built-in validation and error handling
+- Dynamic field visibility based on configuration
 
 ### Update Methods
 
 ```swift
-let cardFormScope = checkoutScope.cardForm
-
-// Update card details
-cardFormScope.updateCardNumber("4111 1111 1111 1111")
-cardFormScope.updateExpiryDate("12/25")
-cardFormScope.updateCvv("123")
-cardFormScope.updateCardholderName("John Doe")
-
-// Update billing address
-cardFormScope.updateFirstName("John")
-cardFormScope.updateLastName("Doe")
-cardFormScope.updateEmail("john@example.com")
-cardFormScope.updatePhoneNumber("+1234567890")
-cardFormScope.updateAddressLine1("123 Main St")
-cardFormScope.updateAddressLine2("Apt 4B")
-cardFormScope.updateCity("San Francisco")
-cardFormScope.updateState("CA")
-cardFormScope.updatePostalCode("94105")
-cardFormScope.updateCountryCode("US")
-
-// Submit the form
-cardFormScope.submit()
+// Access card form scope
+if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
+    // Update card details
+    cardScope.updateCardNumber("4111 1111 1111 1111")
+    cardScope.updateExpiryDate("12/25")
+    cardScope.updateCvv("123")
+    cardScope.updateCardholderName("John Doe")
+    
+    // Update billing address
+    cardScope.updateFirstName("John")
+    cardScope.updateLastName("Doe")
+    cardScope.updateEmail("john@example.com")
+    cardScope.updatePhoneNumber("+1234567890")
+    cardScope.updateAddressLine1("123 Main St")
+    cardScope.updateAddressLine2("Apt 4B")
+    cardScope.updateCity("San Francisco")
+    cardScope.updateState("CA")
+    cardScope.updatePostalCode("94105")
+    cardScope.updateCountryCode("US")
+    
+    // Select card network for co-badged cards
+    cardScope.selectCardNetwork(.visa)
+    
+    // Submit the form
+    cardScope.submit()
+}
 ```
 
 ### Customizable Components
 
-CheckoutComponents provides closure properties for customizing individual fields:
+CheckoutComponents provides three approaches for customization:
+
+#### 1. Field-Level Customization (Replace Individual Fields)
 
 ```swift
-// Get the card form scope
-if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? DefaultCardFormScope {
-    // Customize card number field
+if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
+    // Replace card number field with custom implementation
     cardScope.cardNumberField = { label, styling in
         AnyView(CustomCardNumberInput(
             label: label,
             styling: styling,
-            onChange: cardScope.updateCardNumber
+            onChange: cardScope.updateCardNumber,
+            validation: cardScope.state.cardNumber
         ))
     }
     
-    // Customize expiry date field
+    // Replace expiry date field
     cardScope.expiryDateField = { label, styling in
         AnyView(CustomExpiryInput(
             label: label,
             styling: styling,
-            onMonthChange: cardScope.updateExpiryMonth,
-            onYearChange: cardScope.updateExpiryYear
+            onChange: cardScope.updateExpiryDate,
+            validation: cardScope.state.expiryDate
         ))
     }
-    
-    // Customize CVV field
-    cardScope.cvvField = { label, styling in
-        AnyView(CustomCVVInput(
-            label: label,
-            styling: styling,
-            onChange: cardScope.updateCvv
-        ))
-    }
-    
-    // ... and 15 more field customization options
 }
 ```
 
-This single, consistent approach matches Android's API exactly, providing a clean and predictable customization pattern.
+#### 2. Section-Level Customization (Group Multiple Fields)
+
+```swift
+// Customize entire card input section
+cardScope.cardInputSection = { modifier in
+    CustomCardSection(
+        scope: cardScope,
+        modifier: modifier
+    )
+}
+
+// Customize billing address section
+cardScope.billingAddressSection = { modifier in
+    CustomBillingSection(
+        scope: cardScope,
+        modifier: modifier,
+        fields: cardScope.state.configuration.billingAddressFields
+    )
+}
+```
+
+#### 3. SDK Components with Custom Styling
+
+```swift
+// Use SDK components with ViewBuilder pattern
+VStack(spacing: 16) {
+    cardScope.PrimerCardNumberField(
+        label: "Card Number",
+        styling: customStyling
+    )
+    
+    HStack(spacing: 12) {
+        cardScope.PrimerExpiryDateField(
+            label: "Expiry",
+            styling: customStyling
+        )
+        
+        cardScope.PrimerCvvField(
+            label: "CVV",
+            styling: customStyling
+        )
+    }
+    
+    // Conditional fields based on configuration
+    if cardScope.state.configuration.isCardholderNameRequired {
+        cardScope.PrimerCardholderNameField(
+            label: "Name on Card",
+            styling: customStyling
+        )
+    }
+}
+```
+
+All customizable fields include:
+- Card fields: cardNumberField, expiryDateField, cvvField, cardholderNameField
+- Billing fields: firstNameField, lastNameField, emailField, phoneNumberField
+- Address fields: addressLine1Field, addressLine2Field, cityField, stateField, postalCodeField, countryField
+- UI elements: cardNetworkSelector, countrySelector, submitButton, cardInputSection, billingAddressSection
 
 ## State Observation
 
 Observe real-time state changes using AsyncStream:
+
+### Checkout State
 
 ```swift
 Task {
     for await state in checkoutScope.state {
         switch state {
         case .initializing:
-            print("Loading...")
+            print("Loading payment methods...")
         case .ready:
-            print("Ready for payment")
+            print("Payment methods loaded")
         case .error(let error):
-            print("Error: \(error)")
+            print("Error: \(error.localizedDescription)")
         case .dismissed:
             print("Checkout dismissed")
         }
     }
 }
+```
 
-// Observe card form state
+### Card Form State
+
+The card form provides a structured state with comprehensive field information:
+
+```swift
 Task {
-    for await cardState in checkoutScope.cardForm.state {
-        print("Card valid: \(cardState.isValid)")
-        print("Submitting: \(cardState.isSubmitting)")
+    for await formState in cardScope.state {
+        // Overall form state
+        print("Form valid: \(formState.isValid)")
+        print("Submitting: \(formState.isSubmitting)")
+        print("Submit enabled: \(formState.isSubmitEnabled)")
         
-        // Access all field states
-        print("Card number: \(cardState.cardNumber)")
-        print("Expiry: \(cardState.expiryDate)")
-        // ... etc
+        // Field-specific validation
+        if let error = formState.cardNumber.error {
+            print("Card number error: \(error.localizedDescription)")
+        }
+        
+        // Co-badged card information
+        if !formState.detectedCardNetworks.isEmpty {
+            print("Available networks: \(formState.detectedCardNetworks)")
+            print("Selected: \(formState.selectedCardNetwork ?? "None")")
+        }
+        
+        // Surcharge information
+        if let surcharge = formState.surcharge {
+            print("Surcharge: \(surcharge.amount) \(surcharge.currency)")
+        }
+        
+        // Dynamic field configuration
+        print("Cardholder name required: \(formState.configuration.isCardholderNameRequired)")
+        print("Billing fields: \(formState.configuration.billingAddressFields)")
     }
+}
+```
+
+### Field State Structure
+
+Each field in the form state includes:
+```swift
+struct FieldState<T> {
+    let value: T?              // Current field value
+    let isValid: Bool          // Validation status
+    let error: FieldError?     // Specific error if invalid
+    let isRequired: Bool       // Whether field is required
+    let isVisible: Bool        // Whether field should be shown
 }
 ```
 
 ## Co-Badged Cards
 
-CheckoutComponents automatically detects and handles co-badged cards:
+CheckoutComponents automatically detects and handles co-badged cards with network selection and surcharge support:
 
 ```swift
-// The framework automatically detects available networks
-// and shows a selector when multiple networks are available
-
-// Observe selected network
+// Observe co-badged card state
 Task {
-    for await state in checkoutScope.cardForm.state {
-        if let network = state.selectedCardNetwork {
-            print("Selected network: \(network)")
+    for await state in cardScope.state {
+        // Multiple networks detected
+        if state.detectedCardNetworks.count > 1 {
+            print("Co-badged card detected: \(state.detectedCardNetworks)")
+            
+            // Network-specific surcharges
+            for network in state.detectedCardNetworks {
+                if let surcharge = state.getNetworkSurcharge(for: network) {
+                    print("\(network): +\(surcharge.amount) \(surcharge.currency)")
+                }
+            }
         }
     }
+}
+
+// Programmatically select network
+cardScope.selectCardNetwork(.mastercard)
+
+// Customize network selector UI
+cardScope.cardNetworkSelector = { networks, selected, onSelect in
+    AnyView(CustomNetworkPicker(
+        networks: networks,
+        selected: selected,
+        onSelect: onSelect
+    ))
 }
 ```
 
@@ -263,16 +444,49 @@ Task {
 Billing address fields are dynamically configured based on API response:
 
 ```swift
-// Fields are automatically shown/hidden based on configuration
-// The billing address is sent via Client Session Actions API
-// separate from card tokenization
+// Check which fields are required
+let config = cardScope.state.configuration
+print("Required billing fields: \(config.billingAddressFields)")
+
+// Fields can include: firstName, lastName, email, phoneNumber,
+// addressLine1, addressLine2, city, state, postalCode, countryCode
 
 // Customize billing address section
-scope.cardForm.billingAddressSection = { modifier in
-    CustomBillingAddressView(
-        scope: scope.cardForm,
-        modifier: modifier
-    )
+cardScope.billingAddressSection = { modifier in
+    VStack(alignment: .leading, spacing: 12) {
+        Text("Billing Address")
+            .font(.headline)
+        
+        // Only show required fields
+        ForEach(config.billingAddressFields, id: \.self) { field in
+            switch field {
+            case .email:
+                cardScope.PrimerEmailField(
+                    label: "Email",
+                    styling: customStyling
+                )
+            case .countryCode:
+                cardScope.PrimerCountryField(
+                    label: "Country",
+                    styling: customStyling
+                )
+            // ... handle other fields
+            default:
+                EmptyView()
+            }
+        }
+    }
+    .primerModifier(modifier)
+}
+
+// Country selection with search
+cardScope.countrySelector = { countries, selected, onSelect in
+    AnyView(CustomCountryPicker(
+        countries: countries,
+        selected: selected,
+        onSelect: onSelect,
+        searchEnabled: true
+    ))
 }
 ```
 
@@ -281,81 +495,202 @@ scope.cardForm.billingAddressSection = { modifier in
 Customize the payment method selection screen:
 
 ```swift
-scope.paymentMethodSelectionScreen = { selectionScope in
-    CustomPaymentMethodGrid(scope: selectionScope)
+// Access payment method selection scope
+if let selectionScope = checkoutScope.paymentMethodSelection {
+    // Replace entire selection screen
+    selectionScope.screen = { scope in
+        AnyView(CustomPaymentMethodGrid(
+            methods: scope.state.paymentMethods,
+            onSelect: scope.onPaymentMethodSelected
+        ))
+    }
+    
+    // Or customize individual components
+    selectionScope.paymentMethodItem = { method in
+        AnyView(CustomPaymentMethodCell(
+            method: method,
+            showSurcharge: method.surcharge != nil
+        ))
+    }
+    
+    // Custom category headers
+    selectionScope.categoryHeader = { category in
+        AnyView(
+            Text(category.displayName)
+                .font(.headline)
+                .padding(.vertical, 8)
+        )
+    }
+    
+    // Empty state when no methods available
+    selectionScope.emptyStateView = {
+        AnyView(
+            VStack {
+                Image(systemName: "creditcard.slash")
+                Text("No payment methods available")
+            }
+        )
+    }
 }
 
-// Or customize individual components
-scope.paymentMethodSelection.searchBar = { onSearch in
-    CustomSearchBar(onSearch: onSearch)
-}
-
-scope.paymentMethodSelection.paymentMethodItem = { method in
-    CustomPaymentMethodCell(method: method)
+// Observe selection state
+Task {
+    for await state in selectionScope.state {
+        print("Available methods: \(state.paymentMethods.count)")
+        print("Categories: \(state.categories)")
+    }
 }
 ```
 
 ## Error Handling
 
-CheckoutComponents integrates with the standard PrimerDelegate:
+CheckoutComponents uses the CheckoutComponentsDelegate protocol:
 
 ```swift
-extension ViewController: PrimerDelegate {
-    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        // Payment successful
+extension ViewController: CheckoutComponentsDelegate {
+    func checkoutComponentsDidCompletePayment(with data: PrimerCheckoutData) {
+        print("Payment successful: \(data.payment.id)")
+        // Handle successful payment
     }
     
-    func primerDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
-        // Handle error
-        return .fail(withMessage: error.localizedDescription)
+    func checkoutComponentsDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
+        switch error.errorCode {
+        case .paymentFailed:
+            // Allow retry
+            return .retry
+        case .userCancelled:
+            // Dismiss checkout
+            return .fail()
+        default:
+            // Show error message
+            return .fail(withMessage: error.localizedDescription)
+        }
+    }
+    
+    func checkoutComponentsDidDismiss() {
+        print("Checkout dismissed")
+    }
+    
+    // 3DS handling
+    func checkoutComponentsWillPresent3DS() {
+        print("3DS challenge will be presented")
+    }
+    
+    func checkoutComponentsDidPresent3DS() {
+        print("3DS challenge presented")
+    }
+    
+    func checkoutComponentsWillDismiss3DS() {
+        print("3DS challenge will be dismissed")
+    }
+    
+    func checkoutComponentsDidComplete3DS(with result: ThreeDSResult) {
+        print("3DS completed: \(result)")
     }
 }
+
+// Set the delegate
+CheckoutComponentsPrimer.delegate = self
 ```
 
 ## Advanced Features
 
 ### 3D Secure
 
-3DS is handled automatically by the framework:
+3DS is handled automatically with delegate callbacks for tracking:
 
 ```swift
-// No additional code needed - 3DS challenges are presented
-// automatically when required by the payment
-```
-
-### Custom Modifiers
-
-Use PrimerModifier to style components consistently:
-
-```swift
-let customModifier = PrimerModifier(
-    padding: EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20),
-    background: .blue.opacity(0.1),
-    cornerRadius: 12,
-    border: (color: .blue, width: 1)
-)
-
-scope.cardForm.cardNumberInput = { _ in
-    CardNumberInput()
-        .primerModifier(customModifier)
+// Implement delegate methods for 3DS lifecycle
+extension ViewController: CheckoutComponentsDelegate {
+    func checkoutComponentsWillPresent3DS() {
+        // Prepare UI for 3DS presentation
+    }
+    
+    func checkoutComponentsDidComplete3DS(with result: ThreeDSResult) {
+        switch result {
+        case .success:
+            print("3DS authentication successful")
+        case .failure(let error):
+            print("3DS failed: \(error)")
+        case .cancelled:
+            print("3DS cancelled by user")
+        }
+    }
 }
 ```
 
-### Future Support
+### Navigation and Presentation Context
 
-Placeholders for upcoming features:
+CheckoutComponents supports smart navigation based on presentation context:
 
 ```swift
-// Vaulting support (coming soon)
-// scope.cardForm.saveCardToggle = { modifier in
-//     SaveCardToggle(modifier: modifier)
-// }
+// Direct presentation
+CheckoutComponentsPrimer.presentCardForm(
+    with: clientToken,
+    from: viewController
+)
 
-// Additional payment methods (coming soon)
-// - Apple Pay
-// - PayPal
-// - Google Pay
-// - Bank transfers
+// The framework tracks presentation context
+// and adjusts navigation behavior accordingly:
+// - Back button shows when navigating from payment selection
+// - Cancel button shows for direct presentation
+```
+
+### Dynamic Payment Method Registration
+
+The framework supports dynamic payment method registration:
+
+```swift
+// Payment methods are registered automatically based on configuration
+// Each payment method type has its own scope implementation
+// Access dynamically via:
+let paymentMethodScope = checkoutScope.getPaymentMethodScope(for: paymentMethodType)
+```
+
+### Field Validation
+
+Comprehensive field validation with specific error codes:
+
+```swift
+enum FieldError {
+    case required
+    case invalidFormat
+    case invalidCardNumber
+    case invalidExpiryDate
+    case invalidCvv
+    case invalidEmail
+    case custom(String)
+}
+
+// Access field errors
+if let error = cardScope.state.cardNumber.error {
+    switch error {
+    case .invalidCardNumber:
+        showError("Please enter a valid card number")
+    case .required:
+        showError("Card number is required")
+    default:
+        showError(error.localizedDescription)
+    }
+}
+```
+
+### Surcharge Support
+
+Display payment method and network-specific surcharges:
+
+```swift
+// Payment method surcharge
+if let surcharge = paymentMethod.surcharge {
+    Text("+ \(surcharge.amount) \(surcharge.currency)")
+}
+
+// Network-specific surcharges for co-badged cards
+cardScope.state.detectedCardNetworks.forEach { network in
+    if let surcharge = cardScope.state.getNetworkSurcharge(for: network) {
+        print("\(network): +\(surcharge.formatted)")
+    }
+}
 ```
 
 ## Integration Examples
@@ -363,32 +698,159 @@ Placeholders for upcoming features:
 ### Basic Integration
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(with: token)
+// Simplest integration - default UI
+CheckoutComponentsPrimer.delegate = self
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController
+)
 ```
 
-### Custom UI Integration
+### Custom Card Form
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(with: token) { scope in
-    // Your custom UI using scope for logic
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController,
+    customContent: { scope in
+        if let cardScope = scope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
+            VStack(spacing: 20) {
+                // Custom header
+                CustomHeaderView()
+                
+                // Mix SDK and custom components
+                cardScope.PrimerCardNumberField(
+                    label: "Card Number",
+                    styling: customStyling
+                )
+                
+                HStack {
+                    cardScope.PrimerExpiryDateField(styling: customStyling)
+                    cardScope.PrimerCvvField(styling: customStyling)
+                }
+                
+                // Custom billing section
+                if !cardScope.state.configuration.billingAddressFields.isEmpty {
+                    CustomBillingAddressView(scope: cardScope)
+                }
+                
+                // Submit button with loading state
+                Button(action: cardScope.submit) {
+                    if cardScope.state.isSubmitting {
+                        ProgressView()
+                    } else {
+                        Text("Pay \(cardScope.state.amount.formatted)")
+                    }
+                }
+                .disabled(!cardScope.state.isSubmitEnabled)
+            }
+        }
+    }
+)
+```
+
+### Complete Custom Checkout
+
+```swift
+struct CustomCheckoutView: View {
+    let scope: PrimerCheckoutScope
+    
+    var body: some View {
+        NavigationView {
+            switch scope.state {
+            case .initializing:
+                LoadingView()
+                
+            case .ready:
+                if let selectionScope = scope.paymentMethodSelection {
+                    PaymentMethodGrid(
+                        methods: selectionScope.state.paymentMethods,
+                        onSelect: { method in
+                            selectionScope.onPaymentMethodSelected(method)
+                        }
+                    )
+                }
+                
+            case .error(let error):
+                ErrorView(error: error) {
+                    scope.retry()
+                }
+                
+            case .dismissed:
+                EmptyView()
+            }
+        }
+    }
 }
+
+// Present with custom view
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController,
+    customContent: { scope in
+        CustomCheckoutView(scope: scope)
+    }
+)
 ```
 
 ## Best Practices
 
-1. **State Observation**: Always use AsyncStream for state observation rather than polling
-2. **Error Handling**: Implement PrimerDelegate for proper error handling
-3. **Customization**: Start with default UI and customize only what you need
-4. **Testing**: Test with various card types including co-badged cards
-5. **Accessibility**: Maintain accessibility when creating custom components
+1. **State Observation**: Use AsyncStream for reactive state updates
+   ```swift
+   Task {
+       for await state in scope.state {
+           updateUI(for: state)
+       }
+   }
+   ```
+
+2. **Error Handling**: Implement CheckoutComponentsDelegate for comprehensive error handling
+   ```swift
+   func checkoutComponentsDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
+       // Return .retry for recoverable errors
+       // Return .fail() for terminal errors
+   }
+   ```
+
+3. **Customization Strategy**: 
+   - Start with default UI
+   - Use SDK components with custom styling for quick customization
+   - Replace individual fields only when needed
+   - Build complete custom UI only for unique requirements
+
+4. **Performance**:
+   - Reuse scope references instead of repeatedly calling `getPaymentMethodScope`
+   - Batch state updates when possible
+   - Use structured state properties instead of parsing raw values
+
+5. **Testing Considerations**:
+   - Test with various card types including co-badged cards
+   - Verify dynamic field visibility with different configurations
+   - Test error states and recovery flows
+   - Validate 3DS flows with test cards
+
+6. **Accessibility**:
+   - Maintain VoiceOver support in custom components
+   - Use semantic colors that respect Dark Mode
+   - Provide clear error messages with actionable guidance
+   - Ensure touch targets meet minimum size requirements
+
+## Migration Guide
+
+For teams migrating from other Primer checkout solutions:
+
+1. **From Drop-In Checkout**: CheckoutComponents offers the same ease of integration with added customization options
+2. **From Headless Checkout**: Use the scope-based API for similar programmatic control with better type safety
+3. **From Raw API**: CheckoutComponents handles tokenization, 3DS, and validation automatically
 
 ## API Reference
 
 For detailed API documentation, see:
+- [CheckoutComponentsPrimer](CheckoutComponentsPrimer.swift)
 - [PrimerCheckoutScope](Scope/PrimerCheckoutScope.swift)
 - [PrimerCardFormScope](Scope/PrimerCardFormScope.swift)
 - [PrimerPaymentMethodSelectionScope](Scope/PrimerPaymentMethodSelectionScope.swift)
-- [PrimerSelectCountryScope](Scope/PrimerSelectCountryScope.swift)
+- [StructuredCardFormState](State/StructuredCardFormState.swift)
 
 ## Support
 
