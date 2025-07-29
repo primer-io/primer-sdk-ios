@@ -322,8 +322,7 @@ extension [CardNetwork]: LogReporter {
             logger.warn(message: "Expected allowed networks to be present in client session")
             return []
         }
-        let networks = networkStrings.compactMap { CardNetwork(rawValue: $0) }//.filter { $0 != .amex }
-        return networks
+        return networkStrings.compactMap { CardNetwork(rawValue: $0) }
     }
 
     /// A list of all card networks, used by default when a merchant does not specify the networks they support

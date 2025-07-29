@@ -1,8 +1,15 @@
+//
+//  PrimerInputElementType.swift
+//  PrimerSDK
+//
+//  Created by Evangelos on 4/10/22.
+//
+
+// swiftlint:disable cyclomatic_complexity
 import UIKit
 
 @objc
 public enum PrimerInputElementType: Int {
-    // Existing cases
     case cardNumber
     case expiryDate
     case cvv
@@ -24,7 +31,6 @@ public enum PrimerInputElementType: Int {
 
     public var stringValue: String {
         switch self {
-        // Existing cases
         case .cardNumber:
             return "CARD_NUMBER"
         case .expiryDate:
@@ -41,9 +47,6 @@ public enum PrimerInputElementType: Int {
             return "PHONE_NUMBER"
         case .retailer:
             return "RETAILER"
-        case .unknown:
-            return "UNKNOWN"
-        // New cases
         case .countryCode:
             return "COUNTRY_CODE"
         case .firstName:
@@ -62,10 +65,12 @@ public enum PrimerInputElementType: Int {
             return "EMAIL"
         case .all:
             return "ALL"
+        case .unknown:
+            return "UNKNOWN"
+
         }
     }
 
-    /// Refactored validation method with reduced cyclomatic complexity.
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
         // For .all and .retailer, no validation is needed.
         if self == .all || self == .retailer {
@@ -284,3 +289,4 @@ public enum PrimerInputElementType: Int {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
