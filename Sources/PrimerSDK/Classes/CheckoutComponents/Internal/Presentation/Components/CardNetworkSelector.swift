@@ -105,18 +105,3 @@ internal struct CardNetworkSelector: View {
         }
     }
 }
-
-/// Preview provider for SwiftUI previews
-@available(iOS 15.0, *)
-struct CardNetworkSelector_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            CardNetworkSelector(
-                availableNetworks: [.cartesBancaires, .visa],
-                selectedNetwork: .constant(.cartesBancaires),
-                onNetworkSelected: nil
-            )
-            .padding()
-        }
-    }
-}

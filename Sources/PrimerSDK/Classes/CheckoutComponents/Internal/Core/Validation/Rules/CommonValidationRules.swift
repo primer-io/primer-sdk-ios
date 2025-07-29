@@ -340,7 +340,7 @@ internal class EmailRule: ValidationRule {
 
         return .valid
     }
-    
+
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
@@ -354,7 +354,7 @@ internal class EmailRule: ValidationRule {
 internal class EmailValidationRule: ValidationRule {
     typealias Input = String?
     private let emailRule = EmailRule()
-    
+
     func validate(_ value: String?) -> ValidationResult {
         return emailRule.validate(value)
     }
@@ -390,7 +390,7 @@ internal class PhoneNumberRule: ValidationRule {
 
         return .valid
     }
-    
+
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
@@ -404,7 +404,7 @@ internal class PhoneNumberRule: ValidationRule {
 internal class PhoneNumberValidationRule: ValidationRule {
     typealias Input = String?
     private let phoneNumberRule = PhoneNumberRule()
-    
+
     func validate(_ value: String?) -> ValidationResult {
         return phoneNumberRule.validate(value)
     }
