@@ -351,9 +351,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             delegate: paymentHandler
                         )
 
-                        // Configure 3DS if needed
-                        await configure3DSIfNeeded()
-
                         // Configure and submit payment
                         configureRawDataManagerAndSubmit(
                             rawDataManager: rawDataManager,
@@ -395,20 +392,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         logger.debug(message: "Card data prepared for payment processing")
         return cardData
-    }
-
-    @MainActor
-    private func configure3DSIfNeeded() async {
-        if #available(iOS 15.0, *) {
-            await ensureSettingsService()
-            if let settingsService = settingsService as? CheckoutComponentsSettingsServiceProtocol,
-               let threeDsOptions = settingsService.threeDsOptions,
-               let appRequestorUrl = threeDsOptions.threeDsAppRequestorUrl {
-                logger.info(message: "🔐 [PaymentMethodOptions] Configuring 3DS with app requestor URL: \(appRequestorUrl)")
-                // Note: 3DS configuration is handled by the SDK configuration, not RawDataManager
-                // The threeDsAppRequestorUrl should be set during SDK configuration phase
-            }
-        }
     }
 
     @MainActor
