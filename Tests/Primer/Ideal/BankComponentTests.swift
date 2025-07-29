@@ -1,10 +1,8 @@
 //
 //  BankComponentTests.swift
-//  Debug App Tests
 //
-//  Created by Alexandra Lovin on 14.11.2023.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK

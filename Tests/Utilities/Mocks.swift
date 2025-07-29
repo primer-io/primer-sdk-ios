@@ -1,9 +1,8 @@
 //
-//  PrimerSettings.swift
-//  PrimerSDKTests
+//  Mocks.swift
 //
-//  Created by Carl Eriksson on 03/01/2021.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
 import XCTest

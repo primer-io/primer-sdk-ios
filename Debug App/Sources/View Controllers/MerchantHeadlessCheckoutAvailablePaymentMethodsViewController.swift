@@ -1,10 +1,8 @@
 //
-//  MerchantPaymentMethodsViewController.swift
-//  PrimerSDK_Example
+//  MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift
 //
-//  Created by Evangelos on 2/2/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
 import UIKit

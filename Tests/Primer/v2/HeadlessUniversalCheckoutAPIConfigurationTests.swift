@@ -1,10 +1,8 @@
 //
 //  HeadlessUniversalCheckoutAPIConfigurationTests.swift
-//  Debug App Tests
 //
-//  Created by Evangelos Pittas on 20/4/23.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK

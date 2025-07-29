@@ -1,9 +1,8 @@
 //
 //  PrimerAPIClientTests.swift
 //
-//
-//  Created by Onur Var on 3.06.2025.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 // swiftlint:disable line_length

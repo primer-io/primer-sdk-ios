@@ -1,9 +1,8 @@
 //
-//  ThreeDSService.swift
-//  PrimerSDK
+//  3DSService.swift
 //
-//  Created by Evangelos Pittas on 17/6/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length

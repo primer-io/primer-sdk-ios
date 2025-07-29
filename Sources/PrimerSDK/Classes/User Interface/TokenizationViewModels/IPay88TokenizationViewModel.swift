@@ -1,9 +1,8 @@
 //
 //  IPay88TokenizationViewModel.swift
-//  PrimerSDK
 //
-//  Created by Evangelos on 12/12/22.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
