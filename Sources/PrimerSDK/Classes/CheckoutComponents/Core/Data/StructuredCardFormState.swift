@@ -26,7 +26,6 @@ public struct CardFormConfiguration: Equatable {
         requiresBillingAddress: false
     )
 
-
     public init(
         cardFields: [PrimerInputElementType],
         billingFields: [PrimerInputElementType] = [],

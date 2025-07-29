@@ -100,10 +100,7 @@
                            location = "group:Rules"
                            name = "Rules">
                            <FileRef
-                              location = "group:AdditionalValidationRules.swift">
-                           </FileRef>
-                           <FileRef
-                              location = "group:AddressValidationRules.swift">
+                              location = "group:CommonValidationRules.swift">
                            </FileRef>
                            <FileRef
                               location = "group:CardValidationRules.swift">

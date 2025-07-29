@@ -161,7 +161,6 @@ public extension CheckoutComponentsDelegate {
         shared.dismiss(animated: animated, completion: completion)
     }
 
-
     // MARK: - Instance Methods
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
@@ -190,7 +189,6 @@ public extension CheckoutComponentsDelegate {
             }
         }
     }
-
 
     /// Internal method for handling payment failure
     internal func handlePaymentFailure(_ error: PrimerError) {
@@ -527,7 +525,6 @@ extension CheckoutComponentsPrimer {
     @objc public static var isPresenting: Bool {
         return shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
-
 
     private func findPresentingViewController() -> UIViewController? {
         // Find the topmost view controller
