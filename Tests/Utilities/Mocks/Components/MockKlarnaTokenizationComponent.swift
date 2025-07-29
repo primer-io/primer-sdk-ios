@@ -1,9 +1,8 @@
 //
 //  MockKlarnaTokenizationComponent.swift
 //
-//
-//  Created by Onur Var on 19.04.2025.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
 

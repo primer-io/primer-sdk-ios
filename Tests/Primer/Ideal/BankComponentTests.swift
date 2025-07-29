@@ -1,10 +1,8 @@
 //
 //  BankComponentTests.swift
-//  Debug App Tests
 //
-//  Created by Alexandra Lovin on 14.11.2023.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -195,29 +193,6 @@ final class BankComponentTests: XCTestCase {
     }
 }
 
-class MockSteppableDelegate: PrimerHeadlessSteppableDelegate {
-
-    var banks: [IssuingBank] = []
-    var steps: [BanksStep] = []
-
-    var onReceiveStep: ((PrimerHeadlessStep) -> Void)?
-
-    var onReceiveBanks: (([IssuingBank]) -> Void)?
-
-    func didReceiveStep(step: PrimerHeadlessStep) {
-        guard let step = step as? BanksStep else {
-            return
-        }
-        steps.append(step)
-        switch step {
-        case .loading: break
-        case .banksRetrieved(banks: let banks):
-            self.onReceiveBanks?(banks)
-            self.banks = banks
-        }
-    }
-}
-
 extension BankComponentTests: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
@@ -232,73 +207,4 @@ extension BankComponentTests: PrimerHeadlessValidatableDelegate {
             validationStatuses.append("valid")
         }
     }
-}
-
-private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding {
-    var didFinishPayment: ((Error?) -> Void)?
-    var didPresentPaymentMethodUI: (() -> Void)?
-    var didDismissPaymentMethodUI: (() -> Void)?
-    var didCancel: (() -> Void)?
-
-    var paymentMethodType: PrimerPaymentMethodType
-    var didCallFilter: Bool = false
-    var didCallCancel: Bool = false
-    var useSuccess: Bool = false
-    static let bankNameToBeFiltered = "Bank filtered"
-    init(paymentMethodType: PrimerPaymentMethodType) {
-        self.paymentMethodType = paymentMethodType
-    }
-    let mockBanks: [AdyenBank] = [AdyenBank(id: "0", name: "Bank_0", iconUrlStr: nil, disabled: false),
-                                  AdyenBank(id: "1", name: "Bank_1", iconUrlStr: nil, disabled: false),
-                                  AdyenBank(id: "2", name: MockBankSelectorTokenizationModel.bankNameToBeFiltered, iconUrlStr: nil, disabled: false)]
-    func validateReturningPromise() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then {
-                self.fetchBanks()
-            }
-            .done { banks in
-                seal.fulfill(banks)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    private func fetchBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            seal.fulfill(mockBanks)
-        }
-    }
-    func filterBanks(query: String) -> [AdyenBank] {
-        didCallFilter = true
-        return [mockBanks[2]]
-    }
-    func tokenize(bankId: String) -> Promise<Void> {
-        return Promise { seal in
-            useSuccess ? seal.fulfill() : seal.reject(PrimerError.failedToCreatePayment(
-                paymentMethodType: paymentMethodType.rawValue,
-                description: "payment_failed",
-                userInfo: nil,
-                diagnosticsId: UUID().uuidString
-            ))
-        }
-    }
-    func handlePaymentMethodTokenData() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    func setupNotificationObservers() {}
-    func cancel() {
-        didCallCancel = true
-    }
-    func cleanup() {}
 }

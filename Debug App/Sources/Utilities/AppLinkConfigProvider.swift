@@ -1,10 +1,8 @@
 //
-//  AppetizeConfigProvider.swift
-//  Debug App
+//  AppLinkConfigProvider.swift
 //
-//  Created by Niall Quinn on 08/03/24.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PrimerSDK

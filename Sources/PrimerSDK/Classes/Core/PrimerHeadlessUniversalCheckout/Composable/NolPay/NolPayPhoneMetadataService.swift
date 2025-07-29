@@ -1,9 +1,8 @@
 //
 //  NolPayPhoneMetadataService.swift
-//  PrimerSDK
 //
-//  Created by Boris on 27.10.23..
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 // swiftlint:disable large_tuple

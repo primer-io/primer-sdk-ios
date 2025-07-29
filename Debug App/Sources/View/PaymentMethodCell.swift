@@ -1,10 +1,8 @@
 //
 //  PaymentMethodCell.swift
-//  PrimerSDK_Example
 //
-//  Created by Evangelos Pittas on 12/4/21.
-//  Copyright © 2021 CocoaPods. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 

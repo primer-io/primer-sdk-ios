@@ -1,9 +1,8 @@
 //
-//  PrimerInputElementType.swift
-//  PrimerSDK
+//  PrimerHeadlessUniversalCheckoutInputElement.swift
 //
-//  Created by Evangelos on 4/10/22.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 import UIKit

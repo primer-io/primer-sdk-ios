@@ -1,9 +1,8 @@
 //
-//  Test3DSService.swift
-//  Pods-Debug App
+//  Mock3DSService.swift
 //
-//  Created by Niall Quinn on 08/09/23.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import UIKit
