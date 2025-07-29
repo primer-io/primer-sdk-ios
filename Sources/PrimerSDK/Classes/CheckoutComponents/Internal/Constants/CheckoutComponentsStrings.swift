@@ -335,7 +335,7 @@ internal struct CheckoutComponentsStrings {
         comment: "Email invalid validation error"
     )
 
-    // MARK: - Android Parity: Result Screen Messages
+    // MARK: - Result Screen Messages
 
     static let paymentSuccessful = NSLocalizedString(
         "checkout-components-payment-successful",

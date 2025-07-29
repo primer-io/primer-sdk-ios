@@ -9,7 +9,6 @@ import SwiftUI
 import UIKit
 
 /// Scope interface for payment method selection screen interactions and customization.
-/// This protocol matches the Android Composable API exactly.
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerPaymentMethodSelectionScope: AnyObject {
@@ -123,7 +122,6 @@ public struct PrimerComposablePaymentMethod: Equatable, Identifiable {
     /// Additional metadata about the payment method.
     public let metadata: [String: Any]?
 
-    // Android parity: Surcharge support
     /// Raw surcharge amount in minor currency units (e.g., 500 for $5.00).
     public let surcharge: Int?
 

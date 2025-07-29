@@ -10,7 +10,6 @@ import SwiftUI
 import UIKit
 
 /// Scope interface for card form interactions, state management, and UI customization.
-/// This protocol matches the Android Composable API exactly with all 15 update methods.
 /// Inherits from PrimerPaymentMethodScope for unified payment method architecture.
 @available(iOS 15.0, *)
 @MainActor
@@ -50,7 +49,7 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     /// Navigates to country selection screen for billing address.
     func navigateToCountrySelection()
 
-    // MARK: - Update Methods (15 total - exact match to Android)
+    // MARK: - Update Methods
 
     /// Updates the card number field.
     func updateCardNumber(_ cardNumber: String)
@@ -350,30 +349,24 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     /// to the scope, ensuring button state synchronization.
     func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
 
-    // MARK: - Structured State Support (Android Parity)
+    // MARK: - Structured State Support
 
     /// Updates field value using the type-safe field type enum
-    /// Matches Android's updateField(fieldType, value) pattern
     func updateField(_ fieldType: PrimerInputElementType, value: String)
 
     /// Gets field value using the type-safe field type enum
-    /// Matches Android's getFieldValue(fieldType) pattern
     func getFieldValue(_ fieldType: PrimerInputElementType) -> String
 
     /// Sets field-specific error using structured error approach
-    /// Matches Android's setFieldError(fieldType, error) pattern
     func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String?)
 
     /// Clears field-specific error
-    /// Matches Android's clearFieldError(fieldType) pattern
     func clearFieldError(_ fieldType: PrimerInputElementType)
 
     /// Gets field-specific error message
-    /// Matches Android's getFieldError(fieldType) pattern
     func getFieldError(_ fieldType: PrimerInputElementType) -> String?
 
     /// Gets the current form configuration (which fields are displayed)
-    /// Matches Android's getFormConfiguration() pattern
     func getFormConfiguration() -> CardFormConfiguration
 
 }

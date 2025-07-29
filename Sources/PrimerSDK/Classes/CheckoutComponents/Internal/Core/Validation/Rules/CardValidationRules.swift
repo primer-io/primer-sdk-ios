@@ -19,25 +19,25 @@ internal class CardNumberRule: ValidationRule {
     func validate(_ value: String) -> ValidationResult {
         let cleanedNumber = value.replacingOccurrences(of: " ", with: "")
 
-        // Check if empty - use Android-matching error structure with automatic message resolution
+        // Check if empty - use error structure with automatic message resolution
         if cleanedNumber.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Check if all digits - use Android-matching error structure with automatic message resolution
+        // Check if all digits - use error structure with automatic message resolution
         if !cleanedNumber.allSatisfy({ $0.isNumber }) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Check length (13-19 digits) - use Android-matching error structure with automatic message resolution
+        // Check length (13-19 digits) - use error structure with automatic message resolution
         if cleanedNumber.count < 13 || cleanedNumber.count > 19 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Luhn algorithm validation - use Android-matching error structure with automatic message resolution
+        // Luhn algorithm validation - use error structure with automatic message resolution
         if !isValidLuhn(cleanedNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
@@ -99,19 +99,19 @@ internal class CVVRule: ValidationRule {
     }
 
     func validate(_ value: String) -> ValidationResult {
-        // Check if empty - use Android-matching error structure with automatic message resolution
+        // Check if empty - use error structure with automatic message resolution
         if value.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
             return .invalid(error: error)
         }
 
-        // Check if all digits - use Android-matching error structure with automatic message resolution
+        // Check if all digits - use error structure with automatic message resolution
         if !value.allSatisfy({ $0.isNumber }) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
             return .invalid(error: error)
         }
 
-        // Check length based on card network - use Android-matching error structure with automatic message resolution
+        // Check length based on card network - use error structure with automatic message resolution
         let expectedLength = cardNetwork?.rawValue == "AMEX" ? 4 : 3
         if value.count != expectedLength {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
@@ -128,15 +128,15 @@ internal class CardholderNameRule: ValidationRule {
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Check if empty - use Android-matching error structure with automatic message resolution
+        // Check if empty - use error structure with automatic message resolution
         if trimmedValue.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cardholderName)
             return .invalid(error: error)
         }
 
-        // Check minimum length - use Android-matching error structure with specific length message
+        // Check minimum length - use error structure with specific length message
         if trimmedValue.count < 2 {
-            // Use the specific cardholder name length error from Android parity strings
+            // Use the specific cardholder name length error
             let error = ValidationError(
                 inputElementType: .cardholderName,
                 errorId: "cardholder_name_length",
@@ -149,7 +149,7 @@ internal class CardholderNameRule: ValidationRule {
             return .invalid(error: error)
         }
 
-        // Check for valid characters - use Android-matching error structure with automatic message resolution
+        // Check for valid characters - use error structure with automatic message resolution
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-'"))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardholderName)

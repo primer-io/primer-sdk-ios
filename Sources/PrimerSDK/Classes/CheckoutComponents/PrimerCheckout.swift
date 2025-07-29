@@ -8,7 +8,6 @@
 import SwiftUI
 
 /// The main entry point for CheckoutComponents, providing a SwiftUI view for payment checkout.
-/// This API matches the Android Composable API exactly for cross-platform consistency.
 ///
 /// Example usage:
 /// ```swift

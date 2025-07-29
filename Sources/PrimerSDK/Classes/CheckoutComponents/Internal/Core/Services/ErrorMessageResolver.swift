@@ -7,15 +7,14 @@
 
 import Foundation
 
-/// Android parity: Error message resolution service matching Android's resolveErrorMessage() pattern.
-/// This service converts ValidationError objects to localized, formatted error messages.
+/// Error message resolution service that converts ValidationError objects to localized, formatted error messages.
 internal final class ErrorMessageResolver {
 
-    /// Resolve error message to match Android's string resolution pattern exactly
+    /// Resolve error message based on validation error
     /// @param error The validation error to resolve
     /// @return Localized error message string, or nil if error cannot be resolved
     static func resolveErrorMessage(for error: ValidationError) -> String? {
-        // Match Android's resolution priority:
+        // Resolution priority:
         // 1. Try formatted error with field name placeholder
         if let formatKey = error.errorFormatKey,
            let fieldNameKey = error.fieldNameKey {
@@ -29,7 +28,7 @@ internal final class ErrorMessageResolver {
             return getLocalizedString(messageKey)
         }
 
-        // 3. Fall back to error ID (like Android)
+        // 3. Fall back to error ID
         return error.errorId
     }
 
@@ -235,7 +234,7 @@ internal final class ErrorMessageResolver {
 
 extension ErrorMessageResolver {
 
-    /// Create a validation error with Android-matching structure for required field validation
+    /// Create a validation error for required field validation
     static func createRequiredFieldError(for inputElementType: ValidationError.InputElementType) -> ValidationError {
         let errorMessageKey = requiredErrorMessageKey(for: inputElementType)
         let errorId = "\(inputElementType.rawValue.lowercased())_required"
@@ -251,7 +250,7 @@ extension ErrorMessageResolver {
         )
     }
 
-    /// Create a validation error with Android-matching structure for invalid field validation
+    /// Create a validation error for invalid field validation
     static func createInvalidFieldError(for inputElementType: ValidationError.InputElementType) -> ValidationError {
         let errorMessageKey = invalidErrorMessageKey(for: inputElementType)
         let errorId = "\(inputElementType.rawValue.lowercased())_invalid"

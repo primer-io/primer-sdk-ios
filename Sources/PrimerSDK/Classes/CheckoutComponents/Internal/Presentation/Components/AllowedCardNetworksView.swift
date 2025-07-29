@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A SwiftUI component that displays a row of allowed card network badges
-/// as per Figma design and Android parity requirements.
+/// as per Figma design requirements.
 @available(iOS 15.0, *)
 internal struct AllowedCardNetworksView: View, LogReporter {
 

@@ -42,7 +42,7 @@ internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
         return internalMethods.map { mapToPublic($0) }
     }
 
-    /// Format surcharge for display matching Android parity
+    /// Format surcharge for display
     private func formatSurcharge(_ surcharge: Int?, hasUnknownSurcharge: Bool) -> String? {
 
         // Priority: unknown surcharge > actual surcharge > no fee
@@ -58,7 +58,7 @@ internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
         // Use existing currency formatting extension to match Drop-in/Headless behavior
         let formatted = surcharge.toCurrencyString(currency: currency)
-        let result = "+\(formatted)" // Android parity: "+" prefix for surcharges
+        let result = "+\(formatted)" // "+" prefix for surcharges
         return result
     }
 }

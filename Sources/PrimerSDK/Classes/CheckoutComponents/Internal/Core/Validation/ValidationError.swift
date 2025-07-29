@@ -9,29 +9,28 @@ import Foundation
 
 /**
  * A data class representing a validation error encountered during the payment method data validation process.
- * Updated to match Android SyncValidationError structure for exact parity.
  *
  * @property code A unique identifier for the error.
  * @property message A descriptive message explaining the error.
- * @property inputElementType Android parity: The input element type that failed validation.
- * @property errorId Android parity: Error identifier string.
- * @property fieldNameKey Android parity: Localization key for field name.
- * @property errorMessageKey Android parity: Localization key for error message.
- * @property errorFormatKey Android parity: Localization key for formatted error with placeholder.
+ * @property inputElementType The input element type that failed validation.
+ * @property errorId Error identifier string.
+ * @property fieldNameKey Localization key for field name.
+ * @property errorMessageKey Localization key for error message.
+ * @property errorFormatKey Localization key for formatted error with placeholder.
  */
 public struct ValidationError: Equatable, Hashable, Codable {
     // Core error properties
     let code: String
     let message: String
 
-    // Android parity: Match SyncValidationError structure
+    // Match SyncValidationError structure
     let inputElementType: InputElementType
     let errorId: String
     let fieldNameKey: String?       // Localization key for field name
     let errorMessageKey: String?    // Localization key for error message
     let errorFormatKey: String?     // Localization key for formatted error
 
-    /// Android parity: Input element types matching Android PrimerInputElementType
+    /// Input element types matching PrimerInputElementType
     public enum InputElementType: String, Codable, CaseIterable {
         case cardNumber = "CARD_NUMBER"
         case cvv = "CVV"

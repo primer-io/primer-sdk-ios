@@ -8,7 +8,6 @@
 import SwiftUI
 
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
-/// This protocol matches the Android Composable API exactly for cross-platform consistency.
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCheckoutScope: AnyObject {

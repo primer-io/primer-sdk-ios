@@ -27,25 +27,25 @@ internal protocol RulesFactory {
 
     // MARK: - Billing Address Validation Rules
 
-    /// Creates a first name validation rule with Android parity
+    /// Creates a first name validation rule
     func createFirstNameRule() -> FirstNameRule
 
-    /// Creates a last name validation rule with Android parity
+    /// Creates a last name validation rule
     func createLastNameRule() -> LastNameRule
 
-    /// Creates an email validation rule with Android parity
+    /// Creates an email validation rule
     func createEmailValidationRule() -> EmailValidationRule
 
-    /// Creates a phone number validation rule with Android parity
+    /// Creates a phone number validation rule
     func createPhoneNumberValidationRule() -> PhoneNumberValidationRule
 
-    /// Creates an address field validation rule with Android parity
+    /// Creates an address field validation rule
     func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool) -> AddressFieldRule
 
-    /// Creates a postal code validation rule with Android parity
+    /// Creates a postal code validation rule
     func createBillingPostalCodeRule() -> BillingPostalCodeRule
 
-    /// Creates a country code validation rule with Android parity
+    /// Creates a country code validation rule
     func createBillingCountryCodeRule() -> BillingCountryCodeRule
 }
 

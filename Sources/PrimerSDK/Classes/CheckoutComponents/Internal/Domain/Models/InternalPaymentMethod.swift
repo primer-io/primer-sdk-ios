@@ -20,7 +20,7 @@ internal struct InternalPaymentMethod: Equatable {
     let supportedCurrencies: [String]?
     let requiredInputElements: [PrimerInputElementType]
     let metadata: [String: Any]?
-    // Android parity: Surcharge support
+    // Surcharge support
     let surcharge: Int?                    // Raw amount in minor currency units
     let hasUnknownSurcharge: Bool          // "Fee may apply" flag
     let networkSurcharges: [String: Int]?  // Card network-specific surcharges

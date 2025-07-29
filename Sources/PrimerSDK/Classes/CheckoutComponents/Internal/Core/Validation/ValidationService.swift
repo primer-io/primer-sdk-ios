@@ -109,7 +109,7 @@ public protocol ValidationService {
     /// Validates a field using a specific validation rule
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T
 
-    // MARK: - Structured State Support (Android Parity)
+    // MARK: - Structured State Support
 
     /// Validates form data using structured state approach
     /// Returns structured field errors for granular error handling

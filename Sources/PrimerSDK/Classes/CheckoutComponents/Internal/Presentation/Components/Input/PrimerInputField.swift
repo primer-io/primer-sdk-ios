@@ -40,7 +40,7 @@ struct PrimerInputField: View {
     let isError: Bool
 
     /// Error message to display if isError is true
-    /// Can be either a String or ValidationError object for Android parity
+    /// Can be either a String or ValidationError object
     let validationError: Any?
 
     /// Controls the enabled state of this text field
@@ -244,7 +244,7 @@ struct PrimerInputField: View {
     private func resolveErrorMessage() -> String? {
         guard let validationError = validationError else { return nil }
 
-        // Check if it's a ValidationError object for Android parity resolution
+        // Check if it's a ValidationError object for resolution
         if let error = validationError as? ValidationError {
             return ErrorMessageResolver.resolveErrorMessage(for: error)
         }

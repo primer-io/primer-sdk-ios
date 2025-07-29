@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Validation rule for first names with Android parity error messaging
+/// Validation rule for first names with error messaging
 internal class FirstNameRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {
@@ -32,7 +32,7 @@ internal class FirstNameRule: ValidationRule {
     }
 }
 
-/// Validation rule for last names with Android parity error messaging
+/// Validation rule for last names with error messaging
 internal class LastNameRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {
@@ -57,7 +57,7 @@ internal class LastNameRule: ValidationRule {
     }
 }
 
-/// Validation rule for email addresses with Android parity error messaging
+/// Validation rule for email addresses with error messaging
 internal class EmailValidationRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {
@@ -85,7 +85,7 @@ internal class EmailValidationRule: ValidationRule {
     }
 }
 
-/// Validation rule for phone numbers with Android parity error messaging
+/// Validation rule for phone numbers with error messaging
 internal class PhoneNumberValidationRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {
@@ -113,7 +113,7 @@ internal class PhoneNumberValidationRule: ValidationRule {
     }
 }
 
-/// Generic validation rule for address fields with Android parity error messaging
+/// Generic validation rule for address fields with error messaging
 internal class AddressFieldRule: ValidationRule {
 
     private let inputType: ValidationError.InputElementType
@@ -155,7 +155,7 @@ internal class AddressFieldRule: ValidationRule {
     }
 }
 
-/// Validation rule for postal codes with Android parity error messaging
+/// Validation rule for postal codes with error messaging
 internal class BillingPostalCodeRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {
@@ -183,7 +183,7 @@ internal class BillingPostalCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for country codes with Android parity error messaging
+/// Validation rule for country codes with error messaging
 internal class BillingCountryCodeRule: ValidationRule {
 
     func validate(_ value: String?) -> ValidationResult {

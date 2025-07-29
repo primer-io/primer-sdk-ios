@@ -110,7 +110,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
 
-    /// Structured state for Android parity
+    /// Structured state for form data
     @Published internal var structuredState = StructuredCardFormState()
 
     /// Form configuration determining which fields are displayed
@@ -805,7 +805,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         logger.debug(message: "🔍 [CountryCode] Validation state updated: \(isValid)")
     }
 
-    // MARK: - Structured State Implementation (Android Parity)
+    // MARK: - Structured State Implementation
 
     /// Implementation of getFieldValue using structured state
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {

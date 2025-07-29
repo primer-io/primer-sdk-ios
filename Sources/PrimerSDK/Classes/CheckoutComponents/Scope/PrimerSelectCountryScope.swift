@@ -8,7 +8,6 @@
 import SwiftUI
 
 /// Scope interface for country selection functionality with search capabilities.
-/// This protocol matches the Android Composable API exactly.
 @MainActor
 @available(iOS 15.0, *)
 public protocol PrimerSelectCountryScope: AnyObject {
