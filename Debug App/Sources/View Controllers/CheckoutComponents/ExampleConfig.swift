@@ -25,7 +25,6 @@ struct ExampleConfig: Identifiable {
         case runtimeCustomization
         case propertyReassignment
         case mixedComponents
-        case gygBranded
         case customPaymentSelection
     }
 }
@@ -38,12 +37,6 @@ let stylingExamples: [ExampleConfig] = [
         description: "Customize only cardholder name field",
         paymentMethods: ["PAYMENT_CARD"],
         customization: .colorful
-    ),
-    ExampleConfig(
-        name: "GetYourGuide Demo",
-        description: "Complete card form styled with GYG brand colors and design",
-        paymentMethods: ["PAYMENT_CARD"],
-        customization: .gygBranded
     )
 ]
 

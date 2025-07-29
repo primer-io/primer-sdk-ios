@@ -396,7 +396,6 @@ Debug App/Sources/View Controllers/CheckoutComponentsShowcase/
 ├── ShowcaseDemo.swift                            # Individual demo container
 ├── SingleFieldCustomisationDemo.swift           # Single field customization
 ├── CustomScreenPaymentSelectionDemo.swift       # Custom payment selection screen
-├── GYGDemo.swift                                 # GYG-style demonstration
 ├── CustomCardFormLayoutDemo.swift               # Custom card form layouts
 ├── PropertyReassignmentDemo.swift               # Property reassignment patterns
 ├── RuntimeCustomizationDemo.swift               # Runtime customization

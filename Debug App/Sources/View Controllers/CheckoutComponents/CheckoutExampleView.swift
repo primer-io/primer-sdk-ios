@@ -247,8 +247,6 @@ struct CheckoutContentView: View {
             PropertyReassignmentDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         case "Conditional Customization":
             RuntimeCustomizationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "GetYourGuide Demo":
-            GYGDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         case "Custom Payment Selection Screen":
             CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
         default:
