@@ -30,7 +30,7 @@ internal struct PaymentMethodScreen: View {
                 AnyView(CardFormScreen(scope: cardFormScope))
             }
         } else if let container = DIContainer.currentSync,
-                  let paymentMethodScope = try? PaymentMethodRegistry.shared.createScope(
+                  let _ = try? PaymentMethodRegistry.shared.createScope(
                     for: paymentMethodType,
                     checkoutScope: checkoutScope,
                     diContainer: container

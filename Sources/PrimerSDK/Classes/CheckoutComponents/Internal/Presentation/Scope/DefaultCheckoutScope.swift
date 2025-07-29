@@ -185,7 +185,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         logger.info(message: "🔧 [CheckoutComponents] Setting up interactors...")
         do {
             logger.debug(message: "🔍 [CheckoutComponents] Checking DI container availability...")
-            guard let container = await DIContainer.current else {
+            guard let _ = await DIContainer.current else {
                 logger.error(message: "❌ [CheckoutComponents] DI Container is not available")
                 throw ContainerError.containerUnavailable
             }

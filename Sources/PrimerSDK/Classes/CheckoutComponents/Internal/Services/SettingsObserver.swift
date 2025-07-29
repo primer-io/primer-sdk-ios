@@ -52,7 +52,7 @@ internal protocol SettingsObserverProtocol: AnyObject {
 /// Service for observing and propagating PrimerSettings changes throughout CheckoutComponents
 /// This service watches for settings updates and notifies registered observers
 @available(iOS 15.0, *)
-internal final class SettingsObserver: LogReporter {
+internal final class SettingsObserver: LogReporter, @unchecked Sendable {
 
     // MARK: - Properties
 
@@ -286,8 +286,7 @@ internal final class SettingsObserver: LogReporter {
         case (nil, nil):
             return true
         case (let lhsOptions?, let rhsOptions?):
-            return lhsOptions.merchantIdentifier == rhsOptions.merchantIdentifier &&
-                lhsOptions.merchantName == rhsOptions.merchantName
+            return lhsOptions.merchantIdentifier == rhsOptions.merchantIdentifier
         default:
             return false
         }

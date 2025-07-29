@@ -176,7 +176,13 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 @available(iOS 15.0, *)
 @preconcurrency
 internal struct CheckoutNavigatorKey: EnvironmentKey {
-    @MainActor static let defaultValue: CheckoutNavigator = CheckoutNavigator()
+    static let defaultValue: CheckoutNavigator = {
+        // Create the navigator on MainActor
+        let navigator = MainActor.assumeIsolated {
+            CheckoutNavigator()
+        }
+        return navigator
+    }() 
 }
 
 @available(iOS 15.0, *)
