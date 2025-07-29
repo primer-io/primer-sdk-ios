@@ -8,7 +8,6 @@
 import SwiftUI
 import UIKit
 
-
 /// A SwiftUI component for email input with validation and consistent styling
 /// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)

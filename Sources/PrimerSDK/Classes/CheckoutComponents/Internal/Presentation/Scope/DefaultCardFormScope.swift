@@ -153,7 +153,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             // Resolve interactors from DI container (proper dependency injection)
             processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
             cardNetworkDetectionInteractor = try await container.resolve(CardNetworkDetectionInteractor.self)
-            
+
             logger.debug(message: "Interactors resolved from DI container successfully")
 
             // Setup network detection stream through the interactor
@@ -185,9 +185,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Setup network detection stream for co-badged cards
     private func setupNetworkDetectionStream() {
-        guard let interactor = cardNetworkDetectionInteractor else { 
+        guard let interactor = cardNetworkDetectionInteractor else {
             logger.error(message: "CardNetworkDetectionInteractor not initialized")
-            return 
+            return
         }
 
         Task {
