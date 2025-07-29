@@ -9,43 +9,6 @@ import SwiftUI
 import UIKit
 
 @available(iOS 15.0, *)
-private func convertSwiftUIFontToUIFont(_ font: Font) -> UIFont {
-    if #available(iOS 14.0, *) {
-        switch font {
-        case .title2:
-            return UIFont.preferredFont(forTextStyle: .title2)
-        case .title3:
-            return UIFont.preferredFont(forTextStyle: .title3)
-        case .caption2:
-            return UIFont.preferredFont(forTextStyle: .caption2)
-        default:
-            break
-        }
-    }
-
-    switch font {
-    case .largeTitle:
-        return UIFont.preferredFont(forTextStyle: .largeTitle)
-    case .title:
-        return UIFont.preferredFont(forTextStyle: .title1)
-    case .headline:
-        return UIFont.preferredFont(forTextStyle: .headline)
-    case .subheadline:
-        return UIFont.preferredFont(forTextStyle: .subheadline)
-    case .body:
-        return UIFont.preferredFont(forTextStyle: .body)
-    case .callout:
-        return UIFont.preferredFont(forTextStyle: .callout)
-    case .footnote:
-        return UIFont.preferredFont(forTextStyle: .footnote)
-    case .caption:
-        return UIFont.preferredFont(forTextStyle: .caption1)
-    default:
-        return UIFont.systemFont(ofSize: 16, weight: .regular)
-    }
-}
-
-@available(iOS 15.0, *)
 internal struct CardNumberInputField: View, LogReporter {
     let label: String?
     let placeholder: String
@@ -233,7 +196,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         textField.borderStyle = .none
 
         if let customFont = styling?.font {
-            textField.font = convertSwiftUIFontToUIFont(customFont)
+            textField.font = UIFont(customFont)
         } else {
             textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         }
@@ -246,7 +209,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         let placeholderFont: UIFont = {
             if let customFont = styling?.font {
-                return convertSwiftUIFontToUIFont(customFont)
+                return UIFont(customFont)
             } else if let interFont = UIFont(name: "InterVariable", size: 16) {
                 return interFont
             }

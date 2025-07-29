@@ -13,25 +13,14 @@ import UIKit
 internal extension UIFont {
     /// Creates a UIFont from a SwiftUI Font with proper iOS version handling
     convenience init(_ font: Font) {
-        // Handle iOS 14.0+ specific font cases first
-        if #available(iOS 14.0, *) {
-            switch font {
-            case .title2:
-                self.init(descriptor: UIFont.preferredFont(forTextStyle: .title2).fontDescriptor, size: 0)
-                return
-            case .title3:
-                self.init(descriptor: UIFont.preferredFont(forTextStyle: .title3).fontDescriptor, size: 0)
-                return
-            case .caption2:
-                self.init(descriptor: UIFont.preferredFont(forTextStyle: .caption2).fontDescriptor, size: 0)
-                return
-            default:
-                break
-            }
-        }
-
-        // Handle all iOS 13.1+ compatible cases
+        // Handle all font cases
         switch font {
+        case .title2:
+            self.init(descriptor: UIFont.preferredFont(forTextStyle: .title2).fontDescriptor, size: 0)
+        case .title3:
+            self.init(descriptor: UIFont.preferredFont(forTextStyle: .title3).fontDescriptor, size: 0)
+        case .caption2:
+            self.init(descriptor: UIFont.preferredFont(forTextStyle: .caption2).fontDescriptor, size: 0)
         case .largeTitle:
             self.init(descriptor: UIFont.preferredFont(forTextStyle: .largeTitle).fontDescriptor, size: 0)
         case .title:

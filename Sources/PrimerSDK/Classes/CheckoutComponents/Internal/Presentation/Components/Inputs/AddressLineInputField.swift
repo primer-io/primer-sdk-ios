@@ -8,45 +8,6 @@
 import SwiftUI
 import UIKit
 
-/// Helper function to convert SwiftUI Font to UIFont
-@available(iOS 15.0, *)
-private func convertSwiftUIFontToUIFont(_ font: Font) -> UIFont {
-    // Handle iOS 14.0+ specific font cases first
-    if #available(iOS 14.0, *) {
-        switch font {
-        case .title2:
-            return UIFont.preferredFont(forTextStyle: .title2)
-        case .title3:
-            return UIFont.preferredFont(forTextStyle: .title3)
-        case .caption2:
-            return UIFont.preferredFont(forTextStyle: .caption2)
-        default:
-            break
-        }
-    }
-
-    // Handle all iOS 13.1+ compatible cases
-    switch font {
-    case .largeTitle:
-        return UIFont.preferredFont(forTextStyle: .largeTitle)
-    case .title:
-        return UIFont.preferredFont(forTextStyle: .title1)
-    case .headline:
-        return UIFont.preferredFont(forTextStyle: .headline)
-    case .subheadline:
-        return UIFont.preferredFont(forTextStyle: .subheadline)
-    case .body:
-        return UIFont.preferredFont(forTextStyle: .body)
-    case .callout:
-        return UIFont.preferredFont(forTextStyle: .callout)
-    case .footnote:
-        return UIFont.preferredFont(forTextStyle: .footnote)
-    case .caption:
-        return UIFont.preferredFont(forTextStyle: .caption1)
-    default:
-        return UIFont.systemFont(ofSize: 16, weight: .regular)
-    }
-}
 
 /// A SwiftUI component for address line input with validation and consistent styling
 /// matching the card form field validation timing patterns.
@@ -279,7 +240,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
         textField.borderStyle = .none
         // Apply custom font or use system default
         if let customFont = styling?.font {
-            textField.font = convertSwiftUIFontToUIFont(customFont)
+            textField.font = UIFont(customFont)
         } else {
             textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         }
@@ -297,7 +258,7 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
         // Apply custom placeholder styling or use defaults
         let placeholderFont: UIFont = {
             if let customFont = styling?.font {
-                return convertSwiftUIFontToUIFont(customFont)
+                return UIFont(customFont)
             } else if let interFont = UIFont(name: "InterVariable", size: 16) {
                 return interFont
             }
