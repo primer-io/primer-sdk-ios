@@ -102,7 +102,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Services
 
     private let navigator: CheckoutNavigator
-    private var getPaymentMethodsInteractor: GetPaymentMethodsInteractor?
+    private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
 
     // MARK: - Internal Access
 
@@ -202,7 +202,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             logger.info(message: "🌐 [CheckoutComponents] Locale service injected - using locale: \(localeService?.currentLocale.identifier ?? "default")")
 
             logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
-            getPaymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
+            paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
 
             logger.info(message: "✅ [CheckoutComponents] Interactor setup completed with bridge")
         } catch {
@@ -234,7 +234,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
             logger.debug(message: "🔍 [CheckoutComponents] Checking payment methods interactor...")
-            guard let interactor = getPaymentMethodsInteractor else {
+            guard let interactor = paymentMethodsInteractor else {
                 logger.error(message: "❌ [CheckoutComponents] GetPaymentMethodsInteractor is nil - DI resolution failed")
                 throw PrimerError.unknown(
                     userInfo: ["error": "GetPaymentMethodsInteractor not resolved"],
