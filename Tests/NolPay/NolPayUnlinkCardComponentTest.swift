@@ -92,11 +92,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
 
     func test_UpdateCollectedData_CardAndPhoneData__WithInvalidCardNumberAndValidPhoneNumber_ShouldReturnCardNumberError() {
         // Given
-        let expectedError = PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid.",
-            userInfo: nil,
-            diagnosticsId: ""
-        )
+        let expectedError = PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")
         mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
 
         // When
@@ -128,14 +124,10 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     func test_UpdateCollectedData_CardAndPhoneData__WithInvalidCardNumberAndPhoneNumber_ShouldReturnBothErrors() {
         // Given
         let expectedCardError = PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid.",
-            userInfo: [:],
-            diagnosticsId: ""
+            message: "Card number is not valid."
         )
         let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number is not valid.",
-            userInfo: [:],
-            diagnosticsId: ""
+            message: "Phone number is not valid."
         )
         mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedPhoneError]), nil, nil))
 
@@ -167,7 +159,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     func test_UpdateCollectedData_CardAndPhoneData__WhenPhoneMetadataServiceFails_ShouldReturnError() {
         // Given
         let expectedErrorKey = "INVALID_DATA"
-        let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
         mockPhoneMetadataService.resultToReturn = .failure(expectedError)
 
         // When
@@ -237,7 +229,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
             }
 
             switch primerValidationError {
-            case .invalidOTPCode(let message, _, _):
+            case .invalidOTPCode(let message, _):
                 XCTAssertEqual(message, expectedErrorMessage)
             default:
                 XCTFail("primerError should be of type invalidOTPCode")
@@ -337,7 +329,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
 
     func test_Submit_CollectCardAndPhoneData__WithUninitializedSDK_ShouldReturnError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
         sut.cardNumber = cardNumber
@@ -590,7 +582,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
         mockApiClient.fetchNolSdkSecretResult = {
             exp.fulfill()
-            return .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+            return .failure(PrimerError.nolError(code: expectedErrorCode))
         }
 
         // When

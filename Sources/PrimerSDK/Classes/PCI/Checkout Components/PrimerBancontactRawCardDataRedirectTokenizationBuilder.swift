@@ -76,22 +76,13 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
                   let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
             }
 
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "rawData")))
             }
 
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
@@ -150,12 +141,8 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 var errors: [PrimerValidationError] = []
 
                 guard let rawData = data as? PrimerBancontactCardData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(error: PrimerValidationError.invalidRawData())
                     errors.append(err)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
@@ -166,18 +153,10 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 }
 
                 if rawData.cardNumber.isEmpty {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number can not be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
 
                 } else if !rawData.cardNumber.isValidCardNumber {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
                 }
 
                 do {
@@ -190,30 +169,18 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if rawData.cardholderName.isEmpty {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name cannot be blank.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
 
                     } else if !(rawData.cardholderName).isValidNonDecimalString {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name is not valid.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
                     }
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        seal.reject(err)
+                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
                     }
                 } else {
                     self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
