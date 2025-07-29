@@ -137,7 +137,6 @@ struct PrimerCheckout: View {
         }
         .background(tokens?.primerColorBackground ?? .white)
         .environmentObject(coordinator)
-        .animation(.easeInOut(duration: 0.4), value: coordinator.currentRoute.id)
     }
     
     @ViewBuilder

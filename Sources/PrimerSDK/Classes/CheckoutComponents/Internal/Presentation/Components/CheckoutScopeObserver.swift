@@ -42,7 +42,15 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             VStack(spacing: 0) {
                 // Navigation state driven UI (now properly observing @Published navigationState)
                 ZStack {
+                    // MARK: - Navigation Content
+                    // Simple fade transition between screens
+                    // TODO: Future improvements could include:
+                    // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
+                    // - Add directional transitions (slide left/right) based on navigation direction
+                    // - Implement custom per-route transitions (e.g., scale for success screen)
+                    // - Add interactive gesture-based navigation
                     getCurrentView()
+                        .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
 
                     // Custom content overlay if provided
                     if let customContent = customContent {
