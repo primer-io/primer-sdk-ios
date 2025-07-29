@@ -105,7 +105,7 @@ extension KlarnaTokenizationComponent {
             }
             // Ensure the payment method has a valid ID
             guard let paymentMethodConfigId = paymentMethod.id else {
-                seal.reject(KlarnaHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
+                seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethod.type)))
                 return
             }
             // Request the primer configuration update with actions
@@ -134,7 +134,7 @@ extension KlarnaTokenizationComponent {
         }
 
         guard let paymentMethodConfigId = paymentMethod.id else {
-            throw KlarnaHelpers.getInvalidValueError(key: "configuration.id")
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethod.type))
         }
 
         try await requestPrimerConfiguration(
@@ -202,8 +202,12 @@ extension KlarnaTokenizationComponent {
             throw KlarnaHelpers.getInvalidTokenError()
         }
 
-        guard let paymentMethodConfigId = paymentMethod.id, let sessionId = paymentSessionId else {
-            throw KlarnaHelpers.getInvalidValueError(key: "paymentSessionId || configId")
+        guard let paymentMethodConfigId = paymentMethod.id else {
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethod.type))
+        }
+
+        guard let paymentSessionId else {
+            throw handled(primerError: .invalidValue(key: "paymentSessionId"))
         }
 
         switch KlarnaHelpers.getSessionType() {
@@ -212,7 +216,7 @@ extension KlarnaTokenizationComponent {
                 with: decodedJWTToken,
                 body: prepareKlarnaFinalizePaymentSessionBody(
                     paymentMethodConfigId: paymentMethodConfigId,
-                    sessionId: sessionId
+                    sessionId: paymentSessionId
                 )
             )
         case .recurringPayment:
@@ -220,7 +224,7 @@ extension KlarnaTokenizationComponent {
                 with: decodedJWTToken,
                 body: prepareKlarnaCustomerTokenBody(
                     paymentMethodConfigId: paymentMethodConfigId,
-                    sessionId: sessionId,
+                    sessionId: paymentSessionId,
                     authorizationToken: authorizationToken
                 )
             )
