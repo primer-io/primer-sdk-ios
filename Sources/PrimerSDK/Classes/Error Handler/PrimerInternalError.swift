@@ -136,33 +136,6 @@ enum InternalError: PrimerErrorProtocol {
         }
     }
 
-    var info: [String: Any]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-
-        switch self {
-        case .failedToDecode(_, let userInfo, _),
-             .invalidUrl(_, let userInfo, _),
-             .invalidValue(_, _, let userInfo, _),
-             .invalidResponse(let userInfo, _),
-             .noData(let userInfo, _),
-             .serverError(_, _, let userInfo, _),
-             .unauthorized(_, let userInfo, _),
-             .underlyingErrors(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
-        case .failedToPerform3dsButShouldContinue,
-             .failedToPerform3dsAndShouldBreak,
-             .noNeedToPerform3ds:
-            break
-        }
-
-        return tmpUserInfo
-    }
-
-    var errorUserInfo: [String: Any] {
-        return info ?? [:]
-    }
-
     var exposedError: Error {
         switch self {
         case .failedToPerform3dsButShouldContinue(let error):

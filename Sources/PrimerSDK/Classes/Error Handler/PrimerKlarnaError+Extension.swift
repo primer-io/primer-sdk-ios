@@ -14,20 +14,6 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
         self
     }
 
-    var info: InfoType? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-
-        switch self {
-        case .userNotApproved(let userInfo),
-             .klarnaSdkError(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
-        default: break
-        }
-
-        return tmpUserInfo
-    }
-
     var errorId: String {
         switch self {
         case .userNotApproved:
