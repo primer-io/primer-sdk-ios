@@ -25,6 +25,21 @@
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
+		A1DD4D4B2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4A2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift */; };
+		A1DD4D5A2E3A859F00877A5D /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4C2E3A859F00877A5D /* ShowcaseDemo.swift */; };
+		A1DD4D5B2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4D2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift */; };
+		A1DD4D5C2E3A859F00877A5D /* CheckoutExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4E2E3A859F00877A5D /* CheckoutExampleView.swift */; };
+		A1DD4D5D2E3A859F00877A5D /* RuntimeCustomizationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4F2E3A859F00877A5D /* RuntimeCustomizationDemo.swift */; };
+		A1DD4D5E2E3A859F00877A5D /* CheckoutComponentsExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D502E3A859F00877A5D /* CheckoutComponentsExamplesView.swift */; };
+		A1DD4D5F2E3A859F00877A5D /* CustomCardFormLayoutDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D512E3A859F00877A5D /* CustomCardFormLayoutDemo.swift */; };
+		A1DD4D602E3A859F00877A5D /* SingleInputFieldDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D522E3A859F00877A5D /* SingleInputFieldDemo.swift */; };
+		A1DD4D612E3A859F00877A5D /* ExampleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D532E3A859F00877A5D /* ExampleConfig.swift */; };
+		A1DD4D622E3A859F00877A5D /* CustomScreenPaymentSelectionDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D542E3A859F00877A5D /* CustomScreenPaymentSelectionDemo.swift */; };
+		A1DD4D632E3A859F00877A5D /* PropertyReassignmentDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D552E3A859F00877A5D /* PropertyReassignmentDemo.swift */; };
+		A1DD4D642E3A859F00877A5D /* ShowcaseEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D562E3A859F00877A5D /* ShowcaseEnums.swift */; };
+		A1DD4D652E3A859F00877A5D /* ShowcaseSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D572E3A859F00877A5D /* ShowcaseSection.swift */; };
+		A1DD4D662E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */; };
+		A1DD4D672E3A859F00877A5D /* MixedComponentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
@@ -132,6 +147,21 @@
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		A1DD4D4A2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsMenuViewController.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsMenuViewController.swift"; sourceTree = "<group>"; };
+		A1DD4D4C2E3A859F00877A5D /* ShowcaseDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D4D2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SingleFieldCustomisationDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/SingleFieldCustomisationDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D4E2E3A859F00877A5D /* CheckoutExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutExampleView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutExampleView.swift"; sourceTree = "<group>"; };
+		A1DD4D4F2E3A859F00877A5D /* RuntimeCustomizationDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RuntimeCustomizationDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/RuntimeCustomizationDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D502E3A859F00877A5D /* CheckoutComponentsExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsExamplesView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsExamplesView.swift"; sourceTree = "<group>"; };
+		A1DD4D512E3A859F00877A5D /* CustomCardFormLayoutDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomCardFormLayoutDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CustomCardFormLayoutDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D522E3A859F00877A5D /* SingleInputFieldDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SingleInputFieldDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/SingleInputFieldDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D532E3A859F00877A5D /* ExampleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExampleConfig.swift; path = "Sources/View Controllers/CheckoutComponents/ExampleConfig.swift"; sourceTree = "<group>"; };
+		A1DD4D542E3A859F00877A5D /* CustomScreenPaymentSelectionDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomScreenPaymentSelectionDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CustomScreenPaymentSelectionDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D552E3A859F00877A5D /* PropertyReassignmentDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PropertyReassignmentDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/PropertyReassignmentDemo.swift"; sourceTree = "<group>"; };
+		A1DD4D562E3A859F00877A5D /* ShowcaseEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseEnums.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseEnums.swift"; sourceTree = "<group>"; };
+		A1DD4D572E3A859F00877A5D /* ShowcaseSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowcaseSection.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/ShowcaseSection.swift"; sourceTree = "<group>"; };
+		A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsShowcaseView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CheckoutComponentsShowcaseView.swift"; sourceTree = "<group>"; };
+		A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MixedComponentsDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/MixedComponentsDemo.swift"; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
@@ -243,6 +273,21 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				A1DD4D502E3A859F00877A5D /* CheckoutComponentsExamplesView.swift */,
+				A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */,
+				A1DD4D4E2E3A859F00877A5D /* CheckoutExampleView.swift */,
+				A1DD4D512E3A859F00877A5D /* CustomCardFormLayoutDemo.swift */,
+				A1DD4D542E3A859F00877A5D /* CustomScreenPaymentSelectionDemo.swift */,
+				A1DD4D532E3A859F00877A5D /* ExampleConfig.swift */,
+				A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */,
+				A1DD4D552E3A859F00877A5D /* PropertyReassignmentDemo.swift */,
+				A1DD4D4F2E3A859F00877A5D /* RuntimeCustomizationDemo.swift */,
+				A1DD4D4C2E3A859F00877A5D /* ShowcaseDemo.swift */,
+				A1DD4D562E3A859F00877A5D /* ShowcaseEnums.swift */,
+				A1DD4D572E3A859F00877A5D /* ShowcaseSection.swift */,
+				A1DD4D4D2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift */,
+				A1DD4D522E3A859F00877A5D /* SingleInputFieldDemo.swift */,
+				A1DD4D4A2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift */,
 				F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */,
 				F09978832D0326860058E4B5 /* Metadata.swift */,
 				F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */,
@@ -494,6 +539,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1DD4D5A2E3A859F00877A5D /* ShowcaseDemo.swift in Sources */,
+				A1DD4D5B2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift in Sources */,
+				A1DD4D5C2E3A859F00877A5D /* CheckoutExampleView.swift in Sources */,
+				A1DD4D5D2E3A859F00877A5D /* RuntimeCustomizationDemo.swift in Sources */,
+				A1DD4D5E2E3A859F00877A5D /* CheckoutComponentsExamplesView.swift in Sources */,
+				A1DD4D5F2E3A859F00877A5D /* CustomCardFormLayoutDemo.swift in Sources */,
+				A1DD4D602E3A859F00877A5D /* SingleInputFieldDemo.swift in Sources */,
+				A1DD4D612E3A859F00877A5D /* ExampleConfig.swift in Sources */,
+				A1DD4D622E3A859F00877A5D /* CustomScreenPaymentSelectionDemo.swift in Sources */,
+				A1DD4D632E3A859F00877A5D /* PropertyReassignmentDemo.swift in Sources */,
+				A1DD4D642E3A859F00877A5D /* ShowcaseEnums.swift in Sources */,
+				A1DD4D652E3A859F00877A5D /* ShowcaseSection.swift in Sources */,
+				A1DD4D662E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift in Sources */,
+				A1DD4D672E3A859F00877A5D /* MixedComponentsDemo.swift in Sources */,
+				A1DD4D4B2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift in Sources */,
 				F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */,
 				F09978842D0326860058E4B5 /* Metadata.swift in Sources */,
 				F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */,
