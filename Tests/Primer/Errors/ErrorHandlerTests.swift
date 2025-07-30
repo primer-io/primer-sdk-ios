@@ -57,10 +57,7 @@ final class ErrorHandlerTests: XCTestCase {
     
     func testHandleError_With3DSError_CreatesCorrectEvent() {
         // Create a 3DS error using an available case
-        let threeDsError = Primer3DSErrorContainer.missingSdkDependency(
-            userInfo: ["3ds": "missing"],
-            diagnosticsId: "3ds-test"
-        )
+        let threeDsError = Primer3DSErrorContainer.missingSdkDependency()
         
         // Handle the error
         sut.handle(error: threeDsError)
