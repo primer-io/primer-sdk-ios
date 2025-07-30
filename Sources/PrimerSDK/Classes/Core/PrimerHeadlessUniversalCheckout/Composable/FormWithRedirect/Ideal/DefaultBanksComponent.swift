@@ -59,11 +59,7 @@ final class DefaultBanksComponent: BanksComponent {
             }
         case .bankFilterText(text: let text):
             if banks.isEmpty {
-                let error = handled(
-                    error: PrimerValidationError.banksNotLoaded(
-                        userInfo: .errorUserInfoDictionary(additionalInfo: ["text": text])
-                    )
-                )
+                let error = handled(error: PrimerValidationError.banksNotLoaded())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
