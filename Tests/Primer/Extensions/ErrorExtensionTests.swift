@@ -34,12 +34,11 @@ final class ErrorExtensionTests: XCTestCase {
             XCTFail()
         }
 
-        let internalError3DSFailureContinue = InternalError.failedToPerform3dsButShouldContinue(error:
-                                                                                                    Primer3DSErrorContainer.missingSdkDependency(userInfo: nil, diagnosticsId: "")
-        )
+        let missingDependencyError = Primer3DSErrorContainer.missingSdkDependency()
+        let internalError3DSFailureContinue = InternalError.failedToPerform3dsButShouldContinue(error: missingDependencyError)
         let exposedError3DSFailureContinue = internalError3DSFailureContinue.exposedError
         switch exposedError3DSFailureContinue {
-        case Primer3DSErrorContainer.missingSdkDependency(_, _):
+        case Primer3DSErrorContainer.missingSdkDependency(_):
             break
         default:
             XCTFail()

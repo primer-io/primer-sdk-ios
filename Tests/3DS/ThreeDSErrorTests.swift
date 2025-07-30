@@ -173,7 +173,6 @@ class ThreeDSErrorTests: XCTestCase {
                                        initProtocolVersion: String) -> Primer3DSErrorContainer {
         return Primer3DSErrorContainer.primer3DSSdkError(
             paymentMethodType: paymentMethodType,
-            userInfo: nil,
             diagnosticsId: diagnosticsId,
             initProtocolVersion: initProtocolVersion,
             errorInfo: Primer3DSErrorInfo(
