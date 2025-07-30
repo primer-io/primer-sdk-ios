@@ -154,24 +154,7 @@ final class PrimerErrorTests: XCTestCase {
     }
     
     // MARK: - Error Info Tests
-    
-    func testErrorInfo() {
-        let userInfo = ["custom": "data", "more": "info"]
-        let error = PrimerError.applePayNoCardsInWallet(userInfo: userInfo, diagnosticsId: "test-123")
-        
-        guard let info = error.info else {
-            XCTFail("Expected error info")
-            return
-        }
-        
-        // Should contain merged user info
-        XCTAssertEqual(info["custom"] as? String, "data")
-        XCTAssertEqual(info["more"] as? String, "info")
-        
-        // Should contain default info
-        XCTAssertNotNil(info["createdAt"])
-        XCTAssertEqual(info["diagnosticsId"] as? String, "test-123")
-    }
+
     
     // MARK: - Exposed Error Tests
     

@@ -17,10 +17,8 @@ enum AnalyticsContextKeys {
 }
 
 protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
-    associatedtype InfoType
     var errorId: String { get }
     var exposedError: Error { get }
-    var info: InfoType? { get }
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
 }
@@ -467,52 +465,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var errorDescription: String? {
         return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
-    }
-
-    var info: InfoType? {
-        var tmpUserInfo: [String: Any] = errorUserInfo
-
-        switch self {
-        case .uninitializedSDKSession(let userInfo, _),
-             .invalidClientToken(let userInfo, _),
-             .missingPrimerConfiguration(let userInfo, _),
-             .missingPrimerInputElement(_, let userInfo, _),
-             .misconfiguredPaymentMethods(let userInfo, _),
-             .cancelled(_, let userInfo, _),
-             .failedToCreateSession(_, let userInfo, _),
-             .invalidUrl(_, let userInfo, _),
-             .invalidArchitecture(_, _, let userInfo, _),
-             .invalidClientSessionValue(_, _, _, let userInfo, _),
-             .invalidMerchantIdentifier(_, let userInfo, _),
-             .invalidValue(_, _, let userInfo, _),
-             .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
-             .unableToPresentPaymentMethod(_, let userInfo, _),
-             .unsupportedIntent(_, let userInfo, _),
-             .unsupportedPaymentMethod(_, let userInfo, _),
-             .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
-             .underlyingErrors(_, let userInfo, _),
-             .missingSDK(_, _, let userInfo, _),
-             .merchantError(_, let userInfo, _),
-             .paymentFailed(_, _, _, _, let userInfo, _),
-             .applePayTimedOut(let userInfo, _),
-             .failedToCreatePayment(_, _, let userInfo, _),
-             .failedToResumePayment(_, _, let userInfo, _),
-             .invalidVaultedPaymentMethodId(_, let userInfo, _),
-             .nolError(_, _, let userInfo, _),
-             .nolSdkInitError(let userInfo, _),
-             .klarnaError(_, let userInfo, _),
-             .klarnaUserNotApproved(let userInfo, _),
-             .stripeError(_, _, let userInfo, _),
-             .unableToPresentApplePay(let userInfo, _),
-             .applePayNoCardsInWallet(let userInfo, _),
-             .applePayDeviceNotSupported(let userInfo, _),
-             .applePayConfigurationError(_, let userInfo, _),
-             .applePayPresentationFailed(_, let userInfo, _),
-             .unknown(let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
-        }
-
-        return tmpUserInfo
     }
 
     public var errorUserInfo: [String: Any] {
