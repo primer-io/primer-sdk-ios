@@ -78,9 +78,9 @@ extension PrimerHeadlessUniversalCheckout {
                     return errors.isEmpty ? nil : errors
 
                 } else {
-                    errors.append(PrimerValidationError.vaultedPaymentMethodAdditionalDataMismatch(
-                        paymentMethodType: vaultedPaymentMethod.paymentMethodType,
-                        validVaultedPaymentMethodAdditionalDataType: String(describing: PrimerVaultedCardAdditionalData.self)
+                    errors.append(PrimerValidationError.vaultedPaymentDataMismatch(
+                        paymentMethod: vaultedPaymentMethod.paymentMethodType,
+                        dataType: String(describing: PrimerVaultedCardAdditionalData.self)
                     ))
                     return errors
                 }

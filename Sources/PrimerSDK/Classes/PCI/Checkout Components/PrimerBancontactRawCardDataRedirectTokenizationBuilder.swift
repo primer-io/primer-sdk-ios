@@ -150,12 +150,8 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 var errors: [PrimerValidationError] = []
 
                 guard let rawData = data as? PrimerBancontactCardData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(primerValidationError: .invalidRawData())
                     errors.append(err)
-                    ErrorHandler.handle(error: err)
-
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
@@ -166,18 +162,9 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 }
 
                 if rawData.cardNumber.isEmpty {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number can not be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
-
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
                 } else if !rawData.cardNumber.isValidCardNumber {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
                 }
 
                 do {
@@ -190,16 +177,18 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if rawData.cardholderName.isEmpty {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name cannot be blank.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(
+                            PrimerValidationError.invalidCardholderName(
+                                message: "Cardholder name cannot be blank."
+                            )
+                        )
 
                     } else if !(rawData.cardholderName).isValidNonDecimalString {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name is not valid.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(
+                            PrimerValidationError.invalidCardholderName(
+                                message: "Cardholder name is not valid."
+                            )
+                        )
                     }
                 }
 
@@ -230,31 +219,16 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
         var errors: [PrimerValidationError] = []
 
         guard let rawData = data as? PrimerBancontactCardData else {
-            let err = PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = handled(primerValidationError: .invalidRawData())
             errors.append(err)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }
 
         if rawData.cardNumber.isEmpty {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number can not be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
         } else if !rawData.cardNumber.isValidCardNumber {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         }
 
         do {
@@ -268,15 +242,11 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
         if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if rawData.cardholderName.isEmpty {
                 errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    message: "Cardholder name cannot be blank."
                 ))
             } else if !(rawData.cardholderName).isValidNonDecimalString {
                 errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    message: "Cardholder name is not valid."
                 ))
             }
         }

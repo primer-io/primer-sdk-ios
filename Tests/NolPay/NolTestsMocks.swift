@@ -142,7 +142,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
     var validateResult: Result<Void, Error>?
     override func validate() throws {
         guard let result = validateResult else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         switch result {
@@ -156,7 +156,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
     var mockTokenizationResult: Result<PrimerPaymentMethodTokenData, Error>?
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         guard let result = mockTokenizationResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -171,7 +171,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
     override func awaitUserInput() -> Promise<Void> {
         guard let result = awaitUserInputResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -186,7 +186,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         guard let result = presentPaymentMethodUserInterfaceResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -202,7 +202,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                                    paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         guard let result = handleDecodedClientTokenResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -217,7 +217,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
     override func performPreTokenizationSteps() -> Promise<Void> {
         guard let result = performPreTokenizationStepsResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -232,7 +232,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
     override func performTokenizationStep() -> Promise<Void> {
         guard let result = performTokenizationStepResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
@@ -247,7 +247,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
     override func performPostTokenizationSteps() -> Promise<Void> {
         guard let result = performPostTokenizationStepsResult else {
-            return .init(error: PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return .init(error: PrimerError.unknown())
         }
 
         switch result {
