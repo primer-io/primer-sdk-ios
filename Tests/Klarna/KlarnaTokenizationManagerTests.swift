@@ -79,7 +79,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return .failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return .failure(PrimerError.unknown())
         }
 
         firstly {
@@ -135,7 +135,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return .failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return .failure(PrimerError.unknown())
         }
 
         firstly {

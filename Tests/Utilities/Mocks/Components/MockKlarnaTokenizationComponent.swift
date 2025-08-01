@@ -17,7 +17,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         switch validateResult {
         case .success: return
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 
@@ -26,7 +26,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
             switch createPaymentSessionResult {
             case .success(let paymentSession): seal.fulfill(paymentSession)
             case .failure(let error): seal.reject(error)
-            case nil: seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            case nil: seal.reject(PrimerError.unknown())
             }
         }
     }
@@ -35,7 +35,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         switch createPaymentSessionResult {
         case .success(let paymentSession): return paymentSession
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 
@@ -46,7 +46,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
             switch authorizePaymentSessionResult {
             case .success(let customerToken): seal.fulfill(customerToken)
             case .failure(let error): seal.reject(error)
-            case nil: seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            case nil: seal.reject(PrimerError.unknown())
             }
         }
     }
@@ -57,7 +57,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         switch authorizePaymentSessionResult {
         case .success(let customerToken): return customerToken
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 
@@ -69,7 +69,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
             switch tokenizeHeadlessResult {
             case .success(let primerCheckoutData): seal.fulfill(primerCheckoutData)
             case .failure(let error): seal.reject(error)
-            case nil: seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            case nil: seal.reject(PrimerError.unknown())
             }
         }
     }
@@ -81,7 +81,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         switch tokenizeHeadlessResult {
         case .success(let primerCheckoutData): return primerCheckoutData
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 
@@ -93,7 +93,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
             switch tokenizeDropInResult {
             case .success(let paymentMethodToken): seal.fulfill(paymentMethodToken)
             case .failure(let error): seal.reject(error)
-            case nil: seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            case nil: seal.reject(PrimerError.unknown())
             }
         }
     }
@@ -105,7 +105,7 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
         switch tokenizeDropInResult {
         case .success(let paymentMethodToken): return paymentMethodToken
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 }
