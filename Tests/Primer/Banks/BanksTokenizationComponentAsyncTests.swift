@@ -1,29 +1,63 @@
 //
-//  BanksTokenizationComponentTests.swift
+//  BanksTokenizationComponentAsyncTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
-final class BanksTokenizationComponentTests: XCTestCase {
+final class BanksTokenizationComponentAsyncTests: XCTestCase {
+    // MARK: - Test Dependencies
 
-    var apiClient: MockBanksAPIClient!
+    private var apiClient: MockBanksAPIClient!
+    private var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
+    private var stepDelegate: MockBanksStepDelegate!
+    private var validationDelegate: MockBanksValidationDelegate!
+    private var tokenizationService: MockTokenizationService!
+    private var createResumePaymentService: MockCreateResumePaymentService!
+    private var uiManager: MockPrimerUIManager!
+    private var sut: BanksTokenizationComponent!
 
-    var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
+    // MARK: - Helper Methods
 
-    var stepDelegate: MockBanksStepDelegate!
+    private let paymentResponseBody = Response.Body.Payment(
+        id: "id",
+        paymentId: "payment_id",
+        amount: 123,
+        currencyCode: "GBP",
+        customer: Request.Body.ClientSession.Customer(
+            firstName: "first_name",
+            lastName: "last_name",
+            emailAddress: "email_address",
+            mobileNumber: "+44(0)7891234567",
+            billingAddress: PaymentAPIModelAddress(
+                firstName: "billing_first_name",
+                lastName: "billing_last_name",
+                addressLine1: "billing_line_1",
+                addressLine2: "billing_line_2",
+                city: "billing_city",
+                state: "billing_state",
+                countryCode: "billing_country_code",
+                postalCode: "billing_postal_code"
+            ),
+            shippingAddress: PaymentAPIModelAddress(
+                firstName: "shipping_first_name",
+                lastName: "shipping_last_name",
+                addressLine1: "shipping_line_1",
+                addressLine2: "shipping_line_2",
+                city: "shipping_city",
+                state: "shipping_state",
+                countryCode: "shipping_country_code",
+                postalCode: "shipping_postal_code"
+            )
+        ),
+        customerId: "customer_id",
+        orderId: "order_id",
+        status: .success
+    )
 
-    var validationDelegate: MockBanksValidationDelegate!
-
-    var tokenizationService: MockTokenizationService!
-
-    var createResumePaymentService: MockCreateResumePaymentService!
-
-    var uiManager: MockPrimerUIManager!
-
-    var sut: BanksTokenizationComponent!
+    // MARK: - Setup & Teardown
 
     override func setUpWithError() throws {
         let paymentMethod = Mocks.PaymentMethods.idealFormWithRedirectPaymentMethod
@@ -62,17 +96,21 @@ final class BanksTokenizationComponentTests: XCTestCase {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
 
-    func testValidationSuccess() throws {
+    // MARK: - Validation Tests
+
+    func test_validate_withValidSession_shouldSucceed() throws {
         try SDKSessionHelper.test {
             XCTAssertNoThrow(try self.sut.validate())
         }
     }
 
-    func testValidationFailure() throws {
+    func test_validate_withInvalidSession_shouldThrowError() throws {
         XCTAssertThrowsError(try sut.validate())
     }
 
-    func testFetchBanksSuccess() throws {
+    // MARK: - Banks Retrieval Tests
+
+    func test_fetchBanks_shouldReturnBanksSuccessfully() throws {
         let banks: BanksListSessionResponse = .init(
             result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
         )
@@ -92,7 +130,9 @@ final class BanksTokenizationComponentTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
     }
 
-    func testFullPaymentFlow() throws {
+    // MARK: - Flow Tests
+
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
         apiClient.result = .init(result: [
             .init(id: "bank_id", name: "bank_name", iconUrlStr: "icon_url_str", disabled: false)
         ])
@@ -122,7 +162,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             }
         }
 
-        defaultBanksComponent.start()
+        defaultBanksComponent.start_async()
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 2.0, enforceOrder: true)
 
@@ -137,7 +177,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
             default:
                 XCTFail()
             }
-
         }
 
         defaultBanksComponent.updateCollectedData(collectableData: .bankId(bankId: "bank_id"))
@@ -161,7 +200,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             expectDidCompleteCheckout.fulfill()
         }
 
-        defaultBanksComponent.submit()
+        defaultBanksComponent.submit_async()
 
         wait(for: [
             expectDidFinishFlow,
@@ -171,8 +210,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         ], timeout: 15.0, enforceOrder: true)
     }
 
-    func testFullPaymentFlow_manual() throws {
-
+    func test_startFlow_manualPaymentHandling_shouldCompleteSuccessfully() throws {
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
         PollingModule.apiClient = apiClient
@@ -217,7 +255,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             }
         }
 
-        defaultBanksComponent.start()
+        defaultBanksComponent.start_async()
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 5.0, enforceOrder: true)
 
@@ -232,7 +270,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
             default:
                 XCTFail()
             }
-
         }
 
         defaultBanksComponent.updateCollectedData(collectableData: .bankId(bankId: "bank_id"))
@@ -266,7 +303,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             expectDidResume.fulfill()
         }
 
-        defaultBanksComponent.submit()
+        defaultBanksComponent.submit_async()
 
         wait(for: [
             expectDidFinishFlow,
@@ -276,36 +313,22 @@ final class BanksTokenizationComponentTests: XCTestCase {
             expectDidFinishPayment
         ], timeout: 25.0, enforceOrder: true)
     }
+}
 
-    // MARK: Helpers
+// MARK: - Mock Classes
 
-    var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 123,
-                     currencyCode: "GBP",
-                     customer: .init(firstName: "first_name",
-                                     lastName: "last_name",
-                                     emailAddress: "email_address",
-                                     mobileNumber: "+44(0)7891234567",
-                                     billingAddress: .init(firstName: "billing_first_name",
-                                                           lastName: "billing_last_name",
-                                                           addressLine1: "billing_line_1",
-                                                           addressLine2: "billing_line_2",
-                                                           city: "billing_city",
-                                                           state: "billing_state",
-                                                           countryCode: "billing_country_code",
-                                                           postalCode: "billing_postal_code"),
-                                     shippingAddress: .init(firstName: "shipping_first_name",
-                                                            lastName: "shipping_last_name",
-                                                            addressLine1: "shipping_line_1",
-                                                            addressLine2: "shipping_line_2",
-                                                            city: "shipping_city",
-                                                            state: "shipping_state",
-                                                            countryCode: "shipping_country_code",
-                                                            postalCode: "shipping_postal_code")),
-                     customerId: "customer_id",
-                     orderId: "order_id",
-                     status: .success)
+class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
+    var onReceiveStep: ((BanksStep) -> Void)?
+
+    func didReceiveStep(step: PrimerHeadlessStep) {
+        onReceiveStep?(step as! BanksStep)
+    }
+}
+
+class MockBanksValidationDelegate: PrimerHeadlessValidatableDelegate {
+    var onDidUpdate: ((PrimerValidationStatus, PrimerCollectableData?) -> Void)?
+
+    func didUpdate(validationStatus: PrimerValidationStatus, for data: PrimerCollectableData?) {
+        onDidUpdate?(validationStatus, data)
     }
 }
