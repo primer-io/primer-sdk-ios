@@ -349,8 +349,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
-
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
