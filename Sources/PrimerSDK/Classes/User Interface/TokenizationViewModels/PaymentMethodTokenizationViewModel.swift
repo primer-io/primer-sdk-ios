@@ -169,35 +169,38 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
+        defer {
+            startTokenizationFlowTask = nil
+        }
+
         startTokenizationFlowTask = Task {
-            do {
-                try Task.checkCancellation()
+            try Task.checkCancellation()
 
-                try await self.performPreTokenizationSteps()
-                try Task.checkCancellation()
+            try await self.performPreTokenizationSteps()
+            try Task.checkCancellation()
 
-                try await self.performTokenizationStep()
-                try Task.checkCancellation()
+            try await self.performTokenizationStep()
+            try Task.checkCancellation()
 
-                try await self.performPostTokenizationSteps()
-                try Task.checkCancellation()
+            try await self.performPostTokenizationSteps()
+            try Task.checkCancellation()
 
-                return self.paymentMethodTokenData
-            } catch is CancellationError {
-                throw handled(primerError: .cancelled(paymentMethodType: config.type))
-            } catch {
-                throw error
+            return paymentMethodTokenData
+        }
+
+        do {
+            let paymentMethodTokenData = try await startTokenizationFlowTask?.value
+
+            guard let paymentMethodTokenData else {
+                throw PrimerError.invalidValue(key: "paymentMethodTokenData", value: "Payment method token data is not valid")
             }
+
+            return paymentMethodTokenData
+        } catch is CancellationError {
+            throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
+        } catch {
+            throw error
         }
-
-        let paymentMethodTokenData = try await startTokenizationFlowTask?.value
-        startTokenizationFlowTask = nil
-
-        guard let paymentMethodTokenData else {
-            throw PrimerError.invalidValue(key: "paymentMethodTokenData", value: "Payment method token data is not valid")
-        }
-
-        return paymentMethodTokenData
     }
 
     @MainActor
@@ -244,5 +247,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         self.didCancel?()
         startTokenizationFlowTask?.cancel()
         startPaymentFlowTask?.cancel()
+        awaitUserInputTask?.cancel()
     }
 }
