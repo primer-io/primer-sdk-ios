@@ -477,7 +477,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 }
             }
 
-            let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+            let paymentCreationDecision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
             decisionHandlerHasBeenCalled = true
 
             switch paymentCreationDecision.type {
