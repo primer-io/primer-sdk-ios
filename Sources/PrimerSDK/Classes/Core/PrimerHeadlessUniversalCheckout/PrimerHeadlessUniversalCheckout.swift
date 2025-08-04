@@ -231,13 +231,11 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     private func continueValidateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                let info = ["reason": "Client token is nil"]
-                return seal.reject(handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info))))
+                return seal.reject(handled(primerError: .invalidClientToken(reason: "Client token is nil")))
             }
 
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                let info = ["reason": "Client token cannot be decoded"]
-                return seal.reject(PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+                return seal.reject(handled(primerError: .invalidClientToken(reason: "Client token cannot be decoded")))
             }
 
             do {
@@ -260,13 +258,11 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
 
     private func continueValidateSession() async throws {
         guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-            let info = ["reason": "Client token is nil"]
-            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+            throw handled(primerError: .invalidClientToken(reason: "Client token is nil"))
         }
 
         guard let decodedJWTToken = clientToken.decodedJWTToken else {
-            let info = ["reason": "Client token cannot be decoded"]
-            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+            throw handled(primerError: .invalidClientToken(reason: "Client token cannot be decoded"))
         }
 
         try decodedJWTToken.validate()
@@ -283,15 +279,13 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     internal func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                let info = ["reason": "Client token is nil"]
-                let err = handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+                let err = handled(primerError: .invalidClientToken(reason: "Client token is nil"))
                 seal.reject(err)
                 return
             }
 
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                let info = ["reason": "Client token cannot be decoded"]
-                return seal.reject(PrimerError.invalidClientToken(userInfo: info))
+                return seal.reject(PrimerError.invalidClientToken(reason: "Client token cannot be decoded"))
             }
 
             do {
@@ -314,13 +308,11 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
 
     func validateSession() async throws {
         guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-            let info = ["reason": "Client token is nil"]
-            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+            throw handled(primerError: .invalidClientToken(reason: "Client token is nil"))
         }
 
         guard let decodedJWTToken = clientToken.decodedJWTToken else {
-            let info = ["reason": "Client token cannot be decoded"]
-            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+            throw handled(primerError: .invalidClientToken(reason: "Client token cannot be decoded"))
         }
 
         try decodedJWTToken.validate()

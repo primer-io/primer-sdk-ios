@@ -23,6 +23,6 @@ final class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
     func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList) async throws -> BanksListSessionResponse {
         if let error { throw error }
         if let result { return result }
-        throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        throw PrimerError.unknown()
     }
 }

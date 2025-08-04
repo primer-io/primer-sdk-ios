@@ -131,11 +131,7 @@ final class Downloader: NSObject, DownloaderModule {
         }
 
         if !errors.isEmpty && errors.count == files.count {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let primerErr = PrimerError.underlyingErrors(errors: errors)
             ErrorHandler.handle(error: primerErr)
             throw primerErr
         }
@@ -175,7 +171,7 @@ final class Downloader: NSObject, DownloaderModule {
                 if let primerErr = err as? PrimerError {
                     switch primerErr {
 
-                    case .underlyingErrors(let errors, _, _):
+                    case .underlyingErrors(let errors, _):
                         if errors.filter({ ($0 as NSError).code == 516 }).first != nil {
                             seal.fulfill(file)
                             return
@@ -214,7 +210,7 @@ final class Downloader: NSObject, DownloaderModule {
             return file
         } catch {
             if let primerErr = error as? PrimerError,
-               case .underlyingErrors(let errors, _, _) = primerErr,
+               case .underlyingErrors(let errors, _) = primerErr,
                errors.contains(where: { ($0 as NSError).code == 516 }) {
                 return file
             }
@@ -254,9 +250,7 @@ final class Downloader: NSObject, DownloaderModule {
                         return
 
                     } catch {
-                        let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                     userInfo: .errorUserInfoDictionary(),
-                                                                     diagnosticsId: UUID().uuidString)
+                        let primerErr = PrimerError.underlyingErrors(errors: [error])
                         ErrorHandler.handle(error: primerErr)
                     }
                 }
@@ -264,9 +258,7 @@ final class Downloader: NSObject, DownloaderModule {
 
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
-                    let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                 userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
+                    let primerErr = PrimerError.underlyingErrors(errors: [error])
                     seal.reject(primerErr)
 
                 } else if let response = response,
@@ -294,9 +286,7 @@ final class Downloader: NSObject, DownloaderModule {
                             seal.fulfill(())
 
                         } catch {
-                            let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                         userInfo: .errorUserInfoDictionary(),
-                                                                         diagnosticsId: UUID().uuidString)
+                            let primerErr = PrimerError.underlyingErrors(errors: [error])
                             ErrorHandler.handle(error: primerErr)
                             seal.reject(primerErr)
                         }
@@ -342,11 +332,7 @@ final class Downloader: NSObject, DownloaderModule {
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
-                    let primerErr = PrimerError.underlyingErrors(
-                        errors: [error],
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
+                    let primerErr = PrimerError.underlyingErrors(errors: [error])
                     ErrorHandler.handle(error: primerErr)
                     throw primerErr
                 }
@@ -387,11 +373,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
 
         } catch {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: [error],
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let primerErr = PrimerError.underlyingErrors(errors: [error])
             ErrorHandler.handle(error: primerErr)
             throw primerErr
         }
@@ -423,9 +405,8 @@ final class Downloader: NSObject, DownloaderModule {
         }
     }
 
-        
     // MARK: - Helper Methods
-    
+
     private func fileExists(at url: URL) -> Bool {
         if #available(iOS 16.0, *) {
             return FileManager.default.fileExists(atPath: url.path())

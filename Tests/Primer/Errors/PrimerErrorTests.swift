@@ -12,9 +12,8 @@ final class PrimerErrorTests: XCTestCase {
     // MARK: - Apple Pay Error Tests
     
     func testApplePayNoCardsInWallet() {
-        let userInfo = ["key": "value"]
         let diagnosticsId = "test-id-456"
-        let error = PrimerError.applePayNoCardsInWallet(userInfo: userInfo, diagnosticsId: diagnosticsId)
+        let error = PrimerError.applePayNoCardsInWallet(diagnosticsId: diagnosticsId)
         
         XCTAssertEqual(error.errorId, "apple-pay-no-cards-in-wallet")
         XCTAssertEqual(error.diagnosticsId, diagnosticsId)
@@ -32,9 +31,8 @@ final class PrimerErrorTests: XCTestCase {
     }
     
     func testApplePayDeviceNotSupported() {
-        let userInfo = ["test": "data"]
         let diagnosticsId = "test-id-789"
-        let error = PrimerError.applePayDeviceNotSupported(userInfo: userInfo, diagnosticsId: diagnosticsId)
+        let error = PrimerError.applePayDeviceNotSupported(diagnosticsId: diagnosticsId)
         
         XCTAssertEqual(error.errorId, "apple-pay-device-not-supported")
         XCTAssertEqual(error.diagnosticsId, diagnosticsId)
@@ -49,11 +47,9 @@ final class PrimerErrorTests: XCTestCase {
     
     func testApplePayConfigurationError() {
         let merchantIdentifier = "invalid.merchant.id"
-        let userInfo = ["config": "error"]
         let diagnosticsId = "test-id-abc"
         let error = PrimerError.applePayConfigurationError(
             merchantIdentifier: merchantIdentifier,
-            userInfo: userInfo,
             diagnosticsId: diagnosticsId
         )
         
@@ -65,7 +61,6 @@ final class PrimerErrorTests: XCTestCase {
         // Test with nil merchant identifier
         let errorWithNilMerchant = PrimerError.applePayConfigurationError(
             merchantIdentifier: nil,
-            userInfo: nil,
             diagnosticsId: "test-id-def"
         )
         XCTAssertEqual(errorWithNilMerchant.plainDescription, "Apple Pay configuration error: merchant identifier 'nil' may be invalid")
@@ -77,11 +72,9 @@ final class PrimerErrorTests: XCTestCase {
     
     func testApplePayPresentationFailed() {
         let reason = "User cancelled the payment"
-        let userInfo = ["action": "cancelled"]
         let diagnosticsId = "test-id-xyz"
         let error = PrimerError.applePayPresentationFailed(
             reason: reason,
-            userInfo: userInfo,
             diagnosticsId: diagnosticsId
         )
         
@@ -93,7 +86,6 @@ final class PrimerErrorTests: XCTestCase {
         // Test with nil reason
         let errorWithNilReason = PrimerError.applePayPresentationFailed(
             reason: nil,
-            userInfo: nil,
             diagnosticsId: "test-id-123"
         )
         XCTAssertEqual(errorWithNilReason.plainDescription, "Apple Pay presentation failed: unknown reason")
@@ -104,9 +96,8 @@ final class PrimerErrorTests: XCTestCase {
     }
     
     func testUnableToPresentApplePay() {
-        let userInfo = ["error": "unable"]
         let diagnosticsId = "test-id-999"
-        let error = PrimerError.unableToPresentApplePay(userInfo: userInfo, diagnosticsId: diagnosticsId)
+        let error = PrimerError.unableToPresentApplePay(diagnosticsId: diagnosticsId)
         
         XCTAssertEqual(error.errorId, "unable-to-present-apple-pay")
         XCTAssertEqual(error.diagnosticsId, diagnosticsId)
@@ -124,9 +115,8 @@ final class PrimerErrorTests: XCTestCase {
     }
     
     func testApplePayTimedOut() {
-        let userInfo = ["timeout": "true"]
         let diagnosticsId = "test-id-timeout"
-        let error = PrimerError.applePayTimedOut(userInfo: userInfo, diagnosticsId: diagnosticsId)
+        let error = PrimerError.applePayTimedOut(diagnosticsId: diagnosticsId)
         
         XCTAssertEqual(error.errorId, "apple-pay-timed-out")
         XCTAssertEqual(error.diagnosticsId, diagnosticsId)
@@ -139,9 +129,8 @@ final class PrimerErrorTests: XCTestCase {
     }
     
     func testUnableToMakePaymentsOnProvidedNetworks() {
-        let userInfo = ["networks": "unsupported"]
         let diagnosticsId = "test-id-networks"
-        let error = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: userInfo, diagnosticsId: diagnosticsId)
+        let error = PrimerError.unableToMakePaymentsOnProvidedNetworks(diagnosticsId: diagnosticsId)
         
         XCTAssertEqual(error.errorId, "unable-to-make-payments-on-provided-networks")
         XCTAssertEqual(error.diagnosticsId, diagnosticsId)
@@ -159,7 +148,7 @@ final class PrimerErrorTests: XCTestCase {
     // MARK: - Exposed Error Tests
     
     func testExposedError() {
-        let error = PrimerError.applePayDeviceNotSupported(userInfo: nil, diagnosticsId: "test")
+        let error = PrimerError.applePayDeviceNotSupported(diagnosticsId: "test")
         let exposedError = error.exposedError
         
         // Exposed error should be the same as the original error

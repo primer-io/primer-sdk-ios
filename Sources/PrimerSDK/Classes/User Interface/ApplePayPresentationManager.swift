@@ -44,11 +44,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                 if success == false {
                     // Check merchant identifier first
                     guard !applePayRequest.merchantIdentifier.isEmpty else {
-                        let err = PrimerError.applePayConfigurationError(
-                            merchantIdentifier: nil,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
+                        let err = PrimerError.applePayConfigurationError(merchantIdentifier: nil)
                         ErrorHandler.handle(error: err)
                         self.logger.error(message: "APPLE PAY")
                         self.logger.error(message: err.recoverySuggestion ?? "")
@@ -56,11 +52,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                     }
 
                     // Generic presentation failure
-                    let err = PrimerError.applePayPresentationFailed(
-                        reason: "PKPaymentAuthorizationController.present returned false",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
+                    let err = PrimerError.applePayPresentationFailed(reason: "PKPaymentAuthorizationController.present returned false")
                     ErrorHandler.handle(error: err)
                     self.logger.error(message: "APPLE PAY")
                     self.logger.error(message: err.recoverySuggestion ?? "")
@@ -189,8 +181,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         guard PKPaymentAuthorizationController.canMakePayments() else {
             self.logger.error(message: "APPLE PAY")
             self.logger.error(message: "Device does not support Apple Pay")
-            let err = PrimerError.applePayDeviceNotSupported(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
+            let err = PrimerError.applePayDeviceNotSupported()
             return err
         }
 
@@ -199,16 +190,14 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
             // Device supports Apple Pay but no cards for our supported networks
             self.logger.error(message: "APPLE PAY")
             self.logger.error(message: "No cards available for supported networks")
-            let err = PrimerError.applePayNoCardsInWallet(userInfo: .errorUserInfoDictionary(),
-                                                          diagnosticsId: UUID().uuidString)
+            let err = PrimerError.applePayNoCardsInWallet()
             return err
         }
 
         // Generic error - shouldn't reach here in normal flow
         self.logger.error(message: "APPLE PAY")
         self.logger.error(message: "Cannot present Apple Pay")
-        let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
-                                                      diagnosticsId: UUID().uuidString)
+        let err = PrimerError.unableToPresentApplePay()
         return err
     }
 }

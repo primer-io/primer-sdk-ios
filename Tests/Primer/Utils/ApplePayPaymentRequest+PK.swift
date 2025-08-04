@@ -90,12 +90,7 @@ final class ApplePayPaymentRequest: XCTestCase {
         key: String,
         value: Any? = nil
     ) -> PrimerError {
-        PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
+        PrimerError.invalidValue(key: key, value: value)
     }
 }
 

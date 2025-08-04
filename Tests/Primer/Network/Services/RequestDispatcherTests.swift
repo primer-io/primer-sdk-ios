@@ -101,7 +101,7 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        session.error = PrimerError.unknown()
 
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
@@ -153,7 +153,7 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        session.error = PrimerError.unknown()
 
         let request = URLRequest(url: url)
         do {

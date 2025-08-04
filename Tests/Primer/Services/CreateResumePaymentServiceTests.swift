@@ -68,7 +68,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
     func test_completePayment_shouldFail() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
-        apiClient.completeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.completeResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
 
         // When
@@ -91,7 +91,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
     func test_completePayment_shouldFail_async() async throws {
         // Given
-        apiClient.completeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.completeResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
 
         // When
@@ -151,7 +151,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
     func test_createPayment_shouldFailWhenResponseIsError() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
-        apiClient.createResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.createResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
         let createRequest = Request.Body.Payment.Create(token: "123")
 
@@ -169,7 +169,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
     func test_createPayment_shouldFailWhenResponseIsError_async() async throws {
         // Given
-        apiClient.createResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.createResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
         let createRequest = Request.Body.Payment.Create(token: "123")
 
@@ -574,7 +574,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
     func test_resumePayment_shouldFailWhenResponseIsError() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
-        apiClient.resumeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.resumeResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
@@ -592,7 +592,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
     func test_resumePayment_shouldFailWhenResponseIsError_async() async throws {
         // Given
-        apiClient.resumeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        apiClient.resumeResponse = .failure(PrimerError.unknown())
         AppState.current.clientToken = MockAppState.mockClientToken
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 

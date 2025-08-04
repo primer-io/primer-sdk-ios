@@ -282,11 +282,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let pollingModule = PollingModule(url: statusUrl)
         didCancel = {
-            let err = PrimerError.cancelled(
-                paymentMethodType: self.config.type,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.cancelled(paymentMethodType: self.config.type)
             ErrorHandler.handle(error: err)
             pollingModule.cancel(withError: err)
         }
