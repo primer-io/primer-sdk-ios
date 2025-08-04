@@ -9,14 +9,24 @@ import Foundation
 final class ErrorHandler: LogReporter {
 
     // Call this function to log any error to Analytics
-    static func handle(error: Error) {
-        ErrorHandler.shared.handle(error: error)
+    static func handle(
+        error: Error,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        ErrorHandler.shared.handle(error: error, file: file, line: line, function: function)
     }
 
     static var shared = ErrorHandler()
 
-    func handle(error: Error) {
-        self.logger.error(message: error.localizedDescription)
+    func handle(
+        error: Error,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        self.logger.error(message: error.localizedDescription, file: file, line: line, function: function)
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
