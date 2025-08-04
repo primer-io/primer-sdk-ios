@@ -142,14 +142,14 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Error should be of type .nolError")
@@ -253,7 +253,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerValidationError = errors.first as? PrimerValidationError else {
                         XCTFail("Error should be of type PrimerError")
                         return
@@ -344,7 +344,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .nolError(let code, _, _, _):
+                case .nolError(let code, _, _):
                     XCTAssertEqual(code, expectedErrorCode)
                 default:
                     XCTFail("Error should be of type .nolError")
@@ -395,14 +395,14 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Error should be of type .nolError")

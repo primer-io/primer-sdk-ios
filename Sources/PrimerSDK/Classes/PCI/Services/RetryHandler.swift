@@ -66,8 +66,7 @@ final class RetryHandler: LogReporter {
         let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .retryFailed, severity: .error)
         Analytics.Service.record(event: retryEvent)
 
-        self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                        diagnosticsId: UUID().uuidString)))
+        self.completion(.failure(PrimerError.missingPrimerConfiguration()))
     }
 
     func attempt() {

@@ -9,7 +9,7 @@ import XCTest
 
 final class ErrorExtensionTests: XCTestCase {
 
-    let dummyError: PrimerError = PrimerError.unknown(userInfo: ["test": "test"], diagnosticsId: "")
+    let dummyError: PrimerError = PrimerError.unknown(diagnosticsId: "")
 
     func testPrimerErrorForInternalErrors() {
         // MARK: Internal errors
@@ -26,13 +26,6 @@ final class ErrorExtensionTests: XCTestCase {
 
         let internalError3DSFailureBreak = InternalError.failedToPerform3dsAndShouldBreak(error: dummyError)
         let exposedError3DSFailureBreak = internalError3DSFailureBreak.exposedError
-        switch exposedError3DSFailureBreak {
-        case PrimerError.unknown(let userInfo, _):
-            XCTAssertEqual(userInfo?["test"], "test")
-            break
-        default:
-            XCTFail()
-        }
 
         let missingDependencyError = Primer3DSErrorContainer.missingSdkDependency()
         let internalError3DSFailureContinue = InternalError.failedToPerform3dsButShouldContinue(error: missingDependencyError)
@@ -46,29 +39,18 @@ final class ErrorExtensionTests: XCTestCase {
 
         // MARK: Underlying errors
 
-        let singleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError], userInfo: nil, diagnosticsId: "")
 
-        switch singleUnderlyingErrorsError.primerError {
-        case PrimerError.unknown(let userInfo, _):
-            XCTAssertEqual(userInfo?["test"], "test")
-        default:
-            XCTFail()
-        }
-
-        let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [
-            dummyError,
-            PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        ], userInfo: nil, diagnosticsId: "")
+        let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError, PrimerError.unknown()])
 
         switch multipleUnderlyingErrorsError.primerError {
-        case PrimerError.underlyingErrors(let errors, _, _):
+        case PrimerError.underlyingErrors(let errors, _):
             XCTAssertEqual(errors.count, 2)
             break
         default:
             XCTFail()
         }
 
-        let zeroUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [], userInfo: nil, diagnosticsId: "")
+        let zeroUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [])
 
         switch zeroUnderlyingErrorsError.primerError {
         case PrimerError.unknown(_, _):
@@ -82,8 +64,8 @@ final class ErrorExtensionTests: XCTestCase {
     func testCombinedDescriptionForPrimerErrors() {
         let arrayOfErrors: [Error] = [
             dummyError,
-            PrimerError.unknown(userInfo: nil, diagnosticsId: ""),
-            PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            PrimerError.unknown(diagnosticsId: ""),
+            PrimerError.unknown(diagnosticsId: "")
         ]
 
         let singleDescription = { (_: String) in

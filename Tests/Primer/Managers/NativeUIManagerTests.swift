@@ -12,7 +12,7 @@ final class NativeUIManagerTests: XCTestCase {
     func testNativeUIManagerWithUninitializedSDK() throws {
         do {
             _ = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: "PAYMENT_CARD")
-        } catch PrimerError.uninitializedSDKSession(_, _) {
+        } catch PrimerError.uninitializedSDKSession(_) {
             XCTAssert(true)
         } catch {
             XCTFail("Unexpected error type. Should be `uninitializedSDKSession`")
@@ -23,7 +23,7 @@ final class NativeUIManagerTests: XCTestCase {
         SDKSessionHelper.setUp()
         do {
             _ = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: "PAYMENT_CARD")
-        } catch PrimerError.unsupportedPaymentMethodForManager(let type, let category, _, _) {
+        } catch PrimerError.unsupportedPaymentMethodForManager(let type, let category, _) {
             XCTAssertEqual(type, "PAYMENT_CARD")
             XCTAssertEqual(category, "NATIVE_UI")
         } catch {

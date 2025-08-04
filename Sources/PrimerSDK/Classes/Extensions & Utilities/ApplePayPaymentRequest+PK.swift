@@ -157,12 +157,7 @@ private extension String {
 
 private extension ApplePayPaymentRequestBase {
     func handledError(_ key: String) -> PrimerError {
-        let error: PrimerError = .invalidValue(
-            key: key,
-            value: nil,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error: PrimerError = .invalidValue(key: key)
         ErrorHandler.handle(error: error)
         return error
     }

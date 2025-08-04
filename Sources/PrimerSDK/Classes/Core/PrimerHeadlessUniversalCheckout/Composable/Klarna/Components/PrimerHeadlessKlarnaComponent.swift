@@ -167,7 +167,6 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderErrorDelegate {
     public func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
         let primerError = PrimerError.klarnaError(
             message: error.errorDescription,
-            userInfo: error.info,
             diagnosticsId: error.diagnosticsId
         )
         handleReceivedError(error: primerError)

@@ -40,7 +40,6 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     func test_patchClientSession_error() {
         let error = PrimerError.failedToCreateSession(
             error: nil,
-            userInfo: [:],
             diagnosticsId: "test_diagnostics_id: \(UUID().uuidString)"
         )
 
@@ -428,10 +427,7 @@ extension StripeAchHeadlessComponentTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
     }
