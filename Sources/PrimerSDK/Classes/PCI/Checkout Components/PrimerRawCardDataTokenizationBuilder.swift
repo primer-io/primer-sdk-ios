@@ -235,7 +235,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                        let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
-                        return
+                        return seal.fulfill()
                     }
 
                     // Unsupported card type error
