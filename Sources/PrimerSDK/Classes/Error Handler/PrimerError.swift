@@ -23,17 +23,32 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var analyticsContext: [String: Any] { get }
 }
 
-func handled<E: Error>(error: E) -> E {
-    ErrorHandler.handle(error: error)
+func handled<E: Error>(
+    error: E,
+    file: String = #file,
+    line: Int = #line,
+    function: String = #function
+) -> E {
+    ErrorHandler.handle(error: error, file: file, line: line, function: function)
     return error
 }
 
-func handled(primerError: PrimerError) -> PrimerError {
-    handled(error: primerError)
+func handled(
+    primerError: PrimerError,
+    file: String = #file,
+    line: Int = #line,
+    function: String = #function
+) -> PrimerError {
+    handled(error: primerError, file: file, line: line, function: function)
 }
 
-func handled(primerValidationError: PrimerValidationError) -> PrimerValidationError {
-    handled(error: primerValidationError)
+func handled(
+    primerValidationError: PrimerValidationError,
+    file: String = #file,
+    line: Int = #line,
+    function: String = #function
+) -> PrimerValidationError {
+    handled(error: primerValidationError, file: file, line: line, function: function)
 }
 
 public enum PrimerError: PrimerErrorProtocol {
