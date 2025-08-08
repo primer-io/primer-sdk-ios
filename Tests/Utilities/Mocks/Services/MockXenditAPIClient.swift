@@ -14,7 +14,7 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
         if let onListRetailOutlets = onListRetailOutlets {
             completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -22,7 +22,7 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
         if let onListRetailOutlets = onListRetailOutlets {
             return onListRetailOutlets(clientToken, paymentMethodId)
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

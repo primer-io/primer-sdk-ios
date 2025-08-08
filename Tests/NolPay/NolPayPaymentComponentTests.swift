@@ -300,7 +300,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(let code, let message, _, _):
+                    case .nolError(let code, let message, _):
                         XCTAssertTrue(code == "unknown")
                         XCTAssertTrue(message == "Payment failed from unknown reason")
                     default:
@@ -349,7 +349,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(_, let message, _, _):
+                    case .nolError(_, let message, _):
                         XCTAssertTrue(message == expectedErrorDescription)
                     default:
                         XCTFail("primerError should be of type nolError")

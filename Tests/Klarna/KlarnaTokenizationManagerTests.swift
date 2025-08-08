@@ -270,21 +270,9 @@ extension KlarnaTokenizationManagerTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

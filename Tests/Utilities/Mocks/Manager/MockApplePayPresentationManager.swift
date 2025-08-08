@@ -16,7 +16,7 @@ final class MockApplePayPresentationManager: ApplePayPresenting {
         switch onPresent?(applePayRequest, delegate) {
         case .success: .fulfilled(())
         case .failure(let error): .rejected(error)
-        case nil: .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        case nil: .rejected(PrimerError.unknown())
         }
     }
 
@@ -24,7 +24,7 @@ final class MockApplePayPresentationManager: ApplePayPresenting {
         switch onPresent?(applePayRequest, delegate) {
         case .success: return
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 }

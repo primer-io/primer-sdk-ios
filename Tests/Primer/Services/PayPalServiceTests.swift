@@ -222,7 +222,7 @@ final class PayPalServiceTests: XCTestCase {
         state.currency = Currency(code: "GBP", decimalDigits: 2)
         DependencyContainer.register(state as AppStateProtocol)
 
-        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown())
 
         // When
         sut.startOrderSession { result in
@@ -245,7 +245,7 @@ final class PayPalServiceTests: XCTestCase {
         state.currency = Currency(code: "GBP", decimalDigits: 2)
         DependencyContainer.register(state as AppStateProtocol)
 
-        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.createPayPalOrderSessionResult = .failure(PrimerError.unknown())
 
         // When
         do {
@@ -425,7 +425,7 @@ final class PayPalServiceTests: XCTestCase {
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
 
-        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown())
 
         // When
         sut.startBillingAgreementSession { result in
@@ -446,7 +446,7 @@ final class PayPalServiceTests: XCTestCase {
         // Given
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.createPayPalBillingAgreementSessionResult = .failure(PrimerError.unknown())
 
         // When
         do {
@@ -619,7 +619,7 @@ final class PayPalServiceTests: XCTestCase {
         DependencyContainer.register(state as AppStateProtocol)
 
         mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
-        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown())
 
         // When
         sut.startBillingAgreementSession { result in
@@ -655,7 +655,7 @@ final class PayPalServiceTests: XCTestCase {
         DependencyContainer.register(state as AppStateProtocol)
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
         mockApiClient.createPayPalBillingAgreementSessionResult = .success(.init(tokenId: "my_token", approvalUrl: "scheme://approve"))
-        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.confirmPayPalBillingAgreementResult = .failure(PrimerError.unknown())
 
         // When
         do {
@@ -828,7 +828,7 @@ final class PayPalServiceTests: XCTestCase {
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
 
-        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown())
 
         // When
         sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
@@ -849,7 +849,7 @@ final class PayPalServiceTests: XCTestCase {
         // Given
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        mockApiClient.fetchPayPalExternalPayerInfoResult = .failure(PrimerError.unknown())
 
         // When
         do {

@@ -23,7 +23,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         if shouldSucceed {
             completion(.success(.init(id: nil, result: nil)))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
         self.onSendAnalyticsEvent?(body)
     }
@@ -31,14 +31,14 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let body = body else {
             XCTFail();
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         batches.append(body)
         self.onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

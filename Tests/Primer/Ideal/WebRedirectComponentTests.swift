@@ -31,7 +31,7 @@ final class WebRedirectComponentTests: XCTestCase {
         let component = WebRedirectComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockDelegate)
         mockDelegate.didFinishPayment?(nil)
         XCTAssertEqual(component.step, .success)
-        mockDelegate.didFinishPayment?(PrimerError.failedToCreatePayment(paymentMethodType: PrimerPaymentMethodType.adyenIDeal.rawValue, description: "mock_description", userInfo: [:], diagnosticsId: UUID().uuidString))
+        mockDelegate.didFinishPayment?(PrimerError.failedToCreatePayment(paymentMethodType: PrimerPaymentMethodType.adyenIDeal.rawValue, description: "mock_description"))
         XCTAssertEqual(component.step, .failure)
     }
 }

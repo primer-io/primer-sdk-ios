@@ -23,9 +23,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(
-                            additionalInfo: ["message": "Unable to locate a valid payment method configuration"]
-                        )
+                        reason: "Unable to locate a valid payment method configuration"
                     )
                 )
             }
@@ -34,9 +32,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(
-                            additionalInfo: ["message": "Unable to locate a valid payment method view model."]
-                        )
+                        reason: "Unable to locate a valid payment method view model."
                     )
                 )
             }

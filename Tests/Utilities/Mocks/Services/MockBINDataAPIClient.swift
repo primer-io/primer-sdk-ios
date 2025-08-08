@@ -60,7 +60,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         } else if let result = results[bin] {
             return result
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

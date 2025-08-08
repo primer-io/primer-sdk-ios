@@ -101,9 +101,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return Promise { seal in
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil
             else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -112,10 +110,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData")
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -146,19 +141,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
+            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "rawData")
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -198,10 +188,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 guard let self else {
                     // If self is deallocated, reject the promise gracefully
                     DispatchQueue.main.async {
-                        let err = PrimerError.unknown(
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
+                        let err = PrimerError.unknown()
                         seal.reject(err)
                     }
                     return
@@ -286,10 +273,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.underlyingErrors(errors: errors)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
@@ -373,11 +357,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.underlyingErrors(errors: errors)
             ErrorHandler.handle(error: err)
 
             notifyDelegateOfValidationResult(isValid: false, errors: errors)

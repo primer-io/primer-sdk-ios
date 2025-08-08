@@ -62,7 +62,7 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
             XCTFail("Should throw error")
         } catch {
             switch error {
-            case PrimerError.unsupportedIntent(let intent, _, _):
+            case PrimerError.unsupportedIntent(let intent, _):
                 XCTAssertEqual(intent, .vault)
             default:
                 XCTFail("Expected PrimerError.unsupportedPaymentMethod")
@@ -100,21 +100,9 @@ extension PrimerHeadlessUniversalCheckoutKlarnaManagerTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

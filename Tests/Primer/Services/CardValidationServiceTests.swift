@@ -269,8 +269,7 @@ networks: \(networks.detectedCardNetworks.items.count)
 
         let cardNumber = "552266117788"
 
-        apiClient.error = PrimerError.unknown(userInfo: nil,
-                                              diagnosticsId: "Diagnostics ID")
+        apiClient.error = PrimerError.unknown()
 
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
         delegate.onWillFetchCardMetadataForState = { _, cardState in

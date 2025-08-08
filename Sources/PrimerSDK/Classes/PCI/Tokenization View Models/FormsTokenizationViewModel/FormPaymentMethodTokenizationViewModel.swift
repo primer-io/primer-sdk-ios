@@ -479,36 +479,26 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken()
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "amount")
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "currency")
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -606,10 +596,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
                         self.didCancel = {
-                            let err = PrimerError.cancelled(
-                                paymentMethodType: self.config.type,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.cancelled(paymentMethodType: self.config.type)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
                             return
@@ -627,8 +614,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                         seal.reject(err)
                     }
                 } else {
-                    let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
+                    let error = PrimerError.invalidClientToken()
                     seal.reject(error)
                 }
             } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
@@ -741,10 +727,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         guard let configId = config.id else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id)
             ErrorHandler.handle(error: err)
             return Promise { $0.reject(err) }
         }
@@ -753,10 +736,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 guard let blikCode = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "blikCode",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "blikCode")
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -810,10 +790,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
                 guard let phoneNumber = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "phoneNumber",
-                                                       value: nil,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "phoneNumber")
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -893,9 +870,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         didCancel?()
         inputs = []
 
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString)
+        let err = PrimerError.cancelled(paymentMethodType: self.config.type)
         ErrorHandler.handle(error: err)
     }
 }
