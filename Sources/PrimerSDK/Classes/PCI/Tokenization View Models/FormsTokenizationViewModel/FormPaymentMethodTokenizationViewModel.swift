@@ -477,6 +477,26 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         super.start()
     }
 
+    override func start_async() {
+        checkoutEventsNotifierModule.didStartTokenization = {
+            self.enableUserInteraction(false)
+        }
+
+        checkoutEventsNotifierModule.didFinishTokenization = {
+            self.enableUserInteraction(true)
+        }
+
+        didStartPayment = {
+            self.enableUserInteraction(false)
+        }
+
+        didFinishPayment = { _ in
+            self.enableUserInteraction(true)
+        }
+
+        super.start()
+    }
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -897,6 +917,14 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                                         userInfo: .errorUserInfoDictionary(),
                                         diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
+    }
+
+    // MARK: Private helper methods
+
+    private func enableUserInteraction(_ enable: Bool) {
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(enable)
+        }
     }
 }
 
