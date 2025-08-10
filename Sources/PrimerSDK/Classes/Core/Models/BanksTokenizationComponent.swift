@@ -325,8 +325,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
 
         do {
-            let checkoutData = try await startPaymentFlowTask?.value
-            return checkoutData
+            return try await startPaymentFlowTask?.value
         } catch is CancellationError {
             throw handled(primerError: .cancelled(paymentMethodType: config.type))
         } catch {
