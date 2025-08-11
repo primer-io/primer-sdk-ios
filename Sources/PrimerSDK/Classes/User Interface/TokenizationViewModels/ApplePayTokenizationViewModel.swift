@@ -81,6 +81,18 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
 
+    override func start_async() {
+        didFinishPayment = { err in
+            if let error = err {
+                self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
+            } else {
+                self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
+            }
+        }
+
+        super.start_async()
+    }
+
     override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event.ui(
             action: .click,
