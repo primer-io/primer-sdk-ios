@@ -214,11 +214,7 @@ internal extension String {
     ///         between Drop-in UI (MM/YY) and Headless/RawDataManager (MM/YYYY) implementations
     func validateExpiryDateString() throws {
         if self.isEmpty {
-            let err = PrimerValidationError.invalidExpiryDate(
-                message: "Expiry date cannot be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            throw err
+            throw PrimerValidationError.invalidExpiryDate(message: "Expiry date cannot be blank.")
 
         } else {
             var expiryDate: Date?
@@ -240,18 +236,14 @@ internal extension String {
 
             if let expiryDate = expiryDate {
                 if !expiryDate.isValidExpiryDate {
-                    let err = PrimerValidationError.invalidExpiryDate(
-                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    throw err
+                    throw PrimerValidationError.invalidExpiryDate(
+                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past."
+                    )
                 }
             } else {
-                let err = PrimerValidationError.invalidExpiryDate(
-                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                throw err
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
             }
         }
     }

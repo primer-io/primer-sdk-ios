@@ -211,9 +211,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid raw data error
                 guard let rawData = data as? PrimerCardData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(primerValidationError: .invalidRawData())
                     errors.append(err)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
@@ -237,15 +235,13 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                        let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
-                        return
+                        return seal.fulfill()
                     }
 
                     // Unsupported card type error
                     if !self.allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerValidationError.invalidCardType(
-                            message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
+                            message: "Unsupported card type detected: \(cardNetwork.displayName)"
                         )
                         errors.append(err)
                     }
@@ -255,17 +251,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid card number error
                 if rawData.cardNumber.isEmpty {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number can not be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
                 } else if !rawData.cardNumber.isValidCardNumber {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
                 }
 
                 // Invalid expiry error
@@ -279,31 +267,21 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid cvv error
                 if rawData.cvv.isEmpty {
-                    let err = PrimerValidationError.invalidCvv(
-                        message: "CVV cannot be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
                 } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                    let err = PrimerValidationError.invalidCvv(
-                        message: "CVV is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
                 }
 
                 // Cardholder name error
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                        errors.append(
+                            PrimerValidationError.invalidCardholderName(
+                                message: "Cardholder name cannot be blank."
+                            )
+                        )
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                        errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
                     }
                 }
 
@@ -333,13 +311,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         var errors: [PrimerValidationError] = []
 
         guard let rawData = data as? PrimerCardData else {
-            let err = PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = handled(primerValidationError: .invalidRawData())
             errors.append(err)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }
@@ -362,9 +335,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             // Unsupported card type error
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 let err = PrimerValidationError.invalidCardType(
-                    message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    message: "Unsupported card type detected: \(cardNetwork.displayName)"
                 )
                 errors.append(err)
             }
@@ -374,19 +345,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         // Invalid card number error
         if rawData.cardNumber.isEmpty {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number can not be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
         } else if !rawData.cardNumber.isValidCardNumber {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         }
 
         do {
@@ -398,34 +359,16 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         if rawData.cvv.isEmpty {
-            let err = PrimerValidationError.invalidCvv(
-                message: "CVV cannot be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
         } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-            let err = PrimerValidationError.invalidCvv(
-                message: "CVV is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
         }
 
         if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if (rawData.cardholderName ?? "").isEmpty {
-                errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
+                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
             } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
+                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
             }
         }
 

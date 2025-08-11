@@ -61,7 +61,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             self.webViewController?.dismiss(animated: true)
             self.didCancel?()
-            awaitUserInputTask?.cancel()
+            self.cancel()
             self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
@@ -435,25 +435,23 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         let pollingModule = PollingModule(url: statusUrl)
 
         awaitUserInputTask = Task {
-            do {
-                try Task.checkCancellation()
+            try Task.checkCancellation()
 
-                let resumeToken = try await pollingModule.start()
-                try Task.checkCancellation()
+            let resumeToken = try await pollingModule.start()
+            try Task.checkCancellation()
 
-                return resumeToken
-            } catch is CancellationError {
-                pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: config.type)))
-                didDismissPaymentMethodUI?()
-                throw handled(primerError: .cancelled(paymentMethodType: config.type))
-            } catch {
-                throw error
-            }
+            return resumeToken
         }
 
-        let resumeToken = try await awaitUserInputTask?.value
-        self.resumeToken = resumeToken
-        awaitUserInputTask = nil
+        do {
+            resumeToken = try await awaitUserInputTask?.value
+        } catch is CancellationError {
+            pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: config.type)))
+            didDismissPaymentMethodUI?()
+            throw handled(primerError: .cancelled(paymentMethodType: config.type))
+        } catch {
+            throw error
+        }
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -555,11 +553,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
 
         return nil
-    }
-
-    override func cancel() {
-        awaitUserInputTask?.cancel()
-        super.cancel()
     }
 
     #if DEBUG
