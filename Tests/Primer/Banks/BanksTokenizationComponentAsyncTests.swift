@@ -318,7 +318,7 @@ final class BanksTokenizationComponentAsyncTests: XCTestCase {
 
 // MARK: - Mock Classes
 
-class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
+final class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
     var onReceiveStep: ((BanksStep) -> Void)?
 
     func didReceiveStep(step: PrimerHeadlessStep) {
@@ -326,7 +326,7 @@ class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
     }
 }
 
-class MockBanksValidationDelegate: PrimerHeadlessValidatableDelegate {
+final class MockBanksValidationDelegate: PrimerHeadlessValidatableDelegate {
     var onDidUpdate: ((PrimerValidationStatus, PrimerCollectableData?) -> Void)?
 
     func didUpdate(validationStatus: PrimerValidationStatus, for data: PrimerCollectableData?) {
