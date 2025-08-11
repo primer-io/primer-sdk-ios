@@ -38,7 +38,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     var paymentCheckoutData: PrimerCheckoutData?
     var didCancel: (() -> Void)?
     var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
-    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData, Error>?
+    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
     var awaitUserInputTask: Task<String, Error>?
     var isCancelled: Bool = false
     var successMessage: String?
@@ -300,36 +300,37 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
-        startPaymentFlowTask = Task {
-            do {
-                try Task.checkCancellation()
-
-                let decodedJWTToken = try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
-                try Task.checkCancellation()
-
-                if let decodedJWTToken {
-                    let resumeToken = try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
-                    try Task.checkCancellation()
-
-                    if let resumeToken {
-                        let checkoutData = try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-                        try Task.checkCancellation()
-
-                        return checkoutData
-                    }
-                }
-
-                return paymentCheckoutData
-            } catch is CancellationError {
-                throw handled(primerError: .cancelled(paymentMethodType: config.type))
-            } catch {
-                throw error
-            }
+        defer {
+            startPaymentFlowTask = nil
         }
 
-        let checkoutData = try await startPaymentFlowTask?.value
-        startPaymentFlowTask = nil
-        return checkoutData
+        startPaymentFlowTask = Task {
+            try Task.checkCancellation()
+
+            let decodedJWTToken = try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+            try Task.checkCancellation()
+
+            if let decodedJWTToken {
+                let resumeToken = try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+                try Task.checkCancellation()
+
+                if let resumeToken {
+                    let checkoutData = try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                    try Task.checkCancellation()
+
+                    return checkoutData
+                }
+            }
+            return paymentCheckoutData
+        }
+
+        do {
+            return try await startPaymentFlowTask?.value
+        } catch is CancellationError {
+            throw handled(primerError: .cancelled(paymentMethodType: config.type))
+        } catch {
+            throw error
+        }
     }
 
     // This function will do one of the two following:
@@ -347,8 +348,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
-
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -1414,7 +1416,11 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        let task = Task {
+        defer {
+            startTokenizationFlowTask = nil
+        }
+
+        startTokenizationFlowTask = Task {
             try Task.checkCancellation()
 
             try await performPreTokenizationSteps()
@@ -1426,18 +1432,16 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             try await performPostTokenizationSteps()
             try Task.checkCancellation()
 
+            return paymentMethodTokenData
+        }
+
+        do {
+            let paymentMethodTokenData = try await startTokenizationFlowTask?.value
             guard let paymentMethodTokenData else {
                 throw PrimerError.invalidValue(key: "paymentMethodTokenData", value: "Payment method token data is not valid")
             }
 
             return paymentMethodTokenData
-        }
-        startTokenizationFlowTask = task
-
-        defer { startTokenizationFlowTask = nil }
-
-        do {
-            return try await task.value
         } catch is CancellationError {
             throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
         } catch {
@@ -1473,26 +1477,35 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 
     func awaitUserInput() async throws {
-        let pollingModule = PollingModule(url: statusUrl)
-        awaitUserInputTask = Task {
-            do {
-                try Task.checkCancellation()
-
-                let resumeToken = try await pollingModule.start()
-                try Task.checkCancellation()
-
-                return resumeToken
-            } catch is CancellationError {
-                throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
-            } catch {
-                throw error
-            }
+        defer {
+            awaitUserInputTask = nil
         }
 
-        resumeToken = try await awaitUserInputTask?.value
-        awaitUserInputTask = nil
+        let pollingModule = PollingModule(url: statusUrl)
+        awaitUserInputTask = Task {
+            try Task.checkCancellation()
+
+            let resumeToken = try await pollingModule.start()
+            try Task.checkCancellation()
+
+            return resumeToken
+        }
+
+        do {
+            try Task.checkCancellation()
+
+            let resumeToken = try await awaitUserInputTask?.value
+            try Task.checkCancellation()
+
+            self.resumeToken = resumeToken
+        } catch is CancellationError {
+            throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
+        } catch {
+            throw error
+        }
     }
 }
+
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length
