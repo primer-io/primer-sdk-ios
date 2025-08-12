@@ -40,7 +40,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3.9"
+          ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0

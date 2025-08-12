@@ -1,5 +1,5 @@
 variables:
-  RUBY_VERSION: 3.3.9
+  RUBY_VERSION: 3.2.2
 
 workflow:
   rules:

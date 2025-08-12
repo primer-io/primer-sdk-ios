@@ -57,7 +57,7 @@ runs:
         ssh-private-key: ${{ inputs.ssh-private-key }}
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.3.9"
+        ruby-version: "3.2"
         bundler-cache: true
     - name: Setup Package.swift
       shell: bash
