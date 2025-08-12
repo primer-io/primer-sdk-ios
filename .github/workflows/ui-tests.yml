@@ -89,7 +89,7 @@ jobs:
 
       - uses: ruby/setup-ruby@2a7b30092b0caf9c046252510f9273b4875f3db9  # v1.254.0
         with:
-          ruby-version: "3.3"
+          ruby-version: "3.3.9"
           bundler-cache: true
 
       - name: Create Firebase Service Credentials file
