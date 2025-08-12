@@ -87,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@2a7b30092b0caf9c046252510f9273b4875f3db9  # v1.254.0
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
           bundler-cache: true
