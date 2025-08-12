@@ -69,37 +69,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
-    private func fetchBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                return seal.reject(handled(primerError: .invalidClientToken()))
-            }
-
-            var paymentMethodRequestValue: String = ""
-            switch self.config.type {
-            case PrimerPaymentMethodType.adyenDotPay.rawValue:
-                paymentMethodRequestValue = "dotpay"
-            case PrimerPaymentMethodType.adyenIDeal.rawValue:
-                paymentMethodRequestValue = "ideal"
-            default:
-                break
-            }
-
-            let request = Request.Body.Adyen.BanksList(
-                paymentMethodConfigId: config.id!,
-                parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
-
-            self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                case .success(let banks):
-                    seal.fulfill(banks.result)
-                }
-            }
-        }
-    }
-
     private func fetchBanks() async throws -> [AdyenBank] {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
@@ -118,84 +87,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
         let banks = try await apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request)
         return banks.result
-    }
-
-    func processPaymentMethodTokenData() {
-        if PrimerInternal.shared.intent == .vault {
-            PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-            DispatchQueue.main.async {
-                self.handleSuccessfulFlow()
-            }
-        } else {
-            self.didStartPayment?()
-            self.didStartPayment = nil
-
-            //            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
-
-            firstly {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
-            }
-            .done { checkoutData in
-                self.didFinishPayment?(nil)
-
-                if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-                }
-                DispatchQueue.main.async {
-                    self.handleSuccessfulFlow()
-                }
-            }
-            .ensure {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
-            .catch { err in
-                self.didFinishPayment?(err)
-                self.nullifyEventCallbacks()
-
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-                if let primerErr = err as? PrimerError,
-                   case .cancelled = primerErr,
-                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                   PrimerInternal.shared.selectedPaymentMethodType == nil,
-                   self.config.implementationType == .webRedirect ||
-                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                    firstly {
-                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    }
-                    .done { _ in
-                        self.uiManager.primerRootViewController?.popToMainScreen(completion: nil)
-                    }
-                    // The above promises will never end up on error.
-                    .catch { _ in }
-
-                } else {
-                    firstly {
-                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    }
-                    .then { () -> Promise<String?> in
-                        var primerErr: PrimerError!
-                        if let error = err as? PrimerError {
-                            primerErr = error
-                        } else {
-                            primerErr = PrimerError.underlyingErrors(errors: [err])
-                        }
-
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
-                                                                               data: self.paymentCheckoutData)
-                    }
-                    .done { merchantErrorMessage in
-                        DispatchQueue.main.async {
-                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                        }
-                    }
-                    // The above promises will never end up on error.
-                    .catch { _ in }
-                }
-            }
-        }
     }
 
     func processPaymentMethodTokenData() async {
@@ -257,48 +148,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) -> Promise<PrimerCheckoutData?> {
-        Promise { seal in
-            var cancelledError: PrimerError?
-
-            self.didCancel = {
-                self.isCancelled = true
-                cancelledError = handled(primerError: .cancelled(paymentMethodType: self.config.type))
-                seal.reject(cancelledError!)
-                self.isCancelled = false
-            }
-
-            firstly {
-                startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
-            }
-            .then { decodedJWTToken -> Promise<String?> in
-                if let cancelledError { throw cancelledError }
-                guard let decodedJWTToken else { return .value(nil) }
-                return self.handleDecodedClientTokenIfNeeded(
-                    decodedJWTToken,
-                    paymentMethodTokenData: paymentMethodTokenData
-                )
-            }
-            .then { resumeToken -> Promise<PrimerCheckoutData?> in
-                if let cancelledError { throw cancelledError }
-                if let resumeToken {
-                    return self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-                } else {
-                    return .value(self.paymentCheckoutData)
-                }
-            }
-            .done { checkoutData in
-                if let cancelledError { throw cancelledError }
-                seal.fulfill(checkoutData)
-            }
-            .catch { err in
-                if cancelledError == nil { seal.reject(err) }
-            }
-        }
-    }
-
-    func startPaymentFlow(
-        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
         defer {
             startPaymentFlowTask = nil
@@ -348,111 +197,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
-    func startPaymentFlowAndFetchDecodedClientToken(
-        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) -> Promise<DecodedJWTToken?> {
-        return Promise { seal in
-            if PrimerSettings.current.paymentHandling == .manual {
-                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
-                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
-                        switch resumeDecisionType {
-                        case .succeed:
-                            seal.fulfill(nil)
-
-                        case .continueWithNewClientToken(let newClientToken):
-                            let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-                            firstly {
-                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                            }
-                            .done {
-                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    throw handled(primerError: .invalidClientToken())
-                                }
-
-                                seal.fulfill(decodedJWTToken)
-                            }
-                            .catch { err in
-                                seal.reject(err)
-                            }
-
-                        case .fail(let message):
-                            let merchantErr: Error
-                            if let message {
-                                merchantErr = PrimerError.merchantError(message: message)
-                            } else {
-                                merchantErr = NSError.emptyDescriptionError
-                            }
-                            seal.reject(merchantErr)
-                        }
-
-                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                        switch resumeDecisionType {
-                        case .continueWithNewClientToken(let newClientToken):
-                            let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-
-                            firstly {
-                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                            }
-                            .done {
-                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    throw handled(primerError: .invalidClientToken())
-                                }
-
-                                seal.fulfill(decodedJWTToken)
-                            }
-                            .catch { err in
-                                seal.reject(err)
-                            }
-
-                        case .complete:
-                            seal.fulfill(nil)
-                        }
-
-                    } else {
-                        precondition(false)
-                    }
-                }
-
-            } else {
-                guard let token = paymentMethodTokenData.token else {
-                    return seal.reject(handled(primerError: .invalidClientToken()))
-                }
-
-                firstly {
-                    self.handleCreatePaymentEvent(token)
-                }
-                .done { paymentResponse -> Void in
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    self.resumePaymentId = paymentResponse.id
-
-                    if let requiredAction = paymentResponse.requiredAction {
-                        let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-                        firstly {
-                            apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
-                        }
-                        .done {
-                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                throw handled(primerError: .invalidClientToken())
-                            }
-
-                            seal.fulfill(decodedJWTToken)
-                        }
-                        .catch { err in
-                            seal.reject(err)
-                        }
-
-                    } else {
-                        seal.fulfill(nil)
-                    }
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            }
-        }
-    }
 
     func startPaymentFlowAndFetchDecodedClientToken(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
@@ -531,54 +275,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    // Create payment with Payment method token
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-        let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-        return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
-    }
-
     private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
         try await createResumePaymentService.createPayment(
             paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)
         )
-    }
-
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
-        return Promise { seal in
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-                if let redirectUrlStr = decodedJWTToken.redirectUrl,
-                   let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
-
-                    DispatchQueue.main.async {
-                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
-                    }
-
-                    self.redirectUrl = redirectUrl
-                    self.statusUrl = statusUrl
-
-                    firstly {
-                        self.presentPaymentMethodUserInterface()
-                    }
-                    .then { () -> Promise<Void> in
-                        return self.awaitUserInput()
-                    }
-                    .done {
-                        seal.fulfill(self.resumeToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                } else {
-                    seal.reject(handled(primerError: .invalidClientToken()))
-                }
-            } else {
-                seal.fulfill(nil)
-            }
-        }
     }
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -603,72 +303,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
         return resumeToken
-    }
-
-    func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async { [unowned self] in
-                self.webViewController = SFSafariViewController(url: self.redirectUrl)
-                self.webViewController?.delegate = self
-
-                self.willPresentPaymentMethodUI?()
-
-                self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
-                self.redirectUrlComponents?.query = nil
-
-                let presentEvent = Analytics.Event.ui(
-                    action: .present,
-                    context: Analytics.Event.Property.Context(
-                        paymentMethodType: self.config.type,
-                        url: self.redirectUrlComponents?.url?.absoluteString),
-                    extra: nil,
-                    objectType: .button,
-                    objectId: nil,
-                    objectClass: "\(Self.self)",
-                    place: .webview
-                )
-
-                self.redirectUrlRequestId = UUID().uuidString
-
-                let networkEvent = Analytics.Event.networkCall(
-                    callType: .requestStart,
-                    id: self.redirectUrlRequestId!,
-                    url: self.redirectUrlComponents?.url?.absoluteString ?? "",
-                    method: .get,
-                    errorBody: nil,
-                    responseCode: nil
-                )
-
-                Analytics.Service.record(events: [presentEvent, networkEvent])
-                if uiManager.primerRootViewController == nil {
-                    firstly {
-                        uiManager.prepareRootViewController()
-                    }
-                    .done {
-                        self.uiManager.primerRootViewController?.present(
-                            self.webViewController!,
-                            animated: true,
-                            completion: {
-                                DispatchQueue.main.async {
-                                    self.handleWebViewControlllerPresentedCompletion()
-                                    seal.fulfill()
-                                }
-                            }
-                        )
-                    }
-                    .catch { _ in }
-                } else {
-                    uiManager.primerRootViewController?.present(self.webViewController!,
-                                                                animated: true,
-                                                                completion: {
-                                                                    DispatchQueue.main.async {
-                                                                        self.handleWebViewControlllerPresentedCompletion()
-                                                                        seal.fulfill()
-                                                                    }
-                                                                })
-                }
-            }
-        }
     }
 
     @MainActor
@@ -740,67 +374,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
-        return Promise { seal in
-            if PrimerSettings.current.paymentHandling == .manual {
-                PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
-                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
-                        switch resumeDecisionType {
-                        case .fail(let message):
-                            let merchantErr: Error
-                            if let message {
-                                merchantErr = PrimerError.merchantError(message: message)
-                            } else {
-                                merchantErr = NSError.emptyDescriptionError
-                            }
-                            seal.reject(merchantErr)
-
-                        case .succeed:
-                            seal.fulfill(nil)
-
-                        case .continueWithNewClientToken:
-                            seal.fulfill(nil)
-                        }
-
-                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                        switch resumeDecisionType {
-                        case .continueWithNewClientToken:
-                            seal.fulfill(nil)
-                        case .complete:
-                            seal.fulfill(nil)
-                        }
-
-                    } else {
-                        precondition(false)
-                    }
-                }
-
-            } else {
-                guard let resumePaymentId = self.resumePaymentId else {
-                    return seal.reject(
-                        handled(
-                            primerError: .invalidValue(
-                                key: "resumePaymentId",
-                                value: "Resume Payment ID not valid"
-                            )
-                        )
-                    )
-                }
-
-                firstly {
-                    self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
-                }
-                .done { paymentResponse -> Void in
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    seal.fulfill(self.paymentCheckoutData)
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            }
-        }
-    }
-
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
         if PrimerSettings.current.paymentHandling == .manual {
             try await handleManualResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
@@ -852,49 +425,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                                             withMessage: errorMessage)
     }
 
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethodTokenData = paymentMethodTokenData {
-                    seal.fulfill(paymentMethodTokenData)
-                } else {
-                    assert(true, "Should always receive a payment method or an error")
-                }
-            }
-        }
-    }
-
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let selectedBank else {
             throw PrimerError.invalidValue(key: "selectedBank", value: "Selected bank is nil")
         }
 
         return try await tokenize(bank: selectedBank)
-    }
-
-    private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            return completion(nil, handled(primerError: .invalidClientToken()))
-        }
-
-        let requestBody = Request.Body.Tokenization(
-            paymentInstrument: OffSessionPaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
-                paymentMethodType: config.type,
-                sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
-
-        firstly {
-            tokenizationService.tokenize(requestBody: requestBody)
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            completion(self.paymentMethodTokenData, nil)
-        }
-        .catch { err in
-            completion(nil, err)
-        }
     }
 
     private func tokenize(bank: AdyenBank) async throws -> PrimerPaymentMethodTokenData {
@@ -910,38 +446,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
         paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
         return paymentMethodTokenData!
-    }
-
-    func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .ensure { [unowned self] in
-                DispatchQueue.main.async {
-                    self.willDismissPaymentMethodUI?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissPaymentMethodUI?()
-                    })
-                }
-                self.selectedBank = nil
-                self.webViewController = nil
-                self.webViewCompletion = nil
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
     }
 
     func performTokenizationStep() async throws {
@@ -962,12 +466,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
-    func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-
     func performPostTokenizationSteps() async throws {
         // Empty implementation
     }
@@ -975,14 +473,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     private func nullifyEventCallbacks() {
         didStartPayment = nil
         didFinishPayment = nil
-    }
-
-    // Resume payment with Resume payment ID
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-        let createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType.rawValue)
-        let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-        return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                     paymentResumeRequest: resumeRequest)
     }
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
@@ -995,38 +485,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 }
 
 extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
-    func validateReturningPromise() -> Promise<Void> {
-        return Promise { seal in
-            do {
-                try self.validate()
-                seal.fulfill()
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-
     func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             throw handled(primerError: .invalidClientToken())
-        }
-    }
-
-    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then {
-                self.fetchBanks()
-            }
-            .done { banks in
-                self.banks = banks
-                seal.fulfill(banks)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
         }
     }
 
@@ -1047,28 +508,11 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
         }
     }
 
-    func tokenize(bankId: String) -> Promise<Void> {
-        self.selectedBank = banks.first(where: { $0.id == bankId })
-        return performTokenizationStep()
-            .then { () -> Promise<Void> in
-                return self.performPostTokenizationSteps()
-            }
-            .then { () -> Promise<Void> in
-                return self.handlePaymentMethodTokenData()
-            }
-    }
-
     func tokenize(bankId: String) async throws {
         selectedBank = banks.first(where: { $0.id == bankId })
         try await performTokenizationStep()
         try await performPostTokenizationSteps()
         try await handlePaymentMethodTokenData()
-    }
-
-    func handlePaymentMethodTokenData() -> Promise<Void> {
-        return Promise { _ in
-            processPaymentMethodTokenData()
-        }
     }
 
     func handlePaymentMethodTokenData() async throws {
@@ -1196,54 +640,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
-    func performPreTokenizationSteps() -> Promise<Void> {
-        if !PrimerInternal.isInHeadlessMode {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
-        }
-
-        let event = Analytics.Event.ui(
-            action: .click,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: self.config.type,
-                url: nil),
-            extra: nil,
-            objectType: .button,
-            objectId: .select,
-            objectClass: "\(Self.self)",
-            place: .bankSelectionList
-        )
-        Analytics.Service.record(event: event)
-
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then {
-                self.fetchBanks()
-            }
-            .then { banks -> Promise<Void> in
-                self.banks = banks
-                return self.awaitBankSelection()
-            }
-            .then { () -> Promise<Void> in
-                self.bankSelectionCompletion = nil
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
-            .done {
-                seal.fulfill()
-            }
-            .ensure { [unowned self] in
-                self.closePaymentMethodUI()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     func performPreTokenizationSteps() async throws {
         if !PrimerInternal.isInHeadlessMode {
             await uiManager.primerRootViewController?.enableUserInteraction(true)
@@ -1272,42 +668,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         try await awaitBankSelection()
         bankSelectionCompletion = nil
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
-    }
-
-    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
-        return Promise { seal in
-            if PrimerInternal.shared.intent == .vault {
-                seal.fulfill()
-            } else {
-                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
-                let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-
-                var decisionHandlerHasBeenCalled = false
-
-                PrimerDelegateProxy.primerWillCreatePaymentWithData(
-                    checkoutPaymentMethodData,
-                    decisionHandler: { paymentCreationDecision in
-                        decisionHandlerHasBeenCalled = true
-                        switch paymentCreationDecision.type {
-                        case .abort(let errorMessage):
-                            seal.reject(PrimerError.merchantError(message: errorMessage ?? ""))
-                        case .continue:
-                            seal.fulfill()
-                        }
-                    })
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                    if !decisionHandlerHasBeenCalled {
-                        let message =
-                            """
-                        The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
-                        hasn't been called. Make sure you call the decision handler otherwise the SDK will hang."
-"""
-                        self?.logger.warn(message: message)
-                    }
-                }
-            }
-        }
     }
 
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
@@ -1340,15 +700,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
-    private func awaitBankSelection() -> Promise<Void> {
-        return Promise { seal in
-            self.bankSelectionCompletion = { bank in
-                self.selectedBank = bank
-                seal.fulfill()
-            }
-        }
-    }
-
     private func awaitBankSelection() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.bankSelectionCompletion = { bank in
@@ -1369,50 +720,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         self.bankSelectionCompletion = nil
         self.webViewController = nil
         self.webViewCompletion = nil
-    }
-
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            var cancelledError: PrimerError?
-            self.didCancel = {
-                self.isCancelled = true
-                cancelledError = handled(primerError: .cancelled(paymentMethodType: self.config.type))
-                seal.reject(cancelledError!)
-                self.isCancelled = false
-            }
-
-            firstly { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-                return self.performPreTokenizationSteps()
-            }
-            .then { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-                return self.performTokenizationStep()
-            }
-            .then { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-                return self.performPostTokenizationSteps()
-            }
-            .done {
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
-                seal.fulfill(self.paymentMethodTokenData!)
-            }
-            .catch { err in
-                if cancelledError == nil {
-                    seal.reject(err)
-                } else {
-                    // Cancelled error has already been thrown
-                }
-            }
-        }
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
@@ -1446,33 +753,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
         } catch {
             throw error
-        }
-    }
-
-    func awaitUserInput() -> Promise<Void> {
-        return Promise { seal in
-            let pollingModule = PollingModule(url: self.statusUrl)
-            self.didCancel = {
-                pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
-                self.didDismissPaymentMethodUI?()
-            }
-
-            firstly { () -> Promise<String> in
-                if self.isCancelled {
-                    throw PrimerError.cancelled(paymentMethodType: self.config.type)
-                }
-                return pollingModule.start()
-            }
-            .done { resumeToken in
-                self.resumeToken = resumeToken
-                seal.fulfill()
-            }
-            .ensure {
-                self.didCancel = nil
-            }
-            .catch { err in
-                seal.reject(err)
-            }
         }
     }
 

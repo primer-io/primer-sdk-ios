@@ -163,7 +163,7 @@ final class BanksTokenizationComponentAsyncTests: XCTestCase {
             }
         }
 
-        defaultBanksComponent.start_async()
+        defaultBanksComponent.start()
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 2.0, enforceOrder: true)
 
@@ -201,7 +201,7 @@ final class BanksTokenizationComponentAsyncTests: XCTestCase {
             expectDidCompleteCheckout.fulfill()
         }
 
-        defaultBanksComponent.submit_async()
+        defaultBanksComponent.submit()
 
         wait(for: [
             expectDidFinishFlow,
@@ -256,7 +256,7 @@ final class BanksTokenizationComponentAsyncTests: XCTestCase {
             }
         }
 
-        defaultBanksComponent.start_async()
+        defaultBanksComponent.start()
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 5.0, enforceOrder: true)
 
@@ -304,7 +304,7 @@ final class BanksTokenizationComponentAsyncTests: XCTestCase {
             expectDidResume.fulfill()
         }
 
-        defaultBanksComponent.submit_async()
+        defaultBanksComponent.submit()
 
         wait(for: [
             expectDidFinishFlow,
