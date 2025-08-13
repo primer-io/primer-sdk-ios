@@ -79,45 +79,27 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
 
     func test_sessionCreation_error() {
-        let error = PrimerError.failedToCreateSession(
-            error: nil,
-            userInfo: [:],
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.failedToCreateSession(error: nil)
 
         sut?.errorDelegate?.didReceiveError(error: error)
         XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_sessionAuthorization_error() {
-        let error = PrimerError.failedToCreatePayment(
-            paymentMethodType: "KLARNA",
-            description: "",
-            userInfo: [:],
-            diagnosticsId: UUID().uuidString
-        )
-
+        let error = PrimerError.failedToCreatePayment(paymentMethodType: "KLARNA", description: "")
         sut?.errorDelegate?.didReceiveError(error: error)
         XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_klarnaAuthorization_error() {
-        let error = PrimerError.klarnaError(
-            message: "PrimerKlarnaWrapperAuthorization failed",
-            userInfo: [:],
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.klarnaError(message: "PrimerKlarnaWrapperAuthorization failed")
 
         sut?.errorDelegate?.didReceiveError(error: error)
         XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_klarnaFinalization_error() {
-        let error = PrimerError.klarnaError(
-            message: "PrimerKlarnaWrapperFinalization failed",
-            userInfo: [:],
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.klarnaError(message: "PrimerKlarnaWrapperFinalization failed")
 
         sut?.errorDelegate?.didReceiveError(error: error)
         XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
@@ -275,10 +257,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = nil
         let finalizeRequired = false
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
 
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
@@ -299,10 +278,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = nil
         let finalizeRequired = false
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
 
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
@@ -323,10 +299,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = UUID().uuidString
         let finalizeRequired = false
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -346,10 +319,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = UUID().uuidString
         let finalizeRequired = false
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -369,10 +339,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = UUID().uuidString
         let finalizeRequired = true
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -392,10 +359,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         let approved = false
         let authToken: String? = UUID().uuidString
         let finalizeRequired = true
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -528,10 +492,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = .headless
         let approved = false
         let authToken: String? = nil
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -550,10 +511,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
         let approved = false
         let authToken: String? = nil
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -572,10 +530,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = .headless
         let approved = false
         let authToken: String? = UUID().uuidString
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -594,10 +549,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
         let approved = false
         let authToken: String? = UUID().uuidString
-        let expectedError = PrimerError.klarnaUserNotApproved(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let expectedError = PrimerError.klarnaUserNotApproved()
         let expectError = expectation(description: "Received klarna-user-not-approved error")
         receiveErrorDecisionHandler = { _ in
             XCTAssertEqual(self.errorResult?.errorId, expectedError.errorId)
@@ -724,21 +676,9 @@ extension PrimerHeadlessKlarnaComponentTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 
     enum StepDelegationType {

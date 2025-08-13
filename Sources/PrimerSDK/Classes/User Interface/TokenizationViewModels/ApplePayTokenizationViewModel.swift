@@ -793,10 +793,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         let orderAmount = AppState.current.amount
                         let descriptor = clientSession.paymentMethod?.descriptor
                         guard let currency = AppState.current.currency else {
-                            let err = PrimerError.invalidValue(key: "Currency",
-                                                               value: nil,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "Currency")
                             ErrorHandler.handle(error: err)
                             throw err
                         }

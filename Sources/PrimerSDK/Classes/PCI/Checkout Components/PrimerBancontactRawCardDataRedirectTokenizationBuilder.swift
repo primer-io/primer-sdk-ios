@@ -76,8 +76,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
                   let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -86,9 +85,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData")
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -113,17 +110,14 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
               let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
+            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "rawData")
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -193,10 +187,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.underlyingErrors(errors: errors)
                     ErrorHandler.handle(error: err)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
@@ -252,11 +243,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.underlyingErrors(errors: errors)
             ErrorHandler.handle(error: err)
 
             notifyDelegateOfValidationResult(isValid: false, errors: errors)

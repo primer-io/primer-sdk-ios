@@ -188,7 +188,6 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
                                               paymentId: "123",
                                               orderId: "OrderId",
                                               status: "FAILED",
-                                              userInfo: nil,
                                               diagnosticsId: "id")
         sut.setCheckoutDataFromError(error)
 
@@ -196,7 +195,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
         XCTAssertEqual(sut.paymentCheckoutData?.payment?.orderId, "OrderId")
         XCTAssertEqual(sut.paymentCheckoutData?.payment?.paymentFailureReason, PrimerPaymentErrorCode.failed)
 
-        let error2 = PrimerError.cancelled(paymentMethodType: "PMT", userInfo: nil, diagnosticsId: "id")
+        let error2 = PrimerError.cancelled(paymentMethodType: "PMT", diagnosticsId: "id")
         XCTAssertNil(error2.checkoutData)
     }
 

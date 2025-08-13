@@ -143,7 +143,7 @@ enum InternalError: PrimerErrorProtocol {
         case .failedToPerform3dsAndShouldBreak(let error):
             return error.primerError
         default:
-            return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
+            return PrimerError.unknown(diagnosticsId: self.diagnosticsId)
         }
     }
 

@@ -647,11 +647,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func awaitUserInput() async throws {
         let pollingModule = PollingModule(url: statusUrl)
         didCancel = {
-            let err = PrimerError.cancelled(
-                paymentMethodType: self.config.type,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.cancelled(paymentMethodType: self.config.type)
             ErrorHandler.handle(error: err)
             pollingModule.cancel(withError: err)
         }

@@ -174,7 +174,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     var warningStr = "\(viewModel.config.type) configuration has been found, but it cannot be presented."
 
                     if let primerErr = error as? PrimerError {
-                        if case .underlyingErrors(let errors, _, _) = primerErr {
+                        if case .underlyingErrors(let errors, _) = primerErr {
                             for err in errors {
                                 if let primerErr = err as? PrimerError {
                                     var errLine: String = ""

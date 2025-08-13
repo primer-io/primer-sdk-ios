@@ -15,7 +15,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
             completion(.success(result))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -23,7 +23,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
             return result
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 
@@ -32,7 +32,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
             onDeleteVaultedPaymentMethods(clientToken, id)
             completion(.success(()))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -40,7 +40,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

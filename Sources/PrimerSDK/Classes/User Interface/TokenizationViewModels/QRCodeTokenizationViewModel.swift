@@ -6,6 +6,7 @@
 
 // swiftlint:disable function_body_length
 // swiftlint:disable file_length
+// swiftlint:disable orphaned_doc_comment
 
 import SafariServices
 import UIKit
@@ -337,8 +338,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 logger.warn(message: logMessage)
 
                 let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                let dictionary: Dictionary = .errorUserInfoDictionary(additionalInfo: ["message": message])
-                seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type, userInfo: dictionary)))
+                seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type, reason: message)))
             }
 
             /// We don't want to put a lot of conditions for already unhandled payment methods
@@ -416,10 +416,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             logger.warn(message: logMessage)
 
             let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-            throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type,
-                                                                     userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                         "message": message
-                                                                     ])))
+            throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: config.type, reason: message))
         }
 
         /// We don't want to put a lot of conditions for already unhandled payment methods
@@ -474,3 +471,4 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
 
 // swiftlint:enable function_body_length
 // swiftlint:enable file_length
+// swiftlint:enable orphaned_doc_comment

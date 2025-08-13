@@ -54,7 +54,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectDidFail = self.expectation(description: "onDidFail called")
         delegate.onDidFail = { error in
             switch error {
-            case PrimerError.cancelled(let paymentMethodType, _, _):
+            case PrimerError.cancelled(let paymentMethodType, _):
                 XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
             default:
                 XCTFail()

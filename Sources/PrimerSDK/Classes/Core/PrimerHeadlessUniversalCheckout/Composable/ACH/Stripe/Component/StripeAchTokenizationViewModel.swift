@@ -615,10 +615,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 logger.warn(message: logMessage)
 
                 let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                return seal.reject(PrimerError.unableToPresentPaymentMethod(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(additionalInfo: ["message": message])
-                ))
+                return seal.reject(PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.config.type, reason: message))
             }
 
             var additionalInfo: ACHAdditionalInfo
@@ -648,8 +645,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             """)
 
             let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-            throw PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type,
-                                                           userInfo: .errorUserInfoDictionary(additionalInfo: ["message": message]))
+            throw PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type, reason: message)
         }
 
         let additionalInfo: ACHAdditionalInfo
@@ -775,7 +771,6 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
             let primerError = handled(primerError: .stripeError(
                 key: error.errorId,
                 message: error.errorDescription,
-                userInfo: error.userInfo,
                 diagnosticsId: error.diagnosticsId
             ))
             stripeBankAccountCollectorCompletion?(.failure(primerError))

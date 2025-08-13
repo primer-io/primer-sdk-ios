@@ -98,13 +98,13 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
                 XCTFail("Expected failure but got success: \(validationStatus), \(countryCode ?? ""), \(mobileNumber ?? "")")
             case .failure(let error):
                 switch error {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Expected PrimerError but got \(error)")
                         return
                     }
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Expected PrimerError.nolError but got \(firstPrimerError)")

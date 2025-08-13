@@ -238,9 +238,7 @@ extension PaymentMethodTokenizationViewModel {
             guard let paymentMethodTokenData else {
                 throw PrimerError.invalidValue(
                     key: "paymentMethodTokenData",
-                    value: "Payment method token data is not valid",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    value: "Payment method token data is not valid"
                 )
             }
             let checkoutData = try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -846,7 +844,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
-        case .paymentFailed(_, let paymentId, let orderId, _, _, _):
+        case .paymentFailed(_, let paymentId, let orderId, _, _):
             return PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
                                                    orderId: orderId,

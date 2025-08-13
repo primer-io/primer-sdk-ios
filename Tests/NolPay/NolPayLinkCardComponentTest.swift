@@ -329,7 +329,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -356,7 +356,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _, _):
+        case .nolError(let code, let message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Sending of OTP SMS failed from unknown reason")
         default:
@@ -466,7 +466,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -492,7 +492,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _, _):
+        case .nolError(let code, let message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Linking of the card failed failed from unknown reason")
         default:
@@ -554,7 +554,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -580,7 +580,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
