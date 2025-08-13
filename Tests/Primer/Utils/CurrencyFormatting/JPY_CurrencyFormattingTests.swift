@@ -100,7 +100,7 @@ class JPY_CurrencyFormattingTests: XCTestCase {
             "fr_CA": "2 560JP¥", // French (Canada) // There is a special character in this string. U+00A0 (NO-BREAK SPACE)
             "fr_FR": "2 560JP¥", // French (France) // There is a special character in this string. U+202F (NARROW NO-BREAK SPACE)
             "hi_IN": "JP¥2,560", // Hindi (India)
-            "it_IT": "2.560JP¥", // Italian (Italy)
+            "it_IT": "2560JP¥", // Italian (Italy)
             "ja_JP": "JP¥2,560", // Japanese (Japan)
             "ko_KR": "JP¥2,560", // Korean (South Korea)
             "nl_NL": "JP¥2.560", // Dutch (Netherlands)
