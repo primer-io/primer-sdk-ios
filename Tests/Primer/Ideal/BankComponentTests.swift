@@ -67,7 +67,7 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         XCTAssertNil(bankComponent.bankId)
-        bankComponent.start()
+
         let banksRetrievedExpectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
@@ -76,6 +76,9 @@ final class BankComponentTests: XCTestCase {
             bankComponent.submit()
             banksRetrievedExpectation.fulfill()
         }
+
+        bankComponent.start()
+
         waitForExpectations(timeout: self.expectationTimeout)
         XCTAssertNotNil(webRedirectComponent)
     }
@@ -86,7 +89,7 @@ final class BankComponentTests: XCTestCase {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = mockSteppableDelegate
-        bankComponent.start()
+
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { banks in
             XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
@@ -94,6 +97,9 @@ final class BankComponentTests: XCTestCase {
             XCTAssertEqual(self.mockSteppableDelegate.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { IssuingBank(bank: $0) })])
             expectation.fulfill()
         }
+
+        bankComponent.start()
+
         waitForExpectations(timeout: self.expectationTimeout)
     }
 
@@ -161,15 +167,17 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start()
+
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { _ in
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "0"))
             XCTAssertEqual(self.validationStatuses, ["validating", "valid"])
             XCTAssertTrue(self.validationErrors.isEmpty)
             expectation.fulfill()
-
         }
+
+        bankComponent.start()
+
         waitForExpectations(timeout: self.expectationTimeout)
     }
 
@@ -180,7 +188,7 @@ final class BankComponentTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start()
+
         let expectation = expectation(description: "banks_retrieved")
         mockSteppableDelegate.onReceiveBanks = { _ in
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_bank_id"))
@@ -188,8 +196,10 @@ final class BankComponentTests: XCTestCase {
             XCTAssertEqual(self.validationErrors, ["Please provide a valid bank id"])
             expectation.fulfill()
         }
-        waitForExpectations(timeout: self.expectationTimeout)
 
+        bankComponent.start()
+
+        waitForExpectations(timeout: self.expectationTimeout)
     }
 }
 
