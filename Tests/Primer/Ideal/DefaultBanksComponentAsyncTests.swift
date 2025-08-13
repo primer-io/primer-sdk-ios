@@ -73,13 +73,14 @@ final class DefaultBanksComponentAsyncTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         XCTAssertNil(bankComponent.bankId)
-        bankComponent.start_async()
+        bankComponent.start()
+        
         let expectDidRetrieveBanks = expectation(description: "Banks retrieved successfully")
         mockSteppableDelegate.onReceiveBanks = { banks in
             XCTAssertEqual(banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
             XCTAssertEqual(bankComponent.bankId, bankId)
-            bankComponent.submit_async()
+            bankComponent.submit()
             expectDidRetrieveBanks.fulfill()
         }
         wait(for: [
@@ -98,7 +99,8 @@ final class DefaultBanksComponentAsyncTests: XCTestCase {
         bankComponent.stepDelegate = mockSteppableDelegate
 
         // When: Starting the component asynchronously
-        bankComponent.start_async()
+        bankComponent.start()
+        
         let expectDidRetrieveBanks = expectation(description: "Banks retrieved successfully")
         mockSteppableDelegate.onReceiveBanks = { banks in
             // Then: Banks should be retrieved with correct data and steps
@@ -141,7 +143,7 @@ final class DefaultBanksComponentAsyncTests: XCTestCase {
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: "filter_query"))
         }
 
-        bankComponent.start_async()
+        bankComponent.start()
 
         waitForExpectations(timeout: expectationTimeout)
     }
@@ -183,7 +185,7 @@ final class DefaultBanksComponentAsyncTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start_async()
+        bankComponent.start()
 
         let expectDidRetrieveBanks = expectation(description: "Banks retrieved successfully")
         mockSteppableDelegate.onReceiveBanks = { _ in
@@ -206,7 +208,7 @@ final class DefaultBanksComponentAsyncTests: XCTestCase {
         }
         bankComponent.stepDelegate = mockSteppableDelegate
         bankComponent.validationDelegate = self
-        bankComponent.start_async()
+        bankComponent.start()
 
         let expectDidRetrieveBanks = expectation(description: "Banks retrieved successfully")
         mockSteppableDelegate.onReceiveBanks = { _ in

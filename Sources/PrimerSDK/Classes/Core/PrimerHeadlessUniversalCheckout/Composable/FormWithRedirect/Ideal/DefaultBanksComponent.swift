@@ -70,20 +70,6 @@ final class DefaultBanksComponent: BanksComponent {
     public func start() {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
-        tokenizationProvidingModel.retrieveListOfBanks()
-            .done { banks -> Void in
-                self.banks = banks.map(IssuingBank.init)
-                let step = BanksStep.banksRetrieved(banks: self.banks)
-                self.nextDataStep = step
-                self.stepDelegate?.didReceiveStep(step: step)
-            }.catch { error in
-                ErrorHandler.handle(error: error)
-            }
-    }
-
-    public func start_async() {
-        trackStart()
-        stepDelegate?.didReceiveStep(step: BanksStep.loading)
         Task {
             do {
                 let banks = try await tokenizationProvidingModel.retrieveListOfBanks()
@@ -98,23 +84,6 @@ final class DefaultBanksComponent: BanksComponent {
     }
 
     public func submit() {
-        trackSubmit()
-        switch nextDataStep {
-        case .loading: break
-        case .banksRetrieved:
-            guard let bankId else { return }
-            let redirectComponent = onFinished()
-            redirectComponent.start()
-            tokenizationProvidingModel.tokenize(bankId: bankId)
-                .done { _ in
-                    redirectComponent.didReceiveStep(step: WebStep.loaded)
-                }.catch { error in
-                    ErrorHandler.handle(error: error)
-                }
-        }
-    }
-
-    public func submit_async() {
         trackSubmit()
         switch nextDataStep {
         case .loading: break
