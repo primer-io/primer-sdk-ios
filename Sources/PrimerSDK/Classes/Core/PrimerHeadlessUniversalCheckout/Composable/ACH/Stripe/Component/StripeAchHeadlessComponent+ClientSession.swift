@@ -16,27 +16,21 @@ extension StripeAchHeadlessComponent {
      * handles potential errors silently.
      */
     func getClientSessionUserDetails() {
-        firstly {
-            clientSessionService.getClientSessionUserDetails()
-        }
-        .done { stripeAchUserDetails in
-            self.clientSessionUserDetails = stripeAchUserDetails
-            self.updateAndValidateSessionUserDetails()
-            let step = ACHUserDetailsStep.retrievedUserDetails(stripeAchUserDetails)
-            self.stepDelegate?.didReceiveStep(step: step)
-        }
-        .catch { _ in }
+        let stripeAchUserDetails = clientSessionService.getClientSessionUserDetails()
+        clientSessionUserDetails = stripeAchUserDetails
+        updateAndValidateSessionUserDetails()
+        let step = ACHUserDetailsStep.retrievedUserDetails(stripeAchUserDetails)
+        stepDelegate?.didReceiveStep(step: step)
     }
 
     func setClientSessionActions() {
-        firstly {
-            let paymentMethodType = self.tokenizationViewModel.config.type
-            let actionsRequest = self.clientSessionService.prepareClientSessionActionsRequestBody(paymentMethodType: paymentMethodType)
-            return clientSessionService.patchClientSession(with: actionsRequest)
-        }
-        .done {}
-        .catch { error in
-            self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
+        Task {
+            do {
+                let actionsRequest = clientSessionService.prepareClientSessionActionsRequestBody(paymentMethodType: tokenizationViewModel.config.type)
+                try await clientSessionService.patchClientSession(with: actionsRequest)
+            } catch {
+                self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
+            }
         }
     }
 
@@ -89,17 +83,16 @@ extension StripeAchHeadlessComponent {
      */
     private func patchClientSession(actions: [ClientSession.Action]) {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(
-            actions: ClientSessionAction(
-                actions: actions))
+            actions: ClientSessionAction(actions: actions)
+        )
 
-        firstly {
-            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
-        }
-        .done { _ in
-            self.startVMTokenization()
-        }
-        .catch { error in
-            self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
+        Task {
+            do {
+                try await clientSessionService.patchClientSession(with: clientSessionActionsRequest)
+                startVMTokenization()
+            } catch {
+                self.errorDelegate?.didReceiveError(error: PrimerError.failedToCreateSession(error: error))
+            }
         }
     }
 
