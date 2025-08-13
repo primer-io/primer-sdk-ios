@@ -20,7 +20,7 @@ spm_app_xcode_proj = "Debug App/Primer.io Debug App SPM.xcodeproj"
 
 info_plist_path = "Debug App/Info.plist"
 
-default_sim_version = "18.2"
+default_sim_version = "18.3"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
