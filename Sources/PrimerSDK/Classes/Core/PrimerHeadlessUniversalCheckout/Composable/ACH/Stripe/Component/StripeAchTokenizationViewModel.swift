@@ -104,16 +104,16 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         guard let intent = decodedJWTToken.intent, intent.contains("STRIPE_ACH") else {
             throw handled(primerError: .invalidClientToken())
         }
-        
+
         guard
             let clientSecret = decodedJWTToken.stripeClientSecret,
             let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
             let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
             throw handled(primerError: .invalidClientToken())
         }
-        
+
         self.clientSecret = clientSecret
-        
+
         await PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         try await presentPaymentMethodUserInterface()
         try await awaitUserInput()
