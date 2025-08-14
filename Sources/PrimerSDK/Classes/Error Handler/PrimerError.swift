@@ -43,6 +43,15 @@ func handled(
 }
 
 func handled(
+    internalError: InternalError,
+    file: String = #file,
+    line: Int = #line,
+    function: String = #function
+) -> InternalError {
+    handled(error: internalError, file: file, line: line, function: function)
+}
+
+func handled(
     primerValidationError: PrimerValidationError,
     file: String = #file,
     line: Int = #line,

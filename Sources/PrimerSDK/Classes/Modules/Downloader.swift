@@ -102,11 +102,7 @@ final class Downloader: NSObject, DownloaderModule {
                 }
 
                 if !errors.isEmpty, errors.count == responses.count {
-                    let err = InternalError.underlyingErrors(errors: errors,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(internalError: .underlyingErrors(errors: errors))
                 } else {
                     seal.fulfill(files)
                 }
@@ -142,23 +138,11 @@ final class Downloader: NSObject, DownloaderModule {
     func download(file: File) -> Promise<File> {
         return Promise { seal in
             guard let fileRemoteUrl = file.remoteUrl else {
-                let err = InternalError.invalidValue(key: "remoteUrl",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(internalError: .invalidValue(key: "remoteUrl")))
             }
 
             guard let fileLocalUrl = file.localUrl else {
-                let err = InternalError.invalidValue(key: "localUrl",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(internalError: .invalidValue(key: "localUrl")))
             }
 
             firstly {
@@ -188,21 +172,11 @@ final class Downloader: NSObject, DownloaderModule {
 
     func download(file: File) async throws -> File {
         guard let fileRemoteUrl = file.remoteUrl else {
-            let err = InternalError.invalidValue(key: "remoteUrl",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(internalError: .invalidValue(key: "remoteUrl"))
         }
 
         guard let fileLocalUrl = file.localUrl else {
-            let err = InternalError.invalidValue(key: "localUrl",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(internalError: .invalidValue(key: "localUrl"))
         }
 
         do {
@@ -264,13 +238,7 @@ final class Downloader: NSObject, DownloaderModule {
                 } else if let response = response,
                           let tempLocalUrl = tempLocalUrl {
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
-                        let err = InternalError.invalidValue(key: "URL status code",
-                                                             value: nil,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
+                        return seal.reject(handled(internalError: .invalidValue(key: "URL status code")))
                     }
 
                     let validStatusCodeRange = 200..<300
@@ -291,21 +259,13 @@ final class Downloader: NSObject, DownloaderModule {
                             seal.reject(primerErr)
                         }
                     } else {
-                        let err = InternalError.serverError(status: statusCode,
-                                                            response: nil,
-                                                            userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
+                        return seal.reject(handled(internalError: .serverError(status: statusCode)))
+
                     }
 
                 } else {
-                    let err = InternalError.invalidValue(key: "Failed to receive both error and response",
-                                                         value: nil,
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                    let err = handled(internalError: .invalidValue(key: "Failed to receive both error and response"))
                     precondition(true, err.localizedDescription)
-                    ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
             }
@@ -342,27 +302,13 @@ final class Downloader: NSObject, DownloaderModule {
         do {
             let (tempLocalUrl, response) = try await executeDownloadTask(for: request, on: session)
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
-                let err = InternalError.invalidValue(
-                    key: "URL status code",
-                    value: nil,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(internalError: .invalidValue(key: "URL status code"))
             }
 
             let validStatusCodeRange = 200 ..< 300
 
             guard validStatusCodeRange.contains(statusCode) else {
-                let err = InternalError.serverError(
-                    status: statusCode,
-                    response: nil,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(internalError: .serverError(status: statusCode))
             }
 
             FileManager.default.delegate = self
@@ -390,12 +336,7 @@ final class Downloader: NSObject, DownloaderModule {
                     } else if let tempLocalUrl, let response {
                         continuation.resume(returning: (tempLocalUrl, response))
                     } else {
-                        let err = InternalError.invalidValue(
-                            key: "Failed to receive both error and response",
-                            value: nil,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
+                        let err = InternalError.invalidValue(key: "Failed to receive both error and response")
                         precondition(true, err.localizedDescription)
                         continuation.resume(throwing: err)
                     }
