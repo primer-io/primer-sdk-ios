@@ -86,7 +86,7 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail("Expected serverError, but decoding succeeded")
         } catch let error as InternalError {
             switch error {
-            case .serverError(let status, let response, _, _):
+            case .serverError(let status, let response, _):
                 XCTAssertEqual(status, 202)
                 XCTAssertEqual(response?.errorId, "error-id")
                 XCTAssertEqual(response?.description, "a description")
