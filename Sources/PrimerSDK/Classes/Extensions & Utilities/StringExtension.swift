@@ -234,15 +234,15 @@ internal extension String {
                 expiryDate = longFormatter.date(from: self)
             }
 
-            if let expiryDate = expiryDate {
-                if !expiryDate.isValidExpiryDate {
-                    throw PrimerValidationError.invalidExpiryDate(
-                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past."
-                    )
-                }
-            } else {
+            guard let expiryDate, expiryDate.yearComponentAsString.normalizedFourDigitYear() != nil else {
                 throw PrimerValidationError.invalidExpiryDate(
                     message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
+            }
+
+            if !expiryDate.isValidExpiryDate {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Expiry date should not be less than a year in the past."
                 )
             }
         }
