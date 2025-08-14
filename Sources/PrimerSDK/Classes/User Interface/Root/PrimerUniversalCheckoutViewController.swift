@@ -19,7 +19,9 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    // Don't show NOL in Drop-In quick hacky fix
+    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ !($0 is NolPayTokenizationViewModel) })
+
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
