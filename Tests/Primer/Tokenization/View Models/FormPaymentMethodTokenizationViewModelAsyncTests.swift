@@ -203,9 +203,8 @@ final class FormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase {
 }
 
 private final class MockInput: Input {
-    var mockText: String?
-
     override var text: String? { mockText }
+    private var mockText: String?
 
     init(name: String, text: String) {
         super.init()
