@@ -1,3 +1,43 @@
+## 2.39.2 (2025-08-14)
+
+### Fix
+
+- Fix issue where invalid expiry year was valid (#1291)
+- Add Xcode 16.3.0 selection to pod lint workflow (#1290)
+- Add missing start_async methods to tokenization view models (#1280)
+- Handle async cancellation properly in payment tokenization flow (#1274)
+- Fix pending promise deallocated error (#1279)
+- Use computed var for UUID (#1270)
+- Split PrimerRawCardDataManagerTests into focused test files (#1264)
+
+### Refactor
+
+- Remove PromiseKit functions from BanksTokenizationComponent (#1284)
+- Clean up PrimerError (#1277)
+- Remove PromiseKit method signatures from PaymentMethodTokenizationModelProtocol (#1281)
+- Improve async task cancellation handling in BanksTokenizationComponent (#1275)
+- Log caller info in handled usage (#1278)
+- Clean up PrimerValidationError (#1273)
+- Migrate KlarnaTokenizationViewModel and related files (#1231)
+- Remove unused info from ErrorContainer (#1272)
+- Remove unused `info` from errors (#1271)
+- Remove unused `info`
+- Reduce complexity of `startPaymentFlow` (#1269)
+- Standardise headers (#1268)
+- Improvements on CheckoutWithVaultedPaymentMethodViewModelTests
+- Migrate CheckoutWithVaultedPaymentMethodViewModel
+- Complete BankSelectorTokenizationViewModel async migration
+- Migrate BankSelectorTokenizationViewModel and related files
+- Improve errors in UserInterface (#1266)
+- Migrate NolPayTokenizationViewModel
+- Migrate QRCodeTokenizationViewModel
+- Improve errors in TokenizationViewModels (#1262)
+- Migrate PrimerTestPaymentMethodTokenizationViewModel (#1233)
+- Migrate IPay88TokenizationViewModel (#1230)
+- Migrate WebRedirectPaymentMethodTokenizationViewModel (#1260)
+- Migrate PayPalTokenizationViewModel and related files (#1250)
+- Migrate ApplePayTokenizationViewModel and related files (#1228)
+
 ## 2.39.1 (2025-07-23)
 
 ### Fix
