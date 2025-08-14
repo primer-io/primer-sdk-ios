@@ -391,13 +391,11 @@ extension FormPaymentMethodTokenizationViewModel {
         if shouldCompletePaymentExternally {
             await uiManager.primerRootViewController?.enableUserInteraction(true)
 
-            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
                   .first(where: { $0.key == paymentMethodType })?
                   .value
-            else {
-                return
-            }
+            else { return }
 
             let infoView = makePaymentPendingInfoView(message: message)
             let paymentPendingInfoView = await PrimerPaymentPendingInfoViewController(
@@ -405,60 +403,63 @@ extension FormPaymentMethodTokenizationViewModel {
                 infoView: infoView
             )
             await uiManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
-            return
-        }
-
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
-           inputPaymentMethodTypes.contains(paymentMethodType) {
-            return try await presentInputViewController()
-        }
-
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
-           voucherPaymentMethodTypes.contains(paymentMethodType) {
-            return await presentVoucherInfoConfirmationStepViewController()
+        } else if let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) {
+            if inputPaymentMethodTypes.contains(paymentMethodType) {
+                return try await presentInputViewController()
+            } else if voucherPaymentMethodTypes.contains(paymentMethodType) {
+                return await presentVoucherInfoConfirmationStepViewController()
+            }
         }
     }
 
     func presentVoucherInfoConfirmationStepViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
-                                                               formPaymentMethodTokenizationViewModel: self)
+            let accountInfoViewController = PrimerAccountInfoPaymentViewController(
+                navigationBarLogo: uiModule.navigationBarLogo,
+                formPaymentMethodTokenizationViewModel: self
+            )
             infoView = voucherConfirmationInfoView
-            self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+            self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
             seal.fulfill()
         }
     }
 
     func presentVoucherInfoConfirmationStepViewController() async {
-        let pcfvc = await PrimerAccountInfoPaymentViewController(
+        let accountInfoViewController = await PrimerAccountInfoPaymentViewController(
             navigationBarLogo: uiModule.navigationBarLogo,
             formPaymentMethodTokenizationViewModel: self
         )
         infoView = voucherConfirmationInfoView
-        await uiManager.primerRootViewController?.show(viewController: pcfvc)
+        await uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
     }
 
     func presentVoucherInfoViewController() {
         let voucherText = VoucherValue.sharableVoucherValuesText
-        let pcfvc = PrimerVoucherInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
-                                                           formPaymentMethodTokenizationViewModel: self,
-                                                           shouldShareVoucherInfoWithText: voucherText)
+        let voucherInfoViewController = PrimerVoucherInfoPaymentViewController(
+            navigationBarLogo: uiModule.navigationBarLogo,
+            formPaymentMethodTokenizationViewModel: self,
+            shouldShareVoucherInfoWithText: voucherText
+        )
         infoView = voucherInfoView
-        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+        self.uiManager.primerRootViewController?.show(viewController: voucherInfoViewController)
     }
 
     func presentAccountInfoViewController() {
-        let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
-                                                           formPaymentMethodTokenizationViewModel: self)
+        let accountInfoViewController = PrimerAccountInfoPaymentViewController(
+            navigationBarLogo: uiModule.navigationBarLogo,
+            formPaymentMethodTokenizationViewModel: self
+        )
         infoView = makeAccountInfoPaymentView()
-        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+        self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
     }
 
     func presentInputViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo,
-                                                  formPaymentMethodTokenizationViewModel: self,
-                                                  inputsDistribution: .horizontal)
+            let inputViewController = PrimerInputViewController(
+                navigationBarLogo: uiModule.navigationBarLogo,
+                formPaymentMethodTokenizationViewModel: self,
+                inputsDistribution: .horizontal
+            )
 
             let newInputs = makeInputViews()
 
@@ -467,26 +468,23 @@ extension FormPaymentMethodTokenizationViewModel {
                 self.inputs.append(newInput)
             }
 
-            self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+            self.uiManager.primerRootViewController?.show(viewController: inputViewController)
             seal.fulfill()
         }
     }
 
     func presentInputViewController() async throws {
-        let pcfvc = await PrimerInputViewController(
+        let inputViewController = await PrimerInputViewController(
             navigationBarLogo: uiModule.navigationBarLogo,
             formPaymentMethodTokenizationViewModel: self,
             inputsDistribution: .horizontal
         )
 
-        let newInputs = makeInputViews()
-
-        // Append only inputs that are not already in the array
-        for newInput in newInputs where !self.inputs.contains(where: { $0 === newInput }) { // Use reference comparison
+        for newInput in makeInputViews() where !inputs.contains(where: { $0 === newInput }) { // Use reference comparison
             inputs.append(newInput)
         }
 
-        await uiManager.primerRootViewController?.show(viewController: pcfvc)
+        await uiManager.primerRootViewController?.show(viewController: inputViewController)
     }
 }
 

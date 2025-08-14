@@ -1020,7 +1020,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let configId = config.id else {
-            throw handled(primerError: .invalidValue(key: "configuration.id", value: config.id))
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
         }
 
         switch config.type {
