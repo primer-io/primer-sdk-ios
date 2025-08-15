@@ -15,58 +15,32 @@ extension PaymentMethodTokenizationViewModel {
 
     @objc
     func start() {
-        firstly {
-            self.startTokenizationFlow()
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            self.processPaymentMethodTokenData()
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
-        }
-        .catch { err in
-            self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        Task {
+            do {
+                paymentMethodTokenData = try await startTokenizationFlow()
+                await processPaymentMethodTokenData()
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+            } catch {
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
 
-            if let primerErr = err as? PrimerError,
-               case .cancelled = primerErr,
-               PrimerInternal.shared.sdkIntegrationType == .dropIn,
-               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                firstly {
-                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                }
-                .done { _ in
-                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                }
-                // The above promises will never end up on error.
-                .catch { _ in }
-
-            } else {
-                firstly {
-                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                }
-                .then { () -> Promise<String?> in
-                    var primerErr: PrimerError!
-                    if let error = err as? PrimerError {
-                        primerErr = error
-                    } else {
-                        primerErr = PrimerError.underlyingErrors(errors: [err])
+                if case .cancelled = primerErr,
+                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                   config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                   config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                   config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                    await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                } else {
+                    do {
+                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        await showResultScreenIfNeeded(error: primerErr)
+                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
+                        await handleFailureFlow(errorMessage: merchantErrorMessage)
+                    } catch {
+                        logger.error(message: "Unselection of payment method failed - this should never happen ...")
                     }
-
-                    DispatchQueue.main.async {
-                        self.showResultScreenIfNeeded(error: primerErr)
-                    }
-                    return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
-                }
-                .done { merchantErrorMessage in
-                    DispatchQueue.main.async {
-                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                    }
-                }
-                // The above promises will never end up on error.
-                .catch { _ in
-                    self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
                 }
             }
         }
