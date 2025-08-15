@@ -15,13 +15,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4")
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4"),
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.1.2"),
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios")
+                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
             ],
             path: "Sources/PrimerSDK",
             resources: [
@@ -33,13 +35,15 @@ let package = Package(
             name: "Tests",
             dependencies: [
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
-                .byName(name: "PrimerSDK")
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
+                .byName(name: "PrimerSDK"),
             ],
             path: "Tests/",
             sources: [
                 "3DS/",
                 "Utilities/",
-                "Primer/"
+                "Primer/",
+                "Klarna/",
             ]
         )
     ],
