@@ -158,6 +158,32 @@ platform :ios do
     )
   end
 
+  desc 'This action tests both SDK and Debug App via SPM'
+  lane :test_sdk_and_debug_app do |options|
+    common_pre_build_action
+    sim_version = options[:sim_version] || default_sim_version
+    
+    run_tests(
+      package_path: ".",
+      scheme: "PrimerSDKTests",
+      sdk: "iphonesimulator#{sim_version}",
+      destination: "OS=#{sim_version},name=iPhone 16",
+      result_bundle: true,
+      code_coverage: true,
+      output_directory: Dir.pwd + "/test_output"
+    )
+    
+    run_tests(
+      package_path: ".",
+      scheme: "DebugAppTests",
+      sdk: "iphonesimulator#{sim_version}",
+      destination: "OS=#{sim_version},name=iPhone 16",
+      result_bundle: true,
+      code_coverage: true,
+      output_directory: Dir.pwd + "/test_output"
+    )
+  end
+
   lane :build_cocoapods do |options|
     common_pre_build_action
 
