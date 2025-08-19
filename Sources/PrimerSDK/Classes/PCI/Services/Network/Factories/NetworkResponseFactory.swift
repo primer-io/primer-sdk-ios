@@ -29,9 +29,7 @@ final class SuccessResponseFactory: NetworkResponseFactory {
         if let response = SuccessResponse() as? T {
             return response
         }
-        throw InternalError.failedToDecode(message: "SuccessResponse model must be used with this endpoint",
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
+        throw InternalError.failedToDecode(message: "SuccessResponse model must be used with this endpoint")
     }
 }
 
@@ -54,34 +52,22 @@ final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
                     throw InternalError.serverError(
                         status: metadata.statusCode,
                         response: serverError.error,
-                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: serverError.error.diagnosticsId
                     )
                 } else {
                     throw InternalError.failedToDecode(
-                        message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
+                        message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")"
                     )
                 }
             }
         case 401:
-            throw InternalError.unauthorized(url: metadata.responseUrl ?? "Unknown",
-                                             userInfo: .errorUserInfoDictionary(),
-                                             diagnosticsId: UUID().uuidString)
+            throw InternalError.unauthorized(url: metadata.responseUrl ?? "Unknown")
         case 400, 402...599:
             let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response)
-            throw InternalError.serverError(
-                status: metadata.statusCode,
-                response: serverError?.error,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            throw InternalError.serverError(status: metadata.statusCode, response: serverError?.error)
         default:
             throw InternalError.failedToDecode(
-                message: "Failed to determine response from URL: \(metadata.responseUrl ?? "Unknown")",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
+                message: "Failed to determine response from URL: \(metadata.responseUrl ?? "Unknown")"
             )
         }
     }
