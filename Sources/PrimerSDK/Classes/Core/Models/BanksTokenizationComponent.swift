@@ -520,6 +520,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 
     func setupNotificationObservers() {
+        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.receivedNotification(_:)),

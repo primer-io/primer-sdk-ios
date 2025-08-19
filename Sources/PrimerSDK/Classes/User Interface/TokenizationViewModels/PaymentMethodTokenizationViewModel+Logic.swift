@@ -15,6 +15,48 @@ extension PaymentMethodTokenizationViewModel {
 
     @objc
     func start() {
+        start_task()
+    }
+    
+    @objc
+    func start_async() {
+        start_task()
+    }
+
+    func start_task() {
+        Task {
+            do {
+                paymentMethodTokenData = try await startTokenizationFlow()
+                await processPaymentMethodTokenData()
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+            } catch {
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+                if let primerErr = error as? PrimerError,
+                   case .cancelled = primerErr,
+                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                   self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    do {
+                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                    } catch {}
+                } else {
+                    do {
+                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                        await showResultScreenIfNeeded(error: primerErr)
+                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        await handleFailureFlow(errorMessage: merchantErrorMessage)
+                    } catch {}
+                }
+            }
+        }
+    }
+
+    func start_promise() {
         firstly {
             self.startTokenizationFlow()
         }
@@ -71,39 +113,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-
-    @objc
-    func start_async() {
-        Task {
-            do {
-                paymentMethodTokenData = try await startTokenizationFlow()
-                await processPaymentMethodTokenData()
-                await uiManager.primerRootViewController?.enableUserInteraction(true)
-            } catch {
-                await uiManager.primerRootViewController?.enableUserInteraction(true)
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
-
-                if case .cancelled = primerErr,
-                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                   config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   config.type == PrimerPaymentMethodType.payPal.rawValue {
-                    try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                } else {
-                    do {
-                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        await showResultScreenIfNeeded(error: primerErr)
-                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
-                        await handleFailureFlow(errorMessage: merchantErrorMessage)
-                    } catch {
-                        logger.error(message: "Unselection of payment method failed - this should never happen ...")
-                    }
-                }
-            }
-        }
-    }
+    
 
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
@@ -257,6 +267,7 @@ extension PaymentMethodTokenizationViewModel {
             nullifyEventCallbacks()
 
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
 
             if let primerErr = error as? PrimerError,
                case .cancelled = primerErr,
@@ -266,10 +277,8 @@ extension PaymentMethodTokenizationViewModel {
                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-
                 let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
                 setCheckoutDataFromError(primerErr)
                 await showResultScreenIfNeeded(error: primerErr)
@@ -360,34 +369,33 @@ extension PaymentMethodTokenizationViewModel {
             startPaymentFlowTask = nil
         }
 
-        startPaymentFlowTask = Task {
+        let task = CancellableTask<PrimerCheckoutData?> {
             try Task.checkCancellation()
 
-            let decodedJWTToken = try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+            let decodedJWTToken = try await self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             try Task.checkCancellation()
 
             if let decodedJWTToken {
-                let resumeToken = try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+                let resumeToken = try await self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                 try Task.checkCancellation()
 
                 if let resumeToken {
-                    let checkoutData = try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                    let checkoutData = try await self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                     try Task.checkCancellation()
 
                     return checkoutData
                 }
             }
 
-            return paymentCheckoutData
+            return self.paymentCheckoutData
+        }
+        startPaymentFlowTask = task
+
+        if isCancelled {
+            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
         }
 
-        do {
-            return try await startPaymentFlowTask?.value
-        } catch is CancellationError {
-            throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
-        } catch {
-            throw error
-        }
+        return try await task.wait()
     }
 
     // This function will do one of the two following:

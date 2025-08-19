@@ -49,8 +49,6 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        sut.start()
-
         let expectDidFail = self.expectation(description: "onDidFail called")
         delegate.onDidFail = { error in
             switch error {
@@ -61,6 +59,13 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             }
             expectDidFail.fulfill()
         }
+
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
+            decision(.continuePaymentCreation())
+        }
+
+        sut.start()
 
         let cancelNotif = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
         NotificationCenter.default.post(cancelNotif)

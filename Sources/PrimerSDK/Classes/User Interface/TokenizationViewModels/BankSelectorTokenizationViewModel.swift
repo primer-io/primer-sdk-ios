@@ -51,6 +51,10 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
                    createResumePaymentService: createResumePaymentService)
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             throw handled(primerError: .invalidClientToken())

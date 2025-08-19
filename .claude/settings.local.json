@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec fastlane:*)",
+      "Bash(rm:*)",
+      "Bash(xcrun simctl list:*)",
+      "Bash(swift build)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "mcp__atlassian__getJiraIssue",
+      "Bash(swift:*)",
+      "mcp__sequentialthinking__sequentialthinking",
+      "Bash(xcodebuild test:*)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [],
+    "defaultMode": "acceptEdits"
+  }
+}
