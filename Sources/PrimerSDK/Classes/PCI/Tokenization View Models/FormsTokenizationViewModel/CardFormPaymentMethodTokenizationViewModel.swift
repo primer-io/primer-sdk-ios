@@ -425,7 +425,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                     if let pError = error as? PrimerError {
                         primerErr = pError
                     } else {
-                        primerErr = PrimerError.unknown(message: error.localizedDescription)
+                        primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                     }
 
                     DispatchQueue.main.async {
@@ -518,7 +518,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                         if let pError = error as? PrimerError {
                             primerErr = pError
                         } else {
-                            primerErr = PrimerError.unknown(message: error.localizedDescription)
+                            primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                         }
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await showResultScreenIfNeeded(error: primerErr)

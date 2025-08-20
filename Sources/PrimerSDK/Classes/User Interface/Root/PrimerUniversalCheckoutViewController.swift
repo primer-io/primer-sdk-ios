@@ -52,7 +52,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if let pError = error as? PrimerError {
                 primerErr = pError
             } else {
-                primerErr = PrimerError.unknown(message: error.localizedDescription)
+                primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
             }
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in

@@ -52,7 +52,7 @@ extension PaymentMethodTokenizationViewModel {
                     if let pError = error as? PrimerError {
                         primerErr = pError
                     } else {
-                        primerErr = PrimerError.unknown(message: error.localizedDescription)
+                        primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
                     }
 
                     DispatchQueue.main.async {
@@ -88,7 +88,7 @@ extension PaymentMethodTokenizationViewModel {
                 if let pError = error as? PrimerError {
                     primerErr = pError
                 } else {
-                    primerErr = PrimerError.unknown(message: error.localizedDescription)
+                    primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
                 }
 
                 if case .cancelled = primerErr,
@@ -207,7 +207,7 @@ extension PaymentMethodTokenizationViewModel {
                     if let pError = error as? PrimerError {
                         primerErr = pError
                     } else {
-                        primerErr = PrimerError.unknown(message: error.localizedDescription)
+                        primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
                     }
                     self.setCheckoutDataFromError(primerErr)
                     DispatchQueue.main.async {
@@ -283,7 +283,7 @@ extension PaymentMethodTokenizationViewModel {
                 if let pError = error as? PrimerError {
                     primerErr = pError
                 } else {
-                    primerErr = PrimerError.unknown(message: error.localizedDescription)
+                    primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
                 }
                 setCheckoutDataFromError(primerErr)
                 await showResultScreenIfNeeded(error: primerErr)

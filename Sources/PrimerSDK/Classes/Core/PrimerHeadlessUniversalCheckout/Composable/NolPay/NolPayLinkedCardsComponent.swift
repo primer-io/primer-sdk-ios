@@ -112,7 +112,7 @@ public final class NolPayLinkedCardsComponent {
                         if let pError = error as? PrimerError {
                             primerError = pError
                         } else {
-                            primerError = PrimerError.unknown(message: error.localizedDescription)
+                            primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
                         }
                         completion(.failure(primerError))
                     }
