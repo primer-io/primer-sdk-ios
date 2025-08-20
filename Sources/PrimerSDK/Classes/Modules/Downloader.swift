@@ -224,7 +224,7 @@ final class Downloader: NSObject, DownloaderModule {
                         return
 
                     } catch {
-                        let primerErr = PrimerError.underlyingErrors(errors: [error])
+                        let primerErr = error.primerError
                         ErrorHandler.handle(error: primerErr)
                     }
                 }
@@ -232,7 +232,7 @@ final class Downloader: NSObject, DownloaderModule {
 
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
-                    let primerErr = PrimerError.underlyingErrors(errors: [error])
+                    let primerErr = error.primerError
                     seal.reject(primerErr)
 
                 } else if let response = response,
@@ -254,7 +254,7 @@ final class Downloader: NSObject, DownloaderModule {
                             seal.fulfill(())
 
                         } catch {
-                            let primerErr = PrimerError.underlyingErrors(errors: [error])
+                            let primerErr = error.primerError
                             ErrorHandler.handle(error: primerErr)
                             seal.reject(primerErr)
                         }
@@ -292,7 +292,7 @@ final class Downloader: NSObject, DownloaderModule {
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
-                    let primerErr = PrimerError.underlyingErrors(errors: [error])
+                    let primerErr = error.primerError
                     ErrorHandler.handle(error: primerErr)
                     throw primerErr
                 }
@@ -319,7 +319,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
 
         } catch {
-            let primerErr = PrimerError.underlyingErrors(errors: [error])
+            let primerErr = error.primerError
             ErrorHandler.handle(error: primerErr)
             throw primerErr
         }

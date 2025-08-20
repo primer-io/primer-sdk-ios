@@ -1,7 +1,7 @@
 //
 //  VaultManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -53,16 +53,16 @@ extension PrimerHeadlessUniversalCheckout {
         internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
             var errors: [Error] = []
 
-        guard let vaultedPaymentMethod = vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
-            errors.append(
-                handled(
-                    primerError: .invalidVaultedPaymentMethodId(
-                        vaultedPaymentMethodId: vaultedPaymentMethodId
+            guard let vaultedPaymentMethod = vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
+                errors.append(
+                    handled(
+                        primerError: .invalidVaultedPaymentMethodId(
+                            vaultedPaymentMethodId: vaultedPaymentMethodId
+                        )
                     )
                 )
-            )
-            return errors
-        }
+                return errors
+            }
 
             if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
                 let network = vaultedPaymentMethod.paymentInstrumentData.binData?.network ?? ""
@@ -119,15 +119,15 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
-        guard let vaultedPaymentMethods = self.vaultedPaymentMethods,
-              vaultedPaymentMethods.contains(where: { $0.id == id }) else {
-            let err = handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: id))
+            guard let vaultedPaymentMethods = self.vaultedPaymentMethods,
+                  vaultedPaymentMethods.contains(where: { $0.id == id }) else {
+                let err = handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: id))
 
-            DispatchQueue.main.async {
-                completion(err)
+                DispatchQueue.main.async {
+                    completion(err)
+                }
+                return
             }
-            return
-        }
 
             firstly {
                 vaultService.deleteVaultedPaymentMethod(with: id)
@@ -146,18 +146,18 @@ extension PrimerHeadlessUniversalCheckout {
 
         // TODO: FINAL_MIGRATION
         public func startPaymentFlow(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData? = nil) {
-        guard let vaultedPaymentMethod = self.vaultedPaymentMethods?
-                .first(where: { $0.id == vaultedPaymentMethodId })
-        else {
-            let err = handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: vaultedPaymentMethodId))
+            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?
+                    .first(where: { $0.id == vaultedPaymentMethodId })
+            else {
+                let err = handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: vaultedPaymentMethodId))
 
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
-                    // No need to do anything
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
+                        // No need to do anything
+                    }
                 }
+                return
             }
-            return
-        }
 
             if let vaultedPaymentMethodAdditionalData = vaultedPaymentMethodAdditionalData {
                 if let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId,
@@ -227,12 +227,13 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             .catch { err in
                                 DispatchQueue.main.async {
-                                    var primerError: any PrimerErrorProtocol
+                                    let error = err.primerError
+                                    let primerError: any PrimerErrorProtocol
 
-                                    if let primerErr = err as? (any PrimerErrorProtocol) {
-                                        primerError = primerErr
+                                    if let pError = error as? (any PrimerErrorProtocol) {
+                                        primerError = pError
                                     } else {
-                                        primerError = PrimerError.underlyingErrors(errors: [err])
+                                        primerError = PrimerError.unknown(message: error.localizedDescription)
                                     }
 
                                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
@@ -260,12 +261,13 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     .catch { err in
                         DispatchQueue.main.async {
-                            var primerError: any PrimerErrorProtocol
+                            let error = err.primerError
+                            let primerError: any PrimerErrorProtocol
 
-                            if let primerErr = err as? (any PrimerErrorProtocol) {
-                                primerError = primerErr
+                            if let pError = error as? (any PrimerErrorProtocol) {
+                                primerError = pError
                             } else {
-                                primerError = PrimerError.underlyingErrors(errors: [err])
+                                primerError = PrimerError.unknown(message: error.localizedDescription)
                             }
 
                             PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
@@ -297,12 +299,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    var primerError: any PrimerErrorProtocol
+                    let error = err.primerError
+                    let primerError: any PrimerErrorProtocol
 
-                    if let primerErr = err as? (any PrimerErrorProtocol) {
-                        primerError = primerErr
+                    if let pError = error as? (any PrimerErrorProtocol) {
+                        primerError = pError
                     } else {
-                        primerError = PrimerError.underlyingErrors(errors: [err])
+                        primerError = PrimerError.unknown(message: error.localizedDescription)
                     }
 
                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
@@ -355,7 +358,7 @@ extension PrimerHeadlessUniversalCheckout {
                             case .fail(let message):
                                 let merchantErr: Error
                                 if let message {
-                                   merchantErr = PrimerError.merchantError(message: message)
+                                    merchantErr = PrimerError.merchantError(message: message)
                                 } else {
                                     merchantErr = NSError.emptyDescriptionError
                                 }

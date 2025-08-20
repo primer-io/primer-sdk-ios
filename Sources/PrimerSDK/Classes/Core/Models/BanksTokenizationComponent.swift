@@ -137,7 +137,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let error = error.primerError
+                let primerErr: PrimerError
+                if let pError = error as? PrimerError {
+                    primerErr = pError
+                } else {
+                    primerErr = PrimerError.unknown(message: error.localizedDescription)
+                }
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
                                                                                                  data: paymentCheckoutData)
 

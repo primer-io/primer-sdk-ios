@@ -703,12 +703,12 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
             case .failure(let underlyingErr):
-                var primerErr: PrimerError
-
-                if let primerError = underlyingErr as? PrimerError {
-                    primerErr = primerError
+                let error = underlyingErr.primerError
+                let primerErr: PrimerError
+                if let pError = error as? PrimerError {
+                    primerErr = pError
                 } else {
-                    primerErr = PrimerError.underlyingErrors(errors: [underlyingErr])
+                    primerErr = PrimerError.unknown(message: error.localizedDescription)
                 }
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
 
@@ -761,12 +761,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             ) { result in
                 switch result {
                 case .failure(let underlyingErr):
-                    var primerErr: PrimerError
-                    if let primerError = underlyingErr as? PrimerError {
-                        primerErr = primerError
-                    } else {
-                        primerErr = PrimerError.underlyingErrors(errors: [underlyingErr])
-                    }
+                    let primerErr = underlyingErr.primerError
 
                     let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
                     seal.reject(internalErr)
@@ -800,12 +795,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             )
             return response
         } catch {
-            var primerErr: PrimerError
-            if let primerError = error as? PrimerError {
-                primerErr = primerError
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [error])
-            }
+            let primerErr = error.primerError
             throw InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
         }
     }

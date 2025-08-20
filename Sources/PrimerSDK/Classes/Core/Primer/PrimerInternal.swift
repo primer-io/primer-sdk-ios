@@ -153,11 +153,12 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
+            let error = err.primerError
+            let primerErr: PrimerError
+            if let pError = error as? PrimerError {
+                primerErr = pError
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+                primerErr = PrimerError.unknown(message: error.localizedDescription)
             }
 
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -198,11 +199,12 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
+            let error = err.primerError
+            let primerErr: PrimerError
+            if let pError = error as? PrimerError {
+                primerErr = pError
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+                primerErr = PrimerError.unknown(message: error.localizedDescription)
             }
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
@@ -241,11 +243,12 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
+            let error = err.primerError
+            let primerErr: PrimerError
+            if let pError = error as? PrimerError {
+                primerErr = pError
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+                primerErr = PrimerError.unknown(message: error.localizedDescription)
             }
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)

@@ -47,11 +47,12 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             self?.renderSelectedPaymentInstrument(insertAt: 1)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let error = err as? PrimerError {
-                primerErr = error
+            let error = err.primerError
+            let primerErr: PrimerError
+            if let pError = error as? PrimerError {
+                primerErr = pError
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+                primerErr = PrimerError.unknown(message: error.localizedDescription)
             }
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in

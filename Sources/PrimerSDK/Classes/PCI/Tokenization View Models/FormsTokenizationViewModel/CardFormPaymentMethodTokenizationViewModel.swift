@@ -413,9 +413,20 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             } else {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        .recover { error -> Promise<Void> in
+                            // Log the unselection error but continue with error handling
+                            self.logger.error(message: "Unselection of payment method failed: \(error)")
+                            return Promise.value(())
+                        }
                 }
                 .then { () -> Promise<String?> in
-                    let primerErr = (err as? PrimerError) ?? PrimerError.underlyingErrors(errors: [err])
+                    let error = err.primerError
+                    let primerErr: PrimerError
+                    if let pError = error as? PrimerError {
+                        primerErr = pError
+                    } else {
+                        primerErr = PrimerError.unknown(message: error.localizedDescription)
+                    }
 
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
@@ -429,7 +440,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                 }
                 // The above promises will never end up on error.
                 .catch { _ in
-                    self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
+                    self.logger.error(message: "Error handling flow failed - this should never happen ...")
                 }
             }
         }
@@ -502,7 +513,13 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                     } catch {}
                 } else {
                     do {
-                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                        let error = error.primerError
+                        let primerErr: PrimerError
+                        if let pError = error as? PrimerError {
+                            primerErr = pError
+                        } else {
+                            primerErr = PrimerError.unknown(message: error.localizedDescription)
+                        }
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)

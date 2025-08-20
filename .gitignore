@@ -99,3 +99,13 @@ buildserver.json
 # Cursor/VSCode
 launch.json
 .cursorrules
+.claude/settings.local.json
+.serena/cache/swift/document_symbols_cache_v23-06-25.pkl
+.serena/memories/code_structure.md
+.serena/memories/code_style_conventions.md
+.serena/memories/development_guidelines.md
+.serena/memories/project_overview.md
+.serena/memories/suggested_commands.md
+.serena/memories/task_completion_checklist.md
+.serena/project.yml
+Debug App/.claude/settings.local.json

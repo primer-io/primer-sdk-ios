@@ -36,24 +36,13 @@ extension Error {
         } else if let primer3DSErr = self as? Primer3DSErrorContainer {
             return primer3DSErr
         } else if let primerErr = self as? PrimerError {
-            switch primerErr {
-            case .underlyingErrors(let errors, _):
-                if errors.isEmpty {
-                    let unknownErr = PrimerError.unknown()
-                    return unknownErr
-                } else if errors.count == 1 {
-                    return errors.first!.primerError
-                } else {
-                    return primerErr
-                }
-            default:
-                return primerErr
-            }
+            // Return PrimerError as-is, including underlyingErrors
+            return primerErr
         } else if let validationErr = self as? PrimerValidationError {
             return validationErr
         } else {
-            let primerErr = PrimerError.underlyingErrors(errors: [self])
-            return primerErr
+            // For unknown errors, wrap in unknown error (not underlyingErrors)
+            return PrimerError.unknown(message: self.localizedDescription)
         }
     }
 }
