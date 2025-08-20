@@ -233,7 +233,7 @@ extension PrimerHeadlessUniversalCheckout {
                                     if let pError = error as? (any PrimerErrorProtocol) {
                                         primerError = pError
                                     } else {
-                                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
+                                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                                     }
 
                                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
@@ -267,7 +267,7 @@ extension PrimerHeadlessUniversalCheckout {
                             if let pError = error as? (any PrimerErrorProtocol) {
                                 primerError = pError
                             } else {
-                                primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
+                                primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                             }
 
                             PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
@@ -305,7 +305,7 @@ extension PrimerHeadlessUniversalCheckout {
                     if let pError = error as? (any PrimerErrorProtocol) {
                         primerError = pError
                     } else {
-                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid))
+                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                     }
 
                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
