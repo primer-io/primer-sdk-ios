@@ -42,7 +42,7 @@ extension Error {
             return validationErr
         } else {
             // For unknown errors, wrap in unknown error (not underlyingErrors)
-            return PrimerError.unknown(message: self.localizedDescription)
+            return PrimerError.unknown(message: self.localizedDescription, diagnosticsId: .uuid)
         }
     }
 }
