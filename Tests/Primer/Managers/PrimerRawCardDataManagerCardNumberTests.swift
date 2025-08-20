@@ -8,8 +8,6 @@
 import XCTest
 
 final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
-    private let validationTimeout = 5.0
-
     override func setUp() {
         SDKSessionHelper.setUp()
     }
@@ -18,9 +16,7 @@ final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
         SDKSessionHelper.tearDown()
     }
 
-    func test_invalid_cardnumber_in_raw_card_data_1() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_invalid_cardnumber_in_raw_card_data_1() async throws {
         let rawCardData = PrimerCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
@@ -30,24 +26,17 @@ final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
-        firstly { () -> Promise<Void> in
-            rawCardData.cardNumber = "42424242424242421"
-            return tokenizationBuilder.validateRawData(rawCardData)
-        }
-        .done {
-            XCTAssert(false, "Card data should not pass validation")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
+        rawCardData.cardNumber = "42424242424242421"
 
-        wait(for: [exp], timeout: validationTimeout)
+        do {
+            try await tokenizationBuilder.validateRawData(rawCardData)
+            XCTFail("Card data should not pass validation")
+        } catch {
+            // Expected to throw an error
+        }
     }
 
-    func test_invalid_cardnumber_in_raw_card_data_2() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_invalid_cardnumber_in_raw_card_data_2() async throws {
         let rawCardData = PrimerCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
@@ -57,24 +46,17 @@ final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
-        firstly { () -> Promise<Void> in
-            rawCardData.cardNumber = "424242424242424211"
-            return tokenizationBuilder.validateRawData(rawCardData)
-        }
-        .done {
-            XCTAssert(false, "Card data should not pass validation")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
+        rawCardData.cardNumber = "424242424242424211"
 
-        wait(for: [exp], timeout: validationTimeout)
+        do {
+            try await tokenizationBuilder.validateRawData(rawCardData)
+            XCTFail("Card data should not pass validation")
+        } catch {
+            // Expected to throw an error
+        }
     }
 
-    func test_invalid_cardnumber_in_raw_card_data_3() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_invalid_cardnumber_in_raw_card_data_3() async throws {
         let rawCardData = PrimerCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
@@ -84,24 +66,17 @@ final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
-        firstly { () -> Promise<Void> in
-            rawCardData.cardNumber = "424242424242424212345"
-            return tokenizationBuilder.validateRawData(rawCardData)
-        }
-        .done {
-            XCTAssert(false, "Card data should not pass validation")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
+        rawCardData.cardNumber = "424242424242424212345"
 
-        wait(for: [exp], timeout: validationTimeout)
+        do {
+            try await tokenizationBuilder.validateRawData(rawCardData)
+            XCTFail("Card data should not pass validation")
+        } catch {
+            // Expected to throw an error
+        }
     }
 
-    func test_invalid_cardnumber_in_raw_card_data_4() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_invalid_cardnumber_in_raw_card_data_4() async throws {
         let rawCardData = PrimerCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
@@ -111,18 +86,13 @@ final class PrimerRawCardDataManagerCardNumberTests: XCTestCase {
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
-        firstly { () -> Promise<Void> in
-            rawCardData.cardNumber = ""
-            return tokenizationBuilder.validateRawData(rawCardData)
-        }
-        .done {
-            XCTAssert(false, "Card data should not pass validation")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
+        rawCardData.cardNumber = ""
 
-        wait(for: [exp], timeout: validationTimeout)
+        do {
+            try await tokenizationBuilder.validateRawData(rawCardData)
+            XCTFail("Card data should not pass validation")
+        } catch {
+            // Expected to throw an error
+        }
     }
 }
