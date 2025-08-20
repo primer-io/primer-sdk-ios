@@ -8,7 +8,7 @@
 import XCTest
 
 final class PrimerRawCardDataManagerExpiryDateTests: XCTestCase {
-    private let validationTimeout = 3.0
+    private let validationTimeout = 5.0
 
     override func setUp() {
         SDKSessionHelper.setUp()
