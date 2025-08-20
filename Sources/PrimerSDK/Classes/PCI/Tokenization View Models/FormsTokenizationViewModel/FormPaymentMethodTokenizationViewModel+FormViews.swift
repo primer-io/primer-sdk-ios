@@ -480,7 +480,7 @@ extension FormPaymentMethodTokenizationViewModel {
             inputsDistribution: .horizontal
         )
 
-        for newInput in makeInputViews() where !inputs.contains(where: { $0 === newInput }) { // Use reference comparison
+        for newInput in makeInputViews() where !inputs.contains(where: { $0 === newInput }) {
             inputs.append(newInput)
         }
 

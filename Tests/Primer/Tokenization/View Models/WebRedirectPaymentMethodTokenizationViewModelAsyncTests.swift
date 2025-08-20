@@ -181,8 +181,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
     }
 
     func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
-//        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
-        SDKSessionHelper.setUp()
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
         
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
         apiClient.pollingResults = [

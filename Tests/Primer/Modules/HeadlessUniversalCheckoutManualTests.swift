@@ -138,6 +138,8 @@ extension HeadlessUniversalCheckoutManualTests {
                                           surchargeAmount: Int? = nil) -> [XCTestExpectation] {
         var orderedExpectations: [XCTestExpectation] = []
 
+        uiDelegate.onUIDidDismissPaymentMethod = {}
+
         let expectPreparationDidStart = self.expectation(description: "Expected UI delegate method: preparationDidStart")
         uiDelegate.onUIDidStartPreparation = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
@@ -218,15 +220,12 @@ extension HeadlessUniversalCheckoutManualTests {
             orderedExpectations.append(expectDidResumeWith)
         }
 
-        delegate.onDidFail = { err in
-        }
+        delegate.onDidFail = { _ in }
 
         return orderedExpectations
     }
 
     private func presentNativeUIManager(paymentMethod: PrimerPaymentMethod, expecting orderedExpectations: [XCTestExpectation]) throws {
-        uiDelegate.onUIDidDismissPaymentMethod = {}
-        
         guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethod.type })
         else {
             XCTFail("Failed to find payment method \(paymentMethod.type) in mocked API configuration response")

@@ -153,8 +153,7 @@ extension HeadlessUniversalCheckoutAutoTests {
                                           surchargeAmount: Int? = nil) -> [XCTestExpectation] {
         var orderedExpectations: [XCTestExpectation] = []
 
-        uiDelegate.onUIDidDismissPaymentMethod = {
-        }
+        uiDelegate.onUIDidDismissPaymentMethod = {}
 
         let expectPreparationDidStart = self.expectation(description: "Expected UI delegate method: preparationDidStart")
         uiDelegate.onUIDidStartPreparation = { paymentMethodType in
@@ -216,8 +215,7 @@ extension HeadlessUniversalCheckoutAutoTests {
         }
         orderedExpectations.append(expectDidCompleteCheckoutWithData)
 
-        delegate.onDidFail = { err in
-        }
+        delegate.onDidFail = { _ in }
 
         return orderedExpectations
     }
