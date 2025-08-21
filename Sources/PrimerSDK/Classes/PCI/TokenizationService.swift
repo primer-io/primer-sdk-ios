@@ -33,12 +33,12 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
             }
             self.logger.debug(message: "Client Token: \(decodedJWTToken)")
             guard let pciURL = decodedJWTToken.pciUrl else {
-                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)))
+                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl")))
                 return
             }
             self.logger.debug(message: "PCI URL: \(pciURL)")
             guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)))
+                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl")))
                 return
             }
             self.logger.debug(message: "URL: \(url)")
@@ -61,15 +61,12 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         logger.debug(message: "Client Token: \(decodedJWTToken)")
 
         guard let pciURL = decodedJWTToken.pciUrl else {
-            throw handled(primerError: .invalidValue(
-                key: "decodedClientToken.pciUrl",
-                value: decodedJWTToken.pciUrl
-            ))
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl"))
         }
         logger.debug(message: "PCI URL: \(pciURL)")
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl))
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl"))
         }
 
         logger.debug(message: "URL: \(url)")

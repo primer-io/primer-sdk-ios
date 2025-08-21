@@ -244,8 +244,6 @@ extension PaymentMethodTokenizationViewModel {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                try? await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-
                 let error = error.primerError
                 let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                 setCheckoutDataFromError(primerErr)

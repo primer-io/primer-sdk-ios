@@ -222,8 +222,7 @@ final class Downloader: NSObject, DownloaderModule {
                         return
 
                     } catch {
-                        let primerErr = error.primerError
-                        ErrorHandler.handle(error: primerErr)
+                        ErrorHandler.handle(error: error.primerError)
                     }
                 }
             }

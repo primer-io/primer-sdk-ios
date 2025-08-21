@@ -703,8 +703,8 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
             case .failure(let underlyingErr):
-                let error = underlyingErr.primerError
-                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
+                let primerErr = (underlyingErr.primerError as? PrimerError) ??
+                    PrimerError.unknown(message: underlyingErr.primerError.localizedDescription)
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
 
             case .success(let res):
