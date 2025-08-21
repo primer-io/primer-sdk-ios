@@ -1,60 +1,68 @@
 //
 //  BankSelectionTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class BankSelectionTokenizationViewModelTests: XCTestCase {
-
-    var uiManager: MockPrimerUIManager!
-
-    var tokenizationService: MockTokenizationService!
-
-    var createResumePaymentService: MockCreateResumePaymentService!
-
-    var banksApiClient: MockBanksAPIClient!
-
-    var sut: BankSelectorTokenizationViewModel!
+    private var sut: BankSelectorTokenizationViewModel!
+    private var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
+    private var uiDelegate: MockPrimerHeadlessUniversalCheckoutUIDelegate!
+    private var apiClient: MockPrimerAPIClient!
+    private var uiManager: MockPrimerUIManager!
+    private var createResumePaymentService: MockCreateResumePaymentService!
+    private var tokenizationService: MockTokenizationService!
 
     override func setUpWithError() throws {
+        delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
+        uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+
+        apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
 
         uiManager = MockPrimerUIManager()
-        tokenizationService = MockTokenizationService()
+        uiManager.primerRootViewController = MockPrimerRootViewController()
+
         createResumePaymentService = MockCreateResumePaymentService()
-        banksApiClient = MockBanksAPIClient()
+        tokenizationService = MockTokenizationService()
 
         sut = BankSelectorTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
                                                 uiManager: uiManager,
                                                 tokenizationService: tokenizationService,
                                                 createResumePaymentService: createResumePaymentService,
-                                                apiClient: banksApiClient)
+                                                apiClient: apiClient)
     }
 
     override func tearDownWithError() throws {
-        sut = nil
+        delegate = nil
+        PrimerHeadlessUniversalCheckout.current.delegate = nil
+
+        uiDelegate = nil
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
+
+        apiClient = nil
+        PrimerAPIConfigurationModule.apiClient = nil
+
+        uiManager.primerRootViewController = nil
+        uiManager = nil
+
         createResumePaymentService = nil
         tokenizationService = nil
-        uiManager = nil
+        sut = nil
+        
+        SDKSessionHelper.tearDown()
     }
 
     func testStartWithPreTokenizationAndAbort() throws {
         SDKSessionHelper.setUp()
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
-        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
         let banks = setupBanksAPIClient()
-
-        let mockViewController = MockPrimerRootViewController()
-        uiManager.onPrepareViewController = {
-            self.uiManager.primerRootViewController = mockViewController
-        }
-
-        _ = uiManager.prepareRootViewController()
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
@@ -91,13 +99,6 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
 
     func testStartWithFullCheckoutFlow() throws {
         SDKSessionHelper.setUp()
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
-        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
-
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
         let banks = setupBanksAPIClient()
@@ -162,8 +163,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         let banks: BanksListSessionResponse = .init(
             result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
         )
-        banksApiClient.result = banks
-
+        apiClient.listAdyenBanksResult = (banks, nil)
         return banks
     }
 

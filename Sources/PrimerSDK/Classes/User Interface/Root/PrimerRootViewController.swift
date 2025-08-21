@@ -335,14 +335,14 @@ class PrimerRootViewController: PrimerViewController {
     }
 
     internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
-        if let lastViewController = (navController.viewControllers.last as? PrimerContainerViewController)?.childViewController {
-            if lastViewController is PrimerLoadingViewController ||
-                lastViewController is PrimerResultViewController {
-                return
-            }
-        }
-
         DispatchQueue.main.async {
+            if let lastViewController = (self.navController.viewControllers.last as? PrimerContainerViewController)?.childViewController {
+                if lastViewController is PrimerLoadingViewController ||
+                    lastViewController is PrimerResultViewController {
+                    return
+                }
+            }
+
             var show = true
 
             if self.navController.viewControllers.isEmpty {

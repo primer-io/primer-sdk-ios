@@ -51,6 +51,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         )
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
@@ -60,7 +64,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             self.webViewController?.dismiss(animated: true)
-            self.didCancel?()
             self.cancel()
             self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
@@ -75,9 +78,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     override func start() {
-        self.didFinishPayment = { [weak self] _ in
+        didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { @MainActor in self.cleanup_main_actor() }
         }
 
         setupNotificationObservers()
@@ -432,26 +435,26 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     override func awaitUserInput() async throws {
+        defer {
+            awaitUserInputTask = nil
+        }
+
         let pollingModule = PollingModule(url: statusUrl)
 
-        awaitUserInputTask = Task {
-            try Task.checkCancellation()
-
+        let task = CancellableTask<Void>(onCancel: {
+            pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
+            self.didDismissPaymentMethodUI?()
+        }, operation: {
             let resumeToken = try await pollingModule.start()
-            try Task.checkCancellation()
+            self.resumeToken = resumeToken
+        })
+        awaitUserInputTask = task
 
-            return resumeToken
+        if isCancelled {
+            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
         }
 
-        do {
-            resumeToken = try await awaitUserInputTask?.value
-        } catch is CancellationError {
-            pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: config.type)))
-            didDismissPaymentMethodUI?()
-            throw handled(primerError: .cancelled(paymentMethodType: config.type))
-        } catch {
-            throw error
-        }
+        return try await task.wait()
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
