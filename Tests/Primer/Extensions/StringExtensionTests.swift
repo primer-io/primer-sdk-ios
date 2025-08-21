@@ -243,6 +243,32 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertNoThrow(try "01/30".validateExpiryDateString())
         XCTAssertThrowsError(try "01/22".validateExpiryDateString()) // Past date
         XCTAssertThrowsError(try "08/22".validateExpiryDateString()) // Past date
+        
+        // Test invalid year formats (5+ digits) - ESC-620
+        XCTAssertThrowsError(try "03/77777".validateExpiryDateString()) // 5 digit year
+        XCTAssertThrowsError(try "07/77444".validateExpiryDateString()) // 5 digit year
+        XCTAssertThrowsError(try "03/12345".validateExpiryDateString()) // 5 digit year
+        XCTAssertThrowsError(try "03/123456".validateExpiryDateString()) // 6 digit year
+        XCTAssertThrowsError(try "03/1234567".validateExpiryDateString()) // 7 digit year
+        XCTAssertThrowsError(try "03/20301".validateExpiryDateString()) // 5 digit year
+        XCTAssertThrowsError(try "03/203011".validateExpiryDateString()) // 6 digit year
+        
+        // Test invalid year formats (1 or 3 digits)
+        XCTAssertThrowsError(try "03/7".validateExpiryDateString()) // 1 digit year
+        XCTAssertThrowsError(try "03/777".validateExpiryDateString()) // 3 digit year
+        XCTAssertThrowsError(try "03/234".validateExpiryDateString()) // 3 digit year
+        
+        // Test valid 2-digit years should work (using years that won't be in the past)
+        XCTAssertNoThrow(try "03/30".validateExpiryDateString()) // Valid 2 digit year (2030)
+        XCTAssertNoThrow(try "03/35".validateExpiryDateString()) // Valid 2 digit year (2035)
+        
+        // Test valid 4-digit years should work
+        XCTAssertNoThrow(try "03/2030".validateExpiryDateString()) // Valid 4 digit year
+        XCTAssertNoThrow(try "03/2035".validateExpiryDateString()) // Valid 4 digit year
+        
+        // Test that past years are rejected (both 2 and 4 digit formats)
+        XCTAssertThrowsError(try "03/77".validateExpiryDateString()) // 77 is interpreted as 1977 (past)
+        XCTAssertThrowsError(try "03/20".validateExpiryDateString()) // 20 is interpreted as 2020 (past)
     }
 
     func testBase64RFC4648Format() {

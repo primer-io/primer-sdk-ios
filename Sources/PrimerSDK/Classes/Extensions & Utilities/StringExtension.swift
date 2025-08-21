@@ -217,6 +217,31 @@ internal extension String {
             throw PrimerValidationError.invalidExpiryDate(message: "Expiry date cannot be blank.")
 
         } else {
+            // Validate format: must be MM/YY or MM/YYYY
+            let components = self.split(separator: "/")
+            guard components.count == 2 else {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
+            }
+            
+            let monthString = String(components[0])
+            let yearString = String(components[1])
+            
+            // Validate month is 2 digits
+            guard monthString.count == 2, monthString.allSatisfy(\.isNumber) else {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
+            }
+            
+            // Validate year is exactly 2 or 4 digits
+            guard (yearString.count == 2 || yearString.count == 4), yearString.allSatisfy(\.isNumber) else {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
+            }
+            
             var expiryDate: Date?
 
             // Try MM/yy format first
@@ -224,9 +249,9 @@ internal extension String {
             shortFormatter.dateFormat = "MM/yy"
             shortFormatter.locale = Locale(identifier: "en_US_POSIX")
 
-            if let date = shortFormatter.date(from: self) {
+            if yearString.count == 2, let date = shortFormatter.date(from: self) {
                 expiryDate = date
-            } else {
+            } else if yearString.count == 4 {
                 // Try MM/yyyy format
                 let longFormatter = DateFormatter()
                 longFormatter.dateFormat = "MM/yyyy"
