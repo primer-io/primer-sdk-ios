@@ -499,28 +499,20 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken()
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl))
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount")
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "amount"))
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency")
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "currency"))
             }
         }
     }
@@ -899,18 +891,14 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         guard let configId = config.id else {
-            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id)
-            ErrorHandler.handle(error: err)
-            return Promise { $0.reject(err) }
+            return Promise { $0.reject(handled(primerError: .invalidValue(key: "configuration.id", value: config.id))) }
         }
 
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 guard let blikCode = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "blikCode")
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidValue(key: "blikCode")))
                     return
                 }
 
@@ -962,9 +950,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
                 guard let phoneNumber = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "phoneNumber")
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidValue(key: "phoneNumber")))
                     return
                 }
 

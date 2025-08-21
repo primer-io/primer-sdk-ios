@@ -28,23 +28,17 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken()
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidClientToken()))
                 return
             }
             self.logger.debug(message: "Client Token: \(decodedJWTToken)")
             guard let pciURL = decodedJWTToken.pciUrl else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)))
                 return
             }
             self.logger.debug(message: "PCI URL: \(pciURL)")
             guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)))
                 return
             }
             self.logger.debug(message: "URL: \(url)")
@@ -62,26 +56,20 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken()
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
         logger.debug(message: "Client Token: \(decodedJWTToken)")
 
         guard let pciURL = decodedJWTToken.pciUrl else {
-            let err = PrimerError.invalidValue(
+            throw handled(primerError: .invalidValue(
                 key: "decodedClientToken.pciUrl",
                 value: decodedJWTToken.pciUrl
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+            ))
         }
         logger.debug(message: "PCI URL: \(pciURL)")
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl))
         }
 
         logger.debug(message: "URL: \(url)")
@@ -97,9 +85,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     func exchangePaymentMethodToken( _ vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken()
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidClientToken()))
                 return
             }
             self.apiClient.exchangePaymentMethodToken(
@@ -124,9 +110,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
     ) async throws -> PrimerPaymentMethodTokenData {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken()
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         return try await apiClient.exchangePaymentMethodToken(

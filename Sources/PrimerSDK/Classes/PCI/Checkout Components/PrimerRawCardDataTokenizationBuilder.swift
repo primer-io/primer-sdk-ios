@@ -101,18 +101,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return Promise { seal in
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil
             else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
                 return
             }
 
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData")
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                seal.reject(handled(primerError: .invalidValue(key: "rawData")))
                 return
             }
 
@@ -141,16 +137,12 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData")
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])

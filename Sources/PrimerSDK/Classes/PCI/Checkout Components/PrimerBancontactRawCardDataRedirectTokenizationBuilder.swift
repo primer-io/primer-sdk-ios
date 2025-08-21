@@ -187,8 +187,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(errors: errors)
-                    ErrorHandler.handle(error: err)
+                    let err = handled(primerError: .underlyingErrors(errors: errors))
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 

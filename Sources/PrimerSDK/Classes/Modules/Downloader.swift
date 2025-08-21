@@ -127,9 +127,7 @@ final class Downloader: NSObject, DownloaderModule {
         }
 
         if !errors.isEmpty && errors.count == files.count {
-            let primerErr = PrimerError.underlyingErrors(errors: errors)
-            ErrorHandler.handle(error: primerErr)
-            throw primerErr
+            throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
         return downloadedFiles
@@ -232,8 +230,7 @@ final class Downloader: NSObject, DownloaderModule {
 
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
-                    let primerErr = error.primerError
-                    seal.reject(primerErr)
+                    seal.reject(error.primerError)
 
                 } else if let response = response,
                           let tempLocalUrl = tempLocalUrl {
@@ -254,9 +251,7 @@ final class Downloader: NSObject, DownloaderModule {
                             seal.fulfill(())
 
                         } catch {
-                            let primerErr = error.primerError
-                            ErrorHandler.handle(error: primerErr)
-                            seal.reject(primerErr)
+                            seal.reject(handled(error: error.primerError))
                         }
                     } else {
                         return seal.reject(handled(internalError: .serverError(status: statusCode)))
@@ -292,9 +287,7 @@ final class Downloader: NSObject, DownloaderModule {
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
-                    let primerErr = error.primerError
-                    ErrorHandler.handle(error: primerErr)
-                    throw primerErr
+                    throw handled(error: error.primerError)
                 }
             }
         }
@@ -319,9 +312,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
 
         } catch {
-            let primerErr = error.primerError
-            ErrorHandler.handle(error: primerErr)
-            throw primerErr
+            throw handled(error: error.primerError)
         }
     }
 

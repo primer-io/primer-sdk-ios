@@ -195,16 +195,12 @@ final class PrimerUIManager: PrimerUIManaging {
         return Promise { seal in
             if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)))
                     return
                 }
 
                 guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
-                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType)))
                     return
                 }
 
