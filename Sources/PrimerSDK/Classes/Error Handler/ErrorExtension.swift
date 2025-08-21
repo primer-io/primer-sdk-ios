@@ -38,7 +38,7 @@ extension Error {
         } else if let primerErr = self as? PrimerError {
             // Handle empty underlyingErrors case
             if case .underlyingErrors(let errors, _) = primerErr, errors.isEmpty {
-                return PrimerError.unknown(message: "Empty underlying errors", diagnosticsId: .uuid)
+                return PrimerError.unknown(message: "Empty underlying errors")
             }
             // Return PrimerError as-is, including underlyingErrors
             return primerErr
@@ -46,7 +46,7 @@ extension Error {
             return validationErr
         } else {
             // For unknown errors, wrap in unknown error (not underlyingErrors)
-            return PrimerError.unknown(message: self.localizedDescription, diagnosticsId: .uuid)
+            return PrimerError.unknown(message: self.localizedDescription)
         }
     }
 }

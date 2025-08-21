@@ -48,12 +48,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
         .catch { err in
             let error = err.primerError
-            let primerErr: PrimerError
-            if let pError = error as? PrimerError {
-                primerErr = pError
-            } else {
-                primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-            }
+            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                 switch errorDecision.type {

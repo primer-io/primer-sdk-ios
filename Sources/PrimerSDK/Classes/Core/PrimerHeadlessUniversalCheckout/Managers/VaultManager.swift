@@ -228,13 +228,7 @@ extension PrimerHeadlessUniversalCheckout {
                             .catch { err in
                                 DispatchQueue.main.async {
                                     let error = err.primerError
-                                    let primerError: any PrimerErrorProtocol
-
-                                    if let pError = error as? (any PrimerErrorProtocol) {
-                                        primerError = pError
-                                    } else {
-                                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                                    }
+                                    let primerError = (error as? (any PrimerErrorProtocol)) ?? PrimerError.unknown(message: error.localizedDescription)
 
                                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                                         // No need to pass anything
@@ -262,13 +256,7 @@ extension PrimerHeadlessUniversalCheckout {
                     .catch { err in
                         DispatchQueue.main.async {
                             let error = err.primerError
-                            let primerError: any PrimerErrorProtocol
-
-                            if let pError = error as? (any PrimerErrorProtocol) {
-                                primerError = pError
-                            } else {
-                                primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                            }
+                            let primerError = (error as? (any PrimerErrorProtocol)) ?? PrimerError.unknown(message: error.localizedDescription)
 
                             PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                                 // No need to pass anything
@@ -300,13 +288,7 @@ extension PrimerHeadlessUniversalCheckout {
             .catch { err in
                 DispatchQueue.main.async {
                     let error = err.primerError
-                    let primerError: any PrimerErrorProtocol
-
-                    if let pError = error as? (any PrimerErrorProtocol) {
-                        primerError = pError
-                    } else {
-                        primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                    }
+                    let primerError = (error as? (any PrimerErrorProtocol)) ?? PrimerError.unknown(message: error.localizedDescription)
 
                     PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                         // No need to pass anything

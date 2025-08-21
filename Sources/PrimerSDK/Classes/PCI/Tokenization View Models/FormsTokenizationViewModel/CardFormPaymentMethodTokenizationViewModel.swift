@@ -421,12 +421,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                 }
                 .then { () -> Promise<String?> in
                     let error = err.primerError
-                    let primerErr: PrimerError
-                    if let pError = error as? PrimerError {
-                        primerErr = pError
-                    } else {
-                        primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                    }
+                    let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
 
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
@@ -514,12 +509,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                 } else {
                     do {
                         let error = error.primerError
-                        let primerErr: PrimerError
-                        if let pError = error as? PrimerError {
-                            primerErr = pError
-                        } else {
-                            primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                        }
+                        let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)

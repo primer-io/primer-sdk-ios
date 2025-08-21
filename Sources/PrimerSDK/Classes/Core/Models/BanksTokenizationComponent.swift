@@ -138,12 +138,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
                 let error = error.primerError
-                let primerErr: PrimerError
-                if let pError = error as? PrimerError {
-                    primerErr = pError
-                } else {
-                    primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                }
+                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
                                                                                                  data: paymentCheckoutData)
 

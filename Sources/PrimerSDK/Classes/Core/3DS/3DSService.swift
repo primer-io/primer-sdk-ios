@@ -704,12 +704,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             switch result {
             case .failure(let underlyingErr):
                 let error = underlyingErr.primerError
-                let primerErr: PrimerError
-                if let pError = error as? PrimerError {
-                    primerErr = pError
-                } else {
-                    primerErr = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
-                }
+                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
 
             case .success(let res):
