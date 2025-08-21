@@ -36,6 +36,10 @@ extension Error {
         } else if let primer3DSErr = self as? Primer3DSErrorContainer {
             return primer3DSErr
         } else if let primerErr = self as? PrimerError {
+            // Handle empty underlyingErrors case
+            if case .underlyingErrors(let errors, _) = primerErr, errors.isEmpty {
+                return PrimerError.unknown(message: "Empty underlying errors", diagnosticsId: .uuid)
+            }
             // Return PrimerError as-is, including underlyingErrors
             return primerErr
         } else if let validationErr = self as? PrimerValidationError {
