@@ -1,7 +1,7 @@
 //
 //  StringExtension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -224,24 +224,24 @@ internal extension String {
                     message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
                 )
             }
-            
+
             let monthString = String(components[0])
             let yearString = String(components[1])
-            
+
             // Validate month is 2 digits
             guard monthString.count == 2, monthString.allSatisfy(\.isNumber) else {
                 throw PrimerValidationError.invalidExpiryDate(
                     message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
                 )
             }
-            
+
             // Validate year is exactly 2 or 4 digits
-            guard (yearString.count == 2 || yearString.count == 4), yearString.allSatisfy(\.isNumber) else {
+            guard yearString.count == 2 || yearString.count == 4, yearString.allSatisfy(\.isNumber) else {
                 throw PrimerValidationError.invalidExpiryDate(
                     message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
                 )
             }
-            
+
             var expiryDate: Date?
 
             // Try MM/yy format first
