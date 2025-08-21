@@ -114,7 +114,8 @@ public final class NolPayLinkedCardsComponent {
                         } else {
                             primerError = PrimerError.unknown(message: error.localizedDescription, diagnosticsId: .uuid)
                         }
-                        completion(.failure(primerError))
+                        let handledError = handled(primerError: primerError)
+                        completion(.failure(handledError))
                     }
                 }
             }
