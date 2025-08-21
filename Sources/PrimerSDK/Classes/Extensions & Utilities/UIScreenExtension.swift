@@ -20,7 +20,7 @@ extension UIScreen {
             // Fall through to system check
             break
         }
-        
+
         // Default to system appearance
         return Self.main.traitCollection.userInterfaceStyle == .dark
     }
