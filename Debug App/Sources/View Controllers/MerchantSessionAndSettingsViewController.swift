@@ -884,6 +884,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
                 dismissalMechanism: selectedDismissalMechanisms,
                 cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
+                appearanceMode: .system,
                 theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
         }
 
