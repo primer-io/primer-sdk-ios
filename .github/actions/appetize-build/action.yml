@@ -90,7 +90,7 @@ runs:
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |
-        bundle exec fastlane appetize_build_and_upload
+        bundle exec fastlane ci_build_test_and_upload
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
