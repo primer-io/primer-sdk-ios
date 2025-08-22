@@ -355,7 +355,6 @@ public struct PrimerThreeDsOptions: Codable {
 // MARK: - API Version
 // swiftlint:disable identifier_name
 public enum PrimerApiVersion: String, Codable {
-    case V2_3 = "2.3"
     case V2_4 = "2.4"
 
     public static let latest = PrimerApiVersion.V2_4

@@ -15,14 +15,14 @@ final class RNPrimerSettingsTests: XCTestCase {
         {
             "paymentHandling": "AUTO",
             "clientSessionCachingEnabled": true,
-            "apiVersion": "2.3"
+            "apiVersion": "2.4"
         }
         """.data(using: .utf8)!
 
         let settings = try JSONDecoder().decode(RNPrimerSettings.self, from: json)
         XCTAssertEqual(settings.paymentHandling, "AUTO")
         XCTAssertEqual(settings.clientSessionCachingEnabled, true)
-        XCTAssertEqual(settings.apiVersion, "2.3")
+        XCTAssertEqual(settings.apiVersion, "2.4")
     }
 
     func testDecodingApplePayOptions() throws {
@@ -137,7 +137,7 @@ final class RNPrimerSettingsTests: XCTestCase {
                 uiOptions: nil,
                 debugOptions: nil,
                 clientSessionCachingEnabled: true,
-                apiVersion: "2.3"
+                apiVersion: "2.4"
             )
 
             let mapped = RNPrimerSettingsMapper.map(from: rnSettings)
@@ -147,7 +147,7 @@ final class RNPrimerSettingsTests: XCTestCase {
             XCTAssertEqual(mapped.localeData.regionCode, "US")
             XCTAssertEqual(mapped.localeData.localeCode, "en-US")
             XCTAssertEqual(mapped.clientSessionCachingEnabled, true)
-            XCTAssertEqual(mapped.apiVersion, .V2_3)
+            XCTAssertEqual(mapped.apiVersion, .V2_4)
         }
 
         func testMapWithApplePayAndStripeOptions() {
