@@ -503,7 +503,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl))
+            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl"))
         }
 
         if PrimerInternal.shared.intent == .checkout {
@@ -891,7 +891,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         guard let configId = config.id else {
-            return Promise { $0.reject(handled(primerError: .invalidValue(key: "configuration.id", value: config.id))) }
+            return Promise { $0.reject(handled(primerError: .invalidValue(key: "configuration.id"))) }
         }
 
         switch config.type {

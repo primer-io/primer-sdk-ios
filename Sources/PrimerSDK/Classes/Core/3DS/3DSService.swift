@@ -790,8 +790,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             )
             return response
         } catch {
-            let primerErr = error.primerError
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: error.primerError)
         }
     }
 }
