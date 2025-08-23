@@ -27,7 +27,6 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         let tokenizationViewModel = StripeAchTokenizationViewModel(config: stripeACHPaymentMethod, uiManager: uiManager, tokenizationService: tokenizationService, createResumePaymentService: createResumePaymentService)
 
         sut = ACHUserDetailsViewController(tokenizationViewModel: tokenizationViewModel, delegate: self)
-        sut.loadViewIfNeeded()
     }
 
     override func tearDown() {
@@ -63,6 +62,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     }
 
     func test_achUserDetails_view_not_nil() {
+        sut.loadViewIfNeeded()
         XCTAssertNotNil(sut.achUserDetailsView)
     }
 
@@ -93,6 +93,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -123,6 +125,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -153,6 +157,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -183,6 +189,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -213,6 +221,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -243,6 +253,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         wait(for: [
             expectDidReceiveStep,
@@ -268,6 +280,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
+        
+        sut.loadViewIfNeeded()
 
         waitForExpectations(timeout: 2.0)
     }
