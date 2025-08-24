@@ -18,27 +18,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_tokenizeHeadless_success() {
-        prepareConfigurations()
-        mockApiClient.tokenizePaymentMethodResult = (ACHMocks.primerPaymentMethodTokenData, nil)
-        let expectation = XCTestExpectation(description: "Successful Tokenize StripeACH Payment Session")
-
-        firstly {
-            sut.tokenize()
-        }
-        .done { tokenData in
-            XCTAssertNotNil(tokenData, "Result should not be nil")
-            expectation.fulfill()
-        }
-        .catch { _ in
-            XCTFail("Result should be nil")
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 10.0)
-    }
-
-    func test_tokenizeHeadless_success_async() async {
+    func test_tokenizeHeadless_success() async {
         prepareConfigurations()
         mockApiClient.tokenizePaymentMethodResult = (ACHMocks.primerPaymentMethodTokenData, nil)
 
@@ -50,28 +30,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         }
     }
 
-    func test_tokenizeHeadless_failure() {
-        prepareConfigurations()
-        let error = getInvalidTokenError()
-        mockApiClient.tokenizePaymentMethodResult = (nil, error)
-        let expectation = XCTestExpectation(description: "Failure Tokenize StripeACH Payment Session")
-
-        firstly {
-            sut.tokenize()
-        }
-        .done { _ in
-            XCTFail("Result should be nil")
-            expectation.fulfill()
-        }
-        .catch { error in
-            XCTAssertNotNil(error, "Error should not be nil")
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 10.0)
-    }
-
-    func test_tokenizeHeadless_failure_async() async {
+    func test_tokenizeHeadless_failure() async {
         prepareConfigurations()
         let error = getInvalidTokenError()
         mockApiClient.tokenizePaymentMethodResult = (nil, error)

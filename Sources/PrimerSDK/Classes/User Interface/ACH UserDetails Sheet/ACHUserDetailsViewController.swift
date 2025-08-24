@@ -31,6 +31,10 @@ final class ACHUserDetailsViewController: PrimerViewController {
         self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
         super.init()
+
+        self.stripeAchComponent?.errorDelegate = self
+        self.stripeAchComponent?.stepDelegate = self
+        self.stripeAchComponent?.validationDelegate = self
     }
 
     override func viewDidLoad() {
@@ -38,7 +42,7 @@ final class ACHUserDetailsViewController: PrimerViewController {
 
         view.backgroundColor = PrimerColors.white
         addStripeFormView()
-        setupStripeACHDelegatesAndStart()
+        stripeAchComponent?.start()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -62,13 +66,6 @@ final class ACHUserDetailsViewController: PrimerViewController {
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
-    }
-
-    func setupStripeACHDelegatesAndStart() {
-        stripeAchComponent?.errorDelegate = self
-        stripeAchComponent?.stepDelegate = self
-        stripeAchComponent?.validationDelegate = self
-        stripeAchComponent?.start()
     }
 
     func initObservables() {
