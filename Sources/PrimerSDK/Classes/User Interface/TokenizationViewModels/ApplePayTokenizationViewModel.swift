@@ -550,11 +550,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
     func processShippingMethodChange(_ shippingMethod: PKShippingMethod) async -> PKPaymentRequestShippingMethodUpdate {
         do {
             guard let identifier = shippingMethod.identifier else {
-                throw(PrimerError.invalidValue(key: "shippingMethod.identifier"))
+                throw PrimerError.invalidValue(key: "shippingMethod.identifier")
             }
 
             try await ClientSessionActionsModule.selectShippingMethodIfNeeded(identifier)
-
 
             guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
                 throw PrimerError.invalidValue(key: "ClientSession")
@@ -568,7 +567,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             ).map { $0.applePayItem }
 
             let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: summaryItems)
-            
+
             guard let currency = AppState.current.currency else {
                 let err = PrimerError.invalidValue(key: "Currency")
                 ErrorHandler.handle(error: err)

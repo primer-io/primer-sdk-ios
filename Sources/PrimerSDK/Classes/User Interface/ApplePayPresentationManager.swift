@@ -30,7 +30,6 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         return canMakePayment
     }
 
-
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) async throws {
         let request = try createRequest(for: applePayRequest)
