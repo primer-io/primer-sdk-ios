@@ -41,17 +41,14 @@ extension PrimerHeadlessKlarnaComponent {
      * - Failure: It handles the creation of a payment session error
      */
     func startSession() {
-        firstly {
-            handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.klarna.rawValue))
-        }
-        .then { () -> Promise<Response.Body.Klarna.PaymentSession> in
-            self.tokenizationComponent.createPaymentSession()
-        }
-        .done { paymentSession in
-            self.createSessionStep(paymentSession)
-        }
-        .catch { error in
-            self.createSessionError(.sessionCreationFailed(error: error))
+        Task {
+            do {
+                try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.klarna.rawValue))
+                let paymentSession = try await tokenizationComponent.createPaymentSession()
+                createSessionStep(paymentSession)
+            } catch {
+                createSessionError(.sessionCreationFailed(error: error))
+            }
         }
     }
 }
@@ -98,39 +95,38 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         handleReceivedError(error: primerError)
     }
 
-    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
-        return Promise { seal in
-            if PrimerInternal.shared.intent == .vault {
-                seal.fulfill()
-            } else {
-                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
-                let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
+        guard PrimerInternal.shared.intent != .vault else {
+            return
+        }
 
-                var decisionHandlerHasBeenCalled = false
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
+            let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
 
-                PrimerDelegateProxy.primerWillCreatePaymentWithData(
-                    checkoutPaymentMethodData,
-                    decisionHandler: { paymentCreationDecision in
-                        decisionHandlerHasBeenCalled = true
-                        switch paymentCreationDecision.type {
-                        case .abort(let errorMessage):
-                            let error = PrimerError.merchantError(message: errorMessage ?? "")
-                            seal.reject(error)
-                        case .continue:
-                            seal.fulfill()
-                        }
+            var decisionHandlerHasBeenCalled = false
+
+            PrimerDelegateProxy.primerWillCreatePaymentWithData(
+                checkoutPaymentMethodData,
+                decisionHandler: { paymentCreationDecision in
+                    decisionHandlerHasBeenCalled = true
+                    switch paymentCreationDecision.type {
+                    case .abort(let errorMessage):
+                        let error = PrimerError.merchantError(message: errorMessage ?? "")
+                        continuation.resume(throwing: error)
+                    case .continue:
+                        continuation.resume()
                     }
-                )
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                    if !decisionHandlerHasBeenCalled {
-                        let message =
-                            """
-                            The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
-                            Make sure you call the decision handler otherwise the SDK will hang.
-                            """
-                        self?.logger.warn(message: message)
-                    }
+                }
+            )
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                if !decisionHandlerHasBeenCalled {
+                    let message =
+                        """
+                        The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
+                        Make sure you call the decision handler otherwise the SDK will hang.
+                        """
+                    self?.logger.warn(message: message)
                 }
             }
         }

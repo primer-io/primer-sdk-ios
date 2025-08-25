@@ -136,27 +136,22 @@ extension PrimerHeadlessKlarnaComponent {
      * Upon successful finalization, it proceeds to tokenize the customer token received in response.
      */
     func finalizeSession(token: String, fromAuthorization: Bool) {
-        firstly {
-            tokenizationComponent.authorizePaymentSession(authorizationToken: token)
-        }
-        .then { customerToken in
-            self.tokenizationComponent.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: token)
-        }
-        .done { checkoutData in
-            if fromAuthorization {
-                let step = KlarnaStep.paymentSessionAuthorized(authToken: token, checkoutData: checkoutData)
-                self.stepDelegate?.didReceiveStep(step: step)
-            } else {
-                // Finalization
-                let step = KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
-                self.stepDelegate?.didReceiveStep(step: step)
+        Task {
+            do {
+                let customerToken = try await tokenizationComponent.authorizePaymentSession(authorizationToken: token)
+                let checkoutData = try await tokenizationComponent.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: token)
+
+                if fromAuthorization {
+                    stepDelegate?.didReceiveStep(step: KlarnaStep.paymentSessionAuthorized(authToken: token, checkoutData: checkoutData))
+                } else {
+                    stepDelegate?.didReceiveStep(step: KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData))
+                }
+                await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                resetKlarnaSessionVariables()
+            } catch {
+                createSessionError(.sessionAuthorizationFailed(error: error))
+                resetKlarnaSessionVariables()
             }
-            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-            self.resetKlarnaSessionVariables()
-        }
-        .catch { error in
-            self.createSessionError(.sessionAuthorizationFailed(error: error))
-            self.resetKlarnaSessionVariables()
         }
     }
 }
