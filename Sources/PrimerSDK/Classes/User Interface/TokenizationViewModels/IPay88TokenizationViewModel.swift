@@ -117,7 +117,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-
     override func performPreTokenizationSteps() async throws {
         await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
             imageView: uiModule.makeIconImageView(withDimension: 24.0),
@@ -134,7 +133,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         #endif
     }
 
-
     override func performTokenizationStep() async throws {
         #if canImport(PrimerIPay88MYSDK)
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
@@ -146,7 +144,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         #endif
     }
 
-
     override func performPostTokenizationSteps() async throws {
         #if canImport(PrimerIPay88MYSDK)
         // Empty implementation
@@ -154,7 +151,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         throw handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK"))
         #endif
     }
-
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         #if canImport(PrimerIPay88MYSDK)
@@ -175,7 +171,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         throw handled(primerError: .missingSDK(paymentMethodType: config.type, sdkName: "PrimerIPay88SDK"))
         #endif
     }
-
 
     override func handleDecodedClientTokenIfNeeded(
         _ decodedJWTToken: DecodedJWTToken,
@@ -268,7 +263,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return primerIPayPayment
     }
 
-
     @MainActor
     override func presentPaymentMethodUserInterface() async throws {
         #if DEBUG
@@ -346,7 +340,6 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             #endif
         }
     }
-
 
     override func awaitUserInput() async throws {
         let pollingModule = PollingModule(url: statusUrl)
