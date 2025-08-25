@@ -117,7 +117,7 @@ final class QRCodeTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [expectWillCreatePaymentWithData, expectDidFail], timeout: 10.0, enforceOrder: true)
     }
@@ -163,7 +163,7 @@ final class QRCodeTokenizationViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
