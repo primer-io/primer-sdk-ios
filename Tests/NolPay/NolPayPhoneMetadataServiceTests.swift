@@ -1,10 +1,8 @@
 //
 //  NolPayPhoneMetadataServiceTests.swift
-//  Debug App Tests
 //
-//  Created by Boris on 27.10.23..
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -61,9 +59,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // Given
         let exp = expectation(description: " Wait for getPhoneMetadata to complete")
         let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number cannot be blank.",
-            userInfo: [:],
-            diagnosticsId: ""
+            message: "Phone number cannot be blank."
         )
 
         // When
@@ -92,7 +88,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // Given
         let exp = expectation(description: " Wait for getPhoneMetadata to complete")
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
-        let expectedError = PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolError(code: expectedErrorCode, message: "")
         mockApiClient.getPhoneMetadataResult = .failure(expectedError)
 
         // When
@@ -102,13 +98,13 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
                 XCTFail("Expected failure but got success: \(validationStatus), \(countryCode ?? ""), \(mobileNumber ?? "")")
             case .failure(let error):
                 switch error {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Expected PrimerError but got \(error)")
                         return
                     }
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Expected PrimerError.nolError but got \(firstPrimerError)")
@@ -128,9 +124,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // Given
         let exp = expectation(description: " Wait for getPhoneMetadata to complete")
         let expectedError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
+            message: "Phone number is not valid."
         )
         mockApiClient.getPhoneMetadataResult = .success(.init(isValid: false, countryCode: nil, nationalNumber: nil))
 

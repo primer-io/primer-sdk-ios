@@ -1,9 +1,8 @@
 //
 //  StripeAchHeadlessComponentTests.swift
 //
-//
-//  Created by Stefan Vrancianu on 20.05.2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import XCTest
@@ -41,7 +40,6 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     func test_patchClientSession_error() {
         let error = PrimerError.failedToCreateSession(
             error: nil,
-            userInfo: [:],
             diagnosticsId: "test_diagnostics_id: \(UUID().uuidString)"
         )
 
@@ -429,10 +427,7 @@ extension StripeAchHeadlessComponentTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
     }

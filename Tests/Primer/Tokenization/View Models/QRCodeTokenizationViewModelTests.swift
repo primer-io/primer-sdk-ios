@@ -1,9 +1,8 @@
 //
 //  QRCodeTokenizationViewModelTests.swift
 //
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -112,7 +111,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
+            return .success(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")

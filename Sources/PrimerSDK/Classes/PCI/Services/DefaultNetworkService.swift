@@ -1,9 +1,8 @@
 //
 //  DefaultNetworkService.swift
-//  PrimerSDK
 //
-//  Created by Jack Newcombe on 07/03/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -175,16 +174,12 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                        duration: response.requestDuration))
 
         if let error = response.error {
-            completion(.failure(InternalError.underlyingErrors(errors: [error],
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)))
-            return
+            return completion(.failure(InternalError.underlyingErrors(errors: [error])))
         }
 
         self.logger.debug(message: response.metadata.description)
         guard let data = response.data else {
-            completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)))
-            return
+            return completion(.failure(InternalError.noData()))
         }
 
         do {
@@ -205,17 +200,11 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                        duration: response.requestDuration))
 
         if let error = response.error {
-            completion(.failure(InternalError.underlyingErrors(errors: [error],
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)), nil)
-            return
+            return completion(.failure(InternalError.underlyingErrors(errors: [error])), nil)
         }
 
         self.logger.debug(message: response.metadata.description)
-        guard let data = response.data else {
-            completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)), nil)
-            return
-        }
+        guard let data = response.data else { return completion(.failure(InternalError.noData()), nil) }
 
         do {
             let responseHeaders = response.metadata.headers

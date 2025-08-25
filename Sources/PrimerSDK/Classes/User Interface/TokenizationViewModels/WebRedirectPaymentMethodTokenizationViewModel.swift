@@ -1,9 +1,8 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModel.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 11/10/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 // swiftlint:disable file_length
@@ -25,8 +24,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    private var didCancelPolling: (() -> Void)?
-
     private var redirectUrlRequestId: String?
     private var redirectUrlComponents: URLComponents?
     private let deeplinkAbilityProvider: DeeplinkAbilityProviding
@@ -54,6 +51,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         )
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
@@ -63,7 +64,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             self.webViewController?.dismiss(animated: true)
-            self.didCancel?()
+            self.cancel()
             self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
@@ -72,22 +73,30 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     override func validate() throws {
         if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
     }
 
     override func start() {
-        self.didFinishPayment = { [weak self] _ in
+        didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { @MainActor in self.cleanup_main_actor() }
         }
 
         setupNotificationObservers()
 
         super.start()
+    }
+
+    override func start_async() {
+        didFinishPayment = { [weak self] _ in
+            guard let self = self else { return }
+            Task { @MainActor in self.cleanup_main_actor() }
+        }
+
+        setupNotificationObservers()
+
+        super.start_async()
     }
 
     func setupNotificationObservers() {
@@ -108,6 +117,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         })
     }
 
+    @MainActor
+    func cleanup_main_actor() {
+        willDismissPaymentMethodUI?()
+        webViewController?.dismiss(animated: true, completion: {
+            self.didDismissPaymentMethodUI?()
+        })
+    }
+
     override func performPreTokenizationSteps() -> Promise<Void> {
 
         DispatchQueue.main.async {
@@ -118,7 +135,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -152,6 +169,34 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        await uiManager.primerRootViewController?.enableUserInteraction(false)
+
+        Analytics.Service.fire(event: Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodPopup
+        ))
+
+        await uiManager.primerRootViewController?.showLoadingScreenIfNeeded(
+            imageView: uiModule.makeIconImageView(withDimension: 24.0),
+            message: nil
+        )
+
+        try validate()
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(config.type, cardNetwork: nil)
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -175,10 +220,21 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
+    override func performTokenizationStep() async throws {
+        await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        paymentMethodTokenData = try await tokenize()
+        return try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    override func performPostTokenizationSteps() async throws {
+        // Empty implementation
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -253,6 +309,65 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
+    @MainActor
+    override func presentPaymentMethodUserInterface() async throws {
+        let safariViewController = SFSafariViewController(url: redirectUrl)
+        safariViewController.delegate = self
+        webViewController = safariViewController
+
+        willPresentPaymentMethodUI?()
+
+        redirectUrlComponents = URLComponents(string: redirectUrl.absoluteString)
+        redirectUrlComponents?.query = nil
+
+        let presentEvent = Analytics.Event.ui(
+            action: .present,
+            context: Analytics.Event.Property.Context(
+                paymentMethodType: config.type,
+                url: redirectUrlComponents?.url?.absoluteString
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .webview
+        )
+
+        redirectUrlRequestId = UUID().uuidString
+
+        let networkEvent = Analytics.Event.networkCall(
+            callType: .requestStart,
+            id: redirectUrlRequestId!,
+            url: redirectUrlComponents?.url?.absoluteString ?? "",
+            method: .get,
+            errorBody: nil,
+            responseCode: nil
+        )
+
+        Analytics.Service.fire(events: [presentEvent, networkEvent])
+
+        #if DEBUG
+        if TEST {
+            guard !UIApplication.shared.windows.isEmpty else {
+                return handleWebViewControllerPresentedCompletion_main_actor()
+            }
+        }
+        #endif
+
+        if PrimerUIManager.primerRootViewController == nil {
+            PrimerUIManager.prepareRootViewController_main_actor()
+        }
+
+        await withCheckedContinuation { continuation in
+            uiManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
+                continuation.resume()
+            })
+        }
+
+        handleWebViewControllerPresentedCompletion_main_actor()
+
+    }
+
     private func handleWebViewControllerPresentedCompletion() {
         DispatchQueue.main.async {
             let viewEvent = Analytics.Event.ui(
@@ -273,25 +388,36 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
+    @MainActor
+    private func handleWebViewControllerPresentedCompletion_main_actor() {
+        Analytics.Service.fire(event: Analytics.Event.ui(
+            action: .view,
+            context: Analytics.Event.Property.Context(
+                paymentMethodType: config.type,
+                url: redirectUrlComponents?.url?.absoluteString ?? ""
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .webview
+        ))
+
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: config.type)
+        didPresentPaymentMethodUI?()
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             let pollingModule = PollingModule(url: self.statusUrl)
             self.didCancel = {
-                let err = PrimerError.cancelled(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                pollingModule.cancel(withError: err)
+                pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
                 self.didDismissPaymentMethodUI?()
             }
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                    userInfo: .errorUserInfoDictionary(),
-                                                    diagnosticsId: UUID().uuidString)
-                    throw err
+                    throw PrimerError.cancelled(paymentMethodType: config.type)
                 }
                 return pollingModule.start()
             }
@@ -308,16 +434,33 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
+    override func awaitUserInput() async throws {
+        defer {
+            awaitUserInputTask = nil
+        }
+
+        let pollingModule = PollingModule(url: statusUrl)
+
+        let task = CancellableTask<Void>(onCancel: {
+            pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
+            self.didDismissPaymentMethodUI?()
+        }, operation: {
+            let resumeToken = try await pollingModule.start()
+            self.resumeToken = resumeToken
+        })
+        awaitUserInputTask = task
+
+        if isCancelled {
+            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
+        }
+
+        return try await task.wait()
+    }
+
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id",
-                                                   value: config.id,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                return seal.reject(handled(primerError: .invalidValue(key: "configuration.id")))
             }
 
             let sessionInfo = sessionInfo()
@@ -339,6 +482,20 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 seal.reject(err)
             }
         }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let configId = config.id else {
+            throw handled(primerError: .invalidValue(key: "configuration.id"))
+        }
+
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: configId,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo()
+        )
+
+        return try await tokenizationService.tokenize(requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument))
     }
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -370,10 +527,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    seal.reject(handled(primerError: .invalidClientToken()))
                 }
             } else {
                 seal.fulfill(nil)
@@ -381,10 +535,27 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
-    override func cancel() {
-        self.didCancelPolling?()
-        self.didCancelPolling = nil
-        super.cancel()
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            if let redirectUrlStr = decodedJWTToken.redirectUrl,
+               let redirectUrl = URL(string: redirectUrlStr),
+               let statusUrlStr = decodedJWTToken.statusUrl,
+               let statusUrl = URL(string: statusUrlStr) {
+                await uiManager.primerRootViewController?.enableUserInteraction(true)
+
+                self.redirectUrl = redirectUrl
+                self.statusUrl = statusUrl
+
+                try await presentPaymentMethodUserInterface()
+                try await awaitUserInput()
+                return resumeToken
+            } else {
+                throw handled(primerError: .invalidClientToken())
+            }
+        }
+
+        return nil
     }
 
     #if DEBUG

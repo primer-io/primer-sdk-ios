@@ -1,3 +1,9 @@
+//
+//  MockTokenizationService.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import Foundation
 @testable import PrimerSDK
 
@@ -13,7 +19,7 @@ final class MockTokenizationService: TokenizationServiceProtocol {
     
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         guard let onTokenize else {
-            return Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            return Promise.rejected(PrimerError.unknown())
         }
         switch onTokenize(requestBody) {
         case .success(let result): return .fulfilled(result)
@@ -23,7 +29,7 @@ final class MockTokenizationService: TokenizationServiceProtocol {
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
         guard let onTokenize else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         switch onTokenize(requestBody) {
         case .success(let result): return result
@@ -37,7 +43,7 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         switch onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) {
         case .success(let result): .fulfilled(result)
         case .failure(let error): .rejected(error)
-        case nil: .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        case nil: .rejected(PrimerError.unknown())
         }
     }
 
@@ -48,7 +54,7 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         switch onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) {
         case .success(let result): return result
         case .failure(let error): throw error
-        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        case nil: throw PrimerError.unknown()
         }
     }
 }

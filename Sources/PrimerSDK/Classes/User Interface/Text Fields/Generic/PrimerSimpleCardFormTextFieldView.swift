@@ -1,3 +1,9 @@
+//
+//  PrimerSimpleCardFormTextFieldView.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import UIKit
 
 public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
@@ -43,9 +49,8 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            if let validationError = validationError {
-                ErrorHandler.handle(error: validationError)
-                validation = .invalid(validationError)
+            if let validationError {
+                validation = .invalid(handled(primerValidationError: validationError))
             }
         default:
             validation = .notAvailable

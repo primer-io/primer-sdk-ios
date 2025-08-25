@@ -1,3 +1,9 @@
+//
+//  ApplePayPaymentRequest+PK.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import PassKit
 
 @available(iOS 15.0, *)
@@ -151,12 +157,7 @@ private extension String {
 
 private extension ApplePayPaymentRequestBase {
     func handledError(_ key: String) -> PrimerError {
-        let error: PrimerError = .invalidValue(
-            key: key,
-            value: nil,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error: PrimerError = .invalidValue(key: key)
         ErrorHandler.handle(error: error)
         return error
     }

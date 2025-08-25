@@ -1,9 +1,8 @@
 //
 //  PaymentMethodTokenizationModelProtocol.swift
-//  PrimerSDK
 //
-//  Created by Alexandra Lovin on 04.12.2023.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
@@ -19,27 +18,16 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
 
     func validate() throws
     func start()
-    func performPreTokenizationSteps() -> Promise<Void>
     func performPreTokenizationSteps() async throws
-    func performTokenizationStep() -> Promise<Void>
     func performTokenizationStep() async throws
-    func performPostTokenizationSteps() -> Promise<Void>
     func performPostTokenizationSteps() async throws
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
     func tokenize() async throws -> PrimerPaymentMethodTokenData
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData?
-    func presentPaymentMethodUserInterface() -> Promise<Void>
     func presentPaymentMethodUserInterface() async throws
-    func awaitUserInput() -> Promise<Void>
     func awaitUserInput() async throws
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?>
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData?
 
     @MainActor

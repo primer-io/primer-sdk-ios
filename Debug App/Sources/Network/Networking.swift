@@ -1,10 +1,8 @@
 //
 //  Networking.swift
-//  PrimerSDK_Example
 //
-//  Created by Evangelos on 30/11/21.
-//  Copyright © 2021 CocoaPods. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PrimerSDK
@@ -233,14 +231,7 @@ final class Networking {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
 
         guard let token = paymentMethodTokenData.token else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
-                diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken()
             completion(nil, err)
             return
         }

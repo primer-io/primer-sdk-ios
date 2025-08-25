@@ -1,10 +1,8 @@
 //
 //  RequestDispatcherTests.swift
-//  Debug App Tests
 //
-//  Created by Jack Newcombe on 08/04/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -103,7 +101,7 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        session.error = PrimerError.unknown()
 
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
@@ -155,7 +153,7 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        session.error = PrimerError.unknown()
 
         let request = URLRequest(url: url)
         do {

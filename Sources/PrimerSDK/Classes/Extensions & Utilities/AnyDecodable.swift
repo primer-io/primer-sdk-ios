@@ -1,6 +1,12 @@
 //
 //  AnyDecodable.swift
 //
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+//
+//  AnyDecodable.swift
+//
 //  Created Flight-School
 //
 //  License: https://github.com/Flight-School/AnyCodable/blob/master/LICENSE.md

@@ -1,10 +1,8 @@
 //
 //  MerchantSessionAndSettingsViewController.swift
-//  Debug App
 //
-//  Created by Evangelos Pittas on 7/2/23.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
 import UIKit
@@ -886,6 +884,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
                 dismissalMechanism: selectedDismissalMechanisms,
                 cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
+                appearanceMode: .system,
                 theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
         }
 

@@ -1,9 +1,8 @@
 //
 //  PrimerRootViewController.swift
-//  PrimerSDK
 //
-//  Copyright © 2022 Primer API ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
@@ -336,14 +335,14 @@ class PrimerRootViewController: PrimerViewController {
     }
 
     internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
-        if let lastViewController = (navController.viewControllers.last as? PrimerContainerViewController)?.childViewController {
-            if lastViewController is PrimerLoadingViewController ||
-                lastViewController is PrimerResultViewController {
-                return
-            }
-        }
-
         DispatchQueue.main.async {
+            if let lastViewController = (self.navController.viewControllers.last as? PrimerContainerViewController)?.childViewController {
+                if lastViewController is PrimerLoadingViewController ||
+                    lastViewController is PrimerResultViewController {
+                    return
+                }
+            }
+
             var show = true
 
             if self.navController.viewControllers.isEmpty {

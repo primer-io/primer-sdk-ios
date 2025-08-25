@@ -1,9 +1,8 @@
 //
 //  PrimerKlarnaError+Extension.swift
-//  PrimerSDK
 //
-//  Created by Niall Quinn on 06/12/23.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -13,20 +12,6 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
     typealias InfoType = [String: String]
     var exposedError: Error {
         self
-    }
-
-    var info: InfoType? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-
-        switch self {
-        case .userNotApproved(let userInfo),
-             .klarnaSdkError(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
-        default: break
-        }
-
-        return tmpUserInfo
     }
 
     var errorId: String {

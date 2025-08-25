@@ -1,9 +1,8 @@
 //
 //  NetworkRequestFactory.swift
-//  PrimerSDK
 //
-//  Created by Jack Newcombe on 14/03/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -41,9 +40,7 @@ final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
     private func baseRequest(from endpoint: Endpoint) throws -> URLRequest {
         guard let url = url(for: endpoint)
         else {
-            throw InternalError.invalidUrl(url: "\(endpoint.baseURL ?? "Unknown Host")/\(endpoint.path)",
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
+            throw InternalError.invalidUrl(url: "\(endpoint.baseURL ?? "Unknown Host")/\(endpoint.path)")
         }
 
         return URLRequest(url: url)

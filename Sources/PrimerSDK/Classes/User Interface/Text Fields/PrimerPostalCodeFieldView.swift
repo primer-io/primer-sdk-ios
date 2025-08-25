@@ -1,3 +1,9 @@
+//
+//  PrimerPostalCodeFieldView.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import UIKit
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
@@ -53,12 +59,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            let err = PrimerValidationError.invalidPostalCode(
-                message: "Postal code is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            validation = .invalid(err)
+            validation = .invalid(handled(primerValidationError: .invalidPostalCode(message: "Postal code is not valid.")))
         default:
             validation = .notAvailable
         }

@@ -1,3 +1,9 @@
+//
+//  PrimerLastNameFieldView.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import UIKit
 
 public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
@@ -13,10 +19,7 @@ public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressLastName
-        validationError = .invalidLastName(
-            message: "Last name is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidLastName(message: "Last name is not valid.")
         isValid = { text in
             return text.isValidNonDecimalString
         }

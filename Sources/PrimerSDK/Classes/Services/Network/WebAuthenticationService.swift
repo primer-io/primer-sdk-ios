@@ -1,9 +1,8 @@
 //
 //  WebAuthenticationService.swift
-//  PrimerSDK
 //
-//  Created by Jack Newcombe on 28/05/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import AuthenticationServices
@@ -27,13 +26,9 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
                 if let url = url {
                     completion(.success(url))
                 } else if error != nil {
-                    completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType,
-                                                              userInfo: .errorUserInfoDictionary(),
-                                                              diagnosticsId: UUID().uuidString)))
+                    completion(.failure(PrimerError.cancelled(paymentMethodType: paymentMethodType)))
                 } else {
-                    let additionalInfo: [String: String] = [ "message": "Failed to create web authentication session" ]
-                    completion(.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
-                                                            diagnosticsId: UUID().uuidString)))
+                    completion(.failure(PrimerError.unknown(message: "Failed to create web authentication session")))
                 }
             }
         )
@@ -58,9 +53,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
                     } else if let error {
                         continuation.resume(throwing: error)
                     } else {
-                        let additionalInfo = ["message": "Failed to create web authentication session"]
-                        continuation.resume(throwing: PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
-                                                                          diagnosticsId: UUID().uuidString))
+                        continuation.resume(throwing: PrimerError.unknown(message: "Failed to create web authentication session"))
                     }
                 }
             )

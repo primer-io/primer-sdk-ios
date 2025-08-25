@@ -1,3 +1,9 @@
+//
+//  MockPrimerAPIClientVault.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 @testable import PrimerSDK
 
 final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
@@ -9,7 +15,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
             completion(.success(result))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -17,7 +23,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
             return result
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 
@@ -26,7 +32,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
             onDeleteVaultedPaymentMethods(clientToken, id)
             completion(.success(()))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -34,7 +40,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

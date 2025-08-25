@@ -1,10 +1,8 @@
 //
-//  PrimerHeadlessUniversalCheckoutKlarnaManagerTests.swift
-//  Debug App Tests
+//  KlarnaHeadlessManagerTests.swift
 //
-//  Created by Stefan Vrancianu on 28.01.2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
 import XCTest
@@ -64,7 +62,7 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
             XCTFail("Should throw error")
         } catch {
             switch error {
-            case PrimerError.unsupportedIntent(let intent, _, _):
+            case PrimerError.unsupportedIntent(let intent, _):
                 XCTAssertEqual(intent, .vault)
             default:
                 XCTFail("Expected PrimerError.unsupportedPaymentMethod")
@@ -102,21 +100,9 @@ extension PrimerHeadlessUniversalCheckoutKlarnaManagerTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

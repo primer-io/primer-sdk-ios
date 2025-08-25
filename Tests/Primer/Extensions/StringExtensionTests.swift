@@ -1,10 +1,8 @@
 //
 //  StringExtensionTests.swift
-//  Debug App Tests
 //
-//  Created by Jack Newcombe on 24/10/2023.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -281,6 +279,48 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertFalse("12345".isValidOTP)
         XCTAssertFalse("1234567".isValidOTP)
         XCTAssertFalse("".isValidOTP)
+    }
+
+    func testNormalizedFourDigitYear() {
+        // Test 2-digit year conversion (should convert to current century)
+        XCTAssertEqual("30".normalizedFourDigitYear(), "2030")
+        XCTAssertEqual("25".normalizedFourDigitYear(), "2025")
+        XCTAssertEqual("50".normalizedFourDigitYear(), "2050")
+        XCTAssertEqual("99".normalizedFourDigitYear(), "2099")
+        XCTAssertEqual("00".normalizedFourDigitYear(), "2000")
+        XCTAssertEqual("01".normalizedFourDigitYear(), "2001")
+
+        // Test 4-digit year (should return as-is)
+        XCTAssertEqual("2030".normalizedFourDigitYear(), "2030")
+        XCTAssertEqual("2025".normalizedFourDigitYear(), "2025")
+        XCTAssertEqual("1999".normalizedFourDigitYear(), "1999")
+        XCTAssertEqual("2100".normalizedFourDigitYear(), "2100")
+        XCTAssertEqual("0000".normalizedFourDigitYear(), "0000")
+
+        // Test invalid inputs (should return nil)
+        XCTAssertNil("".normalizedFourDigitYear())
+        XCTAssertNil("1".normalizedFourDigitYear())
+        XCTAssertNil("123".normalizedFourDigitYear())
+        XCTAssertNil("12345".normalizedFourDigitYear())
+        XCTAssertNil("abc".normalizedFourDigitYear())
+        XCTAssertNil("ab".normalizedFourDigitYear())
+        XCTAssertNil("abcd".normalizedFourDigitYear())
+        XCTAssertNil("a1".normalizedFourDigitYear())
+        XCTAssertNil("1a".normalizedFourDigitYear())
+        XCTAssertNil("2a30".normalizedFourDigitYear())
+        XCTAssertNil("20a0".normalizedFourDigitYear())
+        XCTAssertNil(" 30".normalizedFourDigitYear())
+        XCTAssertNil("30 ".normalizedFourDigitYear())
+        XCTAssertNil(" 2030 ".normalizedFourDigitYear())
+        XCTAssertNil("30/40".normalizedFourDigitYear())
+        XCTAssertNil("-30".normalizedFourDigitYear())
+        XCTAssertNil("+30".normalizedFourDigitYear())
+
+        // Edge cases with special characters
+        XCTAssertNil("\\n30".normalizedFourDigitYear())
+        XCTAssertNil("30\\t".normalizedFourDigitYear())
+        XCTAssertNil("3.0".normalizedFourDigitYear())
+        XCTAssertNil("3,0".normalizedFourDigitYear())
     }
 
     // MARK: Helpers

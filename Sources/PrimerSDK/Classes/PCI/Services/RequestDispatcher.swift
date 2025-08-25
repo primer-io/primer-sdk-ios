@@ -1,9 +1,8 @@
 //
 //  RequestDispatcher.swift
-//  PrimerSDK
 //
-//  Created by Jack Newcombe on 14/03/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -65,10 +64,7 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
             let requestDuration = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
 
             guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
-                                                          diagnosticsId: UUID().uuidString)
-                completion(.failure(error))
-                return
+                return completion(.failure(InternalError.invalidResponse()))
             }
 
             let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,

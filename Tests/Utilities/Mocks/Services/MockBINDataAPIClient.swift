@@ -1,3 +1,9 @@
+//
+//  MockBINDataAPIClient.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import Foundation
 @testable import PrimerSDK
 
@@ -54,7 +60,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         } else if let result = results[bin] {
             return result
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

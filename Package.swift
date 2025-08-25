@@ -29,6 +29,19 @@ let package = Package(
                 .copy("Classes/Third Party/PromiseKit/LICENSE")
             ]
         ),
+        .target(
+            name: "Debug_App",
+            dependencies: [
+                .byName(name: "PrimerSDK")
+            ],
+            path: "Debug App/Sources/",
+            sources: [
+                "Utilities/SecretsManager.swift",
+                "Utilities/AppLinkConfigProvider.swift",
+                "Model/TestSettings.swift",
+                "Model/TestSettings+PrimerSettings.swift"
+            ]
+        ),
         .testTarget(
             name: "Tests",
             dependencies: [
@@ -40,6 +53,20 @@ let package = Package(
                 "3DS/",
                 "Utilities/",
                 "Primer/"
+            ]
+        ),
+        .testTarget(
+            name: "DebugAppTests",
+            dependencies: [
+                .byName(name: "PrimerSDK"),
+                .byName(name: "Debug_App")
+            ],
+            path: "Debug App/Tests",
+            resources: [
+                .process("Resources"),
+                .copy("DebugAppTestPlan.xctestplan"),
+                .copy("UnitTestsTestPlan.xctestplan"),
+                .copy("Debug App Tests-Info.plist")
             ]
         )
     ],

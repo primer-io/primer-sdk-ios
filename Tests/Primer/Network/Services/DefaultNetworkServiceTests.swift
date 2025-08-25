@@ -1,10 +1,8 @@
 //
 //  DefaultNetworkServiceTests.swift
-//  Debug App Tests
 //
-//  Created by Jack Newcombe on 28/03/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -148,7 +146,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
                 XCTFail(); return
             case .failure(let error):
                 switch error as! PrimerSDK.InternalError {
-                case .failedToDecode(let message, _, _):
+                case .failedToDecode(let message, _):
                     XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
                 default:
                     XCTFail()
@@ -174,7 +172,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
             XCTFail("Expected error to be thrown")
         } catch {
             switch error as! PrimerSDK.InternalError {
-            case .failedToDecode(let message, _, _):
+            case .failedToDecode(let message, _):
                 XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
             default:
                 XCTFail()

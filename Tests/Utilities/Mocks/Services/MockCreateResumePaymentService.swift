@@ -1,3 +1,9 @@
+//
+//  MockCreateResumePaymentService.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import Foundation
 @testable import PrimerSDK
 
@@ -22,14 +28,14 @@ final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             if let result = onCreatePayment?(paymentRequest) {
                 seal.fulfill(result)
             } else {
-                seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+                seal.reject(PrimerError.unknown())
             }
         }
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
         guard let result = onCreatePayment?(paymentRequest) else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         return result
     }
@@ -40,7 +46,7 @@ final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             if let result = onResumePayment?(paymentId, paymentResumeRequest) {
                 seal.fulfill(result)
             } else {
-                seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+                seal.reject(PrimerError.unknown())
             }
         }
     }
@@ -48,7 +54,7 @@ final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     func resumePaymentWithPaymentId(_ paymentId: String,
                                     paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
         guard let result = onResumePayment?(paymentId, paymentResumeRequest) else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         return result

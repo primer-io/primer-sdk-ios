@@ -1,9 +1,8 @@
 //
 //  PayPalTokenizationViewModelTests.swift
 //
-//
-//  Created by Jack Newcombe on 28/05/2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 import AuthenticationServices
@@ -209,56 +208,5 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
                      customerId: "customer_id",
                      orderId: "order_id",
                      status: .success)
-    }
-}
-
-class MockPayPalService: PayPalServiceProtocol {
-
-    // MARK: startOrderSession
-
-    var onStartOrderSession: (() -> Response.Body.PayPal.CreateOrder)?
-
-    func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, any Error>) -> Void) {
-        if let onStartOrderSession = onStartOrderSession {
-            completion(.success(onStartOrderSession()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    // MARK: startBillingAgreementSession
-
-    var onStartBillingAgreementSession: (() -> String)?
-
-    func startBillingAgreementSession(_ completion: @escaping (Result<String, any Error>) -> Void) {
-        if let onStartBillingAgreementSession {
-            completion(.success(onStartBillingAgreementSession()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    // MARK: confirmBillingAgreement
-
-    var onConfirmBillingAgreement: (() -> Response.Body.PayPal.ConfirmBillingAgreement)?
-
-    func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, any Error>) -> Void) {
-        if let onConfirmBillingAgreement {
-            completion(.success(onConfirmBillingAgreement()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    // MARK: fetchPayPalExternalPayerInfo
-
-    var onFetchPayPalExternalPayerInfo: ((String) -> Response.Body.PayPal.PayerInfo)?
-
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, any Error>) -> Void) {
-        if let onFetchPayPalExternalPayerInfo {
-            completion(.success(onFetchPayPalExternalPayerInfo(orderId)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
     }
 }

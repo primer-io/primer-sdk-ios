@@ -1,9 +1,8 @@
 //
 //  ErrorExtension.swift
-//  PrimerSDK
 //
-//  Created by Boris on 19.9.23..
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -38,11 +37,9 @@ extension Error {
             return primer3DSErr
         } else if let primerErr = self as? PrimerError {
             switch primerErr {
-            case .underlyingErrors(let errors, _, _):
+            case .underlyingErrors(let errors, _):
                 if errors.isEmpty {
-                    let unknownErr = PrimerError.unknown(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let unknownErr = PrimerError.unknown()
                     return unknownErr
                 } else if errors.count == 1 {
                     return errors.first!.primerError
@@ -55,10 +52,7 @@ extension Error {
         } else if let validationErr = self as? PrimerValidationError {
             return validationErr
         } else {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: [self],
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+            let primerErr = PrimerError.underlyingErrors(errors: [self])
             return primerErr
         }
     }

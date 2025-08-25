@@ -1,10 +1,8 @@
 //
 //  KlarnaTokenizationManagerTests.swift
-//  Debug App Tests
 //
-//  Created by Stefan Vrancianu on 05.02.2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
@@ -46,7 +44,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.success(KlarnaTestsMocks.tokenizationResponseBody)
+            return .success(KlarnaTestsMocks.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
@@ -81,9 +79,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.failure(
-                PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
-            )
+            return .failure(PrimerError.unknown())
         }
 
         firstly {
@@ -111,7 +107,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.success(KlarnaTestsMocks.tokenizationResponseBody)
+            return .success(KlarnaTestsMocks.tokenizationResponseBody)
         }
 
         firstly {
@@ -139,7 +135,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Result.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return .failure(PrimerError.unknown())
         }
 
         firstly {
@@ -169,7 +165,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
             XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
             expectDidTokenize.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectCreatePayment = expectation(description: "Did create payment")
@@ -200,7 +196,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
             XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
             expectDidTokenize.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
@@ -224,7 +220,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaCustomerTokenPaymentInstrument
             XCTAssertEqual(instrument.klarnaCustomerToken, "customer_token_id")
             expectDidTokenize.fulfill()
-            return Result.success(Mocks.primerPaymentMethodTokenData)
+            return .success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
@@ -274,21 +270,9 @@ extension KlarnaTokenizationManagerTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

@@ -1,9 +1,8 @@
 //
 //  PrimerGenericTextFieldView.swift
-//  PrimerSDK
 //
-//  Created by Evangelos on 12/11/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
@@ -57,11 +56,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
 
         let valid = PrimerTextField.Validation.valid
 
-        let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        ))
+        let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         validation = (self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
 
         switch validation {

@@ -1,9 +1,8 @@
 //
 //  BankSelectorTokenizationProviding.swift
-//  PrimerSDK
 //
-//  Created by Alexandra Lovin on 16.11.2023.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -15,11 +14,11 @@ protocol TokenizationSetupAndCleaning {
 
 protocol BankSelectorTokenizationProviding: TokenizationSetupAndCleaning {
     var paymentMethodType: PrimerPaymentMethodType { get }
-    func validateReturningPromise() -> Promise<Void>
-    func retrieveListOfBanks() -> Promise<[AdyenBank]>
+    func validate() async throws
+    func retrieveListOfBanks() async throws -> [AdyenBank]
     func filterBanks(query: String) -> [AdyenBank]
-    func tokenize(bankId: String) -> Promise<Void>
-    func handlePaymentMethodTokenData() -> Promise<Void>
+    func tokenize(bankId: String) async throws
+    func handlePaymentMethodTokenData() async throws
 }
 
 protocol WebRedirectTokenizationDelegate: TokenizationSetupAndCleaning, AnyObject {

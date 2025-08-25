@@ -1,9 +1,8 @@
 //
 //  ImageManager.swift
-//  PrimerSDK
 //
-//  Created by Evangelos on 15/7/22.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
@@ -140,11 +139,7 @@ final class ImageManager: LogReporter {
                 }
 
                 if !errors.isEmpty, errors.count == responses.count {
-                    let err = InternalError.underlyingErrors(errors: errors,
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(internalError: .underlyingErrors(errors: errors))
                 } else {
                     seal.fulfill(imageFiles)
                 }
@@ -195,11 +190,7 @@ final class ImageManager: LogReporter {
         }
 
         if !errors.isEmpty, errors.count == imageFiles.count {
-            let err = InternalError.underlyingErrors(errors: errors,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(internalError: .underlyingErrors(errors: errors))
         } else {
             return imageFiles
         }
@@ -238,10 +229,7 @@ final class ImageManager: LogReporter {
                     seal.fulfill(imageFile)
 
                 } else {
-                    let err = InternalError.failedToDecode(message: "image", userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
+                    throw handled(internalError: .failedToDecode(message: "image"))
                 }
             }
             .ensure {
@@ -306,10 +294,7 @@ final class ImageManager: LogReporter {
             if let imageFile = file as? ImageFile, imageFile.cachedImage != nil {
                 return imageFile
             } else {
-                let err = InternalError.failedToDecode(message: "image", userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(internalError: .failedToDecode(message: "image"))
             }
         } catch {
             if file.bundledImage != nil {

@@ -1,3 +1,9 @@
+//
+//  MockXenditAPIClient.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 @testable import PrimerSDK
 
 final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
@@ -8,7 +14,7 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
         if let onListRetailOutlets = onListRetailOutlets {
             completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
         } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown()))
         }
     }
 
@@ -16,7 +22,7 @@ final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
         if let onListRetailOutlets = onListRetailOutlets {
             return onListRetailOutlets(clientToken, paymentMethodId)
         } else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
     }
 }

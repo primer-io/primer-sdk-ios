@@ -1,10 +1,8 @@
 //
 //  ThreeDSErrorTests.swift
-//  Debug App Tests
 //
-//  Created by Evangelos Pittas on 16/5/23.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(Primer3DS)
 import XCTest
@@ -175,7 +173,6 @@ class ThreeDSErrorTests: XCTestCase {
                                        initProtocolVersion: String) -> Primer3DSErrorContainer {
         return Primer3DSErrorContainer.primer3DSSdkError(
             paymentMethodType: paymentMethodType,
-            userInfo: nil,
             diagnosticsId: diagnosticsId,
             initProtocolVersion: initProtocolVersion,
             errorInfo: Primer3DSErrorInfo(

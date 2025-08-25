@@ -1,9 +1,8 @@
 //
-//  IdealComponent.swift
-//  PrimerSDK
+//  DefaultBanksComponent.swift
 //
-//  Created by Alexandra Lovin on 06.11.2023.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -60,11 +59,7 @@ final class DefaultBanksComponent: BanksComponent {
             }
         case .bankFilterText(text: let text):
             if banks.isEmpty {
-                let error = handled(
-                    error: PrimerValidationError.banksNotLoaded(
-                        userInfo: .errorUserInfoDictionary(additionalInfo: ["text": text])
-                    )
-                )
+                let error = handled(error: PrimerValidationError.banksNotLoaded())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
@@ -75,15 +70,17 @@ final class DefaultBanksComponent: BanksComponent {
     public func start() {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
-        tokenizationProvidingModel.retrieveListOfBanks()
-            .done { banks -> Void in
-                self.banks = banks.map { IssuingBank(bank: $0) }
+        Task {
+            do {
+                let banks = try await tokenizationProvidingModel.retrieveListOfBanks()
+                self.banks = banks.map(IssuingBank.init)
                 let step = BanksStep.banksRetrieved(banks: self.banks)
                 self.nextDataStep = step
                 self.stepDelegate?.didReceiveStep(step: step)
-            }.catch { error in
+            } catch {
                 ErrorHandler.handle(error: error)
             }
+        }
     }
 
     public func submit() {
@@ -94,12 +91,15 @@ final class DefaultBanksComponent: BanksComponent {
             guard let bankId = self.bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
-            tokenizationProvidingModel.tokenize(bankId: bankId)
-                .done { _ in
+
+            Task {
+                do {
+                    _ = try await tokenizationProvidingModel.tokenize(bankId: bankId)
                     redirectComponent.didReceiveStep(step: WebStep.loaded)
-                }.catch { error in
+                } catch {
                     ErrorHandler.handle(error: error)
                 }
+            }
         }
     }
 }

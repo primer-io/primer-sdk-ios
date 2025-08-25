@@ -1,9 +1,8 @@
 //
 //  InternalCardComponentsManager.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 6/7/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
@@ -241,12 +240,8 @@ and 4 characters for expiry year separated by '/'.
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
-        let currentYearAsString = Date().yearComponentAsString
-        guard currentYearAsString.count >= 2 else { return nil }
-        let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
-        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
-        return "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryYear)"
+        guard let expiryYear = self.expiryDateField.expiryYear else { return nil }
+        return expiryYear.normalizedFourDigitYear()
     }
 
     private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
@@ -326,9 +321,7 @@ and 4 characters for expiry year separated by '/'.
                     
                     if !allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerError.invalidValue(key: "cardNetwork",
-                                                           value: cardNetwork.displayName,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
+                                                           value: cardNetwork.displayName)
                         ErrorHandler.handle(error: err)
                         self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                         return
@@ -353,7 +346,7 @@ and 4 characters for expiry year separated by '/'.
                 self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(let errors, _, _) {
+        } catch PrimerError.underlyingErrors(let errors, _) {
             delegate.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {

@@ -1,10 +1,8 @@
 //
 //  NetworkResponseFactoryTests.swift
-//  Debug App Tests
 //
-//  Created by Jack Newcombe on 18/03/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -88,7 +86,7 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail("Expected serverError, but decoding succeeded")
         } catch let error as InternalError {
             switch error {
-            case .serverError(let status, let response, _, _):
+            case .serverError(let status, let response, _):
                 XCTAssertEqual(status, 202)
                 XCTAssertEqual(response?.errorId, "error-id")
                 XCTAssertEqual(response?.description, "a description")

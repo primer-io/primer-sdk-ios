@@ -1,3 +1,9 @@
+//
+//  MockCreateResumeAPIClient.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 @testable import PrimerSDK
 import XCTest
 
@@ -28,7 +34,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
     func createPayment(clientToken: PrimerSDK.DecodedJWTToken,
                        paymentRequestBody: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
         guard let createResponse else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         switch createResponse {
         case .success(let result): return result
@@ -51,7 +57,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
     func resumePayment(clientToken: PrimerSDK.DecodedJWTToken, paymentId: String,
                        paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
         guard let resumeResponse else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         switch resumeResponse {
         case .success(let result): return result
@@ -72,7 +78,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
                          url completeUrl: URL,
                          paymentRequest body: Request.Body.Payment.Complete) async throws -> Response.Body.Complete {
         guard let completeResponse else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
         switch completeResponse {
         case .success(let result): return result

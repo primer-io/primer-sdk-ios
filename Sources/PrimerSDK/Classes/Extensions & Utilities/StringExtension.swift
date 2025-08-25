@@ -1,11 +1,14 @@
 //
 //  StringExtension.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 10/3/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+
+public extension String {
+    static var uuid: String {  UUID().uuidString }
+}
 
 internal extension String {
 
@@ -211,20 +214,16 @@ internal extension String {
     ///         between Drop-in UI (MM/YY) and Headless/RawDataManager (MM/YYYY) implementations
     func validateExpiryDateString() throws {
         if self.isEmpty {
-            let err = PrimerValidationError.invalidExpiryDate(
-                message: "Expiry date cannot be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            throw err
+            throw PrimerValidationError.invalidExpiryDate(message: "Expiry date cannot be blank.")
 
         } else {
             var expiryDate: Date?
-            
+
             // Try MM/yy format first
             let shortFormatter = DateFormatter()
             shortFormatter.dateFormat = "MM/yy"
             shortFormatter.locale = Locale(identifier: "en_US_POSIX")
-            
+
             if let date = shortFormatter.date(from: self) {
                 expiryDate = date
             } else {
@@ -234,21 +233,17 @@ internal extension String {
                 longFormatter.locale = Locale(identifier: "en_US_POSIX")
                 expiryDate = longFormatter.date(from: self)
             }
-            
-            if let expiryDate = expiryDate {
-                if !expiryDate.isValidExpiryDate {
-                    let err = PrimerValidationError.invalidExpiryDate(
-                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    throw err
-                }
-            } else {
-                let err = PrimerValidationError.invalidExpiryDate(
-                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-                throw err
+
+            guard let expiryDate, expiryDate.yearComponentAsString.normalizedFourDigitYear() != nil else {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date formats are MM/YY or MM/YYYY."
+                )
+            }
+
+            if !expiryDate.isValidExpiryDate {
+                throw PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Expiry date should not be less than a year in the past."
+                )
             }
         }
     }
@@ -280,5 +275,26 @@ internal extension String {
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
         let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
         return matches?.count ?? 0 > 0
+    }
+
+    /// Normalizes a year string to 4-digit format
+    /// - Returns: A 4-digit year string, or nil if the input is not a valid 2-digit or 4-digit year
+    /// - Note: 2-digit years (e.g., "30") are converted using current century (e.g., "2030")
+    ///         4-digit years (e.g., "2030") are returned as-is
+    ///         Invalid inputs return nil
+    func normalizedFourDigitYear() -> String? {
+        guard self.allSatisfy(\.isNumber) else { return nil }
+
+        switch self.count {
+        case 4:
+            return self
+        case 2:
+            // Convert 2-digit year to 4-digit using current century
+            let currentYear = Calendar.current.component(.year, from: Date())
+            let century = String(currentYear).prefix(2)
+            return "\(century)\(self)"
+        default:
+            return nil
+        }
     }
 }

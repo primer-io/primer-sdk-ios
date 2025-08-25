@@ -1,3 +1,9 @@
+//
+//  PrimerSettings.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import Foundation
 import PassKit
 
@@ -248,6 +254,12 @@ public enum DismissalMechanism: Codable {
     case gestures, closeButton
 }
 
+public enum PrimerAppearanceMode: String, Codable {
+    case system = "SYSTEM"
+    case light = "LIGHT"
+    case dark = "DARK"
+}
+
 public final class PrimerUIOptions: Codable {
 
     public internal(set) var isInitScreenEnabled: Bool
@@ -255,6 +267,7 @@ public final class PrimerUIOptions: Codable {
     public internal(set) var isErrorScreenEnabled: Bool
     public internal(set) var dismissalMechanism: [DismissalMechanism]
     public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
+    public internal(set) var appearanceMode: PrimerAppearanceMode
     public let theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
@@ -263,6 +276,7 @@ public final class PrimerUIOptions: Codable {
              isErrorScreenEnabled,
              dismissalMechanism,
              cardFormUIOptions,
+             appearanceMode,
              theme
     }
 
@@ -272,6 +286,7 @@ public final class PrimerUIOptions: Codable {
         isErrorScreenEnabled: Bool? = nil,
         dismissalMechanism: [DismissalMechanism]? = [.gestures],
         cardFormUIOptions: PrimerCardFormUIOptions? = nil,
+        appearanceMode: PrimerAppearanceMode? = nil,
         theme: PrimerTheme? = nil
     ) {
         self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
@@ -279,6 +294,7 @@ public final class PrimerUIOptions: Codable {
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
         self.dismissalMechanism = dismissalMechanism ?? [.gestures]
         self.cardFormUIOptions = cardFormUIOptions
+        self.appearanceMode = appearanceMode ?? .system
         self.theme = theme ?? PrimerTheme()
     }
 
@@ -289,6 +305,7 @@ public final class PrimerUIOptions: Codable {
         self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
         self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
         self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
+        self.appearanceMode = try container.decodeIfPresent(PrimerAppearanceMode.self, forKey: .appearanceMode) ?? .system
         self.theme = PrimerTheme()
     }
 
@@ -299,6 +316,7 @@ public final class PrimerUIOptions: Codable {
         try container.encode(isErrorScreenEnabled, forKey: .isErrorScreenEnabled)
         try container.encode(dismissalMechanism, forKey: .dismissalMechanism)
         try container.encodeIfPresent(cardFormUIOptions, forKey: .cardFormUIOptions)
+        try container.encode(appearanceMode, forKey: .appearanceMode)
     }
 }
 

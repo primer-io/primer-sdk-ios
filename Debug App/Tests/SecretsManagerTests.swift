@@ -1,10 +1,8 @@
 //
-//  SecretsManaagerTests.swift
-//  Debug App Tests
+//  SecretsManagerTests.swift
 //
-//  Created by Jack Newcombe on 16/10/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import Debug_App
@@ -12,11 +10,16 @@ import XCTest
 final class SecretsManagerTests: XCTestCase {
 
     func testLoadFileAndGetSecret() throws {
-        let manager = SecretsManager(bundle: Bundle(for: type(of: self)))
+        let bundle = Bundle(for: type(of: self))
+        guard let nestedBundleURL = bundle.url(forResource: "PrimerSDK_DebugAppTests", withExtension: "bundle"),
+              let resourceBundle = Bundle(url: nestedBundleURL) else {
+            return XCTFail("Could not find PrimerSDK_DebugAppTests.bundle")
+        }
+
+        let manager = SecretsManager(bundle: resourceBundle)
         XCTAssertEqual(manager.properties.count, 1)
 
         let stripePublishableKey = manager.value(forKey: .stripePublishableKey)
         XCTAssertEqual(stripePublishableKey, "pk_test_123")
     }
-
 }

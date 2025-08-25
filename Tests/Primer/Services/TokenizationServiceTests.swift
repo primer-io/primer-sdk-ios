@@ -1,3 +1,9 @@
+//
+//  TokenizationServiceTests.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 @testable import PrimerSDK
 import XCTest
 
@@ -62,7 +68,7 @@ final class TokenizationServiceTests: XCTestCase {
 
     func test_tokenize_WhenApiClientReturnsError_ThenThrowsError() async {
         // Given
-        let expectedError = PrimerError.invalidClientToken(userInfo: [:], diagnosticsId: "test-id")
+        let expectedError = PrimerError.invalidClientToken(diagnosticsId: "test-id")
         mockApiClient.tokenizePaymentMethodResult = (nil, expectedError)
 
         // When
@@ -110,7 +116,7 @@ final class TokenizationServiceTests: XCTestCase {
 
     func test_exchangePaymentMethodToken_WhenApiClientReturnsError_ThenThrowsError() async {
         // Given
-        let expectedError = PrimerError.invalidClientToken(userInfo: [:], diagnosticsId: "test-id")
+        let expectedError = PrimerError.invalidClientToken(diagnosticsId: "test-id")
         mockApiClient.exchangePaymentMethodTokenResult = (nil, expectedError)
 
         // When

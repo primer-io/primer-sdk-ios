@@ -1,3 +1,9 @@
+//
+//  PrimerAddressLineFieldView.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import UIKit
 
 public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
@@ -10,10 +16,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         isValid = { text in
             return !text.isEmpty
         }
-        validationError = .invalidAddress(
-            message: "Address is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidAddress(message: "Address is not valid.")
     }
 }
 

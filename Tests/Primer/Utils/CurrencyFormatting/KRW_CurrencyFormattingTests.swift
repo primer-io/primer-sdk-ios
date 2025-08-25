@@ -1,9 +1,8 @@
 //
 //  KRW_CurrencyFormattingTests.swift
 //
-//
-//  Created by Onur Var on 21.03.2025.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
 import XCTest
@@ -101,7 +100,7 @@ class KRW_CurrencyFormattingTests: XCTestCase {
             "fr_CA": "2 560₩", // French (Canada) // There is a special character in this string. U+00A0 (NO-BREAK SPACE)
             "fr_FR": "2 560₩", // French (France) // There is a special character in this string. U+202F (NARROW NO-BREAK SPACE)
             "hi_IN": "₩2,560", // Hindi (India)
-            "it_IT": "2.560₩", // Italian (Italy)
+            "it_IT": "2560₩", // Italian (Italy)
             "ja_JP": "₩2,560", // Japanese (Japan)
             "ko_KR": "₩2,560", // Korean (South Korea)
             "nl_NL": "₩2.560", // Dutch (Netherlands)

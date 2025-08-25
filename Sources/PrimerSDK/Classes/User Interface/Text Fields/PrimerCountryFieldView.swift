@@ -1,3 +1,9 @@
+//
+//  PrimerCountryFieldView.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import UIKit
 
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
@@ -17,10 +23,7 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCountry
-        validationError = .invalidCountry(
-            message: "Country is not valid.",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
+        validationError = .invalidCountry(message: "Country is not valid.")
         isValid = { text in
             return !text.isEmpty
         }

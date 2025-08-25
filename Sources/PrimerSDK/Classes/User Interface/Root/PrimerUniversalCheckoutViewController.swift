@@ -1,9 +1,8 @@
 //
 //  PrimerUniversalCheckoutViewController.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 31/7/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 // swiftlint:disable cyclomatic_complexity
@@ -25,7 +24,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
     private var cardButtonViewModel: CardButtonViewModel?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         postUIEvent(.view, type: .view, in: .universalCheckout)
@@ -52,9 +51,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if let error = err as? PrimerError {
                 primerErr = error
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: .errorUserInfoDictionary(),
-                                                         diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err])
             }
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
@@ -156,9 +153,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency
             else {
-                let err = PrimerError.invalidValue(key: "amount or currency", value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "amount or currency")
                 firstly {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }

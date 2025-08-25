@@ -1,10 +1,8 @@
 //
 //  NetworkRequestFactoryTests.swift
-//  Debug App Tests
 //
-//  Created by Jack Newcombe on 18/03/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
 @testable import PrimerSDK
@@ -104,9 +102,8 @@ final class NetworkRequestFactoryTests: XCTestCase {
                 return
             }
             switch error {
-            case .invalidUrl(let url, let userInfo, _):
+            case .invalidUrl(let url, _):
                 XCTAssertTrue(url?.hasPrefix("Unknown Host") ?? false)
-                XCTAssertEqual(userInfo["function"], "baseRequest(from:)")
             default:
                 XCTFail()
             }

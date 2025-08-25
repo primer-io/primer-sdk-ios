@@ -1,9 +1,8 @@
 //
-//  OrderItem.swift
-//  PrimerSDK
+//  ApplePayOrderItem.swift
 //
-//  Created by Evangelos Pittas on 24/3/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PassKit
@@ -52,7 +51,7 @@ internal struct ApplePayOrderItem: Codable, Equatable {
                 primerError: .invalidValue(
                     key: "amount",
                     value: unitAmount,
-                    userInfo: .errorUserInfoDictionary(additionalInfo: ["message": "amount should be null for pending items"])
+                    reason: "amount should be null for pending items"
                 )
             )
         }
@@ -62,7 +61,7 @@ internal struct ApplePayOrderItem: Codable, Equatable {
                 primerError: .invalidValue(
                     key: "amount",
                     value: unitAmount,
-                    userInfo: .errorUserInfoDictionary(additionalInfo: ["message": "amount cannot be null for non-pending items"])
+                    reason: "amount cannot be null for non-pending items"
                 )
             )
         }

@@ -1,9 +1,8 @@
 //
-//  KlarnaManager.swift
-//  PrimerSDK
+//  PrimerHeadlessUniversalCheckoutKlarnaManager.swift
 //
-//  Created by Stefan Vrancianu on 17.02.2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 #if canImport(PrimerKlarnaSDK)
@@ -20,9 +19,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(
                         paymentMethodType: "KLARNA",
-                        userInfo: .errorUserInfoDictionary(
-                            additionalInfo: ["message": "Unable to locate a valid payment method configuration"]
-                        )
+                        reason: "Unable to locate a valid payment method configuration"
                     )
                 )
             }

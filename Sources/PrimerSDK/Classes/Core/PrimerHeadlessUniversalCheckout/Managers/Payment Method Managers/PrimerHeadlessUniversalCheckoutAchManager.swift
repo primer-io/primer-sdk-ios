@@ -1,9 +1,8 @@
 //
 //  PrimerHeadlessUniversalCheckoutAchManager.swift
-//  PrimerSDK
 //
-//  Created by Stefan Vrancianu on 25.04.2024.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
@@ -24,9 +23,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(
-                            additionalInfo: ["message": "Unable to locate a valid payment method configuration"]
-                        )
+                        reason: "Unable to locate a valid payment method configuration"
                     )
                 )
             }
@@ -35,9 +32,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw handled(
                     primerError: .unsupportedPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: .errorUserInfoDictionary(
-                            additionalInfo: ["message": "Unable to locate a valid payment method view model."]
-                        )
+                        reason: "Unable to locate a valid payment method view model."
                     )
                 )
             }

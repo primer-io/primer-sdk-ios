@@ -1,3 +1,9 @@
+//
+//  TokenizationService.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 // swiftlint:disable function_body_length
 
 import Foundation
@@ -22,34 +28,21 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+                let err = PrimerError.invalidClientToken()
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             self.logger.debug(message: "Client Token: \(decodedJWTToken)")
             guard let pciURL = decodedJWTToken.pciUrl else {
-                let err = PrimerError.invalidValue(
-                    key: "decodedClientToken.pciUrl",
-                    value: decodedJWTToken.pciUrl,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             self.logger.debug(message: "PCI URL: \(pciURL)")
             guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-                let err = PrimerError.invalidValue(
-                    key: "decodedClientToken.pciUrl",
-                    value: decodedJWTToken.pciUrl,
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -69,10 +62,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.invalidClientToken()
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -81,9 +71,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         guard let pciURL = decodedJWTToken.pciUrl else {
             let err = PrimerError.invalidValue(
                 key: "decodedClientToken.pciUrl",
-                value: decodedJWTToken.pciUrl,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
+                value: decodedJWTToken.pciUrl
             )
             ErrorHandler.handle(error: err)
             throw err
@@ -91,12 +79,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         logger.debug(message: "PCI URL: \(pciURL)")
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            let err = PrimerError.invalidValue(
-                key: "decodedClientToken.pciUrl",
-                value: decodedJWTToken.pciUrl,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -114,9 +97,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     func exchangePaymentMethodToken( _ vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken()
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -143,10 +124,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
     ) async throws -> PrimerPaymentMethodTokenData {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.invalidClientToken()
             ErrorHandler.handle(error: err)
             throw err
         }

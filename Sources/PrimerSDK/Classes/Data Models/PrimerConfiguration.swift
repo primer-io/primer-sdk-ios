@@ -1,9 +1,8 @@
 //
-//  PrimerAPIConfiguration.swift
-//  PrimerSDK
+//  PrimerConfiguration.swift
 //
-//  Created by Evangelos on 28/12/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 
@@ -175,7 +174,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     var warningStr = "\(viewModel.config.type) configuration has been found, but it cannot be presented."
 
                     if let primerErr = error as? PrimerError {
-                        if case .underlyingErrors(let errors, _, _) = primerErr {
+                        if case .underlyingErrors(let errors, _) = primerErr {
                             for err in errors {
                                 if let primerErr = err as? PrimerError {
                                     var errLine: String = ""

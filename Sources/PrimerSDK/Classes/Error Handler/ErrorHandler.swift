@@ -1,23 +1,32 @@
 //
 //  ErrorHandler.swift
-//  PrimerSDK
 //
-//  Created by Evangelos Pittas on 16/3/21.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 final class ErrorHandler: LogReporter {
 
     // Call this function to log any error to Analytics
-    static func handle(error: Error) {
-        ErrorHandler.shared.handle(error: error)
+    static func handle(
+        error: Error,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        ErrorHandler.shared.handle(error: error, file: file, line: line, function: function)
     }
 
     static var shared = ErrorHandler()
 
-    func handle(error: Error) {
-        self.logger.error(message: error.localizedDescription)
+    func handle(
+        error: Error,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        self.logger.error(message: error.localizedDescription, file: file, line: line, function: function)
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
@@ -48,7 +57,7 @@ final class ErrorHandler: LogReporter {
                 context: primerError.analyticsContext
             )
 
-            if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
+            if let createdAt = (primerError.errorUserInfo["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
         } else {

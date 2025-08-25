@@ -1,3 +1,9 @@
+//
+//  ClientToken.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 // swiftlint:disable function_body_length
 import Foundation
 
@@ -274,29 +280,18 @@ extension DecodedJWTToken {
 
     func validate() throws {
         if accessToken == nil {
-            let info = ["reason": "Access token is nil"]
-            throw handled(primerError: .invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info)))
+            throw handled(primerError: .invalidClientToken(reason: "Access token is nil"))
         }
 
         guard let expDate = expDate else {
             throw handled(
-                primerError: .invalidValue(
-                    key: "expDate",
-                    userInfo: .errorUserInfoDictionary(
-                        additionalInfo: ["reason": "Expiry date missing"]
-                    )
-                )
+                primerError: .invalidValue(key: "expDate", reason: "Expiry date missing")
             )
         }
 
         if expDate < Date() {
             throw handled(
-                primerError: .invalidValue(
-                    key: "expDate",
-                    userInfo: .errorUserInfoDictionary(
-                        additionalInfo: ["reason": "Expiry datetime has passed."]
-                    )
-                )
+                primerError: .invalidValue(key: "expDate", reason: "Expiry datetime has passed.")
             )
         }
     }

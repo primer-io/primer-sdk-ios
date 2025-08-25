@@ -1,10 +1,8 @@
 //
 //  MerchantHeadlessCheckoutRawDataViewController.swift
-//  PrimerSDK_Example
 //
-//  Created by Evangelos on 12/7/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
 import UIKit
@@ -172,15 +170,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     }
 
     @IBAction func payButtonTapped(_ sender: UIButton) {
-        guard expiryDateTextField?.text?.count == 7,
-              let expiryComponents = expiryDateTextField?.text?.split(separator: "/") else {
-            self.showErrorMessage("Please write expiry date in format MM/YYYY")
-            return
-        }
-
-        if expiryComponents.count != 2 {
-            self.showErrorMessage("Please write expiry date in format MM/YY")
-            return
+        guard expiryDateTextField?.text?.isEmpty == false,
+              let expiryComponents = expiryDateTextField?.text?.split(separator: "/"),
+              expiryComponents.count == 2,
+              case let yearComponent = String(expiryComponents[1]),
+              [2, 4].contains(yearComponent.count) else {
+            return showErrorMessage("Please write expiry date in format MM/YY or MM/YYYY")
         }
 
         if paymentMethodType == "PAYMENT_CARD" {

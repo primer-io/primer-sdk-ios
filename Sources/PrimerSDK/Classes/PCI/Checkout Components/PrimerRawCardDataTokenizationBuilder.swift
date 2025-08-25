@@ -1,9 +1,8 @@
 //
-//  PrimerRawCardDataTokenization.swift
-//  PrimerSDK
+//  PrimerRawCardDataTokenizationBuilder.swift
 //
-//  Created by Dario Carlomagno on 18/08/22.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
@@ -102,9 +101,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return Promise { seal in
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil
             else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -113,10 +110,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData")
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -127,16 +121,20 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 let err = PrimerError.invalidValue(key: "cardNetwork",
-                                                   value: cardNetwork.displayName,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                                                   value: cardNetwork.displayName)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
-            let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+            let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+
+            guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
+                return seal.reject(handled(primerValidationError: .invalidExpiryDate(
+                    message: "Expiry year '\(rawExpiryYear)' is not valid. Please provide a 2-digit (YY) or 4-digit (YYYY) year."
+                )))
+            }
 
             let paymentInstrument = CardPaymentInstrument(
                 number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
@@ -154,19 +152,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
+            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "rawData")
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -176,15 +169,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
         if !self.allowedCardNetworks.contains(cardNetwork) {
             let err = PrimerError.invalidValue(key: "cardNetwork",
-                                               value: cardNetwork.displayName,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+                                               value: cardNetwork.displayName)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
-        let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+        let rawExpiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+
+        guard let expiryYear = rawExpiryYear.normalizedFourDigitYear() else {
+            throw handled(primerValidationError: .invalidExpiryDate(
+                message: "Expiry year '\(rawExpiryYear)' is not valid. Please provide a 2-digit (YY) or 4-digit (YYYY) year."
+            ))
+        }
 
         return Request.Body.Tokenization(
             paymentInstrument: CardPaymentInstrument(
@@ -212,10 +209,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 guard let self else {
                     // If self is deallocated, reject the promise gracefully
                     DispatchQueue.main.async {
-                        let err = PrimerError.unknown(
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
-                        )
+                        let err = PrimerError.unknown()
                         seal.reject(err)
                     }
                     return
@@ -225,9 +219,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid raw data error
                 guard let rawData = data as? PrimerCardData else {
-                    let err = PrimerValidationError.invalidRawData(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = handled(primerValidationError: .invalidRawData())
                     errors.append(err)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
@@ -252,15 +244,13 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                        let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
-                        return
+                        return seal.fulfill()
                     }
 
                     // Unsupported card type error
                     if !self.allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerValidationError.invalidCardType(
-                            message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
+                            message: "Unsupported card type detected: \(cardNetwork.displayName)"
                         )
                         errors.append(err)
                     }
@@ -270,8 +260,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                     if !self.allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerValidationError.invalidCardType(
                             message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString
                         )
                         errors.append(err)
                     }
@@ -281,17 +269,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid card number error
                 if rawData.cardNumber.isEmpty {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number can not be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
                 } else if !rawData.cardNumber.isValidCardNumber {
-                    let err = PrimerValidationError.invalidCardnumber(
-                        message: "Card number is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
                 }
 
                 // Invalid expiry error
@@ -305,39 +285,26 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Invalid cvv error
                 if rawData.cvv.isEmpty {
-                    let err = PrimerValidationError.invalidCvv(
-                        message: "CVV cannot be blank.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
                 } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                    let err = PrimerValidationError.invalidCvv(
-                        message: "CVV is not valid.",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
                 }
 
                 // Cardholder name error
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name cannot be blank.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(
+                            PrimerValidationError.invalidCardholderName(
+                                message: "Cardholder name cannot be blank."
+                            )
+                        )
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                        errors.append(PrimerValidationError.invalidCardholderName(
-                                        message: "Cardholder name is not valid.",
-                                        userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString))
+                        errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
                     }
                 }
 
                 if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(
-                        errors: errors,
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.underlyingErrors(errors: errors)
 
                     self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
@@ -359,13 +326,8 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         var errors: [PrimerValidationError] = []
 
         guard let rawData = data as? PrimerCardData else {
-            let err = PrimerValidationError.invalidRawData(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = handled(primerValidationError: .invalidRawData())
             errors.append(err)
-            ErrorHandler.handle(error: err)
-
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }
@@ -389,9 +351,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             // Unsupported card type error
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 let err = PrimerValidationError.invalidCardType(
-                    message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    message: "Unsupported card type detected: \(cardNetwork.displayName)"
                 )
                 errors.append(err)
             }
@@ -400,9 +360,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             // This ensures consistent behavior with Web SDK where network validation always happens
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 let err = PrimerValidationError.invalidCardType(
-                    message: "Unsupported card type detected: \(cardNetwork.displayName)",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
+                    message: "Unsupported card type detected: \(cardNetwork.displayName)"
                 )
                 errors.append(err)
             }
@@ -412,19 +370,9 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         // Invalid card number error
         if rawData.cardNumber.isEmpty {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number can not be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
         } else if !rawData.cardNumber.isValidCardNumber {
-            let err = PrimerValidationError.invalidCardnumber(
-                message: "Card number is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         }
 
         do {
@@ -436,43 +384,21 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         if rawData.cvv.isEmpty {
-            let err = PrimerValidationError.invalidCvv(
-                message: "CVV cannot be blank.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
         } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-            let err = PrimerValidationError.invalidCvv(
-                message: "CVV is not valid.",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            errors.append(err)
+            errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
         }
 
         if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
             if (rawData.cardholderName ?? "").isEmpty {
-                errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name cannot be blank.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
+                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
             } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                errors.append(PrimerValidationError.invalidCardholderName(
-                    message: "Cardholder name is not valid.",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                ))
+                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
             }
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(
-                errors: errors,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
+            let err = PrimerError.underlyingErrors(errors: errors)
             ErrorHandler.handle(error: err)
 
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
