@@ -153,12 +153,8 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
-            }
+            let error = err.primerError
+            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
 
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
@@ -198,12 +194,8 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
-            }
+            let error = err.primerError
+            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
@@ -241,12 +233,8 @@ final class PrimerInternal: LogReporter {
             completion?(nil)
         }
         .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
-            }
+            let error = err.primerError
+            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }

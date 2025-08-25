@@ -1,7 +1,7 @@
 //
 //  CVVRecaptureViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -16,7 +16,7 @@ final class CVVRecaptureViewController: UIViewController {
     private var cvvField: PrimerCVVFieldView!
     private var cvvContainerView: PrimerCustomFieldView!
     private let continueButton = PrimerButton()
-    
+
     private var paymentMethodType: String { viewModel.cardButtonViewModel.paymentMethodType.rawValue }
     private var analyticsContext: AnalyticsContext { AnalyticsContext(paymentMethodType: paymentMethodType) }
 

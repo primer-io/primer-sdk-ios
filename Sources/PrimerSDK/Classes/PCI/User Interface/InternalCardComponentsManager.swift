@@ -303,7 +303,7 @@ and 4 characters for expiry year separated by '/'.
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    ErrorHandler.handle(error: PrimerError.underlyingErrors(errors: [err]))
+                    ErrorHandler.handle(error: err.primerError)
                     self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
             }
