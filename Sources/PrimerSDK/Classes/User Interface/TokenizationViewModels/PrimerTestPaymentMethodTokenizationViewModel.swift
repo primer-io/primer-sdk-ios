@@ -146,7 +146,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         try await awaitUserSelection()
         try await awaitPayButtonTappedUponDecisionSelection()
     }
-    
+
     // MARK: - Tokenize
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
