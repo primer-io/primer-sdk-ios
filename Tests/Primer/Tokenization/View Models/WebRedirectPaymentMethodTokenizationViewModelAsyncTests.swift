@@ -99,7 +99,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
             decision(.continuePaymentCreation())
         }
 
-        sut.start_async()
+        sut.start()
 
         let cancelNotification = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
         NotificationCenter.default.post(cancelNotification)
@@ -144,7 +144,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
                 )
             )
         }
-        sut.start_async()
+        sut.start()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             let cancelNotification = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
@@ -175,7 +175,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [expectWillCreatePaymentWithData, expectDidFail], timeout: 2.0, enforceOrder: true)
     }
@@ -271,7 +271,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelAsyncTests: XCTestCase 
             expectDidCompleteCheckoutWithData.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
