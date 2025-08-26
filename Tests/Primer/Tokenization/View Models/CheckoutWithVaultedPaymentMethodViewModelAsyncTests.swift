@@ -99,7 +99,7 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        try await sut.start_async()
+        try await sut.start()
 
         await fulfillment(of: [
             expectWillCreatePaymentWithData,
@@ -151,7 +151,7 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
         let expectPromiseResolved = self.expectation(description: "start promise resolves")
         Task {
             do {
-                try await sut.start_async()
+                try await sut.start()
                 expectPromiseResolved.fulfill()
             } catch {
                 XCTFail()
