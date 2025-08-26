@@ -36,7 +36,8 @@ extension PaymentMethodTokenizationViewModel {
                 } else {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                        let error = error.primerError
+                        let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                         await handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -56,6 +57,8 @@ extension PaymentMethodTokenizationViewModel {
             } catch {
                 await uiManager.primerRootViewController?.enableUserInteraction(true)
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                let error = error.primerError
+                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
 
                 if let primerErr = error as? PrimerError,
                    case .cancelled = primerErr,
@@ -70,7 +73,8 @@ extension PaymentMethodTokenizationViewModel {
                 } else {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                        let error = error.primerError
+                        let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                         await handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -170,12 +174,8 @@ extension PaymentMethodTokenizationViewModel {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .then { () -> Promise<String?> in
-                    var primerErr: PrimerError!
-                    if let error = err as? PrimerError {
-                        primerErr = error
-                    } else {
-                        primerErr = PrimerError.underlyingErrors(errors: [err])
-                    }
+                    let error = err.primerError
+                    let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                     self.setCheckoutDataFromError(primerErr)
                     DispatchQueue.main.async {
                         self.showResultScreenIfNeeded(error: primerErr)
@@ -244,7 +244,8 @@ extension PaymentMethodTokenizationViewModel {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let error = error.primerError
+                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
                 setCheckoutDataFromError(primerErr)
                 await showResultScreenIfNeeded(error: primerErr)
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
