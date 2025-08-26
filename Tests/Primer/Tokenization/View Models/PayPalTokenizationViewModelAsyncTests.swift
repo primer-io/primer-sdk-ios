@@ -115,7 +115,7 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
@@ -192,7 +192,7 @@ final class PayPalTokenizationViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
