@@ -85,55 +85,6 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         super.start_async()
     }
 
-    override func performPreTokenizationSteps() -> Promise<Void> {
-        let event = Analytics.Event.ui(
-            action: .click,
-            context: Analytics.Event.Property.Context(
-                issuerId: nil,
-                paymentMethodType: config.type,
-                url: nil),
-            extra: nil,
-            objectType: .button,
-            objectId: .select,
-            objectClass: "\(Self.self)",
-            place: .bankSelectionList
-        )
-        Analytics.Service.record(event: event)
-
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then { () -> Promise<Void> in
-                self.willPresentPaymentMethodUI?()
-                return self.presentPaymentMethodUserInterface()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitUserInput()
-            }
-            .then { () -> Promise<Void> in
-                self.didStartPayment?()
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
-            .done {
-                self.willDismissPaymentMethodUI?()
-                seal.fulfill()
-            }
-            .ensure { [unowned self] in
-                DispatchQueue.main.async {
-                    self.didDismissPaymentMethodUI?()
-                    self.didFinishPayment?(nil)
-                }
-            }
-            .catch { err in
-                DispatchQueue.main.async {
-                    self.didFinishPayment?(err)
-                }
-                seal.reject(err)
-            }
-        }
-    }
-
     override func performPreTokenizationSteps() async throws {
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
@@ -172,54 +123,14 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         }
     }
 
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     override func performTokenizationStep() async throws {
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
         paymentMethodTokenData = try await tokenize()
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-
     override func performPostTokenizationSteps() async throws {
         // Empty implementation
-    }
-
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
-
-                self.willPresentPaymentMethodUI?()
-                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
-                self.didPresentPaymentMethodUI?()
-                seal.fulfill()
-            }
-        }
     }
 
     @MainActor
@@ -230,46 +141,13 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         didPresentPaymentMethodUI?()
     }
 
-    override func awaitUserInput() -> Promise<Void> {
-        return Promise { seal in
-            self.didPresentPaymentMethodUI?()
-
-            firstly {
-                self.awaitUserSelection()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitPayButtonTappedUponDecisionSelection()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     override func awaitUserInput() async throws {
         didPresentPaymentMethodUI?()
         try await awaitUserSelection()
         try await awaitPayButtonTappedUponDecisionSelection()
     }
-    
-    // MARK: - Tokenize
 
-    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            self.tokenize(decision: self.selectedDecision!) { paymentMethodTokenData, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethodTokenData = paymentMethodTokenData {
-                    seal.fulfill(paymentMethodTokenData)
-                } else {
-                    assert(true, "Should always receive a payment method or an error")
-                }
-            }
-        }
-    }
+    // MARK: - Tokenize
 
     override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let selectedDecision else {
@@ -349,28 +227,11 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
     // MARK: - Flow Promises
 
-    private func awaitUserSelection() -> Promise<Void> {
-        return Promise { seal in
-            self.decisionSelectionCompletion = { decision in
-                self.selectedDecision = decision
-                seal.fulfill()
-            }
-        }
-    }
-
     private func awaitUserSelection() async throws {
         await withCheckedContinuation { continuation in
             self.decisionSelectionCompletion = { decision in
                 self.selectedDecision = decision
                 continuation.resume()
-            }
-        }
-    }
-
-    private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
-        return Promise { seal in
-            self.payButtonTappedCompletion = {
-                seal.fulfill()
             }
         }
     }
@@ -385,32 +246,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 }
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
-
-    private func tokenize(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            return completion(nil, handled(primerError: .invalidClientToken()))
-        }
-
-        let sessionInfo = PrimerTestPaymentMethodSessionInfo(flowDecision: selectedDecision)
-
-        let paymentInstrument = OffSessionPaymentInstrument(
-            paymentMethodConfigId: config.id!,
-            paymentMethodType: config.type,
-            sessionInfo: sessionInfo)
-
-        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-
-        firstly {
-            self.tokenizationService.tokenize(requestBody: requestBody)
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            completion(self.paymentMethodTokenData, nil)
-        }
-        .catch { err in
-            completion(nil, err)
-        }
-    }
 
     // MARK: Private helper methods
 
