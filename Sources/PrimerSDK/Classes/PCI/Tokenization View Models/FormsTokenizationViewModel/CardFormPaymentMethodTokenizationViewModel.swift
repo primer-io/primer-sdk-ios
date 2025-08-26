@@ -573,7 +573,6 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
-
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.userInputCompletion = {
