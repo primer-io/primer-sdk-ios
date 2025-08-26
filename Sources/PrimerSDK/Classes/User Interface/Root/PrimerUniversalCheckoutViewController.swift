@@ -40,7 +40,6 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else { return }
 
         let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
-        
         Task {
             do {
                 try await vaultService.fetchVaultedPaymentMethods()
@@ -51,9 +50,11 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
-                            PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                                      paymentMethodManagerCategories: [],
-                                                                      withMessage: message)
+                            PrimerUIManager.dismissOrShowResultScreen(
+                                type: .failure,
+                                paymentMethodManagerCategories: [],
+                                withMessage: message
+                            )
                         }
                     }
                 }
