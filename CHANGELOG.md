@@ -1,3 +1,31 @@
+## 2.40.0 (2025-08-26)
+
+### Feat
+
+- Add appearance mode override to respect app-level theme settings (#1301)
+
+### Fix
+
+- Remove Klarna check in vault flow (#1317)
+- Reorganize DefaultBanksComponent test structure (#1286)
+- Improve payment tokenization and cancellation flow (#1297)
+
+### Refactor
+
+- Remove PromiseKit from WebRedirect components (#1316)
+- Remove PromiseKit from PrimerTest components (#1315)
+- Remove PromiseKit from QR Code components (#1314)
+- Remove PromiseKit from PayPal components (#1313)
+- Remove PromiseKit from IPay88 components (#1312)
+- Remove PromiseKit from NolPay components (#1311)
+- Remove PromiseKit from Klarna components (#1310)
+- Remove PromiseKit from BankSelector (#1307)
+- Remove PromiseKit from Apple Pay components (#1306)
+- Migrate Stripe ACH from PromiseKit to async/await (#1287)
+- Migrate raw data tests from PromiseKit to async/await (#1300)
+- Increase test validation timeout from 3.0 to 5.0 seconds (#1298)
+- Clean up InternalError (#1285)
+
 ## 2.39.2 (2025-08-15)
 
 ### Fix
