@@ -93,7 +93,7 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func processPaymentMethodTokenData() async {
-        if PrimerInternal.shared.intent == .vault, config.internalPaymentMethodType != .klarna {
+        if PrimerInternal.shared.intent == .vault {
             await processVaultPaymentMethodTokenData_main_actor()
         } else {
             await processCheckoutPaymentMethodTokenData()
