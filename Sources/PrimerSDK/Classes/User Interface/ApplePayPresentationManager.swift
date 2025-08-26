@@ -11,8 +11,6 @@ protocol ApplePayPresenting {
     var isPresentable: Bool { get }
     var errorForDisplay: Error { get }
     func present(withRequest applePayRequest: ApplePayRequest,
-                 delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
-    func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) async throws
 }
 
@@ -30,39 +28,6 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
             canMakePayment = PKPaymentAuthorizationController.canMakePayments()
         }
         return canMakePayment
-    }
-
-    func present(withRequest applePayRequest: ApplePayRequest,
-                 delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
-        Promise { seal in
-            let request = try createRequest(for: applePayRequest)
-
-            let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-            paymentController.delegate = delegate
-
-            paymentController.present { success in
-                if success == false {
-                    // Check merchant identifier first
-                    guard !applePayRequest.merchantIdentifier.isEmpty else {
-                        let err = PrimerError.applePayConfigurationError(merchantIdentifier: nil)
-                        ErrorHandler.handle(error: err)
-                        self.logger.error(message: "APPLE PAY")
-                        self.logger.error(message: err.recoverySuggestion ?? "")
-                        return seal.reject(err)
-                    }
-
-                    // Generic presentation failure
-                    let err = PrimerError.applePayPresentationFailed(reason: "PKPaymentAuthorizationController.present returned false")
-                    ErrorHandler.handle(error: err)
-                    self.logger.error(message: "APPLE PAY")
-                    self.logger.error(message: err.recoverySuggestion ?? "")
-                    return seal.reject(err)
-                } else {
-                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
-                    seal.fulfill()
-                }
-            }
-        }
     }
 
     func present(withRequest applePayRequest: ApplePayRequest,
