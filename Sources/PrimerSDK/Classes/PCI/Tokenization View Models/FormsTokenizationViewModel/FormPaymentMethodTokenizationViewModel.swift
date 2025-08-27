@@ -477,26 +477,6 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         super.start()
     }
 
-    override func start_async() {
-        checkoutEventsNotifierModule.didStartTokenization = {
-            self.enableUserInteraction(false)
-        }
-
-        checkoutEventsNotifierModule.didFinishTokenization = {
-            self.enableUserInteraction(true)
-        }
-
-        didStartPayment = {
-            self.enableUserInteraction(false)
-        }
-
-        didFinishPayment = { _ in
-            self.enableUserInteraction(true)
-        }
-
-        super.start_async()
-    }
-
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken()
