@@ -46,40 +46,6 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 
-    @objc
-    func start_async() {
-        Task {
-            do {
-                paymentMethodTokenData = try await startTokenizationFlow()
-                await processPaymentMethodTokenData()
-                await uiManager.primerRootViewController?.enableUserInteraction(true)
-            } catch {
-                await uiManager.primerRootViewController?.enableUserInteraction(true)
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-                if let primerErr = error as? PrimerError,
-                   case .cancelled = primerErr,
-                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                   self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                    do {
-                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                    } catch {}
-                } else {
-                    do {
-                        try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
-                        await showResultScreenIfNeeded(error: primerErr)
-                        let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
-                        await handleFailureFlow(errorMessage: merchantErrorMessage)
-                    } catch {}
-                }
-            }
-        }
-    }
-
     func processPaymentMethodTokenData() async {
         if PrimerInternal.shared.intent == .vault {
             await processVaultPaymentMethodTokenData()

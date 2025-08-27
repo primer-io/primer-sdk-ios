@@ -41,31 +41,6 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
     // MARK: - Overrides
 
     override func start() {
-
-        self.checkoutEventsNotifierModule.didStartTokenization = {
-            self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
-        }
-
-        self.checkoutEventsNotifierModule.didFinishTokenization = {
-            self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-        }
-
-        self.didStartPayment = {
-            self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
-        }
-
-        self.didFinishPayment = { _ in
-            self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-        }
-
-        super.start()
-    }
-
-    override func start_async() {
         checkoutEventsNotifierModule.didStartTokenization = {
             self.enableUserInteraction(false)
         }
@@ -82,7 +57,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             self.enableUserInteraction(true)
         }
 
-        super.start_async()
+        super.start()
     }
 
     override func performPreTokenizationSteps() async throws {

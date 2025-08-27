@@ -88,17 +88,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         super.start()
     }
 
-    override func start_async() {
-        didFinishPayment = { [weak self] _ in
-            guard let self = self else { return }
-            Task { @MainActor in self.cleanup_main_actor() }
-        }
-
-        setupNotificationObservers()
-
-        super.start_async()
-    }
-
     func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.receivedNotification(_:)),
