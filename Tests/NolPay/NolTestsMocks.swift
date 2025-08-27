@@ -146,115 +146,99 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
         }
 
         switch result {
-        case .success:
-            return
-        case .failure(let error):
-            throw error
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
     var mockTokenizationResult: Result<PrimerPaymentMethodTokenData, Error>?
-    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let result = mockTokenizationResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success(let tokenData):
-            return .value(tokenData)
-        case .failure(let error):
-            return .init(error: error)
+        case .success(let result): return result
+        case .failure(let error): throw error
         }
     }
 
     var awaitUserInputResult: Result<Void, Error>?
 
-    override func awaitUserInput() -> Promise<Void> {
+    override func awaitUserInput() async throws {
         guard let result = awaitUserInputResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success:
-            return .value(())
-        case .failure(let error):
-            return .init(error: error)
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
     var presentPaymentMethodUserInterfaceResult: Result<Void, Error>?
 
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+    override func presentPaymentMethodUserInterface() async throws {
         guard let result = presentPaymentMethodUserInterfaceResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success:
-            return .value(())
-        case .failure(let error):
-            return .init(error: error)
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
     var handleDecodedClientTokenResult: Result<String?, Error>?
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
         guard let result = handleDecodedClientTokenResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success(let token):
-            return .value(token)
-        case .failure(let error):
-            return .init(error: error)
+        case .success(let result): return result
+        case .failure(let error): throw error
         }
     }
 
     var performPreTokenizationStepsResult: Result<Void, Error>?
 
-    override func performPreTokenizationSteps() -> Promise<Void> {
+    override func performPreTokenizationSteps() async throws {
         guard let result = performPreTokenizationStepsResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success:
-            return .value(())
-        case .failure(let error):
-            return .init(error: error)
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
     var performTokenizationStepResult: Result<Void, Error>?
 
-    override func performTokenizationStep() -> Promise<Void> {
+    override func performTokenizationStep() async throws {
         guard let result = performTokenizationStepResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success:
-            return .value(())
-        case .failure(let error):
-            return .init(error: error)
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
     var performPostTokenizationStepsResult: Result<Void, Error>?
 
-    override func performPostTokenizationSteps() -> Promise<Void> {
+    override func performPostTokenizationSteps() async throws {
         guard let result = performPostTokenizationStepsResult else {
-            return .init(error: PrimerError.unknown())
+            throw PrimerError.unknown()
         }
 
         switch result {
-        case .success:
-            return .value(())
-        case .failure(let error):
-            return .init(error: error)
+        case .success: return
+        case .failure(let error): throw error
         }
     }
 
