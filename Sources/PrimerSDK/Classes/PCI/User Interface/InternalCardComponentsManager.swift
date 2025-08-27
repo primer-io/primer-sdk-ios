@@ -253,7 +253,7 @@ and 4 characters for expiry year separated by '/'.
 
     public func tokenize() {
         setIsLoading(true)
-        
+
         Task {
             do {
                 try validateCardComponents()
