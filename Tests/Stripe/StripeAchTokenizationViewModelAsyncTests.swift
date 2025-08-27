@@ -175,7 +175,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
@@ -239,7 +239,7 @@ final class StripeAchTokenizationViewModelAsyncTests: XCTestCase {
             expectDidCompleteCheckoutWithData.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
