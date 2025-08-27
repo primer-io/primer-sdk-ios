@@ -136,8 +136,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
         if isFallback {
-            DispatchQueue.main.async {
-                _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+            Task {
+                try? await rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
             }
         }
     }
@@ -152,8 +152,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: cardMetadata,
                                         forState: cardState)
 
-        DispatchQueue.main.async {
-            _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
+        Task {
+            try? await self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
     }
 
