@@ -409,10 +409,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func apiVersionSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            apiVersion = .V2_3
-        case 1:
             apiVersion = .V2_4
-        case 2:
+        case 1:
             apiVersion = .latest
         default:
             apiVersion = .V2_4
