@@ -145,7 +145,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
         let delegate = PrimerHeadlessUniversalCheckout.current.delegate
         delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
-        self.recordLoadedEvent(start)
+        recordLoadedEvent(start)
         return availablePaymentMethods
 
     }
