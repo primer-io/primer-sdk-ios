@@ -38,6 +38,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     func storeRequiredActionClientToken(_ newClientToken: String) async throws
 }
 
+// swiftlint:disable file_length
 // swiftlint:disable type_body_length
 final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
@@ -45,7 +46,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
     private static var pendingPromises: [String: Promise<PrimerAPIConfiguration>] = [:]
-    private static var pendingTasks: [String: Task<PrimerAPIConfiguration, Error>] = [:]
+    private static var pendingTasks: [String: CancellableTask<PrimerAPIConfiguration>] = [:]
 
     static var clientToken: JWTToken? {
         get {
@@ -423,6 +424,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
+    // swiftlint:disable:next function_body_length
     private func fetchConfiguration(requestDisplayMetadata: Bool) async throws -> PrimerAPIConfiguration {
         let start = Date().millisecondsSince1970
 
@@ -450,7 +452,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                 if let pendingTask = PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] {
                     Task {
                         do {
-                            let config = try await pendingTask.value
+                            let config = try await pendingTask.wait()
                             continuation.resume(returning: config)
                         } catch {
                             continuation.resume(throwing: error)
@@ -459,7 +461,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     return
                 }
 
-                let task = Task<PrimerAPIConfiguration, Error> {
+                let task = CancellableTask<PrimerAPIConfiguration> {
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
                         requestDisplayMetadata: requestDisplayMetadata
@@ -487,7 +489,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
                 Task {
                     do {
-                        let config = try await task.value
+                        let config = try await task.wait()
                         continuation.resume(returning: config)
                     } catch {
                         continuation.resume(throwing: error)
@@ -561,3 +563,4 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length

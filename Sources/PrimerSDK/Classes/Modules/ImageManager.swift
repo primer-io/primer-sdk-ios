@@ -167,8 +167,6 @@ final class ImageManager: LogReporter {
             id: timingEventId
         )
 
-        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
-
         defer {
             let timingEventEnd = Analytics.Event.allImagesLoading(
                 momentType: .end,
@@ -177,13 +175,13 @@ final class ImageManager: LogReporter {
             Analytics.Service.record(events: [timingEventStart, timingEventEnd])
         }
 
-        var imageFiles: [ImageFile] = []
+        var newImageFiles: [ImageFile] = []
         var errors: [Error] = []
 
         for imageFile in imageFiles {
             do {
                 let file = try await getImage(file: imageFile)
-                imageFiles.append(file)
+                newImageFiles.append(file)
             } catch {
                 errors.append(error)
             }
@@ -191,9 +189,9 @@ final class ImageManager: LogReporter {
 
         if !errors.isEmpty, errors.count == imageFiles.count {
             throw handled(internalError: .underlyingErrors(errors: errors))
-        } else {
-            return imageFiles
         }
+
+        return newImageFiles
     }
 
     func getImage(file: ImageFile) -> Promise<ImageFile> {
