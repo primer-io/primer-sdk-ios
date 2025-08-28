@@ -111,7 +111,7 @@ final class RawDataManagerTests: XCTestCase {
                                      cvv: "123",
                                      cardholderName: "John Appleseed")
 
-        sut.submit()
+        sut.submit_async()
 
         waitForExpectations(timeout: 5.0)
     }
@@ -223,7 +223,7 @@ final class RawDataManagerTests: XCTestCase {
                                      cvv: "123",
                                      cardholderName: "John Appleseed")
 
-        sut.submit()
+        sut.submit_async()
 
         waitForExpectations(timeout: 45.0)
     }
@@ -275,7 +275,7 @@ final class RawDataManagerTests: XCTestCase {
                                      cvv: "123",
                                      cardholderName: "John Appleseed")
 
-        sut.submit()
+        sut.submit_async()
 
         waitForExpectations(timeout: 5.0)
     }
@@ -333,7 +333,7 @@ final class RawDataManagerTests: XCTestCase {
             expectDidValidate.fulfill()
         }
 
-        sut.submit()
+        sut.submit_async()
 
         waitForExpectations(timeout: 5.0)
     }
