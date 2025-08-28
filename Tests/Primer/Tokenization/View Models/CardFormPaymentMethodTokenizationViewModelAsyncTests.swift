@@ -109,7 +109,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,
@@ -161,7 +161,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
             expectDidCompleteCheckout.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,
@@ -223,7 +223,7 @@ final class CardFormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase, To
             expectDidShowPaymentMethod.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         waitForExpectations(timeout: 10.0)
 

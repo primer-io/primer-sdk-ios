@@ -79,7 +79,7 @@ final class FormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,
@@ -138,7 +138,7 @@ final class FormPaymentMethodTokenizationViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,

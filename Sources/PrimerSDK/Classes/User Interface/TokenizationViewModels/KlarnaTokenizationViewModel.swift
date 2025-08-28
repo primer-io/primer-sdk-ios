@@ -66,26 +66,6 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
 
-    override func start_async() {
-        checkoutEventsNotifierModule.didStartTokenization = {
-            self.enableUserInteraction(false)
-        }
-
-        checkoutEventsNotifierModule.didFinishTokenization = {
-            self.enableUserInteraction(true)
-        }
-
-        didStartPayment = {
-            self.enableUserInteraction(false)
-        }
-
-        didFinishPayment = { _ in
-            self.enableUserInteraction(true)
-        }
-
-        super.start_async()
-    }
-
     override func performPreTokenizationSteps() async throws {
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,

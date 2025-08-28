@@ -232,7 +232,7 @@ internal struct InternalCheckout: View {
 
     private func initializeAPIConfiguration() async throws {
         let apiConfigurationModule = PrimerAPIConfigurationModule()
-        
+
         try await apiConfigurationModule.setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: true,
