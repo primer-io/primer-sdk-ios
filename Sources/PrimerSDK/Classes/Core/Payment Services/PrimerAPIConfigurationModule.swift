@@ -424,9 +424,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
-    private func fetchConfiguration(
-        requestDisplayMetadata: Bool
-    ) async throws -> PrimerAPIConfiguration {
+    // swiftlint:disable:next function_body_length
+    private func fetchConfiguration(requestDisplayMetadata: Bool) async throws -> PrimerAPIConfiguration {
         let start = Date().millisecondsSince1970
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
