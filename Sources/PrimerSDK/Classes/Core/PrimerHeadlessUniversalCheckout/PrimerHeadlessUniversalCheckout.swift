@@ -72,7 +72,6 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    @MainActor
     public func start(
         withClientToken clientToken: String,
         settings: PrimerSettings? = nil,

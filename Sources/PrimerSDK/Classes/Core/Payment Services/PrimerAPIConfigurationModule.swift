@@ -459,7 +459,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     return
                 }
 
-                let task = CancellableTask<PrimerAPIConfiguration>.init {
+                let task = CancellableTask<PrimerAPIConfiguration> {
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
                         requestDisplayMetadata: requestDisplayMetadata
