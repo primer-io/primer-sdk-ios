@@ -55,15 +55,19 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     ) {
         Task {
             do {
-                let paymentMethod = try await start(
+                let paymentMethods = try await start(
                     withClientToken: clientToken,
                     settings: settings,
                     delegate: delegate,
                     uiDelegate: uiDelegate
                 )
-                completion(paymentMethod, nil)
+                DispatchQueue.main.async {
+                    completion(paymentMethods, nil)
+                }
             } catch {
-                completion(nil, error)
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
             }
         }
     }
@@ -134,16 +138,17 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()
 
-        let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
-        if (availablePaymentMethodsTypes ?? []).isEmpty {
+        let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() ?? []
+        guard !availablePaymentMethodsTypes.isEmpty else {
             throw handled(primerError: .misconfiguredPaymentMethods())
-        } else {
-            let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-            let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-            delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
-            self.recordLoadedEvent(start)
-            return availablePaymentMethods
         }
+        
+        let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
+        let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+        delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
+        self.recordLoadedEvent(start)
+        return availablePaymentMethods
+
     }
 
     private func recordLoadedEvent(_ start: Int) {
