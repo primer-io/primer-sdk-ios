@@ -147,11 +147,10 @@ extension PrimerHeadlessUniversalCheckout {
                         throw handled(primerError: .invalidVaultedPaymentMethodId(vaultedPaymentMethodId: vaultedPaymentMethodId))
                     }
 
-                    if let vaultedPaymentMethodAdditionalData,
-                       let errors = validateAdditionalDataSynchronously(
-                           vaultedPaymentMethodId: vaultedPaymentMethodId,
-                           vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
-                    {
+                    if let vaultedPaymentMethodAdditionalData, let errors = validateAdditionalDataSynchronously(
+                        vaultedPaymentMethodId: vaultedPaymentMethodId,
+                        vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+                    ) {
                         var error: PrimerErrorProtocol?
                         if errors.count == 1 {
                             if let primerErr = errors.first as? PrimerValidationError {
