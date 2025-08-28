@@ -38,6 +38,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     func storeRequiredActionClientToken(_ newClientToken: String) async throws
 }
 
+// swiftlint:disable file_length
 // swiftlint:disable type_body_length
 final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
@@ -423,7 +424,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
-    private func fetchConfiguration(requestDisplayMetadata: Bool) async throws -> PrimerAPIConfiguration {
+    private func fetchConfiguration(
+        requestDisplayMetadata: Bool
+    ) async throws -> PrimerAPIConfiguration {
         let start = Date().millisecondsSince1970
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
@@ -561,3 +564,4 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length

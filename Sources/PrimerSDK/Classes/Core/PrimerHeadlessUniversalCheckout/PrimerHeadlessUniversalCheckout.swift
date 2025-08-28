@@ -141,7 +141,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         guard !availablePaymentMethodsTypes.isEmpty else {
             throw handled(primerError: .misconfiguredPaymentMethods())
         }
-        
+
         let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
         let delegate = PrimerHeadlessUniversalCheckout.current.delegate
         delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
