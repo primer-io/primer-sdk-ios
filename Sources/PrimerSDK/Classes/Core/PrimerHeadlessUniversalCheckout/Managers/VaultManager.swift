@@ -148,9 +148,12 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                     if let vaultedPaymentMethodAdditionalData,
-                       let errors = validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
+                       let errors = validateAdditionalDataSynchronously(
+                           vaultedPaymentMethodId: vaultedPaymentMethodId,
+                           vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+                       )
                     {
-                        var error: PrimerErrorProtocol? = nil
+                        var error: PrimerErrorProtocol?
                         if errors.count == 1 {
                             if let primerErr = errors.first as? PrimerValidationError {
                                 error = primerErr
@@ -483,7 +486,6 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                 self.paymentCheckoutData = nil
-                // TODO: REVIEW_CHECK - What should we return here?
                 return nil
             } else {
                 preconditionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
