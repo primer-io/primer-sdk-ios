@@ -177,7 +177,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     ) async throws -> String {
         #if canImport(Primer3DS)
 
-        defer { cleanup() } // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
+        defer {
+            Task { await cleanup() }
+        }
 
         do {
             return try await executeAuthentication(paymentMethodTokenData: paymentMethodTokenData, sdkDismissed: sdkDismissed)
@@ -218,6 +220,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     }
 
     #if canImport(Primer3DS)
+    @MainActor
     private func cleanup() {
         let dismiss3DSUIEvent = Analytics.Event.ui(
             action: .dismiss,
