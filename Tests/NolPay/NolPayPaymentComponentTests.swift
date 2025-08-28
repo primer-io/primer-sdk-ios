@@ -78,11 +78,7 @@ class NolPayPaymentComponentTests: XCTestCase {
 
     func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndValidPhoneNumber_ShouldReturnCardNumberError() {
         // Given
-        let expectedError = PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid.",
-            userInfo: nil,
-            diagnosticsId: ""
-        )
+        let expectedError = PrimerValidationError.invalidCardnumber(message: "Card number is not valid.")
         mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
 
         // When
@@ -111,14 +107,10 @@ class NolPayPaymentComponentTests: XCTestCase {
     func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndPhoneNumber_ShouldReturnBothErrors() {
         // Given
         let expectedCardError = PrimerValidationError.invalidCardnumber(
-            message: "Card number is not valid.",
-            userInfo: [:],
-            diagnosticsId: ""
+            message: "Card number is not valid."
         )
         let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
-            message: "Phone number is not valid.",
-            userInfo: [:],
-            diagnosticsId: ""
+            message: "Phone number is not valid."
         )
         mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedPhoneError]), nil, nil))
 
@@ -150,7 +142,7 @@ class NolPayPaymentComponentTests: XCTestCase {
     func test_UpdateCollectedData_PaymentData__WhenPhoneMetadataServiceFails_ShouldReturnError() {
         // Given
         let expectedErrorKey = "INVALID_DATA"
-        let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
         mockPhoneMetadataService.resultToReturn = .failure(expectedError)
 
         // When
@@ -263,7 +255,7 @@ class NolPayPaymentComponentTests: XCTestCase {
 
     func test_Submit_CollectCardAndPhoneData__WithUninitializedSDK_ShouldReturnNolSdkInitError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
         sut.cardNumber = cardNumber
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
@@ -308,7 +300,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(let code, let message, _, _):
+                    case .nolError(let code, let message, _):
                         XCTAssertTrue(code == "unknown")
                         XCTAssertTrue(message == "Payment failed from unknown reason")
                     default:
@@ -357,7 +349,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(_, let message, _, _):
+                    case .nolError(_, let message, _):
                         XCTAssertTrue(message == expectedErrorDescription)
                     default:
                         XCTFail("primerError should be of type nolError")
@@ -454,7 +446,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
         mockApiClient.fetchNolSdkSecretResult = {
             exp.fulfill()
-            return .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+            return .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
         }
 
         // When

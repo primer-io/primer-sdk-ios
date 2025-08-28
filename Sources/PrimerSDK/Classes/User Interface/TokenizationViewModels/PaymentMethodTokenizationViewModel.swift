@@ -37,9 +37,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     var didCancel: (() -> Void)?
-    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
-    var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
-    var awaitUserInputTask: Task<String, Error>?
+    var startTokenizationFlowTask: CancellableTask<PrimerPaymentMethodTokenData>?
+    var startPaymentFlowTask: CancellableTask<PrimerCheckoutData?>?
+    var awaitUserInputTask: CancellableTask<Void>?
     var isCancelled: Bool = false
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
@@ -169,35 +169,37 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        startTokenizationFlowTask = Task {
-            do {
-                try Task.checkCancellation()
+        defer {
+            startTokenizationFlowTask = nil
+        }
 
-                try await self.performPreTokenizationSteps()
-                try Task.checkCancellation()
+        let task = CancellableTask<PrimerPaymentMethodTokenData> {
+            try Task.checkCancellation()
 
-                try await self.performTokenizationStep()
-                try Task.checkCancellation()
+            try await self.performPreTokenizationSteps()
+            try Task.checkCancellation()
 
-                try await self.performPostTokenizationSteps()
-                try Task.checkCancellation()
+            try await self.performTokenizationStep()
+            try Task.checkCancellation()
 
-                return self.paymentMethodTokenData
-            } catch is CancellationError {
-                throw handled(primerError: .cancelled(paymentMethodType: config.type))
-            } catch {
-                throw error
+            try await self.performPostTokenizationSteps()
+            try Task.checkCancellation()
+
+            guard let data = self.paymentMethodTokenData else {
+                throw PrimerError.invalidValue(
+                    key: "paymentMethodTokenData",
+                    value: "Payment method token data is not valid"
+                )
             }
+            return data
+        }
+        startTokenizationFlowTask = task
+
+        if isCancelled {
+            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
         }
 
-        let paymentMethodTokenData = try await startTokenizationFlowTask?.value
-        startTokenizationFlowTask = nil
-
-        guard let paymentMethodTokenData else {
-            throw PrimerError.invalidValue(key: "paymentMethodTokenData", value: "Payment method token data is not valid")
-        }
-
-        return paymentMethodTokenData
+        return try await task.wait()
     }
 
     @MainActor
@@ -242,7 +244,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     func cancel() {
         self.didCancel?()
-        startTokenizationFlowTask?.cancel()
-        startPaymentFlowTask?.cancel()
+        isCancelled = true
+        Task {
+            await startTokenizationFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
+            await startPaymentFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
+            await awaitUserInputTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
     }
 }

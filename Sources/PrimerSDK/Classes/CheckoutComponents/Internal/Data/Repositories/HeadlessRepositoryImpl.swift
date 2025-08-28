@@ -495,21 +495,19 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let requiredInputs = rawDataManager.requiredInputElementTypes
         // Required input element types validation failed
 
-        let error = PrimerError.unknown(
-            userInfo: [
-                "error": "Card data validation failed",
-                "requiredInputs": requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", ")
-            ],
-            diagnosticsId: UUID().uuidString
+        let error = PrimerError.invalidValue(
+            key: "cardData",
+            value: nil,
+            reason: "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
         )
         continuation.resume(throwing: error)
     }
 
     private func handleiOS14Fallback(continuation: CheckedContinuation<PaymentResult, Error>) {
         // CheckoutComponents requires iOS 15.0 or later
-        let error = PrimerError.unknown(
-            userInfo: ["error": "CheckoutComponents requires iOS 15.0 or later"],
-            diagnosticsId: UUID().uuidString
+        let error = PrimerError.invalidArchitecture(
+            description: "CheckoutComponents requires iOS 15.0 or later",
+            recoverSuggestion: "Please update your iOS deployment target to iOS 15.0 or later"
         )
         continuation.resume(throwing: error)
     }
@@ -574,137 +572,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         clientSessionActionsModule
             .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
             .cauterize()
-    }
-
-    // MARK: - 3DS Error Handling
-
-    /// Create user-friendly 3DS error using centralized strings
-    private func createUserFriendly3DSError(from error: Error) -> Error {
-        // Creating user-friendly error
-
-        // Check for specific 3DS error types
-        if let primer3DSError = error as? Primer3DSErrorContainer {
-            return createUserFriendly3DSError(from: primer3DSError)
-        }
-
-        if let primerError = error as? PrimerError {
-            return createUserFriendly3DSError(from: primerError)
-        }
-
-        // Check error message for common scenarios using centralized strings
-        let errorMessage = error.localizedDescription.lowercased()
-
-        if errorMessage.contains("timeout") || errorMessage.contains("timed out") {
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSAuthenticationTimeout,
-                    "recovery": CheckoutComponentsStrings.threeDSCheckConnectionMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        }
-
-        if errorMessage.contains("cancelled") || errorMessage.contains("canceled") {
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSAuthenticationCancelled,
-                    "recovery": CheckoutComponentsStrings.threeDSCompleteAuthMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        }
-
-        if errorMessage.contains("network") || errorMessage.contains("connection") {
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSNetworkError,
-                    "recovery": CheckoutComponentsStrings.threeDSCheckConnectionMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        }
-
-        if errorMessage.contains("invalid") || errorMessage.contains("malformed") {
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSInvalidData,
-                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        }
-
-        // Default enhanced error with centralized strings
-        return PrimerError.unknown(
-            userInfo: [
-                "error": CheckoutComponentsStrings.threeDSGenericError,
-                "recovery": CheckoutComponentsStrings.threeDSRetryMessage,
-                "originalError": error.localizedDescription
-            ],
-            diagnosticsId: UUID().uuidString
-        )
-    }
-
-    /// Create user-friendly error from Primer3DSErrorContainer using centralized strings
-    private func createUserFriendly3DSError(from error: Primer3DSErrorContainer) -> PrimerError {
-        switch error {
-        case .missingSdkDependency:
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSNotAvailable,
-                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        case .missing3DSConfiguration:
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSConfigurationError,
-                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        case .invalid3DSSdkVersion:
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSNotAvailable,
-                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        default:
-            return PrimerError.unknown(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSGenericError,
-                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        }
-    }
-
-    /// Create user-friendly error from PrimerError using centralized strings
-    private func createUserFriendly3DSError(from error: PrimerError) -> PrimerError {
-        switch error {
-        case .invalidClientToken:
-            return PrimerError.invalidClientToken(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSSessionExpired,
-                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        case .missingPrimerConfiguration:
-            return PrimerError.missingPrimerConfiguration(
-                userInfo: [
-                    "error": CheckoutComponentsStrings.threeDSConfigurationError,
-                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
-                ],
-                diagnosticsId: UUID().uuidString
-            )
-        default:
-            return error // Return original error if no specific enhancement needed
-        }
     }
 
     /// Update client session with payment method selection (matches Drop-in's dispatchActions)
@@ -778,12 +645,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                     throw PrimerError.invalidValue(
                         key: "urlScheme",
                         value: urlScheme,
-                        userInfo: [
-                            "error": "URL scheme validation failed",
-                            "recovery": "Please configure a valid URL scheme in PrimerSettings.paymentMethodOptions.urlScheme",
-                            "validFormat": "myapp://payment or https://myapp.com/payment"
-                        ],
-                        diagnosticsId: UUID().uuidString
+                        reason: "URL scheme validation failed. Please configure a valid URL scheme in PrimerSettings.paymentMethodOptions.urlScheme. Valid format: myapp://payment or https://myapp.com/payment"
                     )
                 }
             }

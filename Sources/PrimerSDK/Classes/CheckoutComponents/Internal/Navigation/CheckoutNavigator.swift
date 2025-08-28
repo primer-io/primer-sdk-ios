@@ -3,7 +3,6 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Wrapper for CheckoutCoordinator that provides simple navigation methods
-//  Follows CheckoutComponents plan: NO Combine, uses AsyncStream and state-driven navigation
 //
 
 import SwiftUI
@@ -51,11 +50,6 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     // MARK: - Navigation Methods
 
-    /// Navigate to splash screen
-    func navigateToSplash() {
-        coordinator.navigate(to: .splash)
-    }
-
     /// Navigate to loading screen
     func navigateToLoading() {
         coordinator.navigate(to: .loading)
@@ -76,26 +70,6 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .selectCountry)
     }
 
-    /// Navigate to success screen with payment result
-    func navigateToSuccess(_ result: PaymentResult) {
-        // Navigating to success screen
-
-        let checkoutResult = CheckoutPaymentResult(
-            paymentId: result.paymentId,
-            amount: result.amount?.description ?? "N/A",
-            method: result.paymentMethodType ?? "Card"
-        )
-        coordinator.navigate(to: .success(checkoutResult))
-    }
-
-    /// Navigate to success screen
-    func navigateToSuccess() {
-        // Success navigation - handled by delegate
-
-        // Success handling is now managed by CheckoutComponentsPrimer delegate
-        // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately
-    }
-
     /// Navigate to error screen with message (handled by CheckoutComponentsPrimer delegate)
     func navigateToError(_ message: String) {
         let error = CheckoutPaymentError(
@@ -114,19 +88,9 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.goBack()
     }
 
-    /// Reset navigation to root
-    func resetToRoot() {
-        coordinator.resetToRoot()
-    }
-
     /// Dismiss the entire checkout flow
     func dismiss() {
         coordinator.dismiss()
-    }
-
-    /// Complete the checkout with success delegate
-    func completeCheckout() async {
-        await handleCheckoutCompletion()
     }
 
     // MARK: - Coordinator Access
@@ -134,37 +98,6 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     /// Access to the underlying coordinator for advanced navigation
     var checkoutCoordinator: CheckoutCoordinator {
         coordinator
-    }
-
-    // MARK: - Private Methods
-
-    /// Handle successful checkout completion
-    private func handleCheckoutCompletion() async {
-        // Create minimal checkout data for successful payment
-        // In a full implementation, this would contain the actual payment result
-        let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: nil)
-
-        // Call the delegate to handle completion
-        // The delegate proxy already handles UI dismissal
-        await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-
-        // Dismissal would be handled by parent view controller
-    }
-
-    /// Handle checkout error
-    private func handleCheckoutError(_ message: String) async {
-        // Create a generic error for the delegate
-        let nsError = NSError(domain: "CheckoutComponents", code: -1, userInfo: [NSLocalizedDescriptionKey: message])
-        let error = PrimerError.underlyingErrors(errors: [nsError], userInfo: [String: String].errorUserInfoDictionary(), diagnosticsId: .uuid)
-
-        // Call the delegate to handle errors
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
-            // Handle error decision
-            switch errorDecision.type {
-            case .fail:
-                break // Dismissal would be handled by parent view controller
-            }
-        }
     }
 }
 

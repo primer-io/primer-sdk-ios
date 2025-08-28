@@ -9,11 +9,9 @@ import Foundation
 /**
  * Protocol for tokenization process regarding an ACH payment.
  *
- * - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
- * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
+ * - Returns: A `PrimerPaymentMethodTokenData` object on successful tokenization or throws an `Error` if the tokenization process fails.
  */
 protocol ACHTokenizationDelegate: AnyObject {
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
     func tokenize() async throws -> PrimerPaymentMethodTokenData
 }
 
@@ -38,28 +36,6 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     }
 
     // MARK: - Tokenize
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            // Ensure the payment method has a valid ID
-            guard paymentMethod.id != nil else {
-                seal.reject(ACHHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
-                return
-            }
-
-            firstly {
-                getRequestBody()
-            }
-            .then { requestBody in
-                self.tokenizationService.tokenize(requestBody: requestBody)
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-        }
-    }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
         // Ensure the payment method has a valid ID
@@ -125,25 +101,9 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
  * This private function generates the necessary payload for tokenization by assembling data related to
  * the payment method and additional session information.
  *
- * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
+ * - Returns: A `Request.Body.Tokenization` containing the payment instrument data.
  */
 extension ACHTokenizationService {
-    private func getRequestBody() -> Promise<Request.Body.Tokenization> {
-        return Promise { seal in
-            guard let paymentInstrument = ACHHelpers.getACHPaymentInstrument(paymentMethod: paymentMethod) else {
-                let error = ACHHelpers.getInvalidValueError(
-                    key: "configuration.type",
-                    value: paymentMethod.type
-                )
-                seal.reject(error)
-                return
-            }
-
-            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            seal.fulfill(requestBody)
-        }
-    }
-
     private func getRequestBody() async throws -> Request.Body.Tokenization {
         guard let paymentInstrument = ACHHelpers.getACHPaymentInstrument(paymentMethod: paymentMethod) else {
             throw ACHHelpers.getInvalidValueError(

@@ -41,42 +41,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         try achTokenizationService.validate()
     }
 
-    override func performPreTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
-                let event = Analytics.Event.ui(
-                    action: .click,
-                    context: Analytics.Event.Property.Context(
-                        issuerId: nil,
-                        paymentMethodType: self.config.type,
-                        url: nil),
-                    extra: nil,
-                    objectType: .button,
-                    objectId: .select,
-                    objectClass: "\(Self.self)",
-                    place: .paymentMethodPopup
-                )
-                Analytics.Service.record(event: event)
-            }
-
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then { () -> Promise<Void> in
-                return self.showACHUserDetailsViewControllerIfNeeded()
-            }
-            .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(handled(error: err))
-            }
-        }
-    }
-
     override func performPreTokenizationSteps() async throws {
         if PrimerInternal.shared.sdkIntegrationType == .dropIn {
             Analytics.Service.fire(event: Analytics.Event.ui(
@@ -103,41 +67,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.achTokenizationService.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                var primerError: PrimerError
-
-                if let primerErr = err as? PrimerError {
-                    primerError = handled(primerError: primerErr)
-                } else {
-                    primerError = handled(
-                        primerError: .failedToCreatePayment(
-                            paymentMethodType: self.config.type,
-                            description: "Failed to perform tokenization step due to error: \(err.localizedDescription)"
-                        )
-                    )
-                }
-                seal.reject(primerError)
-            }
-        }
-    }
-
     override func performTokenizationStep() async throws {
         await PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: config.type)
 
@@ -154,12 +83,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-
     override func performPostTokenizationSteps() async throws {
         // Empty implementation
     }
@@ -172,49 +95,8 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      * payment method user interface, waiting for user input, and calling a completePayment API method at the end.
      *
      * - Parameter decodedJWTToken: A `DecodedJWTToken` object containing details extracted from a JWT token.
-     * - Returns: A promise that resolves with an optional string.
+     * - Returns: An optional string.
      */
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
-        return Promise { seal in
-
-            guard let intent = decodedJWTToken.intent, intent.contains("STRIPE_ACH") else {
-                return seal.reject(handled(primerError: .invalidClientToken()))
-            }
-
-            guard let clientSecret = decodedJWTToken.stripeClientSecret,
-                  let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
-                  let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
-                seal.reject(handled(primerError: .invalidClientToken()))
-                return
-            }
-
-            self.clientSecret = clientSecret
-
-            DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-            }
-
-            firstly {
-                presentPaymentMethodUserInterface()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitUserInput()
-            }
-            .then { () -> Promise<Void> in
-                return self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
-                                                                       completeUrl: sdkCompleteUrl,
-                                                                       body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
-            }
-            .done {
-                seal.fulfill(nil)
-            }
-            .catch { err in
-                seal.reject(handled(error: err))
-            }
-        }
-    }
-
     override func handleDecodedClientTokenIfNeeded(
         _ decodedJWTToken: DecodedJWTToken,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
@@ -244,42 +126,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return nil
     }
 
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            // Checking if we are running UI(E2E) tests here.
-            var isMockBE = false
-
-            #if DEBUG
-            if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-                isMockBE = true
-            }
-            #endif
-
-            if isMockBE {
-                seal.fulfill()
-            } else {
-                firstly {
-                    getPublishableKey()
-                }
-                .then { () -> Promise<Void> in
-                    return self.getClientSessionUserDetails()
-                }
-                .then { () -> Promise<String> in
-                    return self.getUrlScheme_Promise()
-                }
-                .then { urlScheme -> Promise<Void> in
-                    return self.showCollector(urlScheme: urlScheme)
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            }
-        }
-    }
-
     override func presentPaymentMethodUserInterface() async throws {
         // Checking if we are running UI(E2E) tests here.
         #if DEBUG
@@ -294,41 +140,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         try await getClientSessionUserDetails()
         let urlScheme = try getUrlScheme()
         try await showCollector(urlScheme: urlScheme)
-    }
-
-    private func showCollector(urlScheme: String) -> Promise<Void> {
-        return Promise { seal in
-            #if canImport(PrimerStripeSDK)
-            let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
-            let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
-                                                  clientSecret: self.clientSecret,
-                                                  returnUrl: urlScheme,
-                                                  fullName: fullName,
-                                                  emailAddress: self.userDetails.emailAddress)
-
-            let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams,
-                                                                                                         delegate: self)
-            if PrimerInternal.shared.sdkIntegrationType == .headless {
-
-                firstly {
-                    sendAdditionalInfoEvent(stripeCollector: collectorViewController)
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-
-            } else {
-                PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
-                seal.fulfill()
-            }
-            #else
-            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-            seal.reject(error)
-            #endif
-        }
     }
 
     private func showCollector(urlScheme: String) async throws {
@@ -362,44 +173,8 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      * user acceptance of mandates is confirmed, handling each step in sequence to maintain the integrity of the
      * transaction flow.
      *
-     * - Returns: A promise that resolves when all steps are successfully completed without errors. If an error occurs
-     *            at any step, the promise is rejected with that error.
+     * - Throws: An error if any step in the process fails.
      */
-    override func awaitUserInput() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-
-                // Checking if we are running UI(E2E) tests here.
-                var isMockBE = false
-
-                #if DEBUG
-                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-                    isMockBE = true
-                }
-                #endif
-                if isMockBE {
-                    return Promise { seal in
-                        seal.fulfill()
-                    }
-                } else {
-                    return awaitStripeBankAccountCollectorResponse()
-                }
-            }
-            .then { () -> Promise<Void> in
-                return self.sendAdditionalInfoEvent()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitShowMandateResponse()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     override func awaitUserInput() async throws {
         // Checking if we are running UI(E2E) tests here.
         #if DEBUG
@@ -419,19 +194,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      * Waits for a response from the PrimerStripeCollectorViewControllerDelegate delegate method.
      * The response is returned in stripeBankAccountCollectorCompletion handler.
      */
-    private func awaitStripeBankAccountCollectorResponse() -> Promise<Void> {
-        return Promise { seal in
-            self.stripeBankAccountCollectorCompletion = { result in
-                switch result {
-                case .success:
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
-                }
-            }
-        }
-    }
-
     private func awaitStripeBankAccountCollectorResponse() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.stripeBankAccountCollectorCompletion = { result in
@@ -444,19 +206,6 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      * Waits for a response from the ACHMandateDelegate method.
      * The response is returned in stripeMandateCompletion handler.
      */
-    private func awaitShowMandateResponse() -> Promise<Void> {
-        return Promise { seal in
-            self.stripeMandateCompletion = { result in
-                switch result {
-                case .success:
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
-                }
-            }
-        }
-    }
-
     private func awaitShowMandateResponse() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.stripeMandateCompletion = { result in
@@ -480,27 +229,6 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
         achUserDetailsSubmitCompletion?(false, error)
     }
 
-    private func showACHUserDetailsViewControllerIfNeeded() -> Promise<Void> {
-        return Promise { seal in
-            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
-                firstly {
-                    showACHUserDetailsViewController()
-                }
-                .then {
-                    self.awaitSubmitUserOutput()
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            } else {
-                seal.fulfill()
-            }
-        }
-    }
-
     private func showACHUserDetailsViewControllerIfNeeded() async throws {
         if PrimerInternal.shared.sdkIntegrationType == .dropIn {
             try await showACHUserDetailsViewController()
@@ -509,20 +237,6 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     }
 
     // Checks if the ACHUserDetailsViewController is already presented in the navigation stack
-    private func showACHUserDetailsViewController() -> Promise<Void> {
-        return Promise { seal in
-            let rootVC = self.uiManager.primerRootViewController
-            let isCurrentViewController = rootVC?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
-            if isCurrentViewController {
-                seal.fulfill()
-            } else {
-                let achUserDetailsViewController = ACHUserDetailsViewController(tokenizationViewModel: self, delegate: self)
-                PrimerUIManager.primerRootViewController?.show(viewController: achUserDetailsViewController)
-                seal.fulfill()
-            }
-        }
-    }
-
     private func showACHUserDetailsViewController() async throws {
         let rootVC = uiManager.primerRootViewController
         let isCurrentViewController = await rootVC?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
@@ -536,20 +250,6 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
      * Waits for a response from the ACHUserDetailsDelegate method.
      * The response is returned in achUserDetailsSubmitCompletion handler.
      */
-    private func awaitSubmitUserOutput() -> Promise<Void> {
-        return Promise { seal in
-            self.achUserDetailsSubmitCompletion = { succeeded, error in
-                if succeeded {
-                    seal.fulfill()
-                } else {
-                    if let error {
-                        seal.reject(error)
-                    }
-                }
-            }
-        }
-    }
-
     private func awaitSubmitUserOutput() async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.achUserDetailsSubmitCompletion = { succeeded, error in
@@ -582,57 +282,8 @@ extension StripeAchTokenizationViewModel {
      * sent if the delegate and its respective method are available, otherwise, it handles the absence of the delegate
      * method by proceeding with the displaying of the custom ACHMandateViewController drop-in screen, that is part of the Drop-In Logic.
      *
-     * - Returns: A promise that resolves if additional information is successfully handled or sent, or rejects if
-     *            there are issues with the delegate implementation.
+     * - Throws: An error if there are issues with the delegate implementation.
      */
-    private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) -> Promise<Void> {
-        return Promise { seal in
-            guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-
-                firstly {
-                    getMandateData()
-                }
-                .done { mandateData in
-                    let mandateViewController = ACHMandateViewController(delegate: self, mandateData: mandateData)
-                    PrimerUIManager.primerRootViewController?.show(viewController: mandateViewController)
-                    seal.fulfill()
-                }
-                .catch { error in
-                    seal.reject(error)
-                }
-                return
-            }
-
-            let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-            let isAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
-
-            guard isAdditionalInfoImplemented else {
-                let logMessage =
-                    """
-Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
- hasn't been implemented. No events will be sent to your delegate instance.
-"""
-                logger.warn(message: logMessage)
-
-                let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                return seal.reject(PrimerError.unableToPresentPaymentMethod(
-                    paymentMethodType: self.config.type,
-                    userInfo: .errorUserInfoDictionary(additionalInfo: ["message": message])
-                ))
-            }
-
-            var additionalInfo: ACHAdditionalInfo
-
-            if let viewController = stripeCollector {
-                additionalInfo = ACHBankAccountCollectorAdditionalInfo(collectorViewController: viewController)
-            } else {
-                additionalInfo = ACHMandateAdditionalInfo()
-            }
-            PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
-            seal.fulfill()
-        }
-    }
-
     private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) async throws {
         guard let delegate = PrimerHeadlessUniversalCheckout.current.delegate else {
             let mandateData = try await getMandateData()
@@ -648,8 +299,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             """)
 
             let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-            throw PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type,
-                                                           userInfo: .errorUserInfoDictionary(additionalInfo: ["message": message]))
+            throw PrimerError.unableToPresentPaymentMethod(paymentMethodType: config.type, reason: message)
         }
 
         let additionalInfo: ACHAdditionalInfo
@@ -665,32 +315,8 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
 
 // MARK: - Helpers
 extension StripeAchTokenizationViewModel {
-    private func getClientSessionUserDetails() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                clientSessionService.getClientSessionUserDetails()
-            }
-            .done { stripeAchUserDetails in
-                self.userDetails = stripeAchUserDetails
-                seal.fulfill()
-            }
-            .catch { _ in }
-        }
-    }
-
     private func getClientSessionUserDetails() async throws {
         userDetails = try await clientSessionService.getClientSessionUserDetails()
-    }
-
-    private func getPublishableKey() -> Promise<Void> {
-        return Promise { seal in
-            guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
-                let value = nilOrEmptyErrorMessage("PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey")
-                return seal.reject(PrimerError.merchantError(message: nilOrEmptyErrorMessage(value)))
-            }
-            self.publishableKey = publishableKey
-            seal.fulfill()
-        }
     }
 
     private func getPublishableKey() async throws {
@@ -700,16 +326,6 @@ extension StripeAchTokenizationViewModel {
             )
         }
         self.publishableKey = publishableKey
-    }
-
-    private func getMandateData() -> Promise<PrimerStripeOptions.MandateData> {
-        return Promise { seal in
-            guard let mandateData = PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData else {
-                let value = nilOrEmptyErrorMessage("PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData")
-                return seal.reject(PrimerError.merchantError(message: nilOrEmptyErrorMessage(value)))
-            }
-            seal.fulfill(mandateData)
-        }
     }
 
     private func getMandateData() async throws -> PrimerStripeOptions.MandateData {
@@ -722,17 +338,6 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func nilOrEmptyErrorMessage(_ value: String) -> String { "Required value for \(value) was nil or empty." }
-
-    private func getUrlScheme_Promise() -> Promise<String> {
-        return Promise { seal in
-            do {
-                let urlScheme = try PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme()
-                seal.fulfill(urlScheme.absoluteString)
-            } catch let error {
-                seal.reject(error)
-            }
-        }
-    }
 
     private func getUrlScheme() throws -> String {
         try PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme().absoluteString
@@ -775,7 +380,6 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
             let primerError = handled(primerError: .stripeError(
                 key: error.errorId,
                 message: error.errorDescription,
-                userInfo: error.userInfo,
                 diagnosticsId: error.diagnosticsId
             ))
             stripeBankAccountCollectorCompletion?(.failure(primerError))

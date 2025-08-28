@@ -216,7 +216,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,
@@ -296,7 +296,7 @@ final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentWithData,

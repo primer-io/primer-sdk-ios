@@ -132,7 +132,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let exp = expectation(description: "Wait for start to complete")
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
         mockApiClient.fetchNolSdkSecretResult = {
-            .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+            .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
         }
 
         // When
@@ -142,14 +142,14 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Error should be of type .nolError")
@@ -192,7 +192,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
     func test_ContinueWithLinkedCardsFetch_WhenSDKInitializationFails_ShouldReturnNolSdkInitError() {
         // Given
         let exp = expectation(description: "Wait for continueWithLinkedCardsFetch to complete")
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
 
         // When
         sut.continueWithLinkedCardsFetch(mobileNumber: mobileNumber) { result in
@@ -213,7 +213,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // Given
         let exp = expectation(description: "Wait for continueWithLinkedCardsFetch to complete")
         let expectedErrorKey = "INVALID_DATA"
-        let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
         mockPhoneMetadataService.resultToReturn = .failure(expectedError)
 
         sut.nolPay = mockNolPay
@@ -241,11 +241,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // Given
         let exp = expectation(description: "Wait for continueWithLinkedCardsFetch to complete")
         let expectedErrorMessage = "EXPECTED_ERROR_MESSAGE"
-        let expectedError = PrimerValidationError.invalidPhoneNumber(
-            message: expectedErrorMessage,
-            userInfo: [:],
-            diagnosticsId: ""
-        )
+        let expectedError = PrimerValidationError.invalidPhoneNumber(message: expectedErrorMessage)
         mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedError]), nil, nil))
 
         sut.nolPay = mockNolPay
@@ -257,14 +253,14 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerValidationError = errors.first as? PrimerValidationError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerValidationError {
-                    case .invalidPhoneNumber(let message, _, _):
+                    case .invalidPhoneNumber(let message, _):
                         XCTAssertEqual(expectedErrorMessage, message)
                     default:
                         XCTFail("Error should be of type .nolError")
@@ -348,7 +344,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .nolError(let code, _, _, _):
+                case .nolError(let code, _, _):
                     XCTAssertEqual(code, expectedErrorCode)
                 default:
                     XCTFail("Error should be of type .nolError")
@@ -389,7 +385,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let exp = expectation(description: "Wait for getLinkedCardsFor to complete")
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
         mockApiClient.fetchNolSdkSecretResult = {
-            .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+            .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
         }
 
         // When
@@ -399,14 +395,14 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
                 XCTFail("Expected failure but got success")
             case .failure(let primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _, _):
+                case .underlyingErrors(let errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerError {
-                    case .nolError(let code, _, _, _):
+                    case .nolError(let code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Error should be of type .nolError")

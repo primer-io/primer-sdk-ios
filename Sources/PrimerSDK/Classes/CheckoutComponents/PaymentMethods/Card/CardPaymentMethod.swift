@@ -32,9 +32,7 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
         guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
             throw PrimerError.invalidArchitecture(
                 description: "CardPaymentMethod requires DefaultCheckoutScope",
-                recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation",
-                userInfo: ["paymentMethodType": paymentMethodType],
-                diagnosticsId: UUID().uuidString
+                recoverSuggestion: "Ensure you're using the default CheckoutComponents implementation"
             )
         }
 

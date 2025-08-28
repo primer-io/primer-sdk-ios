@@ -10,6 +10,19 @@ final class PrimerColor: UIColor, @unchecked Sendable {
 
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
         return PrimerColor { (traitCollection) -> UIColor in
+            // Check if there's an appearance mode override in PrimerSettings
+            let uiOptions = PrimerSettings.current.uiOptions
+            switch uiOptions.appearanceMode {
+            case .light:
+                return lightMode
+            case .dark:
+                return darkMode
+            case .system:
+                // Fall through to trait collection check
+                break
+            }
+
+            // Default to trait collection
             return traitCollection.userInterfaceStyle == .light ? lightMode : darkMode
         }
     }

@@ -122,7 +122,7 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,
@@ -180,7 +180,7 @@ final class BankSelectorTokenizationViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        sut.start_async()
+        sut.start()
 
         wait(for: [
             expectDidShowPaymentMethod,

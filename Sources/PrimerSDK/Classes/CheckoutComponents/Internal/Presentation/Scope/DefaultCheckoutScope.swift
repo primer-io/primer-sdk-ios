@@ -198,9 +198,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         } catch {
             // Failed to setup interactors
             // Error type logged
-            let primerError = PrimerError.unknown(
-                userInfo: ["setupError": error.localizedDescription],
-                diagnosticsId: UUID().uuidString
+            let primerError = PrimerError.invalidArchitecture(
+                description: "Failed to setup interactors: \(error.localizedDescription)",
+                recoverSuggestion: "Ensure proper SDK initialization"
             )
             updateNavigationState(.failure(primerError))
             updateState(.failure(primerError))
@@ -226,9 +226,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             // Checking payment methods interactor...
             guard let interactor = paymentMethodsInteractor else {
                 // GetPaymentMethodsInteractor is nil - DI resolution failed
-                throw PrimerError.unknown(
-                    userInfo: ["error": "GetPaymentMethodsInteractor not resolved"],
-                    diagnosticsId: UUID().uuidString
+                throw PrimerError.invalidArchitecture(
+                    description: "GetPaymentMethodsInteractor not resolved",
+                    recoverSuggestion: "Ensure proper SDK initialization and dependency injection setup"
                 )
             }
 
@@ -244,10 +244,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
             if availablePaymentMethods.isEmpty {
                 // No payment methods available
-                let error = PrimerError.unknown(
-                    userInfo: ["error": "No payment methods available"],
-                    diagnosticsId: UUID().uuidString
-                )
+                let error = PrimerError.missingPrimerConfiguration()
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
@@ -270,8 +267,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             // Error description logged
 
             let primerError = error as? PrimerError ?? PrimerError.unknown(
-                userInfo: ["originalError": error.localizedDescription],
-                diagnosticsId: UUID().uuidString
+                message: error.localizedDescription
             )
             updateNavigationState(.failure(primerError))
             updateState(.failure(primerError))
@@ -335,8 +331,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     newNavigationState = .selectCountry
                 case .failure(let checkoutError):
                     let primerError = PrimerError.unknown(
-                        userInfo: ["error": checkoutError.message, "code": checkoutError.code],
-                        diagnosticsId: UUID().uuidString
+                        message: "\(checkoutError.message) (code: \(checkoutError.code))"
                     )
                     newNavigationState = .failure(primerError)
                 default:
@@ -510,8 +505,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Dependency injection container not available",
                     recoverSuggestion: "Ensure DI container is properly initialized",
-                    userInfo: nil,
-                    diagnosticsId: UUID().uuidString
                 )))
                 return
             }
@@ -540,19 +533,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 // Fallback: show error or stay on payment method selection
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Payment method \\(method.type) is not supported",
-                    recoverSuggestion: "Register the payment method implementation",
-                    userInfo: ["paymentMethodType": method.type],
-                    diagnosticsId: UUID().uuidString
+                    recoverSuggestion: "Register the payment method implementation"
                 )))
             }
 
         } catch {
             // Failed to create scope for payment method
             updateNavigationState(.failure(PrimerError.invalidArchitecture(
-                description: "Failed to initialize payment method",
-                recoverSuggestion: "Check payment method implementation",
-                userInfo: ["paymentMethodType": method.type, "error": error.localizedDescription],
-                diagnosticsId: UUID().uuidString
+                description: "Failed to initialize payment method \\(method.type): \\(error.localizedDescription)",
+                recoverSuggestion: "Check payment method implementation"
             )))
         }
     }

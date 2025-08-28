@@ -486,10 +486,7 @@ extension CheckoutComponentsPrimer {
         guard let viewController = shared.findPresentingViewController() else {
             let error = PrimerError.unableToPresentPaymentMethod(
                 paymentMethodType: "CheckoutComponents",
-                userInfo: .errorUserInfoDictionary(
-                    additionalInfo: ["message": "No presenting view controller found"]
-                ),
-                diagnosticsId: UUID().uuidString
+                reason: "No presenting view controller found"
             )
 
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in

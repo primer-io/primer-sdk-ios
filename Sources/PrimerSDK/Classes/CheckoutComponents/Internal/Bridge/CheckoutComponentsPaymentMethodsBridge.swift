@@ -16,20 +16,14 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
         // Get the current configuration from PrimerAPIConfiguration
         guard let configuration = PrimerAPIConfiguration.current else {
             logger.error(message: "❌ [PaymentMethodsBridge] No configuration available")
-            throw PrimerError.unknown(
-                userInfo: ["error": "No configuration available"],
-                diagnosticsId: UUID().uuidString
-            )
+            throw PrimerError.missingPrimerConfiguration()
         }
 
         logger.info(message: "✅ [PaymentMethodsBridge] Configuration found")
 
         guard let paymentMethods = configuration.paymentMethods, !paymentMethods.isEmpty else {
             logger.error(message: "❌ [PaymentMethodsBridge] No payment methods in configuration")
-            throw PrimerError.unknown(
-                userInfo: ["error": "No payment methods in configuration"],
-                diagnosticsId: UUID().uuidString
-            )
+            throw PrimerError.misconfiguredPaymentMethods()
         }
 
         logger.info(message: "📊 [PaymentMethodsBridge] Found \(paymentMethods.count) payment methods in configuration")

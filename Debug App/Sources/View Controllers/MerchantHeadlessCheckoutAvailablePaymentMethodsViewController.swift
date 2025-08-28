@@ -128,20 +128,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         let paymentMethodType = paymentMethod.paymentMethodType
         switch paymentMethodType {
         case "PAYMENT_CARD", "ADYEN_BANCONTACT_CARD":
-            let alert = UIAlertController(title: "", message: "Select Implementation", preferredStyle: .actionSheet)
-
-            let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default, handler: { (_)in
-                let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
-            rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action_\(paymentMethodType)"
-
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
-
-            alert.addAction(rawDataAlertAction)
-            alert.addAction(cancelAction)
-            self.present(alert, animated: true, completion: nil)
+            let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
+            navigationController?.pushViewController(vc, animated: true)
         case "XENDIT_RETAIL_OUTLETS":
             let vc = MerchantHeadlessCheckoutRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)

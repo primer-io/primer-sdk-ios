@@ -45,7 +45,7 @@ runs:
     - name: Select Xcode Version
       uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
       with:
-        xcode-version: '16.2.0'
+        xcode-version: '16.3.0'
     - name: Install SSH key
       uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
       with:
@@ -55,7 +55,7 @@ runs:
     - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
       with:
         ssh-private-key: ${{ inputs.ssh-private-key }}
-    - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+    - uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4  # v1.255.0
       with:
         ruby-version: "3.2"
         bundler-cache: true

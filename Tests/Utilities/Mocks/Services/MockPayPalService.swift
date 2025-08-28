@@ -15,7 +15,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, any Error>) -> Void) {
         guard let result = onStartOrderSession?() else {
-            return completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            return completion(.failure(PrimerError.unknown()))
         }
 
         return completion(.success(result))
@@ -23,7 +23,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
         guard let result = onStartOrderSession?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         return result
@@ -31,7 +31,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, any Error>) -> Void) {
         guard let result = onStartBillingAgreementSession?() else {
-            return completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            return completion(.failure(PrimerError.unknown()))
         }
 
         return completion(.success(result))
@@ -39,7 +39,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func startBillingAgreementSession() async throws -> String {
         guard let result = onStartBillingAgreementSession?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         return result
@@ -47,7 +47,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, any Error>) -> Void) {
         guard let result = onConfirmBillingAgreement?() else {
-            return completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            return completion(.failure(PrimerError.unknown()))
         }
 
         return completion(.success(result))
@@ -55,7 +55,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
         guard let result = onConfirmBillingAgreement?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         return result
@@ -63,7 +63,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, any Error>) -> Void) {
         guard let result = onFetchPayPalExternalPayerInfo?(orderId) else {
-            return completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            return completion(.failure(PrimerError.unknown()))
         }
 
         return completion(.success(result))
@@ -71,7 +71,7 @@ final class MockPayPalService: PayPalServiceProtocol {
 
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
         guard let result = onFetchPayPalExternalPayerInfo?(orderId) else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            throw PrimerError.unknown()
         }
 
         return result

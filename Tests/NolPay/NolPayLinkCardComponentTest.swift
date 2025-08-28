@@ -89,7 +89,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func test_UpdateCollectedData_PhoneData__WithInvalidPhoneData_ShouldReturnValidationError() {
         // Given
         let expectedErrorKey = "INVALID_DATA"
-        let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.invalidValue(key: expectedErrorKey)
         mockPhoneMetadataService.resultToReturn = .failure(expectedError)
 
         // When
@@ -117,11 +117,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_UpdateCollectedData_PhoneData__WithInvalidPhoneDataAndSpecificError_ShouldReturnExpectedValidationError() {
         // Given
-        let expectedError = PrimerValidationError.invalidPhoneNumber(
-            message: "EXPECTED_ERROR_MESSAGE",
-            userInfo: [:],
-            diagnosticsId: ""
-        )
+        let expectedError = PrimerValidationError.invalidPhoneNumber(message: "EXPECTED_ERROR_MESSAGE")
         mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedError]), nil, nil))
 
         // When
@@ -194,7 +190,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
             }
 
             switch primerValidationError {
-            case .invalidOTPCode(let message, _, _):
+            case .invalidOTPCode(let message, _):
                 XCTAssertEqual(message, expectedErrorMessage)
             default:
                 XCTFail("primerError should be of type invalidOTPCode")
@@ -294,7 +290,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Submit_CollectPhoneData__WithUninitializedSDK_ShouldReturnError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
         sut.linkToken = linkToken
@@ -333,7 +329,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -360,7 +356,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _, _):
+        case .nolError(let code, let message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Sending of OTP SMS failed from unknown reason")
         default:
@@ -433,7 +429,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Submit_CollectOtpData__WithUninitializedSDK_ShouldReturnError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
         sut.nextDataStep = .collectOtpData(phoneNumber: "")
         sut.otpCode = otpCode
         sut.linkToken = linkToken
@@ -470,7 +466,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -496,7 +492,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _, _):
+        case .nolError(let code, let message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Linking of the card failed failed from unknown reason")
         default:
@@ -525,7 +521,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Submit_CollectTagData__WithUninitializedSDK_ShouldReturnError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        let expectedError = PrimerError.nolSdkInitError()
         sut.nextDataStep = .collectTagData
 
         // When
@@ -558,7 +554,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -584,7 +580,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _, _):
+        case .nolError(_, let message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -678,7 +674,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         let expectedErrorCode = "EXPECTED_ERROR_CODE"
         mockApiClient.fetchNolSdkSecretResult = {
             exp.fulfill()
-            return .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+            return .failure(PrimerError.nolError(code: expectedErrorCode, message: ""))
         }
 
         // When

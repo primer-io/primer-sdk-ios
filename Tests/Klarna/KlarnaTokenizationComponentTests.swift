@@ -90,50 +90,34 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         }
     }
 
-    func test_createPaymentSessionSuccess() {
+
+    func test_createPaymentSessionSuccess() async throws {
         let clientSession = KlarnaTestsMocks.getClientSession()
         let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
         setupPrimerConfiguration(paymentMethod: paymentMethod, apiConfiguration: successApiConfiguration)
 
-        let expectation = XCTestExpectation(description: "Successful Create Klarna Payment Session")
-
-        firstly {
-            tokenizationComponent.createPaymentSession()
-        }
-        .done { paymentSession in
+        do {
+            let paymentSession = try await tokenizationComponent.createPaymentSession()
             XCTAssertNotNil(paymentSession, "Result should not be nil")
-            expectation.fulfill()
-        }
-        .catch { error in
+        } catch {
             XCTFail("Request failed with: \(error)")
-            expectation.fulfill()
         }
-
-        wait(for: [expectation], timeout: 10.0)
     }
 
-    func test_authorizePaymentSessionSuccess() {
+
+    func test_authorizePaymentSessionSuccess() async throws {
         let clientSession = KlarnaTestsMocks.getClientSession()
         let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
         setupPrimerConfiguration(paymentMethod: paymentMethod, apiConfiguration: successApiConfiguration)
 
         tokenizationComponent.setSessionId(paymentSessionId: "mock-session-id")
 
-        let expectation = XCTestExpectation(description: "Successful Authorize Klarna Payment Session")
-
-        firstly {
-            tokenizationComponent.authorizePaymentSession(authorizationToken: "")
-        }
-        .done { paymentSession in
+        do {
+            let paymentSession = try await tokenizationComponent.authorizePaymentSession(authorizationToken: "")
             XCTAssertNotNil(paymentSession, "Result should not be nil")
-            expectation.fulfill()
-        }
-        .catch { error in
+        } catch {
             XCTFail("Request failed with: \(error)")
-            expectation.fulfill()
         }
-
-        wait(for: [expectation], timeout: 10.0)
     }
 }
 
@@ -162,10 +146,7 @@ extension KlarnaTokenizationComponentTests {
     }
 
     private func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidClientToken()
         ErrorHandler.handle(error: error)
         return error
     }
@@ -174,12 +155,7 @@ extension KlarnaTokenizationComponentTests {
         key: String,
         value: Any? = nil
     ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidValue(key: key, value: value)
         ErrorHandler.handle(error: error)
         return error
     }
@@ -187,23 +163,9 @@ extension KlarnaTokenizationComponentTests {
     func getInvalidSettingError(
         name: String
     ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: name,
-            value: nil,
-            userInfo: getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
+        let error = PrimerError.invalidValue(key: name)
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    private func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }
 

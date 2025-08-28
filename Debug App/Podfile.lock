@@ -1,25 +1,25 @@
 PODS:
   - IQKeyboardCore (1.0.5)
-  - IQKeyboardManagerSwift (8.0.1):
-    - IQKeyboardManagerSwift/Appearance (= 8.0.1)
-    - IQKeyboardManagerSwift/Core (= 8.0.1)
-    - IQKeyboardManagerSwift/IQKeyboardReturnManager (= 8.0.1)
-    - IQKeyboardManagerSwift/IQKeyboardToolbarManager (= 8.0.1)
-    - IQKeyboardManagerSwift/IQTextView (= 8.0.1)
-    - IQKeyboardManagerSwift/Resign (= 8.0.1)
-  - IQKeyboardManagerSwift/Appearance (8.0.1):
+  - IQKeyboardManagerSwift (8.0.0):
+    - IQKeyboardManagerSwift/Appearance (= 8.0.0)
+    - IQKeyboardManagerSwift/Core (= 8.0.0)
+    - IQKeyboardManagerSwift/IQKeyboardReturnManager (= 8.0.0)
+    - IQKeyboardManagerSwift/IQKeyboardToolbarManager (= 8.0.0)
+    - IQKeyboardManagerSwift/IQTextView (= 8.0.0)
+    - IQKeyboardManagerSwift/Resign (= 8.0.0)
+  - IQKeyboardManagerSwift/Appearance (8.0.0):
     - IQKeyboardManagerSwift/Core
-  - IQKeyboardManagerSwift/Core (8.0.1):
+  - IQKeyboardManagerSwift/Core (8.0.0):
     - IQKeyboardNotification
     - IQTextInputViewNotification
-  - IQKeyboardManagerSwift/IQKeyboardReturnManager (8.0.1):
+  - IQKeyboardManagerSwift/IQKeyboardReturnManager (8.0.0):
     - IQKeyboardReturnManager
-  - IQKeyboardManagerSwift/IQKeyboardToolbarManager (8.0.1):
+  - IQKeyboardManagerSwift/IQKeyboardToolbarManager (8.0.0):
     - IQKeyboardManagerSwift/Core
     - IQKeyboardToolbarManager
-  - IQKeyboardManagerSwift/IQTextView (8.0.1):
+  - IQKeyboardManagerSwift/IQTextView (8.0.0):
     - IQTextView
-  - IQKeyboardManagerSwift/Resign (8.0.1):
+  - IQKeyboardManagerSwift/Resign (8.0.0):
     - IQKeyboardManagerSwift/Core
   - IQKeyboardNotification (1.0.3)
   - IQKeyboardReturnManager (1.0.4):
@@ -43,9 +43,9 @@ PODS:
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.2)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (2.39.1):
-    - PrimerSDK/Core (= 2.39.1)
-  - PrimerSDK/Core (2.39.1)
+  - PrimerSDK (2.39.2):
+    - PrimerSDK/Core (= 2.39.2)
+  - PrimerSDK/Core (2.39.2)
   - PrimerStripeSDK (1.0.1)
 
 DEPENDENCIES:
@@ -79,7 +79,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   IQKeyboardCore: 28c8bf3bcd8ba5aa1570b318cbc4da94b861711e
-  IQKeyboardManagerSwift: 835fc9c6e4732398113406d84900ad2e8f141218
+  IQKeyboardManagerSwift: 0c6fbbaa2e60739e48d7cf59f25661471a7a3a65
   IQKeyboardNotification: d7382c4466c5a5adef92c7452ebf861b36050088
   IQKeyboardReturnManager: 972be48528ce9e7508ab3ab15ac7efac803f17f5
   IQKeyboardToolbar: d4bdccfb78324aec2f3920659c77bb89acd33312
@@ -90,7 +90,7 @@ SPEC CHECKSUMS:
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: c39536a4eb070da5b43ec99a4edbede241e91d25
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: e97c2797e38979d52e337f57840ea4293521dbb5
+  PrimerSDK: 0895f668c97b0581a3a6024b19e6a950f2f57da7
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
 PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406

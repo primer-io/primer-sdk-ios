@@ -581,9 +581,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     private func prepareCardPaymentData() async throws -> CardPaymentData {
         guard processCardPaymentInteractor != nil else {
-            throw PrimerError.unknown(
-                userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
-                diagnosticsId: UUID().uuidString
+            throw PrimerError.invalidArchitecture(
+                description: "ProcessCardPaymentInteractor not initialized",
+                recoverSuggestion: "Ensure proper initialization of payment components",
             )
         }
 
@@ -607,9 +607,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private func parseExpiryComponents() throws -> (month: String, year: String) {
         let expiryComponents = structuredState.data[.expiryDate].components(separatedBy: "/")
         guard expiryComponents.count == 2 else {
-            throw PrimerError.unknown(
-                userInfo: ["error": "Invalid expiry date format"],
-                diagnosticsId: UUID().uuidString
+            throw PrimerError.invalidValue(
+                key: "expiryDate",
+                value: structuredState.data[.expiryDate],
+                reason: "Invalid expiry date format. Expected MM/YY or MM/YYYY"
             )
         }
 
@@ -628,9 +629,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Processing card payment using ProcessCardPaymentInteractor
 
         guard let interactor = processCardPaymentInteractor else {
-            throw PrimerError.unknown(
-                userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
-                diagnosticsId: UUID().uuidString
+            throw PrimerError.invalidArchitecture(
+                description: "ProcessCardPaymentInteractor not initialized",
+                recoverSuggestion: "Ensure proper initialization of payment components"
             )
         }
 
@@ -642,10 +643,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private func handlePaymentError(_ error: Error) async {
         // Card form submission failed
         structuredState.isLoading = false
-        let primerError = error as? PrimerError ?? PrimerError.unknown(
-            userInfo: nil,
-            diagnosticsId: UUID().uuidString
-        )
+        let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
         checkoutScope?.handlePaymentError(primerError)
     }
 

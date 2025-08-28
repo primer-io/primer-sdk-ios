@@ -232,23 +232,13 @@ internal struct InternalCheckout: View {
 
     private func initializeAPIConfiguration() async throws {
         let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-        try await withCheckedThrowingContinuation { continuation in
-            firstly {
-                apiConfigurationModule.setupSession(
-                    forClientToken: clientToken,
-                    requestDisplayMetadata: true,
-                    requestClientTokenValidation: false,
-                    requestVaultedPaymentMethods: false
-                )
-            }
-            .done {
-                continuation.resume()
-            }
-            .catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        
+        try await apiConfigurationModule.setupSession(
+            forClientToken: clientToken,
+            requestDisplayMetadata: true,
+            requestClientTokenValidation: false,
+            requestVaultedPaymentMethods: false
+        )
     }
 
     private func finalizeSDKInitialization() async {
@@ -278,13 +268,7 @@ internal struct InternalCheckout: View {
         if let primerError = error as? PrimerError {
             initializationError = primerError
         } else {
-            initializationError = PrimerError.underlyingErrors(
-                errors: [error],
-                userInfo: .errorUserInfoDictionary(
-                    additionalInfo: ["message": "SDK initialization failed"]
-                ),
-                diagnosticsId: UUID().uuidString
-            )
+            initializationError = PrimerError.underlyingErrors(errors: [error])
         }
     }
 }
