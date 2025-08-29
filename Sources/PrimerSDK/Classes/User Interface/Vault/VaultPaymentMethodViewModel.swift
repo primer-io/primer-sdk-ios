@@ -46,7 +46,7 @@ final class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
         Task {
             do {
                 try await vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken)
-                
+
                 if paymentMethodToken == AppState.current.selectedPaymentMethodId {
                     AppState.current.selectedPaymentMethodId = nil
                 }
