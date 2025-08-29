@@ -99,3 +99,6 @@ buildserver.json
 # Cursor/VSCode
 launch.json
 .cursorrules
+
+# Style-dictionary file generation, we only want to commit package.json and package-lock.json
+**/node_modules/
