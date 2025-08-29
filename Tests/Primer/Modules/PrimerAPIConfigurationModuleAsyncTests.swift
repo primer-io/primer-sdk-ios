@@ -423,3 +423,30 @@ class PrimerAPIConfigurationModuleAsyncTests: XCTestCase {
         }
     }
 }
+
+extension MockPrimerAPIClient {
+    convenience init(responseHeaders: [String: String]) {
+        self.init()
+        self.responseHeaders = responseHeaders
+    }
+}
+
+extension ClientSession.APIResponse {
+    static var mock_pre: ClientSession.APIResponse {
+        .init(clientSessionId: "mock_pre", paymentMethod: nil, order: nil, customer: nil, testId: nil)
+    }
+
+    static var mock_post: ClientSession.APIResponse {
+        .init(clientSessionId: "mock_post", paymentMethod: nil, order: nil, customer: nil, testId: nil)
+    }
+}
+
+extension Response.Body.Configuration.CheckoutModule {
+    static var mock_pre: Response.Body.Configuration.CheckoutModule {
+        .init(type: "mock_pre", requestUrlStr: nil, options: nil)
+    }
+
+    static var mock_post: Response.Body.Configuration.CheckoutModule {
+        .init(type: "mock_post", requestUrlStr: nil, options: nil)
+    }
+}
