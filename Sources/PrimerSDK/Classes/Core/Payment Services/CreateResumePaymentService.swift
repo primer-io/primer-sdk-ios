@@ -30,7 +30,6 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         self.apiClient = apiClient
     }
 
-
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
@@ -85,7 +84,6 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             status: paymentResponse.status.rawValue
         )
     }
-
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
