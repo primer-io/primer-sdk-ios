@@ -7,15 +7,10 @@
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
-    func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
-                         body: Request.Body.Payment.Complete) -> Promise<Void>
-    func completePayment(clientToken: DecodedJWTToken,
-                         completeUrl: URL,
                          body: Request.Body.Payment.Complete) async throws
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment
 }
 
@@ -35,28 +30,6 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         self.apiClient = apiClient
     }
 
-    func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment> {
-        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return Promise(error: handled(primerError: .invalidClientToken()))
-        }
-
-        return Promise { seal in
-            self.apiClient.createPayment(clientToken: clientToken,
-                                         paymentRequestBody: paymentRequest) { result in
-                switch result {
-                case .failure(let error):
-                    seal.reject(error)
-                case .success(let paymentResponse):
-                    do {
-                        try self.validateResponse(paymentResponse: paymentResponse, callType: .create)
-                        seal.fulfill(paymentResponse)
-                    } catch {
-                        seal.reject(error)
-                    }
-                }
-            }
-        }
-    }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -113,32 +86,6 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         )
     }
 
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment> {
-        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return Promise(error: handled(primerError: .invalidClientToken()))
-        }
-
-        return Promise { seal in
-            self.apiClient.resumePayment(clientToken: clientToken,
-                                         paymentId: paymentId,
-                                         paymentResumeRequest: paymentResumeRequest) { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(PrimerError.failedToResumePayment(
-                        paymentMethodType: self.paymentMethodType,
-                        description: err.localizedDescription
-                    ))
-                case .success(let paymentResponse):
-                    do {
-                        try self.validateResponse(paymentResponse: paymentResponse, callType: .resume)
-                        seal.fulfill(paymentResponse)
-                    } catch {
-                        seal.reject(error)
-                    }
-                }
-            }
-        }
-    }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -165,33 +112,16 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     /**
      * Completes a payment using the provided JWT token and URL.
      *
-     * This private method performs an API call to complete a payment, using a decoded JWT token for authentication
+     * This method performs an API call to complete a payment, using a decoded JWT token for authentication
      * and a URL indicating where the completion request should be sent.
      *
      * - Parameters:
      *   - clientToken: A `DecodedJWTToken` representing the client's authentication token.
-     *   - completeUrl: An `URL` indicating the endpoint for completing the ACH payment.
+     *   - completeUrl: An `URL` indicating the endpoint for completing the payment.
+     *   - body: The payment completion request body.
      *
-     * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
-     *            an error during the API call.
+     * - Throws: An error if the payment completion fails during the API call.
      */
-    func completePayment(clientToken: DecodedJWTToken,
-                         completeUrl: URL,
-                         body: Request.Body.Payment.Complete) -> Promise<Void> {
-        return Promise { seal in
-            self.apiClient.completePayment(clientToken: clientToken,
-                                           url: completeUrl,
-                                           paymentRequest: body) { result in
-                switch result {
-                case .success:
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
-                }
-            }
-        }
-    }
-
     func completePayment(
         clientToken: DecodedJWTToken,
         completeUrl: URL,
