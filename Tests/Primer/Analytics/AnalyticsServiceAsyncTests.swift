@@ -237,39 +237,6 @@ final class AnalyticsServiceAsyncTests: XCTestCase {
         DispatchQueue(label: "AnalyticsServiceTestsQueue-\(UUID().uuidString)", qos: .background, attributes: .concurrent)
     }
 
-    @discardableResult
-    func sendEvents(numberOfEvents: Int,
-                    eventType: Analytics.Event.EventType = .message,
-                    after delay: TimeInterval? = nil,
-                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) -> Promise<Void> {
-        let events = (0 ..< numberOfEvents).compactMap { num in
-            switch eventType {
-            case .message:
-                return messageEvent(withMessage: "Test #\(num + 1)")
-            case .sdkEvent:
-                return sdkEvent(name: "Test #\(num + 1)")
-            default:
-                XCTFail()
-                return nil
-            }
-        }
-        let promises = events.map { (event: Analytics.Event) in
-            Promise { seal in
-                let _callback = { [self] in
-                    _ = self.sut.record(event: event).ensure {
-                        seal.fulfill()
-                    }
-                }
-                if let delay = delay {
-                    queue.asyncAfter(deadline: .now() + delay, execute: _callback)
-                } else {
-                    queue.async(execute: _callback)
-                }
-            }
-        }
-        return when(fulfilled: promises)
-    }
-
     func sendEvents(
         numberOfEvents: Int,
         eventType: Analytics.Event.EventType = .message,
