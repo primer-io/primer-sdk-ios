@@ -32,33 +32,30 @@ final class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
-        firstly {
-            vaultService.fetchVaultedPaymentMethods()
-        }
-        .done {
-            completion(nil)
-        }
-        .catch { err in
-            completion(err)
+        Task {
+            do {
+                try await vaultService.fetchVaultedPaymentMethods()
+                completion(nil)
+            } catch {
+                completion(error)
+            }
         }
     }
 
     func deletePaymentMethod(with paymentMethodToken: String, and completion: @escaping (Error?) -> Void) {
-        firstly {
-            vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken)
-        }
-        .then { () -> Promise<Void> in
-            if paymentMethodToken == AppState.current.selectedPaymentMethodId {
-                AppState.current.selectedPaymentMethodId = nil
-            }
+        Task {
+            do {
+                try await vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken)
 
-            return self.vaultService.fetchVaultedPaymentMethods()
-        }
-        .done {
-            completion(nil)
-        }
-        .catch { err in
-            completion(err)
+                if paymentMethodToken == AppState.current.selectedPaymentMethodId {
+                    AppState.current.selectedPaymentMethodId = nil
+                }
+
+                try await vaultService.fetchVaultedPaymentMethods()
+                completion(nil)
+            } catch {
+                completion(error)
+            }
         }
     }
 }
