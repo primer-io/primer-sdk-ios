@@ -45,7 +45,7 @@ final class ErrorHandlerTests: XCTestCase {
         // Handle the error
         sut.handle(error: error)
         
-        // We can't easily verify Analytics.Service.record was called with correct parameters
+        // We can't easily verify Analytics.Service.fire was called with correct parameters
         // without dependency injection, but we can verify the method completes
         XCTAssertTrue(true) // Placeholder assertion
     }

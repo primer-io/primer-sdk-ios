@@ -367,7 +367,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                         messageType: .info,
                         severity: .info
                     )
-                    Analytics.Service.record(event: event)
+                    Analytics.Service.fire(event: event)
                     logger.debug(message: "Cached config used")
                     self.recordLoadedEvent(start, source: .cache)
                     seal.fulfill(cachedConfig.config)
@@ -442,7 +442,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                         messageType: .info,
                         severity: .info
                     )
-                    Analytics.Service.record(event: event)
+                    Analytics.Service.fire(event: event)
                     logger.debug(message: "Cached config used")
                     self.recordLoadedEvent(start, source: .cache)
                     return continuation.resume(returning: cachedConfig.config)
@@ -507,7 +507,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         let end = Date().millisecondsSince1970
         let interval = end - start
         let showEvent = Analytics.Event.configurationLoading(duration: interval, source: source)
-        Analytics.Service.record(events: [showEvent])
+        Analytics.Service.fire(events: [showEvent])
     }
 
     private func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
@@ -555,7 +555,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             messageType: .other,
             severity: .info
         )
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     private var cachingEnabled: Bool {

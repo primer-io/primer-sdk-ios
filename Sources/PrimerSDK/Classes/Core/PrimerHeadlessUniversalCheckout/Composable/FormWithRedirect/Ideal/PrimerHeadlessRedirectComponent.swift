@@ -55,7 +55,7 @@ extension WebRedirectComponent: LogReporter {
         let stepEvent = Analytics.Event.message(message: logMessage,
                                                 messageType: .info,
                                                 severity: .info)
-        Analytics.Service.record(events: [stepEvent])
+        Analytics.Service.fire(events: [stepEvent])
     }
 }
 

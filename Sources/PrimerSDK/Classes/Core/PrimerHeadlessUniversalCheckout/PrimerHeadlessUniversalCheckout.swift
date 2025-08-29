@@ -43,7 +43,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     ]
 
     fileprivate init() {
-        Analytics.Service.flush()
+        Analytics.Service.drain()
     }
 
     public func start(
@@ -154,7 +154,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let end = Date().millisecondsSince1970
         let interval = end - start
         let showEvent = Analytics.Event.headlessLoading(duration: interval)
-        Analytics.Service.record(events: [showEvent])
+        Analytics.Service.fire(events: [showEvent])
     }
 
     public func cleanUp() {

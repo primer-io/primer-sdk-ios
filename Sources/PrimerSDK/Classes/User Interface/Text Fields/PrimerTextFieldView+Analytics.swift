@@ -25,7 +25,7 @@ extension PrimerTextFieldView {
             return
         }
 
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     internal func sendTextFieldDidEndEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
@@ -34,6 +34,6 @@ extension PrimerTextFieldView {
             return
         }
 
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 }

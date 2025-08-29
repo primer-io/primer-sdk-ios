@@ -678,7 +678,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             objectClass: "\(Self.self)",
             place: .cardForm
         )
-        Analytics.Service.record(event: viewEvent)
+        Analytics.Service.fire(event: viewEvent)
 
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue,

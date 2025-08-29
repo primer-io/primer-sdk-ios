@@ -195,7 +195,7 @@ final class PrimerDelegateProxy: LogReporter {
                         id: timingEventId
                     )
 
-                    Analytics.Service.record(events: [timingEndEvent])
+                    Analytics.Service.fire(events: [timingEndEvent])
                 }
 
                 PrimerUIManager.dismissPrimerUI(animated: true)
@@ -218,7 +218,7 @@ final class PrimerDelegateProxy: LogReporter {
                     id: timingEventId
                 )
 
-                Task { try await Analytics.Service.record(events: [timingEndEvent]) }
+                Analytics.Service.fire(events: [timingEndEvent])
             }
 
             PrimerUIManager.dismissPrimerUI(animated: true)
@@ -293,8 +293,8 @@ final class PrimerDelegateProxy: LogReporter {
                         id: timingEventId
                     )
 
-                    Analytics.Service.record(events: [timingEndEvent])
-                    Analytics.Service.flush()
+                    Analytics.Service.fire(events: [timingEndEvent])
+                    Analytics.Service.drain()
                 }
 
                 PrimerUIManager.dismissPrimerUI(animated: true)
@@ -334,8 +334,8 @@ final class PrimerDelegateProxy: LogReporter {
                     id: timingEventId
                 )
 
-                try? await Analytics.Service.record(events: [timingEndEvent])
-                try? await Analytics.Service.flush()
+                Analytics.Service.fire(events: [timingEndEvent])
+                Analytics.Service.drain()
             }
 
             PrimerUIManager.dismissPrimerUI(animated: true)

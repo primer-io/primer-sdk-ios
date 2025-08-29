@@ -662,7 +662,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             objectClass: "\(Self.self)",
             place: .cardForm
         )
-        Analytics.Service.record(event: viewEvent)
+        Analytics.Service.fire(event: viewEvent)
 
         self.userInputCompletion?()
     }
