@@ -84,7 +84,7 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             name: NolPayAnalyticsConstants.paymentUpdateCollectedDataMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         switch data {
         case .paymentData(cardNumber: let cardNumber,
@@ -126,7 +126,7 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             name: NolPayAnalyticsConstants.paymentSubmitDataMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         switch nextDataStep {
         case .collectCardAndPhoneData:
@@ -191,7 +191,7 @@ public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             name: NolPayAnalyticsConstants.paymentStartMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
                 .first(where: { $0.internalPaymentMethodType == .nolPay })?

@@ -129,7 +129,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                 messageType: .other,
                 severity: .warning
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
         }
 
         delegate?.primerRawDataManager?(rawDataManager,
@@ -187,7 +187,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             objectClass: String(describing: CardNetwork.self),
             place: .cardForm
         )
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     private func sendEvent(forError error: Error) {
@@ -196,7 +196,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             messageType: .error,
             severity: .error
         )
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     // MARK: API Logic

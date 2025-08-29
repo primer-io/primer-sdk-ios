@@ -41,7 +41,7 @@ extension PrimerHeadlessUniversalCheckout {
                 name: "\(Self.self).\(#function)",
                 params: nil
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             super.init()
         }

@@ -40,7 +40,7 @@ final class RetryHandler: LogReporter {
             self.logger.debug(message: message)
 
             let retryEvent = Analytics.Event.message(message: message, messageType: .retry, severity: .warning)
-            Analytics.Service.record(event: retryEvent)
+            Analytics.Service.fire(event: retryEvent)
 
             DispatchQueue.global().asyncAfter(deadline: .now() + backoffTime) {
                 self.attempt()
@@ -64,7 +64,7 @@ final class RetryHandler: LogReporter {
         }
         self.logger.error(message: errorMessage)
         let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .retryFailed, severity: .error)
-        Analytics.Service.record(event: retryEvent)
+        Analytics.Service.fire(event: retryEvent)
 
         self.completion(.failure(PrimerError.missingPrimerConfiguration()))
     }
@@ -93,7 +93,7 @@ final class RetryHandler: LogReporter {
                 // Record event only if we have one or more retries
                 if self.retries > 0 {
                     let retryEvent = Analytics.Event.message(message: successMessage, messageType: .retrySuccess, severity: .info)
-                    Analytics.Service.record(event: retryEvent)
+                    Analytics.Service.fire(event: retryEvent)
                 }
                 self.completion(.success(responseModel))
             } else {
@@ -124,7 +124,7 @@ final class RetryHandler: LogReporter {
 
             finalErrorMessage += "Last error: \(error?.localizedDescription ?? "Unknown error")"
             let retryEvent = Analytics.Event.message(message: finalErrorMessage, messageType: .retry, severity: .warning)
-            Analytics.Service.record(event: retryEvent)
+            Analytics.Service.fire(event: retryEvent)
             self.logger.warn(message: finalErrorMessage)
         }
 

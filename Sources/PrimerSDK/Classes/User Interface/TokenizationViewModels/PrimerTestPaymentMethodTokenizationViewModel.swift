@@ -161,7 +161,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             objectClass: "\(Self.self)",
             place: .cardForm
         )
-        Analytics.Service.record(event: viewEvent)
+        Analytics.Service.fire(event: viewEvent)
 
         payButtonTappedCompletion?()
     }

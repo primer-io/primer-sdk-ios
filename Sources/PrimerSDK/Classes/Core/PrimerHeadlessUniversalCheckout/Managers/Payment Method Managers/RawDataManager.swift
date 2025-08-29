@@ -77,7 +77,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(event: sdkEvent)
+            Analytics.Service.fire(event: sdkEvent)
 
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
@@ -124,7 +124,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             self.delegate = delegate
             self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
@@ -183,7 +183,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
                 return completion(nil, handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))

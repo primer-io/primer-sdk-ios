@@ -225,7 +225,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 objectClass: "\(Self.self)",
                 place: .webview
             )
-            Analytics.Service.record(events: [viewEvent])
+            Analytics.Service.fire(events: [viewEvent])
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
             self.didPresentPaymentMethodUI?()
@@ -353,7 +353,7 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
             messageType: .other,
             severity: .debug
         )
-        Analytics.Service.record(events: [messageEvent])
+        Analytics.Service.fire(events: [messageEvent])
 
         self.cancel()
     }
@@ -374,7 +374,7 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
                 responseCode: nil
             )
 
-            Analytics.Service.record(events: [networkEvent])
+            Analytics.Service.fire(events: [networkEvent])
         }
     }
 
@@ -387,7 +387,7 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
                 messageType: .other,
                 severity: .debug
             )
-            Analytics.Service.record(events: [messageEvent])
+            Analytics.Service.fire(events: [messageEvent])
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {

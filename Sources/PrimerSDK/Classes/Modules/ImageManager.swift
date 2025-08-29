@@ -150,7 +150,7 @@ final class ImageManager: LogReporter {
                     id: timingEventId
                 )
 
-                Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+                Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
             }
             .catch { err in
                 seal.reject(err)
@@ -172,7 +172,7 @@ final class ImageManager: LogReporter {
                 momentType: .end,
                 id: timingEventId
             )
-            Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+            Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
         }
 
         var newImageFiles: [ImageFile] = []
@@ -235,7 +235,7 @@ final class ImageManager: LogReporter {
                     momentType: .end,
                     id: timingEventId
                 )
-                Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+                Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
             }
             .catch { err in
                 if file.bundledImage != nil {
@@ -279,7 +279,7 @@ final class ImageManager: LogReporter {
                 momentType: .end,
                 id: timingEventId
             )
-            Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+            Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
         }
 
         // First try to download the image with the relevant caching policy.

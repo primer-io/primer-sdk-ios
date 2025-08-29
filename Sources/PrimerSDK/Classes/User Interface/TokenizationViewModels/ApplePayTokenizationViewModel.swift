@@ -82,7 +82,7 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() async throws {
-        try await Analytics.Service.record(event: Analytics.Event.ui(
+        Analytics.Service.fire(event: Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,

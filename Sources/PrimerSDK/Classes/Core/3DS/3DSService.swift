@@ -99,7 +99,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 objectClass: nil,
                 place: .threeDSScreen
             )
-            Analytics.Service.record(events: [dismiss3DSUIEvent])
+            Analytics.Service.fire(events: [dismiss3DSUIEvent])
 
             self.threeDSSDKWindow?.isHidden = true
             self.threeDSSDKWindow = nil
@@ -231,7 +231,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             objectClass: nil,
             place: .threeDSScreen
         )
-        Analytics.Service.record(events: [dismiss3DSUIEvent])
+        Analytics.Service.fire(events: [dismiss3DSUIEvent])
 
         threeDSSDKWindow?.isHidden = true
         threeDSSDKWindow = nil
@@ -596,7 +596,7 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 objectClass: nil,
                 place: .threeDSScreen
             )
-            Analytics.Service.record(events: [present3DSUIEvent])
+            Analytics.Service.fire(events: [present3DSUIEvent])
 
             primer3DS.performChallenge(
                 threeDSAuthData: threeDSAuthData,

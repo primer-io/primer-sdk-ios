@@ -40,7 +40,7 @@ internal extension String {
                 messageType: .validationFailed,
                 severity: .warning
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
         }
 
         return isValid
@@ -77,7 +77,7 @@ internal extension String {
                 messageType: .validationFailed,
                 severity: .error
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
         }
 
         return isValid
@@ -108,7 +108,7 @@ internal extension String {
                 messageType: .validationFailed,
                 severity: .warning
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
         }
 
         return isValid
