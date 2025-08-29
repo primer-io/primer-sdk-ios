@@ -38,27 +38,84 @@ jobs:
           fastlane-test-lane: test_sdk_and_debug_app
           sdk-name: sdk
 
+  check-optional-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run-nolpay: ${{ steps.changes.outputs.nolpay }}
+      should-run-klarna: ${{ steps.changes.outputs.klarna }}
+      should-run-threeds: ${{ steps.changes.outputs.threeds }}
+      should-run-stripe: ${{ steps.changes.outputs.stripe }}
+      should-run-any: ${{ steps.changes.outputs.any }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: changes
+        with:
+          filters: |
+            nolpay:
+              - 'Sources/PrimerSDK/Classes/**/NolPay/**'
+              - 'Tests/NolPay/**'
+              - 'Package.NolPay.swift'
+            klarna:
+              - 'Sources/PrimerSDK/Classes/**/Klarna/**'
+              - 'Tests/Klarna/**'
+              - 'Package.Klarna.swift'
+            threeds:
+              - 'Sources/PrimerSDK/Classes/**/3DS/**'
+              - 'Tests/3DS/**'
+              - 'Package.3DS.swift'
+            stripe:
+              - 'Sources/PrimerSDK/Classes/**/Stripe/**'
+              - 'Sources/PrimerSDK/Classes/**/ACH/Stripe/**'
+              - 'Tests/Stripe/**'
+              - 'Package.Stripe.swift'
+            any:
+              - 'Sources/PrimerSDK/Classes/**/NolPay/**'
+              - 'Sources/PrimerSDK/Classes/**/Klarna/**'
+              - 'Sources/PrimerSDK/Classes/**/3DS/**'
+              - 'Sources/PrimerSDK/Classes/**/Stripe/**'
+              - 'Tests/NolPay/**'
+              - 'Tests/Klarna/**'
+              - 'Tests/3DS/**'
+              - 'Tests/Stripe/**'
+              - 'Package.*.swift'
+
   optional-sdk-tests:
     name: Optional SDK Tests
     runs-on: macos-latest-large
+    needs: check-optional-tests
+    if: needs.check-optional-tests.outputs.should-run-any == 'true'
     strategy:
-      max-parallel: 3
+      fail-fast: false
       matrix:
-        package-swift:
-          - { name: 'nol-pay', file: 'Package.NolPay.swift' }
-          - { name: 'klarna', file: Package.Klarna.swift }
-          - { name: '3DS', file: Package.3DS.swift }
-          - { name: 'stripe', file: Package.Stripe.swift }
+        include:
+          - name: 'nol-pay'
+            file: 'Package.NolPay.swift'
+            skip: ${{ needs.check-optional-tests.outputs.should-run-nolpay != 'true' }}
+          - name: 'klarna'
+            file: 'Package.Klarna.swift'
+            skip: ${{ needs.check-optional-tests.outputs.should-run-klarna != 'true' }}
+          - name: '3DS'
+            file: 'Package.3DS.swift'
+            skip: ${{ needs.check-optional-tests.outputs.should-run-threeds != 'true' }}
+          - name: 'stripe'
+            file: 'Package.Stripe.swift'
+            skip: ${{ needs.check-optional-tests.outputs.should-run-stripe != 'true' }}
     steps:
       - name: Cancel previous jobs
+        if: ${{ !matrix.skip }}
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
+        if: ${{ !matrix.skip }}
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
+        if: ${{ !matrix.skip }}
         uses: ./.github/actions/sdk-tests
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
@@ -69,8 +126,8 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          sdk-name: ${{ matrix.package-swift.name }}
-          package-swift: ${{  matrix.package-swift.file }}
+          sdk-name: ${{ matrix.name }}
+          package-swift: ${{ matrix.file }}
 
   spm-build:
     needs: unit-tests-sdk-and-debug-app
@@ -118,13 +175,37 @@ jobs:
   sonarcloud:
     needs:
       - unit-tests-sdk-and-debug-app
+      - check-optional-tests
       - optional-sdk-tests
     name: SonarCloud
     runs-on: macos-latest
+    if: always() && !cancelled() && needs.unit-tests-sdk-and-debug-app.result == 'success' && (needs.check-optional-tests.outputs.should-run-any != 'true' || needs.optional-sdk-tests.result == 'success')
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Determine coverage files
+        id: coverage-files
+        run: |
+          # Always include the main SDK coverage
+          COVERAGE_FILES="sonar-coverage-sdk.xml"
+          
+          # Add optional test coverage files if those tests ran
+          if [[ "${{ needs.check-optional-tests.outputs.should-run-threeds }}" == "true" ]]; then
+            COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-3DS.xml"
+          fi
+          if [[ "${{ needs.check-optional-tests.outputs.should-run-nolpay }}" == "true" ]]; then
+            COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-nol-pay.xml"
+          fi
+          if [[ "${{ needs.check-optional-tests.outputs.should-run-klarna }}" == "true" ]]; then
+            COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-klarna.xml"
+          fi
+          if [[ "${{ needs.check-optional-tests.outputs.should-run-stripe }}" == "true" ]]; then
+            COVERAGE_FILES="${COVERAGE_FILES},sonar-coverage-stripe.xml"
+          fi
+          
+          echo "Coverage files to process: ${COVERAGE_FILES}"
+          echo "files=${COVERAGE_FILES}" >> $GITHUB_OUTPUT
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -135,7 +216,7 @@ jobs:
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml,sonar-coverage-stripe.xml
+          coverage-file-names: ${{ steps.coverage-files.outputs.files }}
 
   build-and-upload-to-appetize:
     needs:
