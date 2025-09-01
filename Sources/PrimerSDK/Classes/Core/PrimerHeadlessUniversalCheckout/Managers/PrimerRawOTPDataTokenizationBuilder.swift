@@ -15,12 +15,12 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
             if let rawOTPInput = self.rawData as? PrimerOTPData {
                 rawOTPInput.onDataDidChange = { [weak self] in
                     guard let self = self else { return }
-                    _ = self.validateRawData(rawOTPInput)
+                    Task { try? await self.validateRawData(rawOTPInput) }
                 }
             }
 
             if let rawData = self.rawData {
-                _ = self.validateRawData(rawData)
+                Task { try? await self.validateRawData(rawData) }
             }
         }
     }
@@ -42,29 +42,6 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
         self.rawDataManager = rawDataManager
     }
 
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
-        return Promise { seal in
-
-            guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
-            }
-
-            guard let rawData = data as? PrimerOTPData else {
-                return seal.reject(handled(primerError: .invalidValue(key: "rawData")))
-            }
-
-            let sessionInfo = BlikSessionInfo(blikCode: rawData.otp, locale: PrimerSettings.current.localeData.localeCode)
-
-            let paymentInstrument = OffSessionPaymentInstrument(
-                paymentMethodConfigId: paymentMethodId,
-                paymentMethodType: paymentMethodType,
-                sessionInfo: sessionInfo)
-
-            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            seal.fulfill(requestBody)
-        }
-    }
-
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
             throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
@@ -84,40 +61,6 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
                 )
             )
         )
-    }
-
-    func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async {
-                var errors: [PrimerValidationError] = []
-
-                guard let rawData = data as? PrimerOTPData else {
-                    let err = handled(error: PrimerValidationError.invalidRawData())
-                    errors.append(err)
-                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
-                    DispatchQueue.main.async { seal.reject(err) }
-                    return
-                }
-
-                if !rawData.otp.isValidOTP {
-                    errors.append(PrimerValidationError.invalidOTPCode(message: "OTP is not valid."))
-                }
-
-                if !errors.isEmpty {
-                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
-
-                    DispatchQueue.main.async {
-                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
-                    }
-                } else {
-                    self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
-
-                    DispatchQueue.main.async {
-                        seal.fulfill()
-                    }
-                }
-            }
-        }
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
