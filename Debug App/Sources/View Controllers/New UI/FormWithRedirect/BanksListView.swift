@@ -159,12 +159,6 @@ extension BanksListView.SearchBar {
     }
 }
 
-struct BanksListView_Previews: PreviewProvider {
-    static var previews: some View {
-        BanksListView(paymentMethodModel: PaymentMethodModel(name: "ideal", logo: nil), banksModel: BanksListModel(), didSelectBank: { _ in }, didFilterByText: { _ in })
-    }
-}
-
 extension View {
     @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {
