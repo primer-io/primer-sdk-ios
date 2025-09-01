@@ -145,7 +145,7 @@ final class PrimerInternal: LogReporter {
         Task {
             do {
                 try await PrimerUIManager.preparePresentation(clientToken: clientToken)
-                PrimerUIManager.presentPaymentUI()
+                await PrimerUIManager.presentPaymentUI()
 
                 let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
                                                     networkService: CurrencyNetworkService())
@@ -187,7 +187,7 @@ final class PrimerInternal: LogReporter {
         Task {
             do {
                 try await PrimerUIManager.preparePresentation(clientToken: clientToken)
-                PrimerUIManager.presentPaymentUI()
+                await PrimerUIManager.presentPaymentUI()
                 self.recordLoadedEvent(start, source: .vaultManager)
                 completion?(nil)
             } catch {
@@ -224,7 +224,7 @@ final class PrimerInternal: LogReporter {
         Task {
             do {
                 try await PrimerUIManager.preparePresentation(clientToken: clientToken)
-                PrimerUIManager.presentPaymentUI()
+                await PrimerUIManager.presentPaymentUI()
                 self.recordLoadedEvent(start, source: .showPaymentMethod)
                 completion?(nil)
             } catch {

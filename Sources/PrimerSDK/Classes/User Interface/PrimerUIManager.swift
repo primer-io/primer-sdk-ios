@@ -251,6 +251,7 @@ extension PrimerUIManager {
         try await shared.preparePresentation(clientToken: clientToken)
     }
 
+    @MainActor
     static func presentPaymentUI() {
         shared.presentPaymentUI()
     }
