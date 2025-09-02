@@ -107,57 +107,6 @@ final class ImageFile: File {
 
 // MARK: MISSING_TESTS
 final class ImageManager: LogReporter {
-
-    func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
-        return Promise { seal in
-            guard !imageFiles.isEmpty else {
-                return seal.fulfill([])
-            }
-
-            let timingEventId = UUID().uuidString
-            let timingEventStart = Analytics.Event.allImagesLoading(
-                momentType: .start,
-                id: timingEventId
-            )
-
-            let promises = imageFiles.compactMap({ self.getImage(file: $0) })
-
-            firstly {
-                when(resolved: promises)
-            }
-            .done { responses in
-                var imageFiles: [ImageFile] = []
-                var errors: [Error] = []
-
-                for response in responses {
-                    switch response {
-                    case .success(let imageFile):
-                        imageFiles.append(imageFile)
-                    case .failure(let err):
-                        errors.append(err)
-                    }
-                }
-
-                if !errors.isEmpty, errors.count == responses.count {
-                    throw handled(internalError: .underlyingErrors(errors: errors))
-                } else {
-                    seal.fulfill(imageFiles)
-                }
-            }
-            .ensure {
-                let timingEventEnd = Analytics.Event.allImagesLoading(
-                    momentType: .end,
-                    id: timingEventId
-                )
-
-                Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     func getImages(for imageFiles: [ImageFile]) async throws -> [ImageFile] {
         guard !imageFiles.isEmpty else { return [] }
 
@@ -192,68 +141,6 @@ final class ImageManager: LogReporter {
         }
 
         return newImageFiles
-    }
-
-    func getImage(file: ImageFile) -> Promise<ImageFile> {
-        return Promise { seal in
-            // Check if image already exists (cached or bundled)
-            guard file.image == nil else {
-                return seal.fulfill(file)
-            }
-
-            // Check if remoteUrl is nil (no download possible)
-            guard file.remoteUrl != nil else {
-                return seal.fulfill(file)
-            }
-
-            let downloader = Downloader()
-
-            let timingEventId = UUID().uuidString
-            let timingEventStart = Analytics.Event.allImagesLoading(
-                momentType: .start,
-                id: timingEventId
-            )
-
-            // First try to download the image with the relevant caching policy.
-            // Therefore, if the image is cached, it will be returned.
-            // If the image download fails, check for a bundled image with the filename,
-            // if it exists continue.
-            firstly {
-                downloader.download(file: file)
-            }
-            .done { file in
-                if let imageFile = file as? ImageFile,
-                   imageFile.cachedImage != nil {
-                    seal.fulfill(imageFile)
-
-                } else {
-                    throw handled(internalError: .failedToDecode(message: "image"))
-                }
-            }
-            .ensure {
-                let timingEventEnd = Analytics.Event.timer(
-                    momentType: .end,
-                    id: timingEventId
-                )
-                Analytics.Service.fire(events: [timingEventStart, timingEventEnd])
-            }
-            .catch { err in
-                if file.bundledImage != nil {
-
-                    self.logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")
-                    self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
-
-                    seal.fulfill(file)
-
-                } else {
-
-                    self.logger.warn(message: "FAILED TO DOWNLOAD LOGO")
-                    self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
-
-                    seal.reject(err)
-                }
-            }
-        }
     }
 
     func getImage(file: ImageFile) async throws -> ImageFile {
