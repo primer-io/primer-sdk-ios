@@ -63,7 +63,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 // Explicitly validate if data exists
                 if let rawData {
-                    Task { try await validateRawData(rawData) }
+                    Task { try? await validateRawData(rawData) }
                 }
             }
         }
