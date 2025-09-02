@@ -215,11 +215,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             try await self.apiClient.listCardNetworks(clientToken: token, bin: bin)
         }
         listCardNetworksTask = task
-        
+
         defer {
             listCardNetworksTask = nil
         }
-        
+
         return try await task.wait()
     }
 }
