@@ -18,11 +18,6 @@ final class MockPrimerUIManager: PrimerUIManaging {
     var onPrepareViewController: (() -> Void)?
     var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType, [PrimerPaymentMethodManagerCategory], String?) -> Void)?
 
-    func prepareRootViewController() -> Promise<Void> {
-        onPrepareViewController?()
-        return .fulfilled(())
-    }
-    
     @MainActor
     func prepareRootViewController_main_actor() {
         onPrepareViewController?()
