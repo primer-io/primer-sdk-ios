@@ -55,7 +55,7 @@ class StringTyper {
             return
         }
         queue.asyncAfter(deadline: .now() + delay) {
-            self.type(string, string, delay: delay, completion: completion)
+            self.delete(string, delay: delay, completion: completion)
         }
     }
 

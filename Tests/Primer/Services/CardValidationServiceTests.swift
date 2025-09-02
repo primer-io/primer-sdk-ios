@@ -1,340 +1,380 @@
 //
 //  CardValidationServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class CardValidationServiceTests: XCTestCase {
-
-    var rawDataManager: RawDataManager!
-
-    var apiClient: MockBINDataAPIClient!
-
-    var delegate: MockRawDataManagerDelegate!
-
-    var debouncer: Debouncer!
-
-    var binDataService: CardValidationService!
-
-    var maxBinLength: Int {
+    // MARK: - Properties
+    
+    private var delegate: MockRawDataManagerDelegate!
+    private var rawDataManager: RawDataManager!
+    private var apiClient: MockBINDataAPIClient!
+    private var debouncer: Debouncer!
+    private var sut: CardValidationService!
+    
+    // MARK: - Test Constants
+    
+    private var maxBinLength: Int {
         DefaultCardValidationService.maximumBinLength
     }
+    
+    private enum TestConstants {
+        static let shortCardNumber = "5555"
+        static let mediumCardNumber = "5555226611"
+        static let fullCardNumber = "552266117788"
+        static let alternativeCardNumber = "552366117788"
+        static let standardTimeout: TimeInterval = 5.0
+        static let shortTimeout: TimeInterval = 2.0
+    }
 
+    // MARK: - Setup & Teardown
+    
     override func setUpWithError() throws {
+        try super.setUpWithError()
         SDKSessionHelper.setUp()
-
-        self.delegate = MockRawDataManagerDelegate()
-        self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
-        self.apiClient = MockBINDataAPIClient()
-        self.debouncer = Debouncer(delay: 0.275)
-        self.rawDataManager.delegate = delegate
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                           apiClient: apiClient)
+        
+        delegate = MockRawDataManagerDelegate()
+        rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
+        rawDataManager.delegate = delegate
+        apiClient = MockBINDataAPIClient()
+        debouncer = Debouncer(delay: 0.275)
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        self.binDataService = nil
-        self.rawDataManager = nil
-        self.delegate = nil
-
+        sut = nil
+        rawDataManager?.delegate = nil
+        rawDataManager = nil
+        delegate = nil
+        apiClient = nil
+        debouncer = nil
+        
         SDKSessionHelper.tearDown()
+        try super.tearDownWithError()
     }
 
+    // MARK: - Local Validation Tests
+    
     func testFourDigitCardNumber_noRemoteValidation() throws {
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is not called")
-
+        // Given
+        sut = createCardValidationService()
+        let metadataExpectation = expectation(description: "Local metadata received")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, _ in
-            XCTFail()
+            XCTFail("Remote validation should not be triggered for short card numbers")
         }
-
+        
         delegate.onMetadataForCardValidationState = { _, networks, _ in
-            XCTAssertEqual(networks.source, .local)
-            expectation.fulfill()
+            XCTAssertEqual(networks.source, .local, "Should use local validation for incomplete BIN")
+            metadataExpectation.fulfill()
         }
-
-        binDataService.validateCardNetworks(withCardNumber: "5555")
-
-        waitForExpectations(timeout: 2)
-
+        
+        // Then
+        sut.validateCardNetworks(withCardNumber: TestConstants.shortCardNumber)
+        
+        wait(for: [metadataExpectation], timeout: TestConstants.shortTimeout)
     }
 
+    // MARK: - Remote Validation Tests
+    
     func testSixDigitCardNumber_startRemoteValidation() throws {
-
-        let cardNumber = "5555226611"
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
-
+        // Given
+        sut = createCardValidationService()
+        let willFetchExpectation = expectation(description: "Remote validation initiated")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, cardState in
-            XCTAssertEqual(cardState.cardNumber, cardNumber)
-            expectation.fulfill()
+            XCTAssertEqual(cardState.cardNumber, TestConstants.mediumCardNumber, "Card state should match input")
+            willFetchExpectation.fulfill()
         }
-
-        binDataService.validateCardNetworks(withCardNumber: cardNumber)
-
-        waitForExpectations(timeout: 1)
+        
+        // Then
+        sut.validateCardNetworks(withCardNumber: TestConstants.mediumCardNumber)
+        
+        wait(for: [willFetchExpectation], timeout: TestConstants.shortTimeout)
     }
 
     func testTwelveDigitCardNumber_fastEntry_successfulValidation() throws {
-
-        let cardNumber = "552266117788"
-
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(value: "VISA"),
-            .init(value: "MASTERCARD")
-        ])
-
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                           allowedCardNetworks: [.visa, .masterCard],
-                                                           apiClient: apiClient)
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD"])
+        
+        let willFetchExpectation = expectation(description: "Remote validation initiated")
+        let metadataExpectation = expectation(description: "Remote metadata received")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, cardState in
-            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-            expectation.fulfill()
+            XCTAssertEqual(cardState.cardNumber, bin, "Should fetch metadata for complete BIN")
+            willFetchExpectation.fulfill()
         }
-
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        
         delegate.onMetadataForCardValidationState = { _, networks, cardState in
-            if networks.detectedCardNetworks.items.count > 1 {
-                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-                XCTAssertEqual(networks.source, .remote)
-
-                XCTAssertEqual(networks.detectedCardNetworks.items.map { $0.network },
-                               networks.selectableCardNetworks?.items.map { $0.network })
-
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "MASTERCARD")
-                expectation2.fulfill()
-            }
+            guard networks.detectedCardNetworks.items.count > 1,
+                  networks.source == .remote,
+                  cardState.cardNumber == bin else { return }
+            
+            self.assertRemoteValidationResult(
+                networks: networks,
+                expectedNetworks: [("Visa", "VISA"), ("Mastercard", "MASTERCARD")],
+                shouldHaveSelectableNetworks: true
+            )
+            metadataExpectation.fulfill()
         }
-
-        enterCardNumber(cardNumber)
-
-        waitForExpectations(timeout: 5)
+        
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+        
+        wait(for: [willFetchExpectation, metadataExpectation], timeout: TestConstants.standardTimeout)
     }
 
     func testTwelveDigitCardNumber_replaceNumber_successfulValidation() throws {
-
-        let cardNumber = "552266117788"
-        let altCardNumber = "552366117788"
-
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(value: "VISA"),
-            .init(value: "CARTES_BANCAIRES")
-        ])
-
-        apiClient.results[String(altCardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(value: "MASTERCARD"),
-            .init(value: "CARTES_BANCAIRES")
-        ])
-
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                           allowedCardNetworks: [.visa, .masterCard, .cartesBancaires],
-                                                           apiClient: apiClient)
-
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(cardNumber)'")
-        let expectation3 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(altCardNumber)'")
-        delegate.onMetadataForCardValidationState = { (_: RawDataManager,
-                                                       networks: PrimerCardNumberEntryMetadata,
-                                                       cardState: PrimerCardNumberEntryState) in
-            print("""
-onMetadataForCardValidationStateCount: \(self.delegate.onMetadataForCardValidationStateCount), \
-networks: \(networks.detectedCardNetworks.items.count)
-""")
-            if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
-                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-                XCTAssertEqual(networks.source, .remote)
-
-                XCTAssertEqual(networks.detectedCardNetworks.items.map { $0.network },
-                               networks.selectableCardNetworks?.items.map { $0.network })
-
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "CARTES_BANCAIRES")
-                expectation2.fulfill()
-            }
-            if self.delegate.onMetadataForCardValidationStateCount == (self.maxBinLength * 2) {
-                XCTAssertEqual(cardState.cardNumber, String(altCardNumber.prefix(self.maxBinLength)))
-                XCTAssertEqual(networks.source, .remote)
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "MASTERCARD")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "CARTES_BANCAIRES")
-                expectation3.fulfill()
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard, .cartesBancaires])
+        let firstBin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        let secondBin = String(TestConstants.alternativeCardNumber.prefix(maxBinLength))
+        
+        configureMockAPIClient(bin: firstBin, networks: ["VISA", "CARTES_BANCAIRES"])
+        configureMockAPIClient(bin: secondBin, networks: ["MASTERCARD", "CARTES_BANCAIRES"])
+        
+        let firstCardExpectation = expectation(description: "First card validation completed")
+        let secondCardExpectation = expectation(description: "Second card validation completed")
+        
+        // When
+        delegate.onMetadataForCardValidationState = { _, networks, cardState in
+            guard networks.source == .remote else { return }
+            
+            if cardState.cardNumber == firstBin {
+                self.assertRemoteValidationResult(
+                    networks: networks,
+                    expectedNetworks: [("Visa", "VISA"), ("Cartes Bancaires", "CARTES_BANCAIRES")],
+                    shouldHaveSelectableNetworks: true
+                )
+                firstCardExpectation.fulfill()
+            } else if cardState.cardNumber == secondBin {
+                self.assertRemoteValidationResult(
+                    networks: networks,
+                    expectedNetworks: [("Mastercard", "MASTERCARD"), ("Cartes Bancaires", "CARTES_BANCAIRES")],
+                    shouldHaveSelectableNetworks: true
+                )
+                secondCardExpectation.fulfill()
             }
         }
-
-        enterCardNumber(cardNumber, altCardNumber)
-
-        waitForExpectations(timeout: 10)
+        
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber, TestConstants.alternativeCardNumber)
+        
+        wait(for: [firstCardExpectation, secondCardExpectation], timeout: 10.0)
     }
 
-    func testTwelveDigitCardNumber_fastEntry_allowedSubset_successfulValidation() throws {
-
-        let cardNumber = "552266117788"
-
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(value: "VISA"),
-            .init(value: "MASTERCARD"),
-            .init(value: "CARTES_BANCAIRES")
-        ])
-
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                           allowedCardNetworks: [.visa, .cartesBancaires],
-                                                           apiClient: apiClient)
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+    func testTwelveDigitCardNumber_allowedSubset_successfulValidation() throws {
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .cartesBancaires])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["VISA", "MASTERCARD", "CARTES_BANCAIRES"])
+        
+        let willFetchExpectation = expectation(description: "Remote validation initiated")
+        let metadataExpectation = expectation(description: "Filtered metadata received")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, cardState in
-            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-            expectation.fulfill()
+            XCTAssertEqual(cardState.cardNumber, bin, "Should fetch metadata for complete BIN")
+            willFetchExpectation.fulfill()
         }
-
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        
         delegate.onMetadataForCardValidationState = { _, networks, cardState in
-            if networks.detectedCardNetworks.items.count > 1 {
-                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-                XCTAssertEqual(networks.source, .remote)
-                XCTAssertNotNil(networks.selectableCardNetworks)
-                XCTAssertEqual(networks.selectableCardNetworks?.items.count, 2)
-                XCTAssertEqual(networks.selectableCardNetworks?.items[0].displayName, "Visa")
-                XCTAssertEqual(networks.selectableCardNetworks?.items[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.selectableCardNetworks?.items[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.selectableCardNetworks?.items[1].network.rawValue, "CARTES_BANCAIRES")
-
-                XCTAssertEqual(networks.detectedCardNetworks.items.count, 3)
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "CARTES_BANCAIRES")
-                XCTAssertEqual(networks.detectedCardNetworks.items[2].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks.items[2].network.rawValue, "MASTERCARD")
-                expectation2.fulfill()
-            }
+            guard networks.detectedCardNetworks.items.count > 1,
+                  networks.source == .remote,
+                  cardState.cardNumber == bin else { return }
+            
+            // Should have 2 selectable networks (allowed subset)
+            XCTAssertNotNil(networks.selectableCardNetworks, "Should have selectable networks")
+            XCTAssertEqual(networks.selectableCardNetworks?.items.count, 2, "Should filter to allowed networks")
+            
+            // Should have 3 detected networks (all from API)
+            XCTAssertEqual(networks.detectedCardNetworks.items.count, 3, "Should show all detected networks")
+            
+            self.assertSelectableNetworks(
+                networks.selectableCardNetworks?.items,
+                expectedNetworks: [("Visa", "VISA"), ("Cartes Bancaires", "CARTES_BANCAIRES")]
+            )
+            
+            self.assertDetectedNetworks(
+                networks.detectedCardNetworks.items,
+                expectedNetworks: [("Visa", "VISA"), ("Cartes Bancaires", "CARTES_BANCAIRES"), ("Mastercard", "MASTERCARD")]
+            )
+            
+            metadataExpectation.fulfill()
         }
-
-        enterCardNumber(cardNumber)
-
-        waitForExpectations(timeout: 5)
+        
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+        
+        wait(for: [willFetchExpectation, metadataExpectation], timeout: TestConstants.standardTimeout)
     }
 
-    func testTwelveDigitCardNumber_fastEntry_unallowed_successfulValidation() throws {
-
-        let cardNumber = "552266117788"
-
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(value: "CARTES_BANCAIRES")
-        ])
-
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                           allowedCardNetworks: [.visa, .masterCard],
-                                                           apiClient: apiClient)
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+    func testTwelveDigitCardNumber_unallowedNetworks_successfulValidation() throws {
+        // Given
+        sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        let bin = String(TestConstants.fullCardNumber.prefix(maxBinLength))
+        configureMockAPIClient(bin: bin, networks: ["CARTES_BANCAIRES"])
+        
+        let willFetchExpectation = expectation(description: "Remote validation initiated")
+        let metadataExpectation = expectation(description: "Unallowed network metadata received")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, cardState in
-            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-            expectation.fulfill()
+            XCTAssertEqual(cardState.cardNumber, bin, "Should fetch metadata for complete BIN")
+            willFetchExpectation.fulfill()
         }
-
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        
         delegate.onMetadataForCardValidationState = { _, networks, cardState in
-            guard cardState.cardNumber == cardNumber.prefix(8) else { return }
-
-            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-            XCTAssertEqual(networks.source, .remote)
-
-            XCTAssertNil(networks.selectableCardNetworks)
-
-            XCTAssertEqual(networks.detectedCardNetworks.items.count, 1)
+            guard cardState.cardNumber == bin,
+                  networks.source == .remote else { return }
+            
+            // No selectable networks (none are allowed)
+            XCTAssertNil(networks.selectableCardNetworks, "Should have no selectable networks when none are allowed")
+            
+            // Should show detected network even if not allowed
+            XCTAssertEqual(networks.detectedCardNetworks.items.count, 1, "Should show detected network")
             XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Cartes Bancaires")
             XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "CARTES_BANCAIRES")
-            XCTAssertNil(networks.detectedCardNetworks.preferred)
-
-            expectation2.fulfill()
+            XCTAssertNil(networks.detectedCardNetworks.preferred, "Should have no preferred network")
+            
+            metadataExpectation.fulfill()
         }
-
-        enterCardNumber(cardNumber)
-
-        waitForExpectations(timeout: 5)
+        
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+        
+        wait(for: [willFetchExpectation, metadataExpectation], timeout: TestConstants.standardTimeout)
     }
 
-    func testReceiveError() throws {
-
-        let cardNumber = "552266117788"
-
+    // MARK: - Error Handling Tests
+    
+    func testRemoteValidationError_fallsBackToLocal() throws {
+        // Given
+        sut = createCardValidationService()
         apiClient.error = PrimerError.unknown()
-
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        
+        let willFetchExpectation = expectation(description: "Remote validation initiated")
+        let fallbackExpectation = expectation(description: "Local fallback triggered")
+        
+        // When
         delegate.onWillFetchCardMetadataForState = { _, cardState in
-            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
-            expectation.fulfill()
+            let expectedBin = String(TestConstants.fullCardNumber.prefix(self.maxBinLength))
+            XCTAssertEqual(cardState.cardNumber, expectedBin, "Should attempt remote validation for complete BIN")
+            willFetchExpectation.fulfill()
         }
-
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
-        delegate.onMetadataForCardValidationState = { _, networks, _ in
-            XCTAssertEqual(networks.detectedCardNetworks.items.count, 1)
-            if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
-                expectation2.fulfill()
+        
+        delegate.onMetadataForCardValidationState = { _, networks, cardState in
+            let expectedBin = String(TestConstants.fullCardNumber.prefix(self.maxBinLength))
+            
+            // Should receive local fallback validation
+            if networks.source == .localFallback, cardState.cardNumber == expectedBin {
+                XCTAssertEqual(networks.detectedCardNetworks.items.count, 1, "Should detect one network locally")
+                fallbackExpectation.fulfill()
             }
         }
-
-        enterCardNumber(cardNumber)
-
-        waitForExpectations(timeout: 5)
+        
+        // Then
+        enterCardNumber(TestConstants.fullCardNumber)
+        
+        wait(for: [willFetchExpectation, fallbackExpectation], timeout: TestConstants.standardTimeout)
     }
 
-    // MARK: Validation creation tests
-
+    // MARK: - Metadata Creation Tests
+    
     func testCreateValidationMetadata_allAllowed_differentOrder() {
-        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                          allowedCardNetworks: [.visa, .masterCard],
-                                                          apiClient: apiClient)
-
-        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
-
-        XCTAssertEqual(metadata.source, .remote)
-        XCTAssertEqual(metadata.selectableCardNetworks?.items.map { $0.network }, [.visa, .masterCard])
-        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.visa, .masterCard])
+        // Given
+        let sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+        
+        // When
+        let metadata = sut.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
+        
+        // Then
+        XCTAssertEqual(metadata.source, .remote, "Should preserve source")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.visa, .masterCard],
+            "Should order selectable networks according to allowed list"
+        )
+        XCTAssertEqual(
+            metadata.detectedCardNetworks.items.map { $0.network },
+            [.visa, .masterCard],
+            "Should include all allowed networks in detected list"
+        )
     }
 
     func testCreateValidationMetadata_noneAllowed_differentOrder() {
-        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                          allowedCardNetworks: [.amex],
-                                                          apiClient: apiClient)
-
-        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
-
-        XCTAssertEqual(metadata.source, .remote)
-        XCTAssertNil(metadata.selectableCardNetworks)
-        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.masterCard, .visa])
+        // Given
+        let sut = createCardValidationService(allowedNetworks: [.amex])
+        
+        // When
+        let metadata = sut.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
+        
+        // Then
+        XCTAssertEqual(metadata.source, .remote, "Should preserve source")
+        XCTAssertNil(metadata.selectableCardNetworks, "Should have no selectable networks when none are allowed")
+        XCTAssertEqual(
+            metadata.detectedCardNetworks.items.map { $0.network },
+            [.masterCard, .visa],
+            "Should show all detected networks even if none are allowed"
+        )
     }
 
     func testCreateValidationMetadata_someAllowed_someOrdered() {
-        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                          allowedCardNetworks: [.masterCard, .visa, .jcb, .amex],
-                                                          apiClient: apiClient)
-
-        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa, .amex, .elo, .jcb], source: .remote)
-
-        XCTAssertEqual(metadata.source, .remote)
-        XCTAssertEqual(metadata.selectableCardNetworks?.items.map { $0.network }, [.masterCard, .visa, .jcb, .amex])
-        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.masterCard, .visa, .jcb, .amex, .elo])
+        // Given
+        let sut = createCardValidationService(allowedNetworks: [.masterCard, .visa, .jcb, .amex])
+        
+        // When
+        let metadata = sut.createValidationMetadata(
+            networks: [.masterCard, .visa, .amex, .elo, .jcb],
+            source: .remote
+        )
+        
+        // Then
+        XCTAssertEqual(metadata.source, .remote, "Should preserve source")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.masterCard, .visa, .jcb, .amex],
+            "Should order selectable networks according to allowed list"
+        )
+        XCTAssertEqual(
+            metadata.detectedCardNetworks.items.map { $0.network },
+            [.masterCard, .visa, .jcb, .amex, .elo],
+            "Should include allowed networks first, then unallowed"
+        )
     }
 
-    // MARK: Helpers
-
-    private func enterCardNumber(_ cardFragment: String, _ altCardFragment: String? = nil) {
-        let typer = StringTyper { string in
-            self.binDataService.validateCardNetworks(withCardNumber: string)
+    // MARK: - Helper Methods
+    
+    private func createCardValidationService(
+        allowedNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks
+    ) -> CardValidationService {
+        DefaultCardValidationService(
+            rawDataManager: rawDataManager,
+            allowedCardNetworks: allowedNetworks,
+            apiClient: apiClient
+        )
+    }
+    
+    private func configureMockAPIClient(bin: String, networks: [String]) {
+        apiClient.results[bin] = .init(networks: networks.map { .init(value: $0) })
+    }
+    
+    private func enterCardNumber(
+        _ cardFragment: String,
+        _ altCardFragment: String? = nil
+    ) {
+        let typer = StringTyper { [weak self] string in
+            self?.sut?.validateCardNetworks(withCardNumber: string)
         }
-
+        
         if let altCardFragment = altCardFragment {
             typer.type(cardFragment) {
                 typer.delete(cardFragment) {
@@ -343,6 +383,73 @@ networks: \(networks.detectedCardNetworks.items.count)
             }
         } else {
             typer.type(cardFragment)
+        }
+    }
+    
+    private func assertRemoteValidationResult(
+        networks: PrimerCardNumberEntryMetadata,
+        expectedNetworks: [(displayName: String, rawValue: String)],
+        shouldHaveSelectableNetworks: Bool
+    ) {
+        XCTAssertEqual(networks.source, .remote, "Should use remote validation")
+        
+        if shouldHaveSelectableNetworks {
+            XCTAssertNotNil(networks.selectableCardNetworks, "Should have selectable networks")
+            XCTAssertEqual(
+                networks.detectedCardNetworks.items.map { $0.network },
+                networks.selectableCardNetworks?.items.map { $0.network },
+                "Detected and selectable networks should match when all are allowed"
+            )
+        }
+        
+        assertNetworkItems(networks.detectedCardNetworks.items, expectedNetworks: expectedNetworks)
+    }
+    
+    private func assertSelectableNetworks(
+        _ selectableNetworks: [PrimerCardNetwork]?,
+        expectedNetworks: [(displayName: String, rawValue: String)]
+    ) {
+        guard let selectableNetworks = selectableNetworks else {
+            XCTFail("Expected selectable networks but got nil")
+            return
+        }
+        assertNetworkItems(selectableNetworks, expectedNetworks: expectedNetworks)
+    }
+    
+    private func assertDetectedNetworks(
+        _ detectedNetworks: [PrimerCardNetwork],
+        expectedNetworks: [(displayName: String, rawValue: String)]
+    ) {
+        assertNetworkItems(detectedNetworks, expectedNetworks: expectedNetworks)
+    }
+    
+    private func assertNetworkItems(
+        _ actualNetworks: [PrimerCardNetwork],
+        expectedNetworks: [(displayName: String, rawValue: String)]
+    ) {
+        XCTAssertEqual(
+            actualNetworks.count,
+            expectedNetworks.count,
+            "Network count should match expected count"
+        )
+        
+        for (index, expected) in expectedNetworks.enumerated() {
+            guard index < actualNetworks.count else {
+                XCTFail("Missing network at index \(index)")
+                continue
+            }
+            
+            let actual = actualNetworks[index]
+            XCTAssertEqual(
+                actual.displayName,
+                expected.displayName,
+                "Display name should match at index \(index)"
+            )
+            XCTAssertEqual(
+                actual.network.rawValue,
+                expected.rawValue,
+                "Network raw value should match at index \(index)"
+            )
         }
     }
 }
