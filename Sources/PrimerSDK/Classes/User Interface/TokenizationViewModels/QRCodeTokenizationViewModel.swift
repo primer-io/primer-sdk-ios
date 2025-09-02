@@ -159,7 +159,7 @@ extension QRCodeTokenizationViewModel {
         }
 
         /// We don't want to put a lot of conditions for already unhandled payment methods
-        /// So we'll fulfill the promise directly, leaving the rest of the logic as clean as possible
+        /// So we'll return directly, leaving the rest of the logic as clean as possible
         /// to proceed with almost only happy path
 
         guard config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {

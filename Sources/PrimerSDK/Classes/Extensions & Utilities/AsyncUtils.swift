@@ -4,18 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-extension Promise {
-    func async() async throws -> T {
-        try await withCheckedThrowingContinuation { continuation in
-            self.done { value in
-                continuation.resume(returning: value)
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
-    }
-}
-
 func awaitResult<T>(_ body: (@escaping (Result<T, Error>) -> Void) -> Void) async throws -> T {
     try await withCheckedThrowingContinuation { continuation in
         body { result in
