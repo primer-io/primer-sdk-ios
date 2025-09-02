@@ -141,9 +141,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
             // Select payment method based on the detected card network
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            clientSessionActionsModule
-                .selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
-                .cauterize()
+            Task {
+                try? await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
+            }
 
         }
         return containerView
@@ -710,9 +710,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
 
     private func unselectPaymentMethodSilently() {
-        ClientSessionActionsModule()
-            .unselectPaymentMethodIfNeeded()
-            .cauterize()
+        Task {
+            try? await ClientSessionActionsModule().unselectPaymentMethodIfNeeded()
+        }
     }
 }
 

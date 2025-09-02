@@ -141,27 +141,22 @@ final class PrimerInternal: LogReporter {
         Analytics.Service.fire(events: events)
 
         let start = Date().millisecondsSince1970
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                networkService: CurrencyNetworkService())
-            currencyLoader.updateCurrenciesFromAPI()
-            self.recordLoadedEvent(start, source: .universalCheckout)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
-            }
 
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+
+                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
+                                                    networkService: CurrencyNetworkService())
+                currencyLoader.updateCurrenciesFromAPI()
+                self.recordLoadedEvent(start, source: .universalCheckout)
+                completion?(nil)
+            } catch {
+                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
+            }
         }
     }
 
@@ -189,23 +184,17 @@ final class PrimerInternal: LogReporter {
 
         let start = Date().millisecondsSince1970
 
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            self.recordLoadedEvent(start, source: .vaultManager)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+                self.recordLoadedEvent(start, source: .vaultManager)
+                completion?(nil)
+            } catch {
+                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
             }
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
         }
     }
 
@@ -232,23 +221,17 @@ final class PrimerInternal: LogReporter {
 
         let start = Date().millisecondsSince1970
 
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            self.recordLoadedEvent(start, source: .showPaymentMethod)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+                self.recordLoadedEvent(start, source: .showPaymentMethod)
+                completion?(nil)
+            } catch {
+                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
             }
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
         }
     }
 
