@@ -15,7 +15,6 @@ protocol Module {
 
     init(url: URL)
 
-    func start() -> Promise<T>
     func start() async throws -> T
     func cancel(withError err: PrimerError)
 }
@@ -31,20 +30,6 @@ final class PollingModule: Module {
 
     required init(url: URL) {
         self.url = url
-    }
-
-    func start() -> Promise<String> {
-        return Promise { seal in
-            self.startPolling { (resumeToken, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let resumeToken = resumeToken {
-                    seal.fulfill(resumeToken)
-                } else {
-                    precondition(false, "Should always return an id or an error")
-                }
-            }
-        }
     }
 
     func start() async throws -> String {
