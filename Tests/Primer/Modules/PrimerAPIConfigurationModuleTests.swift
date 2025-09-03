@@ -14,7 +14,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` succeeds when provided with a valid configuration.
     /// Caching is not relevant for this test.
-    func test_setupSession_succeedsWithValidConfiguration_async() async throws {
+    func test_setupSession_succeedsWithValidConfiguration() async throws {
         // Mock the configuration
         let config = PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
@@ -68,7 +68,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` fails when the configuration fetch returns an error.
     /// Caching is not relevant for this test.
-    func test_setupSession_failsWithInvalidConfiguration_async() async throws {
+    func test_setupSession_failsWithInvalidConfiguration() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session fails with error")
 
         // Create a mock ApiClient and set it to the configuration module as a static property
@@ -102,7 +102,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` uses the cached configuration when caching is enabled.
     /// Caching is enabled for this test.
-    func test_setupSession_usesCachedConfigurationWhenCachingIsEnabled_async() async throws {
+    func test_setupSession_usesCachedConfigurationWhenCachingIsEnabled() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
@@ -180,7 +180,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` fetches a new configuration when caching is disabled.
     /// Caching is disabled for this test.
-    func test_setupSession_fetchesUpdatedConfigurationWhenCachingIsDisabled_async() async throws {
+    func test_setupSession_fetchesUpdatedConfigurationWhenCachingIsDisabled() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
@@ -258,7 +258,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` fetches a new configuration after the cache is cleared.
     /// Caching is enabled initially but cleared during the test.
-    func test_setupSession_fetchesUpdatedConfigurationAfterCacheIsCleared_async() async throws {
+    func test_setupSession_fetchesUpdatedConfigurationAfterCacheIsCleared() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
@@ -339,7 +339,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` updates the configuration when an action is triggered.
     /// Caching is enabled for this test.
-    func test_setupSession_updatesConfigurationWhenActionIsTriggered_async() async throws {
+    func test_setupSession_updatesConfigurationWhenActionIsTriggered() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless

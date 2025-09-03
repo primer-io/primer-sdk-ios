@@ -37,7 +37,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_tokenizeHeadless_success_async() async {
+    func test_tokenizeHeadless_success() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -68,7 +68,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectDidCreatePayment, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeHeadless_failure_async() async {
+    func test_tokenizeHeadless_failure() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -93,7 +93,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_success_async() async {
+    func test_tokenizeDropIn_success() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -118,7 +118,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_failure_async() async {
+    func test_tokenizeDropIn_failure() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -143,7 +143,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_headless_async() async throws {
+    func testFullPaymentFlow_headless() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -174,7 +174,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectCreatePayment, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn_async() async throws {
+    func testFullPaymentFlow_dropIn() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -198,7 +198,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn_vault_async() async throws {
+    func testFullPaymentFlow_dropIn_vault() async throws {
         PrimerInternal.shared.intent = .vault
 
         let expectDidTokenize = expectation(description: "Did tokenize")
