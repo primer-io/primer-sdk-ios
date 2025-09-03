@@ -98,7 +98,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                                                name: Notification.Name.receivedUrlSchemeCancellation,
                                                object: nil)
     }
-    
+
     @MainActor
     func cleanup() {
         willDismissPaymentMethodUI?()
