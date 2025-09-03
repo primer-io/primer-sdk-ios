@@ -541,7 +541,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 Task { @MainActor in
                     if PrimerUIManager.primerRootViewController == nil {
-                        PrimerUIManager.prepareRootViewController_main_actor()
+                        PrimerUIManager.prepareRootViewController()
                     }
 
                     PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {

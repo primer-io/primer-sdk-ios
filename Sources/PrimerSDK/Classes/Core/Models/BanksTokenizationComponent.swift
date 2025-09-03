@@ -342,7 +342,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
-            uiManager.prepareRootViewController_main_actor()
+            uiManager.prepareRootViewController()
         }
 
         uiManager.primerRootViewController?.present(

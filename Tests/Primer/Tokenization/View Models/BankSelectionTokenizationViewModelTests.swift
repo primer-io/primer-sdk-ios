@@ -114,7 +114,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
             expectShowPaymentMethod.fulfill()
         }
 
-        await uiManager.prepareRootViewController_main_actor()
+        await uiManager.prepareRootViewController()
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
