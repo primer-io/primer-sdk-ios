@@ -1,9 +1,15 @@
+//
+//  KlarnaTokenizationManagerTests.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
 @testable import PrimerSDK
 import XCTest
 
-final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
+final class KlarnaTokenizationManagerTests: XCTestCase {
     var sut: KlarnaTokenizationManager!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -217,7 +223,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
     }
 }
 
-extension KlarnaTokenizationManagerAsyncTests {
+extension KlarnaTokenizationManagerTests {
     private var address: Response.Body.Klarna.BillingAddress {
         .init(addressLine1: "address_line_1",
               addressLine2: "address_line_2",
