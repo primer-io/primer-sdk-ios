@@ -148,22 +148,13 @@ final class CheckoutWithVaultedPaymentMethodViewModelAsyncTests: XCTestCase {
             print(error)
         }
 
-        let expectPromiseResolved = self.expectation(description: "start promise resolves")
-        Task {
-            do {
-                try await sut.start()
-                expectPromiseResolved.fulfill()
-            } catch {
-                XCTFail()
-            }
-        }
+        try await sut.start()
 
         await fulfillment(of: [
             expectWillCreatePaymentWithData,
             expectDidExchangeToken,
             expectDidCreatePayment,
-            expectDidCompleteCheckoutWithData,
-            expectPromiseResolved
+            expectDidCompleteCheckoutWithData
         ], timeout: 10.0, enforceOrder: true)
     }
 }

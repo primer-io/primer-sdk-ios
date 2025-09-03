@@ -200,8 +200,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
 
-    // MARK: - Flow Promises
-
     private func awaitUserSelection() async throws {
         await withCheckedContinuation { continuation in
             self.decisionSelectionCompletion = { decision in
