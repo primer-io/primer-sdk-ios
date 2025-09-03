@@ -617,7 +617,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     func start() {
         self.didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { await self.cleanup() }
         }
 
         setupNotificationObservers()

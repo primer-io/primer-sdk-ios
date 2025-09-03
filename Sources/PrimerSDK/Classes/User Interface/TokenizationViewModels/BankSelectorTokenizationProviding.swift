@@ -8,7 +8,7 @@ import Foundation
 
 protocol TokenizationSetupAndCleaning {
     func setupNotificationObservers()
-    func cleanup()
+    @MainActor func cleanup()
     func cancel()
 }
 
