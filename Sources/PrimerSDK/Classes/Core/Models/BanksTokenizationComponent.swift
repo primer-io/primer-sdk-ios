@@ -342,7 +342,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
-            uiManager.prepareRootViewController_main_actor()
+            uiManager.prepareRootViewController()
         }
 
         uiManager.primerRootViewController?.present(
@@ -617,7 +617,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     func start() {
         self.didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { await self.cleanup() }
         }
 
         setupNotificationObservers()

@@ -28,7 +28,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
         self.tokenizationModelDelegate.didFinishPayment = { error in
             self.step = error == nil ? .success : .failure
             self.stepDelegate?.didReceiveStep(step: self.step)
-            self.tokenizationModelDelegate.cleanup()
+            Task { await self.tokenizationModelDelegate.cleanup() }
         }
     }
 

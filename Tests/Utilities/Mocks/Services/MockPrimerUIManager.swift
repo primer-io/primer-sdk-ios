@@ -19,7 +19,7 @@ final class MockPrimerUIManager: PrimerUIManaging {
     var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType, [PrimerPaymentMethodManagerCategory], String?) -> Void)?
 
     @MainActor
-    func prepareRootViewController_main_actor() {
+    func prepareRootViewController() {
         onPrepareViewController?()
     }
 

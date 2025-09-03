@@ -80,7 +80,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func start() {
         didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            Task { @MainActor in self.cleanup_main_actor() }
+            Task { @MainActor in self.cleanup() }
         }
 
         setupNotificationObservers()
@@ -99,15 +99,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                                                object: nil)
     }
 
-    func cleanup() {
-        self.willDismissPaymentMethodUI?()
-        self.webViewController?.dismiss(animated: true, completion: {
-            self.didDismissPaymentMethodUI?()
-        })
-    }
-
     @MainActor
-    func cleanup_main_actor() {
+    func cleanup() {
         willDismissPaymentMethodUI?()
         webViewController?.dismiss(animated: true, completion: {
             self.didDismissPaymentMethodUI?()
@@ -193,13 +186,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         #if DEBUG
         if TEST {
             guard !UIApplication.shared.windows.isEmpty else {
-                return handleWebViewControllerPresentedCompletion_main_actor()
+                return handleWebViewControllerPresentedCompletion()
             }
         }
         #endif
 
         if PrimerUIManager.primerRootViewController == nil {
-            PrimerUIManager.prepareRootViewController_main_actor()
+            PrimerUIManager.prepareRootViewController()
         }
 
         await withCheckedContinuation { continuation in
@@ -208,32 +201,11 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             })
         }
 
-        handleWebViewControllerPresentedCompletion_main_actor()
-
-    }
-
-    private func handleWebViewControllerPresentedCompletion() {
-        DispatchQueue.main.async {
-            let viewEvent = Analytics.Event.ui(
-                action: .view,
-                context: Analytics.Event.Property.Context(
-                    paymentMethodType: self.config.type,
-                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
-                extra: nil,
-                objectType: .button,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .webview
-            )
-            Analytics.Service.fire(events: [viewEvent])
-
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
-            self.didPresentPaymentMethodUI?()
-        }
+        handleWebViewControllerPresentedCompletion()
     }
 
     @MainActor
-    private func handleWebViewControllerPresentedCompletion_main_actor() {
+    private func handleWebViewControllerPresentedCompletion() {
         Analytics.Service.fire(event: Analytics.Event.ui(
             action: .view,
             context: Analytics.Event.Property.Context(

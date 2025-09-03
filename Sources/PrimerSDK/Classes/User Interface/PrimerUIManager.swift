@@ -14,9 +14,7 @@ protocol PrimerUIManaging {
     var primerWindow: UIWindow? { get }
     var primerRootViewController: PrimerRootViewController? { get }
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
-
-    @MainActor
-    func prepareRootViewController_main_actor()
+    @MainActor func prepareRootViewController()
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String?)
@@ -42,7 +40,7 @@ final class PrimerUIManager: PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
 
     func preparePresentation(clientToken: String) async throws {
-        await PrimerUIManager.prepareRootViewController_main_actor()
+        await PrimerUIManager.prepareRootViewController()
         let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
         let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
 
@@ -53,7 +51,7 @@ final class PrimerUIManager: PrimerUIManaging {
             requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
         )
 
-        try PrimerUIManager.validatePaymentUIPresentation_throws()
+        try PrimerUIManager.validatePaymentUIPresentation()
     }
 
     func presentPaymentUI() {
@@ -114,7 +112,7 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     @MainActor
-    func prepareRootViewController_main_actor() {
+    func prepareRootViewController() {
         if PrimerUIManager.primerRootViewController == nil {
             primerRootViewController = PrimerRootViewController()
         }
@@ -135,7 +133,7 @@ final class PrimerUIManager: PrimerUIManaging {
         }
     }
 
-    func validatePaymentUIPresentation_throws() throws {
+    func validatePaymentUIPresentation() throws {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
                 throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType))
@@ -157,15 +155,6 @@ final class PrimerUIManager: PrimerUIManaging {
 
         if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
             throw handled(primerError: .invalidValue(key: "customer.id"))
-        }
-    }
-
-    @MainActor
-    func dismissPrimerUI_async(animated flag: Bool) async {
-        await withCheckedContinuation { continuation in
-            self.dismissPrimerUI(animated: flag) {
-                continuation.resume()
-            }
         }
     }
 
@@ -261,17 +250,12 @@ extension PrimerUIManager {
     }
 
     @MainActor
-    static func prepareRootViewController_main_actor() {
-        shared.prepareRootViewController_main_actor()
+    static func prepareRootViewController() {
+        shared.prepareRootViewController()
     }
 
-    static func validatePaymentUIPresentation_throws() throws {
-        try shared.validatePaymentUIPresentation_throws()
-    }
-
-    @MainActor
-    static func dismissPrimerUI_async(animated flag: Bool) async {
-        await shared.dismissPrimerUI_async(animated: flag)
+    static func validatePaymentUIPresentation() throws {
+        try shared.validatePaymentUIPresentation()
     }
 
     static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
