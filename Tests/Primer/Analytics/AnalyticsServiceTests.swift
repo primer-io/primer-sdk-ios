@@ -29,7 +29,7 @@ final class AnalyticsServiceTests: XCTestCase {
         PrimerAPIConfigurationModule.clientToken = nil
     }
 
-    func testSimpleMessageEventBatchSend_async() async throws {
+    func testSimpleMessageEventBatchSend() async throws {
         let expectation = self.expectation(description: "Batch of five events is sent")
 
         apiClient.onSendAnalyticsEvent = { events in
@@ -57,7 +57,7 @@ final class AnalyticsServiceTests: XCTestCase {
         await fulfillment(of: [expectation, expectation2], timeout: 60.0)
     }
 
-    func testSimpleSDKEventBatchSend_async() async throws {
+    func testSimpleSDKEventBatchSend() async throws {
         let expectation = self.expectation(description: "Batch of five SDK events is sent")
 
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
@@ -87,7 +87,7 @@ final class AnalyticsServiceTests: XCTestCase {
         await fulfillment(of: [expectation, expectation2], timeout: 60.0)
     }
 
-    func testComplexMultiBatchFastSend_async() async throws {
+    func testComplexMultiBatchFastSend() async throws {
         let expectation = self.expectation(description: "Expected number of batches sent")
         expectation.expectedFulfillmentCount = 5
 
@@ -116,7 +116,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(storage.loadEvents().count, 4, "Expected 4 events to remain in storage")
     }
 
-    func testComplexMultiBatchSlowSend_async() async throws {
+    func testComplexMultiBatchSlowSend() async throws {
         let expectation = self.expectation(description: "Events sent to API client expected number of times")
         expectation.expectedFulfillmentCount = 3
 
@@ -154,7 +154,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(storage.loadEvents().count, 4, "Expected 4 events to remain in storage")
     }
 
-    func testFlush_async() async throws {
+    func testFlush() async throws {
         let expectation = self.expectation(description: "All events flushed")
 
         Task {
@@ -174,7 +174,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(storage.loadEvents().count, 0)
     }
 
-    func testSendFailureDeleteSdkEvents_async() async throws {
+    func testSendFailureDeleteSdkEvents() async throws {
         SDKSessionHelper.setUp()
         defer { SDKSessionHelper.tearDown() }
 
@@ -205,7 +205,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertTrue(storage.events.isEmpty, "Expected all events to be deleted after failure.")
     }
 
-    func testSendFailurePurgeAllEvents_async() async {
+    func testSendFailurePurgeAllEvents() async {
         SDKSessionHelper.setUp()
         defer { SDKSessionHelper.tearDown() }
 

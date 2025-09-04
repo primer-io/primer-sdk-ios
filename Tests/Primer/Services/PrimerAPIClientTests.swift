@@ -21,7 +21,7 @@ final class PrimerAPIClientTests: XCTestCase {
         sut = PrimerAPIClient(networkService: networkService)
     }
 
-    func test_genericAPICall_shouldSuccess_whenValidResponse() {
+    func test_genericAPICall_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedResult = SuccessResponse()
@@ -61,7 +61,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_genericAPICall_shouldFail_whenInvalidResponse() {
+    func test_genericAPICall_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let url = URL(string: "https://random.url")!
@@ -110,7 +110,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchVaultedPaymentMethods_shouldSuccess_whenValidResponse() {
+    func test_fetchVaultedPaymentMethods_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockVaultedPaymentMethods
@@ -146,7 +146,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchVaultedPaymentMethods_shouldFail_whenInvalidResponse() {
+    func test_fetchVaultedPaymentMethods_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -187,7 +187,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_exchangePaymentMethodToken_shouldSuccess_whenValidResponse() {
+    func test_exchangePaymentMethodToken_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockTokenizePaymentMethod
@@ -231,7 +231,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_exchangePaymentMethodToken_shouldFail_whenInvalidResponse() {
+    func test_exchangePaymentMethodToken_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -280,7 +280,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_deleteVaultedPaymentMethod_shouldSuccess_whenValidResponse() {
+    func test_deleteVaultedPaymentMethod_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedResult = DummySuccess()
@@ -320,7 +320,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_deleteVaultedPaymentMethod_shouldFail_whenInvalidResponse() {
+    func test_deleteVaultedPaymentMethod_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -367,7 +367,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchConfiguration_shouldSuccess_whenValidResponse() {
+    func test_fetchConfiguration_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration
@@ -423,7 +423,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchConfiguration_shouldFail_whenInvalidResponse() {
+    func test_fetchConfiguration_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -471,7 +471,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayPalOrderSession_shouldSuccess_whenValidResponse() {
+    func test_createPayPalOrderSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPayPalCreateOrder
@@ -527,7 +527,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayPalOrderSession_shouldFail_whenInvalidResponse() {
+    func test_createPayPalOrderSession_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -586,7 +586,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayPalBillingAgreementSession_shouldSuccess() {
+    func test_createPayPalBillingAgreementSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockCreatePayPalBillingAgreementSession
@@ -638,7 +638,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayPalBillingAgreementSession_shouldFail_whenInvalidResponse() {
+    func test_createPayPalBillingAgreementSession_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -693,7 +693,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_confirmPayPalBillingAgreementSession_shouldSuccess_whenValidResponse() {
+    func test_confirmPayPalBillingAgreementSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockConfirmPayPalBillingAgreement
@@ -753,7 +753,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_confirmPayPalBillingAgreementSession_shouldFail_whenInvalidResponse() {
+    func test_confirmPayPalBillingAgreementSession_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -806,7 +806,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createKlarnaPaymentSession_shouldSuccess_whenValidResponse() {
+    func test_createKlarnaPaymentSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockCreateKlarnaPaymentSession
@@ -882,7 +882,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createKlarnaPaymentSession_shouldFail_whenInvalidResponse() {
+    func test_createKlarnaPaymentSession_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -947,7 +947,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createKlarnaCustomerToken_shouldSuccess_whenValidResponse() {
+    func test_createKlarnaCustomerToken_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken
@@ -1004,7 +1004,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createKlarnaCustomerToken_shouldFail_whenInvalidResponse() {
+    func test_createKlarnaCustomerToken_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1063,7 +1063,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_finalizeKlarnaPaymentSession_shouldSuccess_whenValidResponse() {
+    func test_finalizeKlarnaPaymentSession_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockFinalizeKlarnaPaymentSession
@@ -1114,7 +1114,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_finalizeKlarnaPaymentSession_shouldFail_whenInvalidResponse() {
+    func test_finalizeKlarnaPaymentSession_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1167,7 +1167,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listAdyenBanks_shouldSuccess_whenValidResponse() {
+    func test_listAdyenBanks_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockAdyenBanks
@@ -1220,7 +1220,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listAdyenBanks_shouldFail_whenInvalidResponse() {
+    func test_listAdyenBanks_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1273,7 +1273,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listRetailOutlets_shouldSuccess_whenValidResponse() {
+    func test_listRetailOutlets_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockListRetailOutlets
@@ -1320,7 +1320,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listRetailOutlets_shouldFail_whenInvalidResponse() {
+    func test_listRetailOutlets_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1367,7 +1367,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_poll_shouldSuccess_whenValidResponse() {
+    func test_poll_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = PollingResponse(
@@ -1422,7 +1422,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_poll_shouldFail_whenInvalidResponse() {
+    func test_poll_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1469,7 +1469,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_requestPrimerConfigurationWithActions_shouldSuccess_whenValidResponse() {
+    func test_requestPrimerConfigurationWithActions_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration
@@ -1530,7 +1530,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_requestPrimerConfigurationWithActions_shouldFail_whenInvalidResponse() {
+    func test_requestPrimerConfigurationWithActions_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1582,7 +1582,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_sendAnalyticsEvents_shouldSuccess_whenValidResponse() {
+    func test_sendAnalyticsEvents_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockSendAnalyticsEvents
@@ -1629,7 +1629,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_sendAnalyticsEvents_shouldFail_whenInvalidResponse() {
+    func test_sendAnalyticsEvents_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1678,7 +1678,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_shouldSuccess_whenValidResponse() {
+    func test_fetchPayPalExternalPayerInfo_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockFetchPayPalExternalPayerInfo
@@ -1733,7 +1733,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_shouldFail_whenInvalidResponse() {
+    func test_fetchPayPalExternalPayerInfo_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1786,7 +1786,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_validateClientToken_shouldSuccess_whenValidToken() {
+    func test_validateClientToken_shouldSuccess_whenValidToken_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockValidateClientToken
@@ -1822,7 +1822,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_validateClientToken_shouldFail_whenInvalidToken() {
+    func test_validateClientToken_shouldFail_whenInvalidToken_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1863,7 +1863,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayment_shouldSuccess_whenValidResponse() {
+    func test_createPayment_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPayment
@@ -1910,7 +1910,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_createPayment_shouldFail_whenInvalidResponse() {
+    func test_createPayment_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -1957,7 +1957,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_resumePayment_shouldSuccess_whenValidResponse() {
+    func test_resumePayment_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockResumePayment
@@ -2006,7 +2006,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_resumePayment_shouldFail_whenInvalidResponse() {
+    func test_resumePayment_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -2055,7 +2055,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_completePayment_shouldSuccess_whenValidResponse() {
+    func test_completePayment_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockSdkCompleteUrl
@@ -2100,7 +2100,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_completePayment_shouldFail_whenInvalidResponse() {
+    func test_completePayment_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -2149,7 +2149,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_testFinalizePolling_shouldSuccess_whenValidResponse() {
+    func test_testFinalizePolling_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPayment
@@ -2191,7 +2191,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_testFinalizePolling_shouldFail_whenInvalidResponse() {
+    func test_testFinalizePolling_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -2238,7 +2238,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listCardNetworks_shouldSuccess_whenValidResponse() {
+    func test_listCardNetworks_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockBinNetworks
@@ -2283,7 +2283,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_listCardNetworks_shouldFail_whenInvalidResponse() {
+    func test_listCardNetworks_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -2330,7 +2330,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchNolSdkSecret_shouldSuccess_whenValidResponse() {
+    func test_fetchNolSdkSecret_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockFetchNolSdkSecret
@@ -2383,7 +2383,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_fetchNolSdkSecret_shouldFail_whenInvalidResponse() {
+    func test_fetchNolSdkSecret_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
@@ -2440,7 +2440,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_getPhoneMetadata_shouldSuccess_whenValidResponse() {
+    func test_getPhoneMetadata_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         let mockedResult = MockPrimerAPIClient.Samples.mockPhoneMetadataResponse
@@ -2487,7 +2487,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 
-    func test_getPhoneMetadata_shouldFail_whenInvalidResponse() {
+    func test_getPhoneMetadata_shouldFail_whenInvalidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
         networkService.mockedError = mockedError
