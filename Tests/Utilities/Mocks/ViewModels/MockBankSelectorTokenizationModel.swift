@@ -23,52 +23,21 @@ final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding
         self.paymentMethodType = paymentMethodType
     }
 
-    func validateReturningPromise() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
 
     func validate() async throws {}
 
-    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .done {
-                seal.fulfill(self.mockBanks)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
 
     func retrieveListOfBanks() async throws -> [AdyenBank] {
         try await validate()
         return mockBanks
     }
 
-    private func fetchBanks() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            seal.fulfill(mockBanks)
-        }
-    }
 
     func filterBanks(query: String) -> [AdyenBank] {
         didCallFilter = true
         return [mockBanks[2]]
     }
 
-    func tokenize(bankId: String) -> Promise<Void> {
-        return Promise { seal in
-            useSuccess ? seal.fulfill() : seal.reject(PrimerError.failedToCreatePayment(
-                paymentMethodType: paymentMethodType.rawValue,
-                description: "payment_failed"
-            ))
-        }
-    }
 
     func tokenize(bankId: String) async throws {
         guard useSuccess else {
@@ -79,11 +48,6 @@ final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding
         }
     }
 
-    func handlePaymentMethodTokenData() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
 
     func handlePaymentMethodTokenData() async throws {}
 

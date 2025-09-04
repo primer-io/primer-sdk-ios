@@ -4,45 +4,45 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, TokenizationViewModelTestCase {
-
-    var tokenizationService: MockTokenizationService!
-
-    var createResumePaymentService: MockCreateResumePaymentService!
-
-    var uiManager: MockPrimerUIManager!
-
+    
+    // MARK: - Test Dependencies
+    
     var sut: CardFormPaymentMethodTokenizationViewModel!
-
+    var apiClient: MockPrimerAPIClient!
+    var tokenizationService: MockTokenizationService!
+    var createResumePaymentService: MockCreateResumePaymentService!
+    var uiManager: MockPrimerUIManager!
     var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
-
     var uiDelegate: MockPrimerHeadlessUniversalCheckoutUIDelegate!
 
+    // MARK: - Setup & Teardown
+    
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
+        uiManager.primerRootViewController = MockPrimerRootViewController()
         sut = CardFormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.paymentCardPaymentMethod,
                                                          uiManager: uiManager,
                                                          tokenizationService: tokenizationService,
                                                          createResumePaymentService: createResumePaymentService)
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
         delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+        apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
 
         PrimerInternal.shared.intent = .checkout
     }
 
     override func tearDownWithError() throws {
+        apiClient = nil
         sut = nil
         uiManager = nil
         createResumePaymentService = nil
@@ -50,105 +50,9 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         SDKSessionHelper.tearDown()
     }
 
-    func testStartWithPreTokenizationAndAbort() throws {
-        SDKSessionHelper.setUp { mockAppState in
-            mockAppState.amount = 1234
-            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
-        }
+    // MARK: - Validation Tests
 
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
-        delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
-            decision(.abortPaymentCreation())
-            expectWillCreatePaymentData.fulfill()
-        }
-
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { _ in
-            self.sut.userInputCompletion?()
-            expectWillShowPaymentMethod.fulfill()
-        }
-
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
-        delegate.onDidFail = { error in
-            switch error {
-            case PrimerError.merchantError:
-                break
-            default:
-                XCTFail()
-            }
-            expectWillAbort.fulfill()
-        }
-
-        sut.start()
-
-        waitForExpectations(timeout: 10.0)
-    }
-
-    func testStartWithFullCheckoutFlow() throws {
-        SDKSessionHelper.setUp(checkoutModules: [checkoutModule]) { mockAppState in
-            mockAppState.amount = 1234
-            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
-        }
-
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
-
-        _ = PrimerUIManager.prepareRootViewController()
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
-        delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
-
-            self.fillFormFields()
-
-            decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
-        }
-
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompletewithData.fulfill()
-        }
-
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { _ in
-            expectOnTokenize.fulfill()
-            return Result.success(self.tokenizationResponseBody)
-        }
-
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { _ in
-            self.sut.userInputCompletion?()
-            expectWillShowPaymentMethod.fulfill()
-        }
-
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { _ in
-            expectDidCreatePayment.fulfill()
-            return self.paymentResponseBody
-
-        }
-
-        sut.start()
-
-        wait(for: [
-            expectWillShowPaymentMethod,
-            expectWillCreatePaymentData,
-            expectOnTokenize,
-            expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
-        ], timeout: 10.0, enforceOrder: true)
-    }
-
-    func testValidate() throws {
+    func test_validation_requiresValidConfiguration() throws {
         SDKSessionHelper.tearDown()
         XCTAssertThrowsError(try sut.validate())
 
@@ -168,12 +72,109 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
             setupAppState(amount: 1234, currencyCode: "GBP")
             XCTAssertNoThrow(try sut.validate())
-
         }
     }
 
-    func test_checkoutDataFromError() throws {
+    // MARK: - Async Flow Tests
 
+    func test_startFlow_whenAborted_shouldCallOnDidFail() throws {
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
+
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            self.sut.userInputCompletion?()
+            expectDidShowPaymentMethod.fulfill()
+        }
+
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            decision(.abortPaymentCreation())
+            expectWillCreatePaymentWithData.fulfill()
+        }
+
+        let expectDidFail = self.expectation(description: "Payment flow fails")
+        delegate.onDidFail = { error in
+            switch error {
+            case PrimerError.merchantError:
+                break
+            default:
+                XCTFail()
+            }
+            expectDidFail.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectDidShowPaymentMethod,
+            expectWillCreatePaymentWithData,
+            expectDidFail
+        ], timeout: 10, enforceOrder: true)
+    }
+
+    func test_startFlow_fullCheckout_shouldCompleteSuccessfully() throws {
+        SDKSessionHelper.setUp(checkoutModules: [checkoutModule]) { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
+
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            self.sut.userInputCompletion?()
+            expectDidShowPaymentMethod.fulfill()
+        }
+
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+
+            self.fillFormFields()
+
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentWithData.fulfill()
+        }
+
+        let expectDidTokenize = self.expectation(description: "Payment method tokenizes")
+        tokenizationService.onTokenize = { _ in
+            expectDidTokenize.fulfill()
+            return .success(self.tokenizationResponseBody)
+        }
+
+        let expectDidCreatePayment = self.expectation(description: "Payment gets created")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectDidCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        let expectDidCompleteCheckout = self.expectation(description: "Checkout completes successfully")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectDidCompleteCheckout.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectDidShowPaymentMethod,
+            expectWillCreatePaymentWithData,
+            expectDidTokenize,
+            expectDidCreatePayment,
+            expectDidCompleteCheckout
+        ], timeout: 10.0, enforceOrder: true)
+    }
+
+    // MARK: - Error Handling Tests
+
+    func test_setCheckoutDataFromError_shouldSetCorrectPaymentData() throws {
         let sut = PaymentMethodTokenizationViewModel(config: PrimerPaymentMethod(id: "id",
                                                                                  implementationType: .nativeSdk,
                                                                                  type: "PMT",
@@ -198,39 +199,41 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         XCTAssertNil(error2.checkoutData)
     }
 
-    func testSubmitButtonDisabledWithInvalidFields() throws {
+    // MARK: - UI Interaction Tests
+
+    func test_startFlow_withInvalidFields_shouldDisableSubmitButton() throws {
         SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
 
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        let expectDidShowPaymentMethod = self.expectation(description: "UI shows payment method")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             // Fill in fields with invalid data
-            self.sut.cardNumberField.textField.internalText = "4111"  // Incomplete number
+            self.sut.cardNumberField.textField.internalText = "4111" // Incomplete number
             self.sut.expiryDateField.expiryYear = "30"
             self.sut.expiryDateField.expiryMonth = "03"
-            self.sut.cvvField.textField.internalText = "12"  // Invalid CVV
-            
+            self.sut.cvvField.textField.internalText = "12" // Invalid CVV
+
             // Simulate validation of each field
             self.sut.primerTextFieldView(self.sut.cardNumberField, isValid: false)
             self.sut.primerTextFieldView(self.sut.expiryDateField, isValid: true)
             self.sut.primerTextFieldView(self.sut.cvvField, isValid: false)
-            
-            expectWillShowPaymentMethod.fulfill()
+
+            expectDidShowPaymentMethod.fulfill()
         }
 
         sut.start()
 
         waitForExpectations(timeout: 10.0)
-        
+
         XCTAssertFalse(self.sut.uiModule.submitButton?.isEnabled == true)
     }
 
-    func testConfigurePayButton_defaultShowsPayAmount() throws {
+    func test_configurePayButton_defaultBehavior_shouldShowPayAmount() throws {
         // Arrange: set up AppState with amount & currency
         SDKSessionHelper.setUp { mockAppState in
-            mockAppState.amount = 2500               // $25.00
+            mockAppState.amount = 2500 // $25.00
             mockAppState.currency = Currency(code: "USD", decimalDigits: 2)
         }
         PrimerInternal.shared.intent = .checkout
@@ -251,10 +254,10 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         )
     }
 
-    func testConfigurePayButton_showsAddNewCard_whenFlagTrue() throws {
+    func test_configurePayButton_withAddNewCardFlag_shouldShowAddCardText() throws {
         // Arrange: set up AppState
         SDKSessionHelper.setUp { mockAppState in
-            mockAppState.amount = 500                // €5.00
+            mockAppState.amount = 500 // €5.00
             mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
         }
         PrimerInternal.shared.intent = .checkout
@@ -276,7 +279,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         )
     }
 
-    // MARK: Helpers
+    // MARK: - Test Helper Data
 
     private var checkoutModule: PrimerAPIConfiguration.CheckoutModule {
         let options = PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions(
@@ -293,7 +296,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         return PrimerAPIConfiguration.CheckoutModule(type: "BILLING_ADDRESS",
                                                      requestUrlStr: "request_url_str",
                                                      options: options)
-
     }
 
     private func fillFormFields() {
@@ -313,5 +315,4 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         self.sut.postalCodeFieldView.textField.internalText = "EC4M 1AB"
         self.sut.countryFieldView.textField.internalText = "GB"
     }
-
 }

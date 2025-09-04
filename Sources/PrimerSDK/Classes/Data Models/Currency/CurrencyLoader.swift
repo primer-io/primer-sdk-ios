@@ -75,7 +75,7 @@ public final class CurrencyLoader: LogReporter {
 
                 let sdkEvent = Analytics.Event.sdk(name: #function,
                                                    params: ["message": "Successfully updated the list of currencies."])
-                Analytics.Service.record(events: [sdkEvent])
+                Analytics.Service.fire(events: [sdkEvent])
                 completion?(nil)
             } catch {
                 self?.logger.error(message: "Error parsing or saving currencies from API: \(error)")

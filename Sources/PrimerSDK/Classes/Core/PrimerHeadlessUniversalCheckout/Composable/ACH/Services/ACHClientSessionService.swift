@@ -14,9 +14,7 @@ import Foundation
  *  - `patchClientSession`: Updates the client session with new user details based on a given request.
  */
 protocol ACHUserDetailsProviding {
-    func getClientSessionUserDetails() -> Promise<ACHUserDetails>
-    func getClientSessionUserDetails() async throws -> ACHUserDetails
-    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func getClientSessionUserDetails() -> ACHUserDetails
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws
 }
 
@@ -38,24 +36,16 @@ final class ACHClientSessionService: ACHUserDetailsProviding {
  * Retrieves the current user details stored in the client session.
  * This method accesses the cached client session to extract user details
  *
- * - Returns: A promise that resolves with `ACHUserDetails` containing the current user details.
+ * - Returns: `ACHUserDetails` containing the current user details.
  */
 extension ACHClientSessionService {
-    func getClientSessionUserDetails() -> Promise<ACHUserDetails> {
+    func getClientSessionUserDetails() -> ACHUserDetails {
         let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
-        return Promise { seal in
-            let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
-                                             lastName: customerDetails?.lastName ?? "",
-                                             emailAddress: customerDetails?.emailAddress ?? "")
-            seal.fulfill(userDetails)
-        }
-    }
-
-    func getClientSessionUserDetails() async throws -> ACHUserDetails {
-        let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
-        return ACHUserDetails(firstName: customerDetails?.firstName ?? "",
-                                         lastName: customerDetails?.lastName ?? "",
-                                         emailAddress: customerDetails?.emailAddress ?? "")
+        return ACHUserDetails(
+            firstName: customerDetails?.firstName ?? "",
+            lastName: customerDetails?.lastName ?? "",
+            emailAddress: customerDetails?.emailAddress ?? ""
+        )
     }
 }
 
@@ -66,25 +56,9 @@ extension ACHClientSessionService {
  * and applies these to the client session. The method handles both successful updates and errors.
  *
  * - Parameter actionsRequest: The `ClientSessionUpdateRequest` specifying how user details should be updated.
- * - Returns: A promise that resolves when the session has been successfully updated or rejects if an error occurs.
+ * - Throws: An error if the session update fails.
  */
 extension ACHClientSessionService {
-    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                let apiConfigurationModule = PrimerAPIConfigurationModule()
-                return apiConfigurationModule.updateSession(withActions: actionsRequest)
-            }
-            .done { _ in
-                seal.fulfill()
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-
-        }
-    }
-
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
         let apiConfigurationModule = PrimerAPIConfigurationModule()
         try await apiConfigurationModule.updateSession(withActions: actionsRequest)

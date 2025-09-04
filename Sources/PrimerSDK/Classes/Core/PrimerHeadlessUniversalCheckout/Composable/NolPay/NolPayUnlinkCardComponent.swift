@@ -59,7 +59,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             name: NolPayAnalyticsConstants.unlinkCardUpdateCollectedDataMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         switch collectableData {
         case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
@@ -125,7 +125,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             name: NolPayAnalyticsConstants.unlinkCardSubmitDataMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         switch nextDataStep {
         case .collectCardAndPhoneData:
@@ -208,7 +208,7 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             name: NolPayAnalyticsConstants.unlinkCardStartMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
                 .first(where: { $0.internalPaymentMethodType == .nolPay })?

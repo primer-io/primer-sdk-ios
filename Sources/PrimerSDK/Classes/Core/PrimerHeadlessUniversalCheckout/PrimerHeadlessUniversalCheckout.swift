@@ -43,7 +43,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     ]
 
     fileprivate init() {
-        Analytics.Service.flush()
+        Analytics.Service.drain()
     }
 
     public func start(
@@ -53,87 +53,25 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil,
         completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
-        let start = Date().millisecondsSince1970
-
-        PrimerInternal.shared.sdkIntegrationType = .headless
-        PrimerInternal.shared.intent = .checkout
-
-        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
-
-        if delegate != nil {
-            PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        }
-
-        if uiDelegate != nil {
-            PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
-        }
-
-        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-            let message = """
-                PrimerHeadlessUniversalCheckout delegate has not been set, \
-                and you won't be able to receive the Payment Method Token \
-                data to create a payment."
-                """
-            logger.warn(message: message)
-        }
-
-        PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-        PrimerInternal.shared.timingEventId = UUID().uuidString
-
-        var events: [Analytics.Event] = []
-
-        let sdkEvent = Analytics.Event.sdk(
-            name: "\(Self.self).\(#function)",
-            params: [ "intent": PrimerInternal.shared.intent?.rawValue ?? "null" ]
-        )
-
-        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
-
-        let timingStartEvent = Analytics.Event.timer(
-            momentType: .start,
-            id: PrimerInternal.shared.timingEventId ?? "Unknown"
-        )
-
-        events = [sdkEvent, connectivityEvent, timingStartEvent]
-        Analytics.Service.record(events: events)
-
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.uiOptions.isInitScreenEnabled = false
-        settings.uiOptions.isSuccessScreenEnabled = false
-        settings.uiOptions.isErrorScreenEnabled = false
-
-        firstly {
-            self.apiConfigurationModule.setupSession(
-                forClientToken: clientToken,
-                requestDisplayMetadata: true,
-                requestClientTokenValidation: false,
-                requestVaultedPaymentMethods: false)
-        }
-        .done {
-            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
-            currencyLoader.updateCurrenciesFromAPI()
-            let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
-            if (availablePaymentMethodsTypes ?? []).isEmpty {
-                let err = handled(primerError: .misconfiguredPaymentMethods())
-                DispatchQueue.main.async { completion(nil, err) }
-            } else {
+        Task {
+            do {
+                let paymentMethods = try await start(
+                    withClientToken: clientToken,
+                    settings: settings,
+                    delegate: delegate,
+                    uiDelegate: uiDelegate
+                )
                 DispatchQueue.main.async {
-                    let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-                    let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                    delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
-                    self.recordLoadedEvent(start)
-                    completion(availablePaymentMethods, nil)
+                    completion(paymentMethods, nil)
                 }
-            }
-        }
-        .catch { err in
-            DispatchQueue.main.async {
-                completion(nil, err)
+            } catch {
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
             }
         }
     }
 
-    @MainActor
     public func start(
         withClientToken clientToken: String,
         settings: PrimerSettings? = nil,
@@ -199,23 +137,24 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()
 
-        let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
-        if (availablePaymentMethodsTypes ?? []).isEmpty {
+        let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() ?? []
+        guard !availablePaymentMethodsTypes.isEmpty else {
             throw handled(primerError: .misconfiguredPaymentMethods())
-        } else {
-            let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-            let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-            delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
-            self.recordLoadedEvent(start)
-            return availablePaymentMethods
         }
+
+        let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
+        let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+        delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
+        recordLoadedEvent(start)
+        return availablePaymentMethods
+
     }
 
     private func recordLoadedEvent(_ start: Int) {
         let end = Date().millisecondsSince1970
         let interval = end - start
         let showEvent = Analytics.Event.headlessLoading(duration: interval)
-        Analytics.Service.record(events: [showEvent])
+        Analytics.Service.fire(events: [showEvent])
     }
 
     public func cleanUp() {
@@ -227,34 +166,6 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     // MARK: - HELPERS
-
-    private func continueValidateSession() -> Promise<Void> {
-        return Promise { seal in
-            guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                return seal.reject(handled(primerError: .invalidClientToken(reason: "Client token is nil")))
-            }
-
-            guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                return seal.reject(handled(primerError: .invalidClientToken(reason: "Client token cannot be decoded")))
-            }
-
-            do {
-                try decodedJWTToken.validate()
-            } catch {
-                seal.reject(error)
-            }
-
-            guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
-                return seal.reject(PrimerError.missingPrimerConfiguration())
-            }
-
-            guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-                return seal.reject(PrimerError.misconfiguredPaymentMethods())
-            }
-
-            seal.fulfill()
-        }
-    }
 
     private func continueValidateSession() async throws {
         guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
@@ -273,36 +184,6 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
 
         guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
             throw handled(primerError: .misconfiguredPaymentMethods())
-        }
-    }
-
-    internal func validateSession() -> Promise<Void> {
-        return Promise { seal in
-            guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                let err = handled(primerError: .invalidClientToken(reason: "Client token is nil"))
-                seal.reject(err)
-                return
-            }
-
-            guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                return seal.reject(PrimerError.invalidClientToken(reason: "Client token cannot be decoded"))
-            }
-
-            do {
-                try decodedJWTToken.validate()
-            } catch {
-                seal.reject(error)
-            }
-
-            guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
-                return seal.reject(PrimerError.missingPrimerConfiguration())
-            }
-
-            guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-                return seal.reject(PrimerError.misconfiguredPaymentMethods())
-            }
-
-            seal.fulfill()
         }
     }
 

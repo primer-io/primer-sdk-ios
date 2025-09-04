@@ -78,7 +78,7 @@ final class ErrorHandler: LogReporter {
             )
         }
 
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     private func shouldFilterError(_ error: Error) -> Bool {

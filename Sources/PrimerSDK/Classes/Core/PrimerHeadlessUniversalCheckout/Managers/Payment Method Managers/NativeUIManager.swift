@@ -27,7 +27,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             switch paymentMethodType {
             case PrimerPaymentMethodType.applePay.rawValue:
@@ -68,7 +68,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ]
             )
 
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             do {
                 try self.validatePaymentMethod(withType: self.paymentMethodType, andIntent: intent)
