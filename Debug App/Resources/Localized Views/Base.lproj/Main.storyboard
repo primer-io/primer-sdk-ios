@@ -178,7 +178,7 @@
                                 <rect key="frame" x="0.0" y="163" width="414" height="561"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
-                                        <rect key="frame" x="20" y="20" width="374" height="4377"/>
+                                        <rect key="frame" x="20" y="20" width="374" height="4302"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="oCT-9e-d89" userLabel="Environment Stack View">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="318.5"/>
@@ -347,7 +347,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f7f-4e-ZPN" userLabel="SDK Settings Stack View">
-                                                <rect key="frame" x="0.0" y="823" width="374" height="1099.5"/>
+                                                <rect key="frame" x="0.0" y="823" width="374" height="1024.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDK Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZ9-hO-miI">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -355,30 +355,8 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="JMx-kT-CNz" userLabel="Api Version Stack View">
-                                                        <rect key="frame" x="0.0" y="53.5" width="374" height="55"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="API Version" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YnN-Gz-z4B">
-                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Mp3-M5-t9x" userLabel="API Version Segmented Control">
-                                                                <rect key="frame" x="0.0" y="24" width="374" height="32"/>
-                                                                <segments>
-                                                                    <segment title="2.3"/>
-                                                                    <segment title="2.4"/>
-                                                                    <segment title="latest"/>
-                                                                </segments>
-                                                                <connections>
-                                                                    <action selector="apiVersionSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="SZ1-R3-k11"/>
-                                                                </connections>
-                                                            </segmentedControl>
-                                                        </subviews>
-                                                    </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="ei5-BV-JXB" userLabel="Checkout Flow Stack View">
-                                                        <rect key="frame" x="0.0" y="128.5" width="374" height="55"/>
+                                                        <rect key="frame" x="0.0" y="53.5" width="374" height="55"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checkout flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7u-Po-f89">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
@@ -399,7 +377,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="nWM-Ez-WUl" userLabel="Vaulting Flow Stack View">
-                                                        <rect key="frame" x="0.0" y="203.5" width="374" height="48"/>
+                                                        <rect key="frame" x="0.0" y="128.5" width="374" height="48"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vaulting flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n93-PX-jxr">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
@@ -418,7 +396,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="gHa-UJ-OZI" userLabel="Merchant Name Stack View">
-                                                        <rect key="frame" x="0.0" y="271.5" width="374" height="58"/>
+                                                        <rect key="frame" x="0.0" y="196.5" width="374" height="58"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Merchant name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DQF-57-AQg">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
@@ -434,7 +412,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="e5H-u1-UYv" userLabel="Theming Stack View">
-                                                        <rect key="frame" x="0.0" y="349.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="274.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apply theming" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NrM-QC-Yfb" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -448,7 +426,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qps" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="400.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="325.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vault payments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U0L-jF-Mgs">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -462,10 +440,10 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpn" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="451.5" width="374" height="50"/>
+                                                        <rect key="frame" x="0.0" y="376.5" width="374" height="50"/>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpd" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="521.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="446.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable success screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1kI-6E-8gK" userLabel="Disable Success Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -479,7 +457,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="4lC-2k-qct" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="572.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="497.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable init screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wt0-U1-U8V" userLabel="Disable Success Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -494,7 +472,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-4Y-N1z" userLabel="Disable Error Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="623.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="548.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable error screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OHe-89-28f" userLabel="Disable Error Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -508,7 +486,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="YZe-Oh-Inv" userLabel="Recapture CVV">
-                                                        <rect key="frame" x="0.0" y="674.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="599.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable CVV Recapture flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hxC-Ql-YpN" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -522,7 +500,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
-                                                        <rect key="frame" x="0.0" y="725.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="650.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Klarna EMD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -539,7 +517,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="6ae-Na-iSQ" userLabel="Dismiss with Gestures">
-                                                        <rect key="frame" x="0.0" y="776.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="701.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss with Gestures" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NET-aR-Nxd" userLabel="Dismiss w Gestures">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -553,7 +531,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="u6D-4t-3Ra" userLabel="Dismiss with Closebutton">
-                                                        <rect key="frame" x="0.0" y="827.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="752.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss with Closebutton" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hC-rs-Gfj" userLabel="Dismiss w Closebutton">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -567,7 +545,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="tH9-pt-CzZ" userLabel="Dismiss with Closebutton">
-                                                        <rect key="frame" x="0.0" y="878.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="803.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="&quot;Add new card&quot; DropIn button title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0MH-jP-Yls" userLabel="Dismiss w Closebutton">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -581,13 +559,13 @@
                                                         </subviews>
                                                     </stackView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Apple Pay Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="In5-VI-PDg" userLabel="Apple Pay">
-                                                        <rect key="frame" x="0.0" y="929.5" width="374" height="17"/>
+                                                        <rect key="frame" x="0.0" y="854.5" width="374" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="KXu-LO-Zau" userLabel="Billing">
-                                                        <rect key="frame" x="0.0" y="966.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="891.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Billing Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sJn-QO-F0J" userLabel="ApplePay gather Billing">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -604,7 +582,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="bFz-Ec-13T" userLabel="Billing Controls">
-                                                        <rect key="frame" x="0.0" y="1007.5" width="374" height="14"/>
+                                                        <rect key="frame" x="0.0" y="932.5" width="374" height="14"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="FGu-TL-mhN" userLabel="Additional Contact Fields">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="14"/>
@@ -677,7 +655,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="EqY-FO-mDr" userLabel="Shipping">
-                                                        <rect key="frame" x="0.0" y="1017.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="942.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shipping Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E5l-2Z-blp" userLabel="ApplePay gather Shipping">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -694,7 +672,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hmd-vB-Ft9" userLabel="Shipping Controls">
-                                                        <rect key="frame" x="0.0" y="1058.5" width="374" height="34"/>
+                                                        <rect key="frame" x="0.0" y="983.5" width="374" height="34"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="RIG-jm-T50" userLabel="Shipping Address">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
@@ -780,7 +758,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="GpQ-Jz-0Mz" userLabel="Check Provided Networks">
-                                                        <rect key="frame" x="0.0" y="1068.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="993.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check Provided Networks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IU9-FR-hyJ" userLabel="ApplePay check networks">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -799,7 +777,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wmb-0A-wCB" userLabel="Order Stack View">
-                                                <rect key="frame" x="0.0" y="1962.5" width="374" height="461"/>
+                                                <rect key="frame" x="0.0" y="1887.5" width="374" height="461"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhW-8E-83f">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -910,7 +888,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cka-yb-xqD" userLabel="Customer Stack View">
-                                                <rect key="frame" x="0.0" y="2463.5" width="374" height="1565.5"/>
+                                                <rect key="frame" x="0.0" y="2388.5" width="374" height="1565.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Customer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3y1-pX-UrW">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -1311,7 +1289,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="32O-OV-0ey" userLabel="Surcharge Group Stack View">
-                                                <rect key="frame" x="0.0" y="4069" width="374" height="109"/>
+                                                <rect key="frame" x="0.0" y="3994" width="374" height="109"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hmO-CL-ebG">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="31"/>
@@ -1352,7 +1330,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="TQ2-LG-HCd" userLabel="DeepLinkStackView">
-                                                <rect key="frame" x="0.0" y="4218" width="374" height="159"/>
+                                                <rect key="frame" x="0.0" y="4143" width="374" height="159"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dxK-cD-3YA">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="45"/>

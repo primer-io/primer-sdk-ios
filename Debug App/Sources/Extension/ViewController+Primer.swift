@@ -27,7 +27,7 @@ extension UIViewController {
 
         let networking = Networking()
         networking.request(
-            apiVersion: .v2,
+            apiVersion: .v2_4,
             url: url,
             method: .get,
             headers: nil,
