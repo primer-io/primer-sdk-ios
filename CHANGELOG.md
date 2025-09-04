@@ -1,3 +1,34 @@
+## 2.40.1 (2025-09-04)
+
+### Fix
+
+- Resolve asset loading issues in headless checkout components (#1330)
+- Fix main thread crash in 3DS cleanup (#1327)
+
+### Refactor
+
+- Remove _async from method signatures (#1348)
+- Remove main_actor and throws from method signatures (#1346)
+- Remove 'Async' suffix from test class names (#1345)
+- Remove PromiseKit (#1344)
+- Remove PromiseKit from CardValidationService (#1343)
+- Remove PromiseKit from PollingModule (#1342)
+- remove PromiseKit from test mock files and utilities (#1341)
+- remove PromiseKit from ImageManager and related components (#1338)
+- Remove PromiseKit from VaultService and related files (#1336)
+- Remove PromiseKit from raw data managers and tests (#1339)
+- remove PromiseKit from PrimerAPIConfigurationModule (#1335)
+- Remove PromiseKit methods from ThreeDSService (#1337)
+- remove PromiseKit from AnalyticsService (#1333)
+- Remove PromiseKit from TokenizationService (#1331)
+- remove PromiseKit from CreateResumePaymentService (#1332)
+- Remove PromiseKit from VaultManager (#1328)
+- Remove PromiseKit from InternalCardComponentsManager (#1325)
+- Remove PromiseKit from PrimerHeadlessUniversalCheckout (#1326)
+- Remove PromiseKit from PaymentMethodTokenizationViewModel (#1324)
+- Remove PromiseKit from CardFormPaymentMethodTokenizationViewModel (#1322)
+- Remove PromiseKit from FormPaymentMethodTokenizationViewModel (#1321)
+
 ## 2.40.0 (2025-08-27)
 
 ### Feat

@@ -5,4 +5,4 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable:next identifier_name
-public let PrimerSDKVersion = "2.40.0"
+public let PrimerSDKVersion = "2.40.1"
