@@ -107,12 +107,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
-        // Validate card network before tokenization
+        // Validate card network before tokenization (only if card number is valid)
         // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-        let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-        if !self.allowedCardNetworks.contains(cardNetwork) {
-            throw handled(primerError: .invalidValue(key: "cardNetwork",
-                                                     value: cardNetwork.displayName))
+        if !rawData.cardNumber.isEmpty && rawData.cardNumber.isValidCardNumber {
+            let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+            if !self.allowedCardNetworks.contains(cardNetwork) {
+                throw handled(primerError: .invalidValue(key: "cardNetwork",
+                                                         value: cardNetwork.displayName))
+            }
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
