@@ -358,7 +358,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             resumePaymentToken = threeDsAuth.resumeToken
             return threeDsAuth.resumeToken
         } catch {
-            throw error.primerError
+            throw error.asPrimerError
         }
     }
     #endif
