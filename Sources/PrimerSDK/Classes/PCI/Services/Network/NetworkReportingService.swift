@@ -67,7 +67,7 @@ final class DefaultNetworkReportingService: NetworkReportingService {
             event = Analytics.Event.networkConnectivity()
         }
 
-        (analyticsService ?? Analytics.Service.shared).record(event: event)
+        (analyticsService ?? Analytics.Service.shared).fire(event: event)
     }
 
     private func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {

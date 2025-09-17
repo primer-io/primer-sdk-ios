@@ -31,7 +31,7 @@ extension PrimerHeadlessUniversalCheckout {
                 messageType: .other,
                 severity: .info
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
 
             return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardImage)
         }

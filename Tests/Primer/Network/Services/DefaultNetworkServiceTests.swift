@@ -57,7 +57,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         requestDispatcher = nil
     }
 
-    func testBasicRequest_jsonDecodingSuccess_sync() throws {
+    func testBasicRequest_jsonDecodingSuccess_completion() throws {
 
         let expectation = self.expectation(description: "Successful response")
 
@@ -131,7 +131,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         XCTAssertTrue(model.checkoutModules!.isEmpty)
     }
 
-    func testBasicRequest_jsonDecodingFailure_sync() throws {
+    func testBasicRequest_jsonDecodingFailure_completion() throws {
 
         let expectation = self.expectation(description: "Fails with decoding error")
 
@@ -180,7 +180,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         }
     }
 
-    func testRedirectRequest_successWithEmptyResponse_sync() {
+    func testRedirectRequest_successWithEmptyResponse_completion() {
         let expectation = self.expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
@@ -212,7 +212,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
     }
 
-    func testRedirectRequest_successWithNonJsonResponse_sync() {
+    func testRedirectRequest_successWithNonJsonResponse_completion() {
         let expectation = self.expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
@@ -245,7 +245,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
     }
 
-    func testRequest_failsDueToNetworkError_sync() {
+    func testRequest_failsDueToNetworkError_completion() {
         let expectation = self.expectation(description: "Fails with network error")
 
         requestDispatcher.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
@@ -279,7 +279,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         }
     }
 
-    func testRequest_withHeaders_success_sync() {
+    func testRequest_withHeaders_success_completion() {
         let expectation = self.expectation(description: "Successful response with headers")
 
         let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",

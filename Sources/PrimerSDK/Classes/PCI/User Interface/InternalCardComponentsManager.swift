@@ -125,74 +125,49 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         delegate.cardComponentsManager?(self, isLoading: isLoading)
     }
 
-    private func fetchClientToken() -> Promise<DecodedJWTToken> {
-        return Promise { seal in
+    private func fetchClientToken() async throws -> DecodedJWTToken {
+        return try await withCheckedThrowingContinuation { continuation in
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
                 guard error == nil, let clientToken = clientToken else {
-                    seal.reject(error!)
-                    return
+                    return continuation.resume(throwing: error!)
                 }
 
                 let apiConfigurationModule = PrimerAPIConfigurationModule()
-                firstly {
-                    apiConfigurationModule.setupSession(
-                        forClientToken: clientToken,
-                        requestDisplayMetadata: false,
-                        requestClientTokenValidation: false,
-                        requestVaultedPaymentMethods: false)
-                }
-                .done {
-                    if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken {
-                        seal.fulfill(decodedJWTToken)
-                    } else {
-                        let preconditionMessage = "Decoded client token should never be null at this point."
-                        precondition(false, preconditionMessage)
-                        seal.reject(handled(primerError: .invalidValue(key: "self.decodedClientToken")))
+                Task {
+                    do {
+                        try await apiConfigurationModule.setupSession(
+                            forClientToken: clientToken,
+                            requestDisplayMetadata: false,
+                            requestClientTokenValidation: false,
+                            requestVaultedPaymentMethods: false
+                        )
+                        if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken {
+                            continuation.resume(returning: decodedJWTToken)
+                        } else {
+                            continuation.resume(throwing: handled(primerError: .invalidValue(key: "self.decodedClientToken")))
+                            preconditionFailure("Decoded client token should never be null at this point.")
+                        }
+                    } catch {
+                        continuation.resume(throwing: error)
                     }
-                }
-                .catch { err in
-                    seal.reject(err)
                 }
             })
         }
     }
 
-    private func fetchClientTokenIfNeeded() -> Promise<DecodedJWTToken> {
-        return Promise { seal in
+    private func fetchClientTokenIfNeeded() async throws -> DecodedJWTToken {
+        if let decodedJWTToken {
             do {
-                if let decodedJWTToken = decodedJWTToken {
-                    try decodedJWTToken.validate()
-                    seal.fulfill(decodedJWTToken)
-                } else {
-                    firstly {
-                        self.fetchClientToken()
-                    }
-                    .done { decodedJWTToken in
-                        seal.fulfill(decodedJWTToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                }
-
+                try decodedJWTToken.validate()
+                return decodedJWTToken
+            } catch PrimerError.invalidClientToken {
+                // Fall through to fetch new token
             } catch {
-                switch error {
-                case PrimerError.invalidClientToken:
-                    firstly {
-                        self.fetchClientToken()
-                    }
-                    .done { decodedJWTToken in
-                        seal.fulfill(decodedJWTToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                default:
-                    seal.reject(error)
-                }
+                throw error
             }
-
         }
+
+        return try await fetchClientToken()
     }
 
     private func validateCardComponents() throws {
@@ -277,46 +252,34 @@ and 4 characters for expiry year separated by '/'.
     }
 
     public func tokenize() {
-        do {
-            setIsLoading(true)
+        setIsLoading(true)
 
-            try validateCardComponents()
+        Task {
+            do {
+                try validateCardComponents()
+                _ = try await self.fetchClientTokenIfNeeded()
 
-            firstly {
-                self.fetchClientTokenIfNeeded()
-            }
-            .done { _ in
-
-                guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
-                    let err = handled(primerError: .invalidValue(key: "Payment Instrument"))
-                    self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
-                    return
+                guard let tokenizationPaymentInstrument else {
+                    throw handled(primerError: .invalidValue(key: "Payment Instrument"))
                 }
 
                 self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
                 let requestBody = Request.Body.Tokenization(paymentInstrument: tokenizationPaymentInstrument)
 
-                firstly {
-                    return self.tokenizationService.tokenize(requestBody: requestBody)
-                }
-                .done { paymentMethodTokenData in
+                do {
+                    let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+                } catch {
+                    throw handled(primerError: error.primerError)
                 }
-                .catch { err in
-                    ErrorHandler.handle(error: err.primerError)
-                    self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
-                }
+
+            } catch PrimerError.underlyingErrors(let errors, _) {
+                delegate.cardComponentsManager?(self, tokenizationFailedWith: errors)
+                setIsLoading(false)
+            } catch {
+                delegate.cardComponentsManager?(self, tokenizationFailedWith: [error])
+                setIsLoading(false)
             }
-            .catch { err in
-                self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
-                self.setIsLoading(false)
-            }
-        } catch PrimerError.underlyingErrors(let errors, _) {
-            delegate.cardComponentsManager?(self, tokenizationFailedWith: errors)
-            setIsLoading(false)
-        } catch {
-            delegate.cardComponentsManager?(self, tokenizationFailedWith: [error])
-            setIsLoading(false)
         }
     }
 }

@@ -122,7 +122,7 @@ public final class NolPayLinkedCardsComponent {
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
         #if canImport(PrimerNolPaySDK)
 
         guard let nolPay else {

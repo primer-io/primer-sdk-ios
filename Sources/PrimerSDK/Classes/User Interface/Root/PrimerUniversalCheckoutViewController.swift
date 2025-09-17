@@ -40,23 +40,23 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else { return }
 
         let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
-        firstly {
-            vaultService.fetchVaultedPaymentMethods()
-        }
-        .done { [weak self] in
-            self?.renderSelectedPaymentInstrument(insertAt: 1)
-        }
-        .catch { err in
-            let error = err.primerError
-            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
-
-            PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
-                switch errorDecision.type {
-                case .fail(let message):
-                    DispatchQueue.main.async {
-                        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                                  paymentMethodManagerCategories: [],
-                                                                  withMessage: message)
+        Task {
+            do {
+                try await vaultService.fetchVaultedPaymentMethods()
+                renderSelectedPaymentInstrument(insertAt: 1)
+            } catch {
+                let err = error.primerError
+                let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
+                PrimerDelegateProxyor.primerDidFailWithError(primerErr, data: nil) { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        DispatchQueue.main.async {
+                            PrimerUIManager.dismissOrShowResultScreen(
+                                type: .failure,
+                                paymentMethodManagerCategories: [],
+                                withMessage: message
+                            )
+                        }
                     }
                 }
             }
@@ -150,15 +150,12 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                   let currency = AppState.current.currency
             else {
                 let err = PrimerError.invalidValue(key: "amount or currency")
-                firstly {
-                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                }
-                .done { errMessage in
+                Task {
+                    let errMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                     PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                               paymentMethodManagerCategories: [],
                                                               withMessage: errMessage)
                 }
-                .catch { _ in }
                 return
             }
 
@@ -281,14 +278,12 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 selectedPaymentMethodTokenData: selectedPaymentMethod,
                 additionalData: additionalData,
                 createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType))
-            firstly {
-                checkoutWithVaultedPaymentMethodVM.start()
-            }
-            .ensure {
+
+            Task {
+                try? await checkoutWithVaultedPaymentMethodVM.start()
                 self.payButton.stopAnimating()
                 self.enableView(true)
             }
-            .catch { _ in }
         }
     }
 }

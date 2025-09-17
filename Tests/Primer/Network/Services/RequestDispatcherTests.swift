@@ -43,7 +43,7 @@ final class RequestDispatcherTests: XCTestCase {
         session = nil
     }
 
-    func testSuccessfulResponse_sync() throws {
+    func testSuccessfulResponse_completion() throws {
 
         let expectation = self.expectation(description: "Successful response received")
 
@@ -69,7 +69,7 @@ final class RequestDispatcherTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testHTTPFailureResponse_sync() throws {
+    func testHTTPFailureResponse_completion() throws {
 
         let expectation = self.expectation(description: "Successful response received")
 
@@ -95,7 +95,7 @@ final class RequestDispatcherTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testFailedDispatchResponse_sync() throws {
+    func testFailedDispatchResponse_completion() throws {
         let expectation = self.expectation(description: "Successful response received")
 
         let urlString = "https://a_url"

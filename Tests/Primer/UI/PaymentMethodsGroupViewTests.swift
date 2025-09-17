@@ -61,83 +61,41 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
         onStart?()
     }
 
-    func performPreTokenizationSteps() -> Promise<Void> {
-        Promise.rejected(PrimerError.unknown())
-    }
-
     func performPreTokenizationSteps() async throws {
         throw PrimerError.unknown()
-    }
-
-    func performTokenizationStep() -> Promise<Void> {
-        Promise.rejected(PrimerError.unknown())
     }
 
     func performTokenizationStep() async throws {
         throw PrimerError.unknown()
     }
 
-    func performPostTokenizationSteps() -> Promise<Void> {
-        Promise.rejected(PrimerError.unknown())
-    }
-
     func performPostTokenizationSteps() async throws {
         throw PrimerError.unknown()
-    }
-
-    func tokenize() -> PrimerSDK.Promise<PrimerPaymentMethodTokenData> {
-        Promise.rejected(PrimerError.unknown())
     }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
         throw PrimerError.unknown()
     }
 
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        Promise.rejected(PrimerError.unknown())
-    }
-
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
         throw PrimerError.unknown()
-    }
-
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
-        Promise.rejected(PrimerError.unknown())
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
         throw PrimerError.unknown()
     }
 
-    func presentPaymentMethodUserInterface() -> Promise<Void> {
-        Promise.rejected(PrimerError.unknown())
-    }
-
     func presentPaymentMethodUserInterface() async throws {
         throw PrimerError.unknown()
-    }
-
-    func awaitUserInput() -> Promise<Void> {
-        Promise.rejected(PrimerError.unknown())
     }
 
     func awaitUserInput() async throws {
         throw PrimerError.unknown()
     }
 
-
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
-        Promise.rejected(PrimerError.unknown())
-    }
-
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                              paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
         throw PrimerError.unknown()
-    }
-
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> PrimerSDK.Promise<PrimerSDK.PrimerCheckoutData?> {
-        Promise.rejected(PrimerError.unknown())
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerSDK.PrimerCheckoutData? {

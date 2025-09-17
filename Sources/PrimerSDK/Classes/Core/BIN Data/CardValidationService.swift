@@ -8,6 +8,7 @@ import Foundation
 
 protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
+    func createValidationMetadata(networks: [CardNetwork], source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
 }
 
 final class DefaultCardValidationService: CardValidationService, LogReporter {
@@ -90,23 +91,23 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             return handle(cardMetadata: cached, forCardState: cardState)
         }
 
-        _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
-            guard let self = self else { return }
+        Task { @MainActor in
+            do {
+                let result = try await listCardNetworks(cardState.cardNumber)
+                guard !result.networks.isEmpty else {
+                    useLocalValidation(withCardState: cardState, isFallback: true)
+                    return
+                }
 
-            guard result.networks.count > 0 else {
-                self.useLocalValidation(withCardState: cardState, isFallback: true)
-                return
+                let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
+                let metadata = createValidationMetadata(networks: networks, source: .remote)
+
+                handle(cardMetadata: metadata, forCardState: cardState)
+            } catch {
+                sendEvent(forError: error)
+                logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
+                useLocalValidation(withCardState: cardState, isFallback: true)
             }
-
-            let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
-            let metadata = createValidationMetadata(networks: networks,
-                                                         source: .remote)
-
-            self.handle(cardMetadata: metadata, forCardState: cardState)
-        }.catch { error in
-            self.sendEvent(forError: error)
-            self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
-            self.useLocalValidation(withCardState: cardState, isFallback: true)
         }
     }
 
@@ -129,15 +130,15 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                 messageType: .other,
                 severity: .warning
             )
-            Analytics.Service.record(event: event)
+            Analytics.Service.fire(event: event)
         }
 
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
         if isFallback {
-            DispatchQueue.main.async {
-                _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+            Task {
+                try? await rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
             }
         }
     }
@@ -152,8 +153,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: cardMetadata,
                                         forState: cardState)
 
-        DispatchQueue.main.async {
-            _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
+        Task {
+            try? await self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
     }
 
@@ -187,7 +188,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             objectClass: String(describing: CardNetwork.self),
             place: .cardForm
         )
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     private func sendEvent(forError error: Error) {
@@ -196,39 +197,29 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             messageType: .error,
             severity: .error
         )
-        Analytics.Service.record(event: event)
+        Analytics.Service.fire(event: event)
     }
 
     // MARK: API Logic
 
-    private var validateCardNetworksCancellable: PrimerCancellable?
+    private var listCardNetworksTask: CancellableTask<Response.Body.Bin.Networks>?
 
-    private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
+    private func listCardNetworks(_ cardNumber: String) async throws -> Response.Body.Bin.Networks {
         let bin = String(cardNumber.prefix(Self.maximumBinLength))
-
         guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return rejectedPromise(withError: PrimerError.invalidClientToken())
+            throw PrimerError.invalidClientToken()
         }
 
-        return Promise { resolver in
-            validateCardNetworksCancellable?.cancel()
-            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: token,
-                                                                         bin: bin) { result in
-                switch result {
-                case .success(let networks):
-                    resolver.fulfill(networks)
-                case .failure(let error):
-                    resolver.reject(error)
-                }
-            }
+        await listCardNetworksTask?.cancel(with: handled(primerError: .unknown()))
+        let task = CancellableTask {
+            try await self.apiClient.listCardNetworks(clientToken: token, bin: bin)
         }
-    }
+        listCardNetworksTask = task
 
-    // MARK: Helpers
-
-    private func rejectedPromise<T>(withError error: PrimerError) -> Promise<T> {
-        return Promise {
-            $0.reject(error)
+        defer {
+            listCardNetworksTask = nil
         }
+
+        return try await task.wait()
     }
 }

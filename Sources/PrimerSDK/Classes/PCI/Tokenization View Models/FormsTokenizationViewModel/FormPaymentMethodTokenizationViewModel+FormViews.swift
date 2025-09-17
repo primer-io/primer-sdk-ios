@@ -350,42 +350,7 @@ extension FormPaymentMethodTokenizationViewModel {
 }
 
 extension FormPaymentMethodTokenizationViewModel {
-
     // MARK: Present appropriate View Controller
-
-    func presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: Bool = false) -> Promise<Void> {
-        if shouldCompletePaymentExternally {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
-            }
-
-            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
-                  let message = needingExternalCompletionPaymentMethodDictionary
-                    .first(where: { $0.key == paymentMethodType })?
-                    .value
-            else {
-                return Promise()
-            }
-
-            let infoView = makePaymentPendingInfoView(message: message)
-            let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self,
-                                                                                infoView: infoView)
-            self.uiManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
-            return Promise()
-        }
-
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
-           inputPaymentMethodTypes.contains(paymentMethodType) {
-            return presentInputViewController()
-        }
-
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
-           voucherPaymentMethodTypes.contains(paymentMethodType) {
-            return presentVoucherInfoConfirmationStepViewController()
-        }
-
-        return Promise()
-    }
 
     func presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: Bool = false) async throws {
         if shouldCompletePaymentExternally {
@@ -409,18 +374,6 @@ extension FormPaymentMethodTokenizationViewModel {
             } else if voucherPaymentMethodTypes.contains(paymentMethodType) {
                 return await presentVoucherInfoConfirmationStepViewController()
             }
-        }
-    }
-
-    func presentVoucherInfoConfirmationStepViewController() -> Promise<Void> {
-        return Promise { seal in
-            let accountInfoViewController = PrimerAccountInfoPaymentViewController(
-                navigationBarLogo: uiModule.navigationBarLogo,
-                formPaymentMethodTokenizationViewModel: self
-            )
-            infoView = voucherConfirmationInfoView
-            self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
-            seal.fulfill()
         }
     }
 
@@ -451,26 +404,6 @@ extension FormPaymentMethodTokenizationViewModel {
         )
         infoView = makeAccountInfoPaymentView()
         self.uiManager.primerRootViewController?.show(viewController: accountInfoViewController)
-    }
-
-    func presentInputViewController() -> Promise<Void> {
-        return Promise { seal in
-            let inputViewController = PrimerInputViewController(
-                navigationBarLogo: uiModule.navigationBarLogo,
-                formPaymentMethodTokenizationViewModel: self,
-                inputsDistribution: .horizontal
-            )
-
-            let newInputs = makeInputViews()
-
-            // Append only inputs that are not already in the array
-            for newInput in newInputs where !self.inputs.contains(where: { $0 === newInput }) { // Use reference comparison
-                self.inputs.append(newInput)
-            }
-
-            self.uiManager.primerRootViewController?.show(viewController: inputViewController)
-            seal.fulfill()
-        }
     }
 
     func presentInputViewController() async throws {

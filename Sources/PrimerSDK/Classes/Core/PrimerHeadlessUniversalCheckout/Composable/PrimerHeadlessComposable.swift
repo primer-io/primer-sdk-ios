@@ -78,6 +78,6 @@ extension PrimerHeadlessAnalyticsRecordable {
         params: [String: String]
     ) {
         let event = Analytics.Event.sdk(name: name, params: params)
-        Analytics.Service.record(events: [event])
+        Analytics.Service.fire(events: [event])
     }
 }

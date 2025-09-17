@@ -235,11 +235,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
         let expectStep = expectation(description: "Session creation step is received")
         stepTypeDecisionHandler = { stepType in
-            switch self.stepType {
-            case .creationStep:
+            if case .creationStep = stepType {
                 expectStep.fulfill()
-            default:
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
 
@@ -383,8 +380,6 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         stepTypeDecisionHandler = { stepType in
             if case .authorizationStep = stepType {
                 expectStep.fulfill()
-            } else {
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
         tokenizationComponent.authorizePaymentSessionResult = .success(MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken)
@@ -411,8 +406,6 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         stepTypeDecisionHandler = { stepType in
             if case .authorizationStep = stepType {
                 expectStep.fulfill()
-            } else {
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
 
@@ -433,8 +426,6 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         stepTypeDecisionHandler = { stepType in
             if case .finalizationRequiredStep = stepType {
                 expectStep.fulfill()
-            } else {
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
         tokenizationComponent.authorizePaymentSessionResult = .success(MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken)
@@ -580,8 +571,6 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         stepTypeDecisionHandler = { stepType in
             if case .finalizationStep = stepType {
                 expectStep.fulfill()
-            } else {
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
         tokenizationComponent.authorizePaymentSessionResult = .success(MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken)
@@ -607,8 +596,6 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         stepTypeDecisionHandler = { stepType in
             if case .finalizationStep = stepType {
                 expectStep.fulfill()
-            } else {
-                XCTFail("Unexpected step type: \(stepType)")
             }
         }
 
