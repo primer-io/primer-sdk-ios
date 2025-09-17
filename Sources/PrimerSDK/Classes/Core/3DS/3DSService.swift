@@ -334,9 +334,8 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
             case .failure(let underlyingErr):
-                let primerErr = (underlyingErr.primerError as? PrimerError) ??
-                    PrimerError.unknown(message: underlyingErr.primerError.localizedDescription)
-                completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
+                let primerErr = underlyingErr.primerError
+                completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)))
 
             case .success(let res):
                 completion(.success(res))

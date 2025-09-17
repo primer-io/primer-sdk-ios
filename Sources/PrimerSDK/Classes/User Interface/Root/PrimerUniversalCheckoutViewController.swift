@@ -47,7 +47,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             } catch {
                 let err = error.primerError
                 let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
-                PrimerDelegateProxyor.primerDidFailWithError(primerErr, data: nil) { errorDecision in
+                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {

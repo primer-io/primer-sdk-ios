@@ -224,21 +224,21 @@ final class PrimerInternal: LogReporter {
 
         let start = Date().millisecondsSince1970
 
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            self.recordLoadedEvent(start, source: .showPaymentMethod)
-            completion?(nil)
-        }
-        .catch { err in
-            let error = err.primerError
-            let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+                self.recordLoadedEvent(start, source: .showPaymentMethod)
+                completion?(nil)
+            } catch {
+                let err = error.primerError
+                let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: err.localizedDescription)
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(err)
+            }
         }
     }
+
 
     private func recordLoadedEvent(_ start: Int, source: Analytics.Event.DropInLoadingSource) {
         let end = Date().millisecondsSince1970
