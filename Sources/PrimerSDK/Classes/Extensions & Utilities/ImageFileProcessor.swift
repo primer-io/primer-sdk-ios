@@ -16,7 +16,9 @@ final class ImageFileProcessor {
         var imageFiles: [ImageFile] = []
 
         for paymentMethod in apiConfiguration.paymentMethods ?? [] {
-            imageFiles.append(makeImageFile(for: paymentMethod, variant: "colored", value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
+            imageFiles.append(makeImageFile(for: paymentMethod,
+                                           variant: "colored",
+                                           value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "light", value: paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "dark", value: paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr))
         }

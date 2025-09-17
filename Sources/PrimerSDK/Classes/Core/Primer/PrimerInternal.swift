@@ -235,7 +235,6 @@ final class PrimerInternal: LogReporter {
         }
     }
 
-
     private func recordLoadedEvent(_ start: Int, source: Analytics.Event.DropInLoadingSource) {
         let end = Date().millisecondsSince1970
         let interval = end - start
