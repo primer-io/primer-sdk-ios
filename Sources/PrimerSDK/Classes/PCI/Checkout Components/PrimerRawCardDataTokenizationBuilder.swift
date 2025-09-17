@@ -99,26 +99,20 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData")
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "rawData"))
         }
 
         // Validate card network before tokenization
         // Use user-selected network if available (for co-badged cards), otherwise auto-detect
         let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
         if !self.allowedCardNetworks.contains(cardNetwork) {
-            let err = PrimerError.invalidValue(key: "cardNetwork",
-                                               value: cardNetwork.displayName)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "cardNetwork",
+                                                     value: cardNetwork.displayName))
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
@@ -222,9 +216,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(errors: errors)
-            ErrorHandler.handle(error: err)
-
+            let err = handled(primerError: .underlyingErrors(errors: errors))
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }

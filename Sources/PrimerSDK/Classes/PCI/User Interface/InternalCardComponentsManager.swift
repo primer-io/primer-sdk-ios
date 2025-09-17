@@ -300,9 +300,8 @@ and 4 characters for expiry year separated by '/'.
                     )
 
                     if !allowedCardNetworks.contains(cardNetwork) {
-                        let err = PrimerError.invalidValue(key: "cardNetwork",
-                                                           value: cardNetwork.displayName)
-                        ErrorHandler.handle(error: err)
+                        let err = handled(primerError: .invalidValue(key: "cardNetwork",
+                                                                     value: cardNetwork.displayName))
                         self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                         return
                     }
