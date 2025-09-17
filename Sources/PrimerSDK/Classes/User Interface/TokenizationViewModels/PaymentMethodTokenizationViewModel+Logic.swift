@@ -36,8 +36,7 @@ extension PaymentMethodTokenizationViewModel {
                 } else {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        let error = error.primerError
-                        let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
+                        let primerErr = error.asPrimerError
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                         await handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -112,8 +111,7 @@ extension PaymentMethodTokenizationViewModel {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let error = error.primerError
-                let primerErr = (error as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
+                let primerErr = error.asPrimerError
                 setCheckoutDataFromError(primerErr)
                 await showResultScreenIfNeeded(error: primerErr)
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)

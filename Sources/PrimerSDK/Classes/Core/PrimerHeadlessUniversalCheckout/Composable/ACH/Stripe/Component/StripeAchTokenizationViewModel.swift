@@ -75,11 +75,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             paymentMethodTokenData = try await achTokenizationService.tokenize()
             try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
         } catch {
-            let primerError = (error as? PrimerError) ?? PrimerError.failedToCreatePayment(
-                paymentMethodType: config.type,
-                description: "Failed to perform tokenization step due to error: \(error.localizedDescription)"
-            )
-            throw handled(primerError: primerError)
+            throw handled(primerError: error.asPrimerError)
         }
     }
 

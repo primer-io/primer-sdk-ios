@@ -42,7 +42,7 @@ final class ErrorExtensionTests: XCTestCase {
 
         let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError, PrimerError.unknown()])
 
-        switch multipleUnderlyingErrorsError.primerError {
+        switch multipleUnderlyingErrorsError.normalizedForSDK {
         case PrimerError.underlyingErrors(let errors, _):
             XCTAssertEqual(errors.count, 2)
             break
@@ -52,7 +52,7 @@ final class ErrorExtensionTests: XCTestCase {
 
         let zeroUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [])
 
-        switch zeroUnderlyingErrorsError.primerError {
+        switch zeroUnderlyingErrorsError.normalizedForSDK {
         case PrimerError.unknown(_, _):
             break
         default:

@@ -138,7 +138,7 @@ final class Downloader: NSObject, DownloaderModule {
                     try cachedResponse.data.write(to: localUrl)
                     return
                 } catch {
-                    throw handled(error: error.primerError)
+                    throw handled(error: error.normalizedForSDK)
                 }
             }
         }
@@ -163,7 +163,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
 
         } catch {
-            throw handled(error: error.primerError)
+            throw handled(error: error.normalizedForSDK)
         }
     }
 

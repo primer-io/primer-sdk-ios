@@ -146,7 +146,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             resumePaymentToken = result.resumeToken
             return result.resumeToken
         } catch {
-            throw error.primerError
+            throw error.normalizedForSDK
         }
     }
 
@@ -334,7 +334,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
             case .failure(let underlyingErr):
-                let primerErr = underlyingErr.primerError
+                let primerErr = underlyingErr.normalizedForSDK
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)))
 
             case .success(let res):
@@ -385,7 +385,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
             return response
         } catch {
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: error.primerError)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
         }
     }
 }

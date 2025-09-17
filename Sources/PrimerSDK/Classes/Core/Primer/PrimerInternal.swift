@@ -153,11 +153,9 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .universalCheckout)
                 completion?(nil)
             } catch {
-                let err = error.primerError
-                let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
-
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-                completion?(err)
+                completion?(error)
             }
         }
     }
@@ -193,10 +191,9 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .vaultManager)
                 completion?(nil)
             } catch {
-                let err = error.primerError
-                let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: error.localizedDescription)
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-                completion?(err)
+                completion?(error)
             }
         }
     }
@@ -231,10 +228,9 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .showPaymentMethod)
                 completion?(nil)
             } catch {
-                let err = error.primerError
-                let primerErr = (err as? PrimerError) ?? PrimerError.unknown(message: err.localizedDescription)
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-                completion?(err)
+                completion?(error)
             }
         }
     }

@@ -30,7 +30,7 @@ extension Array where Element == Error {
 
 extension Error {
 
-    var primerError: Error {
+    var normalizedForSDK: Error {
         if let internalErr = self as? InternalError {
             return internalErr.exposedError
         } else if let primer3DSErr = self as? Primer3DSErrorContainer {
@@ -48,5 +48,19 @@ extension Error {
             // For unknown errors, wrap in unknown error (not underlyingErrors)
             return PrimerError.unknown(message: self.localizedDescription)
         }
+    }
+
+    /// Converts any error to a PrimerError, using the primerError computed property first
+    /// and casting to PrimerError with a fallback to PrimerError.unknown
+    var asPrimerError: PrimerError {
+        let baseError = self.normalizedForSDK
+        return (baseError as? PrimerError) ?? PrimerError.unknown(message: baseError.localizedDescription)
+    }
+
+    /// Converts any error to a PrimerErrorProtocol, using the primerError computed property first
+    /// and casting to PrimerErrorProtocol with a fallback to PrimerError.unknown
+    var asPrimerErrorProtocol: any PrimerErrorProtocol {
+        let baseError = self.normalizedForSDK
+        return (baseError as? PrimerErrorProtocol) ?? PrimerError.unknown(message: baseError.localizedDescription)
     }
 }

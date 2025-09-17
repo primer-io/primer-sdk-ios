@@ -205,8 +205,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     return await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(paymentCheckoutData)
                 } catch {
-                    let err = error.primerError
-                    let primerError = (err as? PrimerErrorProtocol) ?? PrimerError.unknown(message: err.localizedDescription)
+                    let primerError = error.asPrimerErrorProtocol
                     _ = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData)
                 }
             }

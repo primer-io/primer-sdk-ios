@@ -100,7 +100,7 @@ extension Analytics {
                     try FileManager.default.removeItem(at: fileURL)
 
                 } catch {
-                    ErrorHandler.handle(error: error.primerError)
+                    ErrorHandler.handle(error: error.normalizedForSDK)
                 }
             }
         }
