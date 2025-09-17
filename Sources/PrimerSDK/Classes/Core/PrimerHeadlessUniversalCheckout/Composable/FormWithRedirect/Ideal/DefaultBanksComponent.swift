@@ -122,6 +122,6 @@ private extension DefaultBanksComponent {
         }
 
         let sdkEvent = Analytics.Event.sdk(name: event.rawValue, params: params)
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
     }
 }

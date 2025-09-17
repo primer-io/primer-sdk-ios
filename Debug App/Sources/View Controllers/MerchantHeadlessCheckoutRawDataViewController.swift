@@ -336,9 +336,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
             self.updateCardImages()
 
-            if self.selectedCardIndex < metadata.detectedCardNetworks.items.count {
-                self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
-            }
+			self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[safe: self.selectedCardIndex]?.network
         }
     }
 

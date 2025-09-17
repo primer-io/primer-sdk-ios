@@ -97,13 +97,13 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func testStartWithFullCheckoutFlow() async throws {
         SDKSessionHelper.setUp()
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
         let banks = setupBanksAPIClient()
 
-        let mockViewController = MockPrimerRootViewController()
+        let mockViewController = await MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
         }
@@ -114,7 +114,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
             expectShowPaymentMethod.fulfill()
         }
 
-        _ = uiManager.prepareRootViewController()
+        await uiManager.prepareRootViewController()
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
@@ -147,14 +147,18 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         }
 
         sut.start()
-
-        wait(for: [
-            expectShowPaymentMethod,
-            expectWillCreatePaymentData,
-            expectOnTokenize,
-            expectDidCreatePayment,
-            expectCheckoutDidCompletewithData
-        ], timeout: 10.0, enforceOrder: true)
+        
+        await fulfillment(
+            of: [
+                expectShowPaymentMethod,
+                expectWillCreatePaymentData,
+                expectOnTokenize,
+                expectDidCreatePayment,
+                expectCheckoutDidCompletewithData
+            ],
+            timeout: 10.0,
+            enforceOrder: true
+        )
     }
 
     // MARK: Helpers

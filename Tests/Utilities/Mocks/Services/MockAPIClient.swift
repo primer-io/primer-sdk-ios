@@ -129,19 +129,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
-        return Promise { seal in
-            self.fetchVaultedPaymentMethods(clientToken: clientToken) { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                case .success(let res):
-                    seal.fulfill(res)
-                }
-            }
-        }
-    }
-
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
         guard let result = fetchVaultedPaymentMethodsResult,
               result.0 != nil || result.1 != nil

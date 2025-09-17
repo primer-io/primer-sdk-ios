@@ -17,12 +17,12 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
             if let rawPhoneNumberInput = self.rawData as? PrimerPhoneNumberData {
                 rawPhoneNumberInput.onDataDidChange = { [weak self] in
                     guard let self = self else { return }
-                    _ = self.validateRawData(rawPhoneNumberInput)
+                    Task { try? await self.validateRawData(rawPhoneNumberInput) }
                 }
             }
 
             if let rawData = self.rawData {
-                _ = self.validateRawData(rawData)
+                Task { try? await self.validateRawData(rawData) }
             }
         }
     }
@@ -44,30 +44,6 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
         self.rawDataManager = rawDataManager
     }
 
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
-        return Promise { seal in
-            guard
-                let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
-                let paymentMethodId = paymentMethod.id else {
-                return seal.reject(handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
-            }
-
-            guard let rawData = data as? PrimerPhoneNumberData else {
-                return seal.reject(handled(primerError: .invalidValue(key: "rawData")))
-            }
-
-            let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: rawData.phoneNumber)
-
-            let paymentInstrument = OffSessionPaymentInstrument(
-                paymentMethodConfigId: paymentMethodId,
-                paymentMethodType: paymentMethodType,
-                sessionInfo: sessionInfo)
-
-            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            seal.fulfill(requestBody)
-        }
-    }
-
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
             throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
@@ -84,43 +60,6 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
                 sessionInfo: InputPhonenumberSessionInfo(phoneNumber: rawData.phoneNumber)
             )
         )
-    }
-
-    func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async {
-                var errors: [PrimerValidationError] = []
-
-                guard let rawData = data as? PrimerPhoneNumberData else {
-                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
-
-                    DispatchQueue.main.async {
-                        seal.reject(handled(error: PrimerValidationError.invalidRawData()))
-                    }
-
-                    return
-                }
-
-                if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodType),
-                   !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
-                    errors.append(PrimerValidationError.invalidPhoneNumber(message: "Phone number is not valid."))
-                }
-
-                if !errors.isEmpty {
-                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
-
-                    DispatchQueue.main.async {
-                        seal.reject(handled(primerError: .underlyingErrors(errors: errors)))
-                    }
-                } else {
-                    self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
-
-                    DispatchQueue.main.async {
-                        seal.fulfill()
-                    }
-                }
-            }
-        }
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {

@@ -26,7 +26,7 @@ final class PayPalServiceTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_startOrderSession_ShouldFailWhenClientTokenIsNil() throws {
+    func test_startOrderSession_ShouldFailWhenClientTokenIsNil_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: No client token")
         let state = MockAppState(clientToken: nil, apiConfiguration: nil)
@@ -61,7 +61,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldFailWhenConfigIdIsNil() throws {
+    func test_startOrderSession_ShouldFailWhenConfigIdIsNil_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: No config ID")
         let state = MockAppState(apiConfiguration: nil)
@@ -96,7 +96,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldFailWhenAmountIsNil() throws {
+    func test_startOrderSession_ShouldFailWhenAmountIsNil_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: No amount")
         let state = MockAppState()
@@ -131,7 +131,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldFailWhenCurrencyIsNil() throws {
+    func test_startOrderSession_ShouldFailWhenCurrencyIsNil_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: No currency")
         let state = MockAppState()
@@ -168,7 +168,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldFailWhenInvalidScheme() throws {
+    func test_startOrderSession_ShouldFailWhenInvalidScheme_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: Invalid URL scheme")
         let state = MockAppState()
@@ -213,7 +213,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldFailWhenReceiveError() throws {
+    func test_startOrderSession_ShouldFailWhenReceiveError_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Failure: Error from API")
 
@@ -256,7 +256,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startOrderSession_ShouldSucceed() throws {
+    func test_startOrderSession_ShouldSucceed_completion() throws {
         // Given
         let expectationStartOrderSession = XCTestExpectation(description: "Create PayPal payment session | Success")
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
@@ -305,7 +305,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startBillingAgreementSession_ShouldFailWhenClientTokenIsNil() throws {
+    func test_startBillingAgreementSession_ShouldFailWhenClientTokenIsNil_completion() throws {
         // Given
         let expectationStartBillingAgreementSession =
             XCTestExpectation(description: "Create PayPal billing agreement session | Failure: No client token")
@@ -341,7 +341,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
     
-    func test_startBillingAgreementSession_ShouldFailWhenConfigIdIsNil() throws {
+    func test_startBillingAgreementSession_ShouldFailWhenConfigIdIsNil_completion() throws {
         // Given
         let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement session | Failure: No config ID")
         let state = MockAppState(apiConfiguration: nil)
@@ -376,7 +376,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startBillingAgreementSession_ShouldFailWhenInvalidScheme() throws {
+    func test_startBillingAgreementSession_ShouldFailWhenInvalidScheme_completion() throws {
         // Given
         let expectationStartBillingAgreementSession =
             XCTestExpectation(description: "Create PayPal billing agreement session | Failure: Invalid URL scheme")
@@ -418,7 +418,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startBillingAgreementSession_ShouldFailWhenReceiveError() throws {
+    func test_startBillingAgreementSession_ShouldFailWhenReceiveError_completion() throws {
         // Given
         let expectationStartBillingAgreementSession =
             XCTestExpectation(description: "Create PayPal billing agreement session | Failure: Error from API")
@@ -457,7 +457,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_startBillingAgreementSession_ShouldSucceed() throws {
+    func test_startBillingAgreementSession_ShouldSucceed_completion() throws {
         // Given
         let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement session | Success")
         SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
@@ -504,7 +504,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_confirmBillingAgreement_ShouldFailWhenClientTokenIsNil() throws {
+    func test_confirmBillingAgreement_ShouldFailWhenClientTokenIsNil_completion() throws {
         // Given
         let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No client token")
         let state = MockAppState(clientToken: nil, apiConfiguration: nil)
@@ -539,7 +539,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_confirmBillingAgreement_ShouldFailWhenConfigIdIsNil() throws {
+    func test_confirmBillingAgreement_ShouldFailWhenConfigIdIsNil_completion() throws {
         // Given
         let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No config ID")
         let state = MockAppState(apiConfiguration: nil)
@@ -574,7 +574,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_confirmBillingAgreement_ShouldFailWhenTokenIdIsNil() throws {
+    func test_confirmBillingAgreement_ShouldFailWhenTokenIdIsNil_completion() throws {
         // Given
         let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: No token ID")
         let state = MockAppState()
@@ -609,7 +609,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_confirmBillingAgreement_ShouldFailWhenReceiveError() throws {
+    func test_confirmBillingAgreement_ShouldFailWhenReceiveError_completion() throws {
         // Given
         let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement session | Success")
         let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Failure: Error from API")
@@ -667,7 +667,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_confirmBillingAgreement_ShouldSucceed() throws {
+    func test_confirmBillingAgreement_ShouldSucceed_completion() throws {
         // Given
         let expectationStartBillingAgreementSession = XCTestExpectation(description: "Create PayPal billing agreement session | Success")
         let expectationConfirmBillingAgreement = XCTestExpectation(description: "Confirm PayPal billing agreement | Success")
@@ -751,7 +751,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenClientTokenIsNil() throws {
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenClientTokenIsNil_completion() throws {
         // Given
         let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: No client token")
         let state = MockAppState(clientToken: nil, apiConfiguration: nil)
@@ -786,7 +786,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenConfigIdIsNil() throws {
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenConfigIdIsNil_completion() throws {
         // Given
         let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: No config ID")
         let state = MockAppState(apiConfiguration: nil)
@@ -821,7 +821,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenReceiveError() throws {
+    func test_fetchPayPalExternalPayerInfo_ShouldFailWhenReceiveError_completion() throws {
         // Given
         let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Failure: Error from API")
 
@@ -860,7 +860,7 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 
-    func test_fetchPayPalExternalPayerInfo_ShouldSucceed() throws {
+    func test_fetchPayPalExternalPayerInfo_ShouldSucceed_completion() throws {
         // Given
         let expectationFetchPayPalExternalPayerInfo = XCTestExpectation(description: "Fetch PayPal external payer info | Success")
 

@@ -9,48 +9,31 @@ import XCTest
 
 class PrimerRawRetailerDataTests: XCTestCase {
 
-    private static let expectationTimeout = 1.0
-
-    func test_invalid_raw_retail_data() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_validateRawData_withInvalidRetailerData_shouldFail() async throws {
+        // Given
         let rawRetailData = PrimerRetailerData(id: "")
-
         let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawRetailData)
+        // When & Then
+        do {
+            try await tokenizationBuilder.validateRawData(rawRetailData)
+            XCTFail("Card data should not pass validation")
+        } catch {
+            // Expected to throw an error for invalid data
         }
-        .done {
-            XCTAssert(false, "Card data should not pass validation")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-
-        wait(for: [exp], timeout: Self.expectationTimeout)
     }
 
-    func test_valid_raw_retail_data() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_validateRawData_withValidRetailerData_shouldSucceed() async throws {
+        // Given
         let rawRetailData = PrimerRetailerData(id: "test")
-
         let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawRetailData)
+        // When & Then
+        do {
+            try await tokenizationBuilder.validateRawData(rawRetailData)
+            // Expected to succeed without throwing
+        } catch {
+            XCTFail("Card data should pass validation")
         }
-        .done { _ in
-            exp.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(false, "Card data should pass validation")
-            exp.fulfill()
-        }
-
-        wait(for: [exp], timeout: Self.expectationTimeout)
     }
-
 }

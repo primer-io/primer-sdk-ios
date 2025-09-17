@@ -55,6 +55,8 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
     }
 
     func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
+        try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
+        
         if let error = error {
             throw error
         } else if let result = results[bin] {

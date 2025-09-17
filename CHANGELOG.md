@@ -1,3 +1,62 @@
+## 2.41.0 (2025-09-04)
+
+### Fix
+
+- Resolve asset loading issues in headless checkout components (#1330)
+- Fix main thread crash in 3DS cleanup (#1327)
+
+### Refactor
+
+- Remove _async from method signatures (#1348)
+- Remove main_actor and throws from method signatures (#1346)
+- Remove 'Async' suffix from test class names (#1345)
+- Remove PromiseKit (#1344)
+- Remove PromiseKit from CardValidationService (#1343)
+- Remove PromiseKit from PollingModule (#1342)
+- remove PromiseKit from test mock files and utilities (#1341)
+- remove PromiseKit from ImageManager and related components (#1338)
+- Remove PromiseKit from VaultService and related files (#1336)
+- Remove PromiseKit from raw data managers and tests (#1339)
+- remove PromiseKit from PrimerAPIConfigurationModule (#1335)
+- Remove PromiseKit methods from ThreeDSService (#1337)
+- remove PromiseKit from AnalyticsService (#1333)
+- Remove PromiseKit from TokenizationService (#1331)
+- remove PromiseKit from CreateResumePaymentService (#1332)
+- Remove PromiseKit from VaultManager (#1328)
+- Remove PromiseKit from InternalCardComponentsManager (#1325)
+- Remove PromiseKit from PrimerHeadlessUniversalCheckout (#1326)
+- Remove PromiseKit from PaymentMethodTokenizationViewModel (#1324)
+- Remove PromiseKit from CardFormPaymentMethodTokenizationViewModel (#1322)
+- Remove PromiseKit from FormPaymentMethodTokenizationViewModel (#1321)
+
+## 2.40.0 (2025-08-27)
+
+### Feat
+
+- Add appearance mode override to respect app-level theme settings (#1301)
+
+### Fix
+
+- Remove Klarna check in vault flow (#1317)
+- Reorganize DefaultBanksComponent test structure (#1286)
+- Improve payment tokenization and cancellation flow (#1297)
+
+### Refactor
+
+- Remove PromiseKit from WebRedirect components (#1316)
+- Remove PromiseKit from PrimerTest components (#1315)
+- Remove PromiseKit from QR Code components (#1314)
+- Remove PromiseKit from PayPal components (#1313)
+- Remove PromiseKit from IPay88 components (#1312)
+- Remove PromiseKit from NolPay components (#1311)
+- Remove PromiseKit from Klarna components (#1310)
+- Remove PromiseKit from BankSelector (#1307)
+- Remove PromiseKit from Apple Pay components (#1306)
+- Migrate Stripe ACH from PromiseKit to async/await (#1287)
+- Migrate raw data tests from PromiseKit to async/await (#1300)
+- Increase test validation timeout from 3.0 to 5.0 seconds (#1298)
+- Clean up InternalError (#1285)
+
 ## 2.39.2 (2025-08-15)
 
 ### Fix

@@ -28,7 +28,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
         self.tokenizationModelDelegate.didFinishPayment = { error in
             self.step = error == nil ? .success : .failure
             self.stepDelegate?.didReceiveStep(step: self.step)
-            self.tokenizationModelDelegate.cleanup()
+            Task { await self.tokenizationModelDelegate.cleanup() }
         }
     }
 
@@ -55,7 +55,7 @@ extension WebRedirectComponent: LogReporter {
         let stepEvent = Analytics.Event.message(message: logMessage,
                                                 messageType: .info,
                                                 severity: .info)
-        Analytics.Service.record(events: [stepEvent])
+        Analytics.Service.fire(events: [stepEvent])
     }
 }
 

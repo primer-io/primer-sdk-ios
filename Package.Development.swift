@@ -31,8 +31,7 @@ let package = Package(
             ],
             path: "Sources/PrimerSDK",
             resources: [
-                .process("Resources"),
-                .copy("Classes/Third Party/PromiseKit/LICENSE")
+                .process("Resources")
             ]
         ),
         .testTarget(

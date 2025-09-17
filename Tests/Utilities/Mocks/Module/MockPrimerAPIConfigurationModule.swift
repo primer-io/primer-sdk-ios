@@ -36,26 +36,6 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
         requestDisplayMetadata: Bool,
         requestClientTokenValidation: Bool,
         requestVaultedPaymentMethods: Bool
-    ) -> Promise<Void> {
-        return Promise { seal in
-            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
-                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
-                return
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.clientToken = clientToken
-                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
-                seal.fulfill()
-            }
-        }
-    }
-
-    func setupSession(
-        forClientToken clientToken: String,
-        requestDisplayMetadata: Bool,
-        requestClientTokenValidation: Bool,
-        requestVaultedPaymentMethods: Bool
     ) async throws {
         guard let mockedAPIConfiguration else {
             XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
@@ -68,19 +48,6 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
         PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
     }
 
-    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { _ in
-            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
-                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
-                return
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
-            }
-        }
-    }
-
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
         guard let mockedAPIConfiguration = mockedAPIConfiguration else {
             XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
@@ -90,14 +57,6 @@ final class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoc
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
         PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
-    }
-
-    func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
-        return Promise { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-                PrimerAPIConfigurationModule.clientToken = newClientToken
-            }
-        }
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
