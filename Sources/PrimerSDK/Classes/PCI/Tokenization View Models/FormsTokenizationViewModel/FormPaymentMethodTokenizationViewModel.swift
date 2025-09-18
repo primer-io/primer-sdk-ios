@@ -479,28 +479,20 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken()
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidClientToken())
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "clientToken.pciUrl"))
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount")
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "amount"))
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency")
-                ErrorHandler.handle(error: err)
-                throw err
+                throw handled(primerError: .invalidValue(key: "currency"))
             }
         }
     }

@@ -153,7 +153,7 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .universalCheckout)
                 completion?(nil)
             } catch {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }
@@ -191,7 +191,7 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .vaultManager)
                 completion?(nil)
             } catch {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }
@@ -228,7 +228,7 @@ final class PrimerInternal: LogReporter {
                 self.recordLoadedEvent(start, source: .showPaymentMethod)
                 completion?(nil)
             } catch {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let primerErr = error.asPrimerError
                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
                 completion?(error)
             }

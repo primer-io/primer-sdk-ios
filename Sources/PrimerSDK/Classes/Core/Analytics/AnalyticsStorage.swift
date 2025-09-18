@@ -100,8 +100,7 @@ extension Analytics {
                     try FileManager.default.removeItem(at: fileURL)
 
                 } catch {
-                    let err = PrimerError.underlyingErrors(errors: [error])
-                    ErrorHandler.handle(error: err)
+                    ErrorHandler.handle(error: error.normalizedForSDK)
                 }
             }
         }

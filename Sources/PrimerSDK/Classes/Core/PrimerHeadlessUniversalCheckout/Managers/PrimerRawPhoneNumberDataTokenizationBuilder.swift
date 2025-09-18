@@ -26,7 +26,6 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
             }
         }
     }
-
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     var isDataValid: Bool = false
     var paymentMethodType: String

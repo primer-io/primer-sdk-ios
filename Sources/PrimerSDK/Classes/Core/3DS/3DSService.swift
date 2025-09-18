@@ -146,7 +146,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             resumePaymentToken = result.resumeToken
             return result.resumeToken
         } catch {
-            throw error.primerError
+            throw error.normalizedForSDK
         }
     }
 
@@ -334,14 +334,8 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
             case .failure(let underlyingErr):
-                var primerErr: PrimerError
-
-                if let primerError = underlyingErr as? PrimerError {
-                    primerErr = primerError
-                } else {
-                    primerErr = PrimerError.underlyingErrors(errors: [underlyingErr])
-                }
-                completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: handled(primerError: primerErr))))
+                let primerErr = underlyingErr.normalizedForSDK
+                completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)))
 
             case .success(let res):
                 completion(.success(res))
@@ -364,7 +358,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             resumePaymentToken = threeDsAuth.resumeToken
             return threeDsAuth.resumeToken
         } catch {
-            throw error.primerError
+            throw error.asPrimerError
         }
     }
     #endif
@@ -391,13 +385,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             )
             return response
         } catch {
-            var primerErr: PrimerError
-            if let primerError = error as? PrimerError {
-                primerErr = primerError
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [error])
-            }
-            throw InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
+            throw InternalError.failedToPerform3dsAndShouldBreak(error: error.normalizedForSDK)
         }
     }
 }

@@ -107,8 +107,7 @@ public final class NolPayLinkedCardsComponent {
                         completion(.success(()))
                     case .failure(let error):
                         continuation.resume(throwing: error)
-                        let primerError = PrimerError.underlyingErrors(errors: [error])
-                        completion(.failure(primerError))
+                        completion(.failure(handled(primerError: error.asPrimerError)))
                     }
                 }
             }

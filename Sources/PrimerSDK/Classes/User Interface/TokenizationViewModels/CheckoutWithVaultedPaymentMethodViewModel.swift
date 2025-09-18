@@ -62,7 +62,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             await handleSuccessfulFlow()
         } catch {
             didFinishPayment?(error)
-            let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+            let primerErr = error.asPrimerError
             let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
             await handleFailureFlow(errorMessage: merchantErrorMessage)
         }

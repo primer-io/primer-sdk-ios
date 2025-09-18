@@ -75,9 +75,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
 
         let paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
-        default: ""
+            case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
+            case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
+            default: ""
         }
 
         let request = Request.Body.Adyen.BanksList(
@@ -137,7 +137,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let primerErr = error.asPrimerError
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
                                                                                                  data: paymentCheckoutData)
 

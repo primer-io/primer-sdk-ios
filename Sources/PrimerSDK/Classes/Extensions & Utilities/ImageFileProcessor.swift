@@ -1,7 +1,7 @@
 //
 //  ImageFileProcessor.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -16,7 +16,9 @@ final class ImageFileProcessor {
         var imageFiles: [ImageFile] = []
 
         for paymentMethod in apiConfiguration.paymentMethods ?? [] {
-            imageFiles.append(makeImageFile(for: paymentMethod, variant: "colored", value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
+            imageFiles.append(makeImageFile(for: paymentMethod,
+                                           variant: "colored",
+                                           value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "light", value: paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr))
             imageFiles.append(makeImageFile(for: paymentMethod, variant: "dark", value: paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr))
         }
@@ -38,7 +40,7 @@ final class ImageFileProcessor {
             )
         }
     }
-    
+
     private func makeImageFile(
         for paymentMethod: PrimerPaymentMethod,
         variant: String,

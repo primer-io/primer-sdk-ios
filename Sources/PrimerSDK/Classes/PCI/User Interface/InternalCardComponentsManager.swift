@@ -314,7 +314,7 @@ and 4 characters for expiry year separated by '/'.
                     let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 } catch {
-                    throw handled(primerError: .underlyingErrors(errors: [error]))
+                    throw handled(primerError: error.asPrimerError)
                 }
 
             } catch PrimerError.underlyingErrors(let errors, _) {
