@@ -320,7 +320,9 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
                 let tapGestureRecognizer = TapGestureRecognizer {
                     self.selectedCardIndex = index
-                    self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
+                    if self.selectedCardIndex < metadata.detectedCardNetworks.items.count {
+                        self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
+                    }
                     self.updateCardImages()
                 }
                 imageView.addGestureRecognizer(tapGestureRecognizer)

@@ -191,7 +191,9 @@ and 4 characters for expiry year separated by '/'.
         if isRequiringCVVInput {
             if cvvField.cvv.isEmpty {
                 errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
-            } else if !cvvField.cvv.isValidCVV(cardNetwork: selectedCardNetwork ?? CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+            } else if !cvvField.cvv.isValidCVV(
+                cardNetwork: selectedCardNetwork ?? CardNetwork(cardNumber: cardnumberField.cardnumber)
+            ) {
                 errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
             }
         }
@@ -261,6 +263,48 @@ and 4 characters for expiry year separated by '/'.
 
                 guard let tokenizationPaymentInstrument else {
                     throw handled(primerError: .invalidValue(key: "Payment Instrument"))
+                }
+
+                // Validate card network before tokenization
+                if let cardPaymentInstrument = tokenizationPaymentInstrument as? CardPaymentInstrument {
+                    let allowedCardNetworks = Set(Array.allowedCardNetworks)
+                    let autoDetectedNetwork = CardNetwork(cardNumber: cardPaymentInstrument.number)
+
+                    // Use user-selected network if available (for co-badged cards)
+                    var cardNetwork = self.selectedCardNetwork ?? autoDetectedNetwork
+
+                    // If the auto-detected network is not allowed but this might be a co-badged card,
+                    // try to find an allowed network for this card number
+                    if !allowedCardNetworks.contains(cardNetwork) && self.selectedCardNetwork == nil {
+                        // For co-badged cards, we need to check if there are other networks this card supports
+                        // that are in the allowed list. Common co-badged scenarios:
+                        // - Visa/Cartes Bancaires co-badged cards
+                        if autoDetectedNetwork == .visa && allowedCardNetworks.contains(.cartesBancaires) {
+                            // Check if this card could be Cartes Bancaires (starts with 4035, 4360, etc.)
+                            let cardNumber = cardPaymentInstrument.number
+                            if cardNumber.hasPrefix("4035") || cardNumber.hasPrefix("4360") {
+                                cardNetwork = .cartesBancaires
+                                self.logger.debug(
+                                    message: "Co-badged card detected: Using Cartes Bancaires " +
+                                    "instead of Visa for card starting with \(String(cardNumber.prefix(4)))"
+                                )
+                            }
+                        }
+                    }
+
+                    self.logger.debug(
+                        message: "Network validation - selectedCardNetwork: " +
+                        "\(self.selectedCardNetwork?.displayName ?? "nil"), " +
+                        "autoDetected: \(autoDetectedNetwork.displayName), " +
+                        "using: \(cardNetwork.displayName)"
+                    )
+
+                    if !allowedCardNetworks.contains(cardNetwork) {
+                        let err = handled(primerError: .invalidValue(key: "cardNetwork",
+                                                                     value: cardNetwork.displayName))
+                        self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                        return
+                    }
                 }
 
                 self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
