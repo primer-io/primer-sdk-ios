@@ -99,16 +99,22 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
         guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType)
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType))
         }
 
         guard let rawData = data as? PrimerCardData,
               (rawData.expiryDate.split(separator: "/")).count == 2 else {
-            let err = PrimerError.invalidValue(key: "rawData")
-            ErrorHandler.handle(error: err)
-            throw err
+            throw handled(primerError: .invalidValue(key: "rawData"))
+        }
+
+        // Validate card network before tokenization (only if card number is valid)
+        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+        if !rawData.cardNumber.isEmpty && rawData.cardNumber.isValidCardNumber {
+            let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+            if !self.allowedCardNetworks.contains(cardNetwork) {
+                throw handled(primerError: .invalidValue(key: "cardNetwork",
+                                                         value: cardNetwork.displayName))
+            }
         }
 
         let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
@@ -146,37 +152,48 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw err
         }
 
-        // Locally validated card network
-        var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-
-        // Remotely validated card network
-        if let cardNetworksMetadata = cardNetworksMetadata {
-            let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
-
-            if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-               let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
-                cardNetwork = network
-            } else {
-                return
-            }
-
-            // Unsupported card type error
-            if !self.allowedCardNetworks.contains(cardNetwork) {
-                let err = PrimerValidationError.invalidCardType(
-                    message: "Unsupported card type detected: \(cardNetwork.displayName)"
-                )
-                errors.append(err)
-            }
-        } else {
-            self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
-        }
-
-        // Invalid card number error
+        // Invalid card number error - check this FIRST before network validation
         if rawData.cardNumber.isEmpty {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
         } else if !rawData.cardNumber.isValidCardNumber {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
+        } else {
+            // Only validate network if card number is valid
+            // Locally validated card network
+            // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+            var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+
+            // Remotely validated card network
+            if let cardNetworksMetadata = cardNetworksMetadata {
+                let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
+                    cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+
+                if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+                   let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                    cardNetwork = network
+                } else {
+                    return
+                }
+
+                // Unsupported card type error
+                if !self.allowedCardNetworks.contains(cardNetwork) {
+                    let err = PrimerValidationError.invalidCardType(
+                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
+                    )
+                    errors.append(err)
+                }
+            } else {
+                // When BIN data is not available, validate locally detected network against allowed networks
+                // This ensures consistent behavior with Web SDK where network validation always happens
+                if !self.allowedCardNetworks.contains(cardNetwork) {
+                    let err = PrimerValidationError.invalidCardType(
+                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
+                    )
+                    errors.append(err)
+                }
+
+                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+            }
         }
 
         do {
@@ -202,9 +219,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         guard errors.isEmpty else {
-            let err = PrimerError.underlyingErrors(errors: errors)
-            ErrorHandler.handle(error: err)
-
+            let err = handled(primerError: .underlyingErrors(errors: errors))
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
             throw err
         }
