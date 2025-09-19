@@ -37,7 +37,8 @@ Pod::Spec.new do |s|
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK",
                 "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK",
                 "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerStripeSDK"
-            ]
+            ],
+            "SWIFT_ENABLE_EXPLICIT_MODULES" => "NO"
         }
     end
 end
