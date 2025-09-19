@@ -142,6 +142,9 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 [Contributing doc](Contributing.md)
 
+## Style
+Once cloned, please ensure you run `make hook` in the root of the repo to format your contribution in alignment with our style guide.
+
 ## Using the Debug App
 
 The Debug App provides you with tools to test your Primer configuration and interact with different payment methods and Universal Checkout features
