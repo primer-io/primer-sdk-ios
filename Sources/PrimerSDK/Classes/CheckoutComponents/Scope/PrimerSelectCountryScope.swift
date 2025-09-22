@@ -33,15 +33,12 @@ public protocol PrimerSelectCountryScope: AnyObject {
     // MARK: - Customizable UI Components
 
     /// The entire country selection screen.
-    /// Default implementation provides searchable country list.
     var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
 
     /// Search bar component for filtering countries.
-    /// Default implementation provides standard search input.
     var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? { get set }
 
     /// Individual country row/item component.
-    /// Default implementation shows flag and country name.
     @available(iOS 15.0, *)
     var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? { get set }
 

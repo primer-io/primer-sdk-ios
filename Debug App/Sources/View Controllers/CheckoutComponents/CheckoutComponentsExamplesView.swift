@@ -175,7 +175,7 @@ private struct ExampleRow: View {
         }
     }
     
-    private func makeCustomizationHStack(customization: CheckoutExampleCustomization) -> some View {
+    private func makeCustomizationHStack(customization: ExampleConfig.CheckoutCustomization) -> some View {
         HStack {
             Text("Style:")
                 .font(.caption)
