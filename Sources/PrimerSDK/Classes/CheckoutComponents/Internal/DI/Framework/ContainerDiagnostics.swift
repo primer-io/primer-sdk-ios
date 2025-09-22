@@ -78,7 +78,7 @@ public struct ContainerHealthReport {
 // MARK: - Instrumented Container (Wrapper Pattern)
 
 /// Container with performance monitoring capabilities using wrapper pattern
-public actor InstrumentedContainer: ContainerProtocol, Sendable {
+public actor InstrumentedContainer: ContainerProtocol {
     private let container: Container
     private let metrics: ContainerMetrics?
 

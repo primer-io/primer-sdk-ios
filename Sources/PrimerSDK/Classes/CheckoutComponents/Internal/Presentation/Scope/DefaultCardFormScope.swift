@@ -581,7 +581,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             throw PrimerError.invalidArchitecture(
                 description: "ProcessCardPaymentInteractor not initialized",
                 recoverSuggestion: "Ensure proper initialization of payment components",
-            )
+                )
         }
 
         let (expiryMonth, fullYear) = try parseExpiryComponents()

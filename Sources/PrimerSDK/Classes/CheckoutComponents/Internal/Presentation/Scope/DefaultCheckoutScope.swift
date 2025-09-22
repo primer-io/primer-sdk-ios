@@ -505,7 +505,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Dependency injection container not available",
                     recoverSuggestion: "Ensure DI container is properly initialized",
-                )))
+                    )))
                 return
             }
 
