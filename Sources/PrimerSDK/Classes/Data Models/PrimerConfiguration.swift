@@ -140,7 +140,7 @@ or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
                     messageType: .error,
                     severity: .error
                 )
-                Analytics.Service.record(events: [event])
+                Analytics.Service.fire(events: [event])
             }
             #endif
 
@@ -159,7 +159,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     messageType: .error,
                     severity: .error
                 )
-                Analytics.Service.record(events: [event])
+                Analytics.Service.fire(events: [event])
             }
             #endif
 

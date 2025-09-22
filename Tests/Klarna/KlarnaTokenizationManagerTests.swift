@@ -1,9 +1,15 @@
+//
+//  KlarnaTokenizationManagerTests.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
 @testable import PrimerSDK
 import XCTest
 
-final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
+final class KlarnaTokenizationManagerTests: XCTestCase {
     var sut: KlarnaTokenizationManager!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -31,7 +37,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_tokenizeHeadless_success_async() async {
+    func test_tokenizeHeadless_success() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -62,7 +68,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectDidCreatePayment, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeHeadless_failure_async() async {
+    func test_tokenizeHeadless_failure() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -87,7 +93,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_success_async() async {
+    func test_tokenizeDropIn_success() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
 
@@ -112,7 +118,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func test_tokenizeDropIn_failure_async() async {
+    func test_tokenizeDropIn_failure() async {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
@@ -137,7 +143,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectation], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_headless_async() async throws {
+    func testFullPaymentFlow_headless() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -168,7 +174,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectCreatePayment, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn_async() async throws {
+    func testFullPaymentFlow_dropIn() async throws {
         PrimerInternal.shared.intent = .checkout
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -192,7 +198,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
         await fulfillment(of: [expectDidTokenize, expectDidCompleteCheckout], timeout: 10.0, enforceOrder: false)
     }
 
-    func testFullPaymentFlow_dropIn_vault_async() async throws {
+    func testFullPaymentFlow_dropIn_vault() async throws {
         PrimerInternal.shared.intent = .vault
 
         let expectDidTokenize = expectation(description: "Did tokenize")
@@ -217,7 +223,7 @@ final class KlarnaTokenizationManagerAsyncTests: XCTestCase {
     }
 }
 
-extension KlarnaTokenizationManagerAsyncTests {
+extension KlarnaTokenizationManagerTests {
     private var address: Response.Body.Klarna.BillingAddress {
         .init(addressLine1: "address_line_1",
               addressLine2: "address_line_2",

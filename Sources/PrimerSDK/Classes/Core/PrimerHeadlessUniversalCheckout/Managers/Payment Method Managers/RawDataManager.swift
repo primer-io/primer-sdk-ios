@@ -63,7 +63,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 // Explicitly validate if data exists
                 if let rawData {
-                    Task { try await validateRawData(rawData) }
+                    Task { try? await validateRawData(rawData) }
                 }
             }
         }
@@ -77,7 +77,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(event: sdkEvent)
+            Analytics.Service.fire(event: sdkEvent)
 
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
@@ -124,7 +124,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             self.delegate = delegate
             self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
@@ -183,7 +183,7 @@ extension PrimerHeadlessUniversalCheckout {
                     "paymentMethodType": paymentMethodType
                 ]
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
                 return completion(nil, handled(primerError: .unsupportedPaymentMethod(paymentMethodType: paymentMethodType)))
@@ -675,7 +675,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 Task { @MainActor in
                     if PrimerUIManager.primerRootViewController == nil {
-                        PrimerUIManager.prepareRootViewController_main_actor()
+                        PrimerUIManager.prepareRootViewController()
                     }
 
                     PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {

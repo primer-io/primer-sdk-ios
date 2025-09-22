@@ -14,9 +14,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` succeeds when provided with a valid configuration.
     /// Caching is not relevant for this test.
-    func test_setupSession_succeedsWithValidConfiguration() throws {
-        let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
-
+    func test_setupSession_succeedsWithValidConfiguration() async throws {
         // Mock the configuration
         let config = PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
@@ -39,10 +37,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .done {
+        // Create an expectation for the async operation
+        let asyncExpectation = XCTestExpectation(description: "Async operation completes successfully")
+
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify the configuration
             XCTAssertEqual(PrimerAPIConfigurationModule.clientToken, MockAppState.mockClientToken, "Client token should match the mock token.")
             XCTAssertEqual(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl, config.coreUrl, "Core URL should match the mock configuration.")
@@ -57,19 +58,17 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
                 config.assetsUrl,
                 "Assets URL should match the mock configuration."
             )
-            setupSessionExpectation.fulfill()
+            // Fulfill the expectation
+            asyncExpectation.fulfill()
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+            asyncExpectation.fulfill()
         }
-        .catch { err in
-            XCTFail("Unexpected error: \(err.localizedDescription)")
-            setupSessionExpectation.fulfill()
-        }
-
-        wait(for: [setupSessionExpectation], timeout: 5.0)
     }
 
     /// Tests that `setupSession` fails when the configuration fetch returns an error.
     /// Caching is not relevant for this test.
-    func test_setupSession_failsWithInvalidConfiguration() throws {
+    func test_setupSession_failsWithInvalidConfiguration() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session fails with error")
 
         // Create a mock ApiClient and set it to the configuration module as a static property
@@ -85,35 +84,35 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .done {
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // This block should not be executed since we expect an error
             XCTFail("Expected error but got success.")
-            setupSessionExpectation.fulfill()
-        }
-        .catch { err in
-            // Verify the error
-            XCTAssertEqual(err.localizedDescription, "Failed to fetch configuration.", "Error message should match the mock error.")
-            setupSessionExpectation.fulfill()
-        }
 
-        wait(for: [setupSessionExpectation], timeout: 5.0)
+            setupSessionExpectation.fulfill()
+        } catch {
+            // Verify the error
+            XCTAssertEqual(error.localizedDescription, "Failed to fetch configuration.", "Error message should match the mock error.")
+
+            setupSessionExpectation.fulfill()
+        }
     }
 
     /// Tests that `setupSession` uses the cached configuration when caching is enabled.
     /// Caching is enabled for this test.
-    func test_setupSession_usesCachedConfigurationWhenCachingIsEnabled() {
+    func test_setupSession_usesCachedConfigurationWhenCachingIsEnabled() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        wait(for: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -149,10 +148,10 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .then {
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify the cached configuration
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
@@ -164,35 +163,34 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             mockApiClient.fetchConfigurationResult = (config_post, nil)
 
             // Trigger the setupSession again to fetch the new configuration
-            return apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .done {
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify that the cached configuration is still being used when caching is enabled
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_pre.binDataUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_pre.assetsUrl)
+
             setupSessionExpectation.fulfill()
-        }.catch { err in
-            XCTAssert(false, err.localizedDescription)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
             setupSessionExpectation.fulfill()
         }
-
-        wait(for: [setupSessionExpectation], timeout: 5.0)
     }
 
     /// Tests that `setupSession` fetches a new configuration when caching is disabled.
     /// Caching is disabled for this test.
-    func test_setupSession_fetchesUpdatedConfigurationWhenCachingIsDisabled() throws {
+    func test_setupSession_fetchesUpdatedConfigurationWhenCachingIsDisabled() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: false)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        wait(for: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -228,10 +226,10 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .then {
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify the cached configuration
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
@@ -243,35 +241,34 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             mockApiClient.fetchConfigurationResult = (config_post, nil)
 
             // Trigger the setupSession again to fetch the new configuration
-            return apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .done {
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify that the updated configuration is still being used when caching is disabled
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_post.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_post.pciUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_post.binDataUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_post.assetsUrl)
+
             setupSessionExpectation.fulfill()
-        }.catch { err in
-            XCTAssert(false, err.localizedDescription)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
             setupSessionExpectation.fulfill()
         }
-
-        wait(for: [setupSessionExpectation], timeout: 10.0)
     }
 
     /// Tests that `setupSession` fetches a new configuration after the cache is cleared.
     /// Caching is enabled initially but cleared during the test.
-    func test_setupSession_fetchesUpdatedConfigurationAfterCacheIsCleared() {
+    func test_setupSession_fetchesUpdatedConfigurationAfterCacheIsCleared() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        wait(for: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -307,10 +304,11 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .then {
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
+            // Verify the cached configuration
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
@@ -324,35 +322,34 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             mockApiClient.fetchConfigurationResult = (config_post, nil)
 
             // Trigger the setupSession again to fetch the new configuration
-            return apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .done {
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify that the updated configuration is being used after clearing the cache
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_post.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_post.pciUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_post.binDataUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_post.assetsUrl)
+
             setupSessionExpectation.fulfill()
-        }.catch { err in
-            XCTAssert(false, err.localizedDescription)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
             setupSessionExpectation.fulfill()
         }
-
-        wait(for: [setupSessionExpectation], timeout: 5.0)
     }
 
     /// Tests that `setupSession` updates the configuration when an action is triggered.
     /// Caching is enabled for this test.
-    func test_setupSession_updatesConfigurationWhenActionIsTriggered() {
+    func test_setupSession_updatesConfigurationWhenActionIsTriggered() async throws {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        wait(for: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -389,10 +386,10 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         // Create ApiConfigurationModule
         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-        firstly {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
-        .then {
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
             // Verify the configurations are matching with the config_pre
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
@@ -402,13 +399,12 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_pre.clientSession?.clientSessionId)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_pre.checkoutModules?.first?.type)
 
-            return apiConfigurationModule.updateSession(withActions:
+            try await apiConfigurationModule.updateSession(withActions:
                 ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(
                     type: .selectPaymentMethod,
                     params: ["": ""]
                 )])))
-        }
-        .done {
+
             // Verify the configurations are still matching with the config_pre
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
@@ -419,13 +415,12 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             // Verify the configurations are updated with the config_post
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_post.clientSession?.clientSessionId)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_post.checkoutModules?.first?.type)
+
             setupSessionExpectation.fulfill()
-        }.catch { err in
-            XCTAssert(false, err.localizedDescription)
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
             setupSessionExpectation.fulfill()
         }
-
-        wait(for: [setupSessionExpectation], timeout: 5.0)
     }
 }
 

@@ -130,7 +130,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         try validate()
         banks = try await fetchBanks()
         dataSource = banks
-        await presentBankList_main_actor()
+        await presentBankList()
         await awaitBankSelection()
         bankSelectionCompletion = nil
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
@@ -161,7 +161,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     }
 
     @MainActor
-    private func presentBankList_main_actor() {
+    private func presentBankList() {
         uiManager.primerRootViewController?.show(viewController: BankSelectorViewController(viewModel: self))
     }
 

@@ -88,8 +88,8 @@ enum InternalError: PrimerErrorProtocol {
 
     var exposedError: Error {
         switch self {
-        case .failedToPerform3dsButShouldContinue(let error): error.primerError
-        case .failedToPerform3dsAndShouldBreak(let error): error.primerError
+        case .failedToPerform3dsButShouldContinue(let error): error.normalizedForSDK
+        case .failedToPerform3dsAndShouldBreak(let error): error.normalizedForSDK
         default: PrimerError.unknown(diagnosticsId: self.diagnosticsId)
         }
     }

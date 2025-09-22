@@ -141,9 +141,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
             // Select payment method based on the detected card network
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            clientSessionActionsModule
-                .selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
-                .cauterize()
+            Task {
+                try? await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
+            }
 
         }
         return containerView
@@ -409,7 +409,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                     } catch {}
                 } else {
                     do {
-                        let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                        let primerErr = error.asPrimerError
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await showResultScreenIfNeeded(error: primerErr)
                         let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
@@ -662,7 +662,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             objectClass: "\(Self.self)",
             place: .cardForm
         )
-        Analytics.Service.record(event: viewEvent)
+        Analytics.Service.fire(event: viewEvent)
 
         self.userInputCompletion?()
     }
@@ -710,9 +710,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
 
     private func unselectPaymentMethodSilently() {
-        ClientSessionActionsModule()
-            .unselectPaymentMethodIfNeeded()
-            .cauterize()
+        Task {
+            try? await ClientSessionActionsModule().unselectPaymentMethodIfNeeded()
+        }
     }
 }
 

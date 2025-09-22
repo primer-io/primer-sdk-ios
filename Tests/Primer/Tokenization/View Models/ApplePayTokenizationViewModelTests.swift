@@ -1,5 +1,5 @@
 //
-//  ApplePayTokenizationViewModelAsyncTests.swift
+//  ApplePayTokenizationViewModelTests.swift
 //
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -11,7 +11,7 @@ import XCTest
 private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
 private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
 
-final class ApplePayTokenizationViewModelAsyncTests: XCTestCase {
+final class ApplePayTokenizationViewModelTests: XCTestCase {
     // MARK: - Test Dependencies
 
     private var sut: ApplePayTokenizationViewModel!

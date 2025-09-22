@@ -1,7 +1,7 @@
 //
 //  VaultPaymentMethodViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -288,7 +288,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                     title: Strings.Generic.cancel,
                     style: .cancel,
                     handler: { [weak self] _ in self?.postAlertButtonClickEvent(id: .cancel) }
-            ))
+                ))
 
             alert.addAction(UIAlertAction(
                                 title: Strings.Generic.delete,
@@ -302,7 +302,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         }
         tableView.reloadData()
     }
-    
+
     private func postAlertButtonClickEvent(id: ObjectId) {
         postUIEvent(
             .click,

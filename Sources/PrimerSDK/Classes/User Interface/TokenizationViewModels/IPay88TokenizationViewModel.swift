@@ -314,7 +314,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         } else {
             #if DEBUG
-            PrimerUIManager.prepareRootViewController_main_actor()
+            PrimerUIManager.prepareRootViewController()
 
             let newPrimerThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: config.type)
             demoThirdPartySDKViewController = newPrimerThirdPartySDKViewController

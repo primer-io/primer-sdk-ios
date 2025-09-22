@@ -83,7 +83,7 @@ final class PrimerInternal: LogReporter {
 
     @objc
     private func onAppStateChange() {
-        Analytics.Service.flush()
+        Analytics.Service.drain()
     }
 
     // MARK: - CONFIGURATION
@@ -104,7 +104,7 @@ final class PrimerInternal: LogReporter {
             )
         )
 
-        Analytics.Service.record(events: events)
+        Analytics.Service.fire(events: events)
 
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
 
@@ -138,30 +138,25 @@ final class PrimerInternal: LogReporter {
         )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
-        Analytics.Service.record(events: events)
+        Analytics.Service.fire(events: events)
 
         let start = Date().millisecondsSince1970
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
-                                                networkService: CurrencyNetworkService())
-            currencyLoader.updateCurrenciesFromAPI()
-            self.recordLoadedEvent(start, source: .universalCheckout)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
-            }
 
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+
+                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
+                                                    networkService: CurrencyNetworkService())
+                currencyLoader.updateCurrenciesFromAPI()
+                self.recordLoadedEvent(start, source: .universalCheckout)
+                completion?(nil)
+            } catch {
+                let primerErr = error.asPrimerError
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
+            }
         }
     }
 
@@ -185,27 +180,21 @@ final class PrimerInternal: LogReporter {
         )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
-        Analytics.Service.record(events: events)
+        Analytics.Service.fire(events: events)
 
         let start = Date().millisecondsSince1970
 
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            self.recordLoadedEvent(start, source: .vaultManager)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+                self.recordLoadedEvent(start, source: .vaultManager)
+                completion?(nil)
+            } catch {
+                let primerErr = error.asPrimerError
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
             }
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
         }
     }
 
@@ -228,27 +217,21 @@ final class PrimerInternal: LogReporter {
         )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
-        Analytics.Service.record(events: events)
+        Analytics.Service.fire(events: events)
 
         let start = Date().millisecondsSince1970
 
-        firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken)
-        }
-        .done {
-            PrimerUIManager.presentPaymentUI()
-            self.recordLoadedEvent(start, source: .showPaymentMethod)
-            completion?(nil)
-        }
-        .catch { err in
-            var primerErr: PrimerError!
-            if let err = err as? PrimerError {
-                primerErr = err
-            } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err])
+        Task {
+            do {
+                try await PrimerUIManager.preparePresentation(clientToken: clientToken)
+                await PrimerUIManager.presentPaymentUI()
+                self.recordLoadedEvent(start, source: .showPaymentMethod)
+                completion?(nil)
+            } catch {
+                let primerErr = error.asPrimerError
+                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                completion?(error)
             }
-            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-            completion?(err)
         }
     }
 
@@ -256,7 +239,7 @@ final class PrimerInternal: LogReporter {
         let end = Date().millisecondsSince1970
         let interval = end - start
         let showEvent = Analytics.Event.dropInLoading(duration: interval, source: source)
-        Analytics.Service.record(events: [showEvent])
+        Analytics.Service.fire(events: [showEvent])
     }
 
     /** Dismisses any opened checkout sheet view. */
@@ -268,8 +251,8 @@ final class PrimerInternal: LogReporter {
             id: self.timingEventId
         )
 
-        Analytics.Service.record(events: [sdkEvent, timingEvent])
-        Analytics.Service.flush()
+        Analytics.Service.fire(events: [sdkEvent, timingEvent])
+        Analytics.Service.drain()
 
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil

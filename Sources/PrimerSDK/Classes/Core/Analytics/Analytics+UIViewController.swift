@@ -22,7 +22,7 @@ extension UIViewController {
         in place: Place,
         id: ObjectId? = nil
     ) {
-        Analytics.Service.record(
+        Analytics.Service.fire(
             event: .ui(
                 action: action,
                 context: context,

@@ -9,7 +9,6 @@ import XCTest
 
 class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 
-    static let validationTimeout = 3.0
     var mockApiClient: MockPrimerAPIClient!
 
     override func setUp() {
@@ -26,14 +25,13 @@ class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 
     // MARK: - Test 'configure(withRawDataManager:)'
 
-    func test_configure_withRawDataManager_sets_rawDataManager() {
-        // Arrange
+    func test_configure_withRawDataManager_setsRawDataManager() {
+        // Given
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
         XCTAssertNil(tokenizationBuilder.rawDataManager, "rawDataManager should initially be nil")
 
         prepareConfigurations(paymentMethodType: "ADYEN_BLIK")
 
-        // Initialize a mock RawDataManager
         var mockRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
         do {
             mockRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "ADYEN_BLIK")
@@ -42,376 +40,180 @@ class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
             return
         }
 
-        // Act
+        // When
         tokenizationBuilder.configure(withRawDataManager: mockRawDataManager!)
 
-        // Assert
+        // Then
         XCTAssertNotNil(tokenizationBuilder.rawDataManager, "rawDataManager should be set after configure")
         XCTAssertTrue(tokenizationBuilder.rawDataManager === mockRawDataManager, "rawDataManager should be the same instance passed to configure")
     }
 
-    // Test invalid OTP: Empty string
-    func test_invalid_otp_in_raw_otp_data_empty() throws {
-        let exp = expectation(description: "Await validation")
+    // MARK: - Test 'validateRawData' with invalid OTP
 
+    func test_validateRawData_withEmptyOTP_shouldFail() async throws {
+        // Given
         let rawOTPData = PrimerOTPData(otp: "")
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawOTPData)
-        }
-        .done {
-            XCTAssert(false, "OTP data should not pass validation when OTP is empty")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_invalid_otp_in_raw_otp_data_empty_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "")
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.validateRawData(rawOTPData)
+            try await tokenizationBuilder.validateRawData(rawOTPData)
             XCTFail("OTP data should not pass validation when OTP is empty")
         } catch {
-            // Expected error
+            // Expected to throw an error for invalid data
         }
     }
 
-    // Test invalid OTP: Contains letters
-    func test_invalid_otp_in_raw_otp_data_non_numeric() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_validateRawData_withNonNumericOTP_shouldFail() async throws {
+        // Given
         let rawOTPData = PrimerOTPData(otp: "abc123")
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawOTPData)
-        }
-        .done {
-            XCTAssert(false, "OTP data should not pass validation when OTP contains letters")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_invalid_otp_in_raw_otp_data_non_numeric_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "abc123")
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.validateRawData(rawOTPData)
+            try await tokenizationBuilder.validateRawData(rawOTPData)
             XCTFail("OTP data should not pass validation when OTP contains letters")
         } catch {
-            // Expected error
+            // Expected to throw an error for invalid data
         }
     }
 
-    // Test invalid OTP: Too short
-    func test_invalid_otp_in_raw_otp_data_too_short() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_validateRawData_withTooShortOTP_shouldFail() async throws {
+        // Given
         let rawOTPData = PrimerOTPData(otp: "12345") // 5 digits
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawOTPData)
-        }
-        .done {
-            XCTAssert(false, "OTP data should not pass validation when OTP is too short")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_invalid_otp_in_raw_otp_data_too_short_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "12345") // 5 digits
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.validateRawData(rawOTPData)
+            try await tokenizationBuilder.validateRawData(rawOTPData)
             XCTFail("OTP data should not pass validation when OTP is too short")
         } catch {
-            // Expected error
+            // Expected to throw an error for invalid data
         }
     }
 
-    // Test invalid OTP: Too long
-    func test_invalid_otp_in_raw_otp_data_too_long() throws {
-        let exp = expectation(description: "Await validation")
-
+    func test_validateRawData_withTooLongOTP_shouldFail() async throws {
+        // Given
         let rawOTPData = PrimerOTPData(otp: "1234567") // 7 digits
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawOTPData)
-        }
-        .done {
-            XCTAssert(false, "OTP data should not pass validation when OTP is too long")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_invalid_otp_in_raw_otp_data_too_long_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "1234567") // 7 digits
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.validateRawData(rawOTPData)
+            try await tokenizationBuilder.validateRawData(rawOTPData)
             XCTFail("OTP data should not pass validation when OTP is too long")
         } catch {
-            // Expected error
+            // Expected to throw an error for invalid data
         }
     }
 
-    // Test valid OTP
-    func test_valid_otp_in_raw_otp_data() throws {
-        let exp = expectation(description: "Await validation")
-
-        let rawOTPData = PrimerOTPData(otp: "123456") // 6 digits
+    func test_validateRawData_withInvalidDataType_shouldFail() async throws {
+        // Given
+        let invalidRawData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "12/2030",
+            cvv: "123",
+            cardholderName: "John Doe"
+        )
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
 
-        firstly {
-            return tokenizationBuilder.validateRawData(rawOTPData)
-        }
-        .done {
-            exp.fulfill()
-        }
-        .catch { error in
-            XCTAssert(false, "OTP data should pass validation but failed with error: \(error)")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_valid_otp_in_raw_otp_data_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "123456") // 6 digits
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.validateRawData(rawOTPData)
+            try await tokenizationBuilder.validateRawData(invalidRawData)
+            XCTFail("Expected validation to fail with invalid raw data type")
+        } catch {
+            XCTAssert(error is PrimerValidationError)
+        }
+    }
+
+    // MARK: - Test 'validateRawData' with valid OTP
+
+    func test_validateRawData_withValidOTP_shouldSucceed() async throws {
+        // Given
+        let rawOTPData = PrimerOTPData(otp: "123456") // 6 digits
+        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
+
+        // When & Then
+        do {
+            try await tokenizationBuilder.validateRawData(rawOTPData)
             // Success, no error expected
         } catch {
             XCTFail("OTP data should pass validation but failed with error: \(error)")
         }
     }
 
-    // Test making request body with invalid payment method type
-    func test_make_request_body_with_raw_data_invalid_payment_method_type() throws {
-        let exp = expectation(description: "Await making request body")
+    // MARK: - Test 'makeRequestBodyWithRawData'
 
+    func test_makeRequestBodyWithRawData_withInvalidPaymentMethodType_shouldFail() async throws {
+        // Given
         let rawOTPData = PrimerOTPData(otp: "123456")
         let invalidPaymentMethodType = "INVALID_PAYMENT_METHOD"
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: invalidPaymentMethodType)
 
-        firstly {
-            tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
-        }
-        .done { _ in
-            XCTAssert(false, "Should not have succeeded with invalid payment method type")
-            exp.fulfill()
-        }
-        .catch { _ in
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_make_request_body_with_raw_data_invalid_payment_method_type_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "123456")
-        let invalidPaymentMethodType = "INVALID_PAYMENT_METHOD"
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: invalidPaymentMethodType)
-
+        // When & Then
         do {
-            _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
+            try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
             XCTFail("Should not have succeeded with invalid payment method type")
         } catch {
-            // Expected error
+            // Expected to throw an error for invalid payment method
+        }
+    }
+
+    func test_makeRequestBodyWithRawData_withInvalidDataType_shouldFail() async throws {
+        // Given
+        let invalidRawData = PrimerCardData(
+            cardNumber: "4242424242424242",
+            expiryDate: "12/2030",
+            cvv: "123",
+            cardholderName: "John Doe"
+        )
+        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
+
+        // When & Then
+        do {
+            try await tokenizationBuilder.makeRequestBodyWithRawData(invalidRawData)
+            XCTFail("Expected failure when raw data is invalid")
+        } catch {
+            XCTAssert(error is PrimerError)
+        }
+    }
+
+    func test_makeRequestBodyWithRawData_withValidData_shouldSucceed() async throws {
+        // Given
+        let rawOTPData = PrimerOTPData(otp: "123456")
+        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
+
+        prepareConfigurations(paymentMethodType: "ADYEN_BLIK")
+
+        // When & Then
+        do {
+            let requestBody = try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
+            
+            // Then - Assert that requestBody is correct
+            XCTAssertNotNil(requestBody.paymentInstrument)
+            if let paymentInstrument = requestBody.paymentInstrument as? OffSessionPaymentInstrument {
+                XCTAssertEqual(paymentInstrument.paymentMethodConfigId, "payment_method_id")
+                XCTAssertEqual(paymentInstrument.paymentMethodType, "ADYEN_BLIK")
+                if let sessionInfo = paymentInstrument.sessionInfo as? BlikSessionInfo {
+                    XCTAssertEqual(sessionInfo.blikCode, "123456")
+                } else {
+                    XCTFail("Expected sessionInfo to be BlikSessionInfo")
+                }
+            } else {
+                XCTFail("Expected paymentInstrument to be OffSessionPaymentInstrument")
+            }
+        } catch {
+            XCTFail("Expected success but got error: \(error)")
         }
     }
 
     // MARK: - Test 'requiredInputElementTypes'
 
-    func test_requiredInputElementTypes() {
+    func test_requiredInputElementTypes_shouldReturnOTPType() {
+        // Given
         let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
+
+        // When & Then
         XCTAssertEqual(tokenizationBuilder.requiredInputElementTypes, [.otp])
-    }
-
-    // MARK: - Test 'makeRequestBodyWithRawData' with invalid rawData
-
-    func test_makeRequestBodyWithRawData_with_invalid_data_type() {
-        let exp = expectation(description: "Await making request body")
-
-        // Using PrimerCardData instead of PrimerOTPData
-        let invalidRawData = PrimerCardData(
-            cardNumber: "4242424242424242",
-            expiryDate: "12/2030",
-            cvv: "123",
-            cardholderName: "John Doe"
-        )
-
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        firstly {
-            tokenizationBuilder.makeRequestBodyWithRawData(invalidRawData)
-        }
-        .done { _ in
-            XCTFail("Expected failure when raw data is invalid")
-            exp.fulfill()
-        }
-        .catch { error in
-            XCTAssert(error is PrimerError)
-            exp.fulfill()
-        }
-
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_makeRequestBodyWithRawData_with_invalid_data_type_async() async throws {
-        // Using PrimerCardData instead of PrimerOTPData
-        let invalidRawData = PrimerCardData(
-            cardNumber: "4242424242424242",
-            expiryDate: "12/2030",
-            cvv: "123",
-            cardholderName: "John Doe"
-        )
-
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        do {
-            _ = try await tokenizationBuilder.makeRequestBodyWithRawData(invalidRawData)
-            XCTFail("Expected failure when raw data is invalid")
-        } catch {
-            XCTAssert(error is PrimerError)
-        }
-    }
-
-    // MARK: - Test 'validateRawData' with invalid data type
-
-    func test_validateRawData_with_invalid_data_type() {
-        let exp = expectation(description: "Await validation")
-
-        // Using PrimerCardData instead of PrimerOTPData
-        let invalidRawData = PrimerCardData(
-            cardNumber: "4242424242424242",
-            expiryDate: "12/2030",
-            cvv: "123",
-            cardholderName: "John Doe"
-        )
-
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        firstly {
-            tokenizationBuilder.validateRawData(invalidRawData)
-        }
-        .done {
-            XCTFail("Expected validation to fail with invalid raw data type")
-            exp.fulfill()
-        }
-        .catch { error in
-            XCTAssert(error is PrimerValidationError)
-            exp.fulfill()
-        }
-
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_validateRawData_with_invalid_data_type_async() async throws {
-        // Using PrimerCardData instead of PrimerOTPData
-        let invalidRawData = PrimerCardData(
-            cardNumber: "4242424242424242",
-            expiryDate: "12/2030",
-            cvv: "123",
-            cardholderName: "John Doe"
-        )
-
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        do {
-            _ = try await tokenizationBuilder.validateRawData(invalidRawData)
-            XCTFail("Expected validation to fail with invalid raw data type")
-        } catch {
-            XCTAssert(error is PrimerValidationError)
-        }
-    }
-
-    // MARK: - Test 'makeRequestBodyWithRawData' with valid rawData
-
-    func test_makeRequestBodyWithRawData_with_valid_data() {
-        let exp = expectation(description: "Await making request body")
-
-        let rawOTPData = PrimerOTPData(otp: "123456")
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        // Prepare the client session with the payment method
-        prepareConfigurations(paymentMethodType: "ADYEN_BLIK")
-
-        firstly {
-            tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
-        }
-        .done { requestBody in
-            // Assert that requestBody is correct
-            XCTAssertNotNil(requestBody.paymentInstrument)
-            if let paymentInstrument = requestBody.paymentInstrument as? OffSessionPaymentInstrument {
-                XCTAssertEqual(paymentInstrument.paymentMethodConfigId, "payment_method_id")
-                XCTAssertEqual(paymentInstrument.paymentMethodType, "ADYEN_BLIK")
-                if let sessionInfo = paymentInstrument.sessionInfo as? BlikSessionInfo {
-                    XCTAssertEqual(sessionInfo.blikCode, "123456")
-                } else {
-                    XCTFail("Expected sessionInfo to be BlikSessionInfo")
-                }
-            } else {
-                XCTFail("Expected paymentInstrument to be OffSessionPaymentInstrument")
-            }
-            exp.fulfill()
-        }
-        .catch { error in
-            XCTFail("Expected success but got error: \(error)")
-            exp.fulfill()
-        }
-
-        wait(for: [exp], timeout: Self.validationTimeout)
-    }
-
-    func test_makeRequestBodyWithRawData_with_valid_data_async() async throws {
-        let rawOTPData = PrimerOTPData(otp: "123456")
-        let tokenizationBuilder = PrimerRawOTPDataTokenizationBuilder(paymentMethodType: "ADYEN_BLIK")
-
-        // Prepare the client session with the payment method
-        prepareConfigurations(paymentMethodType: "ADYEN_BLIK")
-
-        do {
-            let requestBody = try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
-            // Assert that requestBody is correct
-            XCTAssertNotNil(requestBody.paymentInstrument)
-            if let paymentInstrument = requestBody.paymentInstrument as? OffSessionPaymentInstrument {
-                XCTAssertEqual(paymentInstrument.paymentMethodConfigId, "payment_method_id")
-                XCTAssertEqual(paymentInstrument.paymentMethodType, "ADYEN_BLIK")
-                if let sessionInfo = paymentInstrument.sessionInfo as? BlikSessionInfo {
-                    XCTAssertEqual(sessionInfo.blikCode, "123456")
-                } else {
-                    XCTFail("Expected sessionInfo to be BlikSessionInfo")
-                }
-            } else {
-                XCTFail("Expected paymentInstrument to be OffSessionPaymentInstrument")
-            }
-        } catch {
-            XCTFail("Expected success but got error: \(error)")
-        }
     }
 
     // MARK: - Helper Methods
@@ -451,7 +253,6 @@ class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
     }
 
     private func setupPrimerConfiguration(apiConfiguration: PrimerAPIConfiguration) {
-        // Ensure that mockApiClient is of type MockPrimerAPIClient
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
 
         AppState.current.clientToken = MockAppState.mockClientToken

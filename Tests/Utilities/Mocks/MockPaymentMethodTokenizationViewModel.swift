@@ -72,58 +72,33 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func start() {
-        firstly {
-            self.startTokenizationFlow()
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-
-            if PrimerInternal.shared.intent == .vault {
-                DispatchQueue.main.async{
-                    self.handleSuccessfulFlow()
-                }
-            } else {
-                self.didStartPayment?()
-                self.didStartPayment = nil
-
-                firstly {
-                    self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
-                }
-                .done { _ in
-                    self.didFinishPayment?(nil)
-                    self.nullifyEventCallbacks()
+        Task {
+            do {
+                let paymentMethodTokenData = try await startTokenizationFlow()
+                self.paymentMethodTokenData = paymentMethodTokenData
+                if PrimerInternal.shared.intent == .vault {
                     DispatchQueue.main.async {
                         self.handleSuccessfulFlow()
                     }
-                }
-                .catch { err in
-                    self.didFinishPayment?(err)
-                    self.nullifyEventCallbacks()
-                    XCTAssert(false, err.localizedDescription)
-                }
-            }
-        }
-        .catch { err in
-            XCTAssert(false, err.localizedDescription)
-        }
-    }
+                } else {
+                    self.didStartPayment?()
+                    self.didStartPayment = nil
 
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            firstly {
-                self.performPreTokenizationSteps()
-            }
-            .then { () -> Promise<Void> in
-                return self.performTokenizationStep()
-            }
-            .then { () -> Promise<Void> in
-                return self.performPostTokenizationSteps()
-            }
-            .done {
-                seal.fulfill(self.paymentMethodTokenData!)
-            }
-            .catch { err in
-                seal.reject(err)
+                    do {
+                        try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                        self.didFinishPayment?(nil)
+                        self.nullifyEventCallbacks()
+                        DispatchQueue.main.async {
+                            self.handleSuccessfulFlow()
+                        }
+                    } catch {
+                        self.didFinishPayment?(error)
+                        self.nullifyEventCallbacks()
+                        XCTAssert(false, error.localizedDescription)
+                    }
+                }
+            } catch {
+                XCTAssert(false, error.localizedDescription)
             }
         }
     }
@@ -135,53 +110,9 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         return paymentMethodTokenData!
     }
 
-    func performPreTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            //            .then { () -> Promise<Void> in
-            //                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            //                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
-            //            }
-            .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
     func performPreTokenizationSteps() async throws {
         try validate()
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
-    }
-
-    func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
     }
 
     func performTokenizationStep() async throws {
@@ -192,27 +123,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
     }
 
-    func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise()
-    }
-
     func performPostTokenizationSteps() async throws {}
-
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            guard let tokenizationResult = tokenizationResult,
-                  tokenizationResult.0 != nil || tokenizationResult.1 != nil else {
-                XCTAssert(false, "Set 'tokenizationResult' on your MockPaymentMethodTokenizationViewModel")
-                return
-            }
-
-            if let err = tokenizationResult.1 {
-                seal.reject(err)
-            } else if let res = tokenizationResult.0 {
-                seal.fulfill(res)
-            }
-        }
-    }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
         guard let tokenizationResult = tokenizationResult,
@@ -230,36 +141,18 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         }
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
-        return self.handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
-    }
-
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
         return try await handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 
-    func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Timer.delay(2)
-    }
-
     func presentPaymentMethodUserInterface() async throws {
         try await Timer.delay(2)
     }
 
-    func awaitUserInput() -> Promise<Void> {
-        return Timer.delay(2)
-    }
-
     func awaitUserInput() async throws {
         try await Timer.delay(2)
-    }
-
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
-        return Promise { seal in
-            seal.fulfill("mock_resume_token")
-        }
     }
 
     func handleDecodedClientTokenIfNeeded(
@@ -267,22 +160,6 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
         return "mock_resume_token"
-    }
-
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
-        return Promise { seal in
-            guard let paymentResult = paymentResult,
-                  paymentResult.0 != nil || paymentResult.1 != nil else {
-                XCTAssert(false, "Set 'paymentResult' on your MockPaymentMethodTokenizationViewModel")
-                return
-            }
-
-            if let err = paymentResult.1 {
-                seal.reject(err)
-            } else if let res = paymentResult.0 {
-                seal.fulfill(res)
-            }
-        }
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
@@ -310,44 +187,6 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     func submitButtonTapped() {}
 
     func cancel() {}
-
-    private func validateReturningPromise() -> Promise<Void> {
-        return Promise { seal in
-            do {
-                try self.validate()
-                seal.fulfill()
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-
-    private func validateReturningPromise() async throws {
-        try validate()
-    }
-
-    private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
-        return Promise { seal in
-            if PrimerInternal.shared.intent == .vault {
-                seal.fulfill()
-            } else {
-                guard let paymentCreationDecision = paymentCreationDecision else {
-                    XCTAssert(false, "Set 'mockPaymentCreationDecision' on your MockPaymentMethodTokenizationViewModel")
-                    return
-                }
-
-                Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-                    switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "")
-                        seal.reject(error)
-                    case .continue:
-                        seal.fulfill()
-                    }
-                }
-            }
-        }
-    }
 
     private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
         guard PrimerInternal.shared.intent != .vault else {

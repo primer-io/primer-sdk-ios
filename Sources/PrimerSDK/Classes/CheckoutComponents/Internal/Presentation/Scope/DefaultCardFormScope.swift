@@ -566,16 +566,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
         // Sending billing address via Client Session Actions
 
-        await withCheckedContinuation { continuation in
-            ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
-                .done {
-                    self.billingAddressSent = true
-                    continuation.resume()
-                }
-                .catch { error in
-                    // Failed to send billing address
-                    continuation.resume()
-                }
+        do {
+            try await ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
+            self.billingAddressSent = true
+        } catch {
+            // Failed to send billing address
+            // Re-throw the error to be handled by the caller
+            throw error
         }
     }
 

@@ -75,9 +75,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
 
         let paymentMethodRequestValue = switch config.type {
-        case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
-        case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
-        default: ""
+            case PrimerPaymentMethodType.adyenDotPay.rawValue: "dotpay"
+            case PrimerPaymentMethodType.adyenIDeal.rawValue: "ideal"
+            default: ""
         }
 
         let request = Request.Body.Adyen.BanksList(
@@ -137,7 +137,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
-                let primerErr = (error as? PrimerError) ?? PrimerError.underlyingErrors(errors: [error])
+                let primerErr = error.asPrimerError
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
                                                                                                  data: paymentCheckoutData)
 
@@ -342,7 +342,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         Analytics.Service.fire(events: [presentEvent, networkEvent])
 
         if uiManager.primerRootViewController == nil {
-            uiManager.prepareRootViewController_main_actor()
+            uiManager.prepareRootViewController()
         }
 
         uiManager.primerRootViewController?.present(
@@ -367,7 +367,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 objectClass: "\(Self.self)",
                 place: .webview
             )
-            Analytics.Service.record(events: [viewEvent])
+            Analytics.Service.fire(events: [viewEvent])
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
             self.didPresentPaymentMethodUI?()
@@ -569,7 +569,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
             messageType: .other,
             severity: .debug
         )
-        Analytics.Service.record(events: [messageEvent])
+        Analytics.Service.fire(events: [messageEvent])
 
         self.cancel()
     }
@@ -589,7 +589,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
                 errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
                 responseCode: nil
             )
-            Analytics.Service.record(events: [networkEvent])
+            Analytics.Service.fire(events: [networkEvent])
         }
     }
 
@@ -602,7 +602,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
                 messageType: .other,
                 severity: .debug
             )
-            Analytics.Service.record(events: [messageEvent])
+            Analytics.Service.fire(events: [messageEvent])
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
@@ -617,7 +617,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     func start() {
         self.didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
-            self.cleanup()
+            Task { await self.cleanup() }
         }
 
         setupNotificationObservers()

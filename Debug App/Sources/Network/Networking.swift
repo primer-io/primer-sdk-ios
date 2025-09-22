@@ -8,16 +8,10 @@ import Foundation
 import PrimerSDK
 
 enum APIVersion: String {
-    case v2 = "2021-09-27"
-    case v2_1 = "2.1"
-    case v2_2 = "2.2"
-    case v2_3 = "2.3"
     case v2_4 = "2.4"
 
     static func from(primerApiVersion: PrimerApiVersion) -> APIVersion {
         switch primerApiVersion {
-        case .V2_3:
-            return .v2_3
         case .V2_4:
             return .v2_4
         default:
@@ -249,7 +243,7 @@ final class Networking {
 
         let networking = Networking()
         networking.request(
-            apiVersion: .v2,
+            apiVersion: .v2_4,
             url: url,
             method: .post,
             headers: nil,
@@ -340,7 +334,7 @@ final class Networking {
 
         let networking = Networking()
         networking.request(
-            apiVersion: .v2_1,
+            apiVersion: .v2_4,
             url: url,
             method: .patch,
             headers: nil,

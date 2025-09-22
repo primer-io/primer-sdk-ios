@@ -24,7 +24,7 @@ final class SDKSessionHelper {
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
                                                 paymentMethod: .init(vaultOnSuccess: false,
                                                                      options: paymentMethodOptions,
-                                                                     orderedAllowedCardNetworks: nil,
+                                                                     orderedAllowedCardNetworks: ["VISA", "MASTERCARD", "AMEX", "DISCOVER"],
                                                                      descriptor: nil),
                                                 order: order,
                                                 customer: customer,
@@ -100,5 +100,4 @@ final class SDKSessionHelper {
             testId: nil
         )
     }
-
 }

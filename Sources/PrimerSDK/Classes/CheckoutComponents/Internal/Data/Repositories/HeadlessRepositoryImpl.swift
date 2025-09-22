@@ -569,9 +569,15 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Use Client Session Actions to select payment method based on network
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-        clientSessionActionsModule
-            .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
-            .cauterize()
+        Task {
+            do {
+                try await clientSessionActionsModule
+                    .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
+            } catch {
+                // Log error but don't block the flow since this is a fire-and-forget operation
+                print("Failed to select payment method: \(error)")
+            }
+        }
     }
 
     /// Update client session with payment method selection (matches Drop-in's dispatchActions)
@@ -598,13 +604,14 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
-        clientSessionActionsModule.dispatch(actions: actions)
-            .done { _ in
+        Task {
+            do {
+                try await clientSessionActionsModule.dispatch(actions: actions)
                 completion(nil)
-            }
-            .catch { error in
+            } catch {
                 completion(error)
             }
+        }
     }
 
     /// Helper function for timeout on async operations

@@ -1,7 +1,7 @@
 //
 //  PrimerTestPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -161,7 +161,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             objectClass: "\(Self.self)",
             place: .cardForm
         )
-        Analytics.Service.record(event: viewEvent)
+        Analytics.Service.fire(event: viewEvent)
 
         payButtonTappedCompletion?()
     }
@@ -199,8 +199,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 }
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
-
-    // MARK: - Flow Promises
 
     private func awaitUserSelection() async throws {
         await withCheckedContinuation { continuation in

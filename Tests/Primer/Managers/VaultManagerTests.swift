@@ -384,33 +384,12 @@ final class VaultManagerTests: XCTestCase {
 }
 
 private class MockVaultService: VaultServiceProtocol {
-
-    func fetchVaultedPaymentMethods() -> PrimerSDK.Promise<Void> {
-        let appState: AppStateProtocol = DependencyContainer.resolve()
-        let paymentMethod = Mocks.primerPaymentMethodTokenData
-        paymentMethod.paymentInstrumentData = Mocks.primerPaymentMethodInstrumentationData
-        appState.paymentMethods = [paymentMethod]
-        appState.selectedPaymentMethodId = Mocks.primerPaymentMethodTokenData.id
-
-        return Promise.value
-    }
-
     func fetchVaultedPaymentMethods() async throws {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         let paymentMethod = Mocks.primerPaymentMethodTokenData
         paymentMethod.paymentInstrumentData = Mocks.primerPaymentMethodInstrumentationData
         appState.paymentMethods = [paymentMethod]
         appState.selectedPaymentMethodId = Mocks.primerPaymentMethodTokenData.id
-    }
-
-    func deleteVaultedPaymentMethod(with id: String) -> PrimerSDK.Promise<Void> {
-        let appState: AppStateProtocol = DependencyContainer.resolve()
-        if Mocks.primerPaymentMethodTokenData.id == id {
-            appState.paymentMethods = []
-            appState.selectedPaymentMethodId = nil
-        }
-
-        return Promise.value
     }
 
     func deleteVaultedPaymentMethod(with id: String) async throws {

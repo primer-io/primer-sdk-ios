@@ -41,7 +41,7 @@ extension PrimerHeadlessUniversalCheckout {
                 name: "\(Self.self).\(#function)",
                 params: nil
             )
-            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.fire(events: [sdkEvent])
 
             super.init()
         }
@@ -205,7 +205,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     return await PrimerDelegateProxy.primerDidCompleteCheckoutWithData(paymentCheckoutData)
                 } catch {
-                    let primerError = (error as? PrimerErrorProtocol) ?? PrimerError.underlyingErrors(errors: [error])
+                    let primerError = error.asPrimerErrorProtocol
                     _ = await PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData)
                 }
             }
@@ -541,7 +541,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 Task { @MainActor in
                     if PrimerUIManager.primerRootViewController == nil {
-                        PrimerUIManager.prepareRootViewController_main_actor()
+                        PrimerUIManager.prepareRootViewController()
                     }
 
                     PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {

@@ -112,7 +112,7 @@ final class PrimerNavigationBar: PrimerView {
             objectClass: "\(UIButton.self)",
             place: .navigationBar
         )
-        Analytics.Service.record(event: uiEvent)
+        Analytics.Service.fire(event: uiEvent)
 
         PrimerUIManager.primerRootViewController?.popViewController()
     }

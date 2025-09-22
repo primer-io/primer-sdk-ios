@@ -107,8 +107,7 @@ public final class NolPayLinkedCardsComponent {
                         completion(.success(()))
                     case .failure(let error):
                         continuation.resume(throwing: error)
-                        let primerError = PrimerError.underlyingErrors(errors: [error])
-                        completion(.failure(primerError))
+                        completion(.failure(handled(primerError: error.asPrimerError)))
                     }
                 }
             }
@@ -122,7 +121,7 @@ public final class NolPayLinkedCardsComponent {
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
             params: ["category": "NOL_PAY"]
         )
-        Analytics.Service.record(events: [sdkEvent])
+        Analytics.Service.fire(events: [sdkEvent])
         #if canImport(PrimerNolPaySDK)
 
         guard let nolPay else {

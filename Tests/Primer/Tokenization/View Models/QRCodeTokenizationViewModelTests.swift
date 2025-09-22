@@ -1,5 +1,5 @@
 //
-//  QRCodeTokenizationViewModelAsyncTests.swift
+//  QRCodeTokenizationViewModelTests.swift
 //
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -7,7 +7,7 @@
 @testable import PrimerSDK
 import XCTest
 
-final class QRCodeTokenizationViewModelAsyncTests: XCTestCase {
+final class QRCodeTokenizationViewModelTests: XCTestCase {
     // MARK: - Test Dependencies
 
     var sut: QRCodeTokenizationViewModel!
