@@ -15,14 +15,20 @@ import PrimerSDK
 /// This is the simplest form of partial customization - changing just one element.
 @available(iOS 15.0, *)
 struct SingleFieldCustomisationDemo: View {
-    let settings: PrimerSettings
-    let apiVersion: PrimerApiVersion
-    let clientSession: ClientSessionRequestBody?
+    private let settings: PrimerSettings
+    private let apiVersion: PrimerApiVersion
+    private let clientSession: ClientSessionRequestBody?
     
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
+    
+    init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody?) {
+        self.settings = settings
+        self.apiVersion = apiVersion
+        self.clientSession = clientSession
+    }
     
     var body: some View {
         VStack {
@@ -30,9 +36,9 @@ struct SingleFieldCustomisationDemo: View {
                 dismissedStateView
             } else if isLoading {
                 loadingStateView
-            } else if let error = error {
+            } else if let error {
                 errorStateView(error)
-            } else if let clientToken = clientToken {
+            } else if let clientToken {
                 checkoutView(clientToken: clientToken)
             }
         }
@@ -186,10 +192,10 @@ struct SingleFieldCustomisationDemo: View {
             await withCheckedContinuation { continuation in
                 Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
                     Task { @MainActor in
-                        if let error = error {
+                        if let error {
                             self.error = error.localizedDescription
                             self.isLoading = false
-                        } else if let clientToken = clientToken {
+                        } else if let clientToken {
                             self.clientToken = clientToken
                             self.isLoading = false
                         } else {

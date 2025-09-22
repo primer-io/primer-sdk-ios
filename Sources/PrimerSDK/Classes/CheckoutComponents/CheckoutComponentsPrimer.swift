@@ -133,23 +133,6 @@ public extension CheckoutComponentsDelegate {
         )
     }
 
-    /// Present the card form directly without payment method selection
-    /// - Parameters:
-    ///   - clientToken: The client token for the session
-    ///   - viewController: The view controller to present from
-    ///   - completion: Optional completion handler
-    @objc public static func presentCardForm(
-        with clientToken: String,
-        from viewController: UIViewController,
-        completion: (() -> Void)? = nil
-    ) {
-        shared.presentCardForm(
-            with: clientToken,
-            from: viewController,
-            completion: completion
-        )
-    }
-
     /// Dismiss the CheckoutComponents UI
     /// - Parameters:
     ///   - animated: Whether to animate the dismissal
@@ -214,71 +197,6 @@ public extension CheckoutComponentsDelegate {
     /// Internal method for storing payment result (called by DefaultCheckoutScope)
     internal func storePaymentResult(_ result: PaymentResult) {
         lastPaymentResult = result
-    }
-
-    private func presentCardForm(
-        with clientToken: String,
-        from viewController: UIViewController,
-        completion: (() -> Void)?
-    ) {
-        // Presenting card form
-
-        // Check if already presenting
-        guard !isPresentingCheckout else {
-            logger.debug(message: "Already presenting checkout")
-            completion?()
-            return
-        }
-
-        isPresentingCheckout = true
-
-        Task { @MainActor in
-            // Create the bridge controller for direct card form presentation
-            let bridgeController = PrimerSwiftUIBridgeViewController.createForCardForm(
-                clientToken: clientToken,
-                settings: PrimerSettings.current,
-                diContainer: DIContainer.shared,
-                navigator: CheckoutNavigator(),
-                onCompletion: { [weak self] in
-                    // Card form completion
-                    if let paymentResult = self?.lastPaymentResult {
-                        self?.handlePaymentSuccess(paymentResult)
-                    } else {
-                        self?.dismissDirectly()
-                        self?.handleCheckoutDismiss()
-                    }
-                }
-            )
-
-            // Store reference to bridge controller
-            activeCheckoutController = bridgeController
-
-            // Present modally
-            bridgeController.modalPresentationStyle = .pageSheet
-            if let sheet = bridgeController.sheetPresentationController {
-                if #available(iOS 16.0, *) {
-                    let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
-                        guard let bridgeController = bridgeController else { return context.maximumDetentValue }
-                        let contentHeight = bridgeController.preferredContentSize.height
-                        let maxHeight = context.maximumDetentValue
-                        return min(max(contentHeight, 200), maxHeight * 0.9)
-                    }
-                    sheet.detents = [customDetent, .large()]
-                    sheet.selectedDetentIdentifier = customDetent.identifier
-                } else {
-                    sheet.detents = [.medium(), .large()]
-                }
-                sheet.prefersGrabberVisible = true
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                sheet.largestUndimmedDetentIdentifier = .medium
-            }
-
-            viewController.present(bridgeController, animated: true)
-            isPresentingCheckout = false
-
-            // Card form presented
-            completion?()
-        }
     }
 
     private func presentCheckout(

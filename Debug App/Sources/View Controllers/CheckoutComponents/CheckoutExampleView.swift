@@ -11,10 +11,10 @@ import PrimerSDK
 
 @available(iOS 15.0, *)
 struct CheckoutExampleView: View {
-    let example: ExampleConfig
-    let settings: PrimerSettings
-    let apiVersion: PrimerApiVersion
-    let configuredClientSession: ClientSessionRequestBody?
+    private let example: ExampleConfig
+    private let settings: PrimerSettings
+    private let apiVersion: PrimerApiVersion
+    private let configuredClientSession: ClientSessionRequestBody?
     
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @SwiftUI.Environment(\.colorScheme) private var colorScheme
@@ -49,13 +49,13 @@ struct CheckoutExampleView: View {
         Group {
             if isLoading {
                 LoadingView()
-            } else if let error = error {
+            } else if let error {
                 ErrorView(error: error) {
                     Task {
                         await createSession()
                     }
                 }
-            } else if let clientToken = clientToken {
+            } else if let clientToken {
                 CheckoutContentView(
                     example: example,
                     clientToken: clientToken,
@@ -113,10 +113,10 @@ struct CheckoutExampleView: View {
             await withCheckedContinuation { continuation in
                 Networking.requestClientSession(requestBody: session, apiVersion: apiVersion) { clientToken, error in
                     Task { @MainActor in
-                        if let error = error {
+                        if let error {
                             self.error = error.localizedDescription
                             self.isLoading = false
-                        } else if let clientToken = clientToken {
+                        } else if let clientToken {
                             self.clientToken = clientToken
                             self.isLoading = false
                         } else {
@@ -134,7 +134,7 @@ struct CheckoutExampleView: View {
 // MARK: - Loading View
 
 @available(iOS 15.0, *)
-struct LoadingView: View {
+private struct LoadingView: View {
     var body: some View {
         VStack(spacing: 20) {
             ProgressView()
@@ -150,9 +150,9 @@ struct LoadingView: View {
 // MARK: - Error View
 
 @available(iOS 15.0, *)
-struct ErrorView: View {
-    let error: String
-    let onRetry: () -> Void
+private struct ErrorView: View {
+    fileprivate let error: String
+    fileprivate let onRetry: () -> Void
     
     var body: some View {
         VStack(spacing: 20) {
@@ -181,13 +181,13 @@ struct ErrorView: View {
 // MARK: - Checkout Content View
 
 @available(iOS 15.0, *)
-struct CheckoutContentView: View {
-    let example: ExampleConfig
-    let clientToken: String
-    let settings: PrimerSettings
-    let apiVersion: PrimerApiVersion
-    let configuredClientSession: ClientSessionRequestBody?
-    let onCompletion: () -> Void
+private struct CheckoutContentView: View {
+    fileprivate let example: ExampleConfig
+    fileprivate let clientToken: String
+    fileprivate let settings: PrimerSettings
+    fileprivate let apiVersion: PrimerApiVersion
+    fileprivate let configuredClientSession: ClientSessionRequestBody?
+    fileprivate let onCompletion: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -273,8 +273,8 @@ struct CheckoutContentView: View {
     // MARK: - Example Info Header
     
     @available(iOS 15.0, *)
-    struct ExampleInfoHeader: View {
-        let example: ExampleConfig
+    private struct ExampleInfoHeader: View {
+        fileprivate let example: ExampleConfig
         @State private var isExpanded = false
         
         var body: some View {

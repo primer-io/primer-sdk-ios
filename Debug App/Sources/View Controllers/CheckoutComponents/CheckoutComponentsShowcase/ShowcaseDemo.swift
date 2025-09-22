@@ -10,9 +10,9 @@ import SwiftUI
 /// Individual demo container
 @available(iOS 15.0, *)
 struct ShowcaseDemo<Content: View>: View {
-    let title: String
-    let description: String
-    let content: Content
+    private let title: String
+    private let description: String
+    private let content: Content
     
     init(title: String, description: String, @ViewBuilder content: () -> Content) {
         self.title = title
