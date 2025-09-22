@@ -70,12 +70,10 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal func validate(value: Any, detectedValueType: Any?) -> Bool {
-        // For .all and .retailer, no validation is needed.
-        if self == .all || self == .retailer {
+    func validate(value: Any, detectedValueType: Any?) -> Bool {
+        if [.all, .retailer].contains(self) {
             return true
         }
-        // .unknown always fails validation.
         if self == .unknown {
             return false
         }
@@ -102,39 +100,36 @@ public enum PrimerInputElementType: Int {
             return text.isValidPostalCode
         case .phoneNumber:
             return text.isNumeric
-        case .countryCode:
+        case .countryCode, .addressLine1, .addressLine2, .city, .state:
             return !text.isEmpty
         case .firstName, .lastName:
             return text.isValidNonDecimalString
-        case .addressLine1, .addressLine2, .city, .state:
-            return !text.isEmpty
         case .email:
             return text.contains("@") && text.contains(".")
         default:
-            // In case additional cases are added later.
             return false
         }
     }
 
     // MARK: - Additional Methods
 
-    internal func format(value: Any) -> Any {
+    func format(value: Any) -> Any {
         switch self {
         case .cardNumber:
-            guard let text = value as? String, let delimiter = self.delimiter else { return value }
+            guard let text = value as? String, let delimiter else { return value }
             return text.withoutWhiteSpace.separate(every: 4, with: delimiter)
         case .expiryDate:
-            guard let text = value as? String, let delimiter = self.delimiter else { return value }
+            guard let text = value as? String, let delimiter else { return value }
             return text.withoutWhiteSpace.separate(every: 2, with: delimiter)
         default:
             return value
         }
     }
 
-    internal func clearFormatting(value: Any) -> Any? {
+    func clearFormatting(value: Any) -> Any? {
         switch self {
         case .cardNumber, .expiryDate:
-            guard let text = value as? String, let delimiter = self.delimiter else { return nil }
+            guard let text = value as? String, let delimiter else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
             return textWithoutWhiteSpace.replacingOccurrences(of: delimiter, with: "")
         default:
@@ -142,7 +137,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal func detectType(for value: Any) -> Any? {
+    func detectType(for value: Any) -> Any? {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return nil }
@@ -205,7 +200,7 @@ public enum PrimerInputElementType: Int {
     // MARK: - Structured State Support
     
     /// Indicates if this field is a card-related field
-    internal var isCardField: Bool {
+    var isCardField: Bool {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .cardholderName:
             return true

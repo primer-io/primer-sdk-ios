@@ -586,7 +586,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Determine card network (following Drop-in logic exactly)
         var network = selectedNetwork?.rawValue.uppercased()
-        if network == nil || network == "UNKNOWN" {
+        if [nil, "UNKNOWN"].contains(network) {
             network = "OTHER"
         }
 

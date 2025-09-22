@@ -52,10 +52,10 @@ public struct PrimerCheckout: View {
     private let onCompletion: (() -> Void)?
 
     /// Navigator (internal use only)
-    internal let navigator: CheckoutNavigator
+    let navigator: CheckoutNavigator
 
     /// Presentation context determining navigation behavior (internal use only)
-    internal let presentationContext: PresentationContext
+    let presentationContext: PresentationContext
 
     /// Creates a new PrimerCheckout view.
     /// - Parameters:
@@ -75,7 +75,7 @@ public struct PrimerCheckout: View {
         self.customContent = nil
         self.onCompletion = onCompletion
         self.navigator = CheckoutNavigator()
-        self.presentationContext = .fromPaymentSelection // Default context
+        self.presentationContext = .fromPaymentSelection
     }
 
     /// Internal initializer with presentation context

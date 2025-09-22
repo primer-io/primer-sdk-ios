@@ -98,7 +98,7 @@ internal final class ValidationResultCache {
     }
 
     /// Retrieves cached validation result or performs validation
-    internal func cachedValidation(
+    func cachedValidation(
         input: String,
         type: String,
         context: String = "",
@@ -120,12 +120,12 @@ internal final class ValidationResultCache {
     }
 
     /// Clears validation cache (useful for testing or memory pressure)
-    internal func clearCache() {
+    func clearCache() {
         cache.removeAllObjects()
     }
 
     /// INTERNAL UTILITY: Provides cache performance metrics for monitoring
-    internal func getCacheMetrics() -> ValidationCacheMetrics {
+    func getCacheMetrics() -> ValidationCacheMetrics {
         return ValidationCacheMetrics(
             totalHits: 0, // Would require counter implementation
             totalMisses: 0, // Would require counter implementation
@@ -175,7 +175,7 @@ public class DefaultValidationService: ValidationService {
     // MARK: - Internal Quality Enhancement Methods
 
     /// INTERNAL UTILITY: Validates service configuration and reports issues
-    internal func performServiceHealthCheck() -> ValidationServiceHealthReport {
+    func performServiceHealthCheck() -> ValidationServiceHealthReport {
         var issues: [String] = []
         var warnings: [String] = []
 
@@ -217,7 +217,7 @@ public class DefaultValidationService: ValidationService {
     }
 
     /// INTERNAL HELPER: Performance benchmarking for validation operations
-    internal func benchmarkValidationPerformance() -> ValidationPerformanceBenchmark {
+    func benchmarkValidationPerformance() -> ValidationPerformanceBenchmark {
         let iterations = 1000
         var results: [String: TimeInterval] = [:]
 

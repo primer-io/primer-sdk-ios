@@ -376,18 +376,15 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
 @available(iOS 15.0, *)
 extension PrimerCardFormScope {
 
-    /// Default implementation for start() - card form is ready on presentation
+    /// Card form is ready on presentation
     public func start() {
-        // Card form doesn't need explicit start as it's initialized when presented
-        // This can be overridden by implementations if needed
+        // Override if initialization logic needed
     }
 
-    /// Default implementation maps to existing onSubmit() method
     public func submit() {
         onSubmit()
     }
 
-    /// Default implementation maps to existing onCancel() method
     public func cancel() {
         onCancel()
     }
@@ -398,9 +395,8 @@ extension PrimerCardFormScope {
 @available(iOS 15.0, *)
 extension PrimerCardFormScope {
 
-    /// Default implementation for updateField using type-safe enum
+    /// Update field using type-safe enum
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
-        // Map to individual update methods
         switch fieldType {
         case .cardNumber:
             updateCardNumber(value)
@@ -439,36 +435,26 @@ extension PrimerCardFormScope {
         }
     }
 
-    /// Default implementation for getFieldValue using current state
-    /// Implementations should override this to use their actual state
+    /// Get field value from state - override with actual implementation
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
-        // This is a placeholder - implementations should override with their actual state
         return ""
     }
 
-    /// Default implementation for setFieldError
-    /// Implementations should override this to support structured errors
+    /// Set field error - override to support structured errors
     public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
-        // Default implementation does nothing - implementations should override
     }
 
-    /// Default implementation for clearFieldError
-    /// Implementations should override this to support structured errors
+    /// Clear field error - override to support structured errors
     public func clearFieldError(_ fieldType: PrimerInputElementType) {
-        // Default implementation does nothing - implementations should override
     }
 
-    /// Default implementation for getFieldError
-    /// Implementations should override this to support structured errors
+    /// Get field error - override to support structured errors
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
-        // Default implementation returns nil - implementations should override
         return nil
     }
 
-    /// Default implementation for getFormConfiguration
-    /// Implementations should override this to return their actual configuration
+    /// Get form configuration - override with actual configuration
     public func getFormConfiguration() -> CardFormConfiguration {
-        // Default basic card form configuration
         return CardFormConfiguration.default
     }
 }

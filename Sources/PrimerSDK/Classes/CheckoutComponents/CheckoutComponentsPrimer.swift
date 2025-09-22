@@ -42,19 +42,16 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
 @available(iOS 15.0, *)
 public extension CheckoutComponentsDelegate {
-    /// Default implementation - override if you need 3DS challenge presentation callbacks
+    /// Override if you need 3DS challenge presentation callbacks
     func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-        // Default empty implementation
     }
 
-    /// Default implementation - override if you need 3DS challenge dismissal callbacks
+    /// Override if you need 3DS challenge dismissal callbacks
     func checkoutComponentsDidDismiss3DSChallenge() {
-        // Default empty implementation
     }
 
-    /// Default implementation - override if you need 3DS challenge completion callbacks
+    /// Override if you need 3DS challenge completion callbacks
     func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-        // Default empty implementation
     }
 }
 
@@ -147,13 +144,13 @@ public extension CheckoutComponentsDelegate {
     // MARK: - Instance Methods
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
-    internal func dismissCheckout() {
+    func dismissCheckout() {
         // Dismiss CheckoutComponents directly
         dismissDirectly()
     }
 
     /// Internal method for handling payment success
-    internal func handlePaymentSuccess(_ result: PaymentResult) {
+    func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
         // Store the payment result for delegate callback
@@ -173,7 +170,7 @@ public extension CheckoutComponentsDelegate {
     }
 
     /// Internal method for handling payment failure
-    internal func handlePaymentFailure(_ error: PrimerError) {
+    func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
 
         // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
@@ -190,12 +187,12 @@ public extension CheckoutComponentsDelegate {
     }
 
     /// Internal method for handling checkout dismissal
-    internal func handleCheckoutDismiss() {
+    func handleCheckoutDismiss() {
         delegate?.checkoutComponentsDidDismiss()
     }
 
     /// Internal method for storing payment result (called by DefaultCheckoutScope)
-    internal func storePaymentResult(_ result: PaymentResult) {
+    func storePaymentResult(_ result: PaymentResult) {
         lastPaymentResult = result
     }
 
@@ -348,7 +345,7 @@ public extension CheckoutComponentsDelegate {
     // MARK: - Direct Dismissal
 
     /// Internal method for dismissing checkout directly
-    internal func dismissDirectly() {
+    func dismissDirectly() {
         // Dismissing checkout
 
         // Dismiss the modal directly

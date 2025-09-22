@@ -109,7 +109,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private var fieldValidationStates = FieldValidationStates()
 
     /// Structured state for form data
-    @Published internal var structuredState = StructuredCardFormState()
+    @Published var structuredState = StructuredCardFormState()
 
     /// Form configuration determining which fields are displayed
     private var formConfiguration: CardFormConfiguration = .default
