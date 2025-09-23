@@ -1,3 +1,12 @@
+## 2.41.1 (2025-09-22)
+
+### Fix
+
+- Disable explicit modules for iOS 26 compatibility (#1354)
+- Remove unnecessary single-error wrapping in underlyingErrors (#1299)
+- Fix card network validation bypass in iOS SDK (#1256)
+- Use safe array access for detected card items (#1353)
+
 ## 2.41.0 (2025-09-04)
 
 ### Fix
