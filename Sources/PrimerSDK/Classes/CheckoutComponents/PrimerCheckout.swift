@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// The main entry point for CheckoutComponents, providing a SwiftUI view for payment checkout.
+/// Pure SwiftUI implementation for CheckoutComponents SDK.
 ///
 /// Example usage:
 /// ```swift
@@ -25,7 +25,7 @@ import SwiftUI
 ///     scope: { checkoutScope in
 ///         // Customize components using type-safe API
 ///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
-///             cardFormScope.cardNumberInput = { _ in
+///             cardFormScope.cardNumberField = { label, styling in
 ///                 CustomCardNumberField()
 ///             }
 ///         }

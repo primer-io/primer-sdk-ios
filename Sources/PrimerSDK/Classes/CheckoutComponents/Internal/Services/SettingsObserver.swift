@@ -292,9 +292,6 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         }
     }
 
-    // Note: PrimerThreeDsOptions, PrimerStripeOptions, and PrimerLocaleData now conform to Equatable,
-    // so their comparison functions have been removed in favor of using == operator directly
-
     // MARK: - Cleanup
 
     deinit {

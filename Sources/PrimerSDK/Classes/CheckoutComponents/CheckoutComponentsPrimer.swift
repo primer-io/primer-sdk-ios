@@ -55,7 +55,11 @@ public extension CheckoutComponentsDelegate {
     }
 }
 
-/// The main entry point for CheckoutComponents, providing a familiar API similar to the main Primer class
+/// UIKit entry point for CheckoutComponents SDK
+///
+/// This class provides UIKit-friendly APIs for presenting the CheckoutComponents UI from view controllers.
+/// It acts as a bridge between UIKit apps and the underlying SwiftUI implementation (PrimerCheckout).
+/// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
 @objc public final class CheckoutComponentsPrimer: NSObject {
 
@@ -66,7 +70,8 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Properties
 
-    /// The currently active checkout view controller
+    /// The currently active UIViewController hosting the SwiftUI checkout view
+    /// This will always be a PrimerSwiftUIBridgeViewController that wraps the PrimerCheckout SwiftUI view
     private weak var activeCheckoutController: UIViewController?
 
     /// Flag to prevent multiple simultaneous presentations
