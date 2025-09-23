@@ -2,7 +2,6 @@
 //  CheckoutComponentsExamplesView.swift
 //  Debug App
 //
-//  Created by Claude on 27.6.25.
 //  Copyright © 2025 Primer API Ltd. All rights reserved.
 //
 

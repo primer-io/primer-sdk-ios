@@ -2,7 +2,7 @@
 //  ShowcaseDemo.swift
 //  Debug App
 //
-//  Created by Claude on 26.6.25.
+//  Created on 26.6.25.
 //
 
 import SwiftUI

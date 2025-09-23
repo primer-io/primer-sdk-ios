@@ -2,7 +2,7 @@
 //  RuntimeCustomizationDemo.swift
 //  Debug App
 //
-//  Created by Claude on 24.7.25.
+//  Created on 24.7.25.
 //
 
 import SwiftUI
