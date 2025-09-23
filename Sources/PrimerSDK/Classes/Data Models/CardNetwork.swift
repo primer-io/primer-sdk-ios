@@ -259,7 +259,8 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         case .jcb: .jcb
         case .masterCard: .masterCardColored
         case .visa: .visaColored
-        case .diners, .eftpos, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
+        case .eftpos: .eftposColored
+        case .diners, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
         }
     }
 
