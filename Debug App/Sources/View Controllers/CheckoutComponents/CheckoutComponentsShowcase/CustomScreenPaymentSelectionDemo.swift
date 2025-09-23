@@ -183,10 +183,10 @@ struct CustomScreenPaymentSelectionDemo: View {
             error = "Client session configuration is missing"
             return
         }
-        
+
         isLoading = true
         error = nil
-        
+
         let sessionBody = ClientSessionRequestBody(
             customerId: clientSession.customerId,
             orderId: clientSession.orderId ?? "custom-payment-selection-demo-\(UUID().uuidString)",
@@ -197,19 +197,17 @@ struct CustomScreenPaymentSelectionDemo: View {
             order: clientSession.order,
             paymentMethod: clientSession.paymentMethod
         )
-        
-        Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
-            Task { @MainActor in
-                if let error = error {
-                    self.error = error.localizedDescription
-                    self.isLoading = false
-                } else if let clientToken = clientToken {
-                    self.clientToken = clientToken
-                    self.isLoading = false
-                } else {
-                    self.error = "Unknown error occurred"
-                    self.isLoading = false
-                }
+
+        Task {
+            do {
+                self.clientToken = try await NetworkingUtils.requestClientSession(
+                    body: sessionBody,
+                    apiVersion: apiVersion
+                )
+                self.isLoading = false
+            } catch {
+                self.error = error.localizedDescription
+                self.isLoading = false
             }
         }
     }

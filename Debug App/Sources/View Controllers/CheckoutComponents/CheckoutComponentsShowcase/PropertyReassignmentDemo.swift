@@ -147,29 +147,20 @@ struct PropertyReassignmentDemo: View {
     private func createSession() async {
         isLoading = true
         error = nil
-        
+
+        // Create session using the main controller's configuration
+        let sessionBody = createSessionBody()
+
+        // Request client token using the session configuration
         do {
-            // Create session using the main controller's configuration
-            let sessionBody = createSessionBody()
-            
-            // Request client token using the session configuration
-            await withCheckedContinuation { continuation in
-                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
-                    Task { @MainActor in
-                        if let error = error {
-                            self.error = error.localizedDescription
-                            self.isLoading = false
-                        } else if let clientToken = clientToken {
-                            self.clientToken = clientToken
-                            self.isLoading = false
-                        } else {
-                            self.error = "Unknown error occurred"
-                            self.isLoading = false
-                        }
-                        continuation.resume()
-                    }
-                }
-            }
+            self.clientToken = try await NetworkingUtils.requestClientSession(
+                body: sessionBody,
+                apiVersion: apiVersion
+            )
+            self.isLoading = false
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
         }
     }
     

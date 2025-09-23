@@ -104,7 +104,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     
     @objc private func uikitIntegrationTapped() {
         // UIKit Integration button tapped
-        
+
         // Use existing checkoutComponentsUIKitButton logic
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
@@ -112,21 +112,40 @@ final class CheckoutComponentsMenuViewController: UIViewController {
             checkoutComponentsDelegate = delegate
             CheckoutComponentsPrimer.shared.delegate = delegate
         }
-        
+
         switch renderMode {
         case .createClientSession, .testScenario:
             let ccSession = configureCardOnlyClientSession()
 
-            Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
-                DispatchQueue.main.async {
-                    if let error {
-                        self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
-                    } else if let clientToken {
-                        self?.presentUIKitIntegration(with: clientToken)
+            if #available(iOS 15.0, *) {
+                Task { [weak self] in
+                    do {
+                        let clientToken = try await NetworkingUtils.requestClientSession(
+                            body: ccSession,
+                            apiVersion: apiVersion
+                        )
+                        await MainActor.run {
+                            self?.presentUIKitIntegration(with: clientToken)
+                        }
+                    } catch {
+                        await MainActor.run {
+                            self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            } else {
+                // Fallback for iOS < 15.0
+                Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
+                    DispatchQueue.main.async {
+                        if let error {
+                            self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
+                        } else if let clientToken {
+                            self?.presentUIKitIntegration(with: clientToken)
+                        }
                     }
                 }
             }
-            
+
         case .clientToken:
             // Use provided client token directly
             if let clientToken, !clientToken.isEmpty {

@@ -99,34 +99,25 @@ struct CheckoutExampleView: View {
     private func createSession() async {
         isLoading = true
         error = nil
-        
+
+        // Always use the configured client session from MerchantSessionAndSettingsViewController
+        // This preserves the exact configuration from the main UI including currency, billing address, surcharge, etc.
+        guard let session = configuredClientSession else {
+            self.error = "No session configuration provided - please configure session in main settings"
+            self.isLoading = false
+            return
+        }
+
+        // Request client token using the new utility
         do {
-            // Always use the configured client session from MerchantSessionAndSettingsViewController
-            // This preserves the exact configuration from the main UI including currency, billing address, surcharge, etc.
-            guard let session = configuredClientSession else {
-                self.error = "No session configuration provided - please configure session in main settings"
-                self.isLoading = false
-                return
-            }
-            
-            // Request client token using the session configuration
-            await withCheckedContinuation { continuation in
-                Networking.requestClientSession(requestBody: session, apiVersion: apiVersion) { clientToken, error in
-                    Task { @MainActor in
-                        if let error {
-                            self.error = error.localizedDescription
-                            self.isLoading = false
-                        } else if let clientToken {
-                            self.clientToken = clientToken
-                            self.isLoading = false
-                        } else {
-                            self.error = "Unknown error occurred"
-                            self.isLoading = false
-                        }
-                        continuation.resume()
-                    }
-                }
-            }
+            self.clientToken = try await NetworkingUtils.requestClientSession(
+                body: session,
+                apiVersion: apiVersion
+            )
+            self.isLoading = false
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
         }
     }
 }

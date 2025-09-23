@@ -183,29 +183,20 @@ struct SingleFieldCustomisationDemo: View {
     private func createSession() async {
         isLoading = true
         error = nil
-        
+
+        // Create session using the main controller's configuration
+        let sessionBody = createSessionBody()
+
+        // Request client token using the new utility
         do {
-            // Create session using the main controller's configuration
-            let sessionBody = createSessionBody()
-            
-            // Request client token using the session configuration
-            await withCheckedContinuation { continuation in
-                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
-                    Task { @MainActor in
-                        if let error {
-                            self.error = error.localizedDescription
-                            self.isLoading = false
-                        } else if let clientToken {
-                            self.clientToken = clientToken
-                            self.isLoading = false
-                        } else {
-                            self.error = "Unknown error occurred"
-                            self.isLoading = false
-                        }
-                        continuation.resume()
-                    }
-                }
-            }
+            self.clientToken = try await NetworkingUtils.requestClientSession(
+                body: sessionBody,
+                apiVersion: apiVersion
+            )
+            self.isLoading = false
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
         }
     }
     
