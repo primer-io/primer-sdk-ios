@@ -216,9 +216,9 @@ public final class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public final class PrimerStripeOptions: Codable {
+public final class PrimerStripeOptions: Codable, Equatable {
 
-    public enum MandateData: Codable {
+    public enum MandateData: Codable, Equatable {
         case fullMandate(text: String)
         case templateMandate(merchantName: String)
     }
@@ -229,6 +229,11 @@ public final class PrimerStripeOptions: Codable {
     public init(publishableKey: String, mandateData: MandateData? = nil) {
         self.publishableKey = publishableKey
         self.mandateData = mandateData
+    }
+
+    public static func == (lhs: PrimerStripeOptions, rhs: PrimerStripeOptions) -> Bool {
+        return lhs.publishableKey == rhs.publishableKey &&
+               lhs.mandateData == rhs.mandateData
     }
 }
 
@@ -344,7 +349,7 @@ public struct PrimerDebugOptions: Codable {
 
 // MARK: - 3DS OPTIONS
 
-public struct PrimerThreeDsOptions: Codable {
+public struct PrimerThreeDsOptions: Codable, Equatable {
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {

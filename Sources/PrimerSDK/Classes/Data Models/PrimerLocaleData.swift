@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct PrimerLocaleData: Codable {
+public struct PrimerLocaleData: Codable, Equatable {
 
     public let languageCode: String
     public let localeCode: String

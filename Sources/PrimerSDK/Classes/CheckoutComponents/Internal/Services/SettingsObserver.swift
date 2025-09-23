@@ -198,7 +198,7 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
 
     /// Check for locale data changes
     private func checkLocaleDataChange(from oldLocale: PrimerLocaleData, to newLocale: PrimerLocaleData) async {
-        if !areLocaleDataEqual(oldLocale, newLocale) {
+        if oldLocale != newLocale {
             logger.debug(message: "🔧 [SettingsObserver] Locale data changed")
             await notifyObservers { observer in
                 await observer.localeDataDidChange(from: oldLocale, to: newLocale)
@@ -251,7 +251,7 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         return areUIOptionsEqual(lhs.uiOptions, rhs.uiOptions) &&
             areDebugOptionsEqual(lhs.debugOptions, rhs.debugOptions) &&
             arePaymentMethodOptionsEqual(lhs.paymentMethodOptions, rhs.paymentMethodOptions) &&
-            areLocaleDataEqual(lhs.localeData, rhs.localeData) &&
+            lhs.localeData == rhs.localeData &&
             lhs.paymentHandling == rhs.paymentHandling
     }
 
@@ -276,8 +276,8 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         let rhsUrlScheme = try? rhs.validSchemeForUrlScheme()
         return lhsUrlScheme == rhsUrlScheme &&
             areApplePayOptionsEqual(lhs.applePayOptions, rhs.applePayOptions) &&
-            areThreeDsOptionsEqual(lhs.threeDsOptions, rhs.threeDsOptions) &&
-            areStripeOptionsEqual(lhs.stripeOptions, rhs.stripeOptions)
+            lhs.threeDsOptions == rhs.threeDsOptions &&
+            lhs.stripeOptions == rhs.stripeOptions
     }
 
     /// Compare Apple Pay options for equality
@@ -292,36 +292,8 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         }
     }
 
-    /// Compare 3DS options for equality
-    private func areThreeDsOptionsEqual(_ lhs: PrimerThreeDsOptions?, _ rhs: PrimerThreeDsOptions?) -> Bool {
-        switch (lhs, rhs) {
-        case (nil, nil):
-            return true
-        case (let lhsOptions?, let rhsOptions?):
-            return lhsOptions.threeDsAppRequestorUrl == rhsOptions.threeDsAppRequestorUrl
-        default:
-            return false
-        }
-    }
-
-    /// Compare Stripe options for equality
-    private func areStripeOptionsEqual(_ lhs: PrimerStripeOptions?, _ rhs: PrimerStripeOptions?) -> Bool {
-        switch (lhs, rhs) {
-        case (nil, nil):
-            return true
-        case (let lhsOptions?, let rhsOptions?):
-            return lhsOptions.publishableKey == rhsOptions.publishableKey
-        default:
-            return false
-        }
-    }
-
-    /// Compare locale data for equality
-    private func areLocaleDataEqual(_ lhs: PrimerLocaleData, _ rhs: PrimerLocaleData) -> Bool {
-        return lhs.languageCode == rhs.languageCode &&
-            lhs.regionCode == rhs.regionCode &&
-            lhs.localeCode == rhs.localeCode
-    }
+    // Note: PrimerThreeDsOptions, PrimerStripeOptions, and PrimerLocaleData now conform to Equatable,
+    // so their comparison functions have been removed in favor of using == operator directly
 
     // MARK: - Cleanup
 

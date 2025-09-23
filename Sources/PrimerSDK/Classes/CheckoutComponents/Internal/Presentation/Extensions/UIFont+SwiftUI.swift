@@ -14,6 +14,8 @@ internal extension UIFont {
     /// Creates a UIFont from a SwiftUI Font with proper iOS version handling
     convenience init(_ font: Font) {
         // Handle all font cases
+        // Note: Size is 0 to use the default size from the font descriptor,
+        // which preserves the Dynamic Type scaling from the text style
         switch font {
         case .title2:
             self.init(descriptor: UIFont.preferredFont(forTextStyle: .title2).fontDescriptor, size: 0)
