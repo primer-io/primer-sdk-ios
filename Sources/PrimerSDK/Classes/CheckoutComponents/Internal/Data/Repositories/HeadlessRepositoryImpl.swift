@@ -575,7 +575,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                     .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
             } catch {
                 // Log error but don't block the flow since this is a fire-and-forget operation
-                print("Failed to select payment method: \(error)")
+                logger.error(message: "Failed to select payment method: \(error)")
             }
         }
     }

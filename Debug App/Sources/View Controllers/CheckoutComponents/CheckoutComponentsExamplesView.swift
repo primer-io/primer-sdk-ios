@@ -20,18 +20,11 @@ struct CheckoutComponentsExamplesView: View {
         self.settings = settings
         self.apiVersion = apiVersion
         self.clientSession = clientSession
-        print("🔍 [CheckoutComponentsExamplesView] Init called")
-        print("🔍 [CheckoutComponentsExamplesView] Settings: \(settings)")
-        print("🔍 [CheckoutComponentsExamplesView] API Version: \(apiVersion)")
-        print("🔍 [CheckoutComponentsExamplesView] ClientSession: \(clientSession != nil ? "provided" : "nil")")
-        if let clientSession {
-            print("🔍 [CheckoutComponentsExamplesView] Surcharge settings passed through: \(clientSession.paymentMethod?.options?.PAYMENT_CARD?.networks != nil)")
-        }
+        // Initialize with settings, API version and optional client session
     }
     
     var body: some View {
-        let _ = print("🔍 [CheckoutComponentsExamplesView] body called")
-        let _ = print("🔍 [CheckoutComponentsExamplesView] Categories: \(ExampleCategory.allCases.map { $0.rawValue })")
+        // Render main view body with example categories
         
         NavigationView {
             List {
@@ -101,9 +94,7 @@ private struct CategoryExamplesView: View {
                 ExampleRow(
                     example: example,
                     onTap: { 
-                        print("🔍 [CategoryExamplesView] Example tapped: \(example.name)")
                         presentedExample = example
-                        print("🔍 [CategoryExamplesView] presentedExample set to: \(presentedExample?.name ?? "nil")")
                     }
                 )
             }
@@ -118,8 +109,7 @@ private struct CategoryExamplesView: View {
                 clientSession: clientSession
             )
             .onAppear {
-                print("🔍 [CategoryExamplesView] Sheet presenting for: \(example.name)")
-                print("🔍 [CategoryExamplesView] CheckoutExampleView appeared for: \(example.name)")
+                // CheckoutExampleView appeared
             }
         }
     }
