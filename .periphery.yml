@@ -1,0 +1,4 @@
+project: PrimerSDK.xcworkspace
+retain_public: true
+schemes:
+- PrimerUI

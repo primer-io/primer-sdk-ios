@@ -506,7 +506,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         if method.type == "PAYPAL" {
             return updateNavigationState(.serverDrivenUI(schema: schema(resource: "voucher")))
         } else {
-            return updateNavigationState(.serverDrivenUI(schema: schema(resource: "simple")))
+            return updateNavigationState(.serverDrivenUI(schema: schema(resource: "buttons")))
         }
 
         // Use dynamic scope creation instead of hardcoded switch statement

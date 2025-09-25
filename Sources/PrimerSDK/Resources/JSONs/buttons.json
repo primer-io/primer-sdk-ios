@@ -1,0 +1,142 @@
+{
+	"schemaVersion": "2.0.0",
+	"validationStrategy": "onChange",
+	"initialState": {
+		"verification": {
+			"phoneNumber": "+1 (555) 123-4567",
+			"email": "user@example.com",
+			"method": "sms",
+			"selectedOption": "option2",
+		},
+		"henry": {
+			"listOptions": [
+				{ "id": "1", "flag": "a", "name": "Germany" },
+				{ "id": "2", "flag": "b", "name": "Abc" },
+				{ "id": "3", "flag": "c", "name": "UK" },
+				{ "id": "4", "flag": "d", "name": "London" },
+				{ "id": "5", "flag": "e", "name": "United" },
+				{ "id": "6", "flag": "f", "name": "Lancaster" },
+				{ "id": "7", "flag": "g", "name": "Will" }
+			]
+		}
+	},
+	"workflows": {
+		"submitPayment": {
+			"description": "Submit OTP payment when verify button clicked",
+			"triggers": [
+				{
+					"type": "element",
+					"element": "submitButton",
+					"event": "onClick",
+					"condition": "true"
+				}
+			],
+			"steps": [
+				{
+					"type": "NAVIGATE",
+					"stepId": "navigate",
+					"targetContainer": "mainFlow",
+					"targetId": "second",
+					"args": {}
+				}
+			]
+		}
+	},
+	"inputs": {
+		"otpCode": {
+			"binding": "verification.otpCode",
+			"transformations": [
+				"value.replace(/[^0-9]/g, '')"
+			],
+			"validators": [
+				{
+					"validate": "size(value) > 0",
+					"errorMessage": "Verification code is required"
+				},
+				{
+					"validate": "size(value) == 6",
+					"errorMessage": "Verification code must be exactly 6 digits"
+				},
+				{
+					"validate": "value.matches('^[0-9]{6}$')",
+					"errorMessage": "Verification code must contain only numbers"
+				}
+			]
+		},
+		"radioGroup1": {
+			"binding": "verification.selectedOption",
+			"validators": [
+				{
+					"validate": "has(value)",
+					"errorMessage": "Selection is required"
+				}
+			]
+		},
+		"checkboxGroup1": {
+			"binding": "verification.checkboxOption",
+			"validators": [
+				{
+					"validate": "has(value)",
+					"errorMessage": "Selection is required"
+				}
+			]
+		}
+	},
+	"ui": {
+		"type": "NavigationContainer",
+		"id": "mainFlow",
+		"props": {
+			"initialScreenId": "first",
+			"screenIds": ["first", "second"]
+		},
+		"screens": [
+			{
+				"id": "first",
+				"type": "Column",
+				"props": {
+					"spacing": "primerSpaceMedium",
+					"justifyContent": "flex-start",
+					"padding": "primerSpaceLarge",
+					"width": "fill",
+					"backgroundColor": "primerColorBackground",
+					"borderRadius": 16
+				},
+				"children": [
+					{
+						"type": "Button",
+						"id": "submitButton",
+						"props": {
+							"variant": "primary",
+							"enabled": "workflows.submitPayment.state != 'executing'",
+							"width": "fill",
+							"margin": "medium"
+						},
+						"content":{
+							"type":"Row",
+							"props":{
+								"width":"fill"
+							},
+							"children":[
+								{
+									"type":"Text",
+									"props":{
+										"text":"Submit",
+										"textStyle":"bodySmall",
+										"textAlign":"center"
+									}
+								},
+								{
+									"type":"ProgressIndicator",
+									"visible": "has(workflows.submitPayment.state) && workflows.submitPayment.state == 'executing'",
+									"props": {
+										"size":"small"
+									}
+								}
+							]
+						}
+					}
+				]
+			},
+		]
+	}
+}
