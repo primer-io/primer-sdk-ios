@@ -61,33 +61,33 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Screen Customization
 
-    public var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)?
-    public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
-    public var errorView: ((_ error: String) -> AnyView)?
+    public var screen: ((_ scope: any PrimerCardFormScope) -> any View)?
+    public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
+    public var errorView: ((_ error: String) -> any View)?
 
     // MARK: - Field-Level Customization Properties
-    public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)?
-    public var submitButton: ((_ text: String) -> AnyView)?
+    public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
+    public var submitButton: ((_ text: String) -> any View)?
 
     // MARK: - Section-Level Customization Properties
-    public var cardInputSection: (() -> AnyView)?
-    public var billingAddressSection: (() -> AnyView)?
-    public var submitButtonSection: (() -> AnyView)?
+    public var cardInputSection: (() -> any View)?
+    public var billingAddressSection: (() -> any View)?
+    public var submitButtonSection: (() -> any View)?
 
     // MARK: - Default Styling Properties
     public var defaultFieldStyling: [String: PrimerFieldStyling]?
@@ -842,50 +842,45 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - ViewBuilder Method Implementations
 
-    @ViewBuilder
-    public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CardNumberInputField(
             label: label,
             placeholder: "1234 1234 1234 1234",
             scope: self,
             selectedNetwork: structuredState.selectedNetwork?.network,
             styling: styling ?? defaultFieldStyling?["cardNumber"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         ExpiryDateInputField(
             label: label,
             placeholder: "12/25",
             scope: self,
             styling: styling ?? defaultFieldStyling?["expiryDate"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CVVInputField(
             label: label,
             placeholder: getCardNetworkForCvv() == .amex ? "1234" : "123",
             scope: self,
             cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
             styling: styling ?? defaultFieldStyling?["cvv"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CardholderNameInputField(
             label: label,
             placeholder: "Full name",
             scope: self,
             styling: styling ?? defaultFieldStyling?["cardholderName"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CountryInputFieldWrapper(
             scope: self,
             label: label,
@@ -893,40 +888,36 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             styling: styling ?? defaultFieldStyling?["country"],
             onValidationChange: nil,
             onOpenCountrySelector: nil
-        )
+        ).asAny()
     }
-    @ViewBuilder
-    public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         PostalCodeInputField(
             label: label,
             placeholder: "Postal Code",
             scope: self,
             styling: styling ?? defaultFieldStyling?["postalCode"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CityInputField(
             label: label,
             placeholder: "City",
             scope: self,
             styling: styling ?? defaultFieldStyling?["city"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         StateInputField(
             label: label,
             placeholder: "State",
             scope: self,
             styling: styling ?? defaultFieldStyling?["state"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         AddressLineInputField(
             label: label,
             placeholder: "Address Line 1",
@@ -934,11 +925,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             inputType: .addressLine1,
             scope: self,
             styling: styling ?? defaultFieldStyling?["addressLine1"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         AddressLineInputField(
             label: label,
             placeholder: "Address Line 2",
@@ -946,43 +936,39 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             inputType: .addressLine2,
             scope: self,
             styling: styling ?? defaultFieldStyling?["addressLine2"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         NameInputField(
             label: label,
             placeholder: "First Name",
             inputType: .firstName,
             scope: self,
             styling: styling ?? defaultFieldStyling?["firstName"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         NameInputField(
             label: label,
             placeholder: "Last Name",
             inputType: .lastName,
             scope: self,
             styling: styling ?? defaultFieldStyling?["lastName"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         EmailInputField(
             label: label,
             placeholder: "Email",
             scope: self,
             styling: styling ?? defaultFieldStyling?["email"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         // Note: PhoneNumberInputField might not exist, using NameInputField as placeholder
         NameInputField(
             label: label,
@@ -990,11 +976,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             inputType: .phoneNumber,
             scope: self,
             styling: styling ?? defaultFieldStyling?["phoneNumber"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         // Note: RetailOutletInputField might not exist, using NameInputField as placeholder
         NameInputField(
             label: label,
@@ -1002,18 +987,21 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             inputType: .retailer,
             scope: self,
             styling: styling ?? defaultFieldStyling?["retailOutlet"]
-        )
+        ).asAny()
     }
 
-    @ViewBuilder
-    public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> any View {
+    public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         OTPCodeInputField(
             label: label,
             placeholder: "OTP Code",
             scope: self,
             styling: styling ?? defaultFieldStyling?["otpCode"]
-        )
+        ).asAny()
     }
+}
+
+private extension View {
+    func asAny() -> AnyView { AnyView(self) }
 }
 
 // swiftlint:enable identifier_name

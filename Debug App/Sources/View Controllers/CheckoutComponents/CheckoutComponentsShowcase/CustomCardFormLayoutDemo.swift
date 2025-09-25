@@ -136,7 +136,7 @@ struct CustomCardFormLayoutDemo: View {
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with dynamic layout options
             cardFormScope.screen = { _ in
-                AnyView(DynamicLayoutCardFormView(cardFormScope: cardFormScope))
+                DynamicLayoutCardFormView(cardFormScope: cardFormScope)
             }
         }
     }
@@ -281,15 +281,13 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Card Number")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                AnyView(
-                    cardFormScope.PrimerCardNumberField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.blue.opacity(0.05),
-                            borderColor: .blue,
-                            cornerRadius: 8,
-                            borderWidth: 1
-                        )
+                cardFormScope.PrimerCardNumberField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.blue.opacity(0.05),
+                        borderColor: .blue,
+                        cornerRadius: 8,
+                        borderWidth: 1
                     )
                 )
                 .frame(height: 50)
@@ -300,15 +298,13 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Expiry Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                AnyView(
-                    cardFormScope.PrimerExpiryDateField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.green.opacity(0.05),
-                            borderColor: .green,
-                            cornerRadius: 8,
-                            borderWidth: 1
-                        )
+                cardFormScope.PrimerExpiryDateField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.green.opacity(0.05),
+                        borderColor: .green,
+                        cornerRadius: 8,
+                        borderWidth: 1
                     )
                 )
                 .frame(height: 50)
@@ -319,15 +315,13 @@ private struct DynamicLayoutCardFormView: View {
                 Text("CVV")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                AnyView(
-                    cardFormScope.PrimerCvvField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.orange.opacity(0.05),
-                            borderColor: .orange,
-                            cornerRadius: 8,
-                            borderWidth: 1
-                        )
+                cardFormScope.PrimerCvvField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.orange.opacity(0.05),
+                        borderColor: .orange,
+                        cornerRadius: 8,
+                        borderWidth: 1
                     )
                 )
                 .frame(height: 50)
@@ -338,15 +332,13 @@ private struct DynamicLayoutCardFormView: View {
                 Text("Cardholder Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                AnyView(
-                    cardFormScope.PrimerCardholderNameField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.purple.opacity(0.05),
-                            borderColor: .purple,
-                            cornerRadius: 8,
-                            borderWidth: 1
-                        )
+                cardFormScope.PrimerCardholderNameField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.purple.opacity(0.05),
+                        borderColor: .purple,
+                        cornerRadius: 8,
+                        borderWidth: 1
                     )
                 )
                 .frame(height: 50)
@@ -363,15 +355,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCardNumberField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.blue.opacity(0.05),
-                                borderColor: .blue,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCardNumberField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.blue.opacity(0.05),
+                            borderColor: .blue,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(width: 200, height: 50)
@@ -382,15 +372,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerExpiryDateField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.green.opacity(0.05),
-                                borderColor: .green,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerExpiryDateField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.green.opacity(0.05),
+                            borderColor: .green,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(width: 100, height: 50)
@@ -401,15 +389,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCvvField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.orange.opacity(0.05),
-                                borderColor: .orange,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCvvField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.orange.opacity(0.05),
+                            borderColor: .orange,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(width: 80, height: 50)
@@ -420,15 +406,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCardholderNameField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.purple.opacity(0.05),
-                                borderColor: .purple,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCardholderNameField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.purple.opacity(0.05),
+                            borderColor: .purple,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(width: 150, height: 50)
@@ -446,15 +430,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCardNumberField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.blue.opacity(0.05),
-                                borderColor: .blue,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCardNumberField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.blue.opacity(0.05),
+                            borderColor: .blue,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(height: 50)
@@ -465,15 +447,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerExpiryDateField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.green.opacity(0.05),
-                                borderColor: .green,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerExpiryDateField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.green.opacity(0.05),
+                            borderColor: .green,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(height: 50)
@@ -486,15 +466,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCvvField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.orange.opacity(0.05),
-                                borderColor: .orange,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCvvField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.orange.opacity(0.05),
+                            borderColor: .orange,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(height: 50)
@@ -505,15 +483,13 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCardholderNameField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.purple.opacity(0.05),
-                                borderColor: .purple,
-                                cornerRadius: 8,
-                                borderWidth: 1
-                            )
+                    cardFormScope.PrimerCardholderNameField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.purple.opacity(0.05),
+                            borderColor: .purple,
+                            cornerRadius: 8,
+                            borderWidth: 1
                         )
                     )
                     .frame(height: 50)
@@ -530,16 +506,14 @@ private struct DynamicLayoutCardFormView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 // Use ViewBuilder method
-                AnyView(
-                    cardFormScope.PrimerCardNumberField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.blue.opacity(0.05),
-                            borderColor: .blue,
-                            cornerRadius: 8,
-                            borderWidth: 1,
-                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                        )
+                cardFormScope.PrimerCardNumberField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.blue.opacity(0.05),
+                        borderColor: .blue,
+                        cornerRadius: 8,
+                        borderWidth: 1,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                     )
                 )
                 .frame(height: 50)
@@ -551,16 +525,14 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerExpiryDateField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.green.opacity(0.05),
-                                borderColor: .green,
-                                cornerRadius: 8,
-                                borderWidth: 1,
-                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                            )
+                    cardFormScope.PrimerExpiryDateField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.green.opacity(0.05),
+                            borderColor: .green,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                         )
                     )
                     .frame(height: 50)
@@ -571,16 +543,14 @@ private struct DynamicLayoutCardFormView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     // Use ViewBuilder method
-                    AnyView(
-                        cardFormScope.PrimerCvvField(
-                            label: nil,
-                            styling: PrimerFieldStyling(
-                                backgroundColor: Color.orange.opacity(0.05),
-                                borderColor: .orange,
-                                cornerRadius: 8,
-                                borderWidth: 1,
-                                padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                            )
+                    cardFormScope.PrimerCvvField(
+                        label: nil,
+                        styling: PrimerFieldStyling(
+                            backgroundColor: Color.orange.opacity(0.05),
+                            borderColor: .orange,
+                            cornerRadius: 8,
+                            borderWidth: 1,
+                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                         )
                     )
                     .frame(height: 50)
@@ -592,16 +562,14 @@ private struct DynamicLayoutCardFormView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 // Use ViewBuilder method
-                AnyView(
-                    cardFormScope.PrimerCardholderNameField(
-                        label: nil,
-                        styling: PrimerFieldStyling(
-                            backgroundColor: Color.purple.opacity(0.05),
-                            borderColor: .purple,
-                            cornerRadius: 8,
-                            borderWidth: 1,
-                            padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                        )
+                cardFormScope.PrimerCardholderNameField(
+                    label: nil,
+                    styling: PrimerFieldStyling(
+                        backgroundColor: Color.purple.opacity(0.05),
+                        borderColor: .purple,
+                        cornerRadius: 8,
+                        borderWidth: 1,
+                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                     )
                 )
                 .frame(height: 50)

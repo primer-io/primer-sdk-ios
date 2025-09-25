@@ -136,7 +136,7 @@ struct SingleInputFieldDemo: View {
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with step-by-step navigation
             cardFormScope.screen = { _ in
-                AnyView(SingleInputFieldCardFormView(cardFormScope: cardFormScope))
+                SingleInputFieldCardFormView(cardFormScope: cardFormScope)
             }
         }
     }
@@ -299,60 +299,52 @@ private struct SingleInputFieldCardFormView: View {
         
         allFields = [
             // Card number field with step-specific styling
-            AnyView(
-                cardFormScope.PrimerCardNumberField(
-                    label: nil,
-                    styling: PrimerFieldStyling(
-                        font: .system(.body, design: .monospaced),
-                        backgroundColor: Color.blue.opacity(0.05),
-                        borderColor: .blue,
-                        cornerRadius: 8,
-                        borderWidth: 2,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                    )
+            cardFormScope.PrimerCardNumberField(
+                label: nil,
+                styling: PrimerFieldStyling(
+                    font: .system(.body, design: .monospaced),
+                    backgroundColor: Color.blue.opacity(0.05),
+                    borderColor: .blue,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
             
             // Expiry date field with step-specific styling
-            AnyView(
-                cardFormScope.PrimerExpiryDateField(
-                    label: nil,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.green.opacity(0.05),
-                        borderColor: .green,
-                        cornerRadius: 8,
-                        borderWidth: 2,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                    )
+            cardFormScope.PrimerExpiryDateField(
+                label: nil,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.green.opacity(0.05),
+                    borderColor: .green,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
             
             // CVV field with step-specific styling
-            AnyView(
-                cardFormScope.PrimerCvvField(
-                    label: nil,
-                    styling: PrimerFieldStyling(
-                        font: .system(.body, design: .monospaced),
-                        backgroundColor: Color.orange.opacity(0.05),
-                        borderColor: .orange,
-                        cornerRadius: 8,
-                        borderWidth: 2,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                    )
+            cardFormScope.PrimerCvvField(
+                label: nil,
+                styling: PrimerFieldStyling(
+                    font: .system(.body, design: .monospaced),
+                    backgroundColor: Color.orange.opacity(0.05),
+                    borderColor: .orange,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
             
             // Cardholder name field with step-specific styling
-            AnyView(
-                cardFormScope.PrimerCardholderNameField(
-                    label: nil,
-                    styling: PrimerFieldStyling(
-                        backgroundColor: Color.purple.opacity(0.05),
-                        borderColor: .purple,
-                        cornerRadius: 8,
-                        borderWidth: 2,
-                        padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-                    )
+            cardFormScope.PrimerCardholderNameField(
+                label: nil,
+                styling: PrimerFieldStyling(
+                    backgroundColor: Color.purple.opacity(0.05),
+                    borderColor: .purple,
+                    cornerRadius: 8,
+                    borderWidth: 2,
+                    padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             )
         ]

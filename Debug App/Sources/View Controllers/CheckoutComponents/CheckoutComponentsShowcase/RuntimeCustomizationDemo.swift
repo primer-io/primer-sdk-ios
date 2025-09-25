@@ -144,7 +144,7 @@ struct RuntimeCustomizationDemo: View {
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with conditional customization demo
             cardFormScope.screen = { _ in
-                AnyView(ConditionalCardFormView(cardFormScope: cardFormScope))
+                ConditionalCardFormView(cardFormScope: cardFormScope)
             }
         }
     }
@@ -324,18 +324,16 @@ private struct ConditionalCardFormView: View {
                         }
                         
                         // Enhanced card number field with dramatic color changes
-                        AnyView(
-                            cardFormScope.PrimerCardNumberField(
-                                label: nil,
-                                styling: PrimerFieldStyling(
-                                    font: .system(.body, design: .monospaced),
-                                    backgroundColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.08) : Color.gray.opacity(0.03),
-                                    borderColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.4) : Color.gray.opacity(0.3),
-                                    focusedBorderColor: detectedCardType != "Unknown" ? cardTypeColor : .blue,
-                                    cornerRadius: 12,
-                                    borderWidth: detectedCardType != "Unknown" ? 2 : 1,
-                                    padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-                                )
+                        cardFormScope.PrimerCardNumberField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                font: .system(.body, design: .monospaced),
+                                backgroundColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.08) : Color.gray.opacity(0.03),
+                                borderColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.4) : Color.gray.opacity(0.3),
+                                focusedBorderColor: detectedCardType != "Unknown" ? cardTypeColor : .blue,
+                                cornerRadius: 12,
+                                borderWidth: detectedCardType != "Unknown" ? 2 : 1,
+                                padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
                             )
                         )
                         .overlay(
@@ -367,18 +365,16 @@ private struct ConditionalCardFormView: View {
                                     .foregroundColor(.secondary)
                             }
                             
-                            AnyView(
-                                cardFormScope.PrimerExpiryDateField(
-                                    label: nil,
-                                    styling: PrimerFieldStyling(
-                                        font: .system(.body, design: .monospaced),
-                                        backgroundColor: Color.blue.opacity(0.04),
-                                        borderColor: Color.blue.opacity(0.2),
-                                        focusedBorderColor: .blue,
-                                        cornerRadius: 10,
-                                        borderWidth: 1,
-                                        padding: EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
-                                    )
+                            cardFormScope.PrimerExpiryDateField(
+                                label: nil,
+                                styling: PrimerFieldStyling(
+                                    font: .system(.body, design: .monospaced),
+                                    backgroundColor: Color.blue.opacity(0.04),
+                                    borderColor: Color.blue.opacity(0.2),
+                                    focusedBorderColor: .blue,
+                                    cornerRadius: 10,
+                                    borderWidth: 1,
+                                    padding: EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
                                 )
                             )
                         }
@@ -410,18 +406,16 @@ private struct ConditionalCardFormView: View {
                                 }
                             }
                             
-                            AnyView(
-                                cardFormScope.PrimerCvvField(
-                                    label: nil,
-                                    styling: PrimerFieldStyling(
-                                        font: .system(.body, design: .monospaced),
-                                        backgroundColor: isAmex ? cardTypeColor.opacity(0.08) : Color.orange.opacity(0.04),
-                                        borderColor: isAmex ? cardTypeColor.opacity(0.4) : Color.orange.opacity(0.2),
-                                        focusedBorderColor: isAmex ? cardTypeColor : .orange,
-                                        cornerRadius: 10,
-                                        borderWidth: isAmex ? 2 : 1,
-                                        padding: EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
-                                    )
+                            cardFormScope.PrimerCvvField(
+                                label: nil,
+                                styling: PrimerFieldStyling(
+                                    font: .system(.body, design: .monospaced),
+                                    backgroundColor: isAmex ? cardTypeColor.opacity(0.08) : Color.orange.opacity(0.04),
+                                    borderColor: isAmex ? cardTypeColor.opacity(0.4) : Color.orange.opacity(0.2),
+                                    focusedBorderColor: isAmex ? cardTypeColor : .orange,
+                                    cornerRadius: 10,
+                                    borderWidth: isAmex ? 2 : 1,
+                                    padding: EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
                                 )
                             )
                             .overlay(
@@ -474,23 +468,21 @@ private struct ConditionalCardFormView: View {
                             }
                         }
                         
-                        AnyView(
-                            cardFormScope.PrimerCardholderNameField(
-                                label: nil,
-                                styling: PrimerFieldStyling(
-                                    backgroundColor: cardholderValidationColor != .clear 
-                                        ? cardholderValidationColor.opacity(0.06) 
-                                        : Color.purple.opacity(0.04),
-                                    borderColor: cardholderValidationColor != .clear 
-                                        ? cardholderValidationColor.opacity(0.4) 
-                                        : Color.purple.opacity(0.2),
-                                    focusedBorderColor: cardholderValidationColor != .clear 
-                                        ? cardholderValidationColor 
-                                        : .purple,
-                                    cornerRadius: 12,
-                                    borderWidth: cardholderValidationColor != .clear ? 2 : 1,
-                                    padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
-                                )
+                        cardFormScope.PrimerCardholderNameField(
+                            label: nil,
+                            styling: PrimerFieldStyling(
+                                backgroundColor: cardholderValidationColor != .clear
+                                    ? cardholderValidationColor.opacity(0.06)
+                                    : Color.purple.opacity(0.04),
+                                borderColor: cardholderValidationColor != .clear
+                                    ? cardholderValidationColor.opacity(0.4)
+                                    : Color.purple.opacity(0.2),
+                                focusedBorderColor: cardholderValidationColor != .clear
+                                    ? cardholderValidationColor
+                                    : .purple,
+                                cornerRadius: 12,
+                                borderWidth: cardholderValidationColor != .clear ? 2 : 1,
+                                padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
                             )
                         )
                         .overlay(

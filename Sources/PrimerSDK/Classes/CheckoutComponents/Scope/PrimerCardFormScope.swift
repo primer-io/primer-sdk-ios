@@ -117,99 +117,99 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
 
     /// The entire card form screen.
     /// When set, overrides the default card form layout completely.
-    var screen: ((_ scope: any PrimerCardFormScope) -> AnyView)? { get set }
+    var screen: ((_ scope: any PrimerCardFormScope) -> any View)? { get set }
 
     /// Co-badged cards selection view for dual-network cards.
     /// Shown when a card supports multiple networks (e.g., Visa/Mastercard).
-    var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)? { get set }
+    var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)? { get set }
 
     /// Error message display component.
     /// Default implementation shows error text in red.
-    var errorView: ((_ error: String) -> AnyView)? { get set }
+    var errorView: ((_ error: String) -> any View)? { get set }
 
     // MARK: - Field-Level Customization (Partial UI Override)
 
     /// Custom card number field implementation.
     /// When set, overrides the default card number field.
-    var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom expiry date field implementation.
     /// When set, overrides the default expiry date field.
-    var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom CVV field implementation.
     /// When set, overrides the default CVV field.
-    var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom cardholder name field implementation.
     /// When set, overrides the default cardholder name field.
-    var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom postal code field implementation.
     /// When set, overrides the default postal code field.
-    var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom country field implementation.
     /// When set, overrides the default country field.
-    var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom city field implementation.
     /// When set, overrides the default city field.
-    var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom state field implementation.
     /// When set, overrides the default state field.
-    var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom address line 1 field implementation.
     /// When set, overrides the default address line 1 field.
-    var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom address line 2 field implementation.
     /// When set, overrides the default address line 2 field.
-    var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom phone number field implementation.
     /// When set, overrides the default phone number field.
-    var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom first name field implementation.
     /// When set, overrides the default first name field.
-    var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom last name field implementation.
     /// When set, overrides the default last name field.
-    var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom email field implementation.
     /// When set, overrides the default email field.
-    var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom retail outlet field implementation.
     /// When set, overrides the default retail outlet field.
-    var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom OTP code field implementation.
     /// When set, overrides the default OTP code field.
-    var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> AnyView)? { get set }
+    var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)? { get set }
 
     /// Custom submit button implementation.
     /// When set, overrides the default submit button.
-    var submitButton: ((_ text: String) -> AnyView)? { get set }
+    var submitButton: ((_ text: String) -> any View)? { get set }
 
     // MARK: - Section-Level Customization
 
     /// Custom card input section (card number, expiry, CVV, cardholder name).
     /// When set, overrides the entire card input section.
-    var cardInputSection: (() -> AnyView)? { get set }
+    var cardInputSection: (() -> any View)? { get set }
 
     /// Custom billing address section.
     /// When set, overrides the entire billing address section.
-    var billingAddressSection: (() -> AnyView)? { get set }
+    var billingAddressSection: (() -> any View)? { get set }
 
     /// Custom submit button section.
     /// When set, overrides the entire submit button section.
-    var submitButtonSection: (() -> AnyView)? { get set }
+    var submitButtonSection: (() -> any View)? { get set }
 
     // MARK: - Default Styling
 
@@ -235,112 +235,112 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the card number input field.
-    @ViewBuilder func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer expiry date input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the expiry date input field.
-    @ViewBuilder func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer CVV input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the CVV input field.
-    @ViewBuilder func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer cardholder name input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the cardholder name input field.
-    @ViewBuilder func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer country selection field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the country selection field.
-    @ViewBuilder func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer postal code input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the postal code input field.
-    @ViewBuilder func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer city input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the city input field.
-    @ViewBuilder func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer state/province input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the state input field.
-    @ViewBuilder func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer address line 1 input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the address line 1 input field.
-    @ViewBuilder func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer address line 2 input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the address line 2 input field.
-    @ViewBuilder func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer first name input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the first name input field.
-    @ViewBuilder func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer last name input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the last name input field.
-    @ViewBuilder func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer email input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the email input field.
-    @ViewBuilder func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer phone number input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the phone number input field.
-    @ViewBuilder func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer retail outlet input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the retail outlet input field.
-    @ViewBuilder func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     /// Returns a Primer OTP code input field component that can be customized with SwiftUI modifiers.
     /// - Parameters:
     ///   - label: Optional label text for the field. If not specified, a default label will be used.
     ///   - styling: Optional styling configuration for the field.
     /// - Returns: A view representing the OTP code input field.
-    @ViewBuilder func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> any View
+    func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView
 
     // MARK: - Validation State Communication
 
