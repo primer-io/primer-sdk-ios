@@ -42,6 +42,13 @@ internal struct CheckoutComponentsStrings {
         comment: "Cancel button text"
     )
 
+    static let backButton = NSLocalizedString(
+        "checkout-components-back-button",
+        bundle: Bundle.primerResources,
+        value: "Back",
+        comment: "Back button text"
+    )
+
     // MARK: - Payment Method Selection
 
     static let choosePaymentMethod = NSLocalizedString(
