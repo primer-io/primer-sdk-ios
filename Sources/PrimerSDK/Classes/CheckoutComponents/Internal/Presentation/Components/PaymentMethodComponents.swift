@@ -58,10 +58,10 @@ internal struct PaymentMethodPlaceholder: View {
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
 
-            Text("Payment Method: \(displayName)")
+            Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
                 .font(.headline)
 
-            Text("Implementation coming soon")
+            Text(CheckoutComponentsStrings.implementationComingSoon)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }

@@ -272,7 +272,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
         case .dismissed:
             // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
             return AnyView(VStack {
-                Text("Dismissing...")
+                Text(CheckoutComponentsStrings.dismissingMessage)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

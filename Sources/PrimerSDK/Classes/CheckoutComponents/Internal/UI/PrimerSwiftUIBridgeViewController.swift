@@ -235,7 +235,7 @@ extension PrimerSwiftUIBridgeViewController {
 
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
-        bridgeController.title = "Checkout"
+        bridgeController.title = CheckoutComponentsStrings.checkoutTitle
 
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
         return bridgeController
@@ -265,7 +265,7 @@ extension PrimerSwiftUIBridgeViewController {
 
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
-        bridgeController.title = "Card Payment"
+        bridgeController.title = CheckoutComponentsStrings.cardPaymentTitle
 
         logger.info(message: "💳 [SwiftUIBridge] Card form bridge created successfully")
         return bridgeController

@@ -17,7 +17,7 @@ internal struct SDKInitializationLoadingView: View {
             ProgressView()
                 .scaleEffect(1.5)
 
-            Text("Initializing payment system...")
+            Text(CheckoutComponentsStrings.initializingPaymentSystem)
                 .font(.headline)
                 .foregroundColor(.secondary)
         }
@@ -37,7 +37,7 @@ internal struct SDKInitializationErrorView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.orange)
 
-            Text("Payment System Error")
+            Text(CheckoutComponentsStrings.paymentSystemError)
                 .font(.headline)
 
             Text(error.localizedDescription)
@@ -46,7 +46,7 @@ internal struct SDKInitializationErrorView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            Button("Retry") {
+            Button(CheckoutComponentsStrings.retryButton) {
                 onRetry()
             }
             .buttonStyle(.borderedProminent)

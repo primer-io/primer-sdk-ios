@@ -62,7 +62,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
         // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
             // Checkout scope not available
-            internalState.error = "Checkout scope not available"
+            internalState.error = CheckoutComponentsStrings.checkoutScopeNotAvailable
             return
         }
 

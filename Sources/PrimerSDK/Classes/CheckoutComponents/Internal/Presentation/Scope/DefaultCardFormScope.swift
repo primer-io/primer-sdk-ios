@@ -845,7 +845,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CardNumberInputField(
             label: label,
-            placeholder: "1234 1234 1234 1234",
+            placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
             scope: self,
             selectedNetwork: structuredState.selectedNetwork?.network,
             styling: styling ?? defaultFieldStyling?["cardNumber"]
@@ -855,7 +855,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         ExpiryDateInputField(
             label: label,
-            placeholder: "12/25",
+            placeholder: CheckoutComponentsStrings.expiryDateAlternativePlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["expiryDate"]
         ).asAny()
@@ -864,7 +864,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CVVInputField(
             label: label,
-            placeholder: getCardNetworkForCvv() == .amex ? "1234" : "123",
+            placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
             scope: self,
             cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
             styling: styling ?? defaultFieldStyling?["cvv"]
@@ -874,7 +874,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CardholderNameInputField(
             label: label,
-            placeholder: "Full name",
+            placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["cardholderName"]
         ).asAny()
@@ -884,7 +884,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         CountryInputFieldWrapper(
             scope: self,
             label: label,
-            placeholder: "Select Country",
+            placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
             styling: styling ?? defaultFieldStyling?["country"],
             onValidationChange: nil,
             onOpenCountrySelector: nil
@@ -893,7 +893,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         PostalCodeInputField(
             label: label,
-            placeholder: "Postal Code",
+            placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["postalCode"]
         ).asAny()
@@ -902,7 +902,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         CityInputField(
             label: label,
-            placeholder: "City",
+            placeholder: CheckoutComponentsStrings.cityPlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["city"]
         ).asAny()
@@ -911,7 +911,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         StateInputField(
             label: label,
-            placeholder: "State",
+            placeholder: CheckoutComponentsStrings.statePlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["state"]
         ).asAny()
@@ -920,7 +920,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         AddressLineInputField(
             label: label,
-            placeholder: "Address Line 1",
+            placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
             isRequired: true,
             inputType: .addressLine1,
             scope: self,
@@ -931,7 +931,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         AddressLineInputField(
             label: label,
-            placeholder: "Address Line 2",
+            placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
             isRequired: false,
             inputType: .addressLine2,
             scope: self,
@@ -942,7 +942,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         NameInputField(
             label: label,
-            placeholder: "First Name",
+            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
             inputType: .firstName,
             scope: self,
             styling: styling ?? defaultFieldStyling?["firstName"]
@@ -952,7 +952,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         NameInputField(
             label: label,
-            placeholder: "Last Name",
+            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
             inputType: .lastName,
             scope: self,
             styling: styling ?? defaultFieldStyling?["lastName"]
@@ -962,7 +962,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         EmailInputField(
             label: label,
-            placeholder: "Email",
+            placeholder: CheckoutComponentsStrings.emailPlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["email"]
         ).asAny()
@@ -972,7 +972,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Note: PhoneNumberInputField might not exist, using NameInputField as placeholder
         NameInputField(
             label: label,
-            placeholder: "Phone Number",
+            placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
             inputType: .phoneNumber,
             scope: self,
             styling: styling ?? defaultFieldStyling?["phoneNumber"]
@@ -983,7 +983,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Note: RetailOutletInputField might not exist, using NameInputField as placeholder
         NameInputField(
             label: label,
-            placeholder: "Retail Outlet",
+            placeholder: CheckoutComponentsStrings.retailOutletPlaceholder,
             inputType: .retailer,
             scope: self,
             styling: styling ?? defaultFieldStyling?["retailOutlet"]
@@ -993,7 +993,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         OTPCodeInputField(
             label: label,
-            placeholder: "OTP Code",
+            placeholder: CheckoutComponentsStrings.otpCodePlaceholder,
             scope: self,
             styling: styling ?? defaultFieldStyling?["otpCode"]
         ).asAny()

@@ -41,12 +41,12 @@ internal struct SplashScreen: View {
                     .scaleEffect(animateGradient ? 1.1 : 1.0)
                     .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateGradient)
 
-                Text("Primer")
+                Text(CheckoutComponentsStrings.primerBrandName)
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
 
-                Text("Secure Checkout")
+                Text(CheckoutComponentsStrings.secureCheckout)
                     .font(.body)
                     .foregroundColor(.white.opacity(0.8))
             }

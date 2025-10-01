@@ -18,7 +18,7 @@ internal struct LoadingScreen: View {
                 .scaleEffect(1.5)
                 .progressViewStyle(CircularProgressViewStyle(tint: .blue))
 
-            Text("Loading payment methods...")
+            Text(CheckoutComponentsStrings.loadingPaymentMethods)
                 .font(.body)
                 .foregroundColor(.secondary)
         }

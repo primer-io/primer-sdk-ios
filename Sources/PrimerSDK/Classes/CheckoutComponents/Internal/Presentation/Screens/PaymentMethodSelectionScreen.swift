@@ -363,7 +363,7 @@ private struct ModernPaymentMethodCardView: View {
         HStack(spacing: 2) {
             Image(systemName: "applelogo")
                 .font(.system(size: 12, weight: .medium))
-            Text("Pay")
+            Text(CheckoutComponentsStrings.payButton)
                 .font(.system(size: 12, weight: .medium))
         }
         .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
@@ -374,14 +374,14 @@ private struct ModernPaymentMethodCardView: View {
             Text("G")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundColor(tokens?.primerColorBrand ?? .blue)
-            Text("Pay")
+            Text(CheckoutComponentsStrings.payButton)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
         }
     }
 
     private var paypalLogo: some View {
-        Text("PayPal")
+        Text(CheckoutComponentsStrings.payPalMethodName)
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(tokens?.primerColorBlue500 ?? .blue)
     }
@@ -393,13 +393,13 @@ private struct ModernPaymentMethodCardView: View {
     }
 
     private var klarnaLogo: some View {
-        Text("Klarna")
+        Text(CheckoutComponentsStrings.klarnaMethodName)
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
     }
 
     private var idealLogo: some View {
-        Text("iDeal")
+        Text(CheckoutComponentsStrings.idealMethodName)
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(tokens?.primerColorIconPrimary ?? .orange)
     }

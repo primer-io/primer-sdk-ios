@@ -26,8 +26,8 @@ internal struct CardDetailsView: View {
         VStack(spacing: 16) {
             // Card Number
             CardNumberInputField(
-                label: "Card Number",
-                placeholder: "1234 1234 1234 1234",
+                label: CheckoutComponentsStrings.cardNumberLabel,
+                placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
                 scope: cardFormScope
             )
 
@@ -35,15 +35,15 @@ internal struct CardDetailsView: View {
             HStack(spacing: 16) {
                 // Expiry Date
                 ExpiryDateInputField(
-                    label: "Expiry Date",
-                    placeholder: "MM/YY",
+                    label: CheckoutComponentsStrings.expiryDateLabel,
+                    placeholder: CheckoutComponentsStrings.expiryDatePlaceholder,
                     scope: cardFormScope
                 )
 
                 // CVV
                 CVVInputField(
-                    label: "CVV",
-                    placeholder: cardNetwork.validation?.code.name ?? "CVV",
+                    label: CheckoutComponentsStrings.cvvLabel,
+                    placeholder: cardNetwork.validation?.code.name ?? CheckoutComponentsStrings.cvvPlaceholder,
                     scope: cardFormScope,
                     cardNetwork: cardNetwork
                 )
@@ -52,8 +52,8 @@ internal struct CardDetailsView: View {
 
             // Cardholder Name
             CardholderNameInputField(
-                label: "Cardholder Name",
-                placeholder: "John Doe",
+                label: CheckoutComponentsStrings.cardholderNameLabel,
+                placeholder: CheckoutComponentsStrings.cardholderNamePlaceholder,
                 scope: cardFormScope
             )
         }

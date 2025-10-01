@@ -31,10 +31,10 @@ internal struct SelectCountryScreen: View {
             countryListSection
         }
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))
-        .navigationTitle("Select Country")
+        .navigationTitle(CheckoutComponentsStrings.selectCountryTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(
-            trailing: Button("Cancel") {
+            trailing: Button(CheckoutComponentsStrings.cancelButton) {
                 onDismiss?()
             }
             .foregroundColor(.blue)
@@ -46,7 +46,7 @@ internal struct SelectCountryScreen: View {
             if let customSearchBar = scope.searchBar {
                 customSearchBar(countryState.searchQuery, { query in
                     scope.onSearch(query: query)
-                }, "Search countries...")
+                }, CheckoutComponentsStrings.searchCountriesPlaceholder)
             } else {
                 defaultSearchBar
             }
@@ -58,7 +58,7 @@ internal struct SelectCountryScreen: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            TextField("Search countries...", text: Binding(
+            TextField(CheckoutComponentsStrings.searchCountriesPlaceholder, text: Binding(
                 get: { countryState.searchQuery },
                 set: { scope.onSearch(query: $0) }
             ))
@@ -97,7 +97,7 @@ internal struct SelectCountryScreen: View {
                 .font(.system(size: 48))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            Text("No countries found")
+            Text(CheckoutComponentsStrings.noCountriesFound)
                 .font(.body)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
         }

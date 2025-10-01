@@ -236,7 +236,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultFirstNameField() -> some View {
         NameInputField(
             label: CheckoutComponentsStrings.firstNameLabel,
-            placeholder: "John",
+            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
             inputType: .firstName,
             scope: cardFormScope,
             styling: styling
@@ -247,7 +247,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultLastNameField() -> some View {
         NameInputField(
             label: CheckoutComponentsStrings.lastNameLabel,
-            placeholder: "Smith",
+            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
             inputType: .lastName,
             scope: cardFormScope,
             styling: styling
@@ -272,7 +272,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultAddressLine1Field() -> some View {
         AddressLineInputField(
             label: CheckoutComponentsStrings.addressLine1Label,
-            placeholder: "123 Main St",
+            placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
             isRequired: true,
             inputType: .addressLine1,
             scope: cardFormScope,
@@ -284,7 +284,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultAddressLine2Field() -> some View {
         AddressLineInputField(
             label: CheckoutComponentsStrings.addressLine2Label,
-            placeholder: "Apt 4B",
+            placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
             isRequired: false,
             inputType: .addressLine2,
             scope: cardFormScope,
@@ -296,7 +296,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultCityField() -> some View {
         CityInputField(
             label: CheckoutComponentsStrings.cityLabel,
-            placeholder: "New York",
+            placeholder: CheckoutComponentsStrings.cityPlaceholder,
             scope: cardFormScope,
             styling: styling
         )
@@ -306,7 +306,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultStateField() -> some View {
         StateInputField(
             label: CheckoutComponentsStrings.stateLabel,
-            placeholder: "NY",
+            placeholder: CheckoutComponentsStrings.statePlaceholder,
             scope: cardFormScope,
             styling: styling
         )
@@ -316,7 +316,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultPostalCodeField() -> some View {
         PostalCodeInputField(
             label: CheckoutComponentsStrings.postalCodeLabel,
-            placeholder: "10001",
+            placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
             scope: cardFormScope,
             styling: styling
         )
@@ -326,7 +326,7 @@ internal struct BillingAddressView: View, LogReporter {
     private func defaultEmailField() -> some View {
         EmailInputField(
             label: CheckoutComponentsStrings.emailLabel,
-            placeholder: "john.smith@example.com",
+            placeholder: CheckoutComponentsStrings.emailPlaceholder,
             scope: cardFormScope,
             styling: styling
         )
@@ -337,7 +337,7 @@ internal struct BillingAddressView: View, LogReporter {
         // Using NameInputField with phoneNumber type for phone number input
         NameInputField(
             label: CheckoutComponentsStrings.phoneNumberLabel,
-            placeholder: "+1 (555) 123-4567",
+            placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
             inputType: .phoneNumber,
             scope: cardFormScope,
             styling: styling
