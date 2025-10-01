@@ -103,8 +103,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     }
     
     @objc private func uikitIntegrationTapped() {
-        // UIKit Integration button tapped
-
         // Use existing checkoutComponentsUIKitButton logic
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
@@ -164,8 +162,6 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     }
     
     @objc private func swiftUIExamplesTapped() {
-        // SwiftUI Examples button tapped
-        
         // Present CheckoutComponentsExamplesView
         if #available(iOS 15.0, *) {
             // iOS 15+ available, creating examples view

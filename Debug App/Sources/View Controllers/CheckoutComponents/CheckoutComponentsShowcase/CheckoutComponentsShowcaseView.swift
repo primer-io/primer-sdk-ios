@@ -65,19 +65,16 @@ struct CheckoutComponentsShowcaseView: View {
     
     private func makeContent() -> some View {
         ScrollView {
-            Group {
-                switch selectedSection {
-                case .architecture:
-                    makeArchitectureDemo()
-                case .styling:
-                    makeStylingDemo()
-                case .layouts:
-                    makeLayoutsDemo()
-                case .interactive:
-                    makeInteractiveDemo()
-                }
+            switch selectedSection {
+            case .architecture:
+                makeArchitectureDemo()
+            case .styling:
+                makeStylingDemo()
+            case .layouts:
+                makeLayoutsDemo()
+            case .interactive:
+                makeInteractiveDemo()
             }
-            .padding()
         }
     }
 }

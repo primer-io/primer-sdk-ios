@@ -102,7 +102,7 @@ struct CheckoutExampleView: View {
 
         // Always use the configured client session from MerchantSessionAndSettingsViewController
         // This preserves the exact configuration from the main UI including currency, billing address, surcharge, etc.
-        guard let session = configuredClientSession else {
+        guard let configuredClientSession else {
             self.error = "No session configuration provided - please configure session in main settings"
             self.isLoading = false
             return
@@ -111,7 +111,7 @@ struct CheckoutExampleView: View {
         // Request client token using the new utility
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
-                body: session,
+                body: configuredClientSession,
                 apiVersion: apiVersion
             )
             self.isLoading = false

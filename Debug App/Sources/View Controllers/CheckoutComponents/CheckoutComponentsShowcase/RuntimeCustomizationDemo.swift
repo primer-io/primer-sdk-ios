@@ -328,11 +328,11 @@ private struct ConditionalCardFormView: View {
                             label: nil,
                             styling: PrimerFieldStyling(
                                 font: .system(.body, design: .monospaced),
-                                backgroundColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.08) : Color.gray.opacity(0.03),
-                                borderColor: detectedCardType != "Unknown" ? cardTypeColor.opacity(0.4) : Color.gray.opacity(0.3),
-                                focusedBorderColor: detectedCardType != "Unknown" ? cardTypeColor : .blue,
+                                backgroundColor: cardNumberBackgroundColor,
+                                borderColor: cardNumberBorderColor,
+                                focusedBorderColor: cardNumberFocusedBorderColor,
                                 cornerRadius: 12,
-                                borderWidth: detectedCardType != "Unknown" ? 2 : 1,
+                                borderWidth: cardNumberBorderWidth,
                                 padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
                             )
                         )
@@ -749,6 +749,22 @@ private struct ConditionalCardFormView: View {
         default:
             return .gray
         }
+    }
+
+    private var cardNumberBackgroundColor: Color {
+        detectedCardType != "Unknown" ? cardTypeColor.opacity(0.08) : Color.gray.opacity(0.03)
+    }
+
+    private var cardNumberBorderColor: Color {
+        detectedCardType != "Unknown" ? cardTypeColor.opacity(0.4) : Color.gray.opacity(0.3)
+    }
+
+    private var cardNumberFocusedBorderColor: Color {
+        detectedCardType != "Unknown" ? cardTypeColor : .blue
+    }
+
+    private var cardNumberBorderWidth: CGFloat {
+        detectedCardType != "Unknown" ? 2 : 1
     }
     
     private var cardholderValidationColor: Color {
