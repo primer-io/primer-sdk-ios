@@ -11,48 +11,36 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct SplashScreen: View {
     @Environment(\.designTokens) private var tokens
-    @State private var animateGradient = false
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    tokens?.primerColorTextPrimary ?? .blue,
-                    (tokens?.primerColorTextPrimary ?? .blue).opacity(0.7)
-                ]),
-                startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                endPoint: animateGradient ? .bottomTrailing : .topLeading
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: animateGradient)
+            // Clean white background to match Figma design
+            Color.white
+                .ignoresSafeArea()
 
-            // Logo or brand
-            VStack(spacing: 24) {
-                // Placeholder for logo
-                Circle()
-                    .fill(Color.white.opacity(0.9))
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        Text("P")
-                            .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .blue)
-                    )
-                    .scaleEffect(animateGradient ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateGradient)
+            // Content container
+            VStack(spacing: 16) {
+                // Loading spinner (56px to match Figma)
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(2.0)
+                    .frame(width: 56, height: 56)
 
-                Text(CheckoutComponentsStrings.primerBrandName)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
+                VStack(spacing: 4) {
+                    // Primary loading message
+                    Text(CheckoutComponentsStrings.loadingSecureCheckout)
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255))
+                        .multilineTextAlignment(.center)
 
-                Text(CheckoutComponentsStrings.secureCheckout)
-                    .font(.body)
-                    .foregroundColor(.white.opacity(0.8))
+                    // Secondary loading message
+                    Text(CheckoutComponentsStrings.loadingWontTakeLong)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor((tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255)).opacity(0.62))
+                        .multilineTextAlignment(.center)
+                }
             }
-        }
-        .onAppear {
-            animateGradient = true
+            .padding(.horizontal, 32)
         }
     }
 }

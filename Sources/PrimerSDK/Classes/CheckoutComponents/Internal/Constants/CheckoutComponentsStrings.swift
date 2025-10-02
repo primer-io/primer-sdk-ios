@@ -138,7 +138,7 @@ internal struct CheckoutComponentsStrings {
     static let expiryDateLabel = NSLocalizedString(
         "checkout-components-expiry-date-label",
         bundle: Bundle.primerResources,
-        value: "Expiry Date",
+        value: "Expiry (MM/YY)",
         comment: "Expiry date field label"
     )
 
@@ -152,7 +152,7 @@ internal struct CheckoutComponentsStrings {
     static let cardholderNameLabel = NSLocalizedString(
         "checkout-components-cardholder-name-label",
         bundle: Bundle.primerResources,
-        value: "Cardholder Name",
+        value: "Name on card",
         comment: "Cardholder name field label"
     )
 
@@ -421,7 +421,7 @@ internal struct CheckoutComponentsStrings {
     static let enterValidCardholderName = NSLocalizedString(
         "checkout-components-enter-valid-cardholder-name",
         bundle: Bundle.primerResources,
-        value: "Enter a valid cardholder name",
+        value: "Enter a valid name",
         comment: "Cardholder name validation error message"
     )
 
@@ -643,6 +643,20 @@ internal struct CheckoutComponentsStrings {
         comment: "Loading message for payment methods"
     )
 
+    static let loadingSecureCheckout = NSLocalizedString(
+        "checkout-components-loading-secure-checkout",
+        bundle: Bundle.primerResources,
+        value: "Loading your secure checkout",
+        comment: "Main loading message for secure checkout"
+    )
+
+    static let loadingWontTakeLong = NSLocalizedString(
+        "checkout-components-loading-wont-take-long",
+        bundle: Bundle.primerResources,
+        value: "This won't take long",
+        comment: "Secondary loading message indicating quick loading time"
+    )
+
     static let dismissingMessage = NSLocalizedString(
         "checkout-components-dismissing",
         bundle: Bundle.primerResources,
@@ -754,6 +768,13 @@ internal struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "This screen will close automatically in 3 seconds",
         comment: "Auto-dismiss message on success and error screens"
+    )
+
+    static let redirectConfirmationMessage = NSLocalizedString(
+        "checkout-components-redirect-confirmation",
+        bundle: Bundle.primerResources,
+        value: "You'll be redirected to the order confirmation page soon.",
+        comment: "Message shown on success screen about upcoming redirect"
     )
 
     // MARK: - Brand and Company

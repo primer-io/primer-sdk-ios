@@ -22,64 +22,34 @@ internal struct SuccessScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            // Success icon
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 48))
-                .foregroundColor(tokens?.primerColorGreen500 ?? .green)
+        ZStack {
+            // Clean white background to match Figma design
+            Color.white
+                .ignoresSafeArea()
 
-            // Success title
-            Text(CheckoutComponentsStrings.paymentSuccessful)
-                .font(tokens != nil ? PrimerFont.titleLarge(tokens: tokens!) : .title2)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-
-            // Payment details
+            // Content container matching Figma layout
             VStack(spacing: 8) {
-                if !result.paymentId.isEmpty {
-                    HStack {
-                        Text(CheckoutComponentsStrings.paymentId)
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        Spacer()
-                        Text(result.paymentId)
-                            .fontWeight(.medium)
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    }
-                }
+                // Success checkmark icon (56x56 to match Figma)
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 56))
+                    .foregroundColor(.green)
 
-                if !result.amount.isEmpty && result.amount != "N/A" {
-                    HStack {
-                        Text(CheckoutComponentsStrings.amount)
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        Spacer()
-                        Text(result.amount)
-                            .fontWeight(.medium)
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    }
-                }
+                VStack(spacing: 4) {
+                    // Primary success message
+                    Text(CheckoutComponentsStrings.paymentSuccessful)
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255))
+                        .multilineTextAlignment(.center)
 
-                if !result.method.isEmpty {
-                    HStack {
-                        Text(CheckoutComponentsStrings.paymentMethod)
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        Spacer()
-                        Text(result.method)
-                            .fontWeight(.medium)
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    }
+                    // Secondary redirect message
+                    Text(CheckoutComponentsStrings.redirectConfirmationMessage)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor((tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255)).opacity(0.62))
+                        .multilineTextAlignment(.center)
                 }
             }
             .padding(.horizontal, 32)
-            .font(tokens != nil ? PrimerFont.bodyMedium(tokens: tokens!) : .body)
-
-            // Auto-dismiss message
-            Text(CheckoutComponentsStrings.autoDismissMessage)
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .multilineTextAlignment(.center)
-                .padding(.top, 16)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(tokens?.primerColorBackground ?? Color(.systemBackground))
         .onAppear {
             startAutoDismissTimer()
         }

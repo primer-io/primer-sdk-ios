@@ -173,7 +173,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 if let customLoading = scope.loadingScreen {
                     return AnyView(customLoading())
                 } else {
-                    return AnyView(LoadingScreen())
+                    return AnyView(SplashScreen())
                 }
             } else {
                 // Skip loading screen, show empty view or proceed to next state
@@ -216,13 +216,13 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                         scope: scope.paymentMethodSelection
                     ))
                 case .loading:
-                    return AnyView(LoadingScreen())
+                    return AnyView(SplashScreen())
                 default:
-                    return AnyView(LoadingScreen())
+                    return AnyView(SplashScreen())
                 }
             } else {
                 // Fallback to loading if we can't determine the previous state
-                return AnyView(LoadingScreen())
+                return AnyView(SplashScreen())
             }
 
         case .success(let result):

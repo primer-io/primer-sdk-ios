@@ -188,7 +188,7 @@ internal struct InternalCheckout: View {
         VStack(spacing: 0) {
             switch initializationState {
             case .idle, .initializing:
-                SDKInitializationLoadingView()
+                SplashScreen()
             case .initialized:
                 if let checkoutScope = checkoutScope {
                     CheckoutScopeObserver(
@@ -198,7 +198,7 @@ internal struct InternalCheckout: View {
                         onCompletion: onCompletion
                     )
                 } else {
-                    SDKInitializationLoadingView()
+                    SplashScreen()
                 }
             case .failed(let error):
                 SDKInitializationErrorView(error: error) {

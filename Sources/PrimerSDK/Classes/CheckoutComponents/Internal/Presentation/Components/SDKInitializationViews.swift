@@ -9,22 +9,6 @@ import SwiftUI
 
 // MARK: - SDK Initialization UI Components
 
-/// Loading view shown during SDK initialization
-@available(iOS 15.0, *)
-internal struct SDKInitializationLoadingView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.5)
-
-            Text(CheckoutComponentsStrings.initializingPaymentSystem)
-                .font(.headline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 /// Error view shown when SDK initialization fails
 @available(iOS 15.0, *)
 internal struct SDKInitializationErrorView: View {
