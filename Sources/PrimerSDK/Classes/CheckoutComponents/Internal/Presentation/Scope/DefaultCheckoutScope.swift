@@ -476,15 +476,18 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public func onDismiss() {
         // Checkout dismissed
 
-        // Update both state and navigation state to dismissed
-        updateState(.dismissed)
-        updateNavigationState(.dismissed)
+        // Ensure state updates happen on main thread for SwiftUI observation
+        Task { @MainActor in
+            // Update both state and navigation state to dismissed
+            updateState(.dismissed)
+            updateNavigationState(.dismissed)
 
-        // Clean up any resources
-        _paymentMethodSelection = nil
-        currentPaymentMethodScope = nil
-        paymentMethodScopeCache.removeAll()
-        // Payment method screens now handled by PaymentMethodProtocol
+            // Clean up any resources
+            _paymentMethodSelection = nil
+            currentPaymentMethodScope = nil
+            paymentMethodScopeCache.removeAll()
+            // Payment method screens now handled by PaymentMethodProtocol
+        }
 
         // Navigate to dismiss the checkout
         navigator.dismiss()

@@ -37,7 +37,7 @@ internal struct CardFormScreen: View, LogReporter {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
                             .font(.body.weight(.medium))
-                        Text("Back")
+                        Text(CheckoutComponentsStrings.backButton)
                     }
                     .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                 })

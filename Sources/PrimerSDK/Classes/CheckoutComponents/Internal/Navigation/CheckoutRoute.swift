@@ -40,23 +40,6 @@ public enum PresentationContext {
             return true
         }
     }
-
-    /// How cancel should behave based on context
-    var cancelBehavior: CancelBehavior {
-        switch self {
-        case .direct:
-            return .dismiss
-        case .fromPaymentSelection:
-            return .navigateToPaymentSelection
-        }
-    }
-}
-
-// MARK: - Cancel Behavior
-@available(iOS 15.0, *)
-enum CancelBehavior {
-    case dismiss                      // Dismiss entirely
-    case navigateToPaymentSelection  // Navigate back to payment method selection
 }
 
 // MARK: - Navigation Behavior

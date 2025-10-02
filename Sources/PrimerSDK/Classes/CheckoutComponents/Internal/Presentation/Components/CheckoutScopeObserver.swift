@@ -16,7 +16,6 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
     private let onCompletion: (() -> Void)?
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
     // Design tokens state
