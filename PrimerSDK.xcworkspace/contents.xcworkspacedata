@@ -192,9 +192,6 @@
                         location = "group:DesignTokensManager.swift">
                      </FileRef>
                      <FileRef
-                        location = "group:PrimerModifier.swift">
-                     </FileRef>
-                     <FileRef
                         location = "group:DesignTokens.swift">
                      </FileRef>
                   </Group>

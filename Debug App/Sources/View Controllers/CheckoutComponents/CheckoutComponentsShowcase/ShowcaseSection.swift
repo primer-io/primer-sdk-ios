@@ -2,7 +2,7 @@
 //  ShowcaseSection.swift
 //  Debug App
 //
-//  Created by Claude on 26.6.25.
+//  Created on 26.6.25.
 //
 
 import SwiftUI
@@ -10,9 +10,9 @@ import SwiftUI
 /// Reusable showcase section wrapper
 @available(iOS 15.0, *)
 struct ShowcaseSection<Content: View>: View {
-    let title: String
-    let subtitle: String
-    let content: Content
+    private let title: String
+    private let subtitle: String
+    private let content: Content
     
     init(title: String, subtitle: String, @ViewBuilder content: () -> Content) {
         self.title = title

@@ -98,7 +98,7 @@ internal final class ValidationResultCache {
     }
 
     /// Retrieves cached validation result or performs validation
-    internal func cachedValidation(
+    func cachedValidation(
         input: String,
         type: String,
         context: String = "",
@@ -120,179 +120,21 @@ internal final class ValidationResultCache {
     }
 
     /// Clears validation cache (useful for testing or memory pressure)
-    internal func clearCache() {
+    func clearCache() {
         cache.removeAllObjects()
-    }
-
-    /// INTERNAL UTILITY: Provides cache performance metrics for monitoring
-    internal func getCacheMetrics() -> ValidationCacheMetrics {
-        return ValidationCacheMetrics(
-            totalHits: 0, // Would require counter implementation
-            totalMisses: 0, // Would require counter implementation
-            currentEntries: 0, // NSCache doesn't expose count
-            maxEntries: cache.countLimit,
-            hitRate: 0.0, // Would be calculated from hits/total requests
-            averageValidationTime: 0.0 // Would require timing measurements
-        )
-    }
-}
-
-/// INTERNAL HELPER: Metrics structure for validation cache performance
-internal struct ValidationCacheMetrics {
-    let totalHits: Int
-    let totalMisses: Int
-    let currentEntries: Int
-    let maxEntries: Int
-    let hitRate: Double
-    let averageValidationTime: TimeInterval
-
-    /// Human-readable performance summary
-    var performanceSummary: String {
-        let hitRatePercent = String(format: "%.1f", hitRate * 100)
-        let avgTimeMs = String(format: "%.2f", averageValidationTime * 1000)
-
-        return """
-        Validation Cache Performance:
-        - Hit Rate: \(hitRatePercent)% (\(totalHits) hits, \(totalMisses) misses)
-        - Cache Usage: \(currentEntries)/\(maxEntries) entries
-        - Average Validation Time: \(avgTimeMs)ms
-        """
     }
 }
 
 /// Default implementation of the ValidationService
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
-
+    
     private let rulesFactory: RulesFactory
-
+    
     // MARK: - Initialization
-
+    
     internal init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
-    }
-
-    // MARK: - Internal Quality Enhancement Methods
-
-    /// INTERNAL UTILITY: Validates service configuration and reports issues
-    internal func performServiceHealthCheck() -> ValidationServiceHealthReport {
-        var issues: [String] = []
-        var warnings: [String] = []
-
-        // Check if rules factory is properly configured
-        let testCardNumber = "4111111111111111"
-        let cardNumberRule = rulesFactory.createCardNumberRule(allowedCardNetworks: nil)
-        let testResult = cardNumberRule.validate(testCardNumber)
-
-        if !testResult.isValid {
-            issues.append("Card number rule is not working correctly - test validation failed")
-        }
-
-        // Check cache health
-        let cacheMetrics = ValidationResultCache.shared.getCacheMetrics()
-        if cacheMetrics.hitRate < 0.5 && cacheMetrics.totalHits > 100 {
-            warnings.append("Cache hit rate is below 50% - consider tuning cache strategy")
-        }
-
-        // Test all field types
-        let allFieldTypes: [PrimerInputElementType] = [
-            .cardNumber, .expiryDate, .cvv, .cardholderName,
-            .postalCode, .countryCode, .firstName, .lastName,
-            .addressLine1, .city, .state
-        ]
-
-        for fieldType in allFieldTypes {
-            let result = validateField(type: fieldType, value: nil)
-            if result.isValid && fieldType != .addressLine2 {
-                warnings.append("Field type \(fieldType.rawValue) allows nil values unexpectedly")
-            }
-        }
-
-        return ValidationServiceHealthReport(
-            isHealthy: issues.isEmpty,
-            issues: issues,
-            warnings: warnings,
-            cacheMetrics: cacheMetrics
-        )
-    }
-
-    /// INTERNAL HELPER: Performance benchmarking for validation operations
-    internal func benchmarkValidationPerformance() -> ValidationPerformanceBenchmark {
-        let iterations = 1000
-        var results: [String: TimeInterval] = [:]
-
-        // Benchmark card number validation
-        let cardNumbers = ["4111111111111111", "5555555555554444", "378282246310005"]
-        let cardStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            for cardNumber in cardNumbers {
-                _ = validateCardNumber(cardNumber)
-            }
-        }
-        let cardEndTime = CFAbsoluteTimeGetCurrent()
-        results["cardNumber"] = (cardEndTime - cardStartTime) / Double(iterations * cardNumbers.count)
-
-        // Benchmark CVV validation
-        let cvvStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            _ = validateCVV("123", cardNetwork: .visa)
-        }
-        let cvvEndTime = CFAbsoluteTimeGetCurrent()
-        results["cvv"] = (cvvEndTime - cvvStartTime) / Double(iterations)
-
-        // Benchmark expiry validation
-        let expiryStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            _ = validateExpiry(month: "12", year: "25")
-        }
-        let expiryEndTime = CFAbsoluteTimeGetCurrent()
-        results["expiry"] = (expiryEndTime - expiryStartTime) / Double(iterations)
-
-        return ValidationPerformanceBenchmark(
-            averageValidationTimes: results,
-            totalIterations: iterations
-        )
-    }
-}
-
-/// INTERNAL HELPER: Health report structure for validation service
-internal struct ValidationServiceHealthReport {
-    let isHealthy: Bool
-    let issues: [String]
-    let warnings: [String]
-    let cacheMetrics: ValidationCacheMetrics
-
-    var summary: String {
-        let status = isHealthy ? "✅ Healthy" : "❌ Issues Found"
-        let issuesList = issues.isEmpty ? "None" : issues.joined(separator: ", ")
-        let warningsList = warnings.isEmpty ? "None" : warnings.joined(separator: ", ")
-
-        return """
-        Validation Service Health Report:
-        Status: \(status)
-        Issues: \(issuesList)
-        Warnings: \(warningsList)
-
-        \(cacheMetrics.performanceSummary)
-        """
-    }
-}
-
-/// INTERNAL HELPER: Performance benchmark results
-internal struct ValidationPerformanceBenchmark {
-    let averageValidationTimes: [String: TimeInterval]
-    let totalIterations: Int
-
-    var summary: String {
-        let sortedTimes = averageValidationTimes.sorted { $0.value < $1.value }
-        let timingResults = sortedTimes.map { key, time in
-            "\(key): \(String(format: "%.4f", time * 1000))ms"
-        }.joined(separator: "\n")
-
-        return """
-        Validation Performance Benchmark (\(totalIterations) iterations):
-        \(timingResults)
-        """
     }
 }
 

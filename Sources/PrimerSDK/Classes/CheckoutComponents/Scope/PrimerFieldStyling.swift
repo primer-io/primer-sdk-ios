@@ -2,7 +2,7 @@
 //  PrimerFieldStyling.swift
 //  PrimerSDK
 //
-//  Created by Claude on 26.6.25.
+//  Created on 26.6.25.
 //
 
 import SwiftUI
@@ -14,47 +14,24 @@ public struct PrimerFieldStyling {
 
     // MARK: - Typography
 
-    /// Custom font for the input text
     public let font: Font?
-
-    /// Custom font for the field label
     public let labelFont: Font?
 
     // MARK: - Colors
 
-    /// Text color for the input text
     public let textColor: Color?
-
-    /// Text color for the field label
     public let labelColor: Color?
-
-    /// Background color for the input field
     public let backgroundColor: Color?
-
-    /// Border color for the input field
     public let borderColor: Color?
-
-    /// Border color when the field is focused
     public let focusedBorderColor: Color?
-
-    /// Border color when the field has an error
     public let errorBorderColor: Color?
-
-    /// Placeholder text color
     public let placeholderColor: Color?
 
     // MARK: - Layout
 
-    /// Corner radius for the input field
     public let cornerRadius: CGFloat?
-
-    /// Border width for the input field
     public let borderWidth: CGFloat?
-
-    /// Padding inside the input field
     public let padding: EdgeInsets?
-
-    /// Height of the input field
     public let fieldHeight: CGFloat?
 
     // MARK: - Initialization

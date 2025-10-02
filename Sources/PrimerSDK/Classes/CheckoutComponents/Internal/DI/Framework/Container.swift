@@ -34,7 +34,7 @@ final class ThreadSafeContainer<T>: @unchecked Sendable {
 }
 
 /// Main implementation of the dependency injection container
-public actor Container: ContainerProtocol, Sendable, LogReporter {
+public actor Container: ContainerProtocol, LogReporter {
     /// Internal factory structure
     struct FactoryRegistration {
         let policy: ContainerRetainPolicy

@@ -14,10 +14,6 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
 
     // MARK: - Properties
 
-    @Published private var internalState = PrimerSelectCountryState()
-    private weak var cardFormScope: DefaultCardFormScope?
-    private weak var checkoutScope: DefaultCheckoutScope?
-
     /// State stream for external observation
     public var state: AsyncStream<PrimerSelectCountryState> {
         AsyncStream { continuation in
@@ -39,6 +35,12 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     public var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
     public var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)?
     public var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)?
+
+    // MARK: - Private Properties
+
+    @Published private var internalState = PrimerSelectCountryState()
+    private weak var cardFormScope: DefaultCardFormScope?
+    private weak var checkoutScope: DefaultCheckoutScope?
 
     // MARK: - Initialization
 

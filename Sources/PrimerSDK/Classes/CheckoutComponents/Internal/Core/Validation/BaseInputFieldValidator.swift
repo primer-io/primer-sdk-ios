@@ -60,11 +60,11 @@ class BaseInputFieldValidator<T> {
 
     /// Lighter validation during typing
     func validateWhileTyping(_ input: T) -> ValidationResult {
-        return .valid // Default implementation
+        return .valid
     }
 
     /// Complete validation when field loses focus
     func validateOnBlur(_ input: T) -> ValidationResult {
-        return .valid // Default implementation
+        return .valid
     }
 }

@@ -42,23 +42,24 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
 @available(iOS 15.0, *)
 public extension CheckoutComponentsDelegate {
-    /// Default implementation - override if you need 3DS challenge presentation callbacks
+    /// Override if you need 3DS challenge presentation callbacks
     func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-        // Default empty implementation
     }
 
-    /// Default implementation - override if you need 3DS challenge dismissal callbacks
+    /// Override if you need 3DS challenge dismissal callbacks
     func checkoutComponentsDidDismiss3DSChallenge() {
-        // Default empty implementation
     }
 
-    /// Default implementation - override if you need 3DS challenge completion callbacks
+    /// Override if you need 3DS challenge completion callbacks
     func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-        // Default empty implementation
     }
 }
 
-/// The main entry point for CheckoutComponents, providing a familiar API similar to the main Primer class
+/// UIKit entry point for CheckoutComponents SDK
+///
+/// This class provides UIKit-friendly APIs for presenting the CheckoutComponents UI from view controllers.
+/// It acts as a bridge between UIKit apps and the underlying SwiftUI implementation (PrimerCheckout).
+/// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
 @objc public final class CheckoutComponentsPrimer: NSObject {
 
@@ -69,7 +70,8 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Properties
 
-    /// The currently active checkout view controller
+    /// The currently active UIViewController hosting the SwiftUI checkout view
+    /// This will always be a PrimerSwiftUIBridgeViewController that wraps the PrimerCheckout SwiftUI view
     private weak var activeCheckoutController: UIViewController?
 
     /// Flag to prevent multiple simultaneous presentations
@@ -133,23 +135,6 @@ public extension CheckoutComponentsDelegate {
         )
     }
 
-    /// Present the card form directly without payment method selection
-    /// - Parameters:
-    ///   - clientToken: The client token for the session
-    ///   - viewController: The view controller to present from
-    ///   - completion: Optional completion handler
-    @objc public static func presentCardForm(
-        with clientToken: String,
-        from viewController: UIViewController,
-        completion: (() -> Void)? = nil
-    ) {
-        shared.presentCardForm(
-            with: clientToken,
-            from: viewController,
-            completion: completion
-        )
-    }
-
     /// Dismiss the CheckoutComponents UI
     /// - Parameters:
     ///   - animated: Whether to animate the dismissal
@@ -164,13 +149,13 @@ public extension CheckoutComponentsDelegate {
     // MARK: - Instance Methods
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
-    internal func dismissCheckout() {
+    func dismissCheckout() {
         // Dismiss CheckoutComponents directly
         dismissDirectly()
     }
 
     /// Internal method for handling payment success
-    internal func handlePaymentSuccess(_ result: PaymentResult) {
+    func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
         // Store the payment result for delegate callback
@@ -190,7 +175,7 @@ public extension CheckoutComponentsDelegate {
     }
 
     /// Internal method for handling payment failure
-    internal func handlePaymentFailure(_ error: PrimerError) {
+    func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
 
         // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
@@ -207,78 +192,13 @@ public extension CheckoutComponentsDelegate {
     }
 
     /// Internal method for handling checkout dismissal
-    internal func handleCheckoutDismiss() {
+    func handleCheckoutDismiss() {
         delegate?.checkoutComponentsDidDismiss()
     }
 
     /// Internal method for storing payment result (called by DefaultCheckoutScope)
-    internal func storePaymentResult(_ result: PaymentResult) {
+    func storePaymentResult(_ result: PaymentResult) {
         lastPaymentResult = result
-    }
-
-    private func presentCardForm(
-        with clientToken: String,
-        from viewController: UIViewController,
-        completion: (() -> Void)?
-    ) {
-        // Presenting card form
-
-        // Check if already presenting
-        guard !isPresentingCheckout else {
-            logger.debug(message: "Already presenting checkout")
-            completion?()
-            return
-        }
-
-        isPresentingCheckout = true
-
-        Task { @MainActor in
-            // Create the bridge controller for direct card form presentation
-            let bridgeController = PrimerSwiftUIBridgeViewController.createForCardForm(
-                clientToken: clientToken,
-                settings: PrimerSettings.current,
-                diContainer: DIContainer.shared,
-                navigator: CheckoutNavigator(),
-                onCompletion: { [weak self] in
-                    // Card form completion
-                    if let paymentResult = self?.lastPaymentResult {
-                        self?.handlePaymentSuccess(paymentResult)
-                    } else {
-                        self?.dismissDirectly()
-                        self?.handleCheckoutDismiss()
-                    }
-                }
-            )
-
-            // Store reference to bridge controller
-            activeCheckoutController = bridgeController
-
-            // Present modally
-            bridgeController.modalPresentationStyle = .pageSheet
-            if let sheet = bridgeController.sheetPresentationController {
-                if #available(iOS 16.0, *) {
-                    let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
-                        guard let bridgeController = bridgeController else { return context.maximumDetentValue }
-                        let contentHeight = bridgeController.preferredContentSize.height
-                        let maxHeight = context.maximumDetentValue
-                        return min(max(contentHeight, 200), maxHeight * 0.9)
-                    }
-                    sheet.detents = [customDetent, .large()]
-                    sheet.selectedDetentIdentifier = customDetent.identifier
-                } else {
-                    sheet.detents = [.medium(), .large()]
-                }
-                sheet.prefersGrabberVisible = true
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                sheet.largestUndimmedDetentIdentifier = .medium
-            }
-
-            viewController.present(bridgeController, animated: true)
-            isPresentingCheckout = false
-
-            // Card form presented
-            completion?()
-        }
     }
 
     private func presentCheckout(
@@ -430,7 +350,7 @@ public extension CheckoutComponentsDelegate {
     // MARK: - Direct Dismissal
 
     /// Internal method for dismissing checkout directly
-    internal func dismissDirectly() {
+    func dismissDirectly() {
         // Dismissing checkout
 
         // Dismiss the modal directly

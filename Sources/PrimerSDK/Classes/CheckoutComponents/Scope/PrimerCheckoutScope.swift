@@ -19,22 +19,22 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     /// Container view that wraps all checkout content.
     /// Default implementation provides standard checkout container.
-    var container: ((_ content: @escaping () -> AnyView) -> AnyView)? { get set }
+    var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
 
     /// Splash screen shown during initialization.
     /// Default implementation shows Primer branding.
-    var splashScreen: (() -> AnyView)? { get set }
+    var splashScreen: (() -> any View)? { get set }
 
     /// Loading screen shown during async operations.
     /// Default implementation shows activity indicator.
-    var loadingScreen: (() -> AnyView)? { get set }
+    var loadingScreen: (() -> any View)? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
 
     /// Error screen shown when an error occurs.
     /// Default implementation shows error icon and message.
-    var errorScreen: ((_ message: String) -> AnyView)? { get set }
+    var errorScreen: ((_ message: String) -> any View)? { get set }
 
     // MARK: - Nested Scopes
 

@@ -575,7 +575,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                     .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
             } catch {
                 // Log error but don't block the flow since this is a fire-and-forget operation
-                print("Failed to select payment method: \(error)")
+                logger.error(message: "Failed to select payment method: \(error)")
             }
         }
     }
@@ -586,7 +586,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Determine card network (following Drop-in logic exactly)
         var network = selectedNetwork?.rawValue.uppercased()
-        if network == nil || network == "UNKNOWN" {
+        if [nil, "UNKNOWN"].contains(network) {
             network = "OTHER"
         }
 

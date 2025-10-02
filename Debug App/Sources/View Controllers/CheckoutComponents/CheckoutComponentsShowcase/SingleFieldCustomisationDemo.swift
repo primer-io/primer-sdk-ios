@@ -2,7 +2,7 @@
 //  SingleFieldCustomisationDemo.swift
 //  Debug App
 //
-//  Created by Claude on 26.6.25.
+//  Created on 26.6.25.
 //
 
 import SwiftUI
@@ -15,14 +15,20 @@ import PrimerSDK
 /// This is the simplest form of partial customization - changing just one element.
 @available(iOS 15.0, *)
 struct SingleFieldCustomisationDemo: View {
-    let settings: PrimerSettings
-    let apiVersion: PrimerApiVersion
-    let clientSession: ClientSessionRequestBody?
+    private let settings: PrimerSettings
+    private let apiVersion: PrimerApiVersion
+    private let clientSession: ClientSessionRequestBody?
     
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
+    
+    init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody?) {
+        self.settings = settings
+        self.apiVersion = apiVersion
+        self.clientSession = clientSession
+    }
     
     var body: some View {
         VStack {
@@ -30,9 +36,9 @@ struct SingleFieldCustomisationDemo: View {
                 dismissedStateView
             } else if isLoading {
                 loadingStateView
-            } else if let error = error {
+            } else if let error {
                 errorStateView(error)
-            } else if let clientToken = clientToken {
+            } else if let clientToken {
                 checkoutView(clientToken: clientToken)
             }
         }
@@ -177,29 +183,20 @@ struct SingleFieldCustomisationDemo: View {
     private func createSession() async {
         isLoading = true
         error = nil
-        
+
+        // Create session using the main controller's configuration
+        let sessionBody = createSessionBody()
+
+        // Request client token using the new utility
         do {
-            // Create session using the main controller's configuration
-            let sessionBody = createSessionBody()
-            
-            // Request client token using the session configuration
-            await withCheckedContinuation { continuation in
-                Networking.requestClientSession(requestBody: sessionBody, apiVersion: apiVersion) { clientToken, error in
-                    Task { @MainActor in
-                        if let error = error {
-                            self.error = error.localizedDescription
-                            self.isLoading = false
-                        } else if let clientToken = clientToken {
-                            self.clientToken = clientToken
-                            self.isLoading = false
-                        } else {
-                            self.error = "Unknown error occurred"
-                            self.isLoading = false
-                        }
-                        continuation.resume()
-                    }
-                }
-            }
+            self.clientToken = try await NetworkingUtils.requestClientSession(
+                body: sessionBody,
+                apiVersion: apiVersion
+            )
+            self.isLoading = false
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
         }
     }
     

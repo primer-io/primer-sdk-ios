@@ -2,7 +2,7 @@
 //  CheckoutComponentsSettingsService.swift
 //  PrimerSDK - CheckoutComponents
 //
-//  Created by Claude on 25.7.25.
+//  Created on 25.7.25.
 //
 
 import Foundation

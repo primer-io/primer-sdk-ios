@@ -88,7 +88,7 @@ internal struct CardFormScreen: View, LogReporter {
     private var dynamicFieldsSection: some View {
         // Check for complete screen override first
         if let customScreen = scope.screen {
-            customScreen(scope)
+            AnyView(customScreen(scope))
         } else {
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
                 // Render card fields dynamically based on configuration
@@ -108,7 +108,7 @@ internal struct CardFormScreen: View, LogReporter {
     private var cardFieldsSection: some View {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
-            customSection()
+            AnyView(customSection())
                 .padding(.horizontal)
         } else {
             VStack(spacing: FigmaDesignConstants.sectionSpacing) {
@@ -155,11 +155,11 @@ internal struct CardFormScreen: View, LogReporter {
     private var cobadgedCardsSection: some View {
         if cardFormState.availableNetworks.count > 1 {
             if let customCobadgedCardsView = scope.cobadgedCardsView {
-                customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
+                AnyView(customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
                     Task { @MainActor in
                         scope.updateSelectedCardNetwork(network)
                     }
-                }
+                })
                 .padding(.horizontal)
             } else {
                 defaultCobadgedCardsView
@@ -195,7 +195,7 @@ internal struct CardFormScreen: View, LogReporter {
         if !formConfiguration.billingFields.isEmpty {
             // Check for section-level override first
             if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
-                customSection()
+                AnyView(customSection())
                     .padding(.horizontal)
                     .id(refreshTrigger)
             } else {
@@ -224,13 +224,13 @@ internal struct CardFormScreen: View, LogReporter {
     private var submitButtonSection: some View {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
-            customSection()
+            AnyView(customSection())
                 .padding(.horizontal)
                 .padding(.bottom)
         } else {
             Group {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
-                    customButton(submitButtonText)
+                    AnyView(customButton(submitButtonText))
                         .onTapGesture {
                             if cardFormState.isValid && !cardFormState.isLoading {
                                 submitAction()
@@ -368,7 +368,7 @@ internal struct CardFormScreen: View, LogReporter {
         switch fieldType {
         case .cardNumber:
             if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 CardNumberInputField(
                     label: fieldLabel ?? "Card Number",
@@ -381,7 +381,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .expiryDate:
             if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 ExpiryDateInputField(
                     label: fieldLabel ?? "",
@@ -393,7 +393,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .cvv:
             if let customField = (scope as? DefaultCardFormScope)?.cvvField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 CVVInputField(
                     label: fieldLabel ?? "",
@@ -406,7 +406,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .cardholderName:
             if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 CardholderNameInputField(
                     label: fieldLabel ?? "",
@@ -418,7 +418,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .postalCode:
             if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 PostalCodeInputField(
                     label: fieldLabel ?? "",
@@ -430,7 +430,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .countryCode:
             if let customField = (scope as? DefaultCardFormScope)?.countryField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 CountryInputField(
                     label: fieldLabel ?? "",
@@ -442,7 +442,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .city:
             if let customField = (scope as? DefaultCardFormScope)?.cityField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 CityInputField(
                     label: fieldLabel ?? "",
@@ -454,7 +454,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .state:
             if let customField = (scope as? DefaultCardFormScope)?.stateField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 StateInputField(
                     label: fieldLabel ?? "",
@@ -466,7 +466,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .addressLine1:
             if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 AddressLineInputField(
                     label: fieldLabel ?? "",
@@ -480,7 +480,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .addressLine2:
             if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 AddressLineInputField(
                     label: fieldLabel ?? "",
@@ -494,7 +494,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .phoneNumber:
             if let customField = (scope as? DefaultCardFormScope)?.phoneNumberField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
@@ -507,7 +507,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .firstName:
             if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
@@ -520,7 +520,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .lastName:
             if let customField = (scope as? DefaultCardFormScope)?.lastNameField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
@@ -533,7 +533,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .email:
             if let customField = (scope as? DefaultCardFormScope)?.emailField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 EmailInputField(
                     label: fieldLabel ?? "",
@@ -545,7 +545,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .retailer:
             if let customField = (scope as? DefaultCardFormScope)?.retailOutletField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 Text("Retail outlet selection not yet implemented")
                     .font(.caption)
@@ -555,7 +555,7 @@ internal struct CardFormScreen: View, LogReporter {
 
         case .otp:
             if let customField = (scope as? DefaultCardFormScope)?.otpCodeField {
-                customField(fieldLabel, defaultStyling)
+                AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 OTPCodeInputField(
                     label: fieldLabel ?? "",

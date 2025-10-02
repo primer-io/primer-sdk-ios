@@ -105,7 +105,7 @@ internal struct BillingAddressView: View, LogReporter {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
                         if let customField = (cardFormScope as? DefaultCardFormScope)?.firstNameField {
-                            customField(CheckoutComponentsStrings.firstNameLabel, styling)
+                            AnyView(customField(CheckoutComponentsStrings.firstNameLabel, styling))
                         } else {
                             defaultFirstNameField()
                         }
@@ -113,7 +113,7 @@ internal struct BillingAddressView: View, LogReporter {
 
                     if configuration.showLastName {
                         if let customField = (cardFormScope as? DefaultCardFormScope)?.lastNameField {
-                            customField(CheckoutComponentsStrings.lastNameLabel, styling)
+                            AnyView(customField(CheckoutComponentsStrings.lastNameLabel, styling))
                         } else {
                             defaultLastNameField()
                         }
@@ -124,7 +124,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Country - Show first to match Drop-in layout
             if configuration.showCountry {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.countryField {
-                    customField(CheckoutComponentsStrings.countryLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.countryLabel, styling))
                 } else {
                     defaultCountryField()
                 }
@@ -133,7 +133,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Address Line 1
             if configuration.showAddressLine1 {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine1Field {
-                    customField(CheckoutComponentsStrings.addressLine1Label, styling)
+                    AnyView(customField(CheckoutComponentsStrings.addressLine1Label, styling))
                 } else {
                     defaultAddressLine1Field()
                 }
@@ -142,7 +142,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.postalCodeField {
-                    customField(CheckoutComponentsStrings.postalCodeLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.postalCodeLabel, styling))
                 } else {
                     defaultPostalCodeField()
                 }
@@ -151,7 +151,7 @@ internal struct BillingAddressView: View, LogReporter {
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.stateField {
-                    customField(CheckoutComponentsStrings.stateLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.stateLabel, styling))
                 } else {
                     defaultStateField()
                 }
@@ -160,7 +160,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Address Line 2 (Optional)
             if configuration.showAddressLine2 {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine2Field {
-                    customField(CheckoutComponentsStrings.addressLine2Label, styling)
+                    AnyView(customField(CheckoutComponentsStrings.addressLine2Label, styling))
                 } else {
                     defaultAddressLine2Field()
                 }
@@ -169,7 +169,7 @@ internal struct BillingAddressView: View, LogReporter {
             // City - After address fields
             if configuration.showCity {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.cityField {
-                    customField(CheckoutComponentsStrings.cityLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.cityLabel, styling))
                 } else {
                     defaultCityField()
                 }
@@ -178,7 +178,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Email - Near the end
             if configuration.showEmail {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.emailField {
-                    customField(CheckoutComponentsStrings.emailLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.emailLabel, styling))
                 } else {
                     defaultEmailField()
                 }
@@ -187,7 +187,7 @@ internal struct BillingAddressView: View, LogReporter {
             // Phone Number - Last field
             if configuration.showPhoneNumber {
                 if let customField = (cardFormScope as? DefaultCardFormScope)?.phoneNumberField {
-                    customField(CheckoutComponentsStrings.phoneNumberLabel, styling)
+                    AnyView(customField(CheckoutComponentsStrings.phoneNumberLabel, styling))
                 } else {
                     defaultPhoneNumberField()
                 }

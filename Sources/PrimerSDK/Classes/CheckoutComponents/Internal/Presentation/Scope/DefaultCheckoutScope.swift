@@ -50,7 +50,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     @Published private var internalState = PrimerCheckoutState.initializing
 
     /// The current navigation state
-    @Published internal var navigationState = NavigationState.loading
+    @Published var navigationState = NavigationState.loading
 
     /// State stream for external observation
     public var state: AsyncStream<PrimerCheckoutState> {
@@ -70,11 +70,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     // MARK: - UI Customization Properties
 
-    public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
-    public var splashScreen: (() -> AnyView)?
-    public var loadingScreen: (() -> AnyView)?
+    public var container: ((_ content: @escaping () -> AnyView) -> any View)?
+    public var splashScreen: (() -> any View)?
+    public var loadingScreen: (() -> any View)?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
-    public var errorScreen: ((_ message: String) -> AnyView)?
+    public var errorScreen: ((_ message: String) -> any View)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
 
     // Removed: paymentMethodScreens - now using PaymentMethodProtocol.content()
@@ -107,7 +107,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Internal Access
 
     /// Provides access to the navigator for child scopes
-    internal var checkoutNavigator: CheckoutNavigator {
+    var checkoutNavigator: CheckoutNavigator {
         navigator
     }
 
@@ -115,39 +115,39 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     private let clientToken: String
     private let settingsService: CheckoutComponentsSettingsServiceProtocol
-    internal var availablePaymentMethods: [InternalPaymentMethod] = []
+    var availablePaymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - UI Settings Access (for settings-based screen control)
 
     /// Whether the initialization loading screen should be shown
-    internal var isInitScreenEnabled: Bool {
+    var isInitScreenEnabled: Bool {
         settingsService.isInitScreenEnabled
     }
 
     /// Whether the success screen should be shown after successful payment
-    internal var isSuccessScreenEnabled: Bool {
+    var isSuccessScreenEnabled: Bool {
         settingsService.isSuccessScreenEnabled
     }
 
     /// Whether the error screen should be shown after failed payment
-    internal var isErrorScreenEnabled: Bool {
+    var isErrorScreenEnabled: Bool {
         settingsService.isErrorScreenEnabled
     }
 
     /// Available dismissal mechanisms (gestures, close button)
-    internal var dismissalMechanism: [DismissalMechanism] {
+    var dismissalMechanism: [DismissalMechanism] {
         settingsService.dismissalMechanism
     }
 
     // MARK: - Debug Settings Access (critical for 3DS security)
 
     /// Whether 3DS sanity checks are enabled (CRITICAL for security in production)
-    internal var is3DSSanityCheckEnabled: Bool {
+    var is3DSSanityCheckEnabled: Bool {
         settingsService.is3DSSanityCheckEnabled
     }
 
     /// The presentation context for navigation behavior
-    internal let presentationContext: PresentationContext
+    let presentationContext: PresentationContext
 
     // MARK: - Initialization
 
@@ -283,7 +283,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         // State update completed
     }
 
-    internal func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
+    func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
         // Navigation state updating
         navigationState = newState
 
@@ -495,7 +495,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     // MARK: - Internal Methods
 
-    internal func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
+    func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
         // Payment method selected
         // Available methods count logged
         // Checkout context logged
@@ -508,7 +508,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Dependency injection container not available",
                     recoverSuggestion: "Ensure DI container is properly initialized",
-                )))
+                    )))
                 return
             }
 
@@ -549,7 +549,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         }
     }
 
-    internal func handlePaymentSuccess(_ result: PaymentResult) {
+    func handlePaymentSuccess(_ result: PaymentResult) {
         // Payment successful
 
         // Store the payment result in CheckoutComponentsPrimer for later retrieval in completion callback
@@ -567,7 +567,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         updateNavigationState(.success(checkoutResult))
     }
 
-    internal func handlePaymentError(_ error: PrimerError) {
+    func handlePaymentError(_ error: PrimerError) {
         // Payment error
 
         // Update state and navigate to error screen
@@ -576,7 +576,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     /// Handle auto-dismiss from success or error screens
-    internal func handleAutoDismiss() {
+    func handleAutoDismiss() {
         // Auto-dismiss triggered, completing checkout
         // Current state before auto-dismiss
         // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// The main entry point for CheckoutComponents, providing a SwiftUI view for payment checkout.
+/// Pure SwiftUI implementation for CheckoutComponents SDK.
 ///
 /// Example usage:
 /// ```swift
@@ -25,7 +25,7 @@ import SwiftUI
 ///     scope: { checkoutScope in
 ///         // Customize components using type-safe API
 ///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
-///             cardFormScope.cardNumberInput = { _ in
+///             cardFormScope.cardNumberField = { label, styling in
 ///                 CustomCardNumberField()
 ///             }
 ///         }
@@ -51,11 +51,11 @@ public struct PrimerCheckout: View {
     /// Optional completion callback for dismissal handling
     private let onCompletion: (() -> Void)?
 
-    /// Navigator (internal use only)
-    internal let navigator: CheckoutNavigator
+    /// Navigator for coordinating navigation
+    @StateObject private var navigator: CheckoutNavigator
 
-    /// Presentation context determining navigation behavior (internal use only)
-    internal let presentationContext: PresentationContext
+    /// Presentation context determining navigation behavior
+    private let presentationContext: PresentationContext
 
     /// Creates a new PrimerCheckout view.
     /// - Parameters:
@@ -74,8 +74,8 @@ public struct PrimerCheckout: View {
         self.scope = scope
         self.customContent = nil
         self.onCompletion = onCompletion
-        self.navigator = CheckoutNavigator()
-        self.presentationContext = .fromPaymentSelection // Default context
+        self._navigator = StateObject(wrappedValue: CheckoutNavigator())
+        self.presentationContext = .fromPaymentSelection
     }
 
     /// Internal initializer with presentation context
@@ -92,7 +92,7 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = nil
         self.onCompletion = onCompletion
-        self.navigator = navigator
+        self._navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
     }
 
@@ -111,7 +111,7 @@ public struct PrimerCheckout: View {
         self.scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion
-        self.navigator = navigator
+        self._navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
     }
 
@@ -131,23 +131,30 @@ public struct PrimerCheckout: View {
 
 // MARK: - Internal Implementation
 
-/// Internal checkout implementation that manages the full checkout flow.
+/// Internal checkout implementation that coordinates SDK initialization and UI presentation.
 @available(iOS 15.0, *)
 @MainActor
 internal struct InternalCheckout: View {
-    let clientToken: String
-    let settings: PrimerSettings
-    let diContainer: DIContainer
-    let navigator: CheckoutNavigator
-    let scope: ((PrimerCheckoutScope) -> Void)?
-    let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    let presentationContext: PresentationContext
-    let onCompletion: (() -> Void)?
+    private let clientToken: String
+    private let settings: PrimerSettings
+    private let diContainer: DIContainer
+    private let navigator: CheckoutNavigator
+    private let scope: ((PrimerCheckoutScope) -> Void)?
+    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    private let presentationContext: PresentationContext
+    private let onCompletion: (() -> Void)?
 
     @State private var checkoutScope: DefaultCheckoutScope?
-    @State private var sdkInitialized = false
-    @State private var initializationError: PrimerError?
-    @State private var isInitializing = false
+    @State private var initializationState: InitializationState = .idle
+
+    private let sdkInitializer: CheckoutSDKInitializer
+
+    enum InitializationState {
+        case idle
+        case initializing
+        case initialized
+        case failed(PrimerError)
+    }
 
     init(
         clientToken: String,
@@ -168,107 +175,58 @@ internal struct InternalCheckout: View {
         self.presentationContext = presentationContext
         self.onCompletion = onCompletion
 
-        // Don't create checkout scope until SDK is initialized
-        self._checkoutScope = State(initialValue: nil)
+        self.sdkInitializer = CheckoutSDKInitializer(
+            clientToken: clientToken,
+            settings: settings,
+            diContainer: diContainer,
+            navigator: navigator,
+            presentationContext: presentationContext
+        )
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Show initialization state first
-            if isInitializing {
+            switch initializationState {
+            case .idle, .initializing:
                 SDKInitializationLoadingView()
-            } else if let error = initializationError {
+            case .initialized:
+                if let checkoutScope = checkoutScope {
+                    CheckoutScopeObserver(
+                        scope: checkoutScope,
+                        customContent: customContent,
+                        scopeCustomization: scope,
+                        onCompletion: onCompletion
+                    )
+                } else {
+                    SDKInitializationLoadingView()
+                }
+            case .failed(let error):
                 SDKInitializationErrorView(error: error) {
                     Task {
                         await initializeSDK()
                     }
                 }
-            } else if sdkInitialized, let checkoutScope = checkoutScope {
-                // Only show the checkout UI when SDK is fully initialized and scope is created
-                CheckoutScopeObserver(scope: checkoutScope, customContent: customContent, scopeCustomization: scope, onCompletion: onCompletion)
-            } else {
-                // This shouldn't happen, but show loading as fallback
-                SDKInitializationLoadingView()
             }
         }
         .task {
-            // Initialize SDK first, before anything else
             await initializeSDK()
         }
     }
 
-    // MARK: - SDK Initialization
+    // MARK: - Private Methods
 
-    /// Initialize the SDK using the same pattern as CheckoutComponentsPrimer
     private func initializeSDK() async {
-        guard !isInitializing && !sdkInitialized else { return }
+        guard case .idle = initializationState else { return }
 
-        isInitializing = true
-        initializationError = nil
+        initializationState = .initializing
 
         do {
-            try await performSDKInitialization()
-            await finalizeSDKInitialization()
+            let result = try await sdkInitializer.initialize()
+            checkoutScope = result.checkoutScope
+            initializationState = .initialized
         } catch {
-            handleInitializationError(error)
-        }
-    }
-
-    private func performSDKInitialization() async throws {
-        // Follow the exact same pattern as CheckoutComponentsPrimer.swift:267-317
-        setupSDKIntegration()
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-        try await initializeAPIConfiguration()
-
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-    }
-
-    private func setupSDKIntegration() {
-        PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
-        PrimerInternal.shared.intent = .checkout
-        PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-    }
-
-    private func initializeAPIConfiguration() async throws {
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-        try await apiConfigurationModule.setupSession(
-            forClientToken: clientToken,
-            requestDisplayMetadata: true,
-            requestClientTokenValidation: false,
-            requestVaultedPaymentMethods: false
-        )
-    }
-
-    private func finalizeSDKInitialization() async {
-        // Create settings service
-        let settingsService = CheckoutComponentsSettingsService(settings: settings)
-
-        let defaultScope = DefaultCheckoutScope(
-            clientToken: clientToken,
-            settingsService: settingsService,
-            diContainer: diContainer,
-            navigator: navigator,
-            presentationContext: presentationContext
-        )
-
-        checkoutScope = defaultScope
-        sdkInitialized = true
-        isInitializing = false
-
-        if presentationContext == .direct {
-            defaultScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
-        }
-    }
-
-    private func handleInitializationError(_ error: Error) {
-        isInitializing = false
-
-        if let primerError = error as? PrimerError {
-            initializationError = primerError
-        } else {
-            initializationError = PrimerError.underlyingErrors(errors: [error])
+            let primerError = error as? PrimerError ?? PrimerError.underlyingErrors(errors: [error])
+            initializationState = .failed(primerError)
         }
     }
 }

@@ -25,7 +25,6 @@
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
-		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
 		A1DD4D4B2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4A2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift */; };
 		A1DD4D5A2E3A859F00877A5D /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4C2E3A859F00877A5D /* ShowcaseDemo.swift */; };
 		A1DD4D5B2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4D2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift */; };
@@ -41,6 +40,8 @@
 		A1DD4D652E3A859F00877A5D /* ShowcaseSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D572E3A859F00877A5D /* ShowcaseSection.swift */; };
 		A1DD4D662E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */; };
 		A1DD4D672E3A859F00877A5D /* MixedComponentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */; };
+		A7D6F18D2E840EEC00A380F1 /* NetworkingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D6F18C2E840EEC00A380F1 /* NetworkingUtils.swift */; };
+		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
@@ -164,6 +165,7 @@
 		A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CheckoutComponentsShowcaseView.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/CheckoutComponentsShowcaseView.swift"; sourceTree = "<group>"; };
 		A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MixedComponentsDemo.swift; path = "Sources/View Controllers/CheckoutComponents/CheckoutComponentsShowcase/MixedComponentsDemo.swift"; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
+		A7D6F18C2E840EEC00A380F1 /* NetworkingUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NetworkingUtils.swift; path = "Sources/View Controllers/CheckoutComponents/Utils/NetworkingUtils.swift"; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				A7D6F18C2E840EEC00A380F1 /* NetworkingUtils.swift */,
 				A1DD4D502E3A859F00877A5D /* CheckoutComponentsExamplesView.swift */,
 				A1DD4D582E3A859F00877A5D /* CheckoutComponentsShowcaseView.swift */,
 				A1DD4D4E2E3A859F00877A5D /* CheckoutExampleView.swift */,
@@ -542,6 +545,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7D6F18D2E840EEC00A380F1 /* NetworkingUtils.swift in Sources */,
 				A1DD4D5A2E3A859F00877A5D /* ShowcaseDemo.swift in Sources */,
 				A1DD4D5B2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift in Sources */,
 				A1DD4D5C2E3A859F00877A5D /* CheckoutExampleView.swift in Sources */,

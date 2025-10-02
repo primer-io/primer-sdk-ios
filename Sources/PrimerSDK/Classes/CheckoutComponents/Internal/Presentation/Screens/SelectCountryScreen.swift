@@ -25,7 +25,6 @@ internal struct SelectCountryScreen: View {
         }
     }
 
-    @MainActor
     private var mainContent: some View {
         VStack(spacing: 0) {
             searchBarSection
@@ -42,7 +41,6 @@ internal struct SelectCountryScreen: View {
         )
     }
 
-    @MainActor
     private var searchBarSection: some View {
         Group {
             if let customSearchBar = scope.searchBar {
@@ -55,7 +53,6 @@ internal struct SelectCountryScreen: View {
         }
     }
 
-    @MainActor
     private var defaultSearchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -83,7 +80,6 @@ internal struct SelectCountryScreen: View {
         .padding()
     }
 
-    @MainActor
     private var countryListSection: some View {
         Group {
             if countryState.filteredCountries.isEmpty {
@@ -108,7 +104,6 @@ internal struct SelectCountryScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @MainActor
     private var countryListView: some View {
         List {
             ForEach(countryState.filteredCountries, id: \.code) { country in
@@ -134,7 +129,6 @@ internal struct SelectCountryScreen: View {
         .listStyle(PlainListStyle())
     }
 
-    @MainActor
     private func selectCountry(_ country: PrimerCountry) {
         scope.onCountrySelected(countryCode: country.code, countryName: country.name)
         onDismiss?()
