@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "eftpos-card-icon-colored.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -30,6 +30,7 @@ extension UIImage {
     static let amexColored = UIImage(primerResource: "amex-card-icon-colored")
     static let cartesBancairesColored = UIImage(primerResource: "cartesbancaires-card-icon-colored")
     static let discoverColored = UIImage(primerResource: "discover-card-icon-colored")
+    static let eftposColored = UIImage(primerResource: "eftpos-card-icon-colored")
     static let klarnaColored = UIImage(primerResource: "klarna-logo-colored")
     static let masterCardColored = UIImage(primerResource: "mastercard-card-icon-colored")
     static let visaColored = UIImage(primerResource: "visa-card-icon-colored")
