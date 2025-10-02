@@ -29,270 +29,47 @@ public protocol ValidationService {
 
     // MARK: - Structured State Support
 
-    /// Validates form data using structured state approach
-    /// Returns structured field errors for granular error handling
+    /// Validates all fields in a form and returns structured errors
+    ///
+    /// - Parameters:
+    ///   - formData: The form data containing field values
+    ///   - configuration: Configuration specifying which fields to validate
+    /// - Returns: Array of field errors for invalid fields (empty if all valid)
     @available(iOS 15.0, *)
     func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError]
 
-    /// Validates form data for specific fields only
-    /// Useful for partial validation during user input
+    /// Validates specific fields in a form (useful for partial validation)
+    ///
+    /// - Parameters:
+    ///   - fieldTypes: Specific fields to validate
+    ///   - formData: The form data containing field values
+    /// - Returns: Array of field errors for invalid fields (empty if all valid)
     @available(iOS 15.0, *)
     func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError]
 
-    /// Validates a single field and returns structured error
+    /// Validates a single field and returns a structured error if invalid
+    ///
+    /// - Parameters:
+    ///   - type: The type of field to validate
+    ///   - value: The field value (nil for empty)
+    /// - Returns: FieldError if validation fails, nil if valid
     @available(iOS 15.0, *)
     func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError?
 }
 
-/**
- * INTERNAL PERFORMANCE OPTIMIZATION: Validation Result Cache
- *
- * High-performance caching system for validation operations to improve
- * real-time form validation performance by avoiding repeated rule execution.
- *
- * ## Cache Strategy:
- * - **Key**: Hash of validation input + rule type + context
- * - **Value**: Pre-computed ValidationResult
- * - **Size Limit**: 200 entries (covers typical form interaction patterns)
- * - **Eviction**: LRU eviction with time-based expiration
- *
- * ## Performance Impact:
- * - **Cache Hit**: O(1) - Direct hash lookup vs O(n) rule execution
- * - **Cache Miss**: O(n) - Original validation + cache store
- * - **Memory**: ~8KB for full cache (200 entries × ~40 bytes each)
- * - **Hit Rate**: Expected 70-85% for typical user typing patterns
- */
-internal final class ValidationResultCache {
-
-    /// Shared cache instance for all validation operations
-    internal static let shared = ValidationResultCache()
-
-    /// Internal cache with automatic cleanup
-    private let cache = NSCache<NSString, CachedValidationResult>()
-
-    private init() {
-        // Configure cache for optimal validation performance
-        cache.countLimit = 200  // Support high-frequency validation calls
-        cache.totalCostLimit = 8000  // ~8KB memory limit
-    }
-
-    /// Wrapper for cached validation results with timestamp
-    private class CachedValidationResult {
-        let result: ValidationResult
-        let timestamp: Date
-
-        init(result: ValidationResult) {
-            self.result = result
-            self.timestamp = Date()
-        }
-
-        /// Check if cache entry is still valid (30 seconds expiration)
-        var isValid: Bool {
-            Date().timeIntervalSince(timestamp) < 30
-        }
-    }
-
-    /// Generates cache key for validation input
-    private func cacheKey(for input: String, type: String, context: String = "") -> String {
-        return "\(type)_\(input)_\(context)".hash.description
-    }
-
-    /// Retrieves cached validation result or performs validation
-    func cachedValidation(
-        input: String,
-        type: String,
-        context: String = "",
-        validator: () -> ValidationResult
-    ) -> ValidationResult {
-        let key = cacheKey(for: input, type: type, context: context)
-        let cacheKey = key as NSString
-
-        // Check cache first
-        if let cached = cache.object(forKey: cacheKey), cached.isValid {
-            return cached.result
-        }
-
-        // Cache miss or expired - perform validation
-        let result = validator()
-        cache.setObject(CachedValidationResult(result: result), forKey: cacheKey)
-
-        return result
-    }
-
-    /// Clears validation cache (useful for testing or memory pressure)
-    func clearCache() {
-        cache.removeAllObjects()
-    }
-
-    /// INTERNAL UTILITY: Provides cache performance metrics for monitoring
-    func getCacheMetrics() -> ValidationCacheMetrics {
-        return ValidationCacheMetrics(
-            totalHits: 0, // Would require counter implementation
-            totalMisses: 0, // Would require counter implementation
-            currentEntries: 0, // NSCache doesn't expose count
-            maxEntries: cache.countLimit,
-            hitRate: 0.0, // Would be calculated from hits/total requests
-            averageValidationTime: 0.0 // Would require timing measurements
-        )
-    }
-}
-
-/// INTERNAL HELPER: Metrics structure for validation cache performance
-internal struct ValidationCacheMetrics {
-    let totalHits: Int
-    let totalMisses: Int
-    let currentEntries: Int
-    let maxEntries: Int
-    let hitRate: Double
-    let averageValidationTime: TimeInterval
-
-    /// Human-readable performance summary
-    var performanceSummary: String {
-        let hitRatePercent = String(format: "%.1f", hitRate * 100)
-        let avgTimeMs = String(format: "%.2f", averageValidationTime * 1000)
-
-        return """
-        Validation Cache Performance:
-        - Hit Rate: \(hitRatePercent)% (\(totalHits) hits, \(totalMisses) misses)
-        - Cache Usage: \(currentEntries)/\(maxEntries) entries
-        - Average Validation Time: \(avgTimeMs)ms
-        """
-    }
-}
-
 /// Default implementation of the ValidationService
+///
+/// - Note: ValidationResultCache is in ValidationResultCache.swift
+/// - Note: Diagnostics and health check methods are in ValidationServiceDiagnostics.swift
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
 
-    private let rulesFactory: RulesFactory
+    internal let rulesFactory: RulesFactory
 
     // MARK: - Initialization
 
     internal init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
-    }
-
-    // MARK: - Internal Quality Enhancement Methods
-
-    /// INTERNAL UTILITY: Validates service configuration and reports issues
-    func performServiceHealthCheck() -> ValidationServiceHealthReport {
-        var issues: [String] = []
-        var warnings: [String] = []
-
-        // Check if rules factory is properly configured
-        let testCardNumber = "4111111111111111"
-        let cardNumberRule = rulesFactory.createCardNumberRule(allowedCardNetworks: nil)
-        let testResult = cardNumberRule.validate(testCardNumber)
-
-        if !testResult.isValid {
-            issues.append("Card number rule is not working correctly - test validation failed")
-        }
-
-        // Check cache health
-        let cacheMetrics = ValidationResultCache.shared.getCacheMetrics()
-        if cacheMetrics.hitRate < 0.5 && cacheMetrics.totalHits > 100 {
-            warnings.append("Cache hit rate is below 50% - consider tuning cache strategy")
-        }
-
-        // Test all field types
-        let allFieldTypes: [PrimerInputElementType] = [
-            .cardNumber, .expiryDate, .cvv, .cardholderName,
-            .postalCode, .countryCode, .firstName, .lastName,
-            .addressLine1, .city, .state
-        ]
-
-        for fieldType in allFieldTypes {
-            let result = validateField(type: fieldType, value: nil)
-            if result.isValid && fieldType != .addressLine2 {
-                warnings.append("Field type \(fieldType.rawValue) allows nil values unexpectedly")
-            }
-        }
-
-        return ValidationServiceHealthReport(
-            isHealthy: issues.isEmpty,
-            issues: issues,
-            warnings: warnings,
-            cacheMetrics: cacheMetrics
-        )
-    }
-
-    /// INTERNAL HELPER: Performance benchmarking for validation operations
-    func benchmarkValidationPerformance() -> ValidationPerformanceBenchmark {
-        let iterations = 1000
-        var results: [String: TimeInterval] = [:]
-
-        // Benchmark card number validation
-        let cardNumbers = ["4111111111111111", "5555555555554444", "378282246310005"]
-        let cardStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            for cardNumber in cardNumbers {
-                _ = validateCardNumber(cardNumber)
-            }
-        }
-        let cardEndTime = CFAbsoluteTimeGetCurrent()
-        results["cardNumber"] = (cardEndTime - cardStartTime) / Double(iterations * cardNumbers.count)
-
-        // Benchmark CVV validation
-        let cvvStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            _ = validateCVV("123", cardNetwork: .visa)
-        }
-        let cvvEndTime = CFAbsoluteTimeGetCurrent()
-        results["cvv"] = (cvvEndTime - cvvStartTime) / Double(iterations)
-
-        // Benchmark expiry validation
-        let expiryStartTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            _ = validateExpiry(month: "12", year: "25")
-        }
-        let expiryEndTime = CFAbsoluteTimeGetCurrent()
-        results["expiry"] = (expiryEndTime - expiryStartTime) / Double(iterations)
-
-        return ValidationPerformanceBenchmark(
-            averageValidationTimes: results,
-            totalIterations: iterations
-        )
-    }
-}
-
-/// INTERNAL HELPER: Health report structure for validation service
-internal struct ValidationServiceHealthReport {
-    let isHealthy: Bool
-    let issues: [String]
-    let warnings: [String]
-    let cacheMetrics: ValidationCacheMetrics
-
-    var summary: String {
-        let status = isHealthy ? "✅ Healthy" : "❌ Issues Found"
-        let issuesList = issues.isEmpty ? "None" : issues.joined(separator: ", ")
-        let warningsList = warnings.isEmpty ? "None" : warnings.joined(separator: ", ")
-
-        return """
-        Validation Service Health Report:
-        Status: \(status)
-        Issues: \(issuesList)
-        Warnings: \(warningsList)
-
-        \(cacheMetrics.performanceSummary)
-        """
-    }
-}
-
-/// INTERNAL HELPER: Performance benchmark results
-internal struct ValidationPerformanceBenchmark {
-    let averageValidationTimes: [String: TimeInterval]
-    let totalIterations: Int
-
-    var summary: String {
-        let sortedTimes = averageValidationTimes.sorted { $0.value < $1.value }
-        let timingResults = sortedTimes.map { key, time in
-            "\(key): \(String(format: "%.4f", time * 1000))ms"
-        }.joined(separator: "\n")
-
-        return """
-        Validation Performance Benchmark (\(totalIterations) iterations):
-        \(timingResults)
-        """
     }
 }
 
@@ -302,7 +79,6 @@ extension DefaultValidationService {
     // MARK: - Public Methods
 
     public func validateCardNumber(_ number: String) -> ValidationResult {
-        // INTERNAL OPTIMIZATION: Use caching for card number validation
         return ValidationResultCache.shared.cachedValidation(
             input: number,
             type: "cardNumber"
@@ -313,7 +89,6 @@ extension DefaultValidationService {
     }
 
     public func validateExpiry(month: String, year: String) -> ValidationResult {
-        // INTERNAL OPTIMIZATION: Use caching for expiry validation
         let expiryString = "\(month)/\(year)"
         return ValidationResultCache.shared.cachedValidation(
             input: expiryString,
@@ -326,7 +101,6 @@ extension DefaultValidationService {
     }
 
     public func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
-        // INTERNAL OPTIMIZATION: Use caching for CVV validation with card network context
         return ValidationResultCache.shared.cachedValidation(
             input: cvv,
             type: "cvv",
@@ -338,7 +112,6 @@ extension DefaultValidationService {
     }
 
     public func validateCardholderName(_ name: String) -> ValidationResult {
-        // INTERNAL OPTIMIZATION: Use caching for cardholder name validation
         return ValidationResultCache.shared.cachedValidation(
             input: name,
             type: "cardholderName"
@@ -373,7 +146,7 @@ extension DefaultValidationService {
                 let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
                 return .invalid(error: error)
             }
-            // Using a default network of .visa when none is provided
+            // Default to Visa network when card type is unknown (3-digit CVV)
             return validateCVV(value, cardNetwork: CardNetwork.visa)
 
         case .cardholderName:
@@ -404,7 +177,7 @@ extension DefaultValidationService {
             return rule.validate(value)
 
         case .addressLine2:
-            // AddressLine2 is typically optional
+            // Address line 2 is optional (apartment, suite, etc.)
             let rule = rulesFactory.createAddressFieldRule(inputType: .addressLine2, isRequired: false)
             return rule.validate(value)
 
@@ -425,7 +198,7 @@ extension DefaultValidationService {
                 let error = ErrorMessageResolver.createRequiredFieldError(for: .otpCode)
                 return .invalid(error: error)
             }
-            // Validate OTP is numeric
+            // OTP must be numeric only
             let numericRule = CharacterSetRule(
                 fieldName: "OTP",
                 allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
@@ -434,11 +207,11 @@ extension DefaultValidationService {
             return numericRule.validate(value)
 
         case .retailer, .all:
-            // These types don't need validation
+            // Special field types that don't require validation
             return .valid
 
         case .unknown:
-            // Unknown type always fails validation
+            // Reject unknown field types
             return .invalid(code: "invalid-unknown-field", message: "Unknown field type")
         case .email:
             let rule = rulesFactory.createEmailValidationRule()
@@ -453,13 +226,11 @@ extension DefaultValidationService {
 
     // MARK: - Structured State Support Implementation
 
-    /// Implementation of validateFormData for structured state
     @available(iOS 15.0, *)
     public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
         return validateFields(configuration.allFields, formData: formData)
     }
 
-    /// Implementation of validateFields for partial validation
     @available(iOS 15.0, *)
     public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
         var fieldErrors: [FieldError] = []
@@ -474,12 +245,11 @@ extension DefaultValidationService {
         return fieldErrors
     }
 
-    /// Implementation of validateFieldWithStructuredResult
     @available(iOS 15.0, *)
     public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
         let result = validateField(type: type, value: value)
 
-        // Convert ValidationResult to FieldError if invalid
+        // Convert ValidationResult to FieldError for structured state support
         if !result.isValid, let message = result.errorMessage {
             return FieldError(
                 fieldType: type,
