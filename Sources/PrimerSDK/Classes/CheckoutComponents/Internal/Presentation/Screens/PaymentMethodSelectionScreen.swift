@@ -197,7 +197,7 @@ internal struct PaymentMethodSelectionScreen: View {
 
         if !unknownFeeMethods.isEmpty {
             groups.append(PaymentMethodGroup(
-                group: CheckoutComponentsStrings.feeMayApply,
+                group: CheckoutComponentsStrings.surchargeFeeSectionTitle,
                 methods: unknownFeeMethods
             ))
         }
@@ -247,7 +247,7 @@ internal struct PaymentMethodSelectionScreen: View {
         if groupName.hasPrefix("+") {
             // Positive surcharge - use positive color
             return tokens?.primerColorIconPositive ?? Color(.systemGreen)
-        } else if groupName == CheckoutComponentsStrings.feeMayApply {
+        } else if groupName == CheckoutComponentsStrings.surchargeFeeSectionTitle {
             // Unknown surcharge - use warning color
             return tokens?.primerColorTextSecondary ?? Color(.secondaryLabel)
         } else {
@@ -337,82 +337,17 @@ private struct ModernPaymentMethodCardView: View {
     }
 
     private var paymentMethodLogoPlaceholder: some View {
-        // Create logo based on payment method type
-        Group {
-            switch method.type {
-            case "APPLE_PAY":
-                applePayLogo
-            case "GOOGLE_PAY":
-                googlePayLogo
-            case "PAYPAL":
-                paypalLogo
-            case "PAYMENT_CARD":
-                cardLogo
-            case "KLARNA":
-                klarnaLogo
-            case "ADYEN_IDEAL":
-                idealLogo
-            default:
-                genericLogo
-            }
-        }
-        .frame(width: 32, height: 24)
+        // Create logo based on payment method type using bundled assets (like DropIn UI)
+        let paymentMethodType = PrimerPaymentMethodType(rawValue: method.type)
+        let imageName = paymentMethodType?.defaultImageName ?? .genericCard
+        let fallbackImage = imageName.image
+
+        return Image(uiImage: fallbackImage ?? UIImage())
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 32, height: 24)
     }
 
-    private var applePayLogo: some View {
-        HStack(spacing: 2) {
-            Image(systemName: "applelogo")
-                .font(.system(size: 12, weight: .medium))
-            Text(CheckoutComponentsStrings.payButton)
-                .font(.system(size: 12, weight: .medium))
-        }
-        .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
-    }
-
-    private var googlePayLogo: some View {
-        HStack(spacing: 2) {
-            Text("G")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(tokens?.primerColorBrand ?? .blue)
-            Text(CheckoutComponentsStrings.payButton)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
-        }
-    }
-
-    private var paypalLogo: some View {
-        Text(CheckoutComponentsStrings.payPalMethodName)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(tokens?.primerColorBlue500 ?? .blue)
-    }
-
-    private var cardLogo: some View {
-        Image(systemName: "creditcard")
-            .font(.system(size: 14))
-            .foregroundColor(tokens?.primerColorIconPrimary ?? .secondary)
-    }
-
-    private var klarnaLogo: some View {
-        Text(CheckoutComponentsStrings.klarnaMethodName)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
-    }
-
-    private var idealLogo: some View {
-        Text(CheckoutComponentsStrings.idealMethodName)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(tokens?.primerColorIconPrimary ?? .orange)
-    }
-
-    private var genericLogo: some View {
-        RoundedRectangle(cornerRadius: 2)
-            .fill(tokens?.primerColorGray200 ?? Color(.systemGray4))
-            .overlay(
-                Text(String(method.type.prefix(2)))
-                    .font(.caption2)
-                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            )
-    }
 
     private var methodNameAndSurcharge: some View {
         // Break up complex font expression to avoid compiler timeout
