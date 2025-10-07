@@ -11,7 +11,7 @@ import SwiftUI
 /// Bridge view controller that embeds SwiftUI content into the traditional Primer UI system
 /// This allows CheckoutComponents to work seamlessly with PrimerRootViewController and result screens
 @available(iOS 15.0, *)
-internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
+final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     // MARK: - Properties
 
@@ -235,7 +235,7 @@ extension PrimerSwiftUIBridgeViewController {
 
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
-        bridgeController.title = "Checkout"
+        bridgeController.title = CheckoutComponentsStrings.checkoutTitle
 
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
         return bridgeController
@@ -265,7 +265,7 @@ extension PrimerSwiftUIBridgeViewController {
 
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
-        bridgeController.title = "Card Payment"
+        bridgeController.title = CheckoutComponentsStrings.cardPaymentTitle
 
         logger.info(message: "💳 [SwiftUIBridge] Card form bridge created successfully")
         return bridgeController
