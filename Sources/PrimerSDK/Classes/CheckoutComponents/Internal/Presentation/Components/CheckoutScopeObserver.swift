@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
 @available(iOS 15.0, *)
-internal struct CheckoutScopeObserver: View, LogReporter {
+struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
@@ -124,7 +124,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 // When modal is dismissed, reset the navigation state in the navigator
                 if let previousState = previousNavigationState {
                     switch previousState {
-                    case .paymentMethod(let paymentMethodType):
+                    case let .paymentMethod(paymentMethodType):
                         // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
                     case .paymentMethodSelection:
@@ -194,7 +194,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 ))
             }
 
-        case .paymentMethod(let paymentMethodType):
+        case let .paymentMethod(paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach
             return AnyView(PaymentMethodScreen(
                 paymentMethodType: paymentMethodType,
@@ -205,7 +205,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             // Country selection is now handled via modal sheet, return the previous view
             if let previousState = previousNavigationState {
                 switch previousState {
-                case .paymentMethod(let paymentMethodType):
+                case let .paymentMethod(paymentMethodType):
                     return AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
                         checkoutScope: scope
@@ -224,7 +224,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 return AnyView(SplashScreen())
             }
 
-        case .success(let result):
+        case let .success(result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
                 if let customSuccess = scope.successScreen {
@@ -246,7 +246,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 })
             }
 
-        case .failure(let error):
+        case let .failure(error):
             // Check if error screen is enabled in settings (UI Options integration)
             if scope.isErrorScreenEnabled {
                 if let customError = scope.errorScreen {

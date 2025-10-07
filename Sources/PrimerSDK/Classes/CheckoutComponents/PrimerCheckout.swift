@@ -79,7 +79,7 @@ public struct PrimerCheckout: View {
     }
 
     /// Internal initializer with presentation context
-    internal init(
+    init(
         clientToken: String,
         settings: PrimerSettings,
         diContainer: DIContainer,
@@ -97,7 +97,7 @@ public struct PrimerCheckout: View {
     }
 
     /// Internal initializer with custom content and presentation context
-    internal init(
+    init(
         clientToken: String,
         settings: PrimerSettings,
         diContainer: DIContainer,
@@ -134,7 +134,7 @@ public struct PrimerCheckout: View {
 /// Internal checkout implementation that coordinates SDK initialization and UI presentation.
 @available(iOS 15.0, *)
 @MainActor
-internal struct InternalCheckout: View {
+struct InternalCheckout: View {
     private let clientToken: String
     private let settings: PrimerSettings
     private let diContainer: DIContainer
@@ -200,7 +200,7 @@ internal struct InternalCheckout: View {
                 } else {
                     SplashScreen()
                 }
-            case .failed(let error):
+            case let .failed(error):
                 SDKInitializationErrorView(error: error) {
                     Task {
                         await initializeSDK()

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Centralized strings for CheckoutComponents to make localization easier
-internal struct CheckoutComponentsStrings {
+struct CheckoutComponentsStrings {
 
     // MARK: - Screen Titles (REUSING EXISTING KEYS)
 
@@ -515,7 +515,6 @@ internal struct CheckoutComponentsStrings {
         return String(format: format, displayName)
     }
 
-
     // MARK: - ⚠️ CHECKOUTCOMPONENTS-SPECIFIC STRINGS (PHASE 2 - TO BE EXPORTED) ⚠️
     // These strings are unique to CheckoutComponents and need to be added to all .lproj files
 
@@ -721,7 +720,6 @@ internal struct CheckoutComponentsStrings {
         value: "No countries found",
         comment: "Message when country search returns no results"
     )
-
 
     static let paymentId = NSLocalizedString(
         "checkout-components-payment-id",

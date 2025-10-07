@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Default country selection screen for CheckoutComponents
 @available(iOS 15.0, *)
-internal struct SelectCountryScreen: View {
+struct SelectCountryScreen: View {
     let scope: PrimerSelectCountryScope
     let onDismiss: (() -> Void)?
 
