@@ -1,0 +1,1 @@
+--rules isEmpty, preferCountWhere, redundantExtensionACL, modifierOrder, consecutiveBlankLines, blankLineAfterImports, andOperator, elseOnSameLine, fileHeader, hoistPatternLet, leadingDelimeters, modifiersOnSameLine, wrapMultilineFunctionChains, preferKeyPath

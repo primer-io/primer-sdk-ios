@@ -1,0 +1,52 @@
+name: Code Quality
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+concurrency: 
+  group: ${{ github.ref }}-danger
+  cancel-in-progress: true
+
+jobs:
+  SwiftFormat:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Get changed Swift files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.swift$' || true)
+          echo "changed-files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: SwiftFormat
+        if: steps.changed-files.outputs.changed-files != ''
+        run: |
+          files_to_lint=()
+          while IFS= read -r file; do
+            if [ -n "$file" ] && [ -f "$file" ]; then
+              files_to_lint+=("$file")
+            fi
+          done <<< "${{ steps.changed-files.outputs.changed-files }}"
+          
+          if [ ${#files_to_lint[@]} -gt 0 ]; then
+            swiftformat --lint "${files_to_lint[@]}" --reporter github-actions-log --config BuildTools/.swiftformat
+          fi
+
+  danger:
+    runs-on: ubuntu-latest
+    name: "Run Danger"
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v3.2.2
+      - name: Danger
+        uses: docker://ghcr.io/danger/danger-swift@sha256:dbb8124fe768924ace43755559735df1a96318c7249f9ffac3d64a71f2a2163e
+        with:
+            args: --failOnErrors --no-publish-check --remove-previous-comments
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
