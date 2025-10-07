@@ -31,6 +31,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     case cartesBancaires = "CARTES_BANCAIRES"
     case diners = "DINERS_CLUB"
     case discover = "DISCOVER"
+    case eftpos = "EFTPOS"
     case elo = "ELO"
     case hiper = "HIPER"
     case hipercard = "HIPERCARD"
@@ -54,7 +55,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     name: "CID",
                     length: 4))
 
-        case .bancontact, .cartesBancaires:
+        case .bancontact, .cartesBancaires, .eftpos:
             return nil
 
         case .diners:
@@ -242,6 +243,8 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             return "Bancontact"
         case .cartesBancaires:
             return "Cartes Bancaires"
+        case .eftpos:
+            return "EFTPOS"
         default:
             return "Unknown"
         }
@@ -256,6 +259,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         case .jcb: .jcb
         case .masterCard: .masterCardColored
         case .visa: .visaColored
+        case .eftpos: .eftposColored
         case .diners, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
         }
     }

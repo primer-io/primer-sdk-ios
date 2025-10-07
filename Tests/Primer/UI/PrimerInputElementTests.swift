@@ -121,6 +121,7 @@ private extension CardNetwork {
              .mir,
              .visa,
              .unionpay,
+             .eftpos,
              .unknown:
             return ["123", "345", "456"]
         }

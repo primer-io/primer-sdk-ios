@@ -348,7 +348,6 @@ private struct ModernPaymentMethodCardView: View {
             .frame(width: 32, height: 24)
     }
 
-
     private var methodNameAndSurcharge: some View {
         // Break up complex font expression to avoid compiler timeout
         let methodNameFontSize = tokens?.primerTypographyBodyLargeSize ?? 16

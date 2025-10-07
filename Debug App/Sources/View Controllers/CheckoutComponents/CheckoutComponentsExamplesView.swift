@@ -14,8 +14,6 @@ struct CheckoutComponentsExamplesView: View {
     private let apiVersion: PrimerApiVersion
     private let clientSession: ClientSessionRequestBody?
     
-    @SwiftUI.Environment(\.dismiss) private var dismiss
-    
     init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil) {
         self.settings = settings
         self.apiVersion = apiVersion
@@ -26,19 +24,17 @@ struct CheckoutComponentsExamplesView: View {
     var body: some View {
         // Render main view body with example categories
         
-        NavigationView {
-            List {
-                ForEach(ExampleCategory.allCases, id: \.self) { category in
-                    NavigationLink(
-                        destination: CategoryExamplesView(
-                            category: category,
-                            settings: settings,
-                            apiVersion: apiVersion,
-                            clientSession: clientSession
-                        )
-                    ) {
-                        CategoryRow(category: category)
-                    }
+        List {
+            ForEach(ExampleCategory.allCases, id: \.self) { category in
+                NavigationLink(
+                    destination: CategoryExamplesView(
+                        category: category,
+                        settings: settings,
+                        apiVersion: apiVersion,
+                        clientSession: clientSession
+                    )
+                ) {
+                    CategoryRow(category: category)
                 }
             }
         }

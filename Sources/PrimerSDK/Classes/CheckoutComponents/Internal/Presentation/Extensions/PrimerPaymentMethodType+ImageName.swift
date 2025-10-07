@@ -9,6 +9,7 @@ import Foundation
 
 /// CheckoutComponents extension for mapping payment method types to bundled image assets
 /// This keeps the data model (PrimerPaymentMethodType) clean and UI-agnostic
+@available(iOS 15.0, *)
 extension PrimerPaymentMethodType {
 
     /// Returns the default ImageName for this payment method type

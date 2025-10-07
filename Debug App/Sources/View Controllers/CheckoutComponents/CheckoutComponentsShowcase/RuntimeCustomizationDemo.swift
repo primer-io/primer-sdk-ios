@@ -471,17 +471,11 @@ private struct ConditionalCardFormView: View {
                         cardFormScope.PrimerCardholderNameField(
                             label: nil,
                             styling: PrimerFieldStyling(
-                                backgroundColor: cardholderValidationColor != .clear
-                                    ? cardholderValidationColor.opacity(0.06)
-                                    : Color.purple.opacity(0.04),
-                                borderColor: cardholderValidationColor != .clear
-                                    ? cardholderValidationColor.opacity(0.4)
-                                    : Color.purple.opacity(0.2),
-                                focusedBorderColor: cardholderValidationColor != .clear
-                                    ? cardholderValidationColor
-                                    : .purple,
+                                backgroundColor: cardholderBackgroundColor,
+                                borderColor: cardholderBorderColor,
+                                focusedBorderColor: cardholderFocusedBorderColor,
                                 cornerRadius: 12,
-                                borderWidth: cardholderValidationColor != .clear ? 2 : 1,
+                                borderWidth: cardholderBorderWidth,
                                 padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
                             )
                         )
@@ -766,7 +760,29 @@ private struct ConditionalCardFormView: View {
     private var cardNumberBorderWidth: CGFloat {
         detectedCardType != "Unknown" ? 2 : 1
     }
-    
+
+    private var cardholderBackgroundColor: Color {
+        cardholderValidationColor != .clear
+            ? cardholderValidationColor.opacity(0.06)
+            : Color.purple.opacity(0.04)
+    }
+
+    private var cardholderBorderColor: Color {
+        cardholderValidationColor != .clear
+            ? cardholderValidationColor.opacity(0.4)
+            : Color.purple.opacity(0.2)
+    }
+
+    private var cardholderFocusedBorderColor: Color {
+        cardholderValidationColor != .clear
+            ? cardholderValidationColor
+            : .purple
+    }
+
+    private var cardholderBorderWidth: CGFloat {
+        cardholderValidationColor != .clear ? 2 : 1
+    }
+
     private var cardholderValidationColor: Color {
         guard let state = cardState else {
             return Color.clear

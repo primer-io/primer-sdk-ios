@@ -448,18 +448,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     public func onCancel() {
-        // Cancel triggered
-        // Current context logged
-        // Cancel behavior setting logged
-
-        switch presentationContext.cancelBehavior {
-        case .dismiss:
-            // Action: Dismissing entire checkout flow
-            checkoutScope?.checkoutNavigator.dismiss()
-        case .navigateToPaymentSelection:
-            // Action: Navigating back to payment selection
-            checkoutScope?.checkoutNavigator.navigateToPaymentSelection()
-        }
+        // Cancel button tapped - dismiss entire checkout flow
+        checkoutScope?.onDismiss()
     }
 
     public func navigateToCountrySelection() {
