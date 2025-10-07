@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Configuration for which billing address fields to show
 @available(iOS 15.0, *)
-internal struct BillingAddressConfiguration {
+struct BillingAddressConfiguration {
     let showFirstName: Bool
     let showLastName: Bool
     let showEmail: Bool
@@ -63,7 +63,7 @@ internal struct BillingAddressConfiguration {
 
 /// A composite SwiftUI view containing billing address fields with dynamic layout
 @available(iOS 15.0, *)
-internal struct BillingAddressView: View, LogReporter {
+struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
     /// The card form scope for handling updates
@@ -86,7 +86,7 @@ internal struct BillingAddressView: View, LogReporter {
     // MARK: - Initialization
 
     /// Creates a new BillingAddressView with comprehensive customization support
-    internal init(
+    init(
         cardFormScope: any PrimerCardFormScope,
         configuration: BillingAddressConfiguration,
         styling: PrimerFieldStyling? = nil
@@ -351,7 +351,7 @@ internal struct BillingAddressView: View, LogReporter {
 /// Custom country scope that handles country selection for billing address
 @available(iOS 15.0, *)
 @MainActor
-internal final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
+final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
 
     private let cardFormScope: DefaultCardFormScope
     private let onCountrySelectedCallback: (String, String) -> Void

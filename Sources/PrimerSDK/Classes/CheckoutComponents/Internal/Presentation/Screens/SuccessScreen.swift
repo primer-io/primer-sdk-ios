@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Success screen for CheckoutComponents with auto-dismiss functionality
 @available(iOS 15.0, *)
-internal struct SuccessScreen: View {
+struct SuccessScreen: View {
     let result: CheckoutPaymentResult
     let onDismiss: (() -> Void)?
 

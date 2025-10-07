@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Error view shown when SDK initialization fails
 @available(iOS 15.0, *)
-internal struct SDKInitializationErrorView: View {
+struct SDKInitializationErrorView: View {
     let error: PrimerError
     let onRetry: () -> Void
 

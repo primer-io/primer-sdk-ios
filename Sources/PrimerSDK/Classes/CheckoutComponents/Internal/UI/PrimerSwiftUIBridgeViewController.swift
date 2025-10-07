@@ -11,7 +11,7 @@ import SwiftUI
 /// Bridge view controller that embeds SwiftUI content into the traditional Primer UI system
 /// This allows CheckoutComponents to work seamlessly with PrimerRootViewController and result screens
 @available(iOS 15.0, *)
-internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
+final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     // MARK: - Properties
 

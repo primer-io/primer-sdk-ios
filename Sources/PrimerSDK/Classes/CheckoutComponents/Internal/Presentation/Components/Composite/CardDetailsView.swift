@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A composite SwiftUI view containing all card input fields
 @available(iOS 15.0, *)
-internal struct CardDetailsView: View {
+struct CardDetailsView: View {
     // MARK: - Properties
 
     /// The card form scope for handling updates
