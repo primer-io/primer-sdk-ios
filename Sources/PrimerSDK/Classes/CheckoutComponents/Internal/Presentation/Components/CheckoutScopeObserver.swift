@@ -11,12 +11,13 @@ import SwiftUI
 
 /// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
 @available(iOS 15.0, *)
-internal struct CheckoutScopeObserver: View, LogReporter {
+struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
     private let onCompletion: (() -> Void)?
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.bridgeController) private var bridgeController
 
     // Design tokens state
     @State private var designTokens: DesignTokens?
@@ -37,45 +38,56 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     }
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Navigation state driven UI (now properly observing @Published navigationState)
-                ZStack {
-                    // MARK: - Navigation Content
-                    // Simple fade transition between screens
-                    // TODO: Future improvements could include:
-                    // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
-                    // - Add directional transitions (slide left/right) based on navigation direction
-                    // - Implement custom per-route transitions (e.g., scale for success screen)
-                    // - Add interactive gesture-based navigation
-                    getCurrentView()
-                        .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
-
-                    // Custom content overlay if provided
-                    if let customContent = customContent {
-                        customContent(scope)
-                    }
+        Group {
+            if bridgeController != nil {
+                contentView
+            } else {
+                NavigationView {
+                    contentView
                 }
-                .sheet(isPresented: $showingCountrySelection) {
-                    // Present country selection as a modal sheet
-                    let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
-                    let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
-                    SelectCountryScreen(
-                        scope: countryScope,
-                        onDismiss: {
-                            showingCountrySelection = false
-                            // Restore previous navigation state after dismissal
-                            if let previousState = previousNavigationState {
-                                scope.updateNavigationState(previousState, syncToNavigator: false)
-                            }
-                        }
-                    )
+                .navigationViewStyle(.stack)
+            }
+        }
+    }
+
+    private var contentView: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                // MARK: - Navigation Content
+                // Simple fade transition between screens
+                // TODO: Future improvements could include:
+                // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
+                // - Add directional transitions (slide left/right) based on navigation direction
+                // - Implement custom per-route transitions (e.g., scale for success screen)
+                // - Add interactive gesture-based navigation
+                getCurrentView()
+                    .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
+
+                // Custom content overlay if provided
+                if let customContent = customContent {
+                    customContent(scope)
                 }
             }
-            .environmentObject(scope)
-            .environment(\.diContainer, DIContainer.currentSync)
-            .environment(\.designTokens, designTokens)
+            .sheet(isPresented: $showingCountrySelection) {
+                // Present country selection as a modal sheet
+                let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
+                let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
+                SelectCountryScreen(
+                    scope: countryScope,
+                    onDismiss: {
+                        showingCountrySelection = false
+                        // Restore previous navigation state after dismissal
+                        if let previousState = previousNavigationState {
+                            scope.updateNavigationState(previousState, syncToNavigator: false)
+                        }
+                    }
+                )
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .environmentObject(scope)
+        .environment(\.diContainer, DIContainer.currentSync)
+        .environment(\.designTokens, designTokens)
         .onAppear {
             // Apply any scope customizations (only after SDK is initialized)
             scopeCustomization?(scope)
@@ -124,7 +136,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 // When modal is dismissed, reset the navigation state in the navigator
                 if let previousState = previousNavigationState {
                     switch previousState {
-                    case .paymentMethod(let paymentMethodType):
+                    case let .paymentMethod(paymentMethodType):
                         // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
                     case .paymentMethodSelection:
@@ -194,7 +206,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 ))
             }
 
-        case .paymentMethod(let paymentMethodType):
+        case let .paymentMethod(paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach
             return AnyView(PaymentMethodScreen(
                 paymentMethodType: paymentMethodType,
@@ -205,7 +217,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             // Country selection is now handled via modal sheet, return the previous view
             if let previousState = previousNavigationState {
                 switch previousState {
-                case .paymentMethod(let paymentMethodType):
+                case let .paymentMethod(paymentMethodType):
                     return AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
                         checkoutScope: scope
@@ -224,7 +236,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 return AnyView(LoadingScreen())
             }
 
-        case .success(let result):
+        case let .success(result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
                 if let customSuccess = scope.successScreen {
@@ -246,7 +258,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 })
             }
 
-        case .failure(let error):
+        case let .failure(error):
             // Check if error screen is enabled in settings (UI Options integration)
             if scope.isErrorScreenEnabled {
                 if let customError = scope.errorScreen {

@@ -91,7 +91,7 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Private Init
 
-    private override init() {
+    override private init() {
         super.init()
         // Initialization complete
     }
@@ -252,6 +252,10 @@ public extension CheckoutComponentsDelegate {
             // Create modal presentation with dynamic sizing
             bridgeController.modalPresentationStyle = .pageSheet
             if let sheet = bridgeController.sheetPresentationController {
+                if let primerBridge = bridgeController as? PrimerSwiftUIBridgeViewController {
+                    primerBridge.customSheetPresentationController = sheet
+                }
+
                 // Use custom detent for dynamic sizing based on content
                 if #available(iOS 16.0, *) {
                     let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
@@ -337,6 +341,34 @@ public extension CheckoutComponentsDelegate {
 
             // Present modally from the provided view controller
             // Present custom content
+
+            // Create modal presentation with dynamic sizing
+            bridgeController.modalPresentationStyle = .pageSheet
+            if let sheet = bridgeController.sheetPresentationController {
+                if let primerBridge = bridgeController as? PrimerSwiftUIBridgeViewController {
+                    primerBridge.customSheetPresentationController = sheet
+                }
+
+                // Use custom detent for dynamic sizing based on content
+                if #available(iOS 16.0, *) {
+                    let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
+                        guard let bridgeController = bridgeController else { return context.maximumDetentValue }
+                        let contentHeight = bridgeController.preferredContentSize.height
+                        let maxHeight = context.maximumDetentValue
+                        // Allow content to determine height, but cap at maximum
+                        return min(max(contentHeight, 200), maxHeight * 0.9)
+                    }
+                    sheet.detents = [customDetent, .large()]
+                    sheet.selectedDetentIdentifier = customDetent.identifier
+                } else {
+                    // Fallback for iOS 15: use standard detents
+                    sheet.detents = [.medium(), .large()]
+                }
+                sheet.prefersGrabberVisible = true
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                sheet.largestUndimmedDetentIdentifier = .medium
+            }
+
             viewController.present(bridgeController, animated: true)
 
             // Reset presenting flag after successful presentation

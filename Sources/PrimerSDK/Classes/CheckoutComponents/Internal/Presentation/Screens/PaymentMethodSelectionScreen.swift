@@ -15,11 +15,13 @@ private struct PaymentMethodGroup {
 
 /// Default payment method selection screen for CheckoutComponents
 @available(iOS 15.0, *)
-internal struct PaymentMethodSelectionScreen: View {
+struct PaymentMethodSelectionScreen: View {
     let scope: PrimerPaymentMethodSelectionScope
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.bridgeController) private var bridgeController
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
+
     var body: some View {
         mainContent
     }
@@ -292,6 +294,10 @@ internal struct PaymentMethodSelectionScreen: View {
             for await state in await scope.state {
                 await MainActor.run {
                     self.selectionState = state
+
+                    if !state.paymentMethods.isEmpty {
+                        bridgeController?.invalidateContentSize()
+                    }
                 }
             }
         }
