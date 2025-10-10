@@ -4,7 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
@@ -153,22 +152,23 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
 
         // Invalid card number error - check this FIRST before network validation
-        if rawData.cardNumber.isEmpty {
-            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
-        } else if !rawData.cardNumber.isValidCardNumber {
-            errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
-        } else {
+		if rawData.cardNumber.isEmpty || !rawData.cardNumber.isValidCardNumber {
+			let message = rawData.cardNumber.isEmpty
+			? "Card number can not be blank."
+			: "Card number is not valid."
+			errors.append(PrimerValidationError.invalidCardnumber(message: message))
+		} else {
             // Only validate network if card number is valid
             // Locally validated card network
             // Use user-selected network if available (for co-badged cards), otherwise auto-detect
             var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
 
             // Remotely validated card network
-            if let cardNetworksMetadata = cardNetworksMetadata {
+            if let cardNetworksMetadata {
                 let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
                     cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
-                if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+                if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                     cardNetwork = network
                 } else {
@@ -177,55 +177,49 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
                 // Unsupported card type error
                 if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
-                    )
-                    errors.append(err)
+                    errors.append(PrimerValidationError.invalidCardType(
+						message: "Unsupported card type detected: \(cardNetwork.displayName)"))
                 }
             } else {
                 // When BIN data is not available, validate locally detected network against allowed networks
                 // This ensures consistent behavior with Web SDK where network validation always happens
                 if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "Unsupported card type detected: \(cardNetwork.displayName)"
-                    )
-                    errors.append(err)
-                }
+					errors.append(PrimerValidationError.invalidCardType(
+						message: "Unsupported card type detected: \(cardNetwork.displayName)"
+					))
+				}
 
                 self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
             }
         }
 
-        do {
-            try rawData.expiryDate.validateExpiryDateString()
-        } catch {
-            if let err = error as? PrimerValidationError {
-                errors.append(err)
-            }
-        }
-
-        if rawData.cvv.isEmpty {
-            errors.append(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
-        } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-            errors.append(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
-        }
-
-        if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-            if (rawData.cardholderName ?? "").isEmpty {
-                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name cannot be blank."))
-            } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
-                errors.append(PrimerValidationError.invalidCardholderName(message: "Cardholder name is not valid."))
-            }
-        }
-
+		do {
+			try rawData.expiryDate.validateExpiryDateString()
+			try checkCVVAndNameAreValid(rawData: rawData)
+		} catch let error as PrimerValidationError {
+			errors.append(error)
+		}
         guard errors.isEmpty else {
-            let err = handled(primerError: .underlyingErrors(errors: errors))
             notifyDelegateOfValidationResult(isValid: false, errors: errors)
-            throw err
+            throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
         notifyDelegateOfValidationResult(isValid: true, errors: nil)
     }
+
+	private func checkCVVAndNameAreValid(rawData: PrimerCardData) throws {
+		if rawData.cvv.isEmpty || !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
+			let message = rawData.cvv.isEmpty ? "CVV cannot be blank." : "CVV is not valid."
+			throw PrimerValidationError.invalidCvv(message: message)
+		}
+		if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+			let name = rawData.cardholderName ?? ""
+			if name.isEmpty || !name.isValidNonDecimalString {
+				let message = name.isEmpty ? "Cardholder name cannot be blank." : "Cardholder name is not valid."
+				throw PrimerValidationError.invalidCardholderName(message: message)
+			}
+		}
+	}
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
         isDataValid = isValid
@@ -241,7 +235,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         }
     }
 }
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length

@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
@@ -48,7 +47,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let primerErr = error.asPrimerError
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                     switch errorDecision.type {
-                    case .fail(let message):
+                    case let .fail(message):
                         DispatchQueue.main.async {
                             PrimerUIManager.dismissOrShowResultScreen(
                                 type: .failure,
@@ -78,17 +77,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
 
     private func renderSelectedPaymentInstrument(insertAt index: Int? = nil) {
-        if savedCardView != nil {
-            verticalStackView.removeArrangedSubview(savedCardView)
-            savedCardView.removeFromSuperview()
-            savedCardView = nil
-        }
-
-        if savedPaymentMethodStackView != nil {
-            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
-            savedPaymentMethodStackView.removeFromSuperview()
-            savedPaymentMethodStackView = nil
-        }
+        removeSavedCardsView()
 
         let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
 
@@ -207,17 +196,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 verticalStackView.addArrangedSubview(savedPaymentMethodStackView)
             }
         } else {
-            if savedCardView != nil {
-                verticalStackView.removeArrangedSubview(savedCardView)
-                savedCardView.removeFromSuperview()
-                savedCardView = nil
-            }
-
-            if savedPaymentMethodStackView != nil {
-                verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
-                savedPaymentMethodStackView.removeFromSuperview()
-                savedPaymentMethodStackView = nil
-            }
+            removeSavedCardsView()
         }
 
         (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
@@ -226,6 +205,20 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
+	
+	private func removeSavedCardsView() {
+		if savedCardView != nil {
+			verticalStackView.removeArrangedSubview(savedCardView)
+			savedCardView.removeFromSuperview()
+			savedCardView = nil
+		}
+
+		if savedPaymentMethodStackView != nil {
+			verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+			savedPaymentMethodStackView.removeFromSuperview()
+			savedPaymentMethodStackView = nil
+		}
+	}
 
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
@@ -322,7 +315,6 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     }
 }
 
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length
