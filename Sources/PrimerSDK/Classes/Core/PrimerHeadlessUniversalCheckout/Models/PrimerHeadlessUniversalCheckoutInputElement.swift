@@ -4,8 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
-
 import UIKit
 
 @objc
@@ -44,46 +42,33 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal func validate(value: Any, detectedValueType: Any?) -> Bool {
+    func validate(value: Any, detectedValueType: Any?) -> Bool {
         switch self {
         case .cardNumber:
-            guard let text = value as? String else { return false }
-            return text.isValidCardNumber
-
-        case .expiryDate:
-            guard let text = value as? String else { return false }
-            return text.isValidExpiryDate
-
-        case .cvv:
-            guard let text = value as? String else { return false }
-            if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
-                return text.isValidCVV(cardNetwork: cardNetwork)
-            } else {
-                return text.count >= 3 && text.count <= 5
-            }
-
-        case .cardholderName:
-            guard let text = value as? String else { return false }
-            return text.isValidNonDecimalString
-
-        case .otp:
-            guard let text = value as? String else { return false }
-            return text.isNumeric
-
-        case .postalCode:
-            guard let text = value as? String else { return false }
-            return text.isValidPostalCode
-
-        case .phoneNumber:
-            guard let text = value as? String else { return false }
-            return text.isNumeric
-
+			return (value as? String)?.isValidCardNumber ?? false
+		case .expiryDate:
+			return (value as? String)?.isValidExpiryDate ?? false
+		case .cardholderName:
+			return (value as? String)?.isValidNonDecimalString ?? false
+		case .otp:
+			return (value as? String)?.isNumeric ?? false
+		case .postalCode:
+			return (value as? String)?.isValidPostalCode ?? false
+		case .phoneNumber:
+			return (value as? String)?.isNumeric ?? false
+		case .cvv:
+			guard let text = value as? String else { return false }
+			if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
+				return text.isValidCVV(cardNetwork: cardNetwork)
+			} else {
+				return text.count >= 3 && text.count <= 5
+			}
         default:
             return true
         }
     }
 
-    internal func format(value: Any) -> Any {
+    func format(value: Any) -> Any {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return value }
@@ -98,7 +83,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal func clearFormatting(value: Any) -> Any? {
+    func clearFormatting(value: Any) -> Any? {
         switch self {
         case .cardNumber,
              .expiryDate:
@@ -111,7 +96,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal func detectType(for value: Any) -> Any? {
+    func detectType(for value: Any) -> Any? {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return nil }
@@ -122,7 +107,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var delimiter: String? {
+    var delimiter: String? {
         switch self {
         case .cardNumber:
             return " "
@@ -133,7 +118,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var maxAllowedLength: Int? {
+    var maxAllowedLength: Int? {
         switch self {
         case .cardNumber:
             return nil
@@ -148,7 +133,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var allowedCharacterSet: CharacterSet? {
+    var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber,
              .expiryDate,
@@ -165,7 +150,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var keyboardType: UIKeyboardType {
+    var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber,
              .expiryDate,

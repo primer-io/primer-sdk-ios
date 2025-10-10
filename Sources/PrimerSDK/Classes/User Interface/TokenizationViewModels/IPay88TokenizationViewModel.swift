@@ -4,7 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
 // swiftlint:disable line_length
 // swiftlint:disable function_body_length
@@ -47,11 +46,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }()
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            throw handled(primerError: .invalidClientToken())
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid, decodedJWTToken.pciUrl != nil else {
             throw handled(primerError: .invalidClientToken())
         }
 
@@ -408,7 +403,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
 
         if let error = error {
             switch error {
-            case .iPay88Error(let description, _):
+            case let .iPay88Error(description, _):
                 didFail?(handled(primerError: .failedToCreatePayment(
                     paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue,
                     description: "iPay88 payment (transId: \(primerIPay88Payment.transId ?? "nil"), refNo: \(primerIPay88Payment.refNo) failed with error '\(description)'"
@@ -427,7 +422,6 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     }
 }
 #endif
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
