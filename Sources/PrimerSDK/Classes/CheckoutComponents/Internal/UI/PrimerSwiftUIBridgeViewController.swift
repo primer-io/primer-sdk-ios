@@ -8,12 +8,39 @@
 import UIKit
 import SwiftUI
 
+// MARK: - Environment Key for Bridge Controller Access
+
+/// Environment key to allow SwiftUI views to access the bridge controller
+@available(iOS 15.0, *)
+private struct BridgeControllerKey: EnvironmentKey {
+    static let defaultValue: PrimerSwiftUIBridgeViewController? = nil
+}
+
+@available(iOS 15.0, *)
+extension EnvironmentValues {
+    var bridgeController: PrimerSwiftUIBridgeViewController? {
+        get { self[BridgeControllerKey.self] }
+        set { self[BridgeControllerKey.self] = newValue }
+    }
+}
+
 /// Bridge view controller that embeds SwiftUI content into the traditional Primer UI system
 /// This allows CheckoutComponents to work seamlessly with PrimerRootViewController and result screens
 @available(iOS 15.0, *)
 final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
+    // MARK: - Constants
+
+    private enum SheetSizing {
+        static let minimumHeight: CGFloat = 200
+        static let maximumScreenRatio: CGFloat = 0.9
+        static let heightUpdateThreshold: CGFloat = 5.0
+        static let boundsChangeThreshold: CGFloat = 10.0
+    }
+
     // MARK: - Properties
+
+    weak var customSheetPresentationController: UISheetPresentationController?
 
     private let hostingController: UIHostingController<AnyView>
     private let logger = PrimerLogging.shared.logger
@@ -27,6 +54,10 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
     init<Content: View>(swiftUIView: Content) {
         self.hostingController = UIHostingController(rootView: AnyView(swiftUIView))
         super.init()
+
+        self.hostingController.rootView = AnyView(
+            swiftUIView.environment(\.bridgeController, self)
+        )
 
         logger.info(message: "🌉 [SwiftUIBridge] Initialized bridge controller for SwiftUI integration")
     }
@@ -93,8 +124,8 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
             // Prevent infinite loops - don't update if we're already updating or size hasn't meaningfully changed
             guard !isUpdatingSize else { return }
-            guard abs(newRect.height - lastRecordedSize.height) > 10.0 else { return } // Increased threshold
-            guard abs(newRect.width - lastRecordedSize.width) > 10.0 else { return }
+            guard abs(newRect.height - lastRecordedSize.height) > SheetSizing.boundsChangeThreshold else { return }
+            guard abs(newRect.width - lastRecordedSize.width) > SheetSizing.boundsChangeThreshold else { return }
 
             logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)")
             lastRecordedSize = newRect.size
@@ -109,34 +140,61 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
         hostingController.view.removeObserver(self, forKeyPath: "bounds")
     }
 
+    @MainActor
     private func updateContentSize() {
+        guard modalPresentationStyle == .pageSheet else { return }
+
         // Prevent recursive calls
         guard !isUpdatingSize else { return }
-        isUpdatingSize = true
 
+        isUpdatingSize = true
         defer { isUpdatingSize = false }
 
         // Get the intrinsic content size from SwiftUI
         let targetSize = CGSize(width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
         let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
-
-        // Calculate the actual content height without hardcoded minimum
-        let contentHeight = max(fittingSize.height, 200) // Much smaller minimum than 400
-        let newSize = CGSize(width: view.bounds.width, height: contentHeight)
+        let newSize = CGSize(width: view.bounds.width, height: fittingSize.height)
 
         // Only update if size actually changed significantly
         let heightDifference = abs(newSize.height - preferredContentSize.height)
-        guard heightDifference > 5.0 else { return }
+        guard heightDifference > SheetSizing.heightUpdateThreshold else { return }
 
         // Update preferred content size for proper height calculation
         preferredContentSize = newSize
 
         // Notify parent controller about size change for dynamic layout updates
-        if let parent = parent {
+        if let parent {
             parent.preferredContentSizeDidChange(forChildContentContainer: self)
         }
 
+        // Invalidate sheet detents to update sheet height
+        invalidateSheetDetents()
+
         logger.debug(message: "🌉 [SwiftUIBridge] Updated content size: \(preferredContentSize) (fitting: \(fittingSize))")
+    }
+
+    func invalidateContentSize() {
+        guard modalPresentationStyle == .pageSheet else { return }
+
+        hostingController.view.invalidateIntrinsicContentSize()
+        hostingController.view.setNeedsLayout()
+        hostingController.view.layoutIfNeeded()
+
+        let targetSize = CGSize(width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
+        let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
+
+        preferredContentSize = CGSize(width: view.bounds.width, height: fittingSize.height)
+        invalidateSheetDetents()
+    }
+
+    private func invalidateSheetDetents() {
+        guard let customSheetPresentationController else { return }
+
+        if #available(iOS 16.0, *) {
+            customSheetPresentationController.animateChanges {
+                customSheetPresentationController.invalidateDetents()
+            }
+        }
     }
 }
 
@@ -158,8 +216,8 @@ extension PrimerSwiftUIBridgeViewController {
             let targetSize = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
             let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
 
-            let dynamicHeight = max(fittingSize.height, 200)
-            return CGSize(width: width, height: dynamicHeight)
+            // Return the actual fitting size - let the sheet detent handle minimum size
+            return CGSize(width: width, height: fittingSize.height)
         }
         set {
             super.preferredContentSize = newValue
@@ -195,7 +253,7 @@ extension PrimerSwiftUIBridgeViewController {
         // Create the SwiftUI checkout view
         let checkoutView: PrimerCheckout
 
-        if let customContent = customContent {
+        if let customContent {
             // Use the custom content initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,

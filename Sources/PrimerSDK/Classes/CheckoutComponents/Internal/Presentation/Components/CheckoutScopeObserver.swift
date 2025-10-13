@@ -17,6 +17,7 @@ struct CheckoutScopeObserver: View, LogReporter {
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
     private let onCompletion: (() -> Void)?
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.bridgeController) private var bridgeController
 
     // Design tokens state
     @StateObject private var designTokensManager = DesignTokensManager()
@@ -36,45 +37,54 @@ struct CheckoutScopeObserver: View, LogReporter {
     }
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Navigation state driven UI (now properly observing @Published navigationState)
-                ZStack {
-                    // MARK: - Navigation Content
-                    // Simple fade transition between screens
-                    // TODO: Future improvements could include:
-                    // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
-                    // - Add directional transitions (slide left/right) based on navigation direction
-                    // - Implement custom per-route transitions (e.g., scale for success screen)
-                    // - Add interactive gesture-based navigation
-                    getCurrentView()
-                        .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
+        Group {
+            if bridgeController != nil {
+                contentView
+            } else {
+                NavigationView { contentView }
+                    .navigationViewStyle(.stack)
+            }
+        }
+    }
 
-                    // Custom content overlay if provided
-                    if let customContent = customContent {
-                        customContent(scope)
-                    }
-                }
-                .sheet(isPresented: $showingCountrySelection) {
-                    // Present country selection as a modal sheet
-                    let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
-                    let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
-                    SelectCountryScreen(
-                        scope: countryScope,
-                        onDismiss: {
-                            showingCountrySelection = false
-                            // Restore previous navigation state after dismissal
-                            if let previousState = previousNavigationState {
-                                scope.updateNavigationState(previousState, syncToNavigator: false)
-                            }
-                        }
-                    )
+    private var contentView: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                // MARK: - Navigation Content
+                // Simple fade transition between screens
+                // TODO: Future improvements could include:
+                // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
+                // - Add directional transitions (slide left/right) based on navigation direction
+                // - Implement custom per-route transitions (e.g., scale for success screen)
+                // - Add interactive gesture-based navigation
+                getCurrentView()
+                    .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
+
+                // Custom content overlay if provided
+                if let customContent {
+                    customContent(scope)
                 }
             }
-            .environmentObject(scope)
-            .environment(\.diContainer, DIContainer.currentSync)
-            .environment(\.designTokens, designTokensManager.tokens)
+            .sheet(isPresented: $showingCountrySelection) {
+                // Present country selection as a modal sheet
+                let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
+                let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
+                SelectCountryScreen(
+                    scope: countryScope,
+                    onDismiss: {
+                        showingCountrySelection = false
+                        // Restore previous navigation state after dismissal
+                        if let previousNavigationState {
+                            scope.updateNavigationState(previousNavigationState, syncToNavigator: false)
+                        }
+                    }
+                )
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .environmentObject(scope)
+        .environment(\.diContainer, DIContainer.currentSync)
+        .environment(\.designTokens, designTokensManager.tokens)
         .onAppear {
             // Apply any scope customizations (only after SDK is initialized)
             scopeCustomization?(scope)
@@ -121,8 +131,8 @@ struct CheckoutScopeObserver: View, LogReporter {
         .onChange(of: showingCountrySelection) { isShowing in
             if !isShowing {
                 // When modal is dismissed, reset the navigation state in the navigator
-                if let previousState = previousNavigationState {
-                    switch previousState {
+                if let previousNavigationState {
+                    switch previousNavigationState {
                     case let .paymentMethod(paymentMethodType):
                         // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
@@ -202,8 +212,8 @@ struct CheckoutScopeObserver: View, LogReporter {
 
         case .selectCountry:
             // Country selection is now handled via modal sheet, return the previous view
-            if let previousState = previousNavigationState {
-                switch previousState {
+            if let previousNavigationState {
+                switch previousNavigationState {
                 case let .paymentMethod(paymentMethodType):
                     return AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
