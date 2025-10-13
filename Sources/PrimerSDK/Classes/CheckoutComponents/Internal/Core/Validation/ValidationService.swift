@@ -62,10 +62,10 @@ public protocol ValidationService {
  * - **Memory**: ~8KB for full cache (200 entries × ~40 bytes each)
  * - **Hit Rate**: Expected 70-85% for typical user typing patterns
  */
-internal final class ValidationResultCache {
+final class ValidationResultCache {
 
     /// Shared cache instance for all validation operations
-    internal static let shared = ValidationResultCache()
+    static let shared = ValidationResultCache()
 
     /// Internal cache with automatic cleanup
     private let cache = NSCache<NSString, CachedValidationResult>()
@@ -118,11 +118,6 @@ internal final class ValidationResultCache {
 
         return result
     }
-
-    /// Clears validation cache (useful for testing or memory pressure)
-    func clearCache() {
-        cache.removeAllObjects()
-    }
 }
 
 /// Default implementation of the ValidationService
@@ -133,7 +128,7 @@ public class DefaultValidationService: ValidationService {
     
     // MARK: - Initialization
     
-    internal init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
+    init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
     }
 }

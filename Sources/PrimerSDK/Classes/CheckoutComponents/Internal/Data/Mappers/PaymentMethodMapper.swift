@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// Protocol for mapping between internal and public payment method representations.
-internal protocol PaymentMethodMapper {
+protocol PaymentMethodMapper {
     /// Maps an internal payment method to the public representation.
     func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod
 
@@ -18,7 +18,7 @@ internal protocol PaymentMethodMapper {
 }
 
 /// Default implementation of PaymentMethodMapper.
-internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
+final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
     func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
         let formattedSurcharge = formatSurcharge(internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
@@ -47,13 +47,13 @@ internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
         // Priority: unknown surcharge > actual surcharge > no fee
         if hasUnknownSurcharge {
-            return "Fee may apply"
+            return CheckoutComponentsStrings.additionalFeeMayApply
         }
 
         guard let surcharge = surcharge,
               surcharge > 0,
               let currency = AppState.current.currency else {
-            return "No additional fee"
+            return CheckoutComponentsStrings.noAdditionalFee
         }
 
         // Use existing currency formatting extension to match Drop-in/Headless behavior

@@ -44,7 +44,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     private let hostingController: UIHostingController<AnyView>
     private let logger = PrimerLogging.shared.logger
-    private var heightConstraint: NSLayoutConstraint?
     private var lastRecordedSize: CGSize = .zero
     private var isUpdatingSize = false
 
@@ -174,20 +173,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
         logger.debug(message: "🌉 [SwiftUIBridge] Updated content size: \(preferredContentSize) (fitting: \(fittingSize))")
     }
 
-    // MARK: - Public Interface
-
-    /// Get the underlying SwiftUI hosting controller for advanced integration
-    var swiftUIHostingController: UIHostingController<AnyView> {
-        return hostingController
-    }
-
-    /// Update the SwiftUI content if needed
-    func updateSwiftUIContent<Content: View>(_ newContent: Content) {
-        hostingController.rootView = AnyView(newContent)
-        updateContentSize()
-        logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI content updated")
-    }
-
     func invalidateContentSize() {
         guard modalPresentationStyle == .pageSheet else { return }
 
@@ -296,36 +281,6 @@ extension PrimerSwiftUIBridgeViewController {
         bridgeController.title = CheckoutComponentsStrings.checkoutTitle
 
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
-        return bridgeController
-    }
-
-    /// Factory method to create bridge controller for direct card form presentation
-    static func createForCardForm(
-        clientToken: String,
-        settings: PrimerSettings,
-        diContainer: DIContainer,
-        navigator: CheckoutNavigator,
-        onCompletion: (() -> Void)? = nil
-    ) -> PrimerSwiftUIBridgeViewController {
-
-        let logger = PrimerLogging.shared.logger
-        logger.info(message: "💳 [SwiftUIBridge] Creating bridge for direct card form")
-
-        // Create the SwiftUI checkout view configured for direct card presentation
-        let checkoutView = PrimerCheckout(
-            clientToken: clientToken,
-            settings: settings,
-            diContainer: diContainer,
-            navigator: navigator,
-            presentationContext: .direct, // Key difference: direct presentation
-            onCompletion: onCompletion
-        )
-
-        // Create bridge controller
-        let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
-        bridgeController.title = CheckoutComponentsStrings.cardPaymentTitle
-
-        logger.info(message: "💳 [SwiftUIBridge] Card form bridge created successfully")
         return bridgeController
     }
 }

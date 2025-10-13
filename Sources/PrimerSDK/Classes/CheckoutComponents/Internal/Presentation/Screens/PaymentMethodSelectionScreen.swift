@@ -199,7 +199,7 @@ struct PaymentMethodSelectionScreen: View {
 
         if !unknownFeeMethods.isEmpty {
             groups.append(PaymentMethodGroup(
-                group: CheckoutComponentsStrings.surchargeFeeSectionTitle,
+                group: CheckoutComponentsStrings.additionalFeeMayApply,
                 methods: unknownFeeMethods
             ))
         }
@@ -249,7 +249,7 @@ struct PaymentMethodSelectionScreen: View {
         if groupName.hasPrefix("+") {
             // Positive surcharge - use positive color
             return tokens?.primerColorIconPositive ?? Color(.systemGreen)
-        } else if groupName == CheckoutComponentsStrings.surchargeFeeSectionTitle {
+        } else if groupName == CheckoutComponentsStrings.additionalFeeMayApply {
             // Unknown surcharge - use warning color
             return tokens?.primerColorTextSecondary ?? Color(.secondaryLabel)
         } else {

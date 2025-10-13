@@ -23,8 +23,7 @@ public struct ValidationError: Equatable, Hashable, Codable {
     let code: String
     let message: String
 
-    // Match SyncValidationError structure
-    let inputElementType: InputElementType
+    let inputElementType: InputElementType // ?? Is this needed
     let errorId: String
     let fieldNameKey: String?       // Localization key for field name
     let errorMessageKey: String?    // Localization key for error message
@@ -80,70 +79,6 @@ public struct ValidationError: Equatable, Hashable, Codable {
         self.errorMessageKey = nil
         self.errorFormatKey = nil
     }
-
-    /// Field-based initializer
-    internal init(field: String, message: String) {
-        self.code = "invalid-\(field)"
-        self.message = message
-        self.inputElementType = ValidationError.InputElementType.from(field: field)
-        self.errorId = "invalid-\(field)"
-        self.fieldNameKey = nil
-        self.errorMessageKey = nil
-        self.errorFormatKey = nil
-    }
 }
 
 // MARK: - Convenience Extensions
-
-extension ValidationError.InputElementType {
-    /// Convert from field string to InputElementType
-    static func from(field: String) -> ValidationError.InputElementType {
-        switch field.lowercased() {
-        case "cardnumber", "card-number", "card_number":
-            return .cardNumber
-        case "cvv", "cvc", "security_code":
-            return .cvv
-        case "expirydate", "expiry-date", "expiry_date":
-            return .expiryDate
-        case "cardholdername", "cardholder-name", "cardholder_name":
-            return .cardholderName
-        case "firstname", "first-name", "first_name":
-            return .firstName
-        case "lastname", "last-name", "last_name":
-            return .lastName
-        case "email":
-            return .email
-        case "phonenumber", "phone-number", "phone_number":
-            return .phoneNumber
-        case "countrycode", "country-code", "country_code":
-            return .countryCode
-        case "postalcode", "postal-code", "postal_code":
-            return .postalCode
-        default:
-            return .unknown
-        }
-    }
-
-    /// Convert to PrimerInputElementType for interop
-    var toPrimerInputElementType: PrimerInputElementType {
-        switch self {
-        case .cardNumber: return .cardNumber
-        case .cvv: return .cvv
-        case .expiryDate: return .expiryDate
-        case .cardholderName: return .cardholderName
-        case .firstName: return .firstName
-        case .lastName: return .lastName
-        case .email: return .email
-        case .phoneNumber: return .phoneNumber
-        case .addressLine1: return .addressLine1
-        case .addressLine2: return .addressLine2
-        case .city: return .city
-        case .state: return .state
-        case .postalCode: return .postalCode
-        case .countryCode: return .countryCode
-        case .retailOutlet: return .retailer
-        case .otpCode: return .otp
-        case .unknown: return .unknown
-        }
-    }
-}

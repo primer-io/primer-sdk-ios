@@ -32,6 +32,64 @@
                   location = "group:Internal"
                   name = "Internal">
                   <Group
+                     location = "group:Bridge"
+                     name = "Bridge">
+                     <FileRef
+                        location = "group:CheckoutComponentsPaymentMethodsBridge.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Constants"
+                     name = "Constants">
+                     <FileRef
+                        location = "group:CheckoutComponentsStrings.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Resources"
+                     name = "Resources">
+                     <Group
+                        location = "group:Fonts"
+                        name = "Fonts">
+                        <FileRef
+                           location = "group:InterVariable-Italic.ttf">
+                        </FileRef>
+                        <FileRef
+                           location = "group:InterVariable.ttf">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Services"
+                     name = "Services">
+                     <FileRef
+                        location = "group:CheckoutSDKInitializer.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:SettingsObserver.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CheckoutComponentsSettingsService.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:UI"
+                     name = "UI">
+                     <FileRef
+                        location = "group:PrimerSwiftUIBridgeViewController.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:Design"
+                        name = "Design">
+                        <FileRef
+                           location = "group:FigmaDesignConstants.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Color+CheckoutComponents.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
                      location = "group:DI"
                      name = "DI">
                      <Group
@@ -233,13 +291,6 @@
                         <FileRef
                            location = "group:CardNetworkSelector.swift">
                         </FileRef>
-                        <Group
-                           location = "group:Input"
-                           name = "Input">
-                           <FileRef
-                              location = "group:PrimerInputField.swift">
-                           </FileRef>
-                        </Group>
                         <Group
                            location = "group:Composite"
                            name = "Composite">

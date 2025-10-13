@@ -6,24 +6,25 @@
 //
 
 import SwiftUI
+
 /// Card payment method implementation conforming to PaymentMethodProtocol.
 /// Provides self-contained card payment functionality with scope creation.
 @available(iOS 15.0, *)
-internal struct CardPaymentMethod: PaymentMethodProtocol {
+struct CardPaymentMethod: PaymentMethodProtocol {
 
     /// The scope type this payment method creates
-    internal typealias ScopeType = DefaultCardFormScope
+    typealias ScopeType = DefaultCardFormScope
 
     /// The payment method type identifier for cards
-    internal static let paymentMethodType: String = "PAYMENT_CARD"
+    static let paymentMethodType: String = "PAYMENT_CARD"
 
     /// Creates a card form scope for this payment method
     /// - Parameters:
     ///   - checkoutScope: The parent checkout scope for navigation coordination
-    ///   - diContainer: The dependency injection container for resolving services (not used by card form)
+    ///   - diContainer: The dependency injection container used to resolve card form dependencies
     /// - Returns: A configured DefaultCardFormScope instance
     @MainActor
-    internal static func createScope(
+    static func createScope(
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
     ) throws -> DefaultCardFormScope {
@@ -36,8 +37,6 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
             )
         }
 
-        // Create the card form scope using the existing initialization pattern
-        // The DefaultCardFormScope gets its DIContainer internally from DIContainer.shared
         // Determine the correct presentation context based on the number of available payment methods
         let logger = PrimerLogging.shared.logger
         let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
@@ -60,7 +59,35 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
 
         logger.info(message: "🧭 [CardPaymentMethod]   - Final card scope context: \(paymentMethodContext)")
 
-        return DefaultCardFormScope(checkoutScope: defaultCheckoutScope, presentationContext: paymentMethodContext)
+        do {
+            let processCardInteractor: ProcessCardPaymentInteractor = try diContainer.resolveSync(ProcessCardPaymentInteractor.self)
+            let validateInputInteractor = try? diContainer.resolveSync(ValidateInputInteractor.self)
+            let cardNetworkDetectionInteractor = try? diContainer.resolveSync(CardNetworkDetectionInteractor.self)
+
+            if validateInputInteractor == nil {
+                logger.debug(message: "⚠️ [CardPaymentMethod] ValidateInputInteractor not registered – using local validation only")
+            }
+
+            if cardNetworkDetectionInteractor == nil {
+                logger.warn(message: "⚠️ [CardPaymentMethod] CardNetworkDetectionInteractor not registered – co-badged detection disabled")
+            }
+
+            return DefaultCardFormScope(
+                checkoutScope: defaultCheckoutScope,
+                presentationContext: paymentMethodContext,
+                processCardPaymentInteractor: processCardInteractor,
+                validateInputInteractor: validateInputInteractor,
+                cardNetworkDetectionInteractor: cardNetworkDetectionInteractor
+            )
+        } catch let primerError as PrimerError {
+            throw primerError
+        } catch {
+            logger.error(message: "❌ [CardPaymentMethod] Failed to resolve card payment dependencies: \(error)")
+            throw PrimerError.invalidArchitecture(
+                description: "ProcessCardPaymentInteractor could not be resolved",
+                recoverSuggestion: "Ensure CheckoutComponents DI registration runs before presenting the Card form."
+            )
+        }
     }
 
     /// Provides custom UI for this payment method using ViewBuilder.
@@ -91,7 +118,7 @@ extension CardPaymentMethod {
     /// Registers the card payment method with the global registry
     /// This should be called during SDK initialization
     @MainActor
-    internal static func register() {
+    static func register() {
         PaymentMethodRegistry.shared.register(CardPaymentMethod.self)
     }
 }
