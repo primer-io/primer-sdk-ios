@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A SwiftUI component for country selection with validation
 @available(iOS 15.0, *)
-internal struct CountryInputField: View, LogReporter {
+struct CountryInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -85,7 +85,7 @@ internal struct CountryInputField: View, LogReporter {
     // MARK: - Initialization
 
     /// Creates a new CountryInputField with comprehensive customization support
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
@@ -154,7 +154,7 @@ internal struct CountryInputField: View, LogReporter {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                                .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                                .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
                         } else {
                             // Chevron down icon when no error
                             Image(systemName: "chevron.down")

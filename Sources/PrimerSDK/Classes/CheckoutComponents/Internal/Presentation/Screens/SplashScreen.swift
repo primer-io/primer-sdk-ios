@@ -14,13 +14,10 @@ struct SplashScreen: View {
 
     var body: some View {
         ZStack {
-            // Clean white background to match Figma design
             Color.white
                 .ignoresSafeArea()
 
-            // Content container
             VStack(spacing: 16) {
-                // Loading spinner (56px to match Figma)
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                     .scaleEffect(2.0)
@@ -30,13 +27,13 @@ struct SplashScreen: View {
                     // Primary loading message
                     Text(CheckoutComponentsStrings.loadingSecureCheckout)
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255))
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? .defaultTextPrimary)
                         .multilineTextAlignment(.center)
 
                     // Secondary loading message
                     Text(CheckoutComponentsStrings.loadingWontTakeLong)
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor((tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255)).opacity(0.62))
+                        .foregroundColor((tokens?.primerColorTextPrimary ?? .defaultTextPrimary).opacity(0.62))
                         .multilineTextAlignment(.center)
                 }
             }

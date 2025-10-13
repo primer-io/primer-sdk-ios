@@ -23,13 +23,10 @@ struct SuccessScreen: View {
 
     var body: some View {
         ZStack {
-            // Clean white background to match Figma design
             Color.white
                 .ignoresSafeArea()
 
-            // Content container matching Figma layout
             VStack(spacing: 8) {
-                // Success checkmark icon (56x56 to match Figma)
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 56))
                     .foregroundColor(.green)
@@ -38,13 +35,13 @@ struct SuccessScreen: View {
                     // Primary success message
                     Text(CheckoutComponentsStrings.paymentSuccessful)
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255))
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? .defaultTextPrimary)
                         .multilineTextAlignment(.center)
 
                     // Secondary redirect message
                     Text(CheckoutComponentsStrings.redirectConfirmationMessage)
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor((tokens?.primerColorTextPrimary ?? Color(red: 0x21/255, green: 0x21/255, blue: 0x21/255)).opacity(0.62))
+                        .foregroundColor((tokens?.primerColorTextPrimary ?? .defaultTextPrimary).opacity(0.62))
                         .multilineTextAlignment(.center)
                 }
             }
