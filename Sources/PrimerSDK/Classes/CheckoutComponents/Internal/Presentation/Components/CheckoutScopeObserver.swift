@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
 @available(iOS 15.0, *)
-internal struct CheckoutScopeObserver: View, LogReporter {
+struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
@@ -19,9 +19,8 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     @Environment(\.colorScheme) private var colorScheme
 
     // Design tokens state
-    @State private var designTokens: DesignTokens?
-    @State private var designTokensManager: DesignTokensManager?
-
+    @StateObject private var designTokensManager = DesignTokensManager()
+    
     // Country selection modal state
     @State private var showingCountrySelection = false
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
@@ -74,7 +73,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             }
             .environmentObject(scope)
             .environment(\.diContainer, DIContainer.currentSync)
-            .environment(\.designTokens, designTokens)
+            .environment(\.designTokens, designTokensManager.tokens)
         }
         .onAppear {
             // Apply any scope customizations (only after SDK is initialized)
@@ -124,7 +123,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 // When modal is dismissed, reset the navigation state in the navigator
                 if let previousState = previousNavigationState {
                     switch previousState {
-                    case .paymentMethod(let paymentMethodType):
+                    case let .paymentMethod(paymentMethodType):
                         // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
                     case .paymentMethodSelection:
@@ -194,7 +193,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 ))
             }
 
-        case .paymentMethod(let paymentMethodType):
+        case let .paymentMethod(paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach
             return AnyView(PaymentMethodScreen(
                 paymentMethodType: paymentMethodType,
@@ -205,7 +204,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             // Country selection is now handled via modal sheet, return the previous view
             if let previousState = previousNavigationState {
                 switch previousState {
-                case .paymentMethod(let paymentMethodType):
+                case let .paymentMethod(paymentMethodType):
                     return AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
                         checkoutScope: scope
@@ -224,7 +223,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 return AnyView(LoadingScreen())
             }
 
-        case .success(let result):
+        case let .success(result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
                 if let customSuccess = scope.successScreen {
@@ -246,7 +245,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 })
             }
 
-        case .failure(let error):
+        case let .failure(error):
             // Check if error screen is enabled in settings (UI Options integration)
             if scope.isErrorScreenEnabled {
                 if let customError = scope.errorScreen {
@@ -288,47 +287,14 @@ internal struct CheckoutScopeObserver: View, LogReporter {
 
     private func setupDesignTokens() async {
         logger.info(message: "Setting up design tokens...")
-        do {
-            guard let container = await DIContainer.current else {
-                logger.warn(message: "DI Container not available for design tokens")
-                return
-            }
-
-            designTokensManager = try await container.resolve(DesignTokensManager.self)
-            logger.info(message: "DesignTokensManager resolved successfully")
-            await loadDesignTokens(for: colorScheme)
-        } catch {
-            logger.error(message: "Failed to setup design tokens: \(error)")
-        }
+        await loadDesignTokens(for: colorScheme)
     }
 
     private func loadDesignTokens(for colorScheme: ColorScheme) async {
-        guard let manager = designTokensManager else {
-            logger.warn(message: "DesignTokensManager not available")
-            return
-        }
-
         logger.info(message: "Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
         do {
-            try await manager.fetchTokens(for: colorScheme)
-            await MainActor.run {
-                designTokens = manager.tokens
-                logger.info(message: "Design tokens loaded successfully")
-
-                // Log the specific focus border color for debugging
-                if let focusColor = designTokens?.primerColorBorderOutlinedFocus {
-                    logger.info(message: "Focus border color: \(focusColor)")
-                } else {
-                    logger.warn(message: "Focus border color not found in design tokens!")
-                }
-
-                // Log the brand color for comparison
-                if let brandColor = designTokens?.primerColorBrand {
-                    logger.info(message: "Brand color: \(brandColor)")
-                } else {
-                    logger.warn(message: "Brand color not found in design tokens!")
-                }
-            }
+            try await designTokensManager.fetchTokens(for: colorScheme)
+            logger.info(message: "Design tokens loaded successfully")
         } catch {
             logger.error(message: "Failed to load design tokens: \(error)")
         }

@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A SwiftUI component for selecting between co-badged card networks
 @available(iOS 15.0, *)
-internal struct CardNetworkSelector: View {
+struct CardNetworkSelector: View {
     // MARK: - Properties
 
     /// Available card networks to choose from
