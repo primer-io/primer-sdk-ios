@@ -95,9 +95,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Private Properties
 
     private weak var checkoutScope: DefaultCheckoutScope?
-    private var processCardPaymentInteractor: ProcessCardPaymentInteractor?
-    private var validateInputInteractor: ValidateInputInteractor?
-    private var cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
+    private let processCardPaymentInteractor: ProcessCardPaymentInteractor
+    private let validateInputInteractor: ValidateInputInteractor?
+    private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
 
     /// Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
@@ -129,37 +129,21 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Initialization
 
-    init(checkoutScope: DefaultCheckoutScope, presentationContext: PresentationContext = .fromPaymentSelection) {
+    init(
+        checkoutScope: DefaultCheckoutScope,
+        presentationContext: PresentationContext = .fromPaymentSelection,
+        processCardPaymentInteractor: ProcessCardPaymentInteractor,
+        validateInputInteractor: ValidateInputInteractor? = nil,
+        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil
+    ) {
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
+        self.processCardPaymentInteractor = processCardPaymentInteractor
+        self.validateInputInteractor = validateInputInteractor
+        self.cardNetworkDetectionInteractor = cardNetworkDetectionInteractor
 
-        // Log the presentation context initialization
-        // Initialized with presentation context
-        // Should show back button setting logged
-        // Cancel behavior setting logged
-        // Instance ID logged
-        Task {
-            await setupInteractors()
-        }
-    }
-
-    // MARK: - Setup
-    private func setupInteractors() async {
-        do {
-            guard let container = await DIContainer.current else {
-                throw ContainerError.containerUnavailable
-            }
-
-            // Resolve interactors from DI container (proper dependency injection)
-            processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
-            cardNetworkDetectionInteractor = try await container.resolve(CardNetworkDetectionInteractor.self)
-
-            // Interactors resolved from DI container successfully
-
-            // Setup network detection stream through the interactor
+        if cardNetworkDetectionInteractor != nil {
             setupNetworkDetectionStream()
-        } catch {
-            // Failed to resolve interactors from DI container
         }
     }
 
@@ -556,13 +540,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     private func prepareCardPaymentData() async throws -> CardPaymentData {
-        guard processCardPaymentInteractor != nil else {
-            throw PrimerError.invalidArchitecture(
-                description: "ProcessCardPaymentInteractor not initialized",
-                recoverSuggestion: "Ensure proper initialization of payment components",
-            )
-        }
-
         let (expiryMonth, fullYear) = try parseExpiryComponents()
         let selectedNetwork = getSelectedCardNetwork()
         let billingAddress = createInteractorBillingAddress()
@@ -604,14 +581,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
         // Processing card payment using ProcessCardPaymentInteractor
 
-        guard let interactor = processCardPaymentInteractor else {
-            throw PrimerError.invalidArchitecture(
-                description: "ProcessCardPaymentInteractor not initialized",
-                recoverSuggestion: "Ensure proper initialization of payment components"
-            )
-        }
-
-        let result = try await interactor.execute(cardData: cardData)
+        let result = try await processCardPaymentInteractor.execute(cardData: cardData)
         // Card payment processed successfully via interactor
         return result
     }
