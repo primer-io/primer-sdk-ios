@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Default card form screen for CheckoutComponents with dynamic field rendering
 @available(iOS 15.0, *)
-internal struct CardFormScreen: View, LogReporter {
+struct CardFormScreen: View, LogReporter {
     let scope: any PrimerCardFormScope
 
     @Environment(\.designTokens) private var tokens
