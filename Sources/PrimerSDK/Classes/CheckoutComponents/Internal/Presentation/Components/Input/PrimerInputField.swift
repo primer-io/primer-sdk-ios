@@ -195,7 +195,7 @@ struct PrimerInputField: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
                             .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
                     } else if let trailingIcon = trailingIcon {
                         // Trailing icon when no error

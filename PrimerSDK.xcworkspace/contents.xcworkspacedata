@@ -230,9 +230,6 @@
                            location = "group:PaymentMethodSelectionScreen.swift">
                         </FileRef>
                         <FileRef
-                           location = "group:LoadingScreen.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:SuccessScreen.swift">
                         </FileRef>
                         <FileRef

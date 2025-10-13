@@ -9,50 +9,35 @@ import SwiftUI
 
 /// Default splash screen for CheckoutComponents
 @available(iOS 15.0, *)
-internal struct SplashScreen: View {
+struct SplashScreen: View {
     @Environment(\.designTokens) private var tokens
-    @State private var animateGradient = false
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    tokens?.primerColorTextPrimary ?? .blue,
-                    (tokens?.primerColorTextPrimary ?? .blue).opacity(0.7)
-                ]),
-                startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                endPoint: animateGradient ? .bottomTrailing : .topLeading
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: animateGradient)
+            Color.white
+                .ignoresSafeArea()
 
-            // Logo or brand
-            VStack(spacing: 24) {
-                // Placeholder for logo
-                Circle()
-                    .fill(Color.white.opacity(0.9))
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        Text("P")
-                            .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .blue)
-                    )
-                    .scaleEffect(animateGradient ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateGradient)
+            VStack(spacing: 16) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(2.0)
+                    .frame(width: 56, height: 56)
 
-                Text("Primer")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
+                VStack(spacing: 4) {
+                    // Primary loading message
+                    Text(CheckoutComponentsStrings.loadingSecureCheckout)
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? .defaultTextPrimary)
+                        .multilineTextAlignment(.center)
 
-                Text("Secure Checkout")
-                    .font(.body)
-                    .foregroundColor(.white.opacity(0.8))
+                    // Secondary loading message
+                    Text(CheckoutComponentsStrings.loadingWontTakeLong)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor((tokens?.primerColorTextPrimary ?? .defaultTextPrimary).opacity(0.62))
+                        .multilineTextAlignment(.center)
+                }
             }
-        }
-        .onAppear {
-            animateGradient = true
+            .padding(.horizontal, 32)
         }
     }
 }

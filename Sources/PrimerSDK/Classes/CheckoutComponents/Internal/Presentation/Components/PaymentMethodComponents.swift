@@ -12,7 +12,7 @@ import SwiftUI
 /// Generic payment method screen that dynamically resolves and displays any payment method
 @available(iOS 15.0, *)
 @MainActor
-internal struct PaymentMethodScreen: View {
+struct PaymentMethodScreen: View {
     let paymentMethodType: String
     let checkoutScope: PrimerCheckoutScope
 
@@ -49,7 +49,7 @@ internal struct PaymentMethodScreen: View {
 /// Placeholder screen for payment methods that don't have implemented scopes yet
 @available(iOS 15.0, *)
 @MainActor
-internal struct PaymentMethodPlaceholder: View {
+struct PaymentMethodPlaceholder: View {
     let paymentMethodType: String
 
     var body: some View {
@@ -58,10 +58,10 @@ internal struct PaymentMethodPlaceholder: View {
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
 
-            Text("Payment Method: \(displayName)")
+            Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
                 .font(.headline)
 
-            Text("Implementation coming soon")
+            Text(CheckoutComponentsStrings.implementationComingSoon)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }

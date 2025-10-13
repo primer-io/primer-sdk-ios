@@ -10,7 +10,7 @@ import SwiftUI
 /// Default implementation of PrimerPaymentMethodSelectionScope
 @available(iOS 15.0, *)
 @MainActor
-internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope, ObservableObject, LogReporter {
+final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
     /// The current payment method selection state
@@ -62,7 +62,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
         // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
             // Checkout scope not available
-            internalState.error = "Checkout scope not available"
+            internalState.error = CheckoutComponentsStrings.checkoutScopeNotAvailable
             return
         }
 
@@ -110,7 +110,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
                 // Payment methods loaded and categorized successfully with surcharge data
                 break
-            } else if case .failure(let error) = checkoutState {
+            } else if case let .failure(error) = checkoutState {
                 // Checkout scope has error
                 internalState.error = error.localizedDescription
                 break

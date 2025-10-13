@@ -9,25 +9,9 @@ import SwiftUI
 
 // MARK: - SDK Initialization UI Components
 
-/// Loading view shown during SDK initialization
-@available(iOS 15.0, *)
-internal struct SDKInitializationLoadingView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.5)
-
-            Text("Initializing payment system...")
-                .font(.headline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 /// Error view shown when SDK initialization fails
 @available(iOS 15.0, *)
-internal struct SDKInitializationErrorView: View {
+struct SDKInitializationErrorView: View {
     let error: PrimerError
     let onRetry: () -> Void
 
@@ -37,7 +21,7 @@ internal struct SDKInitializationErrorView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.orange)
 
-            Text("Payment System Error")
+            Text(CheckoutComponentsStrings.paymentSystemError)
                 .font(.headline)
 
             Text(error.localizedDescription)
@@ -46,7 +30,7 @@ internal struct SDKInitializationErrorView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            Button("Retry") {
+            Button(CheckoutComponentsStrings.retryButton) {
                 onRetry()
             }
             .buttonStyle(.borderedProminent)

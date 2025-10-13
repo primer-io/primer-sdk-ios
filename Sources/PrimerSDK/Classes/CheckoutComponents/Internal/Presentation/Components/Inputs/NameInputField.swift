@@ -11,7 +11,7 @@ import UIKit
 /// A SwiftUI component for first/last name input with validation and consistent styling
 /// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
-internal struct NameInputField: View, LogReporter {
+struct NameInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -73,7 +73,7 @@ internal struct NameInputField: View, LogReporter {
     // MARK: - Initialization
 
     /// Creates a new NameInputField with comprehensive customization support (scope-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         inputType: PrimerInputElementType,
@@ -90,7 +90,7 @@ internal struct NameInputField: View, LogReporter {
     }
 
     /// Creates a new NameInputField with comprehensive customization support (callback-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         inputType: PrimerInputElementType,
@@ -175,7 +175,7 @@ internal struct NameInputField: View, LogReporter {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
                             .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
                     }
                 }

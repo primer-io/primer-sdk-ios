@@ -169,7 +169,7 @@ struct CardFormScreen: View, LogReporter {
 
     private var defaultCobadgedCardsView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Select Network")
+            Text(CheckoutComponentsStrings.selectNetworkTitle)
                 .font(.caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .padding(.horizontal)
@@ -201,7 +201,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 VStack(alignment: .leading, spacing: FigmaDesignConstants.sectionSpacing) {
                     // Billing address section title
-                    Text("Billing Address")
+                    Text(CheckoutComponentsStrings.billingAddressTitle)
                         .font(.headline)
                         .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                         .padding(.horizontal)
@@ -372,7 +372,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 CardNumberInputField(
                     label: fieldLabel ?? "Card Number",
-                    placeholder: "1234 1234 1234 1234",
+                    placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
                     scope: scope,
                     selectedNetwork: getSelectedCardNetwork(),
                     styling: defaultStyling
@@ -385,7 +385,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 ExpiryDateInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "MM/YY",
+                    placeholder: CheckoutComponentsStrings.expiryDatePlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -397,7 +397,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 CVVInputField(
                     label: fieldLabel ?? "",
-                    placeholder: getCardNetworkForCvv() == .amex ? "1234" : "123",
+                    placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
                     scope: scope,
                     cardNetwork: getCardNetworkForCvv(),
                     styling: defaultStyling
@@ -410,7 +410,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 CardholderNameInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "Full name",
+                    placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -422,7 +422,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 PostalCodeInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "12345",
+                    placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -434,7 +434,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 CountryInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "Select Country",
+                    placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -446,7 +446,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 CityInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "City",
+                    placeholder: CheckoutComponentsStrings.cityPlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -458,7 +458,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 StateInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "State",
+                    placeholder: CheckoutComponentsStrings.statePlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -470,7 +470,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 AddressLineInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "123 Main St",
+                    placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
                     isRequired: true,
                     inputType: .addressLine1,
                     scope: scope,
@@ -484,7 +484,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 AddressLineInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "Apt 4B",
+                    placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
                     isRequired: false,
                     inputType: .addressLine2,
                     scope: scope,
@@ -498,7 +498,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "+1 (555) 123-4567",
+                    placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
                     inputType: .phoneNumber,
                     scope: scope,
                     styling: defaultStyling
@@ -511,7 +511,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "John",
+                    placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
                     inputType: .firstName,
                     scope: scope,
                     styling: defaultStyling
@@ -524,7 +524,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 NameInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "Smith",
+                    placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
                     inputType: .lastName,
                     scope: scope,
                     styling: defaultStyling
@@ -537,7 +537,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 EmailInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "john@example.com",
+                    placeholder: CheckoutComponentsStrings.emailPlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
@@ -547,7 +547,7 @@ struct CardFormScreen: View, LogReporter {
             if let customField = (scope as? DefaultCardFormScope)?.retailOutletField {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
-                Text("Retail outlet selection not yet implemented")
+                Text(CheckoutComponentsStrings.retailOutletNotImplemented)
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding()
@@ -559,7 +559,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 OTPCodeInputField(
                     label: fieldLabel ?? "",
-                    placeholder: "123456",
+                    placeholder: CheckoutComponentsStrings.otpCodeNumericPlaceholder,
                     scope: scope,
                     styling: defaultStyling
                 )
