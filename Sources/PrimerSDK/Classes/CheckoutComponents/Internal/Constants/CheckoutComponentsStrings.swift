@@ -72,11 +72,11 @@ struct CheckoutComponentsStrings {
         comment: "Payment method selection screen subtitle"
     )
 
-    static let surchargeFeeSectionTitle = NSLocalizedString(
+    static let additionalFeeMayApply = NSLocalizedString(
         "surcharge-additional-fee",
         bundle: Bundle.primerResources,
-        value: "Surcharge fee",
-        comment: "Surcharge fee section title"
+        value: "Additional fee may apply",
+        comment: "Message shown when a surcharge might be applied"
     )
 
     static func paymentAmountTitle(_ amount: String) -> String {
