@@ -11,18 +11,13 @@ import SwiftUI
 /// This provides a simpler API for basic navigation needs while the coordinator handles complex state
 @available(iOS 15.0, *)
 @MainActor
-internal final class CheckoutNavigator: ObservableObject, LogReporter {
+final class CheckoutNavigator: ObservableObject, LogReporter {
 
     // MARK: - Private Properties
 
     private let coordinator: CheckoutCoordinator
 
     // MARK: - Public Properties
-
-    /// Current route from the coordinator
-    var currentRoute: CheckoutRoute {
-        coordinator.currentRoute
-    }
 
     /// Navigation state as AsyncStream (NO Combine)
     var navigationEvents: AsyncStream<CheckoutRoute> {
@@ -70,17 +65,10 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .selectCountry)
     }
 
-    /// Navigate to error screen with message (handled by CheckoutComponentsPrimer delegate)
-    func navigateToError(_ message: String) {
-        let error = CheckoutPaymentError(
-            code: "checkout_error",
-            message: message,
-            details: nil
-        )
+    /// Navigate to error screen with PrimerError (handled by CheckoutComponentsPrimer delegate)
+    func navigateToError(_ error: PrimerError) {
         coordinator.handlePaymentFailure(error)
-
         // Error handling is now managed by CheckoutComponentsPrimer delegate
-        // Error navigation - handled by delegate
     }
 
     /// Navigate back
@@ -95,29 +83,10 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
 
     // MARK: - Coordinator Access
 
-    /// Access to the underlying coordinator for advanced navigation
+    /// Access to the underlying coordinator for advanced navigation scenarios.
+    /// This property provides direct access to the coordinator for cases where
+    /// higher-level navigation methods are insufficient.
     var checkoutCoordinator: CheckoutCoordinator {
         coordinator
-    }
-}
-
-/// Environment key for CheckoutNavigator
-@available(iOS 15.0, *)
-@preconcurrency
-internal struct CheckoutNavigatorKey: EnvironmentKey {
-    static let defaultValue: CheckoutNavigator = {
-        // Create the navigator on MainActor
-        let navigator = MainActor.assumeIsolated {
-            CheckoutNavigator()
-        }
-        return navigator
-    }()
-}
-
-@available(iOS 15.0, *)
-internal extension EnvironmentValues {
-    var checkoutNavigator: CheckoutNavigator {
-        get { self[CheckoutNavigatorKey.self] }
-        set { self[CheckoutNavigatorKey.self] = newValue }
     }
 }

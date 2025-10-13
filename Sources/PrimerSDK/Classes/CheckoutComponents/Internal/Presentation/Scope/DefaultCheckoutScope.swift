@@ -10,10 +10,10 @@ import SwiftUI
 /// Default implementation of PrimerCheckoutScope
 @available(iOS 15.0, *)
 @MainActor
-internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter, SettingsObserverProtocol {
+final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter, SettingsObserverProtocol {
     // MARK: - Internal Navigation State
 
-    internal enum NavigationState: Equatable {
+    enum NavigationState: Equatable {
         case loading
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
@@ -32,11 +32,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 return true
             case (.dismissed, .dismissed):
                 return true
-            case (.paymentMethod(let lhsType), .paymentMethod(let rhsType)):
+            case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
                 return lhsType == rhsType
-            case (.success(let lhsResult), .success(let rhsResult)):
+            case let (.success(lhsResult), .success(rhsResult)):
                 return lhsResult.paymentId == rhsResult.paymentId
-            case (.failure(let lhsError), .failure(let rhsError)):
+            case let (.failure(lhsError), .failure(rhsError)):
                 return lhsError.localizedDescription == rhsError.localizedDescription
             default:
                 return false
@@ -294,15 +294,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 navigator.navigateToLoading()
             case .paymentMethodSelection:
                 navigator.navigateToPaymentSelection()
-            case .paymentMethod(let paymentMethodType):
+            case let .paymentMethod(paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
             case .selectCountry:
                 navigator.navigateToCountrySelection()
             case .success:
                 // Success handling is now done via the view's switch statement, not the navigator
                 break
-            case .failure(let error):
-                navigator.navigateToError(error.localizedDescription)
+            case let .failure(error):
+                navigator.navigateToError(error)
             case .dismissed:
                 // Dismissal is handled by the view layer through onCompletion callback
                 break
@@ -325,14 +325,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     newNavigationState = .loading
                 case .paymentMethodSelection:
                     newNavigationState = .paymentMethodSelection
-                case .paymentMethod(let paymentMethodType, _):
+                case let .paymentMethod(paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
                 case .selectCountry:
                     newNavigationState = .selectCountry
-                case .failure(let checkoutError):
-                    let primerError = PrimerError.unknown(
-                        message: "\(checkoutError.message) (code: \(checkoutError.code))"
-                    )
+                case let .failure(primerError):
                     newNavigationState = .failure(primerError)
                 default:
                     // For any other routes, keep current state
@@ -361,9 +358,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
              (.paymentMethodSelection, .paymentMethodSelection),
              (.selectCountry, .selectCountry):
             return true
-        case (.paymentMethod(let lhsType), .paymentMethod(let rhsType)):
+        case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
             return lhsType == rhsType
-        case (.failure(let lhsError), .failure(let rhsError)):
+        case let (.failure(lhsError), .failure(rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
         default:
             return false
@@ -561,8 +558,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         // Navigate to success screen with payment result
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
-            amount: result.amount?.description ?? "N/A",
-            method: result.paymentMethodType ?? "Card"
+            amount: result.amount?.description ?? "N/A"
         )
         updateNavigationState(.success(checkoutResult))
     }
@@ -634,7 +630,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             // Init screen enabled changed
 
             // If currently in loading state and init screen was disabled, skip to payment method selection
-            if !newOptions.isInitScreenEnabled && navigationState == .loading {
+            if !newOptions.isInitScreenEnabled, navigationState == .loading {
                 // Init screen disabled during loading - skipping to payment method selection
                 updateNavigationState(.paymentMethodSelection)
             }

@@ -8,26 +8,10 @@
 
 import SwiftUI
 
-// MARK: - Navigation Coordinator Protocol
-@available(iOS 15.0, *)
-@MainActor
-protocol NavigationCoordinator: ObservableObject {
-    associatedtype Route: NavigationRoute
-
-    var navigationStack: [Route] { get set }
-    var currentRoute: Route { get }
-
-    func navigate(to route: Route)
-    func goBack()
-    func resetToRoot()
-    func dismiss()
-}
-
 // MARK: - Checkout Navigation Coordinator
 @available(iOS 15.0, *)
 @MainActor
-internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
-    typealias Route = CheckoutRoute
+final class CheckoutCoordinator: ObservableObject, LogReporter {
 
     // MARK: - Published Properties
     @Published var navigationStack: [CheckoutRoute] = []
@@ -75,10 +59,6 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
         navigationStack.removeLast()
     }
 
-    func resetToRoot() {
-        navigationStack = []
-    }
-
     func dismiss() {
         // Clear navigation stack and trigger dismissal
         navigationStack = []
@@ -90,15 +70,21 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
         }
     }
 
+    /// Helper method for handling payment method selection.
+    /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentMethodSelection(_ methodType: String, context: PresentationContext = .fromPaymentSelection) {
         navigate(to: .paymentMethod(methodType, context))
     }
 
+    /// Helper method for handling payment success.
+    /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentSuccess(_ result: CheckoutPaymentResult) {
         navigate(to: .success(result))
     }
 
-    func handlePaymentFailure(_ error: CheckoutPaymentError) {
+    /// Helper method for handling payment failure.
+    /// Wraps navigate() for semantic clarity and potential future hooks.
+    func handlePaymentFailure(_ error: PrimerError) {
         navigate(to: .failure(error))
     }
 
@@ -119,13 +105,5 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
     private func logEvent(_ eventName: String, parameters: [String: Any] = [:]) {
         // This would integrate with your analytics service
         logger.debug(message: "📊 [Analytics] \(eventName): \(parameters)")
-    }
-}
-
-// MARK: - DI Integration
-@available(iOS 15.0, *)
-extension CheckoutCoordinator {
-    static func create(container: ContainerProtocol) async throws -> CheckoutCoordinator {
-        return CheckoutCoordinator()
     }
 }

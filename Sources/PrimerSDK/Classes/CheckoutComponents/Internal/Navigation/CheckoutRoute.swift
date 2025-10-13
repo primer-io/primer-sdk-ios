@@ -9,22 +9,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Navigation Protocol
-@available(iOS 15.0, *)
-protocol NavigationRoute: Hashable, Identifiable {
-    /// Unique identifier for the route
-    var id: String { get }
-
-    /// Defines how this route should be navigated to
-    var navigationBehavior: NavigationBehavior { get }
-
-    /// Human-readable name for debugging and analytics
-    var routeName: String { get }
-
-    /// Optional analytics parameters for tracking
-    var analyticsParameters: [String: Any] { get }
-}
-
 // MARK: - Presentation Context
 @available(iOS 15.0, *)
 public enum PresentationContext {
@@ -50,23 +34,15 @@ enum NavigationBehavior {
     case replace    // Replace current route
 }
 
-// MARK: - Default Implementation
-@available(iOS 15.0, *)
-extension NavigationRoute {
-    var analyticsParameters: [String: Any] {
-        ["route_id": id, "route_name": routeName]
-    }
-}
-
 // MARK: - Checkout Route Implementation
 @available(iOS 15.0, *)
-enum CheckoutRoute: NavigationRoute {
+enum CheckoutRoute: Hashable, Identifiable {
     case splash
     case loading
     case paymentMethodSelection
     case selectCountry
     case success(CheckoutPaymentResult)
-    case failure(CheckoutPaymentError)
+    case failure(PrimerError)
     case paymentMethod(String, PresentationContext) // Payment method type with presentation context
 
     var id: String {
@@ -75,7 +51,8 @@ enum CheckoutRoute: NavigationRoute {
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
         case .selectCountry: return "select-country"
-        case .paymentMethod(let type, let context): return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
+        case let .paymentMethod(type, context):
+            return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
         case .success: return "success"
         case .failure: return "failure"
         }
@@ -90,19 +67,23 @@ enum CheckoutRoute: NavigationRoute {
         lhs.id == rhs.id
     }
 
-    // MARK: - NavigationRoute Protocol Implementation
+    // MARK: - Route Properties
+
+    /// Human-readable name for debugging and analytics
     var routeName: String {
         switch self {
         case .splash: return "Splash Screen"
         case .loading: return "Loading Screen"
         case .paymentMethodSelection: return "Payment Method Selection"
         case .selectCountry: return "Select Country"
-        case .paymentMethod(let type, let context): return "Payment Method: \(type) (\(context == .direct ? "Direct" : "From Selection"))"
+        case let .paymentMethod(type, context):
+            return "Payment Method: \(type) (\(context == .direct ? "Direct" : "From Selection"))"
         case .success: return "Payment Success"
         case .failure: return "Payment Error"
         }
     }
 
+    /// Defines how this route should be navigated to
     var navigationBehavior: NavigationBehavior {
         switch self {
         case .splash:
@@ -118,19 +99,20 @@ enum CheckoutRoute: NavigationRoute {
         }
     }
 
+    /// Analytics parameters for tracking navigation events
     var analyticsParameters: [String: Any] {
         var params = ["route_id": id, "route_name": routeName]
 
         switch self {
-        case .paymentMethod(let type, let context):
+        case let .paymentMethod(type, context):
             params["payment_method_type"] = type
             params["presentation_context"] = context == .direct ? "direct" : "from_selection"
-        case .success(let result):
+        case let .success(result):
             params["payment_id"] = result.paymentId
             params["amount"] = result.amount
-        case .failure(let error):
-            params["error_code"] = error.code
-            params["error_message"] = error.message
+        case let .failure(error):
+            params["error_code"] = error.errorId
+            params["error_message"] = error.errorDescription
         default:
             break
         }
@@ -139,17 +121,13 @@ enum CheckoutRoute: NavigationRoute {
     }
 }
 
-// Navigation result types
+// MARK: - Navigation Result Type
+
+/// Represents a successful payment result for navigation purposes.
+/// Contains minimal information needed for routing; full payment details
+/// are available through the SDK's PaymentResult type.
 @available(iOS 15.0, *)
 struct CheckoutPaymentResult {
     let paymentId: String
     let amount: String
-    let method: String
-}
-
-@available(iOS 15.0, *)
-struct CheckoutPaymentError: Error {
-    let code: String
-    let message: String
-    let details: String?
 }

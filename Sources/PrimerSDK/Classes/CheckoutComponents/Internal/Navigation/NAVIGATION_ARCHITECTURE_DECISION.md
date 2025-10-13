@@ -4,6 +4,8 @@
 
 This document explains why CheckoutComponents uses a **state-driven navigation pattern** instead of traditional SwiftUI navigation approaches. This decision was made after evaluating multiple patterns for iOS 15+ SDK compatibility, performance, and maintainability.
 
+**Last Updated:** 2025-10-13 - Simplified implementation by removing unused protocol abstractions and using SDK error types directly.
+
 ## Problem Statement
 
 **Requirements:**
@@ -187,21 +189,14 @@ enum CheckoutRoute: Hashable, Identifiable {
 }
 ```
 
-#### 2. Coordinator - Centralized Navigation Logic (NO Combine)
+#### 2. Coordinator - Centralized Navigation Logic (NO Combine, NO Protocol Abstraction)
 ```swift
 @MainActor
 final class CheckoutCoordinator: ObservableObject, LogReporter {
     @Published var navigationStack: [CheckoutRoute] = []
-    
+
     var currentRoute: CheckoutRoute {
         navigationStack.last ?? .splash
-    }
-    
-    // AsyncStream for reactive navigation (NO Combine)
-    var navigationEvents: AsyncStream<CheckoutRoute> {
-        AsyncStream { continuation in
-            // Implementation using AsyncStream instead of Combine
-        }
     }
     
     func navigate(to route: CheckoutRoute) {
@@ -349,15 +344,36 @@ struct CardFormScreen: View {
 
 ## Conclusion
 
-The state-driven navigation pattern with AsyncStream provides the best solution for CheckoutComponents by:
+The state-driven navigation pattern provides the best solution for CheckoutComponents by:
 - **Following the implementation plan** (NO Combine requirement)
-- **Maintaining iOS 15+ compatibility** 
+- **Maintaining iOS 15+ compatibility**
 - **Integrating perfectly with scope architecture**
 - **Providing excellent performance** with lazy view creation
 - **Ensuring testability** with mockable coordinator
 - **Maintaining exact Android API parity**
+- **Using SDK types directly** (PrimerError) instead of navigation-specific wrappers
 
 This architecture decision ensures CheckoutComponents remains compliant with its implementation plan while providing a robust, maintainable navigation system.
+
+## Implementation Notes
+
+### Simplified Design (October 2025)
+The initial design included protocol abstractions (`NavigationCoordinator`, `NavigationRoute`) and custom error types (`CheckoutPaymentError`). After implementation, these were identified as unnecessary:
+
+**Removed:**
+- `NavigationCoordinator` protocol - No polymorphic usage needed, concrete `CheckoutCoordinator` class is sufficient
+- `NavigationRoute` protocol - Routes defined directly in `CheckoutRoute` enum
+- `CheckoutPaymentError` struct - SDK's `PrimerError` used directly
+- Environment injection setup (`CheckoutNavigatorKey`) - Navigator passed explicitly through initializers
+- `resetToRoot()` method - Never needed in practice
+
+**Kept:**
+- `CheckoutCoordinator` concrete class - Core navigation engine
+- `CheckoutNavigator` wrapper - Simplified API for common navigation tasks
+- `CheckoutRoute` enum - Type-safe route definitions
+- `CheckoutPaymentResult` - Lightweight wrapper for success routing (full details in SDK's `PaymentResult`)
+
+This simplified design eliminates ~150 lines of dead code while maintaining all functionality.
 
 ---
 
