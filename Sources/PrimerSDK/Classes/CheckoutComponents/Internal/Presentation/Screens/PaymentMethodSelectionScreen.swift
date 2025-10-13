@@ -19,6 +19,7 @@ struct PaymentMethodSelectionScreen: View {
     let scope: PrimerPaymentMethodSelectionScope
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.bridgeController) private var bridgeController
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
 
     var body: some View {
@@ -293,6 +294,10 @@ struct PaymentMethodSelectionScreen: View {
             for await state in await scope.state {
                 await MainActor.run {
                     self.selectionState = state
+
+                    if !state.paymentMethods.isEmpty {
+                        bridgeController?.invalidateContentSize()
+                    }
                 }
             }
         }

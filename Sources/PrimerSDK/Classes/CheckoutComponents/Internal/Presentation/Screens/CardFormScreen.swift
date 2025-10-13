@@ -13,6 +13,7 @@ struct CardFormScreen: View, LogReporter {
     let scope: any PrimerCardFormScope
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.bridgeController) private var bridgeController
     @State private var cardFormState: StructuredCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
@@ -60,14 +61,12 @@ struct CardFormScreen: View, LogReporter {
 
     @MainActor
     private var mainContent: some View {
-        ScrollView {
-            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-                titleSection
-                dynamicFieldsSection
-                submitButtonSection
-            }
-            .padding(.top)
+        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+            titleSection
+            dynamicFieldsSection
+            submitButtonSection
         }
+        .padding(.top)
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))
         .onAppear {
             observeState()
@@ -324,6 +323,7 @@ struct CardFormScreen: View, LogReporter {
             // Get initial form configuration
             await MainActor.run {
                 formConfiguration = scope.getFormConfiguration()
+                bridgeController?.invalidateContentSize()
             }
 
             for await state in await scope.state {

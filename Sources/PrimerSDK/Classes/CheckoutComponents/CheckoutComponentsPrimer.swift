@@ -91,7 +91,7 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Private Init
 
-    private override init() {
+    override private init() {
         super.init()
         // Initialization complete
     }
@@ -147,6 +147,42 @@ public extension CheckoutComponentsDelegate {
     }
 
     // MARK: - Instance Methods
+
+    // MARK: - Sheet Configuration
+
+    private enum SheetSizing {
+        static let minimumHeight: CGFloat = 200
+        static let maximumScreenRatio: CGFloat = 0.9
+    }
+
+    /// Configure sheet presentation for the bridge controller
+    /// - Parameter controller: The view controller to configure
+    private func configureSheetPresentation(for controller: UIViewController) {
+        controller.modalPresentationStyle = .pageSheet
+        guard let sheet = controller.sheetPresentationController else { return }
+
+        if let primerBridge = controller as? PrimerSwiftUIBridgeViewController {
+            primerBridge.customSheetPresentationController = sheet
+        }
+
+        if #available(iOS 16.0, *) {
+            let customDetent = UISheetPresentationController.Detent.custom { [weak controller] context in
+                guard let controller else { return context.maximumDetentValue }
+                let contentHeight = controller.preferredContentSize.height
+                let maxHeight = context.maximumDetentValue
+                // Allow content to determine height, but cap at maximum
+                return min(max(contentHeight, SheetSizing.minimumHeight), maxHeight * SheetSizing.maximumScreenRatio)
+            }
+            sheet.detents = [customDetent, .large()]
+            sheet.selectedDetentIdentifier = customDetent.identifier
+        } else {
+            // Fallback for iOS 15: use standard detents
+            sheet.detents = [.medium(), .large()]
+        }
+        sheet.prefersGrabberVisible = true
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        sheet.largestUndimmedDetentIdentifier = .medium
+    }
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     func dismissCheckout() {
@@ -249,28 +285,8 @@ public extension CheckoutComponentsDelegate {
             // Present CheckoutComponents modally
             // Present modally
 
-            // Create modal presentation with dynamic sizing
-            bridgeController.modalPresentationStyle = .pageSheet
-            if let sheet = bridgeController.sheetPresentationController {
-                // Use custom detent for dynamic sizing based on content
-                if #available(iOS 16.0, *) {
-                    let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
-                        guard let bridgeController = bridgeController else { return context.maximumDetentValue }
-                        let contentHeight = bridgeController.preferredContentSize.height
-                        let maxHeight = context.maximumDetentValue
-                        // Allow content to determine height, but cap at maximum
-                        return min(max(contentHeight, 200), maxHeight * 0.9)
-                    }
-                    sheet.detents = [customDetent, .large()]
-                    sheet.selectedDetentIdentifier = customDetent.identifier
-                } else {
-                    // Fallback for iOS 15: use standard detents
-                    sheet.detents = [.medium(), .large()]
-                }
-                sheet.prefersGrabberVisible = true
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                sheet.largestUndimmedDetentIdentifier = .medium
-            }
+            // Configure sheet presentation
+            configureSheetPresentation(for: bridgeController)
 
             // Present modally from the provided view controller
             viewController.present(bridgeController, animated: true)
@@ -337,6 +353,10 @@ public extension CheckoutComponentsDelegate {
 
             // Present modally from the provided view controller
             // Present custom content
+
+            // Configure sheet presentation
+            configureSheetPresentation(for: bridgeController)
+
             viewController.present(bridgeController, animated: true)
 
             // Reset presenting flag after successful presentation
