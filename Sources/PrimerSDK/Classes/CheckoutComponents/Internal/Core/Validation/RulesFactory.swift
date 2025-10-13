@@ -8,7 +8,7 @@
 import Foundation
 
 /// Factory for creating validation rules
-internal protocol RulesFactory {
+protocol RulesFactory {
     /// Creates a card number validation rule
     /// - Parameter allowedCardNetworks: The allowed card networks for validation (defaults to client session config)
     func createCardNumberRule(allowedCardNetworks: [CardNetwork]?) -> CardNumberRule
@@ -21,9 +21,6 @@ internal protocol RulesFactory {
 
     /// Creates a cardholder name validation rule
     func createCardholderNameRule() -> CardholderNameRule
-
-    /// Creates an OTP code validation rule
-    func createOTPCodeRule(expectedLength: Int) -> OTPCodeRule
 
     // MARK: - Billing Address Validation Rules
 
@@ -50,7 +47,7 @@ internal protocol RulesFactory {
 }
 
 /// Default implementation of RulesFactory
-internal final class DefaultRulesFactory: RulesFactory {
+final class DefaultRulesFactory: RulesFactory {
 
     func createCardNumberRule(allowedCardNetworks: [CardNetwork]? = nil) -> CardNumberRule {
         // Use provided networks or default to allowed networks from client session
@@ -68,10 +65,6 @@ internal final class DefaultRulesFactory: RulesFactory {
 
     func createCardholderNameRule() -> CardholderNameRule {
         return CardholderNameRule()
-    }
-
-    func createOTPCodeRule(expectedLength: Int = 6) -> OTPCodeRule {
-        return OTPCodeRule(expectedLength: expectedLength)
     }
 
     // MARK: - Billing Address Validation Rules Implementation

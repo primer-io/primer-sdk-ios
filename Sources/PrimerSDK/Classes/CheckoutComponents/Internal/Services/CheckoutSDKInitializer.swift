@@ -18,10 +18,6 @@ final class CheckoutSDKInitializer {
         let checkoutScope: DefaultCheckoutScope
     }
 
-    enum InitializationError: Error {
-        case failedToInitialize(underlying: Error)
-    }
-
     // MARK: - Properties
 
     private let clientToken: String

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Validation rule for name fields (first name, last name) with proper localization
-internal class NameRule: ValidationRule {
+class NameRule: ValidationRule {
     typealias Input = String
 
     private let inputElementType: ValidationError.InputElementType
@@ -50,7 +50,7 @@ internal class NameRule: ValidationRule {
 }
 
 /// Validation rule for first names - convenience wrapper
-internal class FirstNameRule: ValidationRule {
+class FirstNameRule: ValidationRule {
     typealias Input = String?
     private let nameRule = NameRule(inputElementType: .firstName)
 
@@ -60,7 +60,7 @@ internal class FirstNameRule: ValidationRule {
 }
 
 /// Validation rule for last names - convenience wrapper
-internal class LastNameRule: ValidationRule {
+class LastNameRule: ValidationRule {
     typealias Input = String?
     private let nameRule = NameRule(inputElementType: .lastName)
 
@@ -70,7 +70,7 @@ internal class LastNameRule: ValidationRule {
 }
 
 /// Validation rule for address lines with proper localization
-internal class AddressRule: ValidationRule {
+class AddressRule: ValidationRule {
     typealias Input = String
     private let inputElementType: ValidationError.InputElementType
     private let isRequired: Bool
@@ -119,7 +119,7 @@ internal class AddressRule: ValidationRule {
 }
 
 /// Generic validation rule for address fields - convenience wrapper
-internal class AddressFieldRule: ValidationRule {
+class AddressFieldRule: ValidationRule {
     typealias Input = String?
     private let addressRule: AddressRule
 
@@ -133,7 +133,7 @@ internal class AddressFieldRule: ValidationRule {
 }
 
 /// Validation rule for city names with proper localization
-internal class CityRule: ValidationRule {
+class CityRule: ValidationRule {
     typealias Input = String
 
     func validate(_ value: String) -> ValidationResult {
@@ -158,18 +158,10 @@ internal class CityRule: ValidationRule {
 
         return .valid
     }
-
-    func validate(_ value: String?) -> ValidationResult {
-        guard let value = value else {
-            let error = ErrorMessageResolver.createRequiredFieldError(for: .city)
-            return .invalid(error: error)
-        }
-        return validate(value)
-    }
 }
 
 /// Validation rule for state/province with proper localization
-internal class StateRule: ValidationRule {
+class StateRule: ValidationRule {
     typealias Input = String
 
     func validate(_ value: String) -> ValidationResult {
@@ -188,18 +180,10 @@ internal class StateRule: ValidationRule {
 
         return .valid
     }
-
-    func validate(_ value: String?) -> ValidationResult {
-        guard let value = value else {
-            let error = ErrorMessageResolver.createRequiredFieldError(for: .state)
-            return .invalid(error: error)
-        }
-        return validate(value)
-    }
 }
 
 /// Validation rule for postal codes with proper localization
-internal class PostalCodeRule: ValidationRule {
+class PostalCodeRule: ValidationRule {
     typealias Input = String
 
     private let countryCode: String?
@@ -264,7 +248,7 @@ internal class PostalCodeRule: ValidationRule {
 }
 
 /// Validation rule for postal codes - convenience wrapper
-internal class BillingPostalCodeRule: ValidationRule {
+class BillingPostalCodeRule: ValidationRule {
     typealias Input = String?
     private let postalCodeRule = PostalCodeRule()
 
@@ -274,7 +258,7 @@ internal class BillingPostalCodeRule: ValidationRule {
 }
 
 /// Validation rule for country codes with proper localization
-internal class CountryCodeRule: ValidationRule {
+class CountryCodeRule: ValidationRule {
     typealias Input = String
 
     func validate(_ value: String) -> ValidationResult {
@@ -304,7 +288,7 @@ internal class CountryCodeRule: ValidationRule {
 }
 
 /// Validation rule for country codes - convenience wrapper
-internal class BillingCountryCodeRule: ValidationRule {
+class BillingCountryCodeRule: ValidationRule {
     typealias Input = String?
     private let countryCodeRule = CountryCodeRule()
 
@@ -314,7 +298,7 @@ internal class BillingCountryCodeRule: ValidationRule {
 }
 
 /// Validation rule for email addresses
-internal class EmailRule: ValidationRule {
+class EmailRule: ValidationRule {
     typealias Input = String
 
     func validate(_ value: String) -> ValidationResult {
@@ -351,7 +335,7 @@ internal class EmailRule: ValidationRule {
 }
 
 /// Validation rule for email addresses - convenience wrapper
-internal class EmailValidationRule: ValidationRule {
+class EmailValidationRule: ValidationRule {
     typealias Input = String?
     private let emailRule = EmailRule()
 
@@ -361,7 +345,7 @@ internal class EmailValidationRule: ValidationRule {
 }
 
 /// Validation rule for phone numbers
-internal class PhoneNumberRule: ValidationRule {
+class PhoneNumberRule: ValidationRule {
     typealias Input = String
 
     func validate(_ value: String) -> ValidationResult {
@@ -401,7 +385,7 @@ internal class PhoneNumberRule: ValidationRule {
 }
 
 /// Validation rule for phone numbers - convenience wrapper
-internal class PhoneNumberValidationRule: ValidationRule {
+class PhoneNumberValidationRule: ValidationRule {
     typealias Input = String?
     private let phoneNumberRule = PhoneNumberRule()
 
@@ -410,24 +394,8 @@ internal class PhoneNumberValidationRule: ValidationRule {
     }
 }
 
-/// Validation rule for retail outlets
-internal class RetailOutletRule: ValidationRule {
-    typealias Input = String
-
-    func validate(_ value: String) -> ValidationResult {
-        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if trimmedValue.isEmpty {
-            let error = ErrorMessageResolver.createRequiredFieldError(for: .retailOutlet)
-            return .invalid(error: error)
-        }
-
-        return .valid
-    }
-}
-
 /// Validation rule for OTP codes
-internal class OTPCodeRule: ValidationRule {
+class OTPCodeRule: ValidationRule {
     typealias Input = String
 
     private let expectedLength: Int
@@ -452,42 +420,6 @@ internal class OTPCodeRule: ValidationRule {
         if value.count != expectedLength {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .otpCode)
             return .invalid(error: error)
-        }
-
-        return .valid
-    }
-}
-
-/// Validation rule for birth dates
-internal class BirthDateRule: ValidationRule {
-    typealias Input = String
-
-    func validate(_ value: String) -> ValidationResult {
-        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-birth-date", message: "Birth date is required")
-        }
-
-        // Try to parse date (DD/MM/YYYY format)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/yyyy"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-
-        guard let birthDate = dateFormatter.date(from: trimmedValue) else {
-            return .invalid(code: "invalid-birth-date-format", message: "Invalid date format (DD/MM/YYYY)")
-        }
-
-        // Check if date is in the past
-        if birthDate > Date() {
-            return .invalid(code: "invalid-birth-date-future", message: "Birth date cannot be in the future")
-        }
-
-        // Check minimum age (e.g., 18 years)
-        let calendar = Calendar.current
-        let ageComponents = calendar.dateComponents([.year], from: birthDate, to: Date())
-        if let age = ageComponents.year, age < 18 {
-            return .invalid(code: "invalid-birth-date-age", message: "Must be at least 18 years old")
         }
 
         return .valid

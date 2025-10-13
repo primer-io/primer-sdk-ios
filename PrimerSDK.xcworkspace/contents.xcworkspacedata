@@ -88,13 +88,7 @@
                         location = "group:Validation"
                         name = "Validation">
                         <FileRef
-                           location = "group:FormValidator.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:ValidationService.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:BaseInputFieldValidator.swift">
                         </FileRef>
                         <Group
                            location = "group:Rules"
@@ -108,9 +102,6 @@
                         </Group>
                         <FileRef
                            location = "group:ValidationError.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:ValidationCoordinator.swift">
                         </FileRef>
                         <FileRef
                            location = "group:ValidationRule.swift">
