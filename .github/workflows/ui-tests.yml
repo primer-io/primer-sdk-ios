@@ -142,6 +142,7 @@ jobs:
     name: "LambdaTest test"
     if: ${{ inputs.testType == '' }}
     strategy:
+      fail-fast: false
       max-parallel: 1
       matrix:
         test-type:

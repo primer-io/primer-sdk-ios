@@ -281,11 +281,17 @@ platform :ios do
   desc 'This action uploads the .ipa to LambdaTest and save its ID into a file'
   private_lane :upload_to_lambdatest_and_save_id do |options|
 
+    custom_id = case source_branch_trimmed
+      when "release/next" then "release-latest"
+      when "master" then "nightly-latest"
+      else "preview-" + pr_number
+    end
+
     upload_to_lambdatest(
       lt_username: ENV["LAMBDATEST_USERNAME"],
       lt_access_key: ENV["LAMBDATEST_ACCESS_KEY"],
       file_path: options[:file_path],
-      custom_id: source_branch_trimmed,
+      custom_id: custom_id,
       visibility: "team"
     )
 

@@ -1,3 +1,13 @@
+## 2.42.0 (2025-10-07)
+
+### Feat
+
+- Add EFTPOS network support (#1359)
+
+### Fix
+
+- Correct error in swiftformat config (#1368)
+
 ## 2.41.1 (2025-09-22)
 
 ### Fix
