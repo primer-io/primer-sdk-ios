@@ -304,41 +304,6 @@ struct CheckoutComponentsStrings {
         comment: "Cardholder name validation error message"
     )
 
-    static let enterValidPostalCode = NSLocalizedString(
-        "postalCodeErrorInvalid",
-        bundle: Bundle.primerResources,
-        value: "Enter a valid postal code",
-        comment: "Postal code validation error message"
-    )
-
-    static let enterValidCity = NSLocalizedString(
-        "cityErrorInvalid",
-        bundle: Bundle.primerResources,
-        value: "Enter a valid city",
-        comment: "City validation error message"
-    )
-
-    static let enterValidState = NSLocalizedString(
-        "stateErrorInvalid",
-        bundle: Bundle.primerResources,
-        value: "Enter a valid state",
-        comment: "State validation error message"
-    )
-
-    static let enterValidAddress = NSLocalizedString(
-        "addressLine1ErrorInvalid",
-        bundle: Bundle.primerResources,
-        value: "Enter a valid address",
-        comment: "Address validation error message"
-    )
-
-    static let selectValidCountry = NSLocalizedString(
-        "countryCodeErrorInvalid",
-        bundle: Bundle.primerResources,
-        value: "Select a valid country",
-        comment: "Country selection validation error message"
-    )
-
     // MARK: - Validation Errors - Form Specific (REUSING EXISTING KEYS)
 
     static let formErrorCardTypeNotSupported = NSLocalizedString(
@@ -616,13 +581,6 @@ struct CheckoutComponentsStrings {
         comment: "Numeric OTP code input placeholder"
     )
 
-    static let enterValidEmail = NSLocalizedString(
-        "checkout-components-enter-valid-email",
-        bundle: Bundle.primerResources,
-        value: "Enter a valid email",
-        comment: "Email validation error message"
-    )
-
     static let enterValidPhoneNumber = NSLocalizedString(
         "checkout-components-enter-valid-phone-number",
         bundle: Bundle.primerResources,
@@ -649,20 +607,6 @@ struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Card has expired",
         comment: "Card expired validation error"
-    )
-
-    static let initializingPaymentSystem = NSLocalizedString(
-        "checkout-components-initializing-payment-system",
-        bundle: Bundle.primerResources,
-        value: "Initializing payment system...",
-        comment: "Loading message during payment system initialization"
-    )
-
-    static let loadingPaymentMethods = NSLocalizedString(
-        "checkout-components-loading-payment-methods",
-        bundle: Bundle.primerResources,
-        value: "Loading payment methods...",
-        comment: "Loading message for payment methods"
     )
 
     static let loadingSecureCheckout = NSLocalizedString(
@@ -721,27 +665,6 @@ struct CheckoutComponentsStrings {
         comment: "Message when country search returns no results"
     )
 
-    static let paymentId = NSLocalizedString(
-        "checkout-components-payment-id",
-        bundle: Bundle.primerResources,
-        value: "Payment ID",
-        comment: "Payment ID label on success screen"
-    )
-
-    static let amount = NSLocalizedString(
-        "checkout-components-amount",
-        bundle: Bundle.primerResources,
-        value: "Amount",
-        comment: "Amount label on success screen"
-    )
-
-    static let paymentMethod = NSLocalizedString(
-        "checkout-components-payment-method",
-        bundle: Bundle.primerResources,
-        value: "Payment Method",
-        comment: "Payment method label on success screen"
-    )
-
     static let autoDismissMessage = NSLocalizedString(
         "checkout-components-auto-dismiss",
         bundle: Bundle.primerResources,
@@ -754,20 +677,6 @@ struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "You'll be redirected to the order confirmation page soon.",
         comment: "Message shown on success screen about upcoming redirect"
-    )
-
-    static let primerBrandName = NSLocalizedString(
-        "checkout-components-primer-brand",
-        bundle: Bundle.primerResources,
-        value: "Primer",
-        comment: "Primer brand name"
-    )
-
-    static let secureCheckout = NSLocalizedString(
-        "checkout-components-secure-checkout",
-        bundle: Bundle.primerResources,
-        value: "Secure Checkout",
-        comment: "Secure checkout branding text"
     )
 
     static let implementationComingSoon = NSLocalizedString(

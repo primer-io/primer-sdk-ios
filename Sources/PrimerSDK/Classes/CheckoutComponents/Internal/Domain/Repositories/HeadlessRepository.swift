@@ -9,11 +9,7 @@ import Foundation
 
 /// Repository protocol for accessing the headless SDK functionality.
 /// This abstracts the PrimerHeadlessUniversalCheckout SDK.
-internal protocol HeadlessRepository {
-
-    /// Initializes the checkout session with a client token.
-    /// - Parameter clientToken: The client token from the merchant backend.
-    func initialize(clientToken: String) async throws
+protocol HeadlessRepository {
 
     /// Fetches available payment methods.
     /// - Returns: Array of available payment methods.
@@ -40,11 +36,6 @@ internal protocol HeadlessRepository {
     /// Sets the billing address for the current session.
     /// - Parameter billingAddress: The billing address data.
     func setBillingAddress(_ billingAddress: BillingAddress) async throws
-
-    /// Detects available card networks for a given card number.
-    /// - Parameter cardNumber: The card number to check.
-    /// - Returns: Array of available card networks, or nil if not co-badged.
-    func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]?
 
     /// Gets a stream for real-time network detection events.
     /// - Returns: AsyncStream that emits detected card networks.

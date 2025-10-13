@@ -8,7 +8,7 @@
 import Foundation
 
 /// Error message resolution service that converts ValidationError objects to localized, formatted error messages.
-internal final class ErrorMessageResolver {
+final class ErrorMessageResolver {
 
     /// Resolve error message based on validation error
     /// @param error The validation error to resolve
@@ -264,44 +264,6 @@ extension ErrorMessageResolver {
             code: "invalid-\(inputElementType.rawValue.lowercased())",
             message: "Field is invalid" // Default fallback
         )
-    }
-
-    /// Get appropriate field name key for input element type
-    private static func fieldNameKey(for inputElementType: ValidationError.InputElementType) -> String {
-        switch inputElementType {
-        case .cardNumber:
-            return "card_number_field"
-        case .cvv:
-            return "cvv_field"
-        case .expiryDate:
-            return "expiry_date_field"
-        case .cardholderName:
-            return "cardholder_name_field"
-        case .firstName:
-            return "first_name_field"
-        case .lastName:
-            return "last_name_field"
-        case .email:
-            return "email_field"
-        case .phoneNumber:
-            return "phone_number_field"
-        case .countryCode:
-            return "country_field"
-        case .addressLine1:
-            return "address_line_1_field"
-        case .addressLine2:
-            return "address_line_2_field"
-        case .city:
-            return "city_field"
-        case .state:
-            return "state_field"
-        case .postalCode:
-            return "postal_code_field"
-        case .otpCode:
-            return "otp_code_field"
-        default:
-            return "field"
-        }
     }
 
     /// Get specific required error message key for input element type

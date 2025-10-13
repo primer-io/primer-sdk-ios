@@ -9,10 +9,9 @@ import Foundation
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
-private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate, LogReporter {
 
     private let completion: (Result<PaymentResult, Error>) -> Void
-    private let logger = PrimerLogging.shared.logger
     private var hasCompleted = false
     private weak var repository: HeadlessRepositoryImpl?
 
@@ -113,12 +112,11 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
-internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
+final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // Reference to headless SDK will be injected or accessed here
     // For now, using placeholders to show the implementation pattern
 
-    private var clientToken: String?
     private var paymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - Settings Integration
@@ -178,12 +176,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         if settingsService == nil {
             await injectSettingsService()
         }
-    }
-
-    func initialize(clientToken: String) async throws {
-        // Initializing headless checkout
-        self.clientToken = clientToken
-        // Headless checkout initialized
     }
 
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
@@ -516,21 +508,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         // Setting billing address via Client Session Actions
     }
 
-    func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]? {
-        // Detecting card networks
-
-        // Use RawDataManager for real network detection
-        await updateCardNumberInRawDataManager(cardNumber)
-
-        // Return stream for real-time updates
-        return await withTimeout(seconds: 2.0) {
-            for await networks in self.networkDetectionStream where !networks.isEmpty {
-                return networks
-            }
-            return nil
-        }
-    }
-
     /// Get network detection stream for real-time updates
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
         return self.networkDetectionStream
@@ -611,22 +588,6 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             } catch {
                 completion(error)
             }
-        }
-    }
-
-    /// Helper function for timeout on async operations
-    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async -> T?) async -> T? {
-        return await withTaskGroup(of: T?.self) { group in
-            group.addTask {
-                return await operation()
-            }
-
-            group.addTask {
-                try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                return nil
-            }
-
-            return await group.first { _ in true } ?? nil
         }
     }
 

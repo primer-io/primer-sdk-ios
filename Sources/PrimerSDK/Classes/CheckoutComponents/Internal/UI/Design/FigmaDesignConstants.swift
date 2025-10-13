@@ -1,6 +1,6 @@
 import UIKit
 
-internal struct FigmaDesignConstants {
+struct FigmaDesignConstants {
 
     // MARK: - Input Field Dimensions
     /// Standard input field height as per Figma design (44px)

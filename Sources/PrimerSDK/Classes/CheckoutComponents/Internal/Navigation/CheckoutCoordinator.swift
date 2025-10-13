@@ -70,18 +70,6 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
         }
     }
 
-    /// Helper method for handling payment method selection.
-    /// Wraps navigate() for semantic clarity and potential future hooks.
-    func handlePaymentMethodSelection(_ methodType: String, context: PresentationContext = .fromPaymentSelection) {
-        navigate(to: .paymentMethod(methodType, context))
-    }
-
-    /// Helper method for handling payment success.
-    /// Wraps navigate() for semantic clarity and potential future hooks.
-    func handlePaymentSuccess(_ result: CheckoutPaymentResult) {
-        navigate(to: .success(result))
-    }
-
     /// Helper method for handling payment failure.
     /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentFailure(_ error: PrimerError) {

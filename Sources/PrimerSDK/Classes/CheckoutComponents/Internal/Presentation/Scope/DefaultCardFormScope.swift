@@ -414,12 +414,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         await interactor.selectNetwork(cardNetwork)
     }
 
-    /// Handle detected networks from CardDetailsView
-    func handleDetectedNetworks(_ networks: [CardNetwork]) {
-        // CardDetailsView detected networks
-        // The actual network detection is handled via the stream in setupNetworkDetectionStream
-    }
-
     public func updateRetailOutlet(_ retailOutlet: String) {
         // Updating retail outlet
         structuredState.data[.retailer] = retailOutlet
@@ -474,11 +468,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     // MARK: - Private Methods
-
-    private func updateExpiryDateFromComponents() {
-        // This method is no longer needed since we update expiryDate directly
-        // in updateExpiryMonth and updateExpiryYear methods
-    }
 
     private func updateCardData() {
         // Create PrimerCardData
@@ -821,13 +810,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Implementation of getFormConfiguration
     public func getFormConfiguration() -> CardFormConfiguration {
         return formConfiguration
-    }
-
-    /// Update form configuration (for dynamic field management)
-    func updateFormConfiguration(_ configuration: CardFormConfiguration) {
-        formConfiguration = configuration
-        structuredState.configuration = configuration
-        // Updated form configuration
     }
 
     // MARK: - ViewBuilder Method Implementations
