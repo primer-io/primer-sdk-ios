@@ -292,13 +292,6 @@
                            location = "group:CardNetworkSelector.swift">
                         </FileRef>
                         <Group
-                           location = "group:Input"
-                           name = "Input">
-                           <FileRef
-                              location = "group:PrimerInputField.swift">
-                           </FileRef>
-                        </Group>
-                        <Group
                            location = "group:Composite"
                            name = "Composite">
                            <FileRef
