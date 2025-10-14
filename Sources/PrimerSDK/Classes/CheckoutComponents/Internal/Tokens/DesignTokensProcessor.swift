@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 
 /// Utility class for processing design token dictionaries.
 /// Provides static methods for merging, reference resolution, color conversion,
