@@ -48,10 +48,20 @@ final class CheckoutSDKInitializer {
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        try await initializeAPIConfiguration()
 
         let composableContainer = ComposableContainer(settings: settings)
         await composableContainer.configure()
+
+        // Track SDK initialization start
+        await trackSDKInitStart()
+
+        try await initializeAPIConfiguration()
+
+        // Initialize analytics session
+        await initializeAnalytics()
+
+        // Track SDK initialization end
+        await trackSDKInitEnd()
 
         let checkoutScope = createCheckoutScope()
 
@@ -91,5 +101,102 @@ final class CheckoutSDKInitializer {
             navigator: navigator,
             presentationContext: presentationContext
         )
+    }
+
+    // MARK: - Analytics Initialization
+
+    private func initializeAnalytics() async {
+        // Extract session data from client token JWT
+        guard let tokenPayload = decodeClientToken(clientToken) else {
+            #if DEBUG
+            print("⚠️ Failed to decode client token for analytics")
+            #endif
+            return
+        }
+
+        // Determine environment from token
+        let environmentString = tokenPayload["env"] as? String ?? "PRODUCTION"
+        let environment = AnalyticsEnvironment(rawValue: environmentString.uppercased()) ?? .production
+
+        // Prefer identifiers from the fetched API configuration (matches Web SDK behaviour)
+        let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration
+        let configClientSessionId = apiConfiguration?.clientSession?.clientSessionId?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let configPrimerAccountId = apiConfiguration?.primerAccountId?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Fallback to token payload only if configuration does not include the identifiers
+        let tokenClientSessionId = (tokenPayload["clientSessionId"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tokenPrimerAccountId = (tokenPayload["primerAccountId"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let clientSessionId = configClientSessionId?.isEmpty == false
+            ? configClientSessionId!
+            : (tokenClientSessionId ?? "")
+        let primerAccountId = configPrimerAccountId?.isEmpty == false
+            ? configPrimerAccountId!
+            : (tokenPrimerAccountId ?? "")
+
+        guard !clientSessionId.isEmpty, !primerAccountId.isEmpty else {
+            #if DEBUG
+            print("⚠️ Missing analytics identifiers: clientSessionId=\(clientSessionId.isEmpty), primerAccountId=\(primerAccountId.isEmpty)")
+            #endif
+            return
+        }
+
+        // Get checkout session ID (generated in setupSDKIntegration)
+        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId ?? UUID().uuidString
+
+        // Get SDK version
+        let sdkVersion = VersionUtils.releaseVersionNumber ?? "unknown"
+
+        // Create analytics session config
+        let analyticsConfig = AnalyticsSessionConfig(
+            environment: environment,
+            checkoutSessionId: checkoutSessionId,
+            clientSessionId: clientSessionId,
+            primerAccountId: primerAccountId,
+            sdkVersion: sdkVersion,
+            clientSessionToken: clientToken
+        )
+
+        // Initialize analytics service
+        guard let container = await DIContainer.current else { return }
+
+        if let analyticsService = try? await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self) {
+            await analyticsService.initialize(config: analyticsConfig)
+        }
+    }
+
+    private func trackSDKInitStart() async {
+        guard let container = await DIContainer.current else { return }
+
+        if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
+            await analyticsInteractor.trackEvent(.sdkInitStart, metadata: nil as AnalyticsEventMetadata?)
+        }
+    }
+
+    private func trackSDKInitEnd() async {
+        guard let container = await DIContainer.current else { return }
+
+        if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
+            await analyticsInteractor.trackEvent(.sdkInitEnd, metadata: nil as AnalyticsEventMetadata?)
+        }
+    }
+
+    private func decodeClientToken(_ token: String) -> [String: Any]? {
+        let components = token.components(separatedBy: ".")
+        guard components.count == 3 else { return nil }
+
+        // Decode the payload (middle segment)
+        let payloadSegment = components[1]
+        let paddedPayload = payloadSegment
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+            .padding(toLength: ((payloadSegment.count + 3) / 4) * 4, withPad: "=", startingAt: 0)
+
+        guard let payloadData = Data(base64Encoded: paddedPayload),
+              let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] else {
+            return nil
+        }
+
+        return json
     }
 }

@@ -514,9 +514,16 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Card form submit initiated
         structuredState.isLoading = true
 
+        // Track payment submission
+        await trackPaymentSubmitted()
+
         do {
             try await sendBillingAddressIfNeeded()
             let cardData = try await prepareCardPaymentData()
+
+            // Track payment processing started
+            await trackPaymentProcessingStarted()
+
             let result = try await processCardPayment(cardData: cardData)
             await handlePaymentSuccess(result)
         } catch {
@@ -642,6 +649,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
         let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
+        let wasValid = structuredState.isValid
+
         // Update the form validation state - only valid if all required fields are complete and valid
         structuredState.isValid = hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
 
@@ -650,6 +659,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Clear any previous field errors when all fields are valid
         if structuredState.isValid {
             structuredState.fieldErrors.removeAll()
+
+            // Track payment details entered (only once when form becomes valid)
+            if !wasValid {
+                Task {
+                    await trackPaymentDetailsEntered()
+                }
+            }
         }
     }
 
@@ -939,6 +955,34 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             scope: self,
             styling: styling ?? defaultFieldStyling?["otpCode"]
         ).asAny()
+    }
+    // MARK: - Analytics Tracking
+
+    private func trackPaymentDetailsEntered() async {
+        guard let container = await DIContainer.current,
+              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+            return
+        }
+
+        await analyticsInteractor.trackEvent(.paymentDetailsEntered, metadata: nil as AnalyticsEventMetadata?)
+    }
+
+    private func trackPaymentSubmitted() async {
+        guard let container = await DIContainer.current,
+              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+            return
+        }
+
+        await analyticsInteractor.trackEvent(.paymentSubmitted, metadata: nil as AnalyticsEventMetadata?)
+    }
+
+    private func trackPaymentProcessingStarted() async {
+        guard let container = await DIContainer.current,
+              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+            return
+        }
+
+        await analyticsInteractor.trackEvent(.paymentProcessingStarted, metadata: nil as AnalyticsEventMetadata?)
     }
 }
 

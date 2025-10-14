@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(Primer3DS)
+import Primer3DS
+#endif
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
@@ -71,6 +74,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
         // Payment method tokenized
+        repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
 
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
@@ -85,6 +89,16 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     ) {
         // Payment resumed with token
         decisionHandler(.complete())
+    }
+
+    func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
+        _ additionalInfo: PrimerCheckoutAdditionalInfo?
+    ) {
+        repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    }
+
+    func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
     }
 
     // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
@@ -144,6 +158,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Last detected networks to avoid duplicate notifications
     private var lastDetectedNetworks: [CardNetwork] = []
+    private var lastTrackedRedirectDestination: String?
 
     init() {
         // HeadlessRepositoryImpl initialized
@@ -643,6 +658,103 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             // Settings service not available on iOS < 15.0
             return
         }
+    }
+
+    // MARK: - Analytics Integration
+
+    func trackThreeDSChallengeIfNeeded(from tokenData: PrimerPaymentMethodTokenData) {
+        guard let authentication = tokenData.threeDSecureAuthentication else {
+            return
+        }
+
+        let metadata = AnalyticsEventMetadata(
+            threedsProvider: resolveThreeDSProvider(),
+            threedsResponse: authentication.responseCode.rawValue
+        )
+
+        trackAnalyticsEvent(.paymentThreeds, metadata: metadata)
+    }
+
+    func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        guard let additionalInfo,
+              let redirectUrl = extractRedirectURL(from: additionalInfo) else { return }
+
+        if redirectUrl == lastTrackedRedirectDestination {
+            return
+        }
+        lastTrackedRedirectDestination = redirectUrl
+
+        let metadata = AnalyticsEventMetadata(redirectDestinationUrl: redirectUrl)
+        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: metadata)
+    }
+
+    private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
+        let candidateKeys = ["redirectUrl", "url", "deeplinkUrl", "deepLinkUrl", "qrCodeUrl", "link", "href"]
+
+        for key in candidateKeys {
+            if let value = info.value(forKey: key) as? String, isLikelyURL(value) {
+                return value
+            }
+            if let url = info.value(forKey: key) as? URL {
+                return url.absoluteString
+            }
+        }
+
+        for child in Mirror(reflecting: info).children {
+            if let nestedInfo = child.value as? PrimerCheckoutAdditionalInfo,
+               let nestedUrl = extractRedirectURL(from: nestedInfo) {
+                return nestedUrl
+            }
+
+            if let url = extractURL(from: child.value) {
+                return url
+            }
+        }
+
+        return nil
+    }
+
+    private func extractURL(from value: Any) -> String? {
+        if let string = value as? String, isLikelyURL(string) {
+            return string
+        }
+
+        if let url = value as? URL {
+            return url.absoluteString
+        }
+
+        if let info = value as? PrimerCheckoutAdditionalInfo {
+            return extractRedirectURL(from: info)
+        }
+
+        return nil
+    }
+
+    private func isLikelyURL(_ string: String) -> Bool {
+        guard !string.isEmpty else { return false }
+        let lowercased = string.lowercased()
+        return lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://")
+    }
+
+    private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
+        if #available(iOS 15.0, *) {
+            Task {
+                guard let container = await DIContainer.current,
+                      let interactor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+                    return
+                }
+
+                await interactor.trackEvent(eventType, metadata: metadata)
+            }
+        }
+    }
+
+    private func resolveThreeDSProvider() -> String? {
+        #if canImport(Primer3DS)
+        return Primer3DS.threeDsSdkProvider
+        #else
+        return nil
+        #endif
     }
 }
 

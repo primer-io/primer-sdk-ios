@@ -281,6 +281,43 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Previous state logged
         internalState = newState
         // State update completed
+
+        // Track analytics events based on state transitions
+        Task {
+            await trackStateChange(newState)
+        }
+    }
+
+    private func trackStateChange(_ state: PrimerCheckoutState) async {
+        guard let container = await DIContainer.current,
+              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+            return
+        }
+
+        switch state {
+        case .ready:
+            // Checkout flow is now interactive
+            await analyticsInteractor.trackEvent(.checkoutFlowStarted, metadata: nil as AnalyticsEventMetadata?)
+
+        case let .success(result):
+            // Payment succeeded
+            let metadata = AnalyticsEventMetadata(
+                paymentMethod: result.paymentMethodType,
+                paymentId: result.paymentId
+            )
+            await analyticsInteractor.trackEvent(.paymentSuccess, metadata: metadata)
+
+        case .failure:
+            // Payment failed
+            await analyticsInteractor.trackEvent(.paymentFailure, metadata: nil as AnalyticsEventMetadata?)
+
+        case .dismissed:
+            // User exited checkout without completion
+            await analyticsInteractor.trackEvent(.paymentFlowExited, metadata: nil as AnalyticsEventMetadata?)
+
+        default:
+            break
+        }
     }
 
     func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
