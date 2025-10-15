@@ -668,6 +668,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
 
         let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            paymentMethod: tokenData.paymentMethodType,
             threedsProvider: resolveThreeDSProvider(),
             threedsResponse: authentication.responseCode.rawValue
         )
@@ -684,7 +686,10 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
         lastTrackedRedirectDestination = redirectUrl
 
-        let metadata = AnalyticsEventMetadata(redirectDestinationUrl: redirectUrl)
+        let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            redirectDestinationUrl: redirectUrl
+        )
         trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: metadata)
     }
 

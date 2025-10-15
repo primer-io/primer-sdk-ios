@@ -294,30 +294,50 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             return
         }
 
+        let userLocale = Locale.current.identifier
+
         switch state {
         case .ready:
             // Checkout flow is now interactive
-            await analyticsInteractor.trackEvent(.checkoutFlowStarted, metadata: nil as AnalyticsEventMetadata?)
+            let metadata = AnalyticsEventMetadata(userLocale: userLocale)
+            await analyticsInteractor.trackEvent(.checkoutFlowStarted, metadata: metadata)
 
         case let .success(result):
             // Payment succeeded
             let metadata = AnalyticsEventMetadata(
+                userLocale: userLocale,
                 paymentMethod: result.paymentMethodType,
                 paymentId: result.paymentId
             )
             await analyticsInteractor.trackEvent(.paymentSuccess, metadata: metadata)
 
-        case .failure:
-            // Payment failed
-            await analyticsInteractor.trackEvent(.paymentFailure, metadata: nil as AnalyticsEventMetadata?)
+        case let .failure(error):
+            // Payment failed - extract metadata from error if available
+            let metadata = extractFailureMetadata(from: error, userLocale: userLocale)
+            await analyticsInteractor.trackEvent(.paymentFailure, metadata: metadata)
 
         case .dismissed:
             // User exited checkout without completion
-            await analyticsInteractor.trackEvent(.paymentFlowExited, metadata: nil as AnalyticsEventMetadata?)
+            let metadata = AnalyticsEventMetadata(userLocale: userLocale)
+            await analyticsInteractor.trackEvent(.paymentFlowExited, metadata: metadata)
 
         default:
             break
         }
+    }
+
+    private func extractFailureMetadata(from error: PrimerError, userLocale: String) -> AnalyticsEventMetadata {
+        // Extract payment information from paymentFailed error if available
+        if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error {
+            return AnalyticsEventMetadata(
+                userLocale: userLocale,
+                paymentMethod: paymentMethodType,
+                paymentId: paymentId
+            )
+        }
+
+        // For other error types, just include userLocale
+        return AnalyticsEventMetadata(userLocale: userLocale)
     }
 
     func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {

@@ -52,7 +52,7 @@ final class CheckoutSDKInitializer {
         let composableContainer = ComposableContainer(settings: settings)
         await composableContainer.configure()
 
-        // Track SDK initialization start
+        // Track SDK initialization start - after DI container is ready, before BE calls
         await trackSDKInitStart()
 
         try await initializeAPIConfiguration()
@@ -60,7 +60,7 @@ final class CheckoutSDKInitializer {
         // Initialize analytics session
         await initializeAnalytics()
 
-        // Track SDK initialization end
+        // Track SDK initialization end - after all API calls complete
         await trackSDKInitEnd()
 
         let checkoutScope = createCheckoutScope()
@@ -169,7 +169,8 @@ final class CheckoutSDKInitializer {
         guard let container = await DIContainer.current else { return }
 
         if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
-            await analyticsInteractor.trackEvent(.sdkInitStart, metadata: nil as AnalyticsEventMetadata?)
+            let metadata = AnalyticsEventMetadata(userLocale: Locale.current.identifier)
+            await analyticsInteractor.trackEvent(.sdkInitStart, metadata: metadata)
         }
     }
 
@@ -177,7 +178,8 @@ final class CheckoutSDKInitializer {
         guard let container = await DIContainer.current else { return }
 
         if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
-            await analyticsInteractor.trackEvent(.sdkInitEnd, metadata: nil as AnalyticsEventMetadata?)
+            let metadata = AnalyticsEventMetadata(userLocale: Locale.current.identifier)
+            await analyticsInteractor.trackEvent(.sdkInitEnd, metadata: metadata)
         }
     }
 

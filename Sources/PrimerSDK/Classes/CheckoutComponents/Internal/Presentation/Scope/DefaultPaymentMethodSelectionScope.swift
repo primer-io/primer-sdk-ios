@@ -147,7 +147,10 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
             return
         }
 
-        let metadata = AnalyticsEventMetadata(paymentMethod: paymentMethodType)
+        let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            paymentMethod: paymentMethodType
+        )
         await analyticsInteractor.trackEvent(.paymentMethodSelection, metadata: metadata)
     }
 

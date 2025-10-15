@@ -964,7 +964,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             return
         }
 
-        await analyticsInteractor.trackEvent(.paymentDetailsEntered, metadata: nil as AnalyticsEventMetadata?)
+        let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            paymentMethod: "PAYMENT_CARD"
+        )
+        await analyticsInteractor.trackEvent(.paymentDetailsEntered, metadata: metadata)
     }
 
     private func trackPaymentSubmitted() async {
@@ -973,7 +977,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             return
         }
 
-        await analyticsInteractor.trackEvent(.paymentSubmitted, metadata: nil as AnalyticsEventMetadata?)
+        let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            paymentMethod: "PAYMENT_CARD"
+        )
+        await analyticsInteractor.trackEvent(.paymentSubmitted, metadata: metadata)
     }
 
     private func trackPaymentProcessingStarted() async {
@@ -982,7 +990,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             return
         }
 
-        await analyticsInteractor.trackEvent(.paymentProcessingStarted, metadata: nil as AnalyticsEventMetadata?)
+        let metadata = AnalyticsEventMetadata(
+            userLocale: Locale.current.identifier,
+            paymentMethod: "PAYMENT_CARD"
+        )
+        await analyticsInteractor.trackEvent(.paymentProcessingStarted, metadata: metadata)
     }
 }
 
