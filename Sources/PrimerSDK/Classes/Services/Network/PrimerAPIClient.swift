@@ -6,6 +6,8 @@
 
 import Foundation
 
+//import PrimerNetworking
+
 let defaultNetworkService = DefaultNetworkService(
     requestFactory: DefaultNetworkRequestFactory(),
     requestDispatcher: DefaultRequestDispatcher(),

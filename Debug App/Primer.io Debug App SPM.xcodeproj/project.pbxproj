@@ -42,6 +42,7 @@
 		A1DD4D672E3A859F00877A5D /* MixedComponentsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D592E3A859F00877A5D /* MixedComponentsDemo.swift */; };
 		A7D6F18D2E840EEC00A380F1 /* NetworkingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D6F18C2E840EEC00A380F1 /* NetworkingUtils.swift */; };
 		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
+		BAE14FB92E9F9BEE00234794 /* PrimerNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = BAE14FB82E9F9BEE00234794 /* PrimerNetworking */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
@@ -210,6 +211,7 @@
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
 				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
 				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
+				BAE14FB92E9F9BEE00234794 /* PrimerNetworking in Frameworks */,
 				87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,6 +476,7 @@
 				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
 				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
 				87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */,
+				BAE14FB82E9F9BEE00234794 /* PrimerNetworking */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -901,6 +904,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */;
 			productName = PrimerStripeSDK;
+		};
+		BAE14FB82E9F9BEE00234794 /* PrimerNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PrimerNetworking;
 		};
 		F04510E22ACD98E100A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;

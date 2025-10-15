@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 protocol ResponseMetadata {
     var responseUrl: String? { get }
@@ -38,6 +39,8 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
     let requestFactory: NetworkRequestFactory
     let requestDispatcher: RequestDispatcher
     let reportingService: NetworkReportingService
+	
+	private let api = API()
 
     init(requestFactory: NetworkRequestFactory,
          requestDispatcher: RequestDispatcher,
@@ -78,13 +81,39 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
             completion(.failure(error))
             return nil
         }
+		
+		// TODO: Wrap async 
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        try await awaitResult { completion in
-            self.request(endpoint, completion: completion)
-        }
+		do {
+			let before: BeforeNetworkingAction = { [weak self] in self?.reportBefore(urlRequest: $0, for: endpoint) }
+			let (data, response): CompatabilityResponse<Data> = try await api.call(endpoint, beforeAction: before)
+			let metadata = ResponseMetadataModel(response: response)
+			reportAfter(metadata: metadata, id: "TODO", for: endpoint)
+			return try endpoint.responseFactory.model(for: data, forMetadata: metadata)
+		} catch let error {
+			throw handled(error: error)
+		}
     }
+	
+	private func reportBefore(urlRequest: URLRequest, for endpoint: Endpoint) {
+		reportingService.report(eventType: .networkConnectivity(endpoint: endpoint))
+		let event: NetworkEventType
+		event = .requestStart(identifier: urlRequest.requestId!, endpoint: endpoint, request: urlRequest)
+		reportingService.report(eventType: event)
+	}
+	
+	private func reportAfter(metadata: ResponseMetadataModel, id: String, for endpoint: Endpoint) {
+		reportingService.report(
+			eventType: .requestEnd(
+				identifier: id,
+				endpoint: endpoint,
+				response: metadata,
+				duration: 0 // todo
+			)
+		)
+	}
 
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint,
@@ -145,9 +174,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletion<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error))
         }
     }
@@ -157,9 +186,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletionWithHeaders<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error), nil)
         }
     }
@@ -214,4 +243,32 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
             completion(.failure(error), nil)
         }
     }
+}
+
+private extension ResponseMetadataModel {
+	init(response: HTTPURLResponse) {
+		responseUrl = response.responseUrl
+		statusCode = response.statusCode
+		headers = response.headers
+	}
+}
+
+private extension Endpoint {
+	func primerNetworkingEndpoint<T: Decodable>() -> PrimerNetworking.Endpoint<Data, T> {
+		switch self.method {
+		case .get: .get(baseURL: URL(string: baseURL!)!, path: path, headers: headers, timeout: timeout)
+		case .post: .post(baseURL: URL(string: baseURL!)!, path: path, body: body, headers: headers, timeout: timeout)
+		case .put: .put(baseURL: URL(string: baseURL!)!, path: path, body: body, headers: headers, timeout: timeout)
+		case .delete: .delete(baseURL: URL(string: baseURL!)!, path: path, headers: headers, timeout: timeout)
+		}
+	}
+}
+
+private extension API {
+	func call(
+		_ endpoint: Endpoint,
+		beforeAction: BeforeNetworkingAction?
+	) async throws -> (Data, HTTPURLResponse) {
+		try await call(endpoint.primerNetworkingEndpoint(), beforeAction: beforeAction)
+	}
 }
