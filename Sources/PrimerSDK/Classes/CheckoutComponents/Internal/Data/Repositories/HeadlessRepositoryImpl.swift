@@ -689,11 +689,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return
         }
 
-        trackAnalyticsEvent(.paymentThreeds, metadata: .withLocale(
-            paymentMethod: tokenData.paymentMethodType,
-            threedsProvider: resolveThreeDSProvider(),
-            threedsResponse: authentication.responseCode.rawValue
-        ))
+        trackAnalyticsEvent(.paymentThreeds, metadata: .threeDS(ThreeDSEvent(
+            paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
+            provider: resolveThreeDSProvider() ?? "Unknown",
+            response: authentication.responseCode.rawValue
+        )))
     }
 
     func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
@@ -705,7 +705,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
         lastTrackedRedirectDestination = redirectUrl
 
-        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: .withLocale(redirectDestinationUrl: redirectUrl))
+        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: .redirect(RedirectEvent(destinationUrl: redirectUrl)))
     }
 
     private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {

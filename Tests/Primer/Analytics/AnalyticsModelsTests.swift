@@ -169,192 +169,198 @@ final class AnalyticsPayloadTests: XCTestCase {
 
 final class AnalyticsEventMetadataTests: XCTestCase {
 
-    func testAnalyticsEventMetadata_InitializesWithAllNilByDefault() {
+    // MARK: - GeneralEvent Tests
+
+    func testGeneralEvent_InitializesWithDefaultLocale() {
         // When
-        let metadata = AnalyticsEventMetadata()
+        let event = GeneralEvent()
 
         // Then
-        XCTAssertNil(metadata.eventType)
-        XCTAssertNil(metadata.userLocale)
-        XCTAssertNil(metadata.paymentMethod)
-        XCTAssertNil(metadata.paymentId)
-        XCTAssertNil(metadata.redirectDestinationUrl)
-        XCTAssertNil(metadata.threedsProvider)
-        XCTAssertNil(metadata.threedsResponse)
-        XCTAssertNil(metadata.browser)
-        XCTAssertNil(metadata.device)
-        XCTAssertNil(metadata.deviceType)
+        XCTAssertEqual(event.locale, Locale.current.identifier)
     }
 
-    func testAnalyticsEventMetadata_InitializesWithSingleField() {
+    func testGeneralEvent_InitializesWithCustomLocale() {
         // When
-        let metadata = AnalyticsEventMetadata(paymentMethod: "PAYMENT_CARD")
+        let event = GeneralEvent(locale: "fr-FR")
 
         // Then
-        XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
-        XCTAssertNil(metadata.eventType)
-        XCTAssertNil(metadata.paymentId)
+        XCTAssertEqual(event.locale, "fr-FR")
     }
 
-    func testAnalyticsEventMetadata_InitializesWithMultipleFields() {
+    // MARK: - PaymentEvent Tests
+
+    func testPaymentEvent_InitializesWithRequiredFields() {
         // When
-        let metadata = AnalyticsEventMetadata(
-            eventType: "payment",
+        let event = PaymentEvent(paymentMethod: "PAYMENT_CARD")
+
+        // Then
+        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
+        XCTAssertNil(event.paymentId)
+    }
+
+    func testPaymentEvent_InitializesWithAllFields() {
+        // When
+        let event = PaymentEvent(
+            locale: "en-GB",
             paymentMethod: "PAYMENT_CARD",
             paymentId: "pay_123"
         )
 
         // Then
-        XCTAssertEqual(metadata.eventType, "payment")
-        XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
-        XCTAssertEqual(metadata.paymentId, "pay_123")
+        XCTAssertEqual(event.locale, "en-GB")
+        XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(event.paymentId, "pay_123")
     }
 
-    func testAnalyticsEventMetadata_Supports3DSFields() {
+    // MARK: - ThreeDSEvent Tests
+
+    func testThreeDSEvent_InitializesWithAllRequiredFields() {
         // When
-        let metadata = AnalyticsEventMetadata(
-            threedsProvider: "Netcetera",
-            threedsResponse: "05"
+        let event = ThreeDSEvent(
+            paymentMethod: "PAYMENT_CARD",
+            provider: "Netcetera",
+            response: "05"
         )
 
         // Then
-        XCTAssertEqual(metadata.threedsProvider, "Netcetera")
-        XCTAssertEqual(metadata.threedsResponse, "05")
+        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(event.provider, "Netcetera")
+        XCTAssertEqual(event.response, "05")
     }
 
-    func testAnalyticsEventMetadata_SupportsRedirectFields() {
+    func testThreeDSEvent_InitializesWithCustomLocale() {
         // When
-        let metadata = AnalyticsEventMetadata(
-            redirectDestinationUrl: "https://example.com/redirect"
+        let event = ThreeDSEvent(
+            locale: "de-DE",
+            paymentMethod: "PAYMENT_CARD",
+            provider: "Netcetera",
+            response: "05"
         )
 
         // Then
-        XCTAssertEqual(metadata.redirectDestinationUrl, "https://example.com/redirect")
+        XCTAssertEqual(event.locale, "de-DE")
     }
 
-    func testAnalyticsEventMetadata_SupportsDeviceOverrides() {
+    // MARK: - RedirectEvent Tests
+
+    func testRedirectEvent_InitializesWithRequiredFields() {
         // When
-        let metadata = AnalyticsEventMetadata(
-            device: "Custom Device",
-            deviceType: "tablet"
+        let event = RedirectEvent(destinationUrl: "https://example.com")
+
+        // Then
+        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.destinationUrl, "https://example.com")
+    }
+
+    func testRedirectEvent_InitializesWithCustomLocale() {
+        // When
+        let event = RedirectEvent(
+            locale: "es-ES",
+            destinationUrl: "https://redirect.example.com"
         )
 
         // Then
-        XCTAssertEqual(metadata.device, "Custom Device")
-        XCTAssertEqual(metadata.deviceType, "tablet")
+        XCTAssertEqual(event.locale, "es-ES")
+        XCTAssertEqual(event.destinationUrl, "https://redirect.example.com")
     }
 
-    // MARK: - withLocale Factory Tests
+    // MARK: - AnalyticsEventMetadata Enum Tests
 
-    func testAnalyticsEventMetadata_withLocale_PopulatesUserLocaleAutomatically() {
-        // Given
-        let expectedLocale = Locale.current.identifier
-
+    func testAnalyticsEventMetadata_GeneralCase() {
         // When
-        let metadata = AnalyticsEventMetadata.withLocale()
+        let metadata: AnalyticsEventMetadata = .general(GeneralEvent())
 
         // Then
-        XCTAssertEqual(metadata.userLocale, expectedLocale, "userLocale should be auto-populated from Locale.current")
-        XCTAssertFalse(expectedLocale.isEmpty, "Locale identifier should not be empty")
-    }
-
-    func testAnalyticsEventMetadata_withLocale_LeavesOtherFieldsNilByDefault() {
-        // When
-        let metadata = AnalyticsEventMetadata.withLocale()
-
-        // Then
-        XCTAssertNotNil(metadata.userLocale, "userLocale should be populated")
-        XCTAssertNil(metadata.eventType)
+        XCTAssertEqual(metadata.locale, Locale.current.identifier)
         XCTAssertNil(metadata.paymentMethod)
         XCTAssertNil(metadata.paymentId)
-        XCTAssertNil(metadata.redirectDestinationUrl)
         XCTAssertNil(metadata.threedsProvider)
         XCTAssertNil(metadata.threedsResponse)
-        XCTAssertNil(metadata.browser)
-        XCTAssertNil(metadata.device)
-        XCTAssertNil(metadata.deviceType)
+        XCTAssertNil(metadata.redirectDestinationUrl)
     }
 
-    func testAnalyticsEventMetadata_withLocale_PassesThroughSingleParameter() {
-        // Given
-        let expectedPaymentMethod = "PAYMENT_CARD"
-
+    func testAnalyticsEventMetadata_PaymentCase() {
         // When
-        let metadata = AnalyticsEventMetadata.withLocale(paymentMethod: expectedPaymentMethod)
-
-        // Then
-        XCTAssertNotNil(metadata.userLocale)
-        XCTAssertEqual(metadata.paymentMethod, expectedPaymentMethod)
-        XCTAssertNil(metadata.paymentId, "Unspecified parameters should remain nil")
-    }
-
-    func testAnalyticsEventMetadata_withLocale_PassesThroughMultipleParameters() {
-        // Given
-        let expectedLocale = Locale.current.identifier
-        let expectedPaymentMethod = "PAYMENT_CARD"
-        let expectedPaymentId = "pay_123"
-        let expectedEventType = "payment"
-
-        // When
-        let metadata = AnalyticsEventMetadata.withLocale(
-            eventType: expectedEventType,
-            paymentMethod: expectedPaymentMethod,
-            paymentId: expectedPaymentId
-        )
-
-        // Then
-        XCTAssertEqual(metadata.userLocale, expectedLocale)
-        XCTAssertEqual(metadata.eventType, expectedEventType)
-        XCTAssertEqual(metadata.paymentMethod, expectedPaymentMethod)
-        XCTAssertEqual(metadata.paymentId, expectedPaymentId)
-        XCTAssertNil(metadata.device, "Unspecified parameters should remain nil")
-    }
-
-    func testAnalyticsEventMetadata_withLocale_Supports3DSParameters() {
-        // Given
-        let expectedProvider = "Netcetera"
-        let expectedResponse = "05"
-
-        // When
-        let metadata = AnalyticsEventMetadata.withLocale(
-            threedsProvider: expectedProvider,
-            threedsResponse: expectedResponse
-        )
-
-        // Then
-        XCTAssertNotNil(metadata.userLocale)
-        XCTAssertEqual(metadata.threedsProvider, expectedProvider)
-        XCTAssertEqual(metadata.threedsResponse, expectedResponse)
-    }
-
-    func testAnalyticsEventMetadata_withLocale_SupportsAllParameters() {
-        // Given
-        let expectedLocale = Locale.current.identifier
-
-        // When
-        let metadata = AnalyticsEventMetadata.withLocale(
-            eventType: "payment",
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
             paymentMethod: "PAYMENT_CARD",
-            paymentId: "pay_123",
-            redirectDestinationUrl: "https://example.com",
-            threedsProvider: "Netcetera",
-            threedsResponse: "05",
-            browser: "Safari",
-            device: "iPhone 15 Pro",
-            deviceType: "phone"
-        )
+            paymentId: "pay_123"
+        ))
 
         // Then
-        XCTAssertEqual(metadata.userLocale, expectedLocale)
-        XCTAssertEqual(metadata.eventType, "payment")
+        XCTAssertEqual(metadata.locale, Locale.current.identifier)
         XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
         XCTAssertEqual(metadata.paymentId, "pay_123")
-        XCTAssertEqual(metadata.redirectDestinationUrl, "https://example.com")
+        XCTAssertNil(metadata.threedsProvider)
+        XCTAssertNil(metadata.threedsResponse)
+        XCTAssertNil(metadata.redirectDestinationUrl)
+    }
+
+    func testAnalyticsEventMetadata_ThreeDSCase() {
+        // When
+        let metadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(
+            paymentMethod: "PAYMENT_CARD",
+            provider: "Netcetera",
+            response: "05"
+        ))
+
+        // Then
+        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
+        XCTAssertNil(metadata.paymentId)
         XCTAssertEqual(metadata.threedsProvider, "Netcetera")
         XCTAssertEqual(metadata.threedsResponse, "05")
-        XCTAssertEqual(metadata.browser, "Safari")
-        XCTAssertEqual(metadata.device, "iPhone 15 Pro")
-        XCTAssertEqual(metadata.deviceType, "phone")
+        XCTAssertNil(metadata.redirectDestinationUrl)
+    }
+
+    func testAnalyticsEventMetadata_RedirectCase() {
+        // When
+        let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            destinationUrl: "https://redirect.example.com"
+        ))
+
+        // Then
+        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertNil(metadata.paymentMethod)
+        XCTAssertNil(metadata.paymentId)
+        XCTAssertNil(metadata.threedsProvider)
+        XCTAssertNil(metadata.threedsResponse)
+        XCTAssertEqual(metadata.redirectDestinationUrl, "https://redirect.example.com")
+    }
+
+    // MARK: - Type Safety Tests
+
+    func testAnalyticsEventMetadata_TypeSafety_PreventsMixedFields() {
+        // When - creating a general event
+        let generalMetadata: AnalyticsEventMetadata = .general(GeneralEvent())
+
+        // Then - should not have payment-specific fields
+        XCTAssertNil(generalMetadata.paymentMethod, "General events should not have payment method")
+        XCTAssertNil(generalMetadata.paymentId, "General events should not have payment ID")
+
+        // When - creating a payment event
+        let paymentMetadata: AnalyticsEventMetadata = .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD"))
+
+        // Then - should not have 3DS fields
+        XCTAssertNil(paymentMetadata.threedsProvider, "Payment events should not have 3DS provider")
+        XCTAssertNil(paymentMetadata.threedsResponse, "Payment events should not have 3DS response")
+    }
+
+    func testAnalyticsEventMetadata_LocaleAccessor_WorksForAllCases() {
+        // Given
+        let testLocale = "ja-JP"
+        
+        let generalMetadata: AnalyticsEventMetadata = .general(GeneralEvent(locale: testLocale))
+        let paymentMetadata: AnalyticsEventMetadata = .payment(PaymentEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD"))
+        let threeDSMetadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD", provider: "Test", response: "05"))
+        let redirectMetadata: AnalyticsEventMetadata = .redirect(RedirectEvent(locale: testLocale, destinationUrl: "https://example.com"))
+
+        // Then
+        XCTAssertEqual(generalMetadata.locale, testLocale)
+        XCTAssertEqual(paymentMetadata.locale, testLocale)
+        XCTAssertEqual(threeDSMetadata.locale, testLocale)
+        XCTAssertEqual(redirectMetadata.locale, testLocale)
     }
 }
 

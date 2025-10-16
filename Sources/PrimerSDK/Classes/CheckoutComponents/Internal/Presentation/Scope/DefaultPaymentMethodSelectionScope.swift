@@ -147,7 +147,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     }
 
     private func trackPaymentMethodSelection(_ paymentMethodType: String) async {
-        await analyticsInteractor?.trackEvent(.paymentMethodSelection, metadata: .withLocale(paymentMethod: paymentMethodType))
+        await analyticsInteractor?.trackEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType)))
     }
 
     public func onCancel() {

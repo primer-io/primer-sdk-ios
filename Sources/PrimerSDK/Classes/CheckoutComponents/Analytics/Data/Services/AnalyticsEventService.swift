@@ -93,9 +93,9 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
 
         // Get device info (auto-fill if not provided in metadata)
         let userAgent = deviceInfoProvider.getUserAgent()
-        let device = metadata?.device ?? deviceInfoProvider.getDevice()
-        let deviceType = metadata?.deviceType ?? deviceInfoProvider.getDeviceType()
-        let userLocale = metadata?.userLocale ?? deviceInfoProvider.getUserLocale()
+        let device = deviceInfoProvider.getDevice()
+        let deviceType = deviceInfoProvider.getDeviceType()
+        let userLocale = metadata?.locale ?? deviceInfoProvider.getUserLocale()
 
         return AnalyticsPayload(
             id: eventId,
@@ -107,14 +107,14 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
             primerAccountId: config.primerAccountId,
             sdkVersion: config.sdkVersion,
             userAgent: userAgent,
-            eventType: metadata?.eventType,
+            eventType: nil,
             userLocale: userLocale,
             paymentMethod: metadata?.paymentMethod,
             paymentId: metadata?.paymentId,
             redirectDestinationUrl: metadata?.redirectDestinationUrl,
             threedsProvider: metadata?.threedsProvider,
             threedsResponse: metadata?.threedsResponse,
-            browser: metadata?.browser,
+            browser: nil,
             device: device,
             deviceType: deviceType
         )

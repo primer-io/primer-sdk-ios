@@ -172,11 +172,11 @@ final class CheckoutSDKInitializer {
     }
 
     private func trackSDKInitStart() async {
-        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: .withLocale())
+        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: .general(GeneralEvent()))
     }
 
     private func trackSDKInitEnd() async {
-        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: .withLocale())
+        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: .general(GeneralEvent()))
     }
 
     private func decodeClientToken(_ token: String) -> [String: Any]? {

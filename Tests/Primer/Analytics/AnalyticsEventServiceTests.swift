@@ -84,18 +84,10 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let config = makeTestConfig()
         await service.initialize(config: config)
 
-        let metadata = AnalyticsEventMetadata(
-            eventType: "payment",
-            userLocale: "en-US",
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
             paymentMethod: "PAYMENT_CARD",
-            paymentId: "pay_123",
-            redirectDestinationUrl: "https://redirect.example.com",
-            threedsProvider: "Netcetera",
-            threedsResponse: "05",
-            browser: "Safari",
-            device: "iPhone 15 Pro",
-            deviceType: "phone"
-        )
+            paymentId: "pay_123"
+        ))
 
         // When
         await service.sendEvent(.paymentSuccess, metadata: metadata)
@@ -109,9 +101,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let config = makeTestConfig()
         await service.initialize(config: config)
 
-        let metadata = AnalyticsEventMetadata(
-            paymentMethod: "PAYMENT_CARD"
-        )
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD"))
 
         // When
         await service.sendEvent(.paymentMethodSelection, metadata: metadata)
@@ -170,10 +160,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let config = makeTestConfig()
         await service.initialize(config: config)
 
-        let metadata = AnalyticsEventMetadata(
-            device: "Custom Device",
-            deviceType: "tablet"
-        )
+        let metadata: AnalyticsEventMetadata = .general(GeneralEvent())
 
         // When
         await service.sendEvent(.paymentSubmitted, metadata: metadata)
@@ -193,7 +180,10 @@ final class AnalyticsEventServiceTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    let metadata = AnalyticsEventMetadata(paymentId: "pay_\(i)")
+                    let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
+                        paymentMethod: "PAYMENT_CARD",
+                        paymentId: "pay_\(i)"
+                    ))
                     await self.service.sendEvent(.paymentSuccess, metadata: metadata)
                 }
             }
@@ -215,7 +205,10 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
             for i in 0..<5 {
                 group.addTask {
-                    let metadata = AnalyticsEventMetadata(paymentId: "pay_\(i)")
+                    let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
+                        paymentMethod: "PAYMENT_CARD",
+                        paymentId: "pay_\(i)"
+                    ))
                     await self.service.sendEvent(.paymentSuccess, metadata: metadata)
                 }
             }
@@ -241,10 +234,10 @@ final class AnalyticsEventServiceTests: XCTestCase {
         await service.initialize(config: config)
 
         // When - send events with real device info
-        let metadata = AnalyticsEventMetadata(
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
             paymentMethod: "PAYMENT_CARD",
             paymentId: "pay_test_123"
-        )
+        ))
 
         await service.sendEvent(.paymentSuccess, metadata: metadata)
 

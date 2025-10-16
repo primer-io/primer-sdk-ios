@@ -962,15 +962,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Analytics Tracking
 
     private func trackPaymentDetailsEntered() async {
-        await analyticsInteractor?.trackEvent(.paymentDetailsEntered, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
+        await analyticsInteractor?.trackEvent(.paymentDetailsEntered, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
     }
 
     private func trackPaymentSubmitted() async {
-        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
+        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
     }
 
     private func trackPaymentProcessingStarted() async {
-        await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
+        await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
     }
 }
 
