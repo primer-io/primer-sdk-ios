@@ -4,7 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
@@ -62,12 +61,11 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
         Analytics.Service.fire(events: [sdkEvent])
 
         switch collectableData {
-        case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
-                               mobileNumber: let mobileNumber):
+        case let .cardAndPhoneData(nolPaymentCard: nolPaymentCard, mobileNumber: mobileNumber):
             nextDataStep = .collectCardAndPhoneData
             cardNumber = nolPaymentCard.cardNumber
             self.mobileNumber = mobileNumber
-        case .otpData(otpCode: let otpCode):
+        case let .otpData(otpCode: otpCode):
             nextDataStep = .collectOtpData
             self.otpCode = otpCode
         }
@@ -77,48 +75,52 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
 
     private func validateData(for data: NolPayUnlinkCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
-        var errors: [PrimerValidationError] = []
-
         switch data {
-        case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber):
-
-            if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
-                errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
-            }
-
-            phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success((let validationStatus, let countryCode, let mobileNumber)):
-                    switch validationStatus {
-                    case .valid:
-                        if errors.isEmpty {
-                            self.countryCode = countryCode
-                            self.mobileNumber = mobileNumber
-                            self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
-                        } else {
-                            self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
-                        }
-
-                    case .invalid(errors: let validationErrors):
-                        errors += validationErrors
-                        self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
-
-                    default: break
-                    }
-                case .failure(let error):
-                    self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
-                }
-            }
-        case .otpData(otpCode: let otpCode):
+        case let .cardAndPhoneData(nolPaymentCard: card, mobileNumber: mobileNumber):
+			handleCardAndPhoneData(card: card, mobileNumber: mobileNumber, data: data)
+        case let .otpData(otpCode: otpCode):
             if !otpCode.isValidOTP {
-                errors.append(handled(error: PrimerValidationError.invalidOTPCode(message: "OTP is not valid.")))
-                validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                let error = handled(error: PrimerValidationError.invalidOTPCode(message: "OTP is not valid."))
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
             }
         }
     }
+
+	private func handleCardAndPhoneData(
+		card: PrimerNolPaymentCard,
+		mobileNumber: String,
+		data: PrimerCollectableData
+	) {
+		var errors: [PrimerValidationError] = []
+		if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
+			errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
+		}
+
+		phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+			guard let self else { return }
+			switch result {
+			case let .success((validationStatus, countryCode, mobileNumber)):
+				switch validationStatus {
+				case .valid:
+					if errors.isEmpty {
+						self.countryCode = countryCode
+						self.mobileNumber = mobileNumber
+						self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+					} else {
+						self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+					}
+				case let .invalid(errors: validationErrors):
+					errors += validationErrors
+					self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+				default: break
+				}
+			case let .failure(error):
+				self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+			}
+		}
+	}
 
     public func submit() {
         let sdkEvent = Analytics.Event.sdk(
@@ -129,74 +131,22 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
 
         switch nextDataStep {
         case .collectCardAndPhoneData:
-            guard let mobileNumber else {
-                return makeAndHandleInvalidValueError(forKey: "mobileNumber")
-            }
-
-            guard let countryCode else {
-                return makeAndHandleInvalidValueError(forKey: "countryCode")
-            }
-
-            guard let cardNumber else {
-                return makeAndHandleInvalidValueError(forKey: "cardNumber")
+            guard let mobileNumber, let countryCode, let cardNumber else {
+				let key = mobileNumber == nil ? "mobileNumber" : countryCode == nil ? "countryCode" : "cardNumber"
+				return makeAndHandleInvalidValueError(forKey: key)
             }
 
             #if canImport(PrimerNolPaySDK)
-
-            guard let nolPay else {
-                return makeAndHandleNolPayInitializationError()
-            }
-
-            nolPay.sendUnlinkOTP(to: mobileNumber,
-                                 with: countryCode,
-                                 and: cardNumber) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success((_, let token)):
-                    self.unlinkToken = token
-                    self.nextDataStep = .collectOtpData
-                    self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                case .failure(let error):
-                    let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
-                    self.errorDelegate?.didReceiveError(error: error)
-                }
-            }
+			sendUnlinkOTP(mobileNumber: mobileNumber, countryCode: countryCode, cardNumber: cardNumber)
             #endif
         case .collectOtpData:
-            guard let otpCode else {
-                return makeAndHandleInvalidValueError(forKey: "otpCode")
-            }
-
-            guard let unlinkToken else {
-                return makeAndHandleInvalidValueError(forKey: "unlinkToken")
-            }
-
-            guard let cardNumber else {
-                return makeAndHandleInvalidValueError(forKey: "cardNumber")
+			guard let otpCode, let unlinkToken, let cardNumber else {
+				let key = otpCode == nil ? "otpCode" : unlinkToken == nil ? "unlinkToken" : "cardNumber"
+				return makeAndHandleInvalidValueError(forKey: key)
             }
 
             #if canImport(PrimerNolPaySDK)
-
-            guard let nolPay else {
-                return makeAndHandleNolPayInitializationError()
-            }
-
-            nolPay.unlinkCard(with: cardNumber, otp: otpCode, and: unlinkToken) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let success):
-                    if success {
-                        self.nextDataStep = .cardUnlinked
-                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                    } else {
-                        let error = handled(primerError: .nolError(code: "unknown", message: "Unlinking failed from unknown reason"))
-                        self.errorDelegate?.didReceiveError(error: error)
-                    }
-                case .failure(let error):
-                    let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
-                    self.errorDelegate?.didReceiveError(error: error)
-                }
-            }
+			unlinkCard(cardNumber: cardNumber, otpCode: otpCode, unlinkToken: unlinkToken)
             #endif
         default:
             break
@@ -240,9 +190,9 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
             return try await withCheckedThrowingContinuation { continuation in
                 self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
-                    case .success(let appSecret):
+                    case let .success(appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)
-                    case .failure(let error):
+                    case let .failure(error):
                         continuation.resume(throwing: error)
                     }
                 }
@@ -259,8 +209,44 @@ public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent
         )
         #endif
     }
+	
+	#if canImport(PrimerNolPaySDK)
+	private func sendUnlinkOTP(mobileNumber: String, countryCode: String, cardNumber: String) {
+		guard let nolPay else { return makeAndHandleNolPayInitializationError() }
+		nolPay.sendUnlinkOTP(to: mobileNumber, with: countryCode, and: cardNumber) { [weak self] result in
+			guard let self else { return }
+			switch result {
+			case let .success((_, token)):
+				unlinkToken = token
+				nextDataStep = .collectOtpData
+				stepDelegate?.didReceiveStep(step: self.nextDataStep)
+			case let .failure(error):
+				let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
+				errorDelegate?.didReceiveError(error: error)
+			}
+		}
+	}
+	
+	private func unlinkCard(cardNumber: String, otpCode: String, unlinkToken: String) {
+		guard let nolPay else { return makeAndHandleNolPayInitializationError() }
+		nolPay.unlinkCard(with: cardNumber, otp: otpCode, and: unlinkToken) { [weak self] result in
+			guard let self else { return }
+			switch result {
+			case let .success(success):
+				if success {
+					nextDataStep = .cardUnlinked
+					stepDelegate?.didReceiveStep(step: nextDataStep)
+				} else {
+					let error = handled(primerError: .nolError(code: "unknown", message: "Unlinking failed from unknown reason"))
+					errorDelegate?.didReceiveError(error: error)
+				}
+			case let .failure(error):
+				let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
+				errorDelegate?.didReceiveError(error: error)
+			}
+		}
+	}
+	#endif
 }
-
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length

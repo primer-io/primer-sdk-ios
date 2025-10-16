@@ -4,14 +4,13 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import UIKit
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
 
-    internal var cvv: String {
+    var cvv: String {
         return textField.internalText ?? ""
     }
     public var cardNetwork: CardNetwork = .unknown
@@ -30,7 +29,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         }
     }
 
-    public override func textField(_ textField: UITextField,
+    override public func textField(_ textField: UITextField,
                                    shouldChangeCharactersIn range: NSRange,
                                    replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
@@ -49,12 +48,11 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            if newText.isEmpty {
-                validation = .invalid(PrimerValidationError.invalidCvv(message: "CVV cannot be blank."))
-            } else {
-                validation = .invalid(PrimerValidationError.invalidCvv(message: "CVV is not valid."))
-            }
-
+			validation = .invalid(
+				PrimerValidationError.invalidCvv(
+					message: newText.isEmpty ? "CVV cannot be blank." : "CVV is not valid."
+				)
+			)
         default:
             validation = .notAvailable
         }
@@ -79,5 +77,4 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         return false
     }
 }
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length

@@ -127,9 +127,14 @@ public enum PrimerInputElementType: Int {
 
     func clearFormatting(value: Any) -> Any? {
         switch self {
+        case .cardNumber,
+             .expiryDate:
+            guard let text = value as? String else { return nil }
         case .cardNumber, .expiryDate:
             guard let text = value as? String, let delimiter else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
+            return textWithoutWhiteSpace.replacingOccurrences(of: self.delimiter!, with: "")
+
             return textWithoutWhiteSpace.replacingOccurrences(of: delimiter, with: "")
         default:
             return value
@@ -146,7 +151,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var delimiter: String? {
+    var delimiter: String? {
         switch self {
         case .cardNumber:
             return " "
@@ -157,7 +162,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var maxAllowedLength: Int? {
+    var maxAllowedLength: Int? {
         switch self {
         case .cardNumber:
             return nil
@@ -172,7 +177,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var allowedCharacterSet: CharacterSet? {
+    var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber:
             return CharacterSet(charactersIn: "0123456789")
@@ -183,7 +188,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var keyboardType: UIKeyboardType {
+    var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber, .postalCode:
             return UIKeyboardType.numberPad
