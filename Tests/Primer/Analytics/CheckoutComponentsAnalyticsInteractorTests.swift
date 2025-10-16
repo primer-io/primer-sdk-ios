@@ -44,10 +44,10 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         // Given
         let service = SpyAnalyticsService()
         let interactor = DefaultAnalyticsInteractor(eventService: service)
-        let metadata = AnalyticsEventMetadata(
+        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
             paymentMethod: "PAYMENT_CARD",
             paymentId: "pay_123"
-        )
+        ))
 
         // When
         await interactor.trackEvent(.paymentSuccess, metadata: metadata)
@@ -102,7 +102,10 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    let metadata = AnalyticsEventMetadata(paymentId: "pay_\(i)")
+                    let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
+                        paymentMethod: "PAYMENT_CARD",
+                        paymentId: "pay_\(i)"
+                    ))
                     await interactor.trackEvent(.paymentSuccess, metadata: metadata)
                 }
             }
@@ -137,10 +140,11 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         // Given
         let service = SpyAnalyticsService()
         let interactor = DefaultAnalyticsInteractor(eventService: service)
-        let metadata = AnalyticsEventMetadata(
-            threedsProvider: "Netcetera",
-            threedsResponse: "05"
-        )
+        let metadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(
+            paymentMethod: "PAYMENT_CARD",
+            provider: "Netcetera",
+            response: "05"
+        ))
 
         // When
         await interactor.trackEvent(.paymentThreeds, metadata: metadata)
@@ -155,9 +159,9 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         // Given
         let service = SpyAnalyticsService()
         let interactor = DefaultAnalyticsInteractor(eventService: service)
-        let metadata = AnalyticsEventMetadata(
-            redirectDestinationUrl: "https://example.com/redirect"
-        )
+        let metadata: AnalyticsEventMetadata = .redirect(RedirectEvent(
+            destinationUrl: "https://example.com/redirect"
+        ))
 
         // When
         await interactor.trackEvent(.paymentRedirectToThirdParty, metadata: metadata)

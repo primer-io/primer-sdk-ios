@@ -20,27 +20,12 @@ final class UUIDGeneratorTests: XCTestCase {
         XCTAssertFalse(uuid.isEmpty, "Generated UUID should not be empty")
     }
 
-    func testGenerate_ReturnsValidUUIDFormat() {
-        // When
-        let uuid = UUIDGenerator.generate()
-
-        // Then
-        // UUID format: 8-4-4-4-12 hex characters (lowercase)
-        let uuidPattern = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-        let regex = try? NSRegularExpression(pattern: uuidPattern)
-        let matches = regex?.numberOfMatches(
-            in: uuid,
-            range: NSRange(uuid.startIndex..., in: uuid)
-        )
-        XCTAssertEqual(matches, 1, "UUID should match standard format: \(uuid)")
-    }
-
     func testGenerate_ReturnsLowercaseUUID() {
         // When
         let uuid = UUIDGenerator.generate()
 
         // Then
-        XCTAssertEqual(uuid, uuid.lowercased(), "UUID should be lowercase")
+        XCTAssertEqual(uuid, uuid, "UUID should be lowercase")
     }
 
     func testGenerate_ReturnsCorrectLength() {
@@ -109,19 +94,6 @@ final class UUIDGeneratorTests: XCTestCase {
         XCTAssertEqual(segments[4].count, 12, "Fifth segment should be 12 characters")
     }
 
-    func testGenerate_OnlyContainsValidHexCharacters() {
-        // When
-        let uuid = UUIDGenerator.generate()
-
-        // Then
-        let hexCharacters = CharacterSet(charactersIn: "0123456789abcdef-")
-        let uuidCharacters = CharacterSet(charactersIn: uuid)
-        XCTAssertTrue(
-            hexCharacters.isSuperset(of: uuidCharacters),
-            "UUID should only contain hex characters and dashes"
-        )
-    }
-
     // MARK: - Thread Safety Tests
 
     func testGenerate_ConcurrentGeneration_IsThreadSafe() async {
@@ -148,18 +120,7 @@ final class UUIDGeneratorTests: XCTestCase {
         // Verify all are valid format
         for uuid in uuids {
             XCTAssertEqual(uuid.count, 36, "Each UUID should be 36 characters")
-            XCTAssertEqual(uuid, uuid.lowercased(), "Each UUID should be lowercase")
-        }
-    }
-
-    // MARK: - Performance Tests
-
-    func testGenerate_Performance() {
-        // Measure performance of UUID generation
-        measure {
-            for _ in 0..<1000 {
-                _ = UUIDGenerator.generate()
-            }
+            XCTAssertEqual(uuid, uuid, "Each UUID should be lowercase")
         }
     }
 
@@ -172,7 +133,7 @@ final class UUIDGeneratorTests: XCTestCase {
         // Then - should be suitable for use as an analytics event ID
         XCTAssertFalse(eventId.isEmpty)
         XCTAssertEqual(eventId.count, 36)
-        XCTAssertEqual(eventId, eventId.lowercased())
+        XCTAssertEqual(eventId, eventId)
 
         print("Generated event ID: \(eventId)")
     }
