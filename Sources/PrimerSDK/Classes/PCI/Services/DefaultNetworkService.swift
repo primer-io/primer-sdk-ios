@@ -86,15 +86,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-		do {
-			let before: BeforeNetworkingAction = { [weak self] in self?.reportBefore(urlRequest: $0, for: endpoint) }
-			let (data, response): CompatabilityResponse<Data> = try await api.call(endpoint, beforeAction: before)
-			let metadata = ResponseMetadataModel(response: response)
-			reportAfter(metadata: metadata, id: "TODO", for: endpoint)
-			return try endpoint.responseFactory.model(for: data, forMetadata: metadata)
-		} catch let error {
-			throw handled(error: error)
-		}
+		try await awaitResult { completion in
+			   self.request(endpoint, completion: completion)
+		   }
     }
 	
 	private func reportBefore(urlRequest: URLRequest, for endpoint: Endpoint) {
