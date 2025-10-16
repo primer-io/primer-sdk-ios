@@ -518,14 +518,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         structuredState.isLoading = true
 
         // Track payment submission
-        await trackPaymentSubmitted()
+        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
 
         do {
             try await sendBillingAddressIfNeeded()
             let cardData = try await prepareCardPaymentData()
 
             // Track payment processing started
-            await trackPaymentProcessingStarted()
+            await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
 
             let result = try await processCardPayment(cardData: cardData)
             await handlePaymentSuccess(result)
@@ -666,7 +666,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             // Track payment details entered (only once when form becomes valid)
             if !wasValid {
                 Task {
-                    await trackPaymentDetailsEntered()
+                    await analyticsInteractor?.trackEvent(.paymentDetailsEntered,
+                                                          metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
                 }
             }
         }
@@ -958,19 +959,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             scope: self,
             styling: styling ?? defaultFieldStyling?["otpCode"]
         ).asAny()
-    }
-    // MARK: - Analytics Tracking
-
-    private func trackPaymentDetailsEntered() async {
-        await analyticsInteractor?.trackEvent(.paymentDetailsEntered, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
-    }
-
-    private func trackPaymentSubmitted() async {
-        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
-    }
-
-    private func trackPaymentProcessingStarted() async {
-        await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
     }
 }
 
