@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4"),
-		.package(path: "/Users/henry/Repos/partners-tech-poc/apps/ios/PrimerNetworking")
+		.package(path: "/Users/henrycooper/partners-tech-poc/apps/ios/PrimerNetworking")
     ],
     targets: [
         .target(

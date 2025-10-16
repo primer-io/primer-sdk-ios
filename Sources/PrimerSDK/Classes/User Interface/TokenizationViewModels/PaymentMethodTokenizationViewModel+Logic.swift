@@ -10,13 +10,18 @@
 
 import Foundation
 import UIKit
+import PrimerNetworking
 
 extension PaymentMethodTokenizationViewModel {
     @objc
     func start() {
         Task {
             do {
-                paymentMethodTokenData = try await startTokenizationFlow()
+				if config.type == "ADYEN_IDEAL" {
+					try await callPay()
+				} else {
+					paymentMethodTokenData = try await startTokenizationFlow()
+				}
                 await processPaymentMethodTokenData()
                 await uiManager.primerRootViewController?.enableUserInteraction(true)
             } catch {
@@ -191,7 +196,7 @@ extension PaymentMethodTokenizationViewModel {
             case .succeed:
                 return nil
 
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule = PrimerAPIConfigurationModule()
 
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -202,7 +207,7 @@ extension PaymentMethodTokenizationViewModel {
 
                 return decodedJWTToken
 
-            case .fail(let message):
+            case let .fail(message):
                 let merchantErr: Error
                 if let message {
                     merchantErr = PrimerError.merchantError(message: message)
@@ -213,7 +218,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
 
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -273,7 +278,7 @@ extension PaymentMethodTokenizationViewModel {
 
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .fail(let message):
+            case let .fail(message):
                 let merchantErr: Error
                 if let message {
                     merchantErr = PrimerError.merchantError(message: message)
@@ -351,7 +356,7 @@ extension PaymentMethodTokenizationViewModel {
         decisionHandlerHasBeenCalled = true
 
         switch paymentCreationDecision.type {
-        case .abort(let errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
+        case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
         case .continue: return
         }
     }
@@ -388,7 +393,7 @@ extension PaymentMethodTokenizationViewModel {
 extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
-        case .paymentFailed(_, let paymentId, let orderId, _, _):
+        case let .paymentFailed(_, paymentId, orderId, _, _):
             return PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
                                                    orderId: orderId,
@@ -397,6 +402,28 @@ extension PrimerError {
             return nil
         }
     }
+}
+
+extension PaymentMethodTokenizationViewModel {
+	func callPay() async throws {
+		let client = API()
+		let response = try await client.call(.pay())
+		try await callActions(response)
+	}
+	
+	private func callActions(_ payResponse: PayResponse) async throws {
+		let client = API()
+		let url = URL(string: "http://localhost:3000\(payResponse.actionsUrl)")!
+		
+		typealias Responses = (ActionResponse, HTTPURLResponse)
+		let (action, response): Responses = try await client.call(.get(baseURL: url))
+		
+		if response.statusCode == 204 { return try await callActions(payResponse) }
+		switch action.stateName {
+		case .navigateToURL:
+			print("Navigate to URL")
+		}
+	}
 }
 
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
