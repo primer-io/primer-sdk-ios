@@ -98,6 +98,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private let processCardPaymentInteractor: ProcessCardPaymentInteractor
     private let validateInputInteractor: ValidateInputInteractor?
     private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
+    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     /// Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
@@ -134,13 +135,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         presentationContext: PresentationContext = .fromPaymentSelection,
         processCardPaymentInteractor: ProcessCardPaymentInteractor,
         validateInputInteractor: ValidateInputInteractor? = nil,
-        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil
+        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
         self.processCardPaymentInteractor = processCardPaymentInteractor
         self.validateInputInteractor = validateInputInteractor
         self.cardNetworkDetectionInteractor = cardNetworkDetectionInteractor
+        self.analyticsInteractor = analyticsInteractor
 
         if cardNetworkDetectionInteractor != nil {
             setupNetworkDetectionStream()
@@ -959,42 +962,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Analytics Tracking
 
     private func trackPaymentDetailsEntered() async {
-        guard let container = await DIContainer.current,
-              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
-            return
-        }
-
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
-            paymentMethod: "PAYMENT_CARD"
-        )
-        await analyticsInteractor.trackEvent(.paymentDetailsEntered, metadata: metadata)
+        await analyticsInteractor?.trackEvent(.paymentDetailsEntered, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
     }
 
     private func trackPaymentSubmitted() async {
-        guard let container = await DIContainer.current,
-              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
-            return
-        }
-
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
-            paymentMethod: "PAYMENT_CARD"
-        )
-        await analyticsInteractor.trackEvent(.paymentSubmitted, metadata: metadata)
+        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
     }
 
     private func trackPaymentProcessingStarted() async {
-        guard let container = await DIContainer.current,
-              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
-            return
-        }
-
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
-            paymentMethod: "PAYMENT_CARD"
-        )
-        await analyticsInteractor.trackEvent(.paymentProcessingStarted, metadata: metadata)
+        await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .withLocale(paymentMethod: "PAYMENT_CARD"))
     }
 }
 

@@ -86,7 +86,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         if let existing = _paymentMethodSelection {
             return existing
         }
-        let scope = DefaultPaymentMethodSelectionScope(checkoutScope: self)
+        let scope = DefaultPaymentMethodSelectionScope(
+            checkoutScope: self,
+            analyticsInteractor: analyticsInteractor
+        )
         _paymentMethodSelection = scope
         return scope
     }
@@ -103,6 +106,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     private let navigator: CheckoutNavigator
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Internal Access
 
@@ -185,7 +189,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Setting up interactors...
         do {
             // Checking DI container availability...
-            guard let _ = await DIContainer.current else {
+            guard let container = await DIContainer.current else {
                 // DI Container is not available
                 throw ContainerError.containerUnavailable
             }
@@ -193,6 +197,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             // Creating bridge to existing SDK payment methods
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
+
+            // Resolve analytics interactor
+            analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
             // Interactor setup completed with bridge
         } catch {
@@ -289,55 +296,42 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     private func trackStateChange(_ state: PrimerCheckoutState) async {
-        guard let container = await DIContainer.current,
-              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
-            return
-        }
-
-        let userLocale = Locale.current.identifier
-
         switch state {
         case .ready:
             // Checkout flow is now interactive
-            let metadata = AnalyticsEventMetadata(userLocale: userLocale)
-            await analyticsInteractor.trackEvent(.checkoutFlowStarted, metadata: metadata)
+            await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .withLocale())
 
         case let .success(result):
             // Payment succeeded
-            let metadata = AnalyticsEventMetadata(
-                userLocale: userLocale,
+            await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .withLocale(
                 paymentMethod: result.paymentMethodType,
                 paymentId: result.paymentId
-            )
-            await analyticsInteractor.trackEvent(.paymentSuccess, metadata: metadata)
+            ))
 
         case let .failure(error):
             // Payment failed - extract metadata from error if available
-            let metadata = extractFailureMetadata(from: error, userLocale: userLocale)
-            await analyticsInteractor.trackEvent(.paymentFailure, metadata: metadata)
+            await analyticsInteractor?.trackEvent(.paymentFailure, metadata: extractFailureMetadata(from: error))
 
         case .dismissed:
             // User exited checkout without completion
-            let metadata = AnalyticsEventMetadata(userLocale: userLocale)
-            await analyticsInteractor.trackEvent(.paymentFlowExited, metadata: metadata)
+            await analyticsInteractor?.trackEvent(.paymentFlowExited, metadata: .withLocale())
 
         default:
             break
         }
     }
 
-    private func extractFailureMetadata(from error: PrimerError, userLocale: String) -> AnalyticsEventMetadata {
+    private func extractFailureMetadata(from error: PrimerError) -> AnalyticsEventMetadata {
         // Extract payment information from paymentFailed error if available
         if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error {
-            return AnalyticsEventMetadata(
-                userLocale: userLocale,
+            return .withLocale(
                 paymentMethod: paymentMethodType,
                 paymentId: paymentId
             )
         }
 
         // For other error types, just include userLocale
-        return AnalyticsEventMetadata(userLocale: userLocale)
+        return .withLocale()
     }
 
     func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {

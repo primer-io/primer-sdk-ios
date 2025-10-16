@@ -243,6 +243,119 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         XCTAssertEqual(metadata.device, "Custom Device")
         XCTAssertEqual(metadata.deviceType, "tablet")
     }
+
+    // MARK: - withLocale Factory Tests
+
+    func testAnalyticsEventMetadata_withLocale_PopulatesUserLocaleAutomatically() {
+        // Given
+        let expectedLocale = Locale.current.identifier
+
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale()
+
+        // Then
+        XCTAssertEqual(metadata.userLocale, expectedLocale, "userLocale should be auto-populated from Locale.current")
+        XCTAssertFalse(expectedLocale.isEmpty, "Locale identifier should not be empty")
+    }
+
+    func testAnalyticsEventMetadata_withLocale_LeavesOtherFieldsNilByDefault() {
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale()
+
+        // Then
+        XCTAssertNotNil(metadata.userLocale, "userLocale should be populated")
+        XCTAssertNil(metadata.eventType)
+        XCTAssertNil(metadata.paymentMethod)
+        XCTAssertNil(metadata.paymentId)
+        XCTAssertNil(metadata.redirectDestinationUrl)
+        XCTAssertNil(metadata.threedsProvider)
+        XCTAssertNil(metadata.threedsResponse)
+        XCTAssertNil(metadata.browser)
+        XCTAssertNil(metadata.device)
+        XCTAssertNil(metadata.deviceType)
+    }
+
+    func testAnalyticsEventMetadata_withLocale_PassesThroughSingleParameter() {
+        // Given
+        let expectedPaymentMethod = "PAYMENT_CARD"
+
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale(paymentMethod: expectedPaymentMethod)
+
+        // Then
+        XCTAssertNotNil(metadata.userLocale)
+        XCTAssertEqual(metadata.paymentMethod, expectedPaymentMethod)
+        XCTAssertNil(metadata.paymentId, "Unspecified parameters should remain nil")
+    }
+
+    func testAnalyticsEventMetadata_withLocale_PassesThroughMultipleParameters() {
+        // Given
+        let expectedLocale = Locale.current.identifier
+        let expectedPaymentMethod = "PAYMENT_CARD"
+        let expectedPaymentId = "pay_123"
+        let expectedEventType = "payment"
+
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale(
+            eventType: expectedEventType,
+            paymentMethod: expectedPaymentMethod,
+            paymentId: expectedPaymentId
+        )
+
+        // Then
+        XCTAssertEqual(metadata.userLocale, expectedLocale)
+        XCTAssertEqual(metadata.eventType, expectedEventType)
+        XCTAssertEqual(metadata.paymentMethod, expectedPaymentMethod)
+        XCTAssertEqual(metadata.paymentId, expectedPaymentId)
+        XCTAssertNil(metadata.device, "Unspecified parameters should remain nil")
+    }
+
+    func testAnalyticsEventMetadata_withLocale_Supports3DSParameters() {
+        // Given
+        let expectedProvider = "Netcetera"
+        let expectedResponse = "05"
+
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale(
+            threedsProvider: expectedProvider,
+            threedsResponse: expectedResponse
+        )
+
+        // Then
+        XCTAssertNotNil(metadata.userLocale)
+        XCTAssertEqual(metadata.threedsProvider, expectedProvider)
+        XCTAssertEqual(metadata.threedsResponse, expectedResponse)
+    }
+
+    func testAnalyticsEventMetadata_withLocale_SupportsAllParameters() {
+        // Given
+        let expectedLocale = Locale.current.identifier
+
+        // When
+        let metadata = AnalyticsEventMetadata.withLocale(
+            eventType: "payment",
+            paymentMethod: "PAYMENT_CARD",
+            paymentId: "pay_123",
+            redirectDestinationUrl: "https://example.com",
+            threedsProvider: "Netcetera",
+            threedsResponse: "05",
+            browser: "Safari",
+            device: "iPhone 15 Pro",
+            deviceType: "phone"
+        )
+
+        // Then
+        XCTAssertEqual(metadata.userLocale, expectedLocale)
+        XCTAssertEqual(metadata.eventType, "payment")
+        XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(metadata.paymentId, "pay_123")
+        XCTAssertEqual(metadata.redirectDestinationUrl, "https://example.com")
+        XCTAssertEqual(metadata.threedsProvider, "Netcetera")
+        XCTAssertEqual(metadata.threedsResponse, "05")
+        XCTAssertEqual(metadata.browser, "Safari")
+        XCTAssertEqual(metadata.device, "iPhone 15 Pro")
+        XCTAssertEqual(metadata.deviceType, "phone")
+    }
 }
 
 // MARK: - AnalyticsEventType Tests

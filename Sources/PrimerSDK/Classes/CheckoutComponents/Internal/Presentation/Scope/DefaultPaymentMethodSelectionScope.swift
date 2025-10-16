@@ -43,11 +43,16 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     // MARK: - Private Properties
 
     private weak var checkoutScope: DefaultCheckoutScope?
+    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Initialization
 
-    init(checkoutScope: DefaultCheckoutScope) {
+    init(
+        checkoutScope: DefaultCheckoutScope,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+    ) {
         self.checkoutScope = checkoutScope
+        self.analyticsInteractor = analyticsInteractor
 
         Task {
             await loadPaymentMethods()
@@ -142,16 +147,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     }
 
     private func trackPaymentMethodSelection(_ paymentMethodType: String) async {
-        guard let container = await DIContainer.current,
-              let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
-            return
-        }
-
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
-            paymentMethod: paymentMethodType
-        )
-        await analyticsInteractor.trackEvent(.paymentMethodSelection, metadata: metadata)
+        await analyticsInteractor?.trackEvent(.paymentMethodSelection, metadata: .withLocale(paymentMethod: paymentMethodType))
     }
 
     public func onCancel() {

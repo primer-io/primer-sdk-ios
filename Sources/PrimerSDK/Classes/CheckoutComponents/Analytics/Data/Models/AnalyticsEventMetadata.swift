@@ -63,4 +63,30 @@ public struct AnalyticsEventMetadata {
         self.device = device
         self.deviceType = deviceType
     }
+
+    /// Creates metadata with auto-populated userLocale from current device settings
+    public static func withLocale(
+        eventType: String? = nil,
+        paymentMethod: String? = nil,
+        paymentId: String? = nil,
+        redirectDestinationUrl: String? = nil,
+        threedsProvider: String? = nil,
+        threedsResponse: String? = nil,
+        browser: String? = nil,
+        device: String? = nil,
+        deviceType: String? = nil
+    ) -> AnalyticsEventMetadata {
+        return AnalyticsEventMetadata(
+            eventType: eventType,
+            userLocale: Locale.current.identifier,
+            paymentMethod: paymentMethod,
+            paymentId: paymentId,
+            redirectDestinationUrl: redirectDestinationUrl,
+            threedsProvider: threedsProvider,
+            threedsResponse: threedsResponse,
+            browser: browser,
+            device: device,
+            deviceType: deviceType
+        )
+    }
 }

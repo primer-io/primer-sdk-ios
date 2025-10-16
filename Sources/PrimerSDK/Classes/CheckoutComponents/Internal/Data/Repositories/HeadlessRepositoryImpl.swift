@@ -138,6 +138,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Settings service for accessing PrimerSettings configurations (iOS 15.0+ only)
     private var settingsService: Any?
 
+    /// Analytics interactor for tracking events (iOS 15.0+ only)
+    private var analyticsInteractor: Any?
+
     // MARK: - Co-Badged Cards Support
 
     /// RawDataManager for co-badged cards detection (follows traditional SDK pattern)
@@ -182,6 +185,25 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             // Settings service injected
         } catch {
             // Failed to inject settings service
+        }
+    }
+
+    /// Inject analytics interactor from DI container (lazy injection to avoid circular dependency)
+    @available(iOS 15.0, *)
+    private func injectAnalyticsInteractor() async {
+        // Check if already injected
+        guard analyticsInteractor == nil else { return }
+
+        do {
+            guard let container = await DIContainer.current else {
+                // DI Container not available
+                return
+            }
+
+            analyticsInteractor = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+            // Analytics interactor injected
+        } catch {
+            // Failed to inject analytics interactor
         }
     }
 
@@ -667,14 +689,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return
         }
 
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
+        trackAnalyticsEvent(.paymentThreeds, metadata: .withLocale(
             paymentMethod: tokenData.paymentMethodType,
             threedsProvider: resolveThreeDSProvider(),
             threedsResponse: authentication.responseCode.rawValue
-        )
-
-        trackAnalyticsEvent(.paymentThreeds, metadata: metadata)
+        ))
     }
 
     func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
@@ -686,11 +705,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
         lastTrackedRedirectDestination = redirectUrl
 
-        let metadata = AnalyticsEventMetadata(
-            userLocale: Locale.current.identifier,
-            redirectDestinationUrl: redirectUrl
-        )
-        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: metadata)
+        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: .withLocale(redirectDestinationUrl: redirectUrl))
     }
 
     private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
@@ -744,8 +759,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
         if #available(iOS 15.0, *) {
             Task {
-                guard let container = await DIContainer.current,
-                      let interactor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) else {
+                await injectAnalyticsInteractor()
+
+                guard let interactor = analyticsInteractor as? CheckoutComponentsAnalyticsInteractorProtocol else {
                     return
                 }
 

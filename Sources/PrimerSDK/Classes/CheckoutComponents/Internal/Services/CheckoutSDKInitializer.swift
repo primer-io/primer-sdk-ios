@@ -25,6 +25,7 @@ final class CheckoutSDKInitializer {
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Initialization
 
@@ -51,6 +52,11 @@ final class CheckoutSDKInitializer {
 
         let composableContainer = ComposableContainer(settings: settings)
         await composableContainer.configure()
+
+        // Resolve analytics interactor
+        if let container = await DIContainer.current {
+            analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        }
 
         // Track SDK initialization start - after DI container is ready, before BE calls
         await trackSDKInitStart()
@@ -166,21 +172,11 @@ final class CheckoutSDKInitializer {
     }
 
     private func trackSDKInitStart() async {
-        guard let container = await DIContainer.current else { return }
-
-        if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
-            let metadata = AnalyticsEventMetadata(userLocale: Locale.current.identifier)
-            await analyticsInteractor.trackEvent(.sdkInitStart, metadata: metadata)
-        }
+        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: .withLocale())
     }
 
     private func trackSDKInitEnd() async {
-        guard let container = await DIContainer.current else { return }
-
-        if let analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self) {
-            let metadata = AnalyticsEventMetadata(userLocale: Locale.current.identifier)
-            await analyticsInteractor.trackEvent(.sdkInitEnd, metadata: metadata)
-        }
+        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: .withLocale())
     }
 
     private func decodeClientToken(_ token: String) -> [String: Any]? {

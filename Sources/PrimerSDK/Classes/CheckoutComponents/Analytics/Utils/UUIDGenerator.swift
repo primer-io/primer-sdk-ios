@@ -12,6 +12,6 @@ import Foundation
 struct UUIDGenerator {
     /// Generate a UUID v4 string.
     static func generate() -> String {
-        return UUID().uuidString.lowercased()
+        return UUID().uuidString
     }
 }
