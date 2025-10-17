@@ -112,6 +112,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
+@available(iOS 15.0, *)
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // Reference to headless SDK will be injected or accessed here
@@ -122,7 +123,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     // MARK: - Settings Integration
 
     /// Settings service for accessing PrimerSettings configurations (iOS 15.0+ only)
-    private var settingsService: Any?
+    private var settingsService: CheckoutComponentsSettingsServiceProtocol?
 
     // MARK: - Co-Badged Cards Support
 
@@ -648,6 +649,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
 // MARK: - RawDataManager Delegate Extension
 
+@available(iOS 15.0, *)
 extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,

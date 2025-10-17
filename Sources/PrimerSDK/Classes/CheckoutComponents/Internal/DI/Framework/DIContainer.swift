@@ -100,6 +100,13 @@ public final class DIContainer: LogReporter {
         }
     }
 
+    /// Clear the global container instance to free resources
+    @MainActor
+    public static func clearContainer() async {
+        await shared.storage.setContainer(nil)
+        shared.cachedContainer = nil
+    }
+
     /// Set up a container with the application's dependencies
     public static func setupMainContainer() async {
         // Setting up main container

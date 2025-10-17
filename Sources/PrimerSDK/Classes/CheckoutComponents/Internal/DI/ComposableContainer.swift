@@ -10,7 +10,7 @@ import Foundation
 /// The main DI container for CheckoutComponents module.
 /// Registers all dependencies needed for the checkout flow.
 @available(iOS 15.0, *)
-internal final class ComposableContainer: LogReporter {
+final class ComposableContainer: LogReporter {
 
     private let container: Container
     private let settings: PrimerSettings
@@ -69,6 +69,11 @@ private extension ComposableContainer {
 
         // Settings observer for dynamic updates
         await SettingsObserver.register(in: container, with: settings)
+
+        // Theme provided by PrimerSettings for components
+        _ = try? await container.register(PrimerThemeProtocol.self)
+            .asSingleton()
+            .with { _ in self.settings.uiOptions.theme }
 
         // Design tokens manager
         _ = try? await container.register(DesignTokensManager.self)

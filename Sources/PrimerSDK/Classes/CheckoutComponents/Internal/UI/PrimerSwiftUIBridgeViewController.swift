@@ -239,7 +239,8 @@ extension PrimerSwiftUIBridgeViewController {
     /// Factory method to create bridge controller for CheckoutComponents
     static func createForCheckoutComponents(
         clientToken: String,
-        settings: PrimerSettings,
+        settings primerSettings: PrimerSettings,
+        theme primerTheme: PrimerTheme = PrimerTheme(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
@@ -257,7 +258,8 @@ extension PrimerSwiftUIBridgeViewController {
             // Use the custom content initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: primerSettings,
+                primerTheme: primerTheme,
                 diContainer: diContainer,
                 navigator: navigator,
                 customContent: customContent,
@@ -268,7 +270,8 @@ extension PrimerSwiftUIBridgeViewController {
             // Use the standard initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: primerSettings,
+                primerTheme: primerTheme,
                 diContainer: diContainer,
                 navigator: navigator,
                 presentationContext: presentationContext,

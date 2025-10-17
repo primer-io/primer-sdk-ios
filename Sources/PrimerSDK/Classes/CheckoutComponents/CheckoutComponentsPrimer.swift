@@ -108,9 +108,35 @@ public extension CheckoutComponentsDelegate {
         from viewController: UIViewController,
         completion: (() -> Void)? = nil
     ) {
+        presentCheckout(
+            with: clientToken,
+            from: viewController,
+            primerSettings: PrimerSettings.current,
+            primerTheme: PrimerTheme(),
+            completion: completion
+        )
+    }
+
+    /// Present the CheckoutComponents UI
+    /// - Parameters:
+    ///   - clientToken: The client token for the session
+    ///   - viewController: The view controller to present from
+    ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - primerTheme: Theme configuration for visual appearance
+    ///   - completion: Optional completion handler
+    /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the overload without settings parameter.
+    public static func presentCheckout(
+        with clientToken: String,
+        from viewController: UIViewController,
+        primerSettings: PrimerSettings,
+        primerTheme: PrimerTheme = PrimerTheme(),
+        completion: (() -> Void)? = nil
+    ) {
         shared.presentCheckout(
             with: clientToken,
             from: viewController,
+            primerSettings: primerSettings,
+            primerTheme: primerTheme,
             completion: completion
         )
     }
@@ -127,9 +153,37 @@ public extension CheckoutComponentsDelegate {
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)? = nil
     ) {
+        presentCheckout(
+            with: clientToken,
+            from: viewController,
+            primerSettings: PrimerSettings.current,
+            primerTheme: PrimerTheme(),
+            customContent: customContent,
+            completion: completion
+        )
+    }
+
+    /// Present the CheckoutComponents UI with custom content
+    /// - Parameters:
+    ///   - clientToken: The client token for the session
+    ///   - viewController: The view controller to present from
+    ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - primerTheme: Theme configuration for visual appearance
+    ///   - customContent: Custom SwiftUI content builder
+    ///   - completion: Optional completion handler
+    public static func presentCheckout<Content: View>(
+        with clientToken: String,
+        from viewController: UIViewController,
+        primerSettings: PrimerSettings,
+        primerTheme: PrimerTheme = PrimerTheme(),
+        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
+        completion: (() -> Void)? = nil
+    ) {
         shared.presentCheckout(
             with: clientToken,
             from: viewController,
+            primerSettings: primerSettings,
+            primerTheme: primerTheme,
             customContent: customContent,
             completion: completion
         )
@@ -144,6 +198,45 @@ public extension CheckoutComponentsDelegate {
         completion: (() -> Void)? = nil
     ) {
         shared.dismiss(animated: animated, completion: completion)
+    }
+
+    /// Update settings during an active checkout session.
+    ///
+    /// Most settings changes take effect immediately:
+    /// - UI options (theme, screen visibility, dismissal mechanism)
+    /// - Debug options (3DS sanity check)
+    /// - Payment method options (Apple Pay, URL schemes)
+    ///
+    /// - Parameter settings: New settings configuration to apply
+    /// - Note: This method should only be called when you need to change settings mid-session.
+    ///         For most use cases, pass settings at initialization instead.
+    ///
+    /// Example:
+    /// ```swift
+    /// // Update theme dynamically
+    /// let updatedSettings = PrimerSettings()
+    /// updatedSettings.uiOptions.theme = darkTheme
+    /// await CheckoutComponentsPrimer.updateSettings(updatedSettings)
+    /// ```
+    @MainActor
+    public static func updateSettings(_ settings: PrimerSettings) async {
+        guard let container = await DIContainer.current else {
+            ErrorHandler.handle(error: PrimerError.unknown(
+                message: "Cannot update settings: No active checkout session",
+                diagnosticsId: UUID().uuidString
+            ))
+            return
+        }
+
+        guard let observer = try? await container.resolve(SettingsObserver.self) else {
+            ErrorHandler.handle(error: PrimerError.unknown(
+                message: "Cannot update settings: SettingsObserver not found",
+                diagnosticsId: UUID().uuidString
+            ))
+            return
+        }
+
+        await observer.settingsDidUpdate(settings)
     }
 
     // MARK: - Instance Methods
@@ -182,6 +275,17 @@ public extension CheckoutComponentsDelegate {
         sheet.prefersGrabberVisible = true
         sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         sheet.largestUndimmedDetentIdentifier = .medium
+    }
+
+    private func applyAppearanceMode(_ mode: PrimerAppearanceMode, to controller: UIViewController) {
+        switch mode {
+        case .system:
+            controller.overrideUserInterfaceStyle = .unspecified
+        case .light:
+            controller.overrideUserInterfaceStyle = .light
+        case .dark:
+            controller.overrideUserInterfaceStyle = .dark
+        }
     }
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
@@ -240,6 +344,8 @@ public extension CheckoutComponentsDelegate {
     private func presentCheckout(
         with clientToken: String,
         from viewController: UIViewController,
+        primerSettings: PrimerSettings,
+        primerTheme: PrimerTheme?,
         completion: (() -> Void)?
     ) {
         // Presenting checkout
@@ -258,7 +364,8 @@ public extension CheckoutComponentsDelegate {
             // Create the bridge controller that embeds SwiftUI with automatic SDK initialization
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
-                settings: PrimerSettings.current,
+                settings: primerSettings,
+                theme: primerTheme,
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
@@ -278,6 +385,8 @@ public extension CheckoutComponentsDelegate {
                     }
                 }
             )
+
+            applyAppearanceMode(primerSettings.uiOptions.appearanceMode, to: bridgeController)
 
             // Store reference to bridge controller
             activeCheckoutController = bridgeController
@@ -302,6 +411,8 @@ public extension CheckoutComponentsDelegate {
     private func presentCheckout<Content: View>(
         with clientToken: String,
         from viewController: UIViewController,
+        primerSettings: PrimerSettings,
+        primerTheme: PrimerTheme?,
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)?
     ) {
@@ -326,7 +437,8 @@ public extension CheckoutComponentsDelegate {
             // Create the bridge controller with custom content and automatic SDK initialization
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
-                settings: PrimerSettings.current,
+                settings: primerSettings,
+                theme: primerTheme,
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
@@ -347,6 +459,8 @@ public extension CheckoutComponentsDelegate {
                     }
                 }
             )
+
+            applyAppearanceMode(primerSettings.uiOptions.appearanceMode, to: bridgeController)
 
             // Store reference
             activeCheckoutController = bridgeController
@@ -423,6 +537,24 @@ extension CheckoutComponentsPrimer {
         with clientToken: String,
         completion: (() -> Void)? = nil
     ) {
+        presentCheckout(
+            with: clientToken,
+            primerSettings: PrimerSettings.current,
+            completion: completion
+        )
+    }
+
+    /// Present checkout with automatic view controller detection and custom settings
+    /// - Parameters:
+    ///   - clientToken: The client token for the session
+    ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - completion: Optional completion handler
+    /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the method that takes a UIViewController.
+    public static func presentCheckout(
+        with clientToken: String,
+        primerSettings: PrimerSettings,
+        completion: (() -> Void)? = nil
+    ) {
         guard let viewController = shared.findPresentingViewController() else {
             let error = PrimerError.unableToPresentPaymentMethod(
                 paymentMethodType: "CheckoutComponents",
@@ -438,6 +570,7 @@ extension CheckoutComponentsPrimer {
         presentCheckout(
             with: clientToken,
             from: viewController,
+            primerSettings: primerSettings,
             completion: completion
         )
     }

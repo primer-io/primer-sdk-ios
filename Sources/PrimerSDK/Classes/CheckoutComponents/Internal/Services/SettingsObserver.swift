@@ -10,7 +10,7 @@ import Foundation
 /// Protocol for observing PrimerSettings changes in CheckoutComponents
 /// This allows components to react to settings updates without requiring restart
 @available(iOS 15.0, *)
-internal protocol SettingsObserverProtocol: AnyObject {
+protocol SettingsObserverProtocol: AnyObject {
 
     /// Called when PrimerSettings are updated
     /// - Parameters:
@@ -52,7 +52,7 @@ internal protocol SettingsObserverProtocol: AnyObject {
 /// Service for observing and propagating PrimerSettings changes throughout CheckoutComponents
 /// This service watches for settings updates and notifies registered observers
 @available(iOS 15.0, *)
-internal final class SettingsObserver: LogReporter, @unchecked Sendable {
+final class SettingsObserver: LogReporter, @unchecked Sendable {
 
     // MARK: - Properties
 
@@ -65,17 +65,11 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
     /// Queue for handling settings changes
     private let settingsQueue = DispatchQueue(label: "com.primer.settings-observer", qos: .utility)
 
-    /// Timer for checking settings changes periodically
-    private var settingsCheckTimer: Timer?
-
     // MARK: - Initialization
 
     init(settings: PrimerSettings) {
         self.currentSettings = settings
         logger.debug(message: "🔧 [SettingsObserver] Initialized with settings")
-
-        // Start periodic settings check
-        startPeriodicSettingsCheck()
     }
 
     // MARK: - Observer Management
@@ -110,33 +104,10 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
 
     // MARK: - Settings Change Detection
 
-    /// Manually trigger settings update (call this when PrimerSettings.current changes)
+    /// Manually trigger settings update
     /// - Parameter newSettings: New settings configuration
     func settingsDidUpdate(_ newSettings: PrimerSettings) async {
         await handleSettingsChange(newSettings)
-    }
-
-    /// Start periodic checking for settings changes
-    /// This is a fallback mechanism in case manual updates are missed
-    private func startPeriodicSettingsCheck() {
-        settingsCheckTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
-            Task {
-                await self?.checkForSettingsChanges()
-            }
-        }
-
-        logger.debug(message: "🔧 [SettingsObserver] Started periodic settings check")
-    }
-
-    /// Check for settings changes (comparing against current global settings)
-    private func checkForSettingsChanges() async {
-        let globalSettings = PrimerSettings.current
-
-        // Compare with current settings to detect changes
-        if !areSettingsEqual(currentSettings, globalSettings) {
-            logger.info(message: "🔧 [SettingsObserver] Detected settings change via periodic check")
-            await handleSettingsChange(globalSettings)
-        }
     }
 
     /// Handle settings change and notify observers
@@ -260,8 +231,9 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         return lhs.isInitScreenEnabled == rhs.isInitScreenEnabled &&
             lhs.isSuccessScreenEnabled == rhs.isSuccessScreenEnabled &&
             lhs.isErrorScreenEnabled == rhs.isErrorScreenEnabled &&
-            lhs.dismissalMechanism == rhs.dismissalMechanism
-        // Note: Theme comparison would require deep comparison - for now focusing on screen settings
+            lhs.dismissalMechanism == rhs.dismissalMechanism &&
+            lhs.theme == rhs.theme &&
+            lhs.appearanceMode == rhs.appearanceMode
     }
 
     /// Compare debug options for equality
@@ -285,20 +257,13 @@ internal final class SettingsObserver: LogReporter, @unchecked Sendable {
         switch (lhs, rhs) {
         case (nil, nil):
             return true
-        case (let lhsOptions?, let rhsOptions?):
+        case let (lhsOptions?, rhsOptions?):
             return lhsOptions.merchantIdentifier == rhsOptions.merchantIdentifier
         default:
             return false
         }
     }
 
-    // MARK: - Cleanup
-
-    deinit {
-        settingsCheckTimer?.invalidate()
-        settingsCheckTimer = nil
-        logger.debug(message: "🔧 [SettingsObserver] Deinitialized")
-    }
 }
 
 // MARK: - Weak Observer Reference

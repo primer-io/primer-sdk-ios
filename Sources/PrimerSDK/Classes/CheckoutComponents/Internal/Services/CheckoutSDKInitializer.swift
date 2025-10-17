@@ -21,7 +21,7 @@ final class CheckoutSDKInitializer {
     // MARK: - Properties
 
     private let clientToken: String
-    private let settings: PrimerSettings
+    private let primerSettings: PrimerSettings
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
@@ -30,13 +30,13 @@ final class CheckoutSDKInitializer {
 
     init(
         clientToken: String,
-        settings: PrimerSettings,
+        primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext
     ) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.primerSettings = primerSettings
         self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
@@ -47,10 +47,10 @@ final class CheckoutSDKInitializer {
     /// Initialize the SDK and create the checkout scope
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
+
         try await initializeAPIConfiguration()
 
-        let composableContainer = ComposableContainer(settings: settings)
+        let composableContainer = ComposableContainer(settings: primerSettings)
         await composableContainer.configure()
 
         let checkoutScope = createCheckoutScope()
@@ -60,6 +60,13 @@ final class CheckoutSDKInitializer {
         }
 
         return InitializationResult(checkoutScope: checkoutScope)
+    }
+
+    /// Clean up resources when checkout session ends
+    func cleanup() {
+        Task {
+            await DIContainer.clearContainer()
+        }
     }
 
     // MARK: - Private Methods
@@ -82,7 +89,7 @@ final class CheckoutSDKInitializer {
     }
 
     private func createCheckoutScope() -> DefaultCheckoutScope {
-        let settingsService = CheckoutComponentsSettingsService(settings: settings)
+        let settingsService = CheckoutComponentsSettingsService(settings: primerSettings)
 
         return DefaultCheckoutScope(
             clientToken: clientToken,
