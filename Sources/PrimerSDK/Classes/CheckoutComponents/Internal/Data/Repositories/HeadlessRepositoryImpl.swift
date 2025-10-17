@@ -173,38 +173,32 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Inject settings service from DI container (lazy injection to avoid circular dependency)
     @available(iOS 15.0, *)
     private func injectSettingsService() async {
-        // Check if already injected
         guard settingsService == nil else { return }
 
         do {
             guard let container = await DIContainer.current else {
-                // DI Container not available
                 return
             }
 
             settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-            // Settings service injected
         } catch {
-            // Failed to inject settings service
+            // Intentionally silenced - service will remain nil
         }
     }
 
     /// Inject analytics interactor from DI container (lazy injection to avoid circular dependency)
     @available(iOS 15.0, *)
     private func injectAnalyticsInteractor() async {
-        // Check if already injected
         guard analyticsInteractor == nil else { return }
 
         do {
             guard let container = await DIContainer.current else {
-                // DI Container not available
                 return
             }
 
             analyticsInteractor = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
-            // Analytics interactor injected
         } catch {
-            // Failed to inject analytics interactor
+            // Intentionally silenced - interactor will remain nil
         }
     }
 
@@ -691,7 +685,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         trackAnalyticsEvent(.paymentThreeds, metadata: .threeDS(ThreeDSEvent(
             paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
-            provider: resolveThreeDSProvider() ?? "Unknown",
+            provider: threeDSProvider ?? "Unknown",
             response: authentication.responseCode.rawValue
         )))
     }
@@ -751,9 +745,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     private func isLikelyURL(_ string: String) -> Bool {
-        guard !string.isEmpty else { return false }
-        let lowercased = string.lowercased()
-        return lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://")
+        ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
     }
 
     private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
@@ -770,7 +762,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func resolveThreeDSProvider() -> String? {
+    private var threeDSProvider: String? {
         #if canImport(Primer3DS)
         return Primer3DS.threeDsSdkProvider
         #else

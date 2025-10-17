@@ -135,10 +135,10 @@ final class CheckoutSDKInitializer {
     }
 
     private func trackSDKInitStart() async {
-        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: .general(GeneralEvent()))
+        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: nil)
     }
 
     private func trackSDKInitEnd() async {
-        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: .general(GeneralEvent()))
+        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: nil)
     }
 }

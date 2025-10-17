@@ -176,7 +176,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         let event = GeneralEvent()
 
         // Then
-        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.locale, GeneralEvent.formattedCurrentLocale)
     }
 
     func testGeneralEvent_InitializesWithCustomLocale() {
@@ -194,7 +194,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         let event = PaymentEvent(paymentMethod: "PAYMENT_CARD")
 
         // Then
-        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
         XCTAssertNil(event.paymentId)
     }
@@ -224,7 +224,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         )
 
         // Then
-        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertEqual(event.paymentMethod, "PAYMENT_CARD")
         XCTAssertEqual(event.provider, "Netcetera")
         XCTAssertEqual(event.response, "05")
@@ -250,7 +250,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         let event = RedirectEvent(destinationUrl: "https://example.com")
 
         // Then
-        XCTAssertEqual(event.locale, Locale.current.identifier)
+        XCTAssertEqual(event.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertEqual(event.destinationUrl, "https://example.com")
     }
 
@@ -273,7 +273,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         let metadata: AnalyticsEventMetadata = .general(GeneralEvent())
 
         // Then
-        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertNil(metadata.paymentMethod)
         XCTAssertNil(metadata.paymentId)
         XCTAssertNil(metadata.threedsProvider)
@@ -289,7 +289,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         ))
 
         // Then
-        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
         XCTAssertEqual(metadata.paymentId, "pay_123")
         XCTAssertNil(metadata.threedsProvider)
@@ -306,7 +306,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         ))
 
         // Then
-        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertEqual(metadata.paymentMethod, "PAYMENT_CARD")
         XCTAssertNil(metadata.paymentId)
         XCTAssertEqual(metadata.threedsProvider, "Netcetera")
@@ -321,7 +321,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
         ))
 
         // Then
-        XCTAssertEqual(metadata.locale, Locale.current.identifier)
+        XCTAssertEqual(metadata.locale, GeneralEvent.formattedCurrentLocale)
         XCTAssertNil(metadata.paymentMethod)
         XCTAssertNil(metadata.paymentId)
         XCTAssertNil(metadata.threedsProvider)

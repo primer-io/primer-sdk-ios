@@ -8,28 +8,50 @@
 import Foundation
 import UIKit
 
-/// Core analytics event service responsible for constructing and sending events.
-/// Thread-safe actor that maintains session state and handles HTTP communication.
+/// Core analytics event service responsible for orchestrating event tracking.
+/// Thread-safe actor that coordinates payload building, buffering, and network transmission.
 actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogReporter {
 
     // MARK: - Dependencies
 
+    private let payloadBuilder: AnalyticsPayloadBuilder
+    private let networkClient: AnalyticsNetworkClient
+    private let eventBuffer: AnalyticsEventBuffer
     private let environmentProvider: AnalyticsEnvironmentProvider
-    private let deviceInfoProvider: DeviceInfoProvider
 
     // MARK: - State
 
     private var sessionConfig: AnalyticsSessionConfig?
-    private var pendingEvents: [(AnalyticsEventType, AnalyticsEventMetadata?)] = []
 
     // MARK: - Initialization
 
     init(
-        environmentProvider: AnalyticsEnvironmentProvider,
-        deviceInfoProvider: DeviceInfoProvider
+        payloadBuilder: AnalyticsPayloadBuilder,
+        networkClient: AnalyticsNetworkClient,
+        eventBuffer: AnalyticsEventBuffer,
+        environmentProvider: AnalyticsEnvironmentProvider
     ) {
+        self.payloadBuilder = payloadBuilder
+        self.networkClient = networkClient
+        self.eventBuffer = eventBuffer
         self.environmentProvider = environmentProvider
-        self.deviceInfoProvider = deviceInfoProvider
+    }
+
+    /// Factory method for creating service with default configuration.
+    /// Factory method for creating service with default configuration.
+    static func create(
+        environmentProvider: AnalyticsEnvironmentProvider
+    ) -> AnalyticsEventService {
+        let payloadBuilder = AnalyticsPayloadBuilder()
+        let networkClient = AnalyticsNetworkClient()
+        let eventBuffer = AnalyticsEventBuffer()
+
+        return AnalyticsEventService(
+            payloadBuilder: payloadBuilder,
+            networkClient: networkClient,
+            eventBuffer: eventBuffer,
+            environmentProvider: environmentProvider
+        )
     }
 
     // MARK: - AnalyticsServiceProtocol
@@ -38,137 +60,60 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
         self.sessionConfig = config
 
         // Flush any events that arrived before initialization completed
-        guard !pendingEvents.isEmpty else { return }
-        let bufferedEvents = pendingEvents
-        pendingEvents.removeAll()
+        let bufferedEvents = await eventBuffer.flush()
 
-        for (eventType, metadata) in bufferedEvents {
-            await sendEvent(eventType, metadata: metadata)
+        guard !bufferedEvents.isEmpty else { return }
+
+        for (eventType, metadata, timestamp) in bufferedEvents {
+            await sendEventWithTimestamp(eventType, metadata: metadata, timestamp: timestamp)
         }
     }
 
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
+        // Capture timestamp at the moment the event occurs
+        let eventTimestamp = Int(Date().timeIntervalSince1970)
+        await sendEventWithTimestamp(eventType, metadata: metadata, timestamp: eventTimestamp)
+    }
+
+    // MARK: - Private Methods
+
+    /// Internal method that sends event with an explicit timestamp
+    /// - Parameters:
+    ///   - eventType: The type of event being tracked
+    ///   - metadata: Optional event metadata
+    ///   - timestamp: UNIX timestamp when the event occurred
+    private func sendEventWithTimestamp(
+        _ eventType: AnalyticsEventType,
+        metadata: AnalyticsEventMetadata?,
+        timestamp: Int
+    ) async {
         guard let config = sessionConfig else {
-            logger.debug(message: "📊 [Analytics] Queued \(eventType.rawValue) - service not initialized yet")
-            pendingEvents.append((eventType, metadata))
+            // Buffer the event with its original timestamp
+            await eventBuffer.buffer(eventType: eventType, metadata: metadata, timestamp: timestamp)
             return
         }
 
         guard let endpoint = environmentProvider.getEndpointURL(for: config.environment) else {
-            logger.warn(message: "📊 [Analytics] Dropped \(eventType.rawValue) - invalid endpoint for \(config.environment.rawValue)")
+            let envName = config.environment.rawValue
+            logger.warn(message: "📊 [Analytics] Dropped \(eventType.rawValue) - invalid endpoint for \(envName)")
             return
         }
 
-        // Construct payload
-        let payload = constructPayload(
+        // Construct payload using the builder, passing the captured timestamp
+        let payload = payloadBuilder.buildPayload(
             eventType: eventType,
             metadata: metadata,
-            config: config
+            config: config,
+            timestamp: timestamp
         )
 
-        // Send request (fire-and-forget)
+        // Send via network client (fire-and-forget)
         do {
-            try await sendRequest(payload: payload, endpoint: endpoint, token: config.clientSessionToken)
+            try await networkClient.send(payload: payload, to: endpoint, token: config.clientSessionToken)
         } catch {
             // Log error but don't throw to caller (fire-and-forget pattern)
             logger.error(message: "📊 [Analytics] Failed to send \(eventType.rawValue): \(error.localizedDescription)")
         }
-    }
-
-    // MARK: - Private Helpers
-
-    private func constructPayload(
-        eventType: AnalyticsEventType,
-        metadata: AnalyticsEventMetadata?,
-        config: AnalyticsSessionConfig
-    ) -> AnalyticsPayload {
-        // Generate unique event ID
-        let eventId = UUIDGenerator.generate()
-
-        // Get current timestamp
-        let timestamp = Int(Date().timeIntervalSince1970)
-
-        // Detect SDK type (native iOS vs React Native)
-        let sdkType = detectSDKType()
-
-        // Get device info (auto-fill if not provided in metadata)
-        let userAgent = deviceInfoProvider.getUserAgent()
-        let device = deviceInfoProvider.getDevice()
-        let deviceType = deviceInfoProvider.getDeviceType()
-        let userLocale = metadata?.locale ?? deviceInfoProvider.getUserLocale()
-
-        return AnalyticsPayload(
-            id: eventId,
-            timestamp: timestamp,
-            sdkType: sdkType,
-            eventName: eventType.rawValue,
-            checkoutSessionId: config.checkoutSessionId,
-            clientSessionId: config.clientSessionId,
-            primerAccountId: config.primerAccountId,
-            sdkVersion: config.sdkVersion,
-            userAgent: userAgent,
-            eventType: nil,
-            userLocale: userLocale,
-            paymentMethod: metadata?.paymentMethod,
-            paymentId: metadata?.paymentId,
-            redirectDestinationUrl: metadata?.redirectDestinationUrl,
-            threedsProvider: metadata?.threedsProvider,
-            threedsResponse: metadata?.threedsResponse,
-            browser: nil,
-            device: device,
-            deviceType: deviceType
-        )
-    }
-
-    private func sendRequest(payload: AnalyticsPayload, endpoint: URL, token: String?) async throws {
-        var request = URLRequest(url: endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        // Add Authorization header if token is available
-        if let token = token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            logger.debug(message: "📊 [Analytics] Authorization header set (token masked)")
-        }
-
-        // Encode payload
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        request.httpBody = try encoder.encode(payload)
-
-        logger.info(message: "📊 [Analytics] Dispatching \(payload.eventName) -> \(endpoint.absoluteString)")
-        logger.debug(message: "📊 [Analytics] Event context - id: \(payload.id), timestamp: \(payload.timestamp), sdkType: \(payload.sdkType)")
-
-        if request.value(forHTTPHeaderField: "Authorization") == nil {
-            logger.warn(message: "⚠️ [Analytics] No authorization token provided")
-        }
-
-        // Send request
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        // Validate response
-        guard let httpResponse = response as? HTTPURLResponse else {
-            logger.error(message: "❌ [Analytics] Invalid response type")
-            throw AnalyticsError.requestFailed
-        }
-
-        logger.debug(message: "📊 [Analytics] Response status code: \(httpResponse.statusCode)")
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            if let responseString = String(data: data, encoding: .utf8), !responseString.isEmpty {
-                logger.error(message: "❌ [Analytics] Request failed with status \(httpResponse.statusCode) - \(responseString)")
-            } else {
-                logger.error(message: "❌ [Analytics] Request failed with status \(httpResponse.statusCode)")
-            }
-            throw AnalyticsError.requestFailed
-        }
-
-        logger.info(message: "✅ [Analytics] \(payload.eventName) acknowledged")
-    }
-
-    private func detectSDKType() -> String {
-        // Check if React Native bridge is available
-        return NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
     }
 }
 

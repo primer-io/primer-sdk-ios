@@ -79,9 +79,8 @@ private extension ComposableContainer {
         _ = try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
             .asSingleton()
             .with { _ in
-                AnalyticsEventService(
-                    environmentProvider: AnalyticsEnvironmentProvider(),
-                    deviceInfoProvider: DeviceInfoProvider()
+                AnalyticsEventService.create(
+                    environmentProvider: AnalyticsEnvironmentProvider()
                 )
             }
 

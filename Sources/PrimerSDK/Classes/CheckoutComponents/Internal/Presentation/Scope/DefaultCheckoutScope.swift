@@ -299,7 +299,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch state {
         case .ready:
             // Checkout flow is now interactive
-            await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general(GeneralEvent()))
+            await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general())
 
         case let .success(result):
             // Payment succeeded
@@ -310,7 +310,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 )))
             } else {
                 // No payment method type available, use general event
-                await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .general(GeneralEvent()))
+                await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .general())
             }
 
         case let .failure(error):
@@ -319,7 +319,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
         case .dismissed:
             // User exited checkout without completion
-            await analyticsInteractor?.trackEvent(.paymentFlowExited, metadata: .general(GeneralEvent()))
+            await analyticsInteractor?.trackEvent(.paymentFlowExited, metadata: .general())
 
         default:
             break
@@ -337,7 +337,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
 
         // For other error types, just include userLocale
-        return .general(GeneralEvent())
+        return .general()
     }
 
     func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {

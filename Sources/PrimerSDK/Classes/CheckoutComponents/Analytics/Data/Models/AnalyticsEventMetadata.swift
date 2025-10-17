@@ -12,7 +12,7 @@ import Foundation
 /// Analytics event metadata using discriminated unions for type safety.
 /// Each event type carries only its relevant metadata - no optional pollution.
 public enum AnalyticsEventMetadata {
-    case general(GeneralEvent)
+    case general(GeneralEvent = GeneralEvent())
     case payment(PaymentEvent)
     case threeDS(ThreeDSEvent)
     case redirect(RedirectEvent)
@@ -24,8 +24,22 @@ public enum AnalyticsEventMetadata {
 public struct GeneralEvent {
     public let locale: String
 
-    public init(locale: String = Locale.current.identifier) {
+    public init(locale: String = Self.formattedCurrentLocale) {
         self.locale = locale
+    }
+
+    /// Get a properly formatted locale string (e.g., "en-US") without modifiers
+    /// Public so it can be used in default parameter values
+    public static var formattedCurrentLocale: String {
+        let locale = Locale.current
+        if let languageCode = locale.languageCode {
+            if let regionCode = locale.regionCode {
+                return "\(languageCode)-\(regionCode)"
+            } else {
+                return languageCode
+            }
+        }
+        return "en-US" // Fallback
     }
 }
 
@@ -36,7 +50,7 @@ public struct PaymentEvent {
     public let paymentId: String?
 
     public init(
-        locale: String = Locale.current.identifier,
+        locale: String = GeneralEvent.formattedCurrentLocale,
         paymentMethod: String,
         paymentId: String? = nil
     ) {
@@ -54,7 +68,7 @@ public struct ThreeDSEvent {
     public let response: String
 
     public init(
-        locale: String = Locale.current.identifier,
+        locale: String = GeneralEvent.formattedCurrentLocale,
         paymentMethod: String,
         provider: String,
         response: String
@@ -72,7 +86,7 @@ public struct RedirectEvent {
     public let destinationUrl: String
 
     public init(
-        locale: String = Locale.current.identifier,
+        locale: String = GeneralEvent.formattedCurrentLocale,
         destinationUrl: String
     ) {
         self.locale = locale
