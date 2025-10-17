@@ -126,6 +126,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
+@available(iOS 15.0, *)
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // Reference to headless SDK will be injected or accessed here
@@ -135,11 +136,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // MARK: - Settings Integration
 
-    /// Settings service for accessing PrimerSettings configurations (iOS 15.0+ only)
-    private var settingsService: Any?
+    /// Settings service for accessing PrimerSettings configurations
+    private var settingsService: CheckoutComponentsSettingsServiceProtocol?
 
-    /// Analytics interactor for tracking events (iOS 15.0+ only)
-    private var analyticsInteractor: Any?
+    /// Analytics interactor for tracking events
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Co-Badged Cards Support
 
@@ -496,8 +497,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
             await ensureSettingsService()
-            paymentHandlingMode = (settingsService as? CheckoutComponentsSettingsServiceProtocol)?
-                .paymentHandling ?? .auto
+            paymentHandlingMode = settingsService?.paymentHandling ?? .auto
         } else {
             paymentHandlingMode = .auto
         }
@@ -635,7 +635,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func validatePaymentMethodOptions() async throws {
         if #available(iOS 15.0, *) {
             await ensureSettingsService()
-            guard let settingsService = settingsService as? CheckoutComponentsSettingsServiceProtocol else {
+            guard let settingsService = settingsService else {
                 // Settings service not available for payment method options validation
                 return
             }
@@ -761,7 +761,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             Task {
                 await injectAnalyticsInteractor()
 
-                guard let interactor = analyticsInteractor as? CheckoutComponentsAnalyticsInteractorProtocol else {
+                guard let interactor = analyticsInteractor else {
                     return
                 }
 
@@ -781,6 +781,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
 // MARK: - RawDataManager Delegate Extension
 
+@available(iOS 15.0, *)
 extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
