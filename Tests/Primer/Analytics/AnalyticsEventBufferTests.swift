@@ -27,11 +27,10 @@ final class AnalyticsEventBufferTests: XCTestCase {
     func testBuffer_AddsEventToBuffer() async {
         // Given
         let eventType = AnalyticsEventType.sdkInitStart
-        let metadata: AnalyticsEventMetadata = .general(GeneralEvent())
         let timestamp = Int(Date().timeIntervalSince1970)
 
         // When
-        await buffer.buffer(eventType: eventType, metadata: metadata, timestamp: timestamp)
+        await buffer.buffer(eventType: eventType, metadata: nil, timestamp: timestamp)
 
         // Then
         let hasBuffered = await buffer.hasBufferedEvents

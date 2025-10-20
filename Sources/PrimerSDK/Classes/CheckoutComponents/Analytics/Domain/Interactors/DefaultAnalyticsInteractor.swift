@@ -26,9 +26,8 @@ actor DefaultAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol 
     func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         // Launch a child task to keep fire-and-forget behavior without leaving structured concurrency
         // This prevents blocking the caller even if the service is busy
-        let eventMetadata = metadata
         _ = Task { [eventService] in
-            await eventService.sendEvent(eventType, metadata: eventMetadata)
+            await eventService.sendEvent(eventType, metadata: metadata)
         }
     }
 }

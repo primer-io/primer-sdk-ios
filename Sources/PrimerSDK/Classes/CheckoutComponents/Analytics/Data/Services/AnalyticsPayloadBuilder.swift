@@ -31,7 +31,7 @@ struct AnalyticsPayloadBuilder {
         config: AnalyticsSessionConfig,
         timestamp: Int? = nil
     ) -> AnalyticsPayload {
-        let eventId = UUIDGenerator.generate()
+        let eventId = String.uuid
         let eventTimestamp = timestamp ?? Int(Date().timeIntervalSince1970)
         let sdkType = detectSDKType()
 

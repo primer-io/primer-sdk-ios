@@ -10,18 +10,32 @@ import XCTest
 
 final class AnalyticsEventServiceTests: XCTestCase {
 
-    private var service: AnalyticsEventService!
+    private var service: TestableAnalyticsEventService!
+    private var mockNetworkClient: MockAnalyticsNetworkClient!
 
     override func setUp() async throws {
         try await super.setUp()
-        // Use real providers since they're simple value types with no side effects
-        service = AnalyticsEventService.create(
-            environmentProvider: AnalyticsEnvironmentProvider()
+
+        // Create mocks
+        mockNetworkClient = MockAnalyticsNetworkClient()
+
+        // Use real buffer, payload builder, and environment provider
+        let buffer = AnalyticsEventBuffer()
+        let payloadBuilder = AnalyticsPayloadBuilder()
+        let environmentProvider = AnalyticsEnvironmentProvider()
+
+        // Create testable service
+        service = TestableAnalyticsEventService(
+            payloadBuilder: payloadBuilder,
+            networkClient: mockNetworkClient,
+            eventBuffer: buffer,
+            environmentProvider: environmentProvider
         )
     }
 
     override func tearDown() async throws {
         service = nil
+        mockNetworkClient = nil
         try await super.tearDown()
     }
 
@@ -33,9 +47,13 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // When
         await service.initialize(config: config)
-
-        // Then - should not crash and accept future events
         await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then - should send event with correct config
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.checkoutSessionId, config.checkoutSessionId)
+        XCTAssertEqual(call.payload.clientSessionId, config.clientSessionId)
+        XCTAssertEqual(call.payload.primerAccountId, config.primerAccountId)
     }
 
     func testInitialize_FlushesQueuedEvents() async throws {
@@ -49,8 +67,35 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When
         await service.initialize(config: config)
 
-        // Then - events should be processed after initialization (fire-and-forget, no crash)
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms for async processing
+        // Then - both buffered events should be sent
+        let call1 = try await mockNetworkClient.nextCall()
+        let call2 = try await mockNetworkClient.nextCall()
+
+        XCTAssertEqual(call1.payload.eventName, "SDK_INIT_START")
+        XCTAssertEqual(call2.payload.eventName, "CHECKOUT_FLOW_STARTED")
+    }
+
+    func testInitialize_PreservesBufferedEventTimestamps() async throws {
+        // Given
+        let config = makeTestConfig()
+        let beforeTimestamp = Int(Date().timeIntervalSince1970)
+
+        // Queue event before initialization
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Wait to ensure we cross a second boundary (timestamps are in seconds)
+        try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+
+        // When - initialize later
+        await service.initialize(config: config)
+
+        // Then - buffered event should have old timestamp
+        let call = try await mockNetworkClient.nextCall()
+        let initTimestamp = Int(Date().timeIntervalSince1970)
+
+        XCTAssertGreaterThanOrEqual(call.payload.timestamp, beforeTimestamp)
+        XCTAssertLessThan(call.payload.timestamp, initTimestamp,
+                         "Buffered event timestamp should be preserved from original time")
     }
 
     // MARK: - Event Sending Tests
@@ -62,8 +107,9 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When
         await service.sendEvent(eventType, metadata: nil)
 
-        // Then - event should be queued (no crash)
-        // After initialization, queued events will be sent
+        // Then - event should be queued (no network call)
+        let hasCall = await mockNetworkClient.hasCall()
+        XCTAssertFalse(hasCall, "Event should be buffered, not sent immediately")
     }
 
     func testSendEvent_AfterInitialization_SendsImmediately() async throws {
@@ -71,11 +117,14 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let config = makeTestConfig()
         await service.initialize(config: config)
 
-        // When - this will attempt to send to real endpoint (will fail but shouldn't crash)
+        // When
         await service.sendEvent(.checkoutFlowStarted, metadata: nil)
 
-        // Then - should not crash (fire-and-forget pattern handles errors)
-        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms for async processing
+        // Then - should send immediately
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "CHECKOUT_FLOW_STARTED")
+        XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.dev.data.primer.io"))
+        XCTAssertEqual(call.token, config.clientSessionToken)
     }
 
     func testSendEvent_WithMetadata_IncludesAllFields() async throws {
@@ -91,8 +140,13 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When
         await service.sendEvent(.paymentSuccess, metadata: metadata)
 
-        // Then - should not crash
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // Then - payload should include all metadata fields
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
+        XCTAssertEqual(call.payload.paymentMethod, "PAYMENT_CARD")
+        XCTAssertEqual(call.payload.paymentId, "pay_123")
+        XCTAssertNotNil(call.payload.device)
+        XCTAssertNotNil(call.payload.deviceType)
     }
 
     func testSendEvent_WithPartialMetadata_OnlyIncludesProvidedFields() async throws {
@@ -105,13 +159,15 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When
         await service.sendEvent(.paymentMethodSelection, metadata: metadata)
 
-        // Then - should not crash
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // Then - only provided fields should be included
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.paymentMethod, "PAYMENT_CARD")
+        XCTAssertNil(call.payload.paymentId, "Payment ID should not be included when not provided")
     }
 
     // MARK: - All Event Types Tests
 
-    func testSendEvent_AllEventTypes_DoNotCrash() async throws {
+    func testSendEvent_AllEventTypes_SendsCorrectly() async throws {
         // Given
         let config = makeTestConfig()
         await service.initialize(config: config)
@@ -132,40 +188,51 @@ final class AnalyticsEventServiceTests: XCTestCase {
             .paymentFlowExited
         ]
 
-        // When/Then - all event types should be sendable
+        // When - send all event types
         for eventType in allEventTypes {
             await service.sendEvent(eventType, metadata: nil)
         }
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - all events should be sent with correct names
+        for expectedType in allEventTypes {
+            let call = try await mockNetworkClient.nextCall()
+            XCTAssertEqual(call.payload.eventName, expectedType.rawValue)
+        }
     }
 
     // MARK: - Metadata Auto-Fill Tests
 
-    func testSendEvent_WithoutDeviceMetadata_AutoFillsFromProvider() async throws {
+    func testSendEvent_WithoutDeviceMetadata_AutoFillsUserAgent() async throws {
         // Given
         let config = makeTestConfig()
         await service.initialize(config: config)
 
-        // When - no device info in metadata
-        await service.sendEvent(.checkoutFlowStarted, metadata: nil)
+        // When - send SDK lifecycle event (no metadata)
+        await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Then - should use UIDevice extension values (verified by no crash)
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // Then - userAgent should be auto-filled, but not device fields
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertNotNil(call.payload.userAgent)
+        XCTAssertTrue(call.payload.userAgent.contains("iOS/"))
+        XCTAssertNil(call.payload.device, "Device should be nil for SDK lifecycle events")
+        XCTAssertNil(call.payload.deviceType, "DeviceType should be nil for SDK lifecycle events")
     }
 
-    func testSendEvent_WithDeviceMetadata_UsesProvidedValues() async throws {
+    func testSendEvent_WithMetadata_AutoFillsDeviceInfo() async throws {
         // Given
         let config = makeTestConfig()
         await service.initialize(config: config)
 
         let metadata: AnalyticsEventMetadata = .general(GeneralEvent())
 
-        // When
-        await service.sendEvent(.paymentSubmitted, metadata: metadata)
+        // When - send with metadata
+        await service.sendEvent(.checkoutFlowStarted, metadata: metadata)
 
-        // Then - should use metadata values
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // Then - device info should be auto-filled
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertNotNil(call.payload.userAgent)
+        XCTAssertNotNil(call.payload.device)
+        XCTAssertNotNil(call.payload.deviceType)
     }
 
     // MARK: - Thread Safety Tests
@@ -177,19 +244,22 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // When - send multiple events concurrently
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<10 {
+            for index in 0..<10 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
-                        paymentId: "pay_\(i)"
+                        paymentId: "pay_\(index)"
                     ))
                     await self.service.sendEvent(.paymentSuccess, metadata: metadata)
                 }
             }
         }
 
-        // Then - should not crash
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - all 10 events should be sent
+        for _ in 0..<10 {
+            let call = try await mockNetworkClient.nextCall()
+            XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
+        }
     }
 
     func testConcurrentInitializationAndSending_IsThreadSafe() async throws {
@@ -202,19 +272,22 @@ final class AnalyticsEventServiceTests: XCTestCase {
                 await self.service.initialize(config: config)
             }
 
-            for i in 0..<5 {
+            for index in 0..<5 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
-                        paymentId: "pay_\(i)"
+                        paymentId: "pay_\(index)"
                     ))
                     await self.service.sendEvent(.paymentSuccess, metadata: metadata)
                 }
             }
         }
 
-        // Then - should not crash
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - all 5 events should be sent (after initialization completes)
+        for _ in 0..<5 {
+            let call = try await mockNetworkClient.nextCall()
+            XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
+        }
     }
 
     // MARK: - Timestamp Preservation Tests
@@ -229,28 +302,37 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // Send first event before initialization (will be buffered)
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        // Wait a bit to ensure timestamp difference
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        // Wait to cross second boundary (timestamps are in seconds)
+        try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         let event2Timestamp = Int(Date().timeIntervalSince1970)
 
         // Send second event before initialization (will also be buffered)
         await service.sendEvent(.checkoutFlowStarted, metadata: nil)
 
-        // Wait a bit more
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        // Wait a bit more to ensure second event timestamp is also in the past
+        try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
         // When - initialize the service (flushes buffered events)
         await service.initialize(config: config)
 
-        // Then - events should have been sent with their original timestamps
-        // This is a behavioral test - the timestamp preservation is verified
-        // by the fact that the system doesn't crash and events are sent
-        try? await Task.sleep(nanoseconds: 100_000_000) // Allow time for async processing
+        let initTimestamp = Int(Date().timeIntervalSince1970)
 
-        // NOTE: In a production test with a mock network client, we would verify
-        // that the payload timestamps match event1Timestamp and event2Timestamp,
-        // not the current time after initialization
+        // Then - events should have been sent with their original timestamps
+        let call1 = try await mockNetworkClient.nextCall()
+        let call2 = try await mockNetworkClient.nextCall()
+
+        // Verify timestamps are preserved (not the current time after initialization)
+        XCTAssertEqual(call1.payload.timestamp, event1Timestamp, accuracy: 1,
+                      "First event should preserve original timestamp")
+        XCTAssertEqual(call2.payload.timestamp, event2Timestamp, accuracy: 1,
+                      "Second event should preserve original timestamp")
+
+        // Verify they're older than init time
+        XCTAssertLessThan(call1.payload.timestamp, initTimestamp,
+                         "Buffered event should have old timestamp")
+        XCTAssertLessThan(call2.payload.timestamp, initTimestamp,
+                         "Buffered event should have old timestamp")
     }
 
     func testImmediateEvents_UseFreshTimestamp() async throws {
@@ -264,25 +346,26 @@ final class AnalyticsEventServiceTests: XCTestCase {
         // When - send event after initialization (immediate send)
         await service.sendEvent(.paymentMethodSelection, metadata: nil)
 
-        // Wait a moment
-        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
-
         let afterTimestamp = Int(Date().timeIntervalSince1970)
 
-        // Then - event should have been sent with a timestamp close to current time
-        // (not some old buffered timestamp)
-        // This is verified by the fire-and-forget pattern not crashing
+        // Then - event should have a fresh timestamp close to current time
+        let call = try await mockNetworkClient.nextCall()
 
-        // The timestamp should be between beforeTimestamp and afterTimestamp
-        // In a production test with mock, we'd verify: beforeTimestamp <= payload.timestamp <= afterTimestamp
+        XCTAssertGreaterThanOrEqual(call.payload.timestamp, beforeTimestamp,
+                                   "Timestamp should be at or after the call")
+        XCTAssertLessThanOrEqual(call.payload.timestamp, afterTimestamp,
+                                "Timestamp should be at or before completion")
     }
 
     func testMixedBufferedAndImmediateEvents_PreserveCorrectTimestamps() async throws {
         // Given - send some events before initialization
+        let bufferedTimestamp1 = Int(Date().timeIntervalSince1970)
         await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
+        // Wait to cross second boundary
+        try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
 
+        let bufferedTimestamp2 = Int(Date().timeIntervalSince1970)
         await service.sendEvent(.sdkInitEnd, metadata: nil)
 
         // When - initialize
@@ -290,42 +373,51 @@ final class AnalyticsEventServiceTests: XCTestCase {
         await service.initialize(config: config)
 
         // Send events after initialization
+        let immediateTimestamp1 = Int(Date().timeIntervalSince1970)
         await service.sendEvent(.checkoutFlowStarted, metadata: nil)
+
+        let immediateTimestamp2 = Int(Date().timeIntervalSince1970)
         await service.sendEvent(.paymentMethodSelection, metadata: nil)
 
-        // Then - all events should be sent with appropriate timestamps
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then - verify timestamp preservation for all events
+        let call1 = try await mockNetworkClient.nextCall()
+        let call2 = try await mockNetworkClient.nextCall()
+        let call3 = try await mockNetworkClient.nextCall()
+        let call4 = try await mockNetworkClient.nextCall()
 
-        // NOTE: With a mock network client, we would verify:
-        // - sdkInitStart and sdkInitEnd have old timestamps (from buffering)
-        // - checkoutFlowStarted and paymentMethodSelection have recent timestamps (immediate send)
+        // Buffered events should have old timestamps (preserved from when they were created)
+        XCTAssertEqual(call1.payload.timestamp, bufferedTimestamp1, accuracy: 1,
+                      "First buffered event should have original timestamp")
+        XCTAssertEqual(call2.payload.timestamp, bufferedTimestamp2, accuracy: 1,
+                      "Second buffered event should have original timestamp")
+
+        // Immediate events should have recent timestamps (from when they were sent)
+        XCTAssertEqual(call3.payload.timestamp, immediateTimestamp1, accuracy: 1,
+                      "First immediate event should have fresh timestamp")
+        XCTAssertEqual(call4.payload.timestamp, immediateTimestamp2, accuracy: 1,
+                      "Second immediate event should have fresh timestamp")
     }
 
-    // MARK: - Integration Tests
+    // MARK: - Environment Configuration Tests
 
-    func testSendEvent_WithRealProviders_WorksCorrectly() async throws {
+    func testSendEvent_UsesCorrectEnvironmentEndpoint() async throws {
         // Given
         let config = AnalyticsSessionConfig(
-            environment: .dev,
+            environment: .staging,
             checkoutSessionId: UUID().uuidString,
             clientSessionId: UUID().uuidString,
             primerAccountId: UUID().uuidString,
             sdkVersion: "2.46.7",
-            clientSessionToken: nil // No token for this test
+            clientSessionToken: "test_token"
         )
-
         await service.initialize(config: config)
 
-        // When - send events with real device info
-        let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
-            paymentMethod: "PAYMENT_CARD",
-            paymentId: "pay_test_123"
-        ))
+        // When
+        await service.sendEvent(.sdkInitStart, metadata: nil)
 
-        await service.sendEvent(.paymentSuccess, metadata: metadata)
-
-        // Then - should not crash even with real device detection
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        // Then - should use staging endpoint
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.staging.data.primer.io"))
     }
 
     // MARK: - Helper Methods
@@ -340,4 +432,116 @@ final class AnalyticsEventServiceTests: XCTestCase {
             clientSessionToken: "test_token_abc"
         )
     }
+}
+
+// MARK: - Test Doubles
+
+/// Testable version of AnalyticsEventService that uses a mock network client
+actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol {
+
+    private let payloadBuilder: AnalyticsPayloadBuilder
+    private let networkClient: MockAnalyticsNetworkClient
+    private let eventBuffer: AnalyticsEventBuffer
+    private let environmentProvider: AnalyticsEnvironmentProvider
+
+    private var sessionConfig: AnalyticsSessionConfig?
+
+    init(
+        payloadBuilder: AnalyticsPayloadBuilder,
+        networkClient: MockAnalyticsNetworkClient,
+        eventBuffer: AnalyticsEventBuffer,
+        environmentProvider: AnalyticsEnvironmentProvider
+    ) {
+        self.payloadBuilder = payloadBuilder
+        self.networkClient = networkClient
+        self.eventBuffer = eventBuffer
+        self.environmentProvider = environmentProvider
+    }
+
+    func initialize(config: AnalyticsSessionConfig) async {
+        self.sessionConfig = config
+
+        let bufferedEvents = await eventBuffer.flush()
+
+        guard !bufferedEvents.isEmpty else { return }
+
+        for (eventType, metadata, timestamp) in bufferedEvents {
+            await sendEventWithTimestamp(eventType, metadata: metadata, timestamp: timestamp)
+        }
+    }
+
+    func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
+        let eventTimestamp = Int(Date().timeIntervalSince1970)
+        await sendEventWithTimestamp(eventType, metadata: metadata, timestamp: eventTimestamp)
+    }
+
+    private func sendEventWithTimestamp(
+        _ eventType: AnalyticsEventType,
+        metadata: AnalyticsEventMetadata?,
+        timestamp: Int
+    ) async {
+        guard let config = sessionConfig else {
+            await eventBuffer.buffer(eventType: eventType, metadata: metadata, timestamp: timestamp)
+            return
+        }
+
+        guard let endpoint = environmentProvider.getEndpointURL(for: config.environment) else {
+            return
+        }
+
+        let payload = payloadBuilder.buildPayload(
+            eventType: eventType,
+            metadata: metadata,
+            config: config,
+            timestamp: timestamp
+        )
+
+        try? await networkClient.send(payload: payload, to: endpoint, token: config.clientSessionToken)
+    }
+}
+
+/// Mock network client that records all send() calls
+actor MockAnalyticsNetworkClient {
+
+    struct Call: Sendable {
+        let payload: AnalyticsPayload
+        let endpoint: URL
+        let token: String?
+    }
+
+    private var calls: [Call] = []
+    private var shouldFail = false
+
+    func send(payload: AnalyticsPayload, to endpoint: URL, token: String?) async throws {
+        calls.append(Call(payload: payload, endpoint: endpoint, token: token))
+
+        if shouldFail {
+            throw AnalyticsError.requestFailed
+        }
+    }
+
+    func nextCall(timeout: TimeInterval = 2.0) async throws -> Call {
+        let deadline = Date().addingTimeInterval(timeout)
+
+        while calls.isEmpty {
+            if Date() > deadline {
+                throw MockError.timeout
+            }
+            try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+        }
+
+        return calls.removeFirst()
+    }
+
+    func hasCall() async -> Bool {
+        return !calls.isEmpty
+    }
+
+    func setShouldFail(_ shouldFail: Bool) {
+        self.shouldFail = shouldFail
+    }
+}
+
+private enum MockError: Error {
+    case timeout
 }

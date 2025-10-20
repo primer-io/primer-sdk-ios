@@ -389,28 +389,32 @@ extension UIDevice {
 
     static var deviceType: String {
         let identifier = modelIdentifier ?? ""
-        
+
+        // Try physical device first
+        if let type = deviceTypeFromIdentifier(identifier) {
+            return type
+        }
+
+        // Try simulator
+        if ["i386", "x86_64", "arm64"].contains(identifier) {
+            if let simModelCode = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"],
+               let type = deviceTypeFromIdentifier(simModelCode) {
+                return type
+            }
+        }
+
+        return "phone" // Default
+    }
+
+    private static func deviceTypeFromIdentifier(_ identifier: String) -> String? {
         if identifier.hasPrefix("iPhone") {
             return "phone"
         } else if identifier.hasPrefix("iPad") {
             return "tablet"
         } else if identifier.hasPrefix("Watch") {
             return "watch"
-        } else if ["i386", "x86_64", "arm64"].contains(identifier) {
-            // Simulator - check what device it's simulating
-            if let simModelCode = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] {
-                if simModelCode.hasPrefix("iPhone") {
-                    return "phone"
-                } else if simModelCode.hasPrefix("iPad") {
-                    return "tablet"
-                } else if simModelCode.hasPrefix("Watch") {
-                    return "watch"
-                }
-            }
-            return "phone" // Default for simulator
         }
-        
-        return "phone" // Default
+        return nil
     }
     
     static var userAgent: String {
