@@ -398,6 +398,45 @@ final class AnalyticsEventServiceTests: XCTestCase {
                       "Second immediate event should have fresh timestamp")
     }
 
+    // MARK: - Error Handling Tests
+
+    func testSendEvent_NetworkFailure_LogsErrorButDoesNotThrow() async throws {
+        // Given
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+        await mockNetworkClient.setShouldFail(true)
+
+        // When - send event that will fail
+        await service.sendEvent(.paymentSuccess, metadata: nil)
+
+        // Then - event should be attempted but error should be caught (fire-and-forget)
+        let call = try await mockNetworkClient.nextCall()
+        XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
+        // The important part is that this doesn't throw to the test - fire-and-forget pattern
+    }
+
+    func testSendEvent_InvalidEnvironment_DropsEventGracefully() async throws {
+        // Given - use a mock environment provider that returns nil
+        let mockEnvironmentProvider = MockAnalyticsEnvironmentProvider(shouldReturnNil: true)
+        let testService = TestableAnalyticsEventService(
+            payloadBuilder: AnalyticsPayloadBuilder(),
+            networkClient: mockNetworkClient,
+            eventBuffer: AnalyticsEventBuffer(),
+            environmentProvider: mockEnvironmentProvider
+        )
+
+        let config = makeTestConfig()
+        await testService.initialize(config: config)
+
+        // When - send event with invalid environment
+        await testService.sendEvent(.sdkInitStart, metadata: nil)
+
+        // Then - event should be dropped (no network call)
+        try await Task.sleep(nanoseconds: 100_000_000) // 100ms to ensure no delayed call
+        let hasCall = await mockNetworkClient.hasCall()
+        XCTAssertFalse(hasCall, "Event should be dropped when endpoint URL is invalid")
+    }
+
     // MARK: - Environment Configuration Tests
 
     func testSendEvent_UsesCorrectEnvironmentEndpoint() async throws {
@@ -436,13 +475,20 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
 // MARK: - Test Doubles
 
+/// Protocol for environment providers to enable testing
+protocol EnvironmentProviding {
+    func getEndpointURL(for environment: AnalyticsEnvironment) -> URL?
+}
+
+extension AnalyticsEnvironmentProvider: EnvironmentProviding {}
+
 /// Testable version of AnalyticsEventService that uses a mock network client
 actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol {
 
     private let payloadBuilder: AnalyticsPayloadBuilder
     private let networkClient: MockAnalyticsNetworkClient
     private let eventBuffer: AnalyticsEventBuffer
-    private let environmentProvider: AnalyticsEnvironmentProvider
+    private let environmentProvider: any EnvironmentProviding
 
     private var sessionConfig: AnalyticsSessionConfig?
 
@@ -450,12 +496,26 @@ actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol 
         payloadBuilder: AnalyticsPayloadBuilder,
         networkClient: MockAnalyticsNetworkClient,
         eventBuffer: AnalyticsEventBuffer,
-        environmentProvider: AnalyticsEnvironmentProvider
+        environmentProvider: any EnvironmentProviding
     ) {
         self.payloadBuilder = payloadBuilder
         self.networkClient = networkClient
         self.eventBuffer = eventBuffer
         self.environmentProvider = environmentProvider
+    }
+
+    convenience init(
+        payloadBuilder: AnalyticsPayloadBuilder,
+        networkClient: MockAnalyticsNetworkClient,
+        eventBuffer: AnalyticsEventBuffer,
+        environmentProvider: AnalyticsEnvironmentProvider
+    ) {
+        self.init(
+            payloadBuilder: payloadBuilder,
+            networkClient: networkClient,
+            eventBuffer: eventBuffer,
+            environmentProvider: environmentProvider as any EnvironmentProviding
+        )
     }
 
     func initialize(config: AnalyticsSessionConfig) async {
@@ -541,6 +601,25 @@ actor MockAnalyticsNetworkClient {
         self.shouldFail = shouldFail
     }
 }
+
+/// Mock environment provider for testing invalid endpoint scenarios
+struct MockAnalyticsEnvironmentProvider {
+    let shouldReturnNil: Bool
+
+    init(shouldReturnNil: Bool = false) {
+        self.shouldReturnNil = shouldReturnNil
+    }
+
+    func getEndpointURL(for environment: AnalyticsEnvironment) -> URL? {
+        if shouldReturnNil {
+            return nil
+        }
+        // Return real URLs for valid environments
+        return AnalyticsEnvironmentProvider().getEndpointURL(for: environment)
+    }
+}
+
+extension MockAnalyticsEnvironmentProvider: EnvironmentProviding {}
 
 private enum MockError: Error {
     case timeout

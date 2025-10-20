@@ -38,7 +38,6 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     }
 
     /// Factory method for creating service with default configuration.
-    /// Factory method for creating service with default configuration.
     static func create(
         environmentProvider: AnalyticsEnvironmentProvider
     ) -> AnalyticsEventService {
