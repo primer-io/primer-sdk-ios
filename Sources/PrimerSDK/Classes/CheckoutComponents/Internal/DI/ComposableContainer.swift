@@ -10,7 +10,7 @@ import Foundation
 /// The main DI container for CheckoutComponents module.
 /// Registers all dependencies needed for the checkout flow.
 @available(iOS 15.0, *)
-internal final class ComposableContainer: LogReporter {
+final class ComposableContainer: LogReporter {
 
     private let container: Container
     private let settings: PrimerSettings
@@ -74,6 +74,24 @@ private extension ComposableContainer {
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()
             .with { _ in DesignTokensManager() }
+
+        // Analytics - Event Service (Data Layer)
+        _ = try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
+            .asSingleton()
+            .with { _ in
+                AnalyticsEventService.create(
+                    environmentProvider: AnalyticsEnvironmentProvider()
+                )
+            }
+
+        // Analytics - Interactor (Domain Layer)
+        _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+            .asSingleton()
+            .with { resolver in
+                DefaultAnalyticsInteractor(
+                    eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+                )
+            }
     }
 
     /// Register validation framework.

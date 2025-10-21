@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(Primer3DS)
+import Primer3DS
+#endif
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
@@ -71,6 +74,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
         // Payment method tokenized
+        repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
 
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
@@ -85,6 +89,16 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     ) {
         // Payment resumed with token
         decisionHandler(.complete())
+    }
+
+    func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(
+        _ additionalInfo: PrimerCheckoutAdditionalInfo?
+    ) {
+        repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
+    }
+
+    func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        repository?.trackRedirectToThirdPartyIfNeeded(from: additionalInfo)
     }
 
     // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
@@ -112,6 +126,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
+@available(iOS 15.0, *)
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // Reference to headless SDK will be injected or accessed here
@@ -121,8 +136,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // MARK: - Settings Integration
 
-    /// Settings service for accessing PrimerSettings configurations (iOS 15.0+ only)
-    private var settingsService: Any?
+    /// Settings service for accessing PrimerSettings configurations
+    private var settingsService: CheckoutComponentsSettingsServiceProtocol?
+
+    /// Analytics interactor for tracking events
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Co-Badged Cards Support
 
@@ -144,6 +162,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Last detected networks to avoid duplicate notifications
     private var lastDetectedNetworks: [CardNetwork] = []
+    private var lastTrackedRedirectDestination: String?
 
     init() {
         // HeadlessRepositoryImpl initialized
@@ -154,19 +173,32 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Inject settings service from DI container (lazy injection to avoid circular dependency)
     @available(iOS 15.0, *)
     private func injectSettingsService() async {
-        // Check if already injected
         guard settingsService == nil else { return }
 
         do {
             guard let container = await DIContainer.current else {
-                // DI Container not available
                 return
             }
 
             settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-            // Settings service injected
         } catch {
-            // Failed to inject settings service
+            // Intentionally silenced - service will remain nil
+        }
+    }
+
+    /// Inject analytics interactor from DI container (lazy injection to avoid circular dependency)
+    @available(iOS 15.0, *)
+    private func injectAnalyticsInteractor() async {
+        guard analyticsInteractor == nil else { return }
+
+        do {
+            guard let container = await DIContainer.current else {
+                return
+            }
+
+            analyticsInteractor = try await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        } catch {
+            // Intentionally silenced - interactor will remain nil
         }
     }
 
@@ -459,8 +491,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
             await ensureSettingsService()
-            paymentHandlingMode = (settingsService as? CheckoutComponentsSettingsServiceProtocol)?
-                .paymentHandling ?? .auto
+            paymentHandlingMode = settingsService?.paymentHandling ?? .auto
         } else {
             paymentHandlingMode = .auto
         }
@@ -598,7 +629,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func validatePaymentMethodOptions() async throws {
         if #available(iOS 15.0, *) {
             await ensureSettingsService()
-            guard let settingsService = settingsService as? CheckoutComponentsSettingsServiceProtocol else {
+            guard let settingsService = settingsService else {
                 // Settings service not available for payment method options validation
                 return
             }
@@ -644,10 +675,105 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return
         }
     }
+
+    // MARK: - Analytics Integration
+
+    func trackThreeDSChallengeIfNeeded(from tokenData: PrimerPaymentMethodTokenData) {
+        guard let authentication = tokenData.threeDSecureAuthentication else {
+            return
+        }
+
+        trackAnalyticsEvent(.paymentThreeds, metadata: .threeDS(ThreeDSEvent(
+            paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
+            provider: threeDSProvider ?? "Unknown",
+            response: authentication.responseCode.rawValue
+        )))
+    }
+
+    func trackRedirectToThirdPartyIfNeeded(from additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        guard let additionalInfo,
+              let redirectUrl = extractRedirectURL(from: additionalInfo) else { return }
+
+        if redirectUrl == lastTrackedRedirectDestination {
+            return
+        }
+        lastTrackedRedirectDestination = redirectUrl
+
+        trackAnalyticsEvent(.paymentRedirectToThirdParty, metadata: .redirect(RedirectEvent(destinationUrl: redirectUrl)))
+    }
+
+    private func extractRedirectURL(from info: PrimerCheckoutAdditionalInfo) -> String? {
+        let candidateKeys = ["redirectUrl", "url", "deeplinkUrl", "deepLinkUrl", "qrCodeUrl", "link", "href"]
+
+        for key in candidateKeys {
+            if let value = info.value(forKey: key) as? String, isLikelyURL(value) {
+                return value
+            }
+            if let url = info.value(forKey: key) as? URL {
+                return url.absoluteString
+            }
+        }
+
+        for child in Mirror(reflecting: info).children {
+            if let nestedInfo = child.value as? PrimerCheckoutAdditionalInfo,
+               let nestedUrl = extractRedirectURL(from: nestedInfo) {
+                return nestedUrl
+            }
+
+            if let url = extractURL(from: child.value) {
+                return url
+            }
+        }
+
+        return nil
+    }
+
+    private func extractURL(from value: Any) -> String? {
+        if let string = value as? String, isLikelyURL(string) {
+            return string
+        }
+
+        if let url = value as? URL {
+            return url.absoluteString
+        }
+
+        if let info = value as? PrimerCheckoutAdditionalInfo {
+            return extractRedirectURL(from: info)
+        }
+
+        return nil
+    }
+
+    private func isLikelyURL(_ string: String) -> Bool {
+        ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
+    }
+
+    private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
+        if #available(iOS 15.0, *) {
+            Task {
+                await injectAnalyticsInteractor()
+
+                guard let interactor = analyticsInteractor else {
+                    return
+                }
+
+                await interactor.trackEvent(eventType, metadata: metadata)
+            }
+        }
+    }
+
+    private var threeDSProvider: String? {
+        #if canImport(Primer3DS)
+        return Primer3DS.threeDsSdkProvider
+        #else
+        return nil
+        #endif
+    }
 }
 
 // MARK: - RawDataManager Delegate Extension
 
+@available(iOS 15.0, *)
 extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
