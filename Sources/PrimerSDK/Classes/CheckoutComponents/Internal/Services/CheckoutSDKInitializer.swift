@@ -21,7 +21,7 @@ final class CheckoutSDKInitializer {
     // MARK: - Properties
 
     private let clientToken: String
-    private let settings: PrimerSettings
+    private let primerSettings: PrimerSettings
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
@@ -32,14 +32,14 @@ final class CheckoutSDKInitializer {
 
     init(
         clientToken: String,
-        settings: PrimerSettings,
+        primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
         configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding) = PrimerAPIConfigurationModule()
     ) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.primerSettings = primerSettings
         self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
@@ -51,9 +51,12 @@ final class CheckoutSDKInitializer {
     /// Initialize the SDK and create the checkout scope
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let composableContainer = ComposableContainer(settings: settings)
+        // Bridge: Register settings in old DI for core SDK compatibility
+        // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current
+        DependencyContainer.register(primerSettings)
+
+        let composableContainer = ComposableContainer(settings: primerSettings)
         await composableContainer.configure()
 
         // Resolve analytics interactor
@@ -81,6 +84,13 @@ final class CheckoutSDKInitializer {
         return InitializationResult(checkoutScope: checkoutScope)
     }
 
+    /// Clean up resources when checkout session ends
+    func cleanup() {
+        Task {
+            await DIContainer.clearContainer()
+        }
+    }
+
     // MARK: - Private Methods
 
     private func setupSDKIntegration() {
@@ -99,11 +109,9 @@ final class CheckoutSDKInitializer {
     }
 
     private func createCheckoutScope() -> DefaultCheckoutScope {
-        let settingsService = CheckoutComponentsSettingsService(settings: settings)
-
         return DefaultCheckoutScope(
             clientToken: clientToken,
-            settingsService: settingsService,
+            settings: primerSettings,
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext

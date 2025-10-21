@@ -266,6 +266,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonText: String {
+        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
+        if scope.cardFormUIOptions?.payButtonAddNewCard == true {
+            return CheckoutComponentsStrings.addCardButton
+        }
+
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
               let currency = AppState.current.currency else {

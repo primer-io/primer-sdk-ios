@@ -10,13 +10,13 @@ import Foundation
 public protocol Registrar: Sendable {
     func register<T>(_ type: T.Type) -> any RegistrationBuilder<T>
     @discardableResult
-    func unregister<T>(_ type: T.Type, name: String?) -> Self
+    func unregister<T>(_ type: T.Type, name: String?) async -> Self
 }
 public extension Registrar {
     /// Convenience: no-name unregister
     @discardableResult
-    func unregister<T>(_ type: T.Type) -> Self {
-        unregister(type, name: nil)
+    func unregister<T>(_ type: T.Type) async -> Self {
+        await unregister(type, name: nil)
     }
 }
 

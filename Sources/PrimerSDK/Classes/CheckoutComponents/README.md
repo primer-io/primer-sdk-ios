@@ -1,14 +1,13 @@
 # CheckoutComponents
 
-A modern, scope-based payment checkout framework for iOS 15+ that provides complete UI customization with exact Android API parity.
+A modern, scope-based payment checkout framework for iOS 15+ that provides complete UI customization.
 
 ## Overview
 
-CheckoutComponents is the newest payment integration approach in the Primer iOS SDK, designed to match the Android Composable API exactly. It provides a type-safe, scope-based architecture that allows complete customization of every UI component while maintaining sensible defaults.
+CheckoutComponents is the newest payment integration approach in the Primer iOS SDK. It provides a type-safe, scope-based architecture that allows complete customization of every UI component while maintaining sensible defaults.
 
 ### Key Features
 
-- 🎯 **Exact Android API Parity**: Same methods, properties, and patterns across platforms
 - 🎨 **Full UI Customization**: Replace any UI component while keeping others
 - 🔄 **Reactive State Management**: AsyncStream-based state observation
 - 💳 **Co-Badged Cards**: Automatic network detection with user selection and surcharge support
@@ -36,11 +35,19 @@ CheckoutComponents is included in the main PrimerSDK. Follow the standard [SDK i
 ```swift
 import PrimerSDK
 
+let settings = PrimerSettings(
+    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+    uiOptions: PrimerUIOptions(
+        appearanceMode: .dark
+    )
+)
+
 // Present default checkout UI
 CheckoutComponentsPrimer.presentCheckout(
     with: clientToken,
-    from: viewController
-) { 
+    from: viewController,
+    primerSettings: settings
+) {
     // Optional completion
 }
 
@@ -48,6 +55,7 @@ CheckoutComponentsPrimer.presentCheckout(
 CheckoutComponentsPrimer.presentCheckout(
     with: clientToken,
     from: viewController,
+    primerSettings: settings,
     customContent: { scope in
         // Your custom SwiftUI content using the scope
         CustomCheckoutView(scope: scope)
@@ -76,6 +84,43 @@ struct ContentView: View {
         CheckoutView(clientToken: "your_client_token")
     }
 }
+```
+
+### Theme Customization
+
+CheckoutComponents supports separate theme configuration:
+
+```swift
+// Create a custom theme
+let customTheme = PrimerTheme()
+customTheme.colorScheme.primaryColor = .purple
+customTheme.cornerRadius = 12
+
+// UIKit: Pass theme separately from settings
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: self,
+    primerSettings: PrimerSettings(),
+    primerTheme: customTheme
+)
+
+// SwiftUI: Pass theme to PrimerCheckout
+PrimerCheckout(
+    clientToken: clientToken,
+    primerSettings: PrimerSettings(),
+    primerTheme: customTheme
+)
+
+// Theme overrides the theme in settings if both are provided
+let settings = PrimerSettings()
+settings.uiOptions.theme = defaultTheme
+
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: self,
+    primerSettings: settings,
+    primerTheme: customTheme  // ← This takes precedence
+)
 ```
 
 ## Customization
@@ -617,6 +662,46 @@ extension ViewController: CheckoutComponentsDelegate {
         }
     }
 }
+```
+
+### Dynamic Settings Updates
+
+For advanced use cases where settings need to be updated during an active checkout session, use the `updateSettings` API:
+
+```swift
+// Update settings mid-session (rare use case)
+let updatedSettings = PrimerSettings()
+updatedSettings.uiOptions.theme = darkModeTheme
+updatedSettings.uiOptions.isSuccessScreenEnabled = false
+
+await CheckoutComponentsPrimer.updateSettings(updatedSettings)
+```
+
+**When to use dynamic updates:**
+- Switching themes based on user preference during checkout
+- Enabling/disabling screens dynamically based on flow
+- Updating debug options for testing
+
+**Which settings can be updated mid-session:**
+- UI options (theme, screen visibility, dismissal mechanism)
+- Debug options (3DS sanity check)
+- Payment method options (Apple Pay configuration, URL schemes)
+
+**Important notes:**
+- This is a rare use case - most merchants should pass settings once at initialization
+- Settings changes take effect immediately for components that observe them
+- Not all settings changes make sense mid-session (e.g., changing fundamental payment configuration)
+- If no active checkout session exists, the update will fail gracefully with an error
+
+**Best practice:**
+```swift
+// ✅ Recommended: Set settings at initialization
+let settings = PrimerSettings()
+settings.uiOptions.theme = customTheme
+CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, settings: settings)
+
+// ❌ Avoid unless necessary: Updating settings mid-session
+// Only use when you have a specific requirement to change settings after checkout has started
 ```
 
 ### Navigation and Presentation Context

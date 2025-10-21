@@ -112,7 +112,7 @@ struct MixedComponentsDemo: View {
 
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: customizeScope,
                 onCompletion: {
                     isDismissed = true
@@ -139,7 +139,7 @@ struct MixedComponentsDemo: View {
             
             // Override the card form screen with mixed components demo
             cardFormScope.screen = { _ in
-                AnyView(MixedStyleCardFormView(cardFormScope: cardFormScope))
+                MixedStyleCardFormView(cardFormScope: cardFormScope)
             }
         }
     }

@@ -60,17 +60,17 @@ public struct PrimerCheckout: View {
     /// Creates a new PrimerCheckout view.
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
-    ///   - settings: Configuration settings including theme and payment options.
+    ///   - primerSettings: Configuration settings including payment options and UI preferences.
     ///   - scope: Optional closure to customize UI components through the scope interface.
     ///   - onCompletion: Optional completion callback called when checkout completes or dismisses.
     public init(
         clientToken: String,
-        settings: PrimerSettings = PrimerSettings(),
+        primerSettings: PrimerSettings = PrimerSettings(),
         scope: ((PrimerCheckoutScope) -> Void)? = nil,
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.settings = primerSettings
         self.scope = scope
         self.customContent = nil
         self.onCompletion = onCompletion
@@ -81,14 +81,14 @@ public struct PrimerCheckout: View {
     /// Internal initializer with presentation context
     init(
         clientToken: String,
-        settings: PrimerSettings,
+        primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.settings = primerSettings
         self.scope = nil
         self.customContent = nil
         self.onCompletion = onCompletion
@@ -99,7 +99,7 @@ public struct PrimerCheckout: View {
     /// Internal initializer with custom content and presentation context
     init(
         clientToken: String,
-        settings: PrimerSettings,
+        primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
@@ -107,7 +107,7 @@ public struct PrimerCheckout: View {
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = settings
+        self.settings = primerSettings
         self.scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion
@@ -177,7 +177,7 @@ struct InternalCheckout: View {
 
         self.sdkInitializer = CheckoutSDKInitializer(
             clientToken: clientToken,
-            settings: settings,
+            primerSettings: settings,
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext
@@ -210,6 +210,9 @@ struct InternalCheckout: View {
         }
         .task {
             await initializeSDK()
+        }
+        .onDisappear {
+            sdkInitializer.cleanup()
         }
     }
 

@@ -10,7 +10,7 @@ import SwiftUI
 /// Default implementation of PrimerCheckoutScope
 @available(iOS 15.0, *)
 @MainActor
-final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter, SettingsObserverProtocol {
+final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
     // MARK: - Internal Navigation State
 
     enum NavigationState: Equatable {
@@ -118,36 +118,48 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     // MARK: - Other Properties
 
     private let clientToken: String
-    private let settingsService: CheckoutComponentsSettingsServiceProtocol
+    private let settings: PrimerSettings
     var availablePaymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - UI Settings Access (for settings-based screen control)
 
     /// Whether the initialization loading screen should be shown
     var isInitScreenEnabled: Bool {
-        settingsService.isInitScreenEnabled
+        settings.uiOptions.isInitScreenEnabled
     }
 
     /// Whether the success screen should be shown after successful payment
     var isSuccessScreenEnabled: Bool {
-        settingsService.isSuccessScreenEnabled
+        settings.uiOptions.isSuccessScreenEnabled
     }
 
     /// Whether the error screen should be shown after failed payment
     var isErrorScreenEnabled: Bool {
-        settingsService.isErrorScreenEnabled
+        settings.uiOptions.isErrorScreenEnabled
+    }
+
+    /// Exposes card form UI options for child scopes
+    var cardFormUIOptions: PrimerCardFormUIOptions? {
+        settings.uiOptions.cardFormUIOptions
     }
 
     /// Available dismissal mechanisms (gestures, close button)
     var dismissalMechanism: [DismissalMechanism] {
-        settingsService.dismissalMechanism
+        settings.uiOptions.dismissalMechanism
     }
 
     // MARK: - Debug Settings Access (critical for 3DS security)
 
     /// Whether 3DS sanity checks are enabled (CRITICAL for security in production)
     var is3DSSanityCheckEnabled: Bool {
-        settingsService.is3DSSanityCheckEnabled
+        settings.debugOptions.is3DSSanityCheckEnabled
+    }
+
+    // MARK: - Payment Settings
+
+    /// Payment handling mode from settings
+    public var paymentHandling: PrimerPaymentHandling {
+        settings.paymentHandling
     }
 
     /// The presentation context for navigation behavior
@@ -155,9 +167,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Initialization
 
-    init(clientToken: String, settingsService: CheckoutComponentsSettingsServiceProtocol, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
+    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
         self.clientToken = clientToken
-        self.settingsService = settingsService
+        self.settings = settings
         self.navigator = navigator
         self.presentationContext = presentationContext
 
@@ -167,7 +179,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         Task {
             await setupInteractors()
             await loadPaymentMethods()
-            await registerAsSettingsObserver()
         }
 
         // Observe navigation events for back navigation
@@ -218,7 +229,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Starting payment methods loading...
 
         // Only show loading screen if enabled in settings (UI Options integration)
-        if settingsService.isInitScreenEnabled {
+        if settings.uiOptions.isInitScreenEnabled {
             updateNavigationState(.loading)
             // Init screen enabled - showing loading state
         } else {
@@ -638,107 +649,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             // Updating state to dismissed
             updateState(.dismissed)
             // State updated to dismissed
-        }
-    }
-
-    // MARK: - Settings Observer Registration
-
-    /// Register this scope as a settings observer for dynamic updates
-    private func registerAsSettingsObserver() async {
-        do {
-            guard let container = await DIContainer.current else {
-                // DI Container not available for settings observer registration
-                return
-            }
-
-            let settingsObserver = try await container.resolve(SettingsObserver.self)
-            settingsObserver.addObserver(self)
-            // Registered as settings observer
-        } catch {
-            // Failed to register as settings observer
-        }
-    }
-
-    // MARK: - SettingsObserverProtocol Implementation
-
-    func settingsDidChange(from oldSettings: PrimerSettings, to newSettings: PrimerSettings) async {
-        // Settings changed notification received
-
-        // Note: Settings service is immutable and will be updated at the container level
-        // The settings service itself wraps PrimerSettings, so changes are reflected automatically
-
-        // Log significant changes
-        if oldSettings.uiOptions.isInitScreenEnabled != newSettings.uiOptions.isInitScreenEnabled {
-            // Init screen setting changed
-        }
-
-        if oldSettings.debugOptions.is3DSSanityCheckEnabled != newSettings.debugOptions.is3DSSanityCheckEnabled {
-            // 3DS sanity check setting changed
-        }
-
-        // Settings update completed
-    }
-
-    func uiOptionsDidChange(from oldOptions: PrimerUIOptions, to newOptions: PrimerUIOptions) async {
-        // UI options changed
-
-        // Specific UI option handling
-        if oldOptions.isInitScreenEnabled != newOptions.isInitScreenEnabled {
-            // Init screen enabled changed
-
-            // If currently in loading state and init screen was disabled, skip to payment method selection
-            if !newOptions.isInitScreenEnabled, navigationState == .loading {
-                // Init screen disabled during loading - skipping to payment method selection
-                updateNavigationState(.paymentMethodSelection)
-            }
-        }
-
-        if oldOptions.isSuccessScreenEnabled != newOptions.isSuccessScreenEnabled {
-            // Success screen enabled changed
-        }
-
-        if oldOptions.isErrorScreenEnabled != newOptions.isErrorScreenEnabled {
-            // Error screen enabled changed
-        }
-    }
-
-    func debugOptionsDidChange(from oldOptions: PrimerDebugOptions, to newOptions: PrimerDebugOptions) async {
-        // Debug options changed
-
-        if oldOptions.is3DSSanityCheckEnabled != newOptions.is3DSSanityCheckEnabled {
-            // 3DS sanity check changed
-            // Note: 3DS sanity check changes require payment method reinitialization in most cases
-            // For now, just log the change - full implementation would require payment method restart
-        }
-    }
-
-    func localeDataDidChange(from oldLocale: PrimerLocaleData, to newLocale: PrimerLocaleData) async {
-        // Locale data changed
-        // Locale changes are handled by the standard iOS localization system
-    }
-
-    func paymentMethodOptionsDidChange(from oldOptions: PrimerPaymentMethodOptions, to newOptions: PrimerPaymentMethodOptions) async {
-        // Payment method options changed
-
-        // URL scheme changes
-        let oldUrlScheme = try? oldOptions.validSchemeForUrlScheme()
-        let newUrlScheme = try? newOptions.validSchemeForUrlScheme()
-        if oldUrlScheme != newUrlScheme {
-            // URL scheme changed
-        }
-
-        // Apple Pay changes
-        let oldApplePayId = oldOptions.applePayOptions?.merchantIdentifier
-        let newApplePayId = newOptions.applePayOptions?.merchantIdentifier
-        if oldApplePayId != newApplePayId {
-            // Apple Pay merchant ID changed
-        }
-
-        // 3DS changes
-        let oldThreeDsUrl = oldOptions.threeDsOptions?.threeDsAppRequestorUrl
-        let newThreeDsUrl = newOptions.threeDsOptions?.threeDsAppRequestorUrl
-        if oldThreeDsUrl != newThreeDsUrl {
-            // 3DS app requestor URL changed
         }
     }
 }

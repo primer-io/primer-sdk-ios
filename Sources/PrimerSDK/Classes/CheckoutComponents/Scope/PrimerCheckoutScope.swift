@@ -80,6 +80,13 @@ public protocol PrimerCheckoutScope: AnyObject {
     // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
     // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
 
+    // MARK: - Payment Settings
+
+    /// Payment handling mode (auto vs manual).
+    /// - `.auto`: Payments are automatically processed after tokenization (default)
+    /// - `.manual`: Payments require explicit confirmation via `CheckoutComponentsPrimer.resumePayment()`
+    var paymentHandling: PrimerPaymentHandling { get }
+
     // MARK: - Navigation
 
     /// Dismisses the checkout flow.
