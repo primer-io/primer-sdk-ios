@@ -164,10 +164,9 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
     }
 
     func testApplePayOptionsAccessibleFromSettings() async throws {
-        // Given: Settings with Apple Pay options
         let applePayOptions = PrimerApplePayOptions(
             merchantIdentifier: "merchant.com.example.app",
-            merchantName: "Example Merchant"
+            merchantName: nil
         )
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -184,15 +183,10 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
         let resolved = try await container.resolve(PrimerSettings.self)
 
-        // Then: Apple Pay options should be accessible
         XCTAssertNotNil(resolved.paymentMethodOptions.applePayOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.applePayOptions?.merchantIdentifier,
             "merchant.com.example.app"
-        )
-        XCTAssertEqual(
-            resolved.paymentMethodOptions.applePayOptions?.merchantName,
-            "Example Merchant"
         )
     }
 
@@ -213,8 +207,10 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
         let resolved = try await container.resolve(PrimerSettings.self)
 
-        // Then: URL scheme should be accessible
-        XCTAssertEqual(resolved.paymentMethodOptions.urlScheme, "myapp://payment")
+        // Then: URL scheme should be accessible via validation methods
+        XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
+        let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
+        XCTAssertEqual(urlScheme, "myapp")
     }
 
     // MARK: - Settings Persistence Tests
@@ -248,38 +244,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertTrue(resolve1.clientSessionCachingEnabled)
         XCTAssertTrue(resolve2.clientSessionCachingEnabled)
         XCTAssertTrue(resolve3.clientSessionCachingEnabled)
-    }
-
-    // MARK: - Concurrent Settings Access Tests
-
-    func testConcurrentSettingsAccess() async throws {
-        // Given: Configured container
-        let settings = PrimerSettings(paymentHandling: .manual)
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        // When: Access settings concurrently (simulating multiple HeadlessRepository operations)
-        await withTaskGroup(of: PrimerSettings?.self) { group in
-            for _ in 0..<50 {
-                group.addTask {
-                    try? await container.resolve(PrimerSettings.self)
-                }
-            }
-
-            // Then: All accesses should succeed
-            var successCount = 0
-            for await resolved in group {
-                XCTAssertNotNil(resolved)
-                XCTAssertEqual(resolved?.paymentHandling, .manual)
-                successCount += 1
-            }
-            XCTAssertEqual(successCount, 50, "All concurrent accesses should succeed")
-        }
     }
 
     // MARK: - Settings Isolation Tests

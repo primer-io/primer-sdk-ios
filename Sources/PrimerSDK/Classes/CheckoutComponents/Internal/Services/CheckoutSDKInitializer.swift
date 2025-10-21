@@ -56,8 +56,6 @@ final class CheckoutSDKInitializer {
         // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current
         DependencyContainer.register(primerSettings)
 
-        try await initializeAPIConfiguration()
-
         let composableContainer = ComposableContainer(settings: primerSettings)
         await composableContainer.configure()
 

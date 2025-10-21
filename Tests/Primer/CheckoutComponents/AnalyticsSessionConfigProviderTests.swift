@@ -74,7 +74,7 @@ final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
         let configurationModule = StubConfigurationModule()
         let initializer = CheckoutSDKInitializer(
             clientToken: tokenWithIds,
-            settings: PrimerSettings(),
+            primerSettings: PrimerSettings(),
             diContainer: DIContainer.shared,
             navigator: CheckoutNavigator(),
             presentationContext: .fromPaymentSelection,
