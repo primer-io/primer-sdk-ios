@@ -240,7 +240,6 @@ extension PrimerSwiftUIBridgeViewController {
     static func createForCheckoutComponents(
         clientToken: String,
         settings primerSettings: PrimerSettings,
-        theme primerTheme: PrimerTheme = PrimerTheme(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
@@ -259,7 +258,6 @@ extension PrimerSwiftUIBridgeViewController {
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 primerSettings: primerSettings,
-                primerTheme: primerTheme,
                 diContainer: diContainer,
                 navigator: navigator,
                 customContent: customContent,
@@ -271,7 +269,6 @@ extension PrimerSwiftUIBridgeViewController {
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 primerSettings: primerSettings,
-                primerTheme: primerTheme,
                 diContainer: diContainer,
                 navigator: navigator,
                 presentationContext: presentationContext,

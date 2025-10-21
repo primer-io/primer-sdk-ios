@@ -64,11 +64,9 @@ private extension ComposableContainer {
     func registerInfrastructure() async {
         // Registering infrastructure
 
-        // Settings service
-        await CheckoutComponentsSettingsService.register(in: container, with: settings)
-
-        // Settings observer for dynamic updates
-        await SettingsObserver.register(in: container, with: settings)
+        _ = try? await container.register(PrimerSettings.self)
+            .asSingleton()
+            .with { _ in self.settings }
 
         // Theme provided by PrimerSettings for components
         _ = try? await container.register(PrimerThemeProtocol.self)

@@ -230,7 +230,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
     private func presentUIKitIntegration(with clientToken: String) {
         if #available(iOS 15.0, *) {
-            CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, settings: settings) {
+            CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, primerSettings: settings) {
                 // CheckoutComponents UIKit presentation completed
             }
         } else {

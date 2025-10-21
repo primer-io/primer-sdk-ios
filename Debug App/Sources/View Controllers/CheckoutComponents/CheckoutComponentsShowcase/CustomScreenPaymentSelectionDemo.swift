@@ -118,7 +118,7 @@ struct CustomScreenPaymentSelectionDemo: View {
         .sheet(isPresented: $showingCheckout) {
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: { checkoutScope in
                 // Customize the payment method selection screen entirely
                 checkoutScope.paymentMethodSelection.screen = {

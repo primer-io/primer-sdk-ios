@@ -95,8 +95,8 @@ public actor InstrumentedContainer: ContainerProtocol {
     }
 
     @discardableResult
-    public nonisolated func unregister<T>(_ type: T.Type, name: String?) -> InstrumentedContainer {
-        container.unregister(type, name: name)
+    public func unregister<T>(_ type: T.Type, name: String?) async -> InstrumentedContainer {
+        await container.unregister(type, name: name)
         return self
     }
 

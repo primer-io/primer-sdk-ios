@@ -122,8 +122,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // MARK: - Settings Integration
 
-    /// Settings service for accessing PrimerSettings configurations (iOS 15.0+ only)
-    private var settingsService: CheckoutComponentsSettingsServiceProtocol?
+    /// PrimerSettings for accessing SDK configurations (iOS 15.0+ only)
+    private var settings: PrimerSettings?
 
     // MARK: - Co-Badged Cards Support
 
@@ -148,34 +148,26 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     init() {
         // HeadlessRepositoryImpl initialized
-        // Don't inject settings service in init to avoid circular dependency
-        // It will be injected lazily when first needed
     }
 
-    /// Inject settings service from DI container (lazy injection to avoid circular dependency)
     @available(iOS 15.0, *)
-    private func injectSettingsService() async {
-        // Check if already injected
-        guard settingsService == nil else { return }
+    private func injectSettings() async {
+        guard settings == nil else { return }
 
         do {
             guard let container = await DIContainer.current else {
-                // DI Container not available
                 return
             }
 
-            settingsService = try await container.resolve(CheckoutComponentsSettingsServiceProtocol.self)
-            // Settings service injected
+            settings = try await container.resolve(PrimerSettings.self)
         } catch {
-            // Failed to inject settings service
         }
     }
 
-    /// Ensure settings service is available (lazy injection)
     @available(iOS 15.0, *)
-    private func ensureSettingsService() async {
-        if settingsService == nil {
-            await injectSettingsService()
+    private func ensureSettings() async {
+        if settings == nil {
+            await injectSettings()
         }
     }
 
@@ -459,9 +451,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func submitPaymentWithHandlingMode(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) async {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
-            await ensureSettingsService()
-            paymentHandlingMode = (settingsService as? CheckoutComponentsSettingsServiceProtocol)?
-                .paymentHandling ?? .auto
+            await ensureSettings()
+            paymentHandlingMode = settings?.paymentHandling ?? .auto
         } else {
             paymentHandlingMode = .auto
         }
@@ -598,50 +589,60 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// This ensures CheckoutComponents respects URL scheme, Apple Pay, and 3DS configurations
     private func validatePaymentMethodOptions() async throws {
         if #available(iOS 15.0, *) {
-            await ensureSettingsService()
-            guard let settingsService = settingsService as? CheckoutComponentsSettingsServiceProtocol else {
-                // Settings service not available for payment method options validation
+            await ensureSettings()
+            guard let settings = settings else {
+                // PrimerSettings not available for payment method options validation
                 return
             }
 
             // Validate URL scheme if configured (critical for payment redirects and deep links)
-            if let urlScheme = settingsService.urlScheme {
-                do {
-                    let validUrl = try settingsService.validUrlForUrlScheme()
-                    // URL scheme validated successfully
-                } catch {
-                    // Invalid URL scheme configuration
-                    throw PrimerError.invalidValue(
-                        key: "urlScheme",
-                        value: urlScheme,
-                        reason: "URL scheme validation failed. Please configure a valid URL scheme in PrimerSettings.paymentMethodOptions.urlScheme. Valid format: myapp://payment or https://myapp.com/payment"
-                    )
-                }
+            do {
+                let validUrl = try settings.paymentMethodOptions.validUrlForUrlScheme()
+                // URL scheme validated successfully
+            } catch {
+                // Invalid URL scheme configuration
+                let urlScheme = try? settings.paymentMethodOptions.validSchemeForUrlScheme()
+                throw PrimerError.invalidValue(
+                    key: "urlScheme",
+                    value: urlScheme,
+                    reason: "URL scheme validation failed. Please configure a valid URL scheme in PrimerSettings.paymentMethodOptions.urlScheme. Valid format: myapp://payment or https://myapp.com/payment"
+                )
             }
 
             // Log Apple Pay configuration for payment method registry
-            if let applePayOptions = settingsService.applePayOptions {
+            if let applePayOptions = settings.paymentMethodOptions.applePayOptions {
                 // Apple Pay configured with merchant ID
                 // Apple Pay validation will be handled by the payment method itself when selected
             }
 
             // Log 3DS configuration for security compliance
-            if let threeDsOptions = settingsService.threeDsOptions {
+            if let threeDsOptions = settings.paymentMethodOptions.threeDsOptions {
                 // 3DS configuration found
             }
 
             // Log Stripe configuration if present
-            if let stripeOptions = settingsService.stripeOptions {
+            if let stripeOptions = settings.paymentMethodOptions.stripeOptions {
                 // Stripe configuration found
             }
 
+            // TODO: KLARNA PAYMENT METHOD - Wire klarnaOptions when Klarna is implemented
+            // Klarna payment method is planned but not yet available in CheckoutComponents
+            // When implementing Klarna, uncomment and complete this section
+            if let klarnaOptions = settings.paymentMethodOptions.klarnaOptions {
+                logger.debug(message: "Klarna options configured: \(klarnaOptions.recurringPaymentDescription)")
+                // TODO: Initialize Klarna payment method with these options
+                // Expected usage: pass klarnaOptions to Klarna payment method configuration
+                // Reference: Similar pattern used for stripeOptions (see lines above)
+                // Note: iOS klarnaOptions only has recurringPaymentDescription
+            }
+
             // Log 3DS sanity check setting (critical for security)
-            let is3DSSanityEnabled = settingsService.is3DSSanityCheckEnabled
+            let is3DSSanityEnabled = settings.debugOptions.is3DSSanityCheckEnabled
             // 3DS sanity check configuration
 
             // Payment method options validation completed
         } else {
-            // Settings service not available on iOS < 15.0
+            // PrimerSettings not available on iOS < 15.0
             return
         }
     }

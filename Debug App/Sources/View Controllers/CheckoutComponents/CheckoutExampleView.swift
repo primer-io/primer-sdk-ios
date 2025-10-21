@@ -216,7 +216,7 @@ private struct CheckoutContentView: View {
             // This is all the merchant needs to do - PrimerCheckout handles SDK initialization automatically!
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 onCompletion: onCompletion
             )
         }
@@ -254,7 +254,7 @@ private struct CheckoutContentView: View {
                 
                 PrimerCheckout(
                     clientToken: clientToken,
-                    settings: settings,
+                    primerSettings: settings,
                     onCompletion: onCompletion
                 )
             }

@@ -112,7 +112,7 @@ struct MixedComponentsDemo: View {
 
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: customizeScope,
                 onCompletion: {
                     isDismissed = true

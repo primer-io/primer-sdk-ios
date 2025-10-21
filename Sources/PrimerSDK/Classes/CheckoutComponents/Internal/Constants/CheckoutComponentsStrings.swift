@@ -42,6 +42,13 @@ struct CheckoutComponentsStrings {
         comment: "Pay button text"
     )
 
+    static let addCardButton = NSLocalizedString(
+        "primer-card-form-add-card",
+        bundle: Bundle.primerResources,
+        value: "Add card",
+        comment: "Add card button text when storing a new card"
+    )
+
     static let cancelButton = NSLocalizedString(
         "primer-alert-button-cancel",
         bundle: Bundle.primerResources,

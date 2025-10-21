@@ -61,13 +61,11 @@ public struct PrimerCheckout: View {
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
     ///   - primerSettings: Configuration settings including payment options and UI preferences.
-    ///   - primerTheme: Theme configuration for visual appearance.
     ///   - scope: Optional closure to customize UI components through the scope interface.
     ///   - onCompletion: Optional completion callback called when checkout completes or dismisses.
     public init(
         clientToken: String,
         primerSettings: PrimerSettings = PrimerSettings(),
-        primerTheme: PrimerTheme = PrimerTheme(),
         scope: ((PrimerCheckoutScope) -> Void)? = nil,
         onCompletion: (() -> Void)? = nil
     ) {
@@ -84,7 +82,6 @@ public struct PrimerCheckout: View {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
-        primerTheme: PrimerTheme = PrimerTheme(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
@@ -103,7 +100,6 @@ public struct PrimerCheckout: View {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
-        primerTheme: PrimerTheme = PrimerTheme(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
@@ -111,12 +107,7 @@ public struct PrimerCheckout: View {
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-
-        // Apply theme override - separate theme parameter always overrides settings.uiOptions.theme
-        var effectiveSettings = primerSettings
-        effectiveSettings.uiOptions.theme = primerTheme
-
-        self.settings = effectiveSettings
+        self.settings = primerSettings
         self.scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion

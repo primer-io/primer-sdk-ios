@@ -65,12 +65,6 @@
                      <FileRef
                         location = "group:CheckoutSDKInitializer.swift">
                      </FileRef>
-                     <FileRef
-                        location = "group:SettingsObserver.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:CheckoutComponentsSettingsService.swift">
-                     </FileRef>
                   </Group>
                   <Group
                      location = "group:UI"

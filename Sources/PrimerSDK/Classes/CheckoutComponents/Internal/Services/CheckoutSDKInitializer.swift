@@ -48,6 +48,10 @@ final class CheckoutSDKInitializer {
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
 
+        // Bridge: Register settings in old DI for core SDK compatibility
+        // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current
+        DependencyContainer.register(primerSettings)
+
         try await initializeAPIConfiguration()
 
         let composableContainer = ComposableContainer(settings: primerSettings)
@@ -89,11 +93,9 @@ final class CheckoutSDKInitializer {
     }
 
     private func createCheckoutScope() -> DefaultCheckoutScope {
-        let settingsService = CheckoutComponentsSettingsService(settings: primerSettings)
-
         return DefaultCheckoutScope(
             clientToken: clientToken,
-            settingsService: settingsService,
+            settings: primerSettings,
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext

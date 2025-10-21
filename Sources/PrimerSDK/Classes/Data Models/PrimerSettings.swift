@@ -362,6 +362,6 @@ public struct PrimerThreeDsOptions: Codable, Equatable {
 public enum PrimerApiVersion: String, Codable {
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_4
+    public static let latest: PrimerApiVersion = .V2_4
 }
 // swiftlint:enable identifier_name
