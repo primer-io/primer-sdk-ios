@@ -119,4 +119,36 @@ final class CheckoutSDKInitializer {
             presentationContext: presentationContext
         )
     }
+
+    // MARK: - Analytics Initialization
+
+    private func initializeAnalytics() async {
+        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId ?? UUID().uuidString
+        let sdkVersion = VersionUtils.releaseVersionNumber ?? "unknown"
+
+        guard let analyticsConfig = configurationModule.makeAnalyticsSessionConfig(
+            checkoutSessionId: checkoutSessionId,
+            clientToken: clientToken,
+            sdkVersion: sdkVersion
+        ) else {
+            #if DEBUG
+            print("⚠️ Unable to create analytics session config")
+            #endif
+            return
+        }
+
+        guard let container = await DIContainer.current else { return }
+
+        if let analyticsService = try? await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self) {
+            await analyticsService.initialize(config: analyticsConfig)
+        }
+    }
+
+    private func trackSDKInitStart() async {
+        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: nil)
+    }
+
+    private func trackSDKInitEnd() async {
+        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: nil)
+    }
 }
