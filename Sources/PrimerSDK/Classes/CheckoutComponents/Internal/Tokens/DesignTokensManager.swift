@@ -141,22 +141,26 @@ final class DesignTokensManager: ObservableObject {
         var rgb: UInt64 = 0
         guard Scanner(string: sanitized).scanHexInt64(&rgb) else { return nil }
 
-        let (r, g, b, a): (CGFloat, CGFloat, CGFloat, CGFloat)
+        var red: CGFloat = 0.0
+        var green: CGFloat = 0.0
+        var blue: CGFloat = 0.0
+        var alpha: CGFloat = 1.0
+
         if sanitized.count == 8 { // RRGGBBAA
-            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
-            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
-            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
-            a = CGFloat(rgb & 0x000000FF) / 255.0
+            red = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            green = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            blue = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            alpha = CGFloat(rgb & 0x000000FF) / 255.0
         } else if sanitized.count == 6 { // RRGGBB
-            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-            b = CGFloat(rgb & 0x0000FF) / 255.0
-            a = 1.0
+            red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            blue = CGFloat(rgb & 0x0000FF) / 255.0
+            alpha = 1.0
         } else {
             return nil
         }
 
-        return [r, g, b, a]
+        return [red, green, blue, alpha]
     }
 
     // MARK: - Dictionary Flattening

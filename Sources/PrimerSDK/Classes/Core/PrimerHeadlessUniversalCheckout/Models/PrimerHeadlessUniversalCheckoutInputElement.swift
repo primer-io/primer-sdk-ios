@@ -146,7 +146,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var delimiter: String? {
+    var delimiter: String? {
         switch self {
         case .cardNumber:
             return " "
@@ -157,7 +157,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var maxAllowedLength: Int? {
+    var maxAllowedLength: Int? {
         switch self {
         case .cardNumber:
             return nil
@@ -172,7 +172,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var allowedCharacterSet: CharacterSet? {
+    var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber:
             return CharacterSet(charactersIn: "0123456789")
@@ -183,7 +183,7 @@ public enum PrimerInputElementType: Int {
         }
     }
 
-    internal var keyboardType: UIKeyboardType {
+    var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber, .postalCode:
             return UIKeyboardType.numberPad
@@ -209,7 +209,7 @@ public enum PrimerInputElementType: Int {
     }
     
     /// Indicates if this field is a billing address field
-    internal var isBillingField: Bool {
+    var isBillingField: Bool {
         switch self {
         case .firstName, .lastName, .addressLine1, .addressLine2, .city, .state, .postalCode, .countryCode, .phoneNumber, .email:
             return true
@@ -219,7 +219,7 @@ public enum PrimerInputElementType: Int {
     }
     
     /// Indicates if this field is required for basic card form validation
-    internal var isRequired: Bool {
+    var isRequired: Bool {
         switch self {
         case .cardNumber, .expiryDate, .cvv, .cardholderName:
             return true
@@ -231,7 +231,7 @@ public enum PrimerInputElementType: Int {
     }
     
     /// Field display order for UI layout
-    internal var displayOrder: Int {
+    var displayOrder: Int {
         switch self {
         // Card fields
         case .cardNumber: return 1
@@ -259,7 +259,7 @@ public enum PrimerInputElementType: Int {
     }
     
     /// Human-readable field name for display
-    internal var displayName: String {
+    var displayName: String {
         switch self {
         case .cardNumber: return "Card Number"
         case .expiryDate: return "Expiry Date"

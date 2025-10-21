@@ -4,7 +4,6 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import UIKit
@@ -47,7 +46,7 @@ public final class NolPayLinkedCardsComponent {
             switch result {
             case .success:
                 break
-            case .failure(let error):
+            case let .failure(error):
                 self?.errorDelegate?.didReceiveError(error: error)
                 completion(.failure(error))
                 return
@@ -102,10 +101,10 @@ public final class NolPayLinkedCardsComponent {
             return try await withCheckedThrowingContinuation { continuation in
                 self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
-                    case .success(let appSecret):
+                    case let .success(appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)
                         completion(.success(()))
-                    case .failure(let error):
+                    case let .failure(error):
                         continuation.resume(throwing: error)
                         completion(.failure(handled(primerError: error.asPrimerError)))
                     }
@@ -135,29 +134,23 @@ public final class NolPayLinkedCardsComponent {
         phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success((let validationStatus, let countryCode, let mobileNumber)):
+            case let .success((validationStatus, countryCode, mobileNumber)):
                 switch validationStatus {
                 case .valid:
 
-                    guard let mobileNumber else {
-                        let error = handled(primerError: .invalidValue(key: "mobileNumber"))
+                    guard let mobileNumber, let countryCode else {
+						let key = mobileNumber == nil ? "mobileNumber" : "countryCode"
+                        let error = handled(primerError: .invalidValue(key: key))
                         self.errorDelegate?.didReceiveError(error: error)
-                        completion(.failure(error))
-                        return
+						return completion(.failure(error))
                     }
 
-                    guard let countryCode else {
-                        let error = handled(primerError: .invalidValue(key: "countryCode"))
-                        self.errorDelegate?.didReceiveError(error: error)
-                        completion(.failure(error))
-                        return
-                    }
                     #if canImport(PrimerNolPaySDK)
                     nolPay.getAvailableCards(for: mobileNumber, with: countryCode) { result in
                         switch result {
-                        case .success(let cards):
+                        case let .success(cards):
                             completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
-                        case .failure(let error):
+                        case let .failure(error):
                             let error = handled(primerError: .nolError(code: error.errorCode, message: error.description))
                             self.errorDelegate?.didReceiveError(error: error)
                             completion(.failure(error))
@@ -165,19 +158,17 @@ public final class NolPayLinkedCardsComponent {
                     }
                     #endif
 
-                case .invalid(errors: let validationErrors):
+                case let .invalid(errors: validationErrors):
                     self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
                     completion(.failure(PrimerError.underlyingErrors(errors: validationErrors)))
 
                 default: break
                 }
-            case .failure(let error):
+            case let .failure(error):
                 self.errorDelegate?.didReceiveError(error: error)
                 completion(.failure(error))
             }
         }
     }
 }
-
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
