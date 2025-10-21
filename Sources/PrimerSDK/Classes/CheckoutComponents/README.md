@@ -1,14 +1,13 @@
 # CheckoutComponents
 
-A modern, scope-based payment checkout framework for iOS 15+ that provides complete UI customization with exact Android API parity.
+A modern, scope-based payment checkout framework for iOS 15+ that provides complete UI customization.
 
 ## Overview
 
-CheckoutComponents is the newest payment integration approach in the Primer iOS SDK, designed to match the Android Composable API exactly. It provides a type-safe, scope-based architecture that allows complete customization of every UI component while maintaining sensible defaults.
+CheckoutComponents is the newest payment integration approach in the Primer iOS SDK. It provides a type-safe, scope-based architecture that allows complete customization of every UI component while maintaining sensible defaults.
 
 ### Key Features
 
-- 🎯 **Exact Android API Parity**: Same methods, properties, and patterns across platforms
 - 🎨 **Full UI Customization**: Replace any UI component while keeping others
 - 🔄 **Reactive State Management**: AsyncStream-based state observation
 - 💳 **Co-Badged Cards**: Automatic network detection with user selection and surcharge support
@@ -89,7 +88,7 @@ struct ContentView: View {
 
 ### Theme Customization
 
-CheckoutComponents supports separate theme configuration for Android API parity:
+CheckoutComponents supports separate theme configuration:
 
 ```swift
 // Create a custom theme
