@@ -139,7 +139,7 @@ struct MixedComponentsDemo: View {
             
             // Override the card form screen with mixed components demo
             cardFormScope.screen = { _ in
-                AnyView(MixedStyleCardFormView(cardFormScope: cardFormScope))
+                MixedStyleCardFormView(cardFormScope: cardFormScope)
             }
         }
     }

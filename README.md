@@ -88,13 +88,170 @@ The Swift Package Manager is a tool for automating the distribution of Swift cod
 ## 📋 Prerequisites
 
 - 🔑 Generate a client token by [creating a client session](https://primer.io/docs/accept-payments/manage-client-sessions) in your backend.
+- 📱 **iOS 15.0+** for CheckoutComponents (modern SwiftUI integration)
+- 📱 **iOS 13.0+** for Universal Checkout (traditional UIKit integration)
 - 🎉 _That's it!_
 
-## 🔍 &nbsp;Initializing the SDK
+## 🚀 Modern Integration: CheckoutComponents (iOS 15+)
 
-Import the Primer SDK and set its delegate as shown in the following example:
+CheckoutComponents is our modern, SwiftUI-based checkout solution with full UI customization and scope-based architecture. It provides exact Android API parity for cross-platform consistency.
 
-```swift{:copy}
+### 📱 Pure SwiftUI Integration
+
+For SwiftUI apps, use `PrimerCheckout` directly in your views:
+
+```swift
+import SwiftUI
+import PrimerSDK
+
+struct PaymentView: View {
+    let clientToken: String
+
+    var body: some View {
+        PrimerCheckout(
+            clientToken: clientToken,
+            primerSettings: PrimerSettings()
+        )
+    }
+}
+```
+
+### 🔄 UIKit Integration (Wrapper)
+
+For UIKit apps, use `CheckoutComponentsPrimer` to present the checkout:
+
+```swift
+import PrimerSDK
+
+class MyViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Set the delegate to receive checkout events
+        CheckoutComponentsPrimer.shared.delegate = self
+    }
+
+    func startCheckout() {
+        CheckoutComponentsPrimer.presentCheckout(
+            with: clientToken,
+            from: self
+        )
+    }
+}
+
+extension MyViewController: CheckoutComponentsDelegate {
+
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+        // Payment completed successfully
+        print("Payment ID: \(result.paymentId)")
+    }
+
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+        // Handle payment failure
+        print("Payment failed: \(error)")
+    }
+
+    func checkoutComponentsDidDismiss() {
+        // Checkout was dismissed without completion
+    }
+}
+```
+
+### 🎨 Custom UI & Styling
+
+Customize the checkout experience using scope-based APIs:
+
+```swift
+PrimerCheckout(
+    clientToken: clientToken,
+    primerSettings: PrimerSettings(),
+    scope: { checkoutScope in
+        // Customize the card form
+        if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
+
+            // Custom styling for card number field
+            cardFormScope.cardNumberField = { label, styling in
+                AnyView(
+                    cardFormScope.PrimerCardNumberField(
+                        label: "Card Number",
+                        styling: PrimerFieldStyling(
+                            font: .system(.body, design: .monospaced),
+                            backgroundColor: Color.blue.opacity(0.05),
+                            borderColor: .blue,
+                            cornerRadius: 8,
+                            borderWidth: 2
+                        )
+                    )
+                )
+            }
+
+            // Customize container/navigation
+            checkoutScope.container = { content in
+                AnyView(
+                    NavigationView {
+                        content()
+                            .navigationBarTitle("Custom Checkout", displayMode: .inline)
+                    }
+                )
+            }
+        }
+    }
+)
+```
+
+### 📊 State Observation
+
+Observe checkout state changes using AsyncStream:
+
+```swift
+// In your scope customization
+if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
+
+    // Observe card form state
+    Task {
+        for await state in cardFormScope.state {
+            print("Form valid: \(state.isValid)")
+            print("Card network: \(state.cardNetwork?.displayName ?? "Unknown")")
+
+            // Access individual field states
+            if let cardNumberState = state.cardNumber {
+                print("Card number valid: \(cardNumberState.isValid)")
+            }
+        }
+    }
+}
+```
+
+### 🧩 Scope-Based Customization
+
+CheckoutComponents provides different scopes for granular customization:
+
+- **`PrimerCheckoutScope`**: Main checkout lifecycle, container, and navigation
+- **`PrimerCardFormScope`**: Card form with field-level customization
+- **`PrimerPaymentMethodSelectionScope`**: Payment method selection UI
+
+```swift
+// Example: Complete screen replacement
+if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
+    cardFormScope.screen = { presentationContext in
+        // Return your completely custom card form screen
+        CustomCardFormView(scope: cardFormScope)
+    }
+}
+```
+
+**Note:** Check the [Detailed iOS Documentation](https://www.notion.so/primerapi/iOS-SDK-ebbf44a733624d17bfd0c3a746f171a2) for complete API reference and advanced customization options.
+
+---
+
+## 📱 Traditional Integration: Universal Checkout (iOS 13+)
+
+For traditional UIKit-based integration, use the Universal Checkout flow:
+
+### Initializing the SDK
+
+```swift
 import PrimerSDK
 
 class MyViewController: UIViewController {
@@ -111,31 +268,22 @@ extension MyViewController: PrimerDelegate {
 
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         // Primer checkout completed with data
-        // do something...
+        print("Payment completed: \(data)")
     }
 }
 ```
 
+### Presenting Universal Checkout
 
-**Note:** Check the [SDK API Reference](https://www.notion.so/primerio/API-Reference-f62b4be8f24642989e63c25a8fb5f0ba_) for more options to customize your SDK.
-
-
-## 🔍 &nbsp;Rendering the checkout
-
-Now you can use the client token that you generated on your backend.
-Call the `showUniversalCheckout(clientToken)` function (as shown below) to present Universal Checkout.
-
-```swift{:copy}
+```swift
 class MyViewController: UIViewController {
     func startUniversalCheckout() {
         Primer.shared.showUniversalCheckout(clientToken: self.clientToken)
     }
 }
 ```
-You should now be able to see Universal Checkout! The user can now interact with Universal Checkout, and the SDK will create the payment.
-The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
-**Note:** There are more options which can be passed to Universal Checkout. Please refer to the section below for more information.
+The user can now interact with Universal Checkout, and the SDK will create the payment. The payment data will be returned via `primerDidCompleteCheckoutWithData(:)`.
 
 
 ## Contributing guidelines:
