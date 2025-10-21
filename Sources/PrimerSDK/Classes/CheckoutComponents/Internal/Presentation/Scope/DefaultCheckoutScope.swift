@@ -86,7 +86,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         if let existing = _paymentMethodSelection {
             return existing
         }
-        let scope = DefaultPaymentMethodSelectionScope(checkoutScope: self)
+        let scope = DefaultPaymentMethodSelectionScope(
+            checkoutScope: self,
+            analyticsInteractor: analyticsInteractor
+        )
         _paymentMethodSelection = scope
         return scope
     }
@@ -103,6 +106,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     private let navigator: CheckoutNavigator
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Internal Access
 
@@ -196,7 +200,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Setting up interactors...
         do {
             // Checking DI container availability...
-            guard let _ = await DIContainer.current else {
+            guard let container = await DIContainer.current else {
                 // DI Container is not available
                 throw ContainerError.containerUnavailable
             }
@@ -204,6 +208,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             // Creating bridge to existing SDK payment methods
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
+
+            // Resolve analytics interactor
+            analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
             // Interactor setup completed with bridge
         } catch {
@@ -292,6 +299,56 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Previous state logged
         internalState = newState
         // State update completed
+
+        // Track analytics events based on state transitions
+        Task {
+            await trackStateChange(newState)
+        }
+    }
+
+    private func trackStateChange(_ state: PrimerCheckoutState) async {
+        switch state {
+        case .ready:
+            // Checkout flow is now interactive
+            await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general())
+
+        case let .success(result):
+            // Payment succeeded
+            if let paymentMethod = result.paymentMethodType {
+                await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .payment(PaymentEvent(
+                    paymentMethod: paymentMethod,
+                    paymentId: result.paymentId
+                )))
+            } else {
+                // No payment method type available, use general event
+                await analyticsInteractor?.trackEvent(.paymentSuccess, metadata: .general())
+            }
+
+        case let .failure(error):
+            // Payment failed - extract metadata from error if available
+            await analyticsInteractor?.trackEvent(.paymentFailure, metadata: extractFailureMetadata(from: error))
+
+        case .dismissed:
+            // User exited checkout without completion
+            await analyticsInteractor?.trackEvent(.paymentFlowExited, metadata: .general())
+
+        default:
+            break
+        }
+    }
+
+    private func extractFailureMetadata(from error: PrimerError) -> AnalyticsEventMetadata {
+        // Extract payment information from paymentFailed error if available
+        if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error,
+           let paymentMethod = paymentMethodType {
+            return .payment(PaymentEvent(
+                paymentMethod: paymentMethod,
+                paymentId: paymentId
+            ))
+        }
+
+        // For other error types, just include userLocale
+        return .general()
     }
 
     func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {

@@ -63,6 +63,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
             let processCardInteractor: ProcessCardPaymentInteractor = try diContainer.resolveSync(ProcessCardPaymentInteractor.self)
             let validateInputInteractor = try? diContainer.resolveSync(ValidateInputInteractor.self)
             let cardNetworkDetectionInteractor = try? diContainer.resolveSync(CardNetworkDetectionInteractor.self)
+            let analyticsInteractor = try? diContainer.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
             if validateInputInteractor == nil {
                 logger.debug(message: "⚠️ [CardPaymentMethod] ValidateInputInteractor not registered – using local validation only")
@@ -77,7 +78,8 @@ struct CardPaymentMethod: PaymentMethodProtocol {
                 presentationContext: paymentMethodContext,
                 processCardPaymentInteractor: processCardInteractor,
                 validateInputInteractor: validateInputInteractor,
-                cardNetworkDetectionInteractor: cardNetworkDetectionInteractor
+                cardNetworkDetectionInteractor: cardNetworkDetectionInteractor,
+                analyticsInteractor: analyticsInteractor
             )
         } catch let primerError as PrimerError {
             throw primerError

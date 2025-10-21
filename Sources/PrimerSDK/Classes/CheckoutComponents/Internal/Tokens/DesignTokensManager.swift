@@ -141,10 +141,10 @@ final class DesignTokensManager: ObservableObject {
         var rgb: UInt64 = 0
         guard Scanner(string: sanitized).scanHexInt64(&rgb) else { return nil }
 
-        var red: CGFloat = 0.0
-        var green: CGFloat = 0.0
-        var blue: CGFloat = 0.0
-        var alpha: CGFloat = 1.0
+        var red: CGFloat
+        var green: CGFloat
+        var blue: CGFloat
+        var alpha: CGFloat
 
         if sanitized.count == 8 { // RRGGBBAA
             red = CGFloat((rgb & 0xFF000000) >> 24) / 255.0

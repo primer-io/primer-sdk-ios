@@ -25,6 +25,8 @@ final class CheckoutSDKInitializer {
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
+    private let configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding)
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Initialization
 
@@ -33,13 +35,15 @@ final class CheckoutSDKInitializer {
         primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        presentationContext: PresentationContext
+        presentationContext: PresentationContext,
+        configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding) = PrimerAPIConfigurationModule()
     ) {
         self.clientToken = clientToken
         self.primerSettings = primerSettings
         self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
+        self.configurationModule = configurationModule
     }
 
     // MARK: - Public Methods
@@ -56,6 +60,22 @@ final class CheckoutSDKInitializer {
 
         let composableContainer = ComposableContainer(settings: primerSettings)
         await composableContainer.configure()
+
+        // Resolve analytics interactor
+        if let container = await DIContainer.current {
+            analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        }
+
+        // Track SDK initialization start - after DI container is ready, before BE calls
+        await trackSDKInitStart()
+
+        try await initializeAPIConfiguration()
+
+        // Initialize analytics session
+        await initializeAnalytics()
+
+        // Track SDK initialization end - after all API calls complete
+        await trackSDKInitEnd()
 
         let checkoutScope = createCheckoutScope()
 
@@ -82,9 +102,7 @@ final class CheckoutSDKInitializer {
     }
 
     private func initializeAPIConfiguration() async throws {
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-        try await apiConfigurationModule.setupSession(
+        try await configurationModule.setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: true,
             requestClientTokenValidation: false,
