@@ -17,27 +17,27 @@ struct SplashScreen: View {
             Color.white
                 .ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                    .scaleEffect(2.0)
-                    .frame(width: 56, height: 56)
+                    .scaleEffect(PrimerScale.large)
+                    .frame(width: PrimerComponentHeight.progressIndicator, height: PrimerComponentHeight.progressIndicator)
 
-                VStack(spacing: 4) {
+                VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary loading message
                     Text(CheckoutComponentsStrings.loadingSecureCheckout)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? .defaultTextPrimary)
+                        .font(PrimerFont.bodyLarge(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
 
                     // Secondary loading message
                     Text(CheckoutComponentsStrings.loadingWontTakeLong)
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor((tokens?.primerColorTextPrimary ?? .defaultTextPrimary).opacity(0.62))
+                        .font(PrimerFont.bodyMedium(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
                 }
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
         }
     }
 }

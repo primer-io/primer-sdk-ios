@@ -35,12 +35,12 @@ struct CardFormScreen: View, LogReporter {
                 Button(action: {
                     scope.onBack()
                 }, label: {
-                    HStack(spacing: 4) {
+                    HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                         Image(systemName: "chevron.left")
-                            .font(.body.weight(.medium))
+                            .font(PrimerFont.bodyMedium(tokens: tokens))
                         Text(CheckoutComponentsStrings.backButton)
                     }
-                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+                    .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
                 })
             }
 
@@ -49,37 +49,45 @@ struct CardFormScreen: View, LogReporter {
             Button(CheckoutComponentsStrings.cancelButton, action: {
                 scope.onCancel()
             })
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .background(
             Rectangle()
-                .fill(tokens?.primerColorBackground ?? Color(.systemBackground))
+                .fill(PrimerCheckoutColors.background(tokens: tokens))
         )
     }
 
     @MainActor
     private var mainContent: some View {
-        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+        VStack(spacing: 0) {
             titleSection
+                .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))
+
             dynamicFieldsSection
+                .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
+
             submitButtonSection
         }
-        .padding(.top)
-        .background(tokens?.primerColorBackground ?? Color(.systemBackground))
+        .padding(.top, PrimerSpacing.large(tokens: tokens))
+        .background(PrimerCheckoutColors.background(tokens: tokens))
         .onAppear {
             observeState()
         }
     }
 
     private var titleSection: some View {
-        Text(CheckoutComponentsStrings.cardPaymentTitle)
-            .font(.title2)
-            .fontWeight(.semibold)
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+        let fontSize = tokens?.primerTypographyTitleXlargeSize ?? 24
+        let fontWeight: Font.Weight = .semibold
+
+        return Text(CheckoutComponentsStrings.cardPaymentTitle)
+            .font(.system(size: fontSize, weight: fontWeight))
+            .tracking(tokens?.primerTypographyTitleXlargeLetterSpacing ?? -0.6)
+            .lineSpacing((tokens?.primerTypographyTitleXlargeLineHeight ?? 32) - fontSize)
+            .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
     }
 
     @MainActor
@@ -89,7 +97,7 @@ struct CardFormScreen: View, LogReporter {
         if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
-            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+            VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                 // Render card fields dynamically based on configuration
                 cardFieldsSection
 
@@ -108,9 +116,9 @@ struct CardFormScreen: View, LogReporter {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
             AnyView(customSection())
-                .padding(.horizontal)
+                .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         } else {
-            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+            VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                 // Render fields dynamically based on configuration
                 ForEach(0..<formConfiguration.cardFields.count, id: \.self) { index in
                     let fieldType = formConfiguration.cardFields[index]
@@ -119,7 +127,7 @@ struct CardFormScreen: View, LogReporter {
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
                        formConfiguration.cardFields[index + 1] == .cvv {
-                        HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
+                        HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(.expiryDate)
                             renderField(.cvv)
                         }
@@ -130,7 +138,7 @@ struct CardFormScreen: View, LogReporter {
                         EmptyView()
                     } else if fieldType == .cardNumber {
                         // Render card number field with allowed networks below it
-                        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(fieldType)
 
                             // Show allowed card networks directly below card number
@@ -145,7 +153,7 @@ struct CardFormScreen: View, LogReporter {
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         }
     }
 
@@ -159,7 +167,7 @@ struct CardFormScreen: View, LogReporter {
                         scope.updateSelectedCardNetwork(network)
                     }
                 })
-                .padding(.horizontal)
+                .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
             } else {
                 defaultCobadgedCardsView
             }
@@ -167,11 +175,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var defaultCobadgedCardsView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
             Text(CheckoutComponentsStrings.selectNetworkTitle)
-                .font(.caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .padding(.horizontal)
+                .font(PrimerFont.caption(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 
             CardNetworkSelector(
                 availableNetworks: cardFormState.availableNetworks.map { $0.network },
@@ -183,7 +191,7 @@ struct CardFormScreen: View, LogReporter {
                     }
                 }
             )
-            .padding(.horizontal)
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         }
     }
 
@@ -195,23 +203,23 @@ struct CardFormScreen: View, LogReporter {
             // Check for section-level override first
             if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
                 AnyView(customSection())
-                    .padding(.horizontal)
+                    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
                     .id(refreshTrigger)
             } else {
-                VStack(alignment: .leading, spacing: FigmaDesignConstants.sectionSpacing) {
+                VStack(alignment: .leading, spacing: PrimerSpacing.medium(tokens: tokens)) {
                     // Billing address section title
                     Text(CheckoutComponentsStrings.billingAddressTitle)
-                        .font(.headline)
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                        .padding(.horizontal)
+                        .font(PrimerFont.headline(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 
                     // Render billing fields dynamically
-                    VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                    VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                         ForEach(formConfiguration.billingFields, id: \.self) { fieldType in
                             renderField(fieldType)
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
                 }
                 .id(refreshTrigger)
             }
@@ -224,8 +232,8 @@ struct CardFormScreen: View, LogReporter {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
             AnyView(customSection())
-                .padding(.horizontal)
-                .padding(.bottom)
+                .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+                .padding(.bottom, PrimerSpacing.large(tokens: tokens))
         } else {
             Group {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
@@ -242,8 +250,8 @@ struct CardFormScreen: View, LogReporter {
                     .disabled(!cardFormState.isValid || cardFormState.isLoading)
                 }
             }
-            .padding(.horizontal)
-            .padding(.bottom)
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+            .padding(.bottom, PrimerSpacing.large(tokens: tokens))
         }
     }
 
@@ -252,17 +260,17 @@ struct CardFormScreen: View, LogReporter {
             if cardFormState.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(0.8)
+                    .scaleEffect(PrimerScale.small)
             } else {
                 Text(submitButtonText)
             }
         }
-        .font(.body)
-        .foregroundColor(.white)
+        .font(PrimerFont.body(tokens: tokens))
+        .foregroundColor(PrimerCheckoutColors.white(tokens: tokens))
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(submitButtonBackground)
-        .cornerRadius(8)
+        .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
 
     private var submitButtonText: String {
@@ -308,8 +316,8 @@ struct CardFormScreen: View, LogReporter {
 
     private var submitButtonBackground: Color {
         cardFormState.isValid && !cardFormState.isLoading
-            ? (tokens?.primerColorTextPrimary ?? .blue)
-            : (tokens?.primerColorGray300 ?? Color(.systemGray3))
+            ? PrimerCheckoutColors.textPrimary(tokens: tokens)
+            : PrimerCheckoutColors.gray300(tokens: tokens)
     }
 
     private func submitAction() {
@@ -548,9 +556,9 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 Text(CheckoutComponentsStrings.retailOutletNotImplemented)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding()
+                    .font(PrimerFont.caption(tokens: tokens))
+                    .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
+                    .padding(PrimerSpacing.large(tokens: tokens))
             }
 
         case .otp:

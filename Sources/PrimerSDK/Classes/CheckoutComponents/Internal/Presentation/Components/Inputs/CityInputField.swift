@@ -50,15 +50,12 @@ struct CityInputField: View, LogReporter {
 
     /// Dynamic border color based on field state
     private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
+        return primerInputBorderColor(
+            errorMessage: errorMessage,
+            isFocused: isFocused,
+            styling: styling,
+            tokens: tokens
+        )
     }
 
     // MARK: - Initialization
@@ -79,23 +76,24 @@ struct CityInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             // Label with custom styling support
             if let label = label {
                 Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+                    .primerLabelStyle(styling: styling, tokens: tokens)
+                    
             }
 
             // City input field with ZStack architecture
             ZStack {
                 // Background and border styling with custom styling support
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
+                Color.clear
+                    .primerInputFieldBorder(
+                        cornerRadius: PrimerRadius.small(tokens: tokens),
+                        backgroundColor: styling?.backgroundColor ?? PrimerCheckoutColors.background(tokens: tokens),
+                        borderColor: borderColor,
+                        borderWidth: styling?.borderWidth ?? PrimerBorderWidth.standard,
+                        animationValue: isFocused
                     )
 
                 // Input field content
@@ -111,19 +109,15 @@ struct CityInputField: View, LogReporter {
                             validationService: validationService,
                             scope: scope
                         )
-                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ?
-                                    (tokens?.primerSizeXxlarge ?? 60) :
-                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                        .primerInputPadding(styling: styling, tokens: tokens, errorPresent: errorMessage != nil)
                     } else {
                         // Fallback view while loading validation service
                         TextField(placeholder, text: $city)
                             .autocapitalization(.words)
                             .disabled(true)
-                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                            .padding(.leading, styling?.padding?.leading ?? PrimerSpacing.large(tokens: tokens))
+                            .padding(.trailing, styling?.padding?.trailing ?? PrimerSpacing.large(tokens: tokens))
+                            .padding(.vertical, styling?.padding?.top ?? PrimerSpacing.medium(tokens: tokens))
                     }
 
                     Spacer()
@@ -138,21 +132,18 @@ struct CityInputField: View, LogReporter {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                            .primerErrorIconStyle(tokens: tokens)
                     }
                 }
             }
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
+            .primerInputFieldHeight(styling: styling, tokens: tokens)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .primerErrorMessageStyle(tokens: tokens)
+                
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
+                .animation(AnimationConstants.errorAnimation, value: errorMessage != nil)
         }
         .onAppear {
             setupValidationService()
@@ -228,7 +219,7 @@ private struct CityTextField: UIViewRepresentable, LogReporter {
         )
 
         // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: PrimerComponentHeight.keyboardAccessory))
         accessoryView.backgroundColor = UIColor.systemGray6
 
         let doneButton = UIButton(type: .system)

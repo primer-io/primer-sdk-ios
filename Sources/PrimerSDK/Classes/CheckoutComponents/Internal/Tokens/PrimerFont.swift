@@ -10,7 +10,7 @@ import SwiftUI
 /// Font utility for CheckoutComponents that provides Inter variable fonts
 /// with fallback to system fonts based on design tokens.
 @available(iOS 15.0, *)
-internal struct PrimerFont {
+struct PrimerFont {
 
     // MARK: - Font Family Names
 
@@ -49,7 +49,10 @@ internal struct PrimerFont {
     // MARK: - Typography Design Token Helpers
 
     /// Font for title extra large based on design tokens
-    static func titleXLarge(tokens: DesignTokens) -> Font {
+    static func titleXLarge(tokens: DesignTokens?) -> Font {
+        guard let tokens = tokens else {
+            return font(family: "Inter", weight: 500, size: 24)
+        }
         return font(
             family: tokens.primerTypographyTitleXlargeFont,
             weight: tokens.primerTypographyTitleXlargeWeight,
@@ -58,7 +61,10 @@ internal struct PrimerFont {
     }
 
     /// Font for title large based on design tokens
-    static func titleLarge(tokens: DesignTokens) -> Font {
+    static func titleLarge(tokens: DesignTokens?) -> Font {
+        guard let tokens = tokens else {
+            return font(family: "Inter", weight: 500, size: 16)
+        }
         return font(
             family: tokens.primerTypographyTitleLargeFont,
             weight: tokens.primerTypographyTitleLargeWeight,
@@ -67,7 +73,10 @@ internal struct PrimerFont {
     }
 
     /// Font for body large based on design tokens
-    static func bodyLarge(tokens: DesignTokens) -> Font {
+    static func bodyLarge(tokens: DesignTokens?) -> Font {
+        guard let tokens = tokens else {
+            return font(family: "Inter", weight: 400, size: 16)
+        }
         return font(
             family: tokens.primerTypographyBodyLargeFont,
             weight: tokens.primerTypographyBodyLargeWeight,
@@ -76,7 +85,10 @@ internal struct PrimerFont {
     }
 
     /// Font for body medium based on design tokens
-    static func bodyMedium(tokens: DesignTokens) -> Font {
+    static func bodyMedium(tokens: DesignTokens?) -> Font {
+        guard let tokens = tokens else {
+            return font(family: "Inter", weight: 400, size: 14)
+        }
         return font(
             family: tokens.primerTypographyBodyMediumFont,
             weight: tokens.primerTypographyBodyMediumWeight,
@@ -85,12 +97,58 @@ internal struct PrimerFont {
     }
 
     /// Font for body small based on design tokens
-    static func bodySmall(tokens: DesignTokens) -> Font {
+    static func bodySmall(tokens: DesignTokens?) -> Font {
+        guard let tokens = tokens else {
+            return font(family: "Inter", weight: 400, size: 12)
+        }
         return font(
             family: tokens.primerTypographyBodySmallFont,
             weight: tokens.primerTypographyBodySmallWeight,
             size: tokens.primerTypographyBodySmallSize
         )
+    }
+
+    // MARK: - Semantic Font Helpers
+
+    /// Standard body font (for main content text) - maps to bodyMedium (14pt)
+    static func body(tokens: DesignTokens?) -> Font {
+        return bodyMedium(tokens: tokens)
+    }
+
+    /// Caption font (for secondary/supporting text) - maps to bodySmall (12pt)
+    static func caption(tokens: DesignTokens?) -> Font {
+        return bodySmall(tokens: tokens)
+    }
+
+    /// Headline font (for emphasized text) - maps to titleLarge (16pt medium)
+    static func headline(tokens: DesignTokens?) -> Font {
+        return titleLarge(tokens: tokens)
+    }
+
+    /// Title2 font (for section titles) - maps to titleXLarge (24pt)
+    static func title2(tokens: DesignTokens?) -> Font {
+        return titleXLarge(tokens: tokens)
+    }
+
+    /// Large icon font (48pt) - no matching token, using explicit size
+    static func largeIcon(tokens: DesignTokens?) -> Font {
+        return font(family: "Inter", weight: 400, size: 48)
+    }
+
+    /// Extra large icon font - maps to primerSizeXxxlarge (56pt)
+    static func extraLargeIcon(tokens: DesignTokens?) -> Font {
+        let size = tokens?.primerSizeXxxlarge ?? 56
+        return font(family: "Inter", weight: 400, size: size)
+    }
+
+    /// Subheadline font (for supporting text) - maps to bodyMedium (14pt)
+    static func subheadline(tokens: DesignTokens?) -> Font {
+        return bodyMedium(tokens: tokens)
+    }
+
+    /// Small badge font (10pt medium) - no matching token, using explicit size
+    static func smallBadge(tokens: DesignTokens?) -> Font {
+        return font(family: "Inter", weight: 500, size: 10)
     }
 
     // MARK: - Private Helpers

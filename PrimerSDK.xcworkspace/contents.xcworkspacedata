@@ -78,16 +78,6 @@
                      <FileRef
                         location = "group:PrimerSwiftUIBridgeViewController.swift">
                      </FileRef>
-                     <Group
-                        location = "group:Design"
-                        name = "Design">
-                        <FileRef
-                           location = "group:FigmaDesignConstants.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:Color+CheckoutComponents.swift">
-                        </FileRef>
-                     </Group>
                   </Group>
                   <Group
                      location = "group:DI"

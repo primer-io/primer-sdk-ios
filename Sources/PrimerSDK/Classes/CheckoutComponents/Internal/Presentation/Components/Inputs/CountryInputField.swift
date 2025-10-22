@@ -57,28 +57,25 @@ struct CountryInputField: View, LogReporter {
 
     /// Dynamic border color based on field state
     private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
+        return primerInputBorderColor(
+            errorMessage: errorMessage,
+            isFocused: isFocused,
+            styling: styling,
+            tokens: tokens
+        )
     }
 
     /// Display text font for country field
     private var countryTextFont: Font {
-        styling?.font ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .body)
+        styling?.font ?? PrimerFont.bodySmall(tokens: tokens)
     }
 
     /// Text color for country display (placeholder vs selected)
     private var countryTextColor: Color {
         if countryName.isEmpty {
-            return styling?.placeholderColor ?? tokens?.primerColorTextSecondary ?? .secondary
+            return styling?.placeholderColor ?? PrimerCheckoutColors.textSecondary(tokens: tokens)
         } else {
-            return styling?.textColor ?? tokens?.primerColorTextPrimary ?? .primary
+            return styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)
         }
     }
 
@@ -102,12 +99,12 @@ struct CountryInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             // Label with custom styling support
             if let label = label {
                 Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+                    .primerLabelStyle(styling: styling, tokens: tokens)
+                    
             }
 
             // Country field with selector button using Button with HStack layout
@@ -130,12 +127,13 @@ struct CountryInputField: View, LogReporter {
             }, label: {
                 ZStack {
                     // Background and border styling
-                    RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                        .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                                .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                                .animation(.easeInOut(duration: 0.2), value: isFocused)
+                    Color.clear
+                        .primerInputFieldBorder(
+                            cornerRadius: PrimerRadius.small(tokens: tokens),
+                            backgroundColor: styling?.backgroundColor ?? PrimerCheckoutColors.background(tokens: tokens),
+                            borderColor: borderColor,
+                            borderWidth: styling?.borderWidth ?? PrimerBorderWidth.standard,
+                            animationValue: isFocused
                         )
 
                     // Content layout
@@ -153,30 +151,29 @@ struct CountryInputField: View, LogReporter {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                                .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
+                                .frame(width: PrimerSize.medium(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
+                                .foregroundColor(PrimerCheckoutColors.iconNegative(tokens: tokens))
                         } else {
                             // Chevron down icon when no error
                             Image(systemName: "chevron.down")
-                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                         }
                     }
-                    .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                    .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                    .padding(.leading, styling?.padding?.leading ?? PrimerSpacing.large(tokens: tokens))
+                    .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
+                    .padding(.vertical, styling?.padding?.top ?? PrimerSpacing.medium(tokens: tokens))
                 }
             })
             .buttonStyle(PlainButtonStyle())
             .disabled(isNavigating)
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
+            .primerInputFieldHeight(styling: styling, tokens: tokens)
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .primerErrorMessageStyle(tokens: tokens)
+                
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
+                .animation(AnimationConstants.errorAnimation, value: errorMessage != nil)
         }
         .onAppear {
             isNavigating = false

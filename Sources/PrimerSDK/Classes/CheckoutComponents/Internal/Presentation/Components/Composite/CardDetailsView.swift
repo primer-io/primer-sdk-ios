@@ -23,7 +23,7 @@ struct CardDetailsView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             // Card Number
             CardNumberInputField(
                 label: CheckoutComponentsStrings.cardNumberLabel,
@@ -32,7 +32,7 @@ struct CardDetailsView: View {
             )
 
             // Card number and CVV in horizontal layout
-            HStack(spacing: 16) {
+            HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
                 // Expiry Date
                 ExpiryDateInputField(
                     label: CheckoutComponentsStrings.expiryDateLabel,
@@ -47,7 +47,7 @@ struct CardDetailsView: View {
                     scope: cardFormScope,
                     cardNetwork: cardNetwork
                 )
-                .frame(maxWidth: 120)
+                .frame(maxWidth: PrimerComponentWidth.cvvFieldMax)
             }
 
             // Cardholder Name

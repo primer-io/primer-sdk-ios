@@ -45,32 +45,29 @@ struct CardNumberInputField: View, LogReporter {
     }
 
     private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
+        return primerInputBorderColor(
+            errorMessage: errorMessage,
+            isFocused: isFocused,
+            styling: styling,
+            tokens: tokens
+        )
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             if let label = label {
                 Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+                    .primerLabelStyle(styling: styling, tokens: tokens)
             }
 
             ZStack {
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
+                Color.clear
+                    .primerInputFieldBorder(
+                        cornerRadius: PrimerRadius.small(tokens: tokens),
+                        backgroundColor: styling?.backgroundColor ?? PrimerCheckoutColors.background(tokens: tokens),
+                        borderColor: borderColor,
+                        borderWidth: styling?.borderWidth ?? PrimerBorderWidth.standard,
+                        animationValue: isFocused
                     )
 
                 HStack {
@@ -86,17 +83,11 @@ struct CardNumberInputField: View, LogReporter {
                             styling: styling,
                             validationService: validationService
                         )
-                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, displayNetwork != .unknown ?
-                                    (tokens?.primerSizeXxlarge ?? 60) :
-                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                        .primerInputPadding(styling: styling, tokens: tokens, errorPresent: displayNetwork != .unknown)
                     } else {
                         TextField(placeholder, text: .constant(""))
                             .disabled(true)
-                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                            .primerInputPadding(styling: styling, tokens: tokens, errorPresent: false)
                     }
 
                     Spacer()
@@ -109,40 +100,36 @@ struct CardNumberInputField: View, LogReporter {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                            .primerErrorIconStyle(tokens: tokens)
                     } else if displayNetwork != .unknown {
-                        VStack(spacing: 2) {
+                        VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
                             if let icon = displayNetwork.icon {
                                 Image(uiImage: icon)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: tokens?.primerSizeLarge ?? 28, height: tokens?.primerSizeMedium ?? 20)
+                                    .frame(width: PrimerSize.large(tokens: tokens) + PrimerSpacing.xsmall(tokens: tokens), height: PrimerSize.medium(tokens: tokens))
                             }
 
                             if let surchargeAmount = surchargeAmount {
                                 Text(surchargeAmount)
-                                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption2)
-                                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                                    .padding(.horizontal, 4)
+                                    .font(PrimerFont.bodySmall(tokens: tokens))
+                                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                                    .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
                                     .padding(.vertical, 1)
-                                    .background(tokens?.primerColorGray200 ?? Color(.systemGray5))
-                                    .cornerRadius(3)
+                                    .background(PrimerCheckoutColors.gray200(tokens: tokens))
+                                    .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
                             }
                         }
-                        .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                        .padding(.trailing, PrimerSpacing.medium(tokens: tokens))
                     }
                 }
             }
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
+            .primerInputFieldHeight(styling: styling, tokens: tokens)
 
             Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .primerErrorMessageStyle(tokens: tokens)
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
+                .animation(AnimationConstants.errorAnimation, value: errorMessage != nil)
         }
         .onAppear {
             setupValidationService()
@@ -226,7 +213,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             ]
         )
 
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: PrimerComponentHeight.keyboardAccessory))
         accessoryView.backgroundColor = UIColor.systemGray6
 
         let doneButton = UIButton(type: .system)

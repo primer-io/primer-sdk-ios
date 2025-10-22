@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A SwiftUI component for OTP code input with validation
 @available(iOS 15.0, *)
-internal struct OTPCodeInputField: View, LogReporter {
+struct OTPCodeInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -50,16 +50,16 @@ internal struct OTPCodeInputField: View, LogReporter {
     /// Dynamic border color based on field state
     private var borderColor: Color {
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            return tokens?.primerColorBorderOutlinedError ?? .red
+            return PrimerCheckoutColors.borderError(tokens: tokens)
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
+            return PrimerCheckoutColors.borderDefault(tokens: tokens)
         }
     }
 
     // MARK: - Initialization
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (scope-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
@@ -74,7 +74,7 @@ internal struct OTPCodeInputField: View, LogReporter {
     }
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (callback-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         expectedLength: Int,
@@ -92,32 +92,25 @@ internal struct OTPCodeInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: tokens?.primerSpaceXsmall ?? 4) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
             // Label
             if let label = label {
                 Text(label)
-                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                    .font(PrimerFont.bodySmall(tokens: tokens))
+                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
             }
 
             // OTP input field
             TextField(placeholder, text: $otpCode)
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
-                .padding(tokens?.primerSpaceMedium ?? 12)
-                .background(
-                    Group {
-                        if true {
-                            // Only apply manual background when no gradient is present
-                            tokens?.primerColorBackground ?? .white
-                        }
-                    }
+                .padding(PrimerSpacing.medium(tokens: tokens))
+                .primerInputFieldBorder(
+                    cornerRadius: PrimerRadius.small(tokens: tokens),
+                    backgroundColor: PrimerCheckoutColors.background(tokens: tokens),
+                    borderColor: borderColor,
+                    borderWidth: PrimerBorderWidth.standard
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                        .stroke(borderColor, lineWidth: 1)
-                )
-                .cornerRadius(FigmaDesignConstants.inputFieldRadius)
                 .onChange(of: otpCode) { newValue in
                     // Limit to expected length
                     if newValue.count > expectedLength {
@@ -134,11 +127,11 @@ internal struct OTPCodeInputField: View, LogReporter {
 
             // Error message (always reserve space to prevent height changes)
             Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 2)
+                .font(PrimerFont.bodySmall(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textNegative(tokens: tokens))
+                .padding(.top, PrimerSpacing.xsmall(tokens: tokens) / 2)
                 .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
+                .animation(AnimationConstants.errorAnimation, value: errorMessage != nil)
         }
         .onAppear {
             setupValidationService()
