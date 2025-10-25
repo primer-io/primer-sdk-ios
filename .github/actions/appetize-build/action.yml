@@ -76,6 +76,20 @@ runs:
       with:
         ruby-version: "3.2"
         bundler-cache: true
+    - name: Print Ruby and OpenSSL versions
+      shell: bash
+      run: |
+        echo "=== Ruby version ==="
+        ruby -v
+        echo ""
+        echo "=== OpenSSL version (Ruby) ==="
+        ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
+        echo ""
+        echo "=== OpenSSL version (System) ==="
+        openssl version -a
+        echo ""
+        echo "=== Ruby OpenSSL library path ==="
+        ruby -ropenssl -e 'puts OpenSSL::OPENSSL_LIBRARY_VERSION'
     - name: Setup node
       uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
       with:
