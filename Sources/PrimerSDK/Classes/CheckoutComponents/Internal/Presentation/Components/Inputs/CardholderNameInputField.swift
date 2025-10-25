@@ -379,3 +379,193 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CardholderNameInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    // Default empty state
+                    CardholderNameInputField(
+                        label: "Cardholder Name",
+                        placeholder: "John Smith",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label
+                    CardholderNameInputField(
+                        label: nil,
+                        placeholder: "Name on card",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Name Format Examples
+                Group {
+                    Text("Name Format Examples")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Full name
+                    CardholderNameInputField(
+                        label: "Full Name",
+                        placeholder: "John Michael Smith",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Hyphenated name
+                    CardholderNameInputField(
+                        label: "Hyphenated Name",
+                        placeholder: "Mary-Jane Watson",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Name with apostrophe
+                    CardholderNameInputField(
+                        label: "Name with Apostrophe",
+                        placeholder: "O'Connor",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Single name
+                    CardholderNameInputField(
+                        label: "Single Name",
+                        placeholder: "Madonna",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid state
+                    CardholderNameInputField(
+                        label: "Valid Name",
+                        placeholder: "John Smith",
+                        scope: MockCardFormScope(isValid: true)
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid state
+                    CardholderNameInputField(
+                        label: "Invalid Name",
+                        placeholder: "Enter valid name",
+                        scope: MockCardFormScope(isValid: false)
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Light theme with custom styling
+                    CardholderNameInputField(
+                        label: "Name (Custom Light)",
+                        placeholder: "John Smith",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .primary,
+                            backgroundColor: .gray.opacity(0.05),
+                            placeholderColor: .gray,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Dark theme styling
+                    CardholderNameInputField(
+                        label: "Name (Dark Theme)",
+                        placeholder: "John Smith",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .white,
+                            backgroundColor: .black.opacity(0.8),
+                            placeholderColor: .gray,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                    .preferredColorScheme(.dark)
+
+                    // Bold/prominent styling
+                    CardholderNameInputField(
+                        label: "Name (Bold Style)",
+                        placeholder: "Enter your name",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            textColor: .primary,
+                            backgroundColor: .blue.opacity(0.1),
+                            borderWidth: 3
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    CardholderNameInputField(
+                        label: "Compact Name",
+                        placeholder: "Name",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .caption,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    CardholderNameInputField(
+                        label: "Large Name",
+                        placeholder: "Enter cardholder name",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title2,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Cardholder Name Input Field")
+    }
+}
+#endif

@@ -402,3 +402,152 @@ private struct EmailTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct EmailInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    // Default empty state
+                    EmailInputField(
+                        label: "Email Address",
+                        placeholder: "Enter your email",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label
+                    EmailInputField(
+                        label: nil,
+                        placeholder: "your.email@example.com",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid state
+                    EmailInputField(
+                        label: "Valid Email",
+                        placeholder: "email@example.com",
+                        scope: MockCardFormScope(isValid: true)
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid state
+                    EmailInputField(
+                        label: "Invalid Email",
+                        placeholder: "Enter valid email",
+                        scope: MockCardFormScope(isValid: false)
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Light theme with custom styling
+                    EmailInputField(
+                        label: "Email (Custom Light)",
+                        placeholder: "email@example.com",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .primary,
+                            backgroundColor: .gray.opacity(0.05),
+                            placeholderColor: .gray,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Dark theme styling
+                    EmailInputField(
+                        label: "Email (Dark Theme)",
+                        placeholder: "email@example.com",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .white,
+                            backgroundColor: .black.opacity(0.8),
+                            placeholderColor: .gray,
+                            borderWidth: 2,
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                    .preferredColorScheme(.dark)
+
+                    // Bold/prominent styling
+                    EmailInputField(
+                        label: "Email (Bold Style)",
+                        placeholder: "your@email.com",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            textColor: .primary,
+                            backgroundColor: .blue.opacity(0.1),
+                            borderWidth: 3
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    EmailInputField(
+                        label: "Compact Email",
+                        placeholder: "email",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .caption,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    EmailInputField(
+                        label: "Large Email",
+                        placeholder: "Enter your email address",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title2,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Email Input Field")
+    }
+}
+#endif

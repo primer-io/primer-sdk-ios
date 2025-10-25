@@ -252,3 +252,217 @@ struct CountryInputField: View, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CountryInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    // Default empty state
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "Select country",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label
+                    CountryInputField(
+                        label: nil,
+                        placeholder: "Country",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Country Selection Examples
+                Group {
+                    Text("Country Selection Examples")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // United States
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "United States",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United States", dialCode: "+1", code: "US")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // United Kingdom
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "United Kingdom",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United Kingdom", dialCode: "+44", code: "GB")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Canada
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "Canada",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "Canada", dialCode: "+1", code: "CA")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Australia
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "Australia",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "Australia", dialCode: "+61", code: "AU")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Germany
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "Germany",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "Germany", dialCode: "+49", code: "DE")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // France
+                    CountryInputField(
+                        label: "Country",
+                        placeholder: "France",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "France", dialCode: "+33", code: "FR")
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid state (country selected)
+                    CountryInputField(
+                        label: "Valid Country",
+                        placeholder: "United States",
+                        scope: MockCardFormScope(isValid: true),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United States", dialCode: "+1", code: "US")
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid state (no country selected)
+                    CountryInputField(
+                        label: "Invalid Country",
+                        placeholder: "Select a country",
+                        scope: MockCardFormScope(isValid: false)
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Light theme with custom styling
+                    CountryInputField(
+                        label: "Country (Custom Light)",
+                        placeholder: "Select country",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .primary,
+                            backgroundColor: .gray.opacity(0.05),
+                            placeholderColor: .gray,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Dark theme styling
+                    CountryInputField(
+                        label: "Country (Dark Theme)",
+                        placeholder: "Select country",
+                        scope: MockCardFormScope(),
+                        selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United States", dialCode: "+1", code: "US"),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .white,
+                            backgroundColor: .black.opacity(0.8),
+                            placeholderColor: .gray,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                    .preferredColorScheme(.dark)
+
+                    // Bold/prominent styling
+                    CountryInputField(
+                        label: "Country (Bold Style)",
+                        placeholder: "Choose your country",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            textColor: .primary,
+                            backgroundColor: .blue.opacity(0.1),
+                            borderWidth: 3
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    CountryInputField(
+                        label: "Compact Country",
+                        placeholder: "Country",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .caption,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    CountryInputField(
+                        label: "Large Country",
+                        placeholder: "Select your country",
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title2,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Country Input Field")
+    }
+}
+#endif

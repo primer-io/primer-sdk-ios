@@ -496,3 +496,249 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct AddressLineInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    // Address Line 1 (Required)
+                    AddressLineInputField(
+                        label: "Address Line 1",
+                        placeholder: "Street address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Address Line 2 (Optional)
+                    AddressLineInputField(
+                        label: "Address Line 2 (Optional)",
+                        placeholder: "Apt, suite, unit, etc.",
+                        isRequired: false,
+                        inputType: .addressLine2,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label
+                    AddressLineInputField(
+                        label: nil,
+                        placeholder: "Enter address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Address Format Examples
+                Group {
+                    Text("Address Format Examples")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // US Street Address
+                    AddressLineInputField(
+                        label: "US Street Address",
+                        placeholder: "123 Main Street",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Apartment/Unit
+                    AddressLineInputField(
+                        label: "Apartment/Unit",
+                        placeholder: "Apt 4B",
+                        isRequired: false,
+                        inputType: .addressLine2,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // UK Address
+                    AddressLineInputField(
+                        label: "UK Address",
+                        placeholder: "10 Downing Street",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Building Name
+                    AddressLineInputField(
+                        label: "Building Name",
+                        placeholder: "Empire State Building",
+                        isRequired: false,
+                        inputType: .addressLine2,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // PO Box
+                    AddressLineInputField(
+                        label: "PO Box",
+                        placeholder: "PO Box 1234",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid required field
+                    AddressLineInputField(
+                        label: "Valid Address (Required)",
+                        placeholder: "123 Main St",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(isValid: true)
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid required field
+                    AddressLineInputField(
+                        label: "Invalid Address (Required)",
+                        placeholder: "Enter valid address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(isValid: false)
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Optional field (always valid when empty)
+                    AddressLineInputField(
+                        label: "Optional Address",
+                        placeholder: "Additional address info",
+                        isRequired: false,
+                        inputType: .addressLine2,
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Light theme with custom styling
+                    AddressLineInputField(
+                        label: "Address (Custom Light)",
+                        placeholder: "123 Main Street",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .primary,
+                            backgroundColor: .gray.opacity(0.05),
+                            placeholderColor: .gray,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Dark theme styling
+                    AddressLineInputField(
+                        label: "Address (Dark Theme)",
+                        placeholder: "456 Oak Avenue",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .white,
+                            backgroundColor: .black.opacity(0.8),
+                            placeholderColor: .gray,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                    .preferredColorScheme(.dark)
+
+                    // Bold/prominent styling
+                    AddressLineInputField(
+                        label: "Address (Bold Style)",
+                        placeholder: "Enter street address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            textColor: .primary,
+                            backgroundColor: .blue.opacity(0.1),
+                            borderWidth: 3
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    AddressLineInputField(
+                        label: "Compact Address",
+                        placeholder: "Address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .caption,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    AddressLineInputField(
+                        label: "Large Address",
+                        placeholder: "Enter your street address",
+                        isRequired: true,
+                        inputType: .addressLine1,
+                        scope: MockCardFormScope(),
+                        styling: PrimerFieldStyling(
+                            font: .title2,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Address Line Input Field")
+    }
+}
+#endif

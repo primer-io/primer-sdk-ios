@@ -709,3 +709,44 @@ private extension String {
         return result
     }
 }
+
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CardNumberInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Default state
+            CardNumberInputField(
+                label: "Card Number",
+                placeholder: "1234 5678 9012 3456",
+                scope: MockCardFormScope()
+            )
+            .previewDisplayName("Default")
+
+            // No label
+            CardNumberInputField(
+                label: nil,
+                placeholder: "Card number",
+                scope: MockCardFormScope()
+            )
+            .previewDisplayName("No Label")
+
+            // With custom styling
+            CardNumberInputField(
+                label: "Card Number",
+                placeholder: "Enter your card number",
+                scope: MockCardFormScope(),
+                styling: PrimerFieldStyling(
+                    font: .title3,
+                    textColor: .primary,
+                    backgroundColor: .blue.opacity(0.1),
+                    borderWidth: 2
+                )
+            )
+            .previewDisplayName("Custom Styling")
+        }
+        .padding()
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+    }
+}

@@ -470,3 +470,69 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct ExpiryDateInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    ExpiryDateInputField(label: "Expiry Date", placeholder: "MM / YY", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: nil, placeholder: "Expiration", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Format Examples
+                Group {
+                    Text("Format Examples").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    ExpiryDateInputField(label: "Format: MM/YY", placeholder: "12/25", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "Format: MM / YY", placeholder: "MM / YY", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "With Label", placeholder: "Expiration (MM/YY)", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    ExpiryDateInputField(label: "Valid Date", placeholder: "12/25", scope: MockCardFormScope(isValid: true))
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "Invalid Date", placeholder: "Enter valid date", scope: MockCardFormScope(isValid: false))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    ExpiryDateInputField(label: "Expiry (Custom Light)", placeholder: "MM / YY", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .primary, backgroundColor: .gray.opacity(0.05), placeholderColor: .gray, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "Expiry (Dark Theme)", placeholder: "MM / YY", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .white, backgroundColor: .black.opacity(0.8), placeholderColor: .gray, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                        .preferredColorScheme(.dark)
+                    ExpiryDateInputField(label: "Expiry (Bold Style)", placeholder: "MM / YY", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title3, textColor: .primary, backgroundColor: .blue.opacity(0.1), borderWidth: 3))
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "Expiry (Monospaced)", placeholder: "12 / 25", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .system(.body, design: .monospaced), textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    ExpiryDateInputField(label: "Compact Expiry", placeholder: "MM/YY", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .caption, textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    ExpiryDateInputField(label: "Large Expiry", placeholder: "Expiration Date", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title2, textColor: .primary, backgroundColor: .clear, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                }
+            }.padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Expiry Date Input Field")
+    }
+}
+#endif

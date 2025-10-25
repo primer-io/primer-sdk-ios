@@ -367,3 +367,71 @@ private struct CityTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CityInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    CityInputField(label: "City", placeholder: "Enter city", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: nil, placeholder: "City", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - City Name Examples
+                Group {
+                    Text("City Name Examples").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    CityInputField(label: "Single Word", placeholder: "London", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "Two Words", placeholder: "New York", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "Three Words", placeholder: "San Francisco Bay", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "Hyphenated", placeholder: "Winston-Salem", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "International", placeholder: "São Paulo", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    CityInputField(label: "Valid City", placeholder: "San Francisco", scope: MockCardFormScope(isValid: true))
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "Invalid City", placeholder: "Enter valid city", scope: MockCardFormScope(isValid: false))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    CityInputField(label: "City (Custom Light)", placeholder: "London", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .primary, backgroundColor: .gray.opacity(0.05), placeholderColor: .gray, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "City (Dark Theme)", placeholder: "Paris", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .white, backgroundColor: .black.opacity(0.8), placeholderColor: .gray, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                        .preferredColorScheme(.dark)
+                    CityInputField(label: "City (Bold Style)", placeholder: "Enter your city", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title3, textColor: .primary, backgroundColor: .blue.opacity(0.1), borderWidth: 3))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    CityInputField(label: "Compact City", placeholder: "City", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .caption, textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    CityInputField(label: "Large City", placeholder: "Enter your city name", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title2, textColor: .primary, backgroundColor: .clear, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                }
+            }.padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("City Input Field")
+    }
+}
+#endif

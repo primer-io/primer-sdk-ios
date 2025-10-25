@@ -393,3 +393,73 @@ private struct PostalCodeTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct PostalCodeInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    PostalCodeInputField(label: "Postal Code", placeholder: "Enter postal code", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: nil, placeholder: "Postal Code", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Country Format Examples
+                Group {
+                    Text("Country Format Examples").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    PostalCodeInputField(label: "US ZIP Code", placeholder: "90210", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "UK Postcode", placeholder: "SW1A 1AA", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Canadian Postal Code", placeholder: "K1A 0B1", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "German PLZ", placeholder: "10115", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Australian Postcode", placeholder: "2000", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    PostalCodeInputField(label: "Valid Postal Code", placeholder: "90210", scope: MockCardFormScope(isValid: true))
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Invalid Postal Code", placeholder: "Enter valid code", scope: MockCardFormScope(isValid: false))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    PostalCodeInputField(label: "Postal Code (Custom Light)", placeholder: "90210", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .primary, backgroundColor: .gray.opacity(0.05), placeholderColor: .gray, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Postal Code (Dark Theme)", placeholder: "SW1A 1AA", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .white, backgroundColor: .black.opacity(0.8), placeholderColor: .gray, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                        .preferredColorScheme(.dark)
+                    PostalCodeInputField(label: "Postal Code (Bold Style)", placeholder: "Enter code", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title3, textColor: .primary, backgroundColor: .blue.opacity(0.1), borderWidth: 3))
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Postal Code (Monospaced)", placeholder: "90210", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .system(.body, design: .monospaced), textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    PostalCodeInputField(label: "Compact Postal Code", placeholder: "Code", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .caption, textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    PostalCodeInputField(label: "Large Postal Code", placeholder: "Enter your postal code", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title2, textColor: .primary, backgroundColor: .clear, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                }
+            }.padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Postal Code Input Field")
+    }
+}
+#endif

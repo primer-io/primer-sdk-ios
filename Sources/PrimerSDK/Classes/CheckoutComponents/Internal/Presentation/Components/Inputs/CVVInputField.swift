@@ -391,3 +391,230 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CVVInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    // Default empty state (Visa)
+                    CVVInputField(
+                        label: "CVV",
+                        placeholder: "123",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label (Mastercard)
+                    CVVInputField(
+                        label: nil,
+                        placeholder: "CVV",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .masterCard
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Card Network Variations
+                Group {
+                    Text("Card Network Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Visa - 3 digits
+                    CVVInputField(
+                        label: "Visa CVV (3 digits)",
+                        placeholder: "123",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Mastercard - 3 digits
+                    CVVInputField(
+                        label: "Mastercard CVV (3 digits)",
+                        placeholder: "456",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .masterCard
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // American Express - 4 digits
+                    CVVInputField(
+                        label: "Amex CID (4 digits)",
+                        placeholder: "1234",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .amex
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Discover - 3 digits
+                    CVVInputField(
+                        label: "Discover CVV (3 digits)",
+                        placeholder: "789",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .discover
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Unknown network - defaults to 3
+                    CVVInputField(
+                        label: "Unknown Network (3 digits)",
+                        placeholder: "CVV",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .unknown
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid state
+                    CVVInputField(
+                        label: "Valid CVV",
+                        placeholder: "123",
+                        scope: MockCardFormScope(isValid: true),
+                        cardNetwork: .visa
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid state
+                    CVVInputField(
+                        label: "Invalid CVV",
+                        placeholder: "Enter valid CVV",
+                        scope: MockCardFormScope(isValid: false),
+                        cardNetwork: .visa
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Light theme with custom styling
+                    CVVInputField(
+                        label: "CVV (Custom Light)",
+                        placeholder: "123",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .primary,
+                            backgroundColor: .gray.opacity(0.05),
+                            placeholderColor: .gray,
+                            borderWidth: 1,
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Dark theme styling
+                    CVVInputField(
+                        label: "CVV (Dark Theme)",
+                        placeholder: "123",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .body,
+                            textColor: .white,
+                            backgroundColor: .black.opacity(0.8),
+                            placeholderColor: .gray,
+                            borderWidth: 2,
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                    .preferredColorScheme(.dark)
+
+                    // Bold/prominent styling
+                    CVVInputField(
+                        label: "CVV (Bold Style)",
+                        placeholder: "CVV",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .title3,
+                            textColor: .primary,
+                            backgroundColor: .blue.opacity(0.1),
+                            borderWidth: 3
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Monospaced font for security codes
+                    CVVInputField(
+                        label: "CVV (Monospaced)",
+                        placeholder: "123",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .system(.body, design: .monospaced),
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    CVVInputField(
+                        label: "Compact CVV",
+                        placeholder: "CVV",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .caption,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 1
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    CVVInputField(
+                        label: "Large CVV",
+                        placeholder: "Security Code",
+                        scope: MockCardFormScope(),
+                        cardNetwork: .visa,
+                        styling: PrimerFieldStyling(
+                            font: .title2,
+                            textColor: .primary,
+                            backgroundColor: .clear,
+                            borderWidth: 2
+                        )
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("CVV Input Field")
+    }
+}
+#endif

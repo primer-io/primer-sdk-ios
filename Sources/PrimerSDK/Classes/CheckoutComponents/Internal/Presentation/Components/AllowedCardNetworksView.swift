@@ -33,11 +33,12 @@ struct AllowedCardNetworksView: View, LogReporter {
 
     var body: some View {
         if !allowedCardNetworks.isEmpty {
-            HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                ForEach(allowedCardNetworks, id: \.self) { network in
-                    CardNetworkBadge(network: network)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+                    ForEach(allowedCardNetworks, id: \.self) { network in
+                        CardNetworkBadge(network: network)
+                    }
                 }
-                Spacer()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

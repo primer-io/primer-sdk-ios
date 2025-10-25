@@ -365,3 +365,73 @@ private struct StateTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct StateInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    StateInputField(label: "State", placeholder: "Enter state", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: nil, placeholder: "State", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - State/Province Examples
+                Group {
+                    Text("State/Province Examples").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    StateInputField(label: "US State (Full)", placeholder: "California", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "US State (Abbr)", placeholder: "CA", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Canadian Province", placeholder: "Ontario", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Canadian Province (Abbr)", placeholder: "ON", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Australian State", placeholder: "New South Wales", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Province/Region", placeholder: "State or Province", scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    StateInputField(label: "Valid State", placeholder: "New York", scope: MockCardFormScope(isValid: true))
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Invalid State", placeholder: "Enter valid state", scope: MockCardFormScope(isValid: false))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    StateInputField(label: "State (Custom Light)", placeholder: "Texas", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .primary, backgroundColor: .gray.opacity(0.05), placeholderColor: .gray, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "State (Dark Theme)", placeholder: "Florida", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .white, backgroundColor: .black.opacity(0.8), placeholderColor: .gray, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                        .preferredColorScheme(.dark)
+                    StateInputField(label: "State (Bold Style)", placeholder: "Enter your state", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title3, textColor: .primary, backgroundColor: .blue.opacity(0.1), borderWidth: 3))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    StateInputField(label: "Compact State", placeholder: "State", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .caption, textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    StateInputField(label: "Large State", placeholder: "Enter your state or province", scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title2, textColor: .primary, backgroundColor: .clear, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                }
+            }.padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("State Input Field")
+    }
+}
+#endif

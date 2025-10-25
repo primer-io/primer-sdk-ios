@@ -171,3 +171,241 @@ struct OTPCodeInputField: View, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct OTPCodeInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    Text("Basic States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Default empty state (scope-based)
+                    OTPCodeInputField(
+                        label: "Enter OTP Code",
+                        placeholder: "000000",
+                        scope: MockCardFormScope()
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // No label (callback-based)
+                    OTPCodeInputField(
+                        label: nil,
+                        placeholder: "Enter code",
+                        expectedLength: 6,
+                        onOTPCodeChange: { code in
+                            print("OTP changed: \(code)")
+                        },
+                        onValidationChange: { isValid in
+                            print("Validation: \(isValid)")
+                        }
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - OTP Length Examples
+                Group {
+                    Text("OTP Length Examples")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // 6-digit OTP (most common)
+                    OTPCodeInputField(
+                        label: "6-Digit OTP",
+                        placeholder: "000000",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // 4-digit OTP (banking/short codes)
+                    OTPCodeInputField(
+                        label: "4-Digit OTP",
+                        placeholder: "0000",
+                        expectedLength: 4
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // 8-digit OTP (high security)
+                    OTPCodeInputField(
+                        label: "8-Digit OTP",
+                        placeholder: "00000000",
+                        expectedLength: 8
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // 5-digit OTP (custom)
+                    OTPCodeInputField(
+                        label: "5-Digit OTP",
+                        placeholder: "00000",
+                        expectedLength: 5
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Use Case Examples
+                Group {
+                    Text("Use Case Examples")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Email verification
+                    OTPCodeInputField(
+                        label: "Email Verification Code",
+                        placeholder: "Enter 6-digit code from email",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // SMS verification
+                    OTPCodeInputField(
+                        label: "SMS Verification",
+                        placeholder: "Enter code from SMS",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Two-factor authentication
+                    OTPCodeInputField(
+                        label: "Two-Factor Authentication",
+                        placeholder: "Enter 2FA code",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Payment verification
+                    OTPCodeInputField(
+                        label: "Payment Verification",
+                        placeholder: "Enter code to confirm payment",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Valid state (callback-based with validation feedback)
+                    OTPCodeInputField(
+                        label: "Valid OTP",
+                        placeholder: "123456",
+                        expectedLength: 6,
+                        onOTPCodeChange: { _ in },
+                        onValidationChange: { isValid in
+                            print("Valid: \(isValid)")
+                        }
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Invalid state (scope-based)
+                    OTPCodeInputField(
+                        label: "Invalid OTP",
+                        placeholder: "Enter valid code",
+                        scope: MockCardFormScope(isValid: false)
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    // Partial entry state
+                    OTPCodeInputField(
+                        label: "Partial Entry",
+                        placeholder: "123...",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Label Variations
+                Group {
+                    Text("Label Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    OTPCodeInputField(
+                        label: "Verification Code",
+                        placeholder: "000000",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "One-Time Password",
+                        placeholder: "Enter OTP",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "Security Code",
+                        placeholder: "######",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "Authentication Code",
+                        placeholder: "Code from authenticator app",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+
+                Divider()
+
+                // MARK: - Placeholder Variations
+                Group {
+                    Text("Placeholder Variations")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    OTPCodeInputField(
+                        label: "OTP Code",
+                        placeholder: "000000",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "OTP Code",
+                        placeholder: "######",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "OTP Code",
+                        placeholder: "Enter 6-digit code",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+
+                    OTPCodeInputField(
+                        label: "OTP Code",
+                        placeholder: "_ _ _ _ _ _",
+                        expectedLength: 6
+                    )
+                    .background(Color.gray.opacity(0.1))
+                }
+            }
+            .padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("OTP Code Input Field")
+    }
+}
+#endif

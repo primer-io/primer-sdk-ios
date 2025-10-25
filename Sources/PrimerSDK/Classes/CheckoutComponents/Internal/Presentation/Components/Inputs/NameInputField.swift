@@ -475,3 +475,73 @@ private struct NameTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct NameInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        ScrollView {
+            VStack(spacing: 32) {
+                // MARK: - Basic States
+                Group {
+                    NameInputField(label: "First Name", placeholder: "Jane", inputType: .firstName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: nil, placeholder: "Name", inputType: .firstName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Name Type Examples
+                Group {
+                    Text("Name Type Examples").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    NameInputField(label: "First Name", placeholder: "Jane", inputType: .firstName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Last Name", placeholder: "Smith", inputType: .lastName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Compound First Name", placeholder: "Mary Anne", inputType: .firstName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Hyphenated Last Name", placeholder: "Parker-Smith", inputType: .lastName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Name with Apostrophe", placeholder: "O'Brien", inputType: .lastName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "International Name", placeholder: "José", inputType: .firstName, scope: MockCardFormScope())
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Validation States
+                Group {
+                    Text("Validation States").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    NameInputField(label: "Valid Name", placeholder: "Jane", inputType: .firstName, scope: MockCardFormScope(isValid: true))
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Invalid Name", placeholder: "Enter valid name", inputType: .firstName, scope: MockCardFormScope(isValid: false))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Styling Variations
+                Group {
+                    Text("Styling Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    NameInputField(label: "Name (Custom Light)", placeholder: "Jane", inputType: .firstName, scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .primary, backgroundColor: .gray.opacity(0.05), placeholderColor: .gray, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Name (Dark Theme)", placeholder: "Smith", inputType: .lastName, scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .body, textColor: .white, backgroundColor: .black.opacity(0.8), placeholderColor: .gray, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                        .preferredColorScheme(.dark)
+                    NameInputField(label: "Name (Bold Style)", placeholder: "Enter name", inputType: .firstName, scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title3, textColor: .primary, backgroundColor: .blue.opacity(0.1), borderWidth: 3))
+                        .background(Color.gray.opacity(0.1))
+                }
+                Divider()
+                // MARK: - Size Variations
+                Group {
+                    Text("Size Variations").font(.headline).frame(maxWidth: .infinity, alignment: .leading)
+                    NameInputField(label: "Compact Name", placeholder: "Name", inputType: .firstName, scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .caption, textColor: .primary, backgroundColor: .clear, borderWidth: 1))
+                        .background(Color.gray.opacity(0.1))
+                    NameInputField(label: "Large Name", placeholder: "Enter your name", inputType: .firstName, scope: MockCardFormScope(), styling: PrimerFieldStyling(font: .title2, textColor: .primary, backgroundColor: .clear, borderWidth: 2))
+                        .background(Color.gray.opacity(0.1))
+                }
+            }.padding()
+        }
+        .environment(\.designTokens, nil)
+        .environment(\.diContainer, nil)
+        .previewDisplayName("Name Input Field")
+    }
+}
+#endif
