@@ -168,7 +168,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
                     cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
-                if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+                if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                     cardNetwork = network
                 } else {

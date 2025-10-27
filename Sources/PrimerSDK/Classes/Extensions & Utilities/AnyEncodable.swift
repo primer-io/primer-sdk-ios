@@ -43,7 +43,7 @@ import Foundation
  let encoder = JSONEncoder()
  let json = try! encoder.encode(dictionary)
  */
-internal struct AnyEncodable: Encodable {
+struct AnyEncodable: Encodable {
     public let value: Any
 
     public init<T>(_ value: T?) {
@@ -267,42 +267,9 @@ extension _AnyEncodable {
 
 extension AnyEncodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-        switch value {
-        case let value as Bool:
-            hasher.combine(value)
-        case let value as Int:
-            hasher.combine(value)
-        case let value as Int8:
-            hasher.combine(value)
-        case let value as Int16:
-            hasher.combine(value)
-        case let value as Int32:
-            hasher.combine(value)
-        case let value as Int64:
-            hasher.combine(value)
-        case let value as UInt:
-            hasher.combine(value)
-        case let value as UInt8:
-            hasher.combine(value)
-        case let value as UInt16:
-            hasher.combine(value)
-        case let value as UInt32:
-            hasher.combine(value)
-        case let value as UInt64:
-            hasher.combine(value)
-        case let value as Float:
-            hasher.combine(value)
-        case let value as Double:
-            hasher.combine(value)
-        case let value as String:
-            hasher.combine(value)
-        case let value as [String: AnyEncodable]:
-            hasher.combine(value)
-        case let value as [AnyEncodable]:
-            hasher.combine(value)
-        default:
-            break
-        }
+		if let value = value as? (any Hashable) {
+			hasher.combine(value)
+		}
     }
 }
 // swiftlint:enable cyclomatic_complexity

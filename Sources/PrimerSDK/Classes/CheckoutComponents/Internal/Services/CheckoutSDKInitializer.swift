@@ -25,6 +25,8 @@ final class CheckoutSDKInitializer {
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
+    private let configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding)
+    private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Initialization
 
@@ -33,13 +35,15 @@ final class CheckoutSDKInitializer {
         settings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        presentationContext: PresentationContext
+        presentationContext: PresentationContext,
+        configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding) = PrimerAPIConfigurationModule()
     ) {
         self.clientToken = clientToken
         self.settings = settings
         self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
+        self.configurationModule = configurationModule
     }
 
     // MARK: - Public Methods
@@ -48,10 +52,25 @@ final class CheckoutSDKInitializer {
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        try await initializeAPIConfiguration()
 
         let composableContainer = ComposableContainer(settings: settings)
         await composableContainer.configure()
+
+        // Resolve analytics interactor
+        if let container = await DIContainer.current {
+            analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        }
+
+        // Track SDK initialization start - after DI container is ready, before BE calls
+        await trackSDKInitStart()
+
+        try await initializeAPIConfiguration()
+
+        // Initialize analytics session
+        await initializeAnalytics()
+
+        // Track SDK initialization end - after all API calls complete
+        await trackSDKInitEnd()
 
         let checkoutScope = createCheckoutScope()
 
@@ -71,9 +90,7 @@ final class CheckoutSDKInitializer {
     }
 
     private func initializeAPIConfiguration() async throws {
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-        try await apiConfigurationModule.setupSession(
+        try await configurationModule.setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: true,
             requestClientTokenValidation: false,
@@ -91,5 +108,37 @@ final class CheckoutSDKInitializer {
             navigator: navigator,
             presentationContext: presentationContext
         )
+    }
+
+    // MARK: - Analytics Initialization
+
+    private func initializeAnalytics() async {
+        let checkoutSessionId = PrimerInternal.shared.checkoutSessionId ?? UUID().uuidString
+        let sdkVersion = VersionUtils.releaseVersionNumber ?? "unknown"
+
+        guard let analyticsConfig = configurationModule.makeAnalyticsSessionConfig(
+            checkoutSessionId: checkoutSessionId,
+            clientToken: clientToken,
+            sdkVersion: sdkVersion
+        ) else {
+            #if DEBUG
+            print("⚠️ Unable to create analytics session config")
+            #endif
+            return
+        }
+
+        guard let container = await DIContainer.current else { return }
+
+        if let analyticsService = try? await container.resolve(CheckoutComponentsAnalyticsServiceProtocol.self) {
+            await analyticsService.initialize(config: analyticsConfig)
+        }
+    }
+
+    private func trackSDKInitStart() async {
+        await analyticsInteractor?.trackEvent(.sdkInitStart, metadata: nil)
+    }
+
+    private func trackSDKInitEnd() async {
+        await analyticsInteractor?.trackEvent(.sdkInitEnd, metadata: nil)
     }
 }

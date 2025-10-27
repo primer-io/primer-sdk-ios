@@ -98,6 +98,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private let processCardPaymentInteractor: ProcessCardPaymentInteractor
     private let validateInputInteractor: ValidateInputInteractor?
     private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
+    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     /// Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
@@ -134,13 +135,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         presentationContext: PresentationContext = .fromPaymentSelection,
         processCardPaymentInteractor: ProcessCardPaymentInteractor,
         validateInputInteractor: ValidateInputInteractor? = nil,
-        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil
+        cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
         self.processCardPaymentInteractor = processCardPaymentInteractor
         self.validateInputInteractor = validateInputInteractor
         self.cardNetworkDetectionInteractor = cardNetworkDetectionInteractor
+        self.analyticsInteractor = analyticsInteractor
 
         if cardNetworkDetectionInteractor != nil {
             setupNetworkDetectionStream()
@@ -514,9 +517,16 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Card form submit initiated
         structuredState.isLoading = true
 
+        // Track payment submission
+        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+
         do {
             try await sendBillingAddressIfNeeded()
             let cardData = try await prepareCardPaymentData()
+
+            // Track payment processing started
+            await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+
             let result = try await processCardPayment(cardData: cardData)
             await handlePaymentSuccess(result)
         } catch {
@@ -642,6 +652,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         let hasValidExpiry = expiry && !structuredState.data[.expiryDate].isEmpty
         let hasValidCardholderName = cardholderName && !structuredState.data[.cardholderName].isEmpty
 
+        let wasValid = structuredState.isValid
+
         // Update the form validation state - only valid if all required fields are complete and valid
         structuredState.isValid = hasValidCardNumber && hasValidCvv && hasValidExpiry && hasValidCardholderName
 
@@ -650,6 +662,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         // Clear any previous field errors when all fields are valid
         if structuredState.isValid {
             structuredState.fieldErrors.removeAll()
+
+            // Track payment details entered (only once when form becomes valid)
+            if !wasValid {
+                Task {
+                    await analyticsInteractor?.trackEvent(.paymentDetailsEntered,
+                                                          metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+                }
+            }
         }
     }
 

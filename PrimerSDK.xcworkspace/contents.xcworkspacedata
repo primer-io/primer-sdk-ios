@@ -22,6 +22,78 @@
             <Group
                location = "group:CheckoutComponents"
                name = "CheckoutComponents">
+               <Group
+                  location = "group:Analytics"
+                  name = "Analytics">
+                  <Group
+                     location = "group:Utils"
+                     name = "Utils">
+                     <FileRef
+                        location = "group:DeviceInfoProvider.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:UUIDGenerator.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:AnalyticsPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventMetadata.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironment.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsSessionConfig.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventType.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsServiceProtocol.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:AnalyticsEventService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironmentProvider.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:DefaultAnalyticsInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsInteractorProtocol.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+               </Group>
                <FileRef
                   location = "group:PrimerCheckout.swift">
                </FileRef>
