@@ -155,7 +155,7 @@ struct PropertyReassignmentDemo: View {
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: apiVersion
+                apiVersion: self.apiVersion
             )
             self.isLoading = false
         } catch {
