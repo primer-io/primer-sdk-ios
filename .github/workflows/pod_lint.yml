@@ -26,7 +26,7 @@ jobs:
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd  # v1.6.0 
         with:
             xcode-version: 16.3.0
-      - uses: ruby/setup-ruby@ab177d40ee5483edb974554986f56b33477e21d0  # v1.265.0
+      - uses: ruby/setup-ruby@4ff6f3611a42bc75eee1e5138240eb1613f48c8f  # v1.266.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
