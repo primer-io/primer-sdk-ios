@@ -15,8 +15,11 @@ final class PrimerKlarnaCategoriesViewModel: ObservableObject {
     @Published var isAuthorizing: Bool = false
     @Published var shouldDisableKlarnaViews: Bool = false
 
-    func updatePaymentCategories(_ paymentCategories: [KlarnaPaymentCategory]) {
+    func updatePaymentCategories(
+        _ paymentCategories: [KlarnaPaymentCategory],
+        showBackButton: Bool
+    ) {
         self.paymentCategories = paymentCategories
-        self.showBackButton = true
+        self.showBackButton = showBackButton
     }
 }
