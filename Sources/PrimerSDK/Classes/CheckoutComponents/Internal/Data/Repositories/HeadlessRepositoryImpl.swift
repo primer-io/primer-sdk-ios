@@ -605,7 +605,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func validatePaymentMethodOptions() async throws {
         if #available(iOS 15.0, *) {
             await ensureSettings()
-            guard let settings = settings else {
+            guard let settings else {
                 // PrimerSettings not available for payment method options validation
                 return
             }

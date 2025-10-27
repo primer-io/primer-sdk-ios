@@ -280,6 +280,16 @@ extension PrimerSwiftUIBridgeViewController {
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
         bridgeController.title = CheckoutComponentsStrings.checkoutTitle
 
+        // Apply appearance mode for modal presentation
+        switch primerSettings.uiOptions.appearanceMode {
+        case .system:
+            bridgeController.overrideUserInterfaceStyle = .unspecified
+        case .light:
+            bridgeController.overrideUserInterfaceStyle = .light
+        case .dark:
+            bridgeController.overrideUserInterfaceStyle = .dark
+        }
+
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
         return bridgeController
     }

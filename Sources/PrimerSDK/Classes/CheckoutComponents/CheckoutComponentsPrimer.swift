@@ -101,12 +101,12 @@ public extension CheckoutComponentsDelegate {
     ///   - viewController: The view controller to present from
     ///   - completion: Optional completion handler
     @objc public static func presentCheckout(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         completion: (() -> Void)? = nil
     ) {
         presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             from: viewController,
             primerSettings: PrimerSettings.current,
             completion: completion
@@ -121,13 +121,13 @@ public extension CheckoutComponentsDelegate {
     ///   - completion: Optional completion handler
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the overload without settings parameter.
     public static func presentCheckout(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
             completion: completion
@@ -141,13 +141,13 @@ public extension CheckoutComponentsDelegate {
     ///   - customContent: Custom SwiftUI content builder
     ///   - completion: Optional completion handler
     public static func presentCheckout<Content: View>(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)? = nil
     ) {
         presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             from: viewController,
             primerSettings: PrimerSettings.current,
             customContent: customContent,
@@ -163,14 +163,14 @@ public extension CheckoutComponentsDelegate {
     ///   - customContent: Custom SwiftUI content builder
     ///   - completion: Optional completion handler
     public static func presentCheckout<Content: View>(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
             customContent: customContent,
@@ -227,17 +227,6 @@ public extension CheckoutComponentsDelegate {
         sheet.largestUndimmedDetentIdentifier = .medium
     }
 
-    private func applyAppearanceMode(_ mode: PrimerAppearanceMode, to controller: UIViewController) {
-        switch mode {
-        case .system:
-            controller.overrideUserInterfaceStyle = .unspecified
-        case .light:
-            controller.overrideUserInterfaceStyle = .light
-        case .dark:
-            controller.overrideUserInterfaceStyle = .dark
-        }
-    }
-
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     func dismissCheckout() {
         // Dismiss CheckoutComponents directly
@@ -292,7 +281,7 @@ public extension CheckoutComponentsDelegate {
     }
 
     private func presentCheckout(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         completion: (() -> Void)?
@@ -334,11 +323,6 @@ public extension CheckoutComponentsDelegate {
                 }
             )
 
-            // Apply appearance mode directly from settings (UI-layer concern, not domain logic)
-            // Note: appearanceMode is intentionally not exposed through settingsService
-            // as it's a presentation-level setting applied to the view controller at presentation time
-            applyAppearanceMode(primerSettings.uiOptions.appearanceMode, to: bridgeController)
-
             // Store reference to bridge controller
             activeCheckoutController = bridgeController
 
@@ -360,7 +344,7 @@ public extension CheckoutComponentsDelegate {
     }
 
     private func presentCheckout<Content: View>(
-        with clientToken: String,
+        clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
@@ -408,8 +392,6 @@ public extension CheckoutComponentsDelegate {
                     }
                 }
             )
-
-            applyAppearanceMode(primerSettings.uiOptions.appearanceMode, to: bridgeController)
 
             // Store reference
             activeCheckoutController = bridgeController
@@ -483,11 +465,11 @@ extension CheckoutComponentsPrimer {
     ///   - clientToken: The client token for the session
     ///   - completion: Optional completion handler
     @objc public static func presentCheckout(
-        with clientToken: String,
+        clientToken: String,
         completion: (() -> Void)? = nil
     ) {
         presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             primerSettings: PrimerSettings.current,
             completion: completion
         )
@@ -500,7 +482,7 @@ extension CheckoutComponentsPrimer {
     ///   - completion: Optional completion handler
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the method that takes a UIViewController.
     public static func presentCheckout(
-        with clientToken: String,
+        clientToken: String,
         primerSettings: PrimerSettings,
         completion: (() -> Void)? = nil
     ) {
@@ -517,7 +499,7 @@ extension CheckoutComponentsPrimer {
         }
 
         presentCheckout(
-            with: clientToken,
+            clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
             completion: completion

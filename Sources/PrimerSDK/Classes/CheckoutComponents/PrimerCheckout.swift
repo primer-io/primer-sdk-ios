@@ -208,6 +208,7 @@ struct InternalCheckout: View {
                 }
             }
         }
+        .applyAppearanceMode(settings.uiOptions.appearanceMode)
         .task {
             await initializeSDK()
         }
@@ -230,6 +231,24 @@ struct InternalCheckout: View {
         } catch {
             let primerError = error as? PrimerError ?? PrimerError.underlyingErrors(errors: [error])
             initializationState = .failed(primerError)
+        }
+    }
+}
+
+// MARK: - Appearance Mode Support
+
+@available(iOS 15.0, *)
+private extension View {
+    /// Applies appearance mode to the view
+    @ViewBuilder
+    func applyAppearanceMode(_ mode: PrimerAppearanceMode) -> some View {
+        switch mode {
+        case .system:
+            self
+        case .light:
+            self.preferredColorScheme(.light)
+        case .dark:
+            self.preferredColorScheme(.dark)
         }
     }
 }
