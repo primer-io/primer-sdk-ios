@@ -1,57 +1,13 @@
-//
-//  DesignTokensManager.swift
-//
-//
-//  Created by Boris on 12.2.25..
-//
-// DesignTokensManager.swift
-
 import Foundation
-import SwiftUI
 
-final class DesignTokensManager: ObservableObject {
-    @Published var tokens: DesignTokens?
-
-    /// Loads and merges the design token JSON files based on the current color scheme.
-    /// - Parameter colorScheme: The current color scheme (.light or .dark).
-    /// - Throws: An error if loading or decoding the JSON fails.
-    func fetchTokens(for colorScheme: ColorScheme) async throws {
-        // Load and merge tokens
-        let baseDict = try loadJSON(named: "base")
-        let mergedDict = colorScheme == .dark
-            ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
-            : baseDict
-
-        // Process tokens through transformation pipeline
-        var processedDict = DesignTokensProcessor.resolveReferences(in: mergedDict)
-        processedDict = DesignTokensProcessor.convertHexColors(in: processedDict)
-        var flatDict = DesignTokensProcessor.flattenTokenDictionary(processedDict)
-        flatDict = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: processedDict)
-        flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
-
-        // Decode and publish
-        let data = try JSONSerialization.data(withJSONObject: flatDict)
-        let tokens = try JSONDecoder().decode(DesignTokens.self, from: data)
-
-        await MainActor.run {
-            self.tokens = tokens
-        }
-    }
-
-    // MARK: - JSON Loading
-
-    private func loadJSON(named fileName: String) throws -> [String: Any] {
-        guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw PrimerError.failedToLoadDesignTokens(fileName: fileName)
-        }
-        return dictionary
-    }
+/// Utility class for processing design token dictionaries.
+/// Provides static methods for merging, reference resolution, color conversion,
+/// flattening, and math expression evaluation.
+enum DesignTokensProcessor {
 
     // MARK: - Dictionary Operations
 
-    private func mergeDictionaries(_ base: [String: Any], with override: [String: Any]) -> [String: Any] {
+    static func mergeDictionaries(_ base: [String: Any], with override: [String: Any]) -> [String: Any] {
         var merged = base
         for (key, overrideValue) in override {
             if let baseDict = base[key] as? [String: Any],
@@ -66,7 +22,7 @@ final class DesignTokensManager: ObservableObject {
 
     // MARK: - Token Reference Resolution
 
-    private func resolveReferences(in dict: [String: Any]) -> [String: Any] {
+    static func resolveReferences(in dict: [String: Any]) -> [String: Any] {
         (0..<10).reduce(dict) { current, _ in
             var hasUnresolved = false
             let resolved = resolvePass(current, root: current, hasUnresolved: &hasUnresolved)
@@ -74,7 +30,7 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func resolvePass(_ dict: [String: Any], root: [String: Any], hasUnresolved: inout Bool) -> [String: Any] {
+    private static func resolvePass(_ dict: [String: Any], root: [String: Any], hasUnresolved: inout Bool) -> [String: Any] {
         dict.reduce(into: [String: Any]()) { result, pair in
             let (key, value) = pair
             if let nested = value as? [String: Any] {
@@ -93,7 +49,7 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func resolveReference(_ reference: String, in root: [String: Any]) -> Any? {
+    private static func resolveReference(_ reference: String, in root: [String: Any]) -> Any? {
         let parts = reference.split(separator: ".").map(String.init)
         var current: Any = root
 
@@ -110,19 +66,20 @@ final class DesignTokensManager: ObservableObject {
         }
 
         // Extract value from nested structure and convert hex colors
-        if let dict = current as? [String: Any], let value = dict["value"] {
-            if let hex = value as? String, hex.hasPrefix("#"), let colorArray = hexToColorArray(hex) {
-                return colorArray
-            }
-            return value
+        guard let dict = current as? [String: Any], let value = dict["value"] else {
+            return current
         }
 
-        return current
+        if let hex = value as? String, hex.hasPrefix("#"), let colorArray = hexToColorArray(hex) {
+            return colorArray
+        }
+
+        return value
     }
 
     // MARK: - Hex Color Conversion
 
-    private func convertHexColors(in dict: [String: Any]) -> [String: Any] {
+    static func convertHexColors(in dict: [String: Any]) -> [String: Any] {
         dict.reduce(into: [String: Any]()) { result, pair in
             let (key, value) = pair
             if let nested = value as? [String: Any] {
@@ -135,42 +92,38 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func hexToColorArray(_ hex: String) -> [CGFloat]? {
+    private static func hexToColorArray(_ hex: String) -> [CGFloat]? {
         let sanitized = hex.replacingOccurrences(of: "#", with: "")
         var rgb: UInt64 = 0
         guard Scanner(string: sanitized).scanHexInt64(&rgb) else { return nil }
 
-        var red: CGFloat
-        var green: CGFloat
-        var blue: CGFloat
-        var alpha: CGFloat
-
+        let (r, g, b, a): (CGFloat, CGFloat, CGFloat, CGFloat)
         if sanitized.count == 8 { // RRGGBBAA
-            red = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
-            green = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
-            blue = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
-            alpha = CGFloat(rgb & 0x000000FF) / 255.0
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
         } else if sanitized.count == 6 { // RRGGBB
-            red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-            green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-            blue = CGFloat(rgb & 0x0000FF) / 255.0
-            alpha = 1.0
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+            a = 1.0
         } else {
             return nil
         }
 
-        return [red, green, blue, alpha]
+        return [r, g, b, a]
     }
 
     // MARK: - Dictionary Flattening
 
-    private func flattenTokenDictionary(_ dict: [String: Any]) -> [String: Any] {
+    static func flattenTokenDictionary(_ dict: [String: Any]) -> [String: Any] {
         var result: [String: Any] = [:]
         flattenRecursive(dict, prefix: "", result: &result)
         return result
     }
 
-    private func flattenRecursive(_ dict: [String: Any], prefix: String, result: inout [String: Any]) {
+    private static func flattenRecursive(_ dict: [String: Any], prefix: String, result: inout [String: Any]) {
         for (key, value) in dict {
             let path = prefix.isEmpty ? key : "\(prefix).\(key)"
 
@@ -186,14 +139,14 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func toCamelCase(_ path: String) -> String {
+    private static func toCamelCase(_ path: String) -> String {
         let parts = path.split(separator: ".").map(String.init)
         return parts.enumerated().map { index, part in
             index == 0 ? part : part.prefix(1).uppercased() + part.dropFirst()
         }.joined()
     }
 
-    private func resolveFlattenedReferences(in flatDict: [String: Any], source: [String: Any]) -> [String: Any] {
+    static func resolveFlattenedReferences(in flatDict: [String: Any], source: [String: Any]) -> [String: Any] {
         (0..<10).reduce(flatDict) { current, _ in
             var hasUnresolved = false
             let resolved = current.reduce(into: [String: Any]()) { result, pair in
@@ -209,7 +162,7 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func resolveReferencesInString(_ string: String, flatDict: [String: Any], source: [String: Any], hasUnresolved: inout Bool) -> Any {
+    private static func resolveReferencesInString(_ string: String, flatDict: [String: Any], source: [String: Any], hasUnresolved: inout Bool) -> Any {
         guard let regex = try? NSRegularExpression(pattern: "\\{([^}]+)\\}") else { return string }
 
         let matches = regex.matches(in: string, range: NSRange(string.startIndex..., in: string))
@@ -245,7 +198,7 @@ final class DesignTokensManager: ObservableObject {
 
     // MARK: - Math Expression Evaluation
 
-    private func evaluateMath(in dict: [String: Any]) -> [String: Any] {
+    static func evaluateMath(in dict: [String: Any]) -> [String: Any] {
         dict.reduce(into: [String: Any]()) { result, pair in
             let (key, value) = pair
             if let str = value as? String, let evaluated = evaluateExpression(str) {
@@ -256,19 +209,19 @@ final class DesignTokensManager: ObservableObject {
         }
     }
 
-    private func evaluateExpression(_ expression: String) -> Double? {
+    private static func evaluateExpression(_ expression: String) -> Double? {
         let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
         let operators: [(Character, (Double, Double) -> Double)] = [
-            ("*", (*)), ("/", (/)), ("+", (+)), ("-", (-))
+            ("*", *), ("/", /), ("+", +), ("-", -)
         ]
 
-        for (op, operation) in operators {
-            guard let index = trimmed.firstIndex(of: op) else { continue }
+        for (symbol, operation) in operators {
+            guard let index = trimmed.firstIndex(of: symbol) else { continue }
             let left = trimmed[..<index].trimmingCharacters(in: .whitespaces)
             let right = trimmed[trimmed.index(after: index)...].trimmingCharacters(in: .whitespaces)
 
             if let leftVal = Double(left), let rightVal = Double(right) {
-                return op == "/" && rightVal == 0 ? nil : operation(leftVal, rightVal)
+                return symbol == "/" && rightVal == 0 ? nil : operation(leftVal, rightVal)
             }
         }
 
