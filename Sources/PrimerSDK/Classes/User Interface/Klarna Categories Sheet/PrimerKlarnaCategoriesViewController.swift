@@ -152,13 +152,13 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             showLoader()
         case .valid:
             hideLoader()
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             hideLoader()
             if let error = errors.first {
                 showLoadingState()
                 delegate?.primerKlarnaPaymentSessionFailed(error: error)
             }
-        case .error(error: let error):
+        case let .error(error: error):
             hideLoader()
             showLoadingState()
             delegate?.primerKlarnaPaymentSessionFailed(error: error)
@@ -169,9 +169,9 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
             switch step {
-            case .paymentSessionCreated(let clientToken, let paymentCategories):
+            case let .paymentSessionCreated(clientToken, paymentCategories):
                 DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
 
                     // If only one payment category is available, skip the selection and continue with the only option
                     if paymentCategories.count == 1, let onlyPaymentCategory = paymentCategories.first {
@@ -187,16 +187,20 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
 
                     hideLoader()
                     self.clientToken = clientToken
-                    klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
+                    klarnaCategoriesVM
+                        .updatePaymentCategories(
+                            paymentCategories,
+                            showBackButton: navigationController?.canPop ?? false
+                        )
                 }
 
             case .paymentSessionFinalizationRequired:
                 finalizeSession()
 
-            case .paymentSessionAuthorized(let authToken, _), .paymentSessionFinalized( let authToken, _):
+            case let .paymentSessionAuthorized(authToken, _), let .paymentSessionFinalized( authToken, _):
                 sessionFinished(with: authToken)
 
-            case .viewLoaded(let view):
+            case let .viewLoaded(view):
                 hideLoader()
                 if let view {
                     passRenderedKlarnaView(view)
