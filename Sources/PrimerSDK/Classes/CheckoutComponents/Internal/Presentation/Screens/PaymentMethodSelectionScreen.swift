@@ -65,10 +65,13 @@ struct PaymentMethodSelectionScreen: View {
 
             Spacer()
 
-            Button(CheckoutComponentsStrings.cancelButton) {
-                scope.onCancel()
+            // Show close button based on dismissalMechanism setting
+            if scope.dismissalMechanism.contains(.closeButton) {
+                Button(CheckoutComponentsStrings.cancelButton) {
+                    scope.onCancel()
+                }
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             }
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
         }
     }
 

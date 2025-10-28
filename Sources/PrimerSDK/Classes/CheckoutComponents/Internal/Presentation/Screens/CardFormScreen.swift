@@ -46,10 +46,13 @@ struct CardFormScreen: View, LogReporter {
 
             Spacer()
 
-            Button(CheckoutComponentsStrings.cancelButton, action: {
-                scope.onCancel()
-            })
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            // Show close button based on dismissalMechanism setting
+            if scope.dismissalMechanism.contains(.closeButton) {
+                Button(CheckoutComponentsStrings.cancelButton, action: {
+                    scope.onCancel()
+                })
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

@@ -199,9 +199,20 @@ public extension CheckoutComponentsDelegate {
     }
 
     /// Configure sheet presentation for the bridge controller
-    /// - Parameter controller: The view controller to configure
-    private func configureSheetPresentation(for controller: UIViewController) {
+    /// - Parameters:
+    ///   - controller: The view controller to configure
+    ///   - settings: The settings to use for configuration
+    private func configureSheetPresentation(for controller: UIViewController, settings: PrimerSettings) {
         controller.modalPresentationStyle = .pageSheet
+
+        // Get dismissalMechanism from the provided settings
+        let dismissalMechanism = settings.uiOptions.dismissalMechanism
+
+        // isModalInPresentation = true DISABLES gestures (prevents accidental dismissal)
+        // isModalInPresentation = false ENABLES gestures (allows dismissal)
+        let gesturesEnabled = dismissalMechanism.contains(.gestures)
+        controller.isModalInPresentation = !gesturesEnabled
+
         guard let sheet = controller.sheetPresentationController else { return }
 
         if let primerBridge = controller as? PrimerSwiftUIBridgeViewController {
@@ -222,7 +233,8 @@ public extension CheckoutComponentsDelegate {
             // Fallback for iOS 15: use standard detents
             sheet.detents = [.medium(), .large()]
         }
-        sheet.prefersGrabberVisible = true
+        // Show grabber when gestures are enabled, hide when disabled
+        sheet.prefersGrabberVisible = gesturesEnabled
         sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         sheet.largestUndimmedDetentIdentifier = .medium
     }
@@ -330,7 +342,7 @@ public extension CheckoutComponentsDelegate {
             // Present modally
 
             // Configure sheet presentation
-            configureSheetPresentation(for: bridgeController)
+            configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
             // Present modally from the provided view controller
             viewController.present(bridgeController, animated: true)
@@ -400,7 +412,7 @@ public extension CheckoutComponentsDelegate {
             // Present custom content
 
             // Configure sheet presentation
-            configureSheetPresentation(for: bridgeController)
+            configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
             viewController.present(bridgeController, animated: true)
 
