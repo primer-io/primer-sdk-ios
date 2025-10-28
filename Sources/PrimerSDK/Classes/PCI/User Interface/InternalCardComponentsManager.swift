@@ -12,7 +12,7 @@
 import UIKit
 
 @objc
-internal protocol InternalCardComponentsManagerDelegate {
+protocol InternalCardComponentsManagerDelegate {
     /// The cardComponentsManager(_:clientTokenCallback:) can be used to provide the CardComponentsManager
     /// with an access token from the merchants backend.
     /// This delegate function is optional since you can initialize the CardComponentsManager with an access token.
@@ -70,18 +70,20 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     var merchantIdentifier: String?
     var amount: Int?
     var currency: Currency?
-    internal var decodedJWTToken: DecodedJWTToken? {
+    var decodedJWTToken: DecodedJWTToken? {
         return PrimerAPIConfigurationModule.decodedJWTToken
     }
-    internal var paymentMethodsConfig: PrimerAPIConfiguration?
-    internal var primerPaymentMethodType: PrimerPaymentMethodType
-    private(set) public var isLoading: Bool = false
-    internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
+    var paymentMethodsConfig: PrimerAPIConfiguration?
+    var primerPaymentMethodType: PrimerPaymentMethodType
+    public private(set) var isLoading: Bool = false
+    private(set) var paymentMethod: PrimerPaymentMethodTokenData?
 
     let tokenizationService: TokenizationServiceProtocol
 
     deinit {
-        setIsLoading(false)
+        if isLoading {
+            delegate.cardComponentsManager?(self, isLoading: false)
+        }
     }
 
     /// The CardComponentsManager can be initialized with/out an access token.
@@ -119,7 +121,8 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         super.init()
     }
 
-    internal func setIsLoading(_ isLoading: Bool) {
+    @MainActor
+    func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
         delegate.cardComponentsManager?(self, isLoading: isLoading)
@@ -201,7 +204,7 @@ and 4 characters for expiry year separated by '/'.
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
             if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView {
                 switch simpleCardFormTextFieldView.validation {
-                case .invalid(let error): errors.append(handled(error: error!))
+                case let .invalid(error): errors.append(handled(error: error!))
                 default: break
                 }
             }
@@ -254,9 +257,8 @@ and 4 characters for expiry year separated by '/'.
     }
 
     public func tokenize() {
-        setIsLoading(true)
-
         Task {
+            await setIsLoading(true)
             do {
                 try validateCardComponents()
                 _ = try await self.fetchClientTokenIfNeeded()
@@ -317,12 +319,12 @@ and 4 characters for expiry year separated by '/'.
                     throw handled(primerError: error.asPrimerError)
                 }
 
-            } catch PrimerError.underlyingErrors(let errors, _) {
+            } catch let PrimerError.underlyingErrors(errors, _) {
                 delegate.cardComponentsManager?(self, tokenizationFailedWith: errors)
-                setIsLoading(false)
+                await setIsLoading(false)
             } catch {
                 delegate.cardComponentsManager?(self, tokenizationFailedWith: [error])
-                setIsLoading(false)
+                await setIsLoading(false)
             }
         }
     }
