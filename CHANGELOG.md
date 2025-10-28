@@ -1,3 +1,10 @@
+## 2.42.1 (2025-10-28)
+
+### Fix
+
+- Hide back button in Klarna vc if no stack (#1388)
+- Ensure main thread on InternalCardComponentsManager loading state (#1383)
+
 ## 2.42.0 (2025-10-07)
 
 ### Feat
