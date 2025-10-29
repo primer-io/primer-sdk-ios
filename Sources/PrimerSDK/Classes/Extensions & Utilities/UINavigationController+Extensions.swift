@@ -7,6 +7,9 @@
 import UIKit
 
 extension UINavigationController {
+    
+    var canPop: Bool { viewControllers.count > 1 }
+    
     func pushViewController(viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         pushViewController(viewController, animated: animated)
 
