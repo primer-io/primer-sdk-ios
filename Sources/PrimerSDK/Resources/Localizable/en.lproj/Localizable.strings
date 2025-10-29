@@ -350,3 +350,59 @@
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "Upload the screenshot in your banking app";
 
+
+/* CheckoutComponents Accessibility Support */
+
+/* VoiceOver hint for card number input field */
+"accessibility-hint-card-number" = "Enter your card number";
+
+/* VoiceOver hint for expiry date input field */
+"accessibility-hint-expiry-date" = "Enter card expiration date in month month year year format";
+
+/* VoiceOver hint for CVV input field */
+"accessibility-hint-cvv" = "Enter 3 or 4 digit security code from back of card";
+
+/* VoiceOver hint for cardholder name input field */
+"accessibility-hint-cardholder-name" = "Enter name as shown on card";
+
+/* VoiceOver hint for address line 1 field */
+"accessibility-hint-address-line1" = "Enter street address";
+
+/* VoiceOver hint for city field */
+"accessibility-hint-city" = "Enter city name";
+
+/* VoiceOver hint for postal code field */
+"accessibility-hint-postal-code" = "Enter postal code or ZIP code";
+
+/* VoiceOver hint for country selector */
+"accessibility-hint-country" = "Select country";
+
+/* VoiceOver hint for payment method selection */
+"accessibility-hint-payment-method" = "Double tap to select this payment method";
+
+/* VoiceOver announcement when payment processing starts */
+"accessibility-announcement-payment-processing" = "Processing payment, please wait";
+
+/* VoiceOver announcement when payment completes successfully */
+"accessibility-announcement-payment-successful" = "Payment successful";
+
+/* VoiceOver announcement when payment fails */
+"accessibility-announcement-payment-failed" = "Payment failed. Please try again";
+
+/* VoiceOver announcement for multiple validation errors */
+"accessibility-announcement-validation-errors-count" = "%d errors found";
+
+/* VoiceOver announcement for co-badged card detection */
+"accessibility-announcement-cobadged-card" = "Multiple card networks detected: %@";
+
+/* Accessibility label for submit button */
+"accessibility-label-submit-button" = "Submit payment";
+
+/* Accessibility label for cancel button */
+"accessibility-label-cancel-button" = "Cancel checkout";
+
+/* Accessibility label for card details form container */
+"accessibility-label-card-details-container" = "Card details";
+
+/* Accessibility label for billing address form container */
+"accessibility-label-billing-address-container" = "Billing address";

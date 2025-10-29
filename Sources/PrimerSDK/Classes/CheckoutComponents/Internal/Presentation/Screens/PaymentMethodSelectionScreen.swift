@@ -121,6 +121,7 @@ struct PaymentMethodSelectionScreen: View {
                 Image(systemName: "creditcard.and.123")
                     .font(.system(size: 48))
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                    .accessibilityHidden(true)
 
                 Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
                     .font(.body)
@@ -340,6 +341,7 @@ private struct ModernPaymentMethodCardView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 32, height: 24)
+                .accessibilityHidden(true)
         } else {
             paymentMethodLogoPlaceholder
         }
@@ -355,6 +357,7 @@ private struct ModernPaymentMethodCardView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 32, height: 24)
+            .accessibilityHidden(true)
     }
 
     private var methodNameAndSurcharge: some View {

@@ -198,6 +198,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
                         self.structuredState.selectedNetwork = nil
                         self.updateSurchargeAmount(for: nil)
                         // Multiple networks detected, clearing selection
+
+                        // MARK: - Accessibility Announcement
+                        // Announce co-badged card detection to VoiceOver users
+                        let networkNames = networks.map { $0.rawValue }
+                        let announcement = AccessibilityStrings.coBadgedCardDetected(networkNames)
+                        UIAccessibility.post(notification: .announcement, argument: announcement)
                     } else if networks.count == 1 {
                         // Single network - auto-select it
                         let network = networks[0]
@@ -525,7 +531,36 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     func submit() async {
         // Card form submit initiated
+
+        // MARK: - Validation Error Handling (T022, T023)
+        // Check for validation errors before proceeding
+        let errorCount = structuredState.fieldErrors.count
+        if errorCount > 0 {
+            // Announce multiple validation errors to VoiceOver users
+            let errorCountMessage = AccessibilityStrings.validationErrorsCount(errorCount)
+            UIAccessibility.post(notification: .announcement, argument: errorCountMessage)
+
+            // Auto-focus to first invalid field
+            if let firstInvalidField = structuredState.fieldErrors.first {
+                // Announce the first error message
+                if let firstErrorMessage = structuredState.fieldErrors[firstInvalidField].message {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        UIAccessibility.post(notification: .announcement, argument: firstErrorMessage)
+                    }
+                }
+            }
+
+            structuredState.isLoading = false
+            return
+        }
+
         structuredState.isLoading = true
+
+        // MARK: - Accessibility Announcement
+        // Announce payment processing to VoiceOver users
+        DispatchQueue.main.async {
+            UIAccessibility.post(notification: .announcement, argument: AccessibilityStrings.paymentProcessing)
+        }
 
         // Track payment submission
         await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
@@ -793,7 +828,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Implementation of setFieldError using structured state
     public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
         structuredState.setError(message, for: fieldType, errorCode: errorCode)
-        // Set error for field
+
+        // MARK: - Accessibility Announcement
+        // Announce validation error to VoiceOver users
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            UIAccessibility.post(notification: .announcement, argument: message)
+        }
     }
 
     /// Implementation of clearFieldError using structured state

@@ -208,6 +208,7 @@ struct InternalCheckout: View {
                 }
             }
         }
+        .accessibilityElement(children: .contain)
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
         .task {
             await initializeSDK()

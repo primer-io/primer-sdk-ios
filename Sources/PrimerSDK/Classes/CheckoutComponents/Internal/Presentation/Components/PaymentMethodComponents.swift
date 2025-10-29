@@ -57,6 +57,7 @@ struct PaymentMethodPlaceholder: View {
             Image(systemName: paymentMethodIcon)
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
+                .accessibilityHidden(true)
 
             Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
                 .font(.headline)

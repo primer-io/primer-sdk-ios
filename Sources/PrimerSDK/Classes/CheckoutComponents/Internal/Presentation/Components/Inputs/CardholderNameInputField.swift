@@ -191,11 +191,16 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         textField.placeholder = placeholder
         textField.borderStyle = .none
         // Apply custom font or use system default
+        // MARK: - Dynamic Type Support
         if let customFont = styling?.font {
             textField.font = UIFont(customFont)
         } else {
-            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+            let baseSize: CGFloat = 16
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            let scaledSize = metrics.scaledValue(for: baseSize)
+            textField.font = UIFont.systemFont(ofSize: scaledSize, weight: .regular)
         }
+        textField.adjustsFontForContentSizeCategory = true
 
         textField.backgroundColor = .clear
 
@@ -244,6 +249,11 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         ])
 
         textField.inputAccessoryView = accessoryView
+
+        // MARK: - Accessibility Configuration
+        textField.accessibilityIdentifier = AccessibilityIdentifiers.CheckoutComponents.CardForm.cardholderName
+        textField.accessibilityLabel = placeholder
+        textField.accessibilityHint = AccessibilityStrings.cardholderNameHint
 
         return textField
     }

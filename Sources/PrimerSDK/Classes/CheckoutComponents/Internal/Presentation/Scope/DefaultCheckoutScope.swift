@@ -623,6 +623,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Update state to success for any listeners
         updateState(.success(result))
 
+        // MARK: - Accessibility Announcement
+        // Announce payment success to VoiceOver users
+        DispatchQueue.main.async {
+            UIAccessibility.post(notification: .announcement, argument: AccessibilityStrings.paymentSuccessful)
+        }
+
         // Navigate to success screen with payment result
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
@@ -633,6 +639,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     func handlePaymentError(_ error: PrimerError) {
         // Payment error
+
+        // MARK: - Accessibility Announcement
+        // Announce payment failure to VoiceOver users
+        DispatchQueue.main.async {
+            UIAccessibility.post(notification: .announcement, argument: AccessibilityStrings.paymentFailed)
+        }
 
         // Update state and navigate to error screen
         updateState(.failure(error))

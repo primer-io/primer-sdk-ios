@@ -200,12 +200,16 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         textField.delegate = context.coordinator
         textField.keyboardType = .numberPad
         textField.borderStyle = .none
-        // Apply custom font or use system default
+        // MARK: - Dynamic Type Support
         if let customFont = styling?.font {
             textField.font = UIFont(customFont)
         } else {
-            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+            let baseSize: CGFloat = 16
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            let scaledSize = metrics.scaledValue(for: baseSize)
+            textField.font = UIFont.systemFont(ofSize: scaledSize, weight: .regular)
         }
+        textField.adjustsFontForContentSizeCategory = true
 
         textField.textContentType = .oneTimeCode // Help prevent autofill of wrong data
         textField.isSecureTextEntry = true // Mask CVV input
@@ -252,6 +256,11 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         ])
 
         textField.inputAccessoryView = accessoryView
+
+        // MARK: - Accessibility Configuration
+        textField.accessibilityIdentifier = AccessibilityIdentifiers.CheckoutComponents.CardForm.cvv
+        textField.accessibilityLabel = placeholder
+        textField.accessibilityHint = AccessibilityStrings.cvvHint
 
         return textField
     }

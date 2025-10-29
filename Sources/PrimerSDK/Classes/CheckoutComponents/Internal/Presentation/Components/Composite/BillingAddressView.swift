@@ -154,6 +154,9 @@ struct BillingAddressView: View, LogReporter {
                 }
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(AccessibilityStrings.billingAddressContainer)
+        .accessibilityIdentifier(AccessibilityIdentifiers.CheckoutComponents.BillingAddress.container)
         .sheet(isPresented: $showCountrySelector) {
             if let defaultCardFormScope = cardFormScope as? DefaultCardFormScope {
                 // Create a custom country scope that updates both code and name

@@ -57,5 +57,8 @@ struct CardDetailsView: View {
                 scope: cardFormScope
             )
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(AccessibilityStrings.cardDetailsContainer)
+        .accessibilityIdentifier(AccessibilityIdentifiers.CheckoutComponents.CardForm.container)
     }
 }
