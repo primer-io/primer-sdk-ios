@@ -16,6 +16,10 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
     /// The current state of the payment method selection as an async stream.
     var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
 
+    /// Available dismissal mechanisms (gestures, close button) from settings.
+    /// Controls how users can dismiss the checkout modal.
+    var dismissalMechanism: [DismissalMechanism] { get }
+
     // MARK: - Navigation Methods
 
     /// Called when a payment method is selected by the user.
