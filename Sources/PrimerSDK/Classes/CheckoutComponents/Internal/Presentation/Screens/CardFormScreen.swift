@@ -48,9 +48,7 @@ struct CardFormScreen: View, LogReporter {
 
             // Show close button based on dismissalMechanism setting
             if scope.dismissalMechanism.contains(.closeButton) {
-                Button(CheckoutComponentsStrings.cancelButton, action: {
-                    scope.onCancel()
-                })
+                Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             }
         }
