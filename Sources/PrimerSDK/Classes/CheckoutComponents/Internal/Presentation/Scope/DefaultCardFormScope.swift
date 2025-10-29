@@ -46,6 +46,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         checkoutScope?.cardFormUIOptions
     }
 
+    /// Available dismissal mechanisms from settings
+    public var dismissalMechanism: [DismissalMechanism] {
+        checkoutScope?.dismissalMechanism ?? []
+    }
+
     /// State stream for external observation
     public var state: AsyncStream<StructuredCardFormState> {
         AsyncStream { continuation in

@@ -99,4 +99,71 @@ class CheckoutComponentsSettingsTests: XCTestCase {
         XCTAssertEqual(settings.localeData.localeCode, "es-MX")
     }
 
+    // MARK: - Dismissal Mechanism Tests
+
+    func testDismissalMechanismDefaultsToGestures() {
+        // Given: Settings with default dismissalMechanism
+        let settings = PrimerSettings()
+
+        // Then: dismissalMechanism should default to [.gestures] for backward compatibility with Drop-In UI
+        XCTAssertEqual(settings.uiOptions.dismissalMechanism, [.gestures])
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
+        XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.closeButton))
+    }
+
+    func testDismissalMechanismGesturesOnly() {
+        // Given: Settings with only gestures enabled
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(
+                dismissalMechanism: [.gestures]
+            )
+        )
+
+        // Then: dismissalMechanism should contain only .gestures
+        XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 1)
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
+        XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.closeButton))
+    }
+
+    func testDismissalMechanismCloseButtonOnly() {
+        // Given: Settings with only close button enabled (APM use case)
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(
+                dismissalMechanism: [.closeButton]
+            )
+        )
+
+        // Then: dismissalMechanism should contain only .closeButton
+        XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 1)
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.closeButton))
+        XCTAssertFalse(settings.uiOptions.dismissalMechanism.contains(.gestures))
+    }
+
+    func testDismissalMechanismBothEnabled() {
+        // Given: Settings with both gestures and close button enabled
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(
+                dismissalMechanism: [.gestures, .closeButton]
+            )
+        )
+
+        // Then: dismissalMechanism should contain both options
+        XCTAssertEqual(settings.uiOptions.dismissalMechanism.count, 2)
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.gestures))
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.contains(.closeButton))
+    }
+
+    func testDismissalMechanismEmptyArrayBehavior() {
+        // Given: Settings with explicitly empty dismissalMechanism array
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(
+                dismissalMechanism: []
+            )
+        )
+
+        // Then: dismissalMechanism should be empty (both disabled - matches Drop-In behavior)
+        XCTAssertTrue(settings.uiOptions.dismissalMechanism.isEmpty)
+        // Note: Empty array disables both gestures and close button (useful for embedding)
+    }
+
 }
