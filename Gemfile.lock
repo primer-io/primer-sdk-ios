@@ -236,6 +236,7 @@ GEM
     naturally (2.2.1)
     netrc (0.11.0)
     nkf (0.2.0)
+    openssl (3.3.1)
     optparse (0.6.0)
     os (1.1.4)
     plist (3.7.1)
@@ -303,6 +304,7 @@ DEPENDENCIES
   fastlane-plugin-firebase_app_distribution
   fastlane-plugin-lambdatest
   fastlane-plugin-versioning
+  openssl (>= 3.3.1)
 
 BUNDLED WITH
    2.1.4
