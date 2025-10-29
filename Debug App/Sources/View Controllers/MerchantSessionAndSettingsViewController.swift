@@ -73,7 +73,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
     @IBOutlet weak var addNewCardSwitch: UISwitch!
 
-
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
     @IBOutlet weak var applePayCheckProvidedNetworksSwitch: UISwitch!
@@ -657,7 +656,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(
             sessionType: paymentSessionType)
-        if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
+        if paymentSessionType == .generic, enableCVVRecaptureFlowSwitch.isOn {
             let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
                                                                                     instalmentDuration: nil,
                                                                                     extraMerchantData: nil,
@@ -871,19 +870,30 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     private func populateSettingsFromUI(dropIn: Bool) -> PrimerSettings {
+        // Build dismissalMechanism for both Drop-In and CheckoutComponents
+        let selectedDismissalMechanisms: [DismissalMechanism] = {
+            var mechanisms = [DismissalMechanism]()
+            if gesturesDismissalSwitch.isOn {
+                mechanisms.append(.gestures)
+            }
+            if closeButtonDismissalSwitch.isOn {
+                mechanisms.append(.closeButton)
+            }
+            return mechanisms
+        }()
+
         var uiOptions: PrimerUIOptions?
         if dropIn {
-            let selectedDismissalMechanisms: [DismissalMechanism] = {
-                var mechanisms = [DismissalMechanism]()
-                if gesturesDismissalSwitch.isOn {
-                    mechanisms.append(.gestures)
-                }
-                if closeButtonDismissalSwitch.isOn {
-                    mechanisms.append(.closeButton)
-                }
-                return mechanisms
-            }()
-
+            uiOptions = PrimerUIOptions(
+                isInitScreenEnabled: !disableInitScreenSwitch.isOn,
+                isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
+                isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
+                dismissalMechanism: selectedDismissalMechanisms,
+                cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
+                appearanceMode: .system,
+                theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
+        } else {
+            // CheckoutComponents: Also apply dismissalMechanism and other relevant settings
             uiOptions = PrimerUIOptions(
                 isInitScreenEnabled: !disableInitScreenSwitch.isOn,
                 isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
@@ -1102,7 +1112,7 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
 
 /// Debug App delegate for CheckoutComponents that logs results and shows alerts
 @available(iOS 15.0, *)
-internal class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
     
     func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
         print("✅ [Debug App] CheckoutComponents payment completed successfully! Payment ID: \(result.paymentId)")

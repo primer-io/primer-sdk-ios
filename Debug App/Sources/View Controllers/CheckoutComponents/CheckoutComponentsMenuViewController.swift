@@ -113,27 +113,28 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
         switch renderMode {
         case .createClientSession, .testScenario:
-            let ccSession = configureCardOnlyClientSession()
+            let ccSession = clientSession!
 
             if #available(iOS 15.0, *) {
                 Task { [weak self] in
+                    guard let self = self else { return }
                     do {
                         let clientToken = try await NetworkingUtils.requestClientSession(
                             body: ccSession,
-                            apiVersion: apiVersion
+                            apiVersion: self.apiVersion
                         )
                         await MainActor.run {
-                            self?.presentUIKitIntegration(with: clientToken)
+                            self.presentUIKitIntegration(with: clientToken)
                         }
                     } catch {
                         await MainActor.run {
-                            self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
+                            self.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
                         }
                     }
                 }
             } else {
                 // Fallback for iOS < 15.0
-                Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
+                Networking.requestClientSession(requestBody: ccSession, apiVersion: self.apiVersion) { [weak self] (clientToken, error) in
                     DispatchQueue.main.async {
                         if let error {
                             self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
@@ -167,7 +168,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
             // iOS 15+ available, creating examples view
             // Client session provided with configured surcharge settings
             
-            let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
+            let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: self.apiVersion, clientSession: clientSession)
             // CheckoutComponentsExamplesView created with clientSession
             
             let hostingController = UIHostingController(rootView: examplesView)
@@ -186,56 +187,12 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     }
     
     // MARK: - Helper Methods
-    
-    private func configureCardOnlyClientSession() -> ClientSessionRequestBody {
-        // Use existing session configuration (preserves surcharge settings from UI)
-        // but ensure it only includes payment methods that CheckoutComponents supports
-        var ccSession = clientSession!
-
-        // Keep existing payment method configuration (including surcharge) but limit to card-only
-        if let existingPaymentMethod = ccSession.paymentMethod {
-            // Create new options with only PAYMENT_CARD to preserve surcharge configuration
-            let cardOnlyOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
-                PAYMENT_CARD: existingPaymentMethod.options?.PAYMENT_CARD
-            )
-
-            // Create new payment method with preserved surcharge but card-only options
-            // IMPORTANT: Preserve ALL original payment method settings for CheckoutComponents compatibility
-            let cardOnlyPaymentMethod = ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: existingPaymentMethod.vaultOnSuccess,
-                vaultOnAgreement: existingPaymentMethod.vaultOnAgreement,
-                options: cardOnlyOptions,
-                descriptor: existingPaymentMethod.descriptor, // Use original descriptor
-                paymentType: existingPaymentMethod.paymentType
-            )
-            ccSession.paymentMethod = cardOnlyPaymentMethod
-        } else {
-            // Fallback to basic payment method if no payment method configured
-            ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .generic)
-
-            // Alert the user that we're using fallback configuration
-            DispatchQueue.main.async { [weak self] in
-                let alert = UIAlertController(
-                    title: "Using Default Configuration",
-                    message: "No payment method was configured in the client session. Using a default card payment configuration for testing.",
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self?.present(alert, animated: true)
-            }
-        }
-
-        return ccSession
-    }
 
     private func presentUIKitIntegration(with clientToken: String) {
         if #available(iOS 15.0, *) {
-            CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self) {
-                // CheckoutComponents UIKit presentation completed
-            }
+            CheckoutComponentsPrimer.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)
         } else {
             showErrorMessage("CheckoutComponents requires iOS 15.0 or later")
         }
     }
 }
-

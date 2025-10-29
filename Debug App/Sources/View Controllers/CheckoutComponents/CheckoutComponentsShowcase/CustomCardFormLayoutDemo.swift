@@ -112,7 +112,7 @@ struct CustomCardFormLayoutDemo: View {
 
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: customizeScope,
                 onCompletion: {
                     isDismissed = true
@@ -155,7 +155,7 @@ struct CustomCardFormLayoutDemo: View {
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: apiVersion
+                apiVersion: self.apiVersion
             )
             self.isLoading = false
         } catch {
@@ -183,7 +183,6 @@ private enum CardFormLayout: String, CaseIterable {
     case grid = "Grid 2x2"
     case compact = "Compact"
 }
-
 
 /// Custom card form view with dynamic layout switching
 @available(iOS 15.0, *)

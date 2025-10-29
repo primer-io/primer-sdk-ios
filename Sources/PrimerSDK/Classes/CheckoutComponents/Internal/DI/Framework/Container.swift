@@ -147,7 +147,7 @@ public actor Container: ContainerProtocol, LogReporter {
         let key = TypeKey(type, name: name)
 
         // Validate weak policy for non-class types
-        if policy == .weak && !(T.self is AnyObject.Type) {
+        if policy == .weak, !(T.self is AnyObject.Type) {
             throw ContainerError.weakUnsupported(key)
         }
 
@@ -184,10 +184,8 @@ public actor Container: ContainerProtocol, LogReporter {
 
     /// Unregister a dependency from the container
     @discardableResult
-    public nonisolated func unregister<T>(_ type: T.Type, name: String? = nil) -> Self {
-        Task {
-            await unregisterInternal(type, name: name)
-        }
+    public func unregister<T>(_ type: T.Type, name: String? = nil) async -> Self {
+        await unregisterInternal(type, name: name)
         return self
     }
 
@@ -279,9 +277,9 @@ public actor Container: ContainerProtocol, LogReporter {
         }
 
         switch finalResult {
-        case .success(let value):
+        case let .success(value):
             return value
-        case .failure(let error):
+        case let .failure(error):
             throw error
         }
     }

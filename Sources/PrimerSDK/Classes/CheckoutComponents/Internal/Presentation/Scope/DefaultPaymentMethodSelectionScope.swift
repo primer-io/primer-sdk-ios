@@ -32,6 +32,11 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
         }
     }
 
+    /// Available dismissal mechanisms from settings
+    public var dismissalMechanism: [DismissalMechanism] {
+        checkoutScope?.dismissalMechanism ?? []
+    }
+
     // MARK: - UI Customization Properties
 
     public var screen: (() -> AnyView)?

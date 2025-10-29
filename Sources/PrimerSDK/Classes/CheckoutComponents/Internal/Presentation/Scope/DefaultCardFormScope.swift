@@ -41,6 +41,16 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// The presentation context determining navigation behavior
     public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
+    /// Card form UI options from settings
+    public var cardFormUIOptions: PrimerCardFormUIOptions? {
+        checkoutScope?.cardFormUIOptions
+    }
+
+    /// Available dismissal mechanisms from settings
+    public var dismissalMechanism: [DismissalMechanism] {
+        checkoutScope?.dismissalMechanism ?? []
+    }
+
     /// State stream for external observation
     public var state: AsyncStream<StructuredCardFormState> {
         AsyncStream { continuation in

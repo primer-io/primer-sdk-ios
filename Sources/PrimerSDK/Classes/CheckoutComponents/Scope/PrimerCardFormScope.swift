@@ -21,6 +21,14 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     /// The presentation context determining navigation behavior.
     var presentationContext: PresentationContext { get }
 
+    /// Card form UI options from settings.
+    /// Controls pay button text (e.g., "Pay $10.00" vs "Add New Card")
+    var cardFormUIOptions: PrimerCardFormUIOptions? { get }
+
+    /// Available dismissal mechanisms (gestures, close button) from settings.
+    /// Controls how users can dismiss the checkout modal.
+    var dismissalMechanism: [DismissalMechanism] { get }
+
     // MARK: - Payment Method Lifecycle (PrimerPaymentMethodScope)
 
     /// Starts the card form flow and initializes the scope.

@@ -50,7 +50,6 @@ public struct ValidationError: Equatable, Hashable, Codable {
         case unknown = "UNKNOWN"
     }
 
-    /// Full initializer matching Android structure
     public init(
         inputElementType: InputElementType,
         errorId: String,

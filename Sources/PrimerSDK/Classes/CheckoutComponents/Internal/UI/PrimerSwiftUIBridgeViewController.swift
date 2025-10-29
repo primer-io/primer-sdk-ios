@@ -239,7 +239,7 @@ extension PrimerSwiftUIBridgeViewController {
     /// Factory method to create bridge controller for CheckoutComponents
     static func createForCheckoutComponents(
         clientToken: String,
-        settings: PrimerSettings,
+        settings primerSettings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
@@ -257,7 +257,7 @@ extension PrimerSwiftUIBridgeViewController {
             // Use the custom content initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: primerSettings,
                 diContainer: diContainer,
                 navigator: navigator,
                 customContent: customContent,
@@ -268,7 +268,7 @@ extension PrimerSwiftUIBridgeViewController {
             // Use the standard initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: primerSettings,
                 diContainer: diContainer,
                 navigator: navigator,
                 presentationContext: presentationContext,
@@ -279,6 +279,16 @@ extension PrimerSwiftUIBridgeViewController {
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
         bridgeController.title = CheckoutComponentsStrings.checkoutTitle
+
+        // Apply appearance mode for modal presentation
+        switch primerSettings.uiOptions.appearanceMode {
+        case .system:
+            bridgeController.overrideUserInterfaceStyle = .unspecified
+        case .light:
+            bridgeController.overrideUserInterfaceStyle = .light
+        case .dark:
+            bridgeController.overrideUserInterfaceStyle = .dark
+        }
 
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
         return bridgeController

@@ -104,7 +104,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeSingleInputDemo() -> some View {
         SingleInputFieldDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -112,7 +112,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeMixedComponentsDemo() -> some View {
         MixedComponentsDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -137,7 +137,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeSingleFieldCustomisationDemo() -> some View {
         SingleFieldCustomisationDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -168,7 +168,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeCustomCardFormLayoutDemo() -> some View {
         CustomCardFormLayoutDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -176,7 +176,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeCustomScreenPaymentSelectionDemo() -> some View {
         CustomScreenPaymentSelectionDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -207,7 +207,7 @@ private extension CheckoutComponentsShowcaseView {
     func makePropertyReassignmentDemo() -> some View {
         PropertyReassignmentDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }
@@ -215,7 +215,7 @@ private extension CheckoutComponentsShowcaseView {
     func makeRuntimeCustomizationDemo() -> some View {
         RuntimeCustomizationDemo(
             settings: settings,
-            apiVersion: apiVersion,
+            apiVersion: self.apiVersion,
             clientSession: clientSession
         )
     }

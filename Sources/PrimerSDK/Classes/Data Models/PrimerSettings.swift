@@ -9,7 +9,7 @@ import PassKit
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -62,7 +62,7 @@ public enum PrimerPaymentHandling: String, Codable {
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -273,7 +273,7 @@ public final class PrimerUIOptions: Codable {
     public internal(set) var dismissalMechanism: [DismissalMechanism]
     public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
     public internal(set) var appearanceMode: PrimerAppearanceMode
-    public let theme: PrimerTheme
+    public var theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
         case isInitScreenEnabled,
@@ -362,6 +362,6 @@ public struct PrimerThreeDsOptions: Codable, Equatable {
 public enum PrimerApiVersion: String, Codable {
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_4
+    public static let latest: PrimerApiVersion = .V2_4
 }
 // swiftlint:enable identifier_name

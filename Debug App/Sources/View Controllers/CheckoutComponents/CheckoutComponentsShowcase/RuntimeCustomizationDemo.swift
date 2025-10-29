@@ -120,7 +120,7 @@ struct RuntimeCustomizationDemo: View {
 
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: customizeScope,
                 onCompletion: {
                     isDismissed = true
@@ -163,7 +163,7 @@ struct RuntimeCustomizationDemo: View {
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: apiVersion
+                apiVersion: self.apiVersion
             )
             self.isLoading = false
         } catch {
@@ -822,17 +822,17 @@ private struct ConditionalCardFormView: View {
         // Detect card type from card number
         let cardNumber = state.data[.cardNumber]
         
-        if cardNumber.starts(with: "4") && cardNumber.count >= 1 {
+        if cardNumber.starts(with: "4"), cardNumber.count >= 1 {
             detectedCardType = "Visa"
             showSecurityBadge = true
             isAmex = false
         } else if (cardNumber.starts(with: "51") || cardNumber.starts(with: "52") ||
                    cardNumber.starts(with: "53") || cardNumber.starts(with: "54") ||
-                   cardNumber.starts(with: "55")) && cardNumber.count >= 2 {
+                   cardNumber.starts(with: "55")), cardNumber.count >= 2 {
             detectedCardType = "Mastercard"
             showSecurityBadge = true
             isAmex = false
-        } else if (cardNumber.starts(with: "34") || cardNumber.starts(with: "37")) && cardNumber.count >= 2 {
+        } else if (cardNumber.starts(with: "34") || cardNumber.starts(with: "37")), cardNumber.count >= 2 {
             detectedCardType = "Amex"
             showSecurityBadge = true
             isAmex = true

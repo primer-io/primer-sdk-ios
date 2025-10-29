@@ -112,7 +112,7 @@ struct SingleInputFieldDemo: View {
 
             PrimerCheckout(
                 clientToken: clientToken,
-                settings: settings,
+                primerSettings: settings,
                 scope: customizeScope,
                 onCompletion: {
                     isDismissed = true
@@ -155,7 +155,7 @@ struct SingleInputFieldDemo: View {
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: apiVersion
+                apiVersion: self.apiVersion
             )
             self.isLoading = false
         } catch {

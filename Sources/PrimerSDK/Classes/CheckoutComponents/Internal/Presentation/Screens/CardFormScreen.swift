@@ -46,10 +46,11 @@ struct CardFormScreen: View, LogReporter {
 
             Spacer()
 
-            Button(CheckoutComponentsStrings.cancelButton, action: {
-                scope.onCancel()
-            })
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            // Show close button based on dismissalMechanism setting
+            if scope.dismissalMechanism.contains(.closeButton) {
+                Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -266,6 +267,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonText: String {
+        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
+        if scope.cardFormUIOptions?.payButtonAddNewCard == true {
+            return CheckoutComponentsStrings.addCardButton
+        }
+
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
               let currency = AppState.current.currency else {

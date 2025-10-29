@@ -150,8 +150,7 @@ final class DIFrameworkTests: XCTestCase {
             .asSingleton()
             .with { _ in TestServiceImpl() }
 
-         _ = container.unregister(TestService.self)
-         await Task.yield()
+         _ = await container.unregister(TestService.self)
 
         do {
             _ = try await container.resolve(TestService.self)
@@ -315,7 +314,7 @@ final class DIFrameworkTests: XCTestCase {
             _ = try await container.register(Int.self).asWeak()
                 .with { _ in 42 }
             XCTFail("Expected weakUnsupported error")
-        } catch ContainerError.weakUnsupported(let key) {
+        } catch let ContainerError.weakUnsupported(key) {
             XCTAssertTrue(key.represents(Int.self))
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -333,7 +332,7 @@ final class DIFrameworkTests: XCTestCase {
         do {
             _ = try await container.resolve(TestService.self)
             XCTFail("Expected factoryFailed error")
-        } catch ContainerError.factoryFailed(let key, let underlying) {
+        } catch let ContainerError.factoryFailed(key, underlying) {
             XCTAssertTrue(underlying is DummyError)
             XCTAssertTrue(key.represents(TestService.self))
         } catch {
@@ -350,7 +349,7 @@ final class DIFrameworkTests: XCTestCase {
         do {
             _ = try await scope.getContainer()
             XCTFail("Expected scopeNotFound error")
-        } catch ContainerError.scopeNotFound(let id, _) {
+        } catch let ContainerError.scopeNotFound(id, _) {
             XCTAssertEqual(id, "scope1")
         }
 
@@ -373,7 +372,7 @@ final class DIFrameworkTests: XCTestCase {
         do {
             _ = try await scope.getContainer()
             XCTFail("Expected scopeNotFound after unregister")
-        } catch ContainerError.scopeNotFound(let id, _) {
+        } catch let ContainerError.scopeNotFound(id, _) {
             XCTAssertEqual(id, "scope1")
         }
     }
