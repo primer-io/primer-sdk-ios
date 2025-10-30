@@ -57,22 +57,6 @@ struct AddressLineInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
-    // MARK: - Modifier Value Extraction
-    // MARK: - Computed Properties
-
-    /// Dynamic border color based on field state
-    private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
-    }
-
     // MARK: - Initialization
 
     /// Creates a new AddressLineInputField with comprehensive customization support (scope-based)
@@ -117,85 +101,35 @@ struct AddressLineInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label with custom styling support
-            if let label = label {
-                Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
-            }
-
-            // Address input field with ZStack architecture
-            ZStack {
-                // Background and border styling with gradient-aware hierarchy
-                // Background and border styling with custom styling support
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
-                    )
-
-                // Input field content
-                HStack {
-                    if let validationService = validationService {
-                        AddressLineTextField(
-                            addressLine: $addressLine,
-                            isValid: $isValid,
-                            errorMessage: $errorMessage,
-                            isFocused: $isFocused,
-                            placeholder: placeholder,
-                            isRequired: isRequired,
-                            inputType: inputType,
-                            styling: styling,
-                            validationService: validationService,
-                            scope: scope,
-                            onAddressChange: onAddressChange,
-                            onValidationChange: onValidationChange
-                        )
-                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ?
-                                    (tokens?.primerSizeXxlarge ?? 60) :
-                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    } else {
-                        // Fallback view while loading validation service
-                        TextField(placeholder, text: $addressLine)
-                            .autocapitalization(.words)
-                            .disabled(true)
-                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    }
-
-                    Spacer()
-                }
-
-                // Right side overlay (error icon)
-                HStack {
-                    Spacer()
-
-                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
-                        // Error icon when validation fails
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    }
-                }
-            }
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
-
-            // Error message (always reserve space to prevent height changes)
-            Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
-                .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
+        PrimerInputFieldContainer(
+            label: label,
+            styling: styling,
+            text: $addressLine,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused
+        ) {
+            if let validationService = validationService {
+                AddressLineTextField(
+                    addressLine: $addressLine,
+                    isValid: $isValid,
+                    errorMessage: $errorMessage,
+                    isFocused: $isFocused,
+                    placeholder: placeholder,
+                    isRequired: isRequired,
+                    inputType: inputType,
+                    styling: styling,
+                    validationService: validationService,
+                    scope: scope,
+                    onAddressChange: onAddressChange,
+                    onValidationChange: onValidationChange,
+                    tokens: tokens
+                )
+            } else {
+                // Fallback view while loading validation service
+                TextField(placeholder, text: $addressLine)
+                    .autocapitalization(.words)
+                    .disabled(true)            }
         }
         .onAppear {
             setupValidationService()
@@ -231,66 +165,20 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
     let scope: (any PrimerCardFormScope)?
     let onAddressChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
+    let tokens: DesignTokens?
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
-        textField.placeholder = placeholder
-        textField.borderStyle = .none
-        // Apply custom font or use system default
-        if let customFont = styling?.font {
-            textField.font = UIFont(customFont)
-        } else {
-            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        }
 
-        textField.backgroundColor = .clear
-
-        // Apply custom text color if provided
-        if let textColor = styling?.textColor {
-            textField.textColor = UIColor(textColor)
-        }
-        textField.autocapitalizationType = .words
-        textField.autocorrectionType = .no
-        textField.returnKeyType = .done
-
-        // Apply custom placeholder styling or use defaults
-        let placeholderFont: UIFont = {
-            if let customFont = styling?.font {
-                return UIFont(customFont)
-            } else if let interFont = UIFont(name: "InterVariable", size: 16) {
-                return interFont
-            }
-            return UIFont.systemFont(ofSize: 16, weight: .regular)
-        }()
-
-        let placeholderColor = styling?.placeholderColor != nil ? UIColor(styling!.placeholderColor!) : UIColor.systemGray
-
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholder,
-            attributes: [
-                .foregroundColor: placeholderColor,
-                .font: placeholderFont
-            ]
+        textField.configurePrimerStyle(
+            placeholder: placeholder,
+            configuration: .standard,
+            styling: styling,
+            tokens: tokens,
+            doneButtonTarget: context.coordinator,
+            doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
-
-        // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
-        accessoryView.backgroundColor = UIColor.systemGray6
-
-        let doneButton = UIButton(type: .system)
-        doneButton.setTitle("Done", for: .normal)
-        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
-
-        accessoryView.addSubview(doneButton)
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
-        ])
-
-        textField.inputAccessoryView = accessoryView
 
         return textField
     }
@@ -505,3 +393,101 @@ private struct AddressLineTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct AddressLineInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Light mode
+            VStack(spacing: 16) {
+                // Default state
+                AddressLineInputField(
+                    label: "Address Line 1",
+                    placeholder: "Street address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                AddressLineInputField(
+                    label: nil,
+                    placeholder: "Street address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Error state
+                AddressLineInputField(
+                    label: "Address with Error",
+                    placeholder: "Enter valid address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope(isValid: false)
+                )
+                .environment(\.diContainer, MockDIContainer(
+                    validationService: MockValidationService(
+                        shouldFailValidation: true,
+                        errorMessage: "Please enter a valid address"
+                    )
+                ))
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Light Mode")
+
+            // Dark mode
+            VStack(spacing: 16) {
+                // Default state
+                AddressLineInputField(
+                    label: "Address Line 1",
+                    placeholder: "Street address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                AddressLineInputField(
+                    label: nil,
+                    placeholder: "Street address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Error state
+                AddressLineInputField(
+                    label: "Address with Error",
+                    placeholder: "Enter valid address",
+                    isRequired: true,
+                    inputType: .addressLine1,
+                    scope: MockCardFormScope(isValid: false)
+                )
+                .environment(\.diContainer, MockDIContainer(
+                    validationService: MockValidationService(
+                        shouldFailValidation: true,
+                        errorMessage: "Please enter a valid address"
+                    )
+                ))
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .background(Color.black)
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
+    }
+}
+#endif

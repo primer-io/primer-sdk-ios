@@ -7,146 +7,249 @@
 
 import SwiftUI
 
-/// Font utility for CheckoutComponents that provides Inter variable fonts
-/// with fallback to system fonts based on design tokens.
+/// Typography utility providing Inter variable fonts with design token integration.
+///
+/// Architecture:
+/// - **Base Function**: Core font creation (`uiFont`)
+/// - **UIKit Helpers**: Typography helpers returning `UIFont`
+/// - **SwiftUI Helpers**: Typography helpers wrapping UIKit helpers in `Font(...)`
+/// - **Semantic Helpers**: Named helpers mapping to typography styles
+///
+/// Custom Font Support:
+/// All typography flows through `uiFont()` → `variableInterFont()` which attempts to load
+/// the Inter variable font with proper weight variation. Falls back to system fonts.
 @available(iOS 15.0, *)
-internal struct PrimerFont {
+struct PrimerFont {
 
-    // MARK: - Font Family Names
+    // MARK: - Base Font Function
 
-    private static let interVariableFont = "InterVariable"
-    private static let interVariableItalicFont = "InterVariable-Italic"
-
-    // MARK: - Design Token Integration
-
-    /// Get font based on design tokens with proper weight and size
-    static func font(
+    /// Creates a UIFont with design token parameters.
+    ///
+    /// All typography flows through this function to ensure consistent Inter variable font loading.
+    ///
+    /// - Parameters:
+    ///   - family: Font family name (defaults to "Inter")
+    ///   - weight: Font weight as numeric value (100-900, defaults to 400)
+    ///   - size: Font size in points (defaults to 14)
+    ///   - isItalic: Whether to apply italic style (defaults to false)
+    /// - Returns: UIFont with Inter variable font or system font fallback
+    static func uiFont(
         family: String?,
         weight: CGFloat?,
         size: CGFloat?,
         isItalic: Bool = false
-    ) -> Font {
+    ) -> UIFont {
         let fontFamily = family ?? "Inter"
         let fontSize = size ?? 14
         let fontWeight = weight ?? 400
 
-        // Convert numeric weight to Font.Weight
-        let swiftUIWeight = weightFromNumber(fontWeight)
-
-        // Try to use custom Inter font if family matches
+        // Attempt to load Inter variable font
         if fontFamily == "Inter" {
-            let fontName = isItalic ? interVariableItalicFont : interVariableFont
-
-            if let customFont = customFont(name: fontName, size: fontSize) {
-                return customFont
+            if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
+                return customUIFont
             }
         }
 
-        // Fallback to system font with appropriate weight
-        return .system(size: fontSize, weight: swiftUIWeight, design: .default)
+        // Fallback to system font
+        return .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
     }
 
-    // MARK: - Typography Design Token Helpers
+    // MARK: - UIKit Typography Helpers
 
-    /// Font for title extra large based on design tokens
-    static func titleXLarge(tokens: DesignTokens) -> Font {
-        return font(
+    /// Title extra large (24pt, weight 500) - for major section titles
+    static func uiFontTitleXLarge(tokens: DesignTokens?) -> UIFont {
+        guard let tokens = tokens else {
+            return uiFont(family: "Inter", weight: 500, size: 24)
+        }
+        return uiFont(
             family: tokens.primerTypographyTitleXlargeFont,
             weight: tokens.primerTypographyTitleXlargeWeight,
             size: tokens.primerTypographyTitleXlargeSize
         )
     }
 
-    /// Font for title large based on design tokens
-    static func titleLarge(tokens: DesignTokens) -> Font {
-        return font(
+    /// Title large (16pt, weight 500) - for subsection titles
+    static func uiFontTitleLarge(tokens: DesignTokens?) -> UIFont {
+        guard let tokens = tokens else {
+            return uiFont(family: "Inter", weight: 500, size: 16)
+        }
+        return uiFont(
             family: tokens.primerTypographyTitleLargeFont,
             weight: tokens.primerTypographyTitleLargeWeight,
             size: tokens.primerTypographyTitleLargeSize
         )
     }
 
-    /// Font for body large based on design tokens
-    static func bodyLarge(tokens: DesignTokens) -> Font {
-        return font(
+    /// Body large (16pt, weight 400) - for large body text
+    static func uiFontBodyLarge(tokens: DesignTokens?) -> UIFont {
+        guard let tokens = tokens else {
+            return uiFont(family: "Inter", weight: 400, size: 16)
+        }
+        return uiFont(
             family: tokens.primerTypographyBodyLargeFont,
             weight: tokens.primerTypographyBodyLargeWeight,
             size: tokens.primerTypographyBodyLargeSize
         )
     }
 
-    /// Font for body medium based on design tokens
-    static func bodyMedium(tokens: DesignTokens) -> Font {
-        return font(
+    /// Body medium (14pt, weight 400) - for standard body text
+    static func uiFontBodyMedium(tokens: DesignTokens?) -> UIFont {
+        guard let tokens = tokens else {
+            return uiFont(family: "Inter", weight: 400, size: 14)
+        }
+        return uiFont(
             family: tokens.primerTypographyBodyMediumFont,
             weight: tokens.primerTypographyBodyMediumWeight,
             size: tokens.primerTypographyBodyMediumSize
         )
     }
 
-    /// Font for body small based on design tokens
-    static func bodySmall(tokens: DesignTokens) -> Font {
-        return font(
+    /// Body small (12pt, weight 400) - for small body text and captions
+    static func uiFontBodySmall(tokens: DesignTokens?) -> UIFont {
+        guard let tokens = tokens else {
+            return uiFont(family: "Inter", weight: 400, size: 12)
+        }
+        return uiFont(
             family: tokens.primerTypographyBodySmallFont,
             weight: tokens.primerTypographyBodySmallWeight,
             size: tokens.primerTypographyBodySmallSize
         )
     }
 
+    /// Large icon font (48pt, weight 400) - for large icon displays
+    static func uiFontLargeIcon(tokens: DesignTokens?) -> UIFont {
+        return uiFont(family: "Inter", weight: 400, size: 48)
+    }
+
+    /// Extra large icon font (56pt, weight 400) - for extra large icon displays
+    static func uiFontExtraLargeIcon(tokens: DesignTokens?) -> UIFont {
+        let size = tokens?.primerSizeXxxlarge ?? 56
+        return uiFont(family: "Inter", weight: 400, size: size)
+    }
+
+    /// Small badge font (10pt, weight 500) - for compact badge text
+    static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
+        return uiFont(family: "Inter", weight: 500, size: 10)
+    }
+
+    // MARK: - SwiftUI Typography Helpers
+
+    /// Title extra large (24pt, weight 500) - for major section titles
+    static func titleXLarge(tokens: DesignTokens?) -> Font {
+        return Font(uiFontTitleXLarge(tokens: tokens))
+    }
+
+    /// Title large (16pt, weight 500) - for subsection titles
+    static func titleLarge(tokens: DesignTokens?) -> Font {
+        return Font(uiFontTitleLarge(tokens: tokens))
+    }
+
+    /// Body large (16pt, weight 400) - for large body text
+    static func bodyLarge(tokens: DesignTokens?) -> Font {
+        return Font(uiFontBodyLarge(tokens: tokens))
+    }
+
+    /// Body medium (14pt, weight 400) - for standard body text
+    static func bodyMedium(tokens: DesignTokens?) -> Font {
+        return Font(uiFontBodyMedium(tokens: tokens))
+    }
+
+    /// Body small (12pt, weight 400) - for small body text and captions
+    static func bodySmall(tokens: DesignTokens?) -> Font {
+        return Font(uiFontBodySmall(tokens: tokens))
+    }
+
+    /// Large icon font (48pt, weight 400) - for large icon displays
+    static func largeIcon(tokens: DesignTokens?) -> Font {
+        return Font(uiFontLargeIcon(tokens: tokens))
+    }
+
+    /// Extra large icon font (56pt, weight 400) - for extra large icon displays
+    static func extraLargeIcon(tokens: DesignTokens?) -> Font {
+        return Font(uiFontExtraLargeIcon(tokens: tokens))
+    }
+
+    /// Small badge font (10pt, weight 500) - for compact badge text
+    static func smallBadge(tokens: DesignTokens?) -> Font {
+        return Font(uiFontSmallBadge(tokens: tokens))
+    }
+
+    // MARK: - Semantic Font Helpers
+
+    /// Standard body text - maps to `bodyMedium` (14pt)
+    static func body(tokens: DesignTokens?) -> Font {
+        return bodyMedium(tokens: tokens)
+    }
+
+    /// Secondary or supporting text - maps to `bodySmall` (12pt)
+    static func caption(tokens: DesignTokens?) -> Font {
+        return bodySmall(tokens: tokens)
+    }
+
+    /// Emphasized text - maps to `titleLarge` (16pt, medium weight)
+    static func headline(tokens: DesignTokens?) -> Font {
+        return titleLarge(tokens: tokens)
+    }
+
+    /// Section titles - maps to `titleXLarge` (24pt)
+    static func title2(tokens: DesignTokens?) -> Font {
+        return titleXLarge(tokens: tokens)
+    }
+
+    /// Supporting or secondary text - maps to `bodyMedium` (14pt)
+    static func subheadline(tokens: DesignTokens?) -> Font {
+        return bodyMedium(tokens: tokens)
+    }
+
     // MARK: - Private Helpers
 
-    private static func customFont(name: String, size: CGFloat) -> Font? {
-        // Try to create custom font from bundle
-        if UIFont(name: name, size: size) != nil {
-            return Font.custom(name, size: size)
+    /// Loads Inter variable font with specified weight using font descriptor API.
+    ///
+    /// Variable fonts use font descriptors with variation axes to access different weights.
+    /// The weight variation axis is specified using the 'wght' tag (2003265652).
+    ///
+    /// Returns nil if Inter variable font is not available, allowing fallback to system font.
+    ///
+    /// - Parameters:
+    ///   - weight: Font weight (100-900)
+    ///   - size: Font size in points
+    /// - Returns: Inter variable font if available, nil otherwise
+    private static func variableInterFont(weight: CGFloat, size: CGFloat) -> UIFont? {
+        // Use the registered PostScript name for InterVariable.ttf
+        let descriptor = UIFontDescriptor(fontAttributes: [
+            .name: "InterVariable",
+            kCTFontVariationAttribute as UIFontDescriptor.AttributeName: [
+                2003265652: weight  // 'wght' variation axis
+            ]
+        ])
+
+        let font = UIFont(descriptor: descriptor, size: size)
+
+        // Verify Inter font loaded (not system font fallback)
+        if font.familyName.contains("Inter") {
+            return font
         }
+
         return nil
     }
 
-    private static func weightFromNumber(_ weight: CGFloat) -> Font.Weight {
+    /// Converts numeric font weight to UIFont.Weight enum.
+    ///
+    /// - Parameter weight: Numeric weight (100-900)
+    /// - Returns: Corresponding UIFont.Weight value
+    private static func uiFontWeightFromNumber(_ weight: CGFloat) -> UIFont.Weight {
         switch weight {
         case 100: return .ultraLight
         case 200: return .thin
         case 300: return .light
         case 400: return .regular
         case 500: return .medium
-        case 550: return .medium  // Design tokens use 550, map to medium
+        case 550: return .medium  // Design tokens use 550
         case 600: return .semibold
         case 700: return .bold
         case 800: return .heavy
         case 900: return .black
         default: return .regular
-        }
-    }
-}
-
-// MARK: - SwiftUI Font Extension
-
-@available(iOS 15.0, *)
-extension Font {
-
-    /// Create Inter font with specific weight and size
-    static func inter(size: CGFloat, weight: Font.Weight = .regular, italic: Bool = false) -> Font {
-        return PrimerFont.font(
-            family: "Inter",
-            weight: weightToNumber(weight),
-            size: size,
-            isItalic: italic
-        )
-    }
-
-    private static func weightToNumber(_ weight: Font.Weight) -> CGFloat {
-        switch weight {
-        case .ultraLight: return 100
-        case .thin: return 200
-        case .light: return 300
-        case .regular: return 400
-        case .medium: return 500
-        case .semibold: return 600
-        case .bold: return 700
-        case .heavy: return 800
-        case .black: return 900
-        default: return 400
         }
     }
 }

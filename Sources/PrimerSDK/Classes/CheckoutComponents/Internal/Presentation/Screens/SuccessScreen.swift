@@ -23,29 +23,29 @@ struct SuccessScreen: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            PrimerCheckoutColors.background(tokens: tokens)
                 .ignoresSafeArea()
 
-            VStack(spacing: 8) {
+            VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 56))
-                    .foregroundColor(.green)
+                    .font(PrimerFont.extraLargeIcon(tokens: tokens))
+                    .foregroundColor(PrimerCheckoutColors.green(tokens: tokens))
 
-                VStack(spacing: 4) {
+                VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary success message
                     Text(CheckoutComponentsStrings.paymentSuccessful)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? .defaultTextPrimary)
+                        .font(PrimerFont.bodyLarge(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
 
                     // Secondary redirect message
                     Text(CheckoutComponentsStrings.redirectConfirmationMessage)
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor((tokens?.primerColorTextPrimary ?? .defaultTextPrimary).opacity(0.62))
+                        .font(PrimerFont.bodyMedium(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
                 }
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
         }
         .onAppear {
             startAutoDismissTimer()
@@ -58,7 +58,7 @@ struct SuccessScreen: View {
 
     private func startAutoDismissTimer() {
         dismissTimer?.invalidate()
-        dismissTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+        dismissTimer = Timer.scheduledTimer(withTimeInterval: AnimationConstants.autoDismissDelay, repeats: false) { _ in
             onDismiss?()
         }
     }

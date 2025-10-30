@@ -52,7 +52,12 @@ public final class Primer {
         return _Primer
     }
 
-    fileprivate init() {}
+    fileprivate init() {
+        // Register custom fonts for CheckoutComponents
+        if #available(iOS 15.0, *) {
+            FontRegistration.registerFonts()
+        }
+    }
 
     public func application(_ app: UIApplication,
                             open url: URL,

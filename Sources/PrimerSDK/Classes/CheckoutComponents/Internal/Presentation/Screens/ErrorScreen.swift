@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Default error screen for CheckoutComponents with auto-dismiss functionality
 @available(iOS 15.0, *)
-internal struct ErrorScreen: View {
+struct ErrorScreen: View {
     let error: PrimerError
     let onDismiss: (() -> Void)?
 
@@ -22,33 +22,33 @@ internal struct ErrorScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
             // Error icon
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 48))
-                .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
+                .font(PrimerFont.largeIcon(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.borderError(tokens: tokens))
 
             // Error title
             Text(CheckoutComponentsStrings.somethingWentWrong)
-                .font(tokens != nil ? PrimerFont.titleLarge(tokens: tokens!) : .title2)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+                .font(PrimerFont.titleLarge(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
 
             // Error message
             Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
-                .font(tokens != nil ? PrimerFont.bodyMedium(tokens: tokens!) : .body)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
 
             // Auto-dismiss message
             Text(CheckoutComponentsStrings.autoDismissMessage)
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .font(PrimerFont.bodySmall(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
-                .padding(.top, 16)
+                .padding(.top, PrimerSpacing.large(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(tokens?.primerColorBackground ?? Color(.systemBackground))
+        .background(PrimerCheckoutColors.background(tokens: tokens))
         .onAppear {
             startAutoDismissTimer()
         }
@@ -60,7 +60,7 @@ internal struct ErrorScreen: View {
 
     private func startAutoDismissTimer() {
         dismissTimer?.invalidate()
-        dismissTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+        dismissTimer = Timer.scheduledTimer(withTimeInterval: AnimationConstants.autoDismissDelay, repeats: false) { _ in
             onDismiss?()
         }
     }
