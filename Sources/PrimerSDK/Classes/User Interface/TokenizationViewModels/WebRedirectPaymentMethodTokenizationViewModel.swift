@@ -148,6 +148,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     @MainActor
     override func presentPaymentMethodUserInterface() async throws {
+        guard redirectUrl.hasWebBasedScheme else {
+            if UIApplication.shared.canOpenURL(redirectUrl) {
+                return UIApplication.shared.open(redirectUrl)
+            } else {
+                throw handled(primerError: .invalidUrl(url: redirectUrl.absoluteString))
+            }
+        }
+        
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
         webViewController = safariViewController
