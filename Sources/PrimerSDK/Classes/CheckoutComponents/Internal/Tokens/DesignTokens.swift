@@ -89,6 +89,7 @@ class DesignTokens: Decodable {
     public var primerSpaceMedium: CGFloat? = 12
     public var primerSpaceLarge: CGFloat? = 16
     public var primerSpaceXlarge: CGFloat? = 20
+    public var primerSpaceXxlarge: CGFloat? = 24
     public var primerSpaceBase: CGFloat? = 4
     public var primerSizeSmall: CGFloat? = 16
     public var primerSizeMedium: CGFloat? = 20
@@ -179,6 +180,7 @@ class DesignTokens: Decodable {
         case primerSpaceMedium
         case primerSpaceLarge
         case primerSpaceXlarge
+        case primerSpaceXxlarge
         case primerSpaceBase
         case primerSizeSmall
         case primerSizeMedium
@@ -188,6 +190,9 @@ class DesignTokens: Decodable {
         case primerSizeXxxlarge
         case primerSizeBase
     }
+
+    // Default initializer preserves default values
+    init() {}
 
     // Custom initializer to decode from JSON.
     required init(from decoder: Decoder) throws {
@@ -607,6 +612,7 @@ class DesignTokens: Decodable {
         self.primerSpaceMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceMedium)
         self.primerSpaceLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceLarge)
         self.primerSpaceXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXlarge)
+        self.primerSpaceXxlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXxlarge)
         self.primerSpaceBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceBase)
         self.primerSizeSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeSmall)
         self.primerSizeMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeMedium)

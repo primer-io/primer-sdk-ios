@@ -50,19 +50,20 @@ struct PaymentMethodScreen: View {
 @MainActor
 struct PaymentMethodPlaceholder: View {
     let paymentMethodType: String
+    @Environment(\.designTokens) private var tokens
 
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: paymentMethodIcon)
-                .font(.system(size: 48))
-                .foregroundColor(.gray)
+                .font(PrimerFont.largeIcon(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
 
             Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
-                .font(.headline)
+                .font(PrimerFont.headline(tokens: tokens))
 
             Text(CheckoutComponentsStrings.implementationComingSoon)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(PrimerFont.subheadline(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

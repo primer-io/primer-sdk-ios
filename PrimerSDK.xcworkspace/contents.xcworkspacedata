@@ -120,16 +120,6 @@
                   <Group
                      location = "group:Resources"
                      name = "Resources">
-                     <Group
-                        location = "group:Fonts"
-                        name = "Fonts">
-                        <FileRef
-                           location = "group:InterVariable-Italic.ttf">
-                        </FileRef>
-                        <FileRef
-                           location = "group:InterVariable.ttf">
-                        </FileRef>
-                     </Group>
                   </Group>
                   <Group
                      location = "group:Services"
@@ -144,16 +134,6 @@
                      <FileRef
                         location = "group:PrimerSwiftUIBridgeViewController.swift">
                      </FileRef>
-                     <Group
-                        location = "group:Design"
-                        name = "Design">
-                        <FileRef
-                           location = "group:FigmaDesignConstants.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:Color+CheckoutComponents.swift">
-                        </FileRef>
-                     </Group>
                   </Group>
                   <Group
                      location = "group:DI"

@@ -38,7 +38,7 @@ struct CVVInputField: View, LogReporter {
     @State private var cvv: String = ""
 
     /// The validation state of the CVV
-    @State private var isValid: Bool?
+    @State private var isValid: Bool = false
 
     /// Error message if validation fails
     @State private var errorMessage: String?
@@ -47,22 +47,6 @@ struct CVVInputField: View, LogReporter {
     @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
-
-    // MARK: - Modifier Value Extraction
-    // MARK: - Computed Properties
-
-    /// Dynamic border color based on field state
-    private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
-    }
 
     // MARK: - Initialization
 
@@ -84,84 +68,33 @@ struct CVVInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label with custom styling support
-            if let label = label {
-                Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
+        PrimerInputFieldContainer(
+            label: label,
+            styling: styling,
+            text: $cvv,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused
+        ) {
+            if let validationService = validationService {
+                CVVTextField(
+                    cvv: $cvv,
+                    isValid: $isValid,
+                    errorMessage: $errorMessage,
+                    isFocused: $isFocused,
+                    placeholder: placeholder,
+                    cardNetwork: cardNetwork,
+                    styling: styling,
+                    validationService: validationService,
+                    scope: scope,
+                    tokens: tokens
+                )
+            } else {
+                // Fallback view while loading validation service
+                TextField(placeholder, text: $cvv)
+                    .keyboardType(.numberPad)
+                    .disabled(true)
             }
-
-            // CVV input field with ZStack architecture
-            ZStack {
-                // Background and border styling with custom styling support
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: borderColor)
-                    )
-
-                // Input field content
-                HStack {
-                    if let validationService = validationService {
-                        CVVTextField(
-                            cvv: $cvv,
-                            isValid: $isValid,
-                            errorMessage: $errorMessage,
-                            isFocused: $isFocused,
-                            placeholder: placeholder,
-                            cardNetwork: cardNetwork,
-                            styling: styling,
-                            validationService: validationService,
-                            scope: scope
-                        )
-                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, errorMessage != nil ?
-                                    (tokens?.primerSizeXxlarge ?? 60) :
-                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    } else {
-                        // Fallback view while loading validation service
-                        TextField(placeholder, text: $cvv)
-                            .keyboardType(.numberPad)
-                            .disabled(true)
-                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    }
-
-                    Spacer()
-                }
-
-                // Right side overlay (error icon)
-                HStack {
-                    Spacer()
-
-                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
-                        // Error icon when validation fails
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    }
-                }
-            }
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
-
-            // Error message (always reserve space to prevent height changes)
-            Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
-                .lineLimit(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(height: 15) // Fixed height to prevent layout shifts
-                .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
         .onAppear {
             setupValidationService()
@@ -186,7 +119,7 @@ struct CVVInputField: View, LogReporter {
 @available(iOS 15.0, *)
 private struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding var cvv: String
-    @Binding var isValid: Bool?
+    @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
     let placeholder: String
@@ -194,64 +127,20 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
     let scope: any PrimerCardFormScope
+    let tokens: DesignTokens?
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
-        textField.keyboardType = .numberPad
-        textField.borderStyle = .none
-        // Apply custom font or use system default
-        if let customFont = styling?.font {
-            textField.font = UIFont(customFont)
-        } else {
-            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        }
 
-        textField.textContentType = .oneTimeCode // Help prevent autofill of wrong data
-        textField.isSecureTextEntry = true // Mask CVV input
-
-        // Apply custom text color if provided
-        if let textColor = styling?.textColor {
-            textField.textColor = UIColor(textColor)
-        }
-
-        // Apply custom placeholder styling or use defaults
-        let placeholderFont: UIFont = {
-            if let customFont = styling?.font {
-                return UIFont(customFont)
-            } else if let interFont = UIFont(name: "InterVariable", size: 16) {
-                return interFont
-            }
-            return UIFont.systemFont(ofSize: 16, weight: .regular)
-        }()
-
-        let placeholderColor = styling?.placeholderColor != nil ? UIColor(styling!.placeholderColor!) : UIColor.systemGray
-
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholder,
-            attributes: [
-                .foregroundColor: placeholderColor,
-                .font: placeholderFont
-            ]
+        textField.configurePrimerStyle(
+            placeholder: placeholder,
+            configuration: .cvv,
+            styling: styling,
+            tokens: tokens,
+            doneButtonTarget: context.coordinator,
+            doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
-
-        // Add a "Done" button to the keyboard using a custom view to avoid UIToolbar constraints
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
-        accessoryView.backgroundColor = UIColor.systemGray6
-
-        let doneButton = UIButton(type: .system)
-        doneButton.setTitle("Done", for: .normal)
-        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
-
-        accessoryView.addSubview(doneButton)
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
-        ])
-
-        textField.inputAccessoryView = accessoryView
 
         return textField
     }
@@ -278,7 +167,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         private let validationService: ValidationService
         private let cardNetwork: CardNetwork
         @Binding private var cvv: String
-        @Binding private var isValid: Bool?
+        @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
         private let scope: any PrimerCardFormScope
@@ -291,7 +180,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             validationService: ValidationService,
             cardNetwork: CardNetwork,
             cvv: Binding<String>,
-            isValid: Binding<Bool?>,
+            isValid: Binding<Bool>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>,
             scope: any PrimerCardFormScope
@@ -350,7 +239,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             if newText.count == expectedCVVLength {
                 validateCVV()
             } else {
-                isValid = nil
+                isValid = false
                 errorMessage = nil
                 // Update scope validation state for incomplete CVV
                 if let scope = scope as? DefaultCardFormScope {
@@ -400,3 +289,95 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct CVVInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Light mode
+            VStack(spacing: 16) {
+                // Default state
+                CVVInputField(
+                    label: "CVV",
+                    placeholder: "123",
+                    scope: MockCardFormScope(),
+                    cardNetwork: .visa
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                CVVInputField(
+                    label: nil,
+                    placeholder: "CVV",
+                    scope: MockCardFormScope(),
+                    cardNetwork: .masterCard
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Error state
+                CVVInputField(
+                    label: "CVV with Error",
+                    placeholder: "Enter valid CVV",
+                    scope: MockCardFormScope(isValid: false),
+                    cardNetwork: .visa
+                )
+                .environment(\.diContainer, MockDIContainer(
+                    validationService: MockValidationService(
+                        shouldFailValidation: true,
+                        errorMessage: "Please enter a valid CVV"
+                    )
+                ))
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Light Mode")
+
+            // Dark mode
+            VStack(spacing: 16) {
+                // Default state
+                CVVInputField(
+                    label: "CVV",
+                    placeholder: "123",
+                    scope: MockCardFormScope(),
+                    cardNetwork: .visa
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                CVVInputField(
+                    label: nil,
+                    placeholder: "CVV",
+                    scope: MockCardFormScope(),
+                    cardNetwork: .masterCard
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Error state
+                CVVInputField(
+                    label: "CVV with Error",
+                    placeholder: "Enter valid CVV",
+                    scope: MockCardFormScope(isValid: false),
+                    cardNetwork: .visa
+                )
+                .environment(\.diContainer, MockDIContainer(
+                    validationService: MockValidationService(
+                        shouldFailValidation: true,
+                        errorMessage: "Please enter a valid CVV"
+                    )
+                ))
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .background(Color.black)
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
+    }
+}
+#endif

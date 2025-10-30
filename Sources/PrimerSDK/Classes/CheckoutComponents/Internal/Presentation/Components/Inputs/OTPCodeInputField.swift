@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A SwiftUI component for OTP code input with validation
 @available(iOS 15.0, *)
-internal struct OTPCodeInputField: View, LogReporter {
+struct OTPCodeInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -29,6 +29,10 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
+
+    /// Optional styling configuration for customizing field appearance
+    let styling: PrimerFieldStyling?
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -44,22 +48,15 @@ internal struct OTPCodeInputField: View, LogReporter {
     /// Error message if validation fails
     @State private var errorMessage: String?
 
-    @Environment(\.designTokens) private var tokens
-    // MARK: - Computed Properties
+    /// Focus state for input field styling
+    @State private var isFocused: Bool = false
 
-    /// Dynamic border color based on field state
-    private var borderColor: Color {
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            return tokens?.primerColorBorderOutlinedError ?? .red
-        } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-    }
+    @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (scope-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
@@ -69,15 +66,17 @@ internal struct OTPCodeInputField: View, LogReporter {
         self.placeholder = placeholder
         self.expectedLength = 6 // Default OTP length
         self.scope = scope
+        self.styling = styling
         self.onOTPCodeChange = nil
         self.onValidationChange = nil
     }
 
     /// Creates a new OTPCodeInputField with comprehensive customization support (callback-based)
-    internal init(
+    init(
         label: String?,
         placeholder: String,
         expectedLength: Int,
+        styling: PrimerFieldStyling? = nil,
         onOTPCodeChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
@@ -85,6 +84,7 @@ internal struct OTPCodeInputField: View, LogReporter {
         self.placeholder = placeholder
         self.expectedLength = expectedLength
         self.scope = nil
+        self.styling = styling
         self.onOTPCodeChange = onOTPCodeChange
         self.onValidationChange = onValidationChange
     }
@@ -92,33 +92,27 @@ internal struct OTPCodeInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: tokens?.primerSpaceXsmall ?? 4) {
-            // Label
-            if let label = label {
-                Text(label)
-                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            }
-
-            // OTP input field
-            TextField(placeholder, text: $otpCode)
-                .keyboardType(.numberPad)
-                .textContentType(.oneTimeCode)
-                .padding(tokens?.primerSpaceMedium ?? 12)
-                .background(
-                    Group {
-                        if true {
-                            // Only apply manual background when no gradient is present
-                            tokens?.primerColorBackground ?? .white
-                        }
-                    }
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: FigmaDesignConstants.inputFieldRadius)
-                        .stroke(borderColor, lineWidth: 1)
-                )
-                .cornerRadius(FigmaDesignConstants.inputFieldRadius)
-                .onChange(of: otpCode) { newValue in
+        PrimerInputFieldContainer(
+            label: label,
+            styling: styling,
+            text: $otpCode,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused
+        ) {
+            TextField(
+                "",
+                text: $otpCode,
+                prompt: Text(placeholder)
+                    .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                    .foregroundColor(styling?.placeholderColor ?? PrimerCheckoutColors.textPlaceholder(tokens: tokens))
+            )
+            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens))
+            .keyboardType(.numberPad)
+            .textContentType(.oneTimeCode)
+            .frame(height: PrimerSize.xxlarge(tokens: tokens))
+            .onChange(of: otpCode) { newValue in
                     // Limit to expected length
                     if newValue.count > expectedLength {
                         otpCode = String(newValue.prefix(expectedLength))
@@ -131,14 +125,6 @@ internal struct OTPCodeInputField: View, LogReporter {
                         validateOTPCode()
                     }
                 }
-
-            // Error message (always reserve space to prevent height changes)
-            Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 2)
-                .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
         .onAppear {
             setupValidationService()
@@ -178,3 +164,81 @@ internal struct OTPCodeInputField: View, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+struct OTPCodeInputField_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Light mode
+            VStack(spacing: 16) {
+                // Default state (scope-based)
+                OTPCodeInputField(
+                    label: "Enter OTP Code",
+                    placeholder: "000000",
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Callback-based
+                OTPCodeInputField(
+                    label: "Verification Code",
+                    placeholder: "######",
+                    expectedLength: 6,
+                    onOTPCodeChange: { _ in },
+                    onValidationChange: { _ in }
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                OTPCodeInputField(
+                    label: nil,
+                    placeholder: "Enter code",
+                    expectedLength: 6
+                )
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Light Mode")
+
+            // Dark mode
+            VStack(spacing: 16) {
+                // Default state (scope-based)
+                OTPCodeInputField(
+                    label: "Enter OTP Code",
+                    placeholder: "000000",
+                    scope: MockCardFormScope()
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // Callback-based
+                OTPCodeInputField(
+                    label: "Verification Code",
+                    placeholder: "######",
+                    expectedLength: 6,
+                    onOTPCodeChange: { _ in },
+                    onValidationChange: { _ in }
+                )
+                .background(Color.gray.opacity(0.1))
+
+                // No label
+                OTPCodeInputField(
+                    label: nil,
+                    placeholder: "Enter code",
+                    expectedLength: 6
+                )
+                .background(Color.gray.opacity(0.1))
+            }
+            .padding()
+            .background(Color.black)
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
+    }
+}
+#endif

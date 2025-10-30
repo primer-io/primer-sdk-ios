@@ -34,27 +34,22 @@ struct CardNetworkSelector: View {
                 }
             }, label: {
                 HStack {
-                    if let icon = selectedNetwork.icon {
-                        Image(uiImage: icon)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 24)
-                    }
+                    CardNetworkBadge(network: selectedNetwork)
 
                     Text(selectedNetwork.displayName)
-                        .font(.body)
-                        .foregroundColor(.primary)
+                        .font(PrimerFont.body(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
 
                     Spacer()
 
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.secondary)
-                        .font(.caption)
+                        .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
+                        .font(PrimerFont.caption(tokens: tokens))
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
+                .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+                .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+                .background(PrimerCheckoutColors.gray100(tokens: tokens))
+                .cornerRadius(PrimerRadius.small(tokens: tokens))
             })
 
             // Dropdown list
@@ -70,36 +65,36 @@ struct CardNetworkSelector: View {
                                 }
                             }, label: {
                                 HStack {
-                                    if let icon = network.icon {
-                                        Image(uiImage: icon)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(height: 24)
-                                    }
+                                    CardNetworkBadge(network: network)
 
                                     Text(network.displayName)
-                                        .font(.body)
-                                        .foregroundColor(.primary)
+                                        .font(PrimerFont.body(tokens: tokens))
+                                        .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
 
                                     Spacer()
                                 }
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(Color.clear)
+                                .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
+                                .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+                                .background(PrimerCheckoutColors.clear(tokens: tokens))
                             })
                             .buttonStyle(PlainButtonStyle())
 
                             if network != availableNetworks.last {
                                 Divider()
-                                    .padding(.horizontal, 12)
+                                    .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
                             }
                         }
                     }
                 }
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
-                .cornerRadius(8)
-                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                .padding(.top, 4)
+                .background(PrimerCheckoutColors.gray100(tokens: tokens))
+                .cornerRadius(PrimerRadius.small(tokens: tokens))
+                .shadow(
+                    color: PrimerCheckoutColors.borderDefault(tokens: tokens),
+                    radius: PrimerRadius.small(tokens: tokens),
+                    x: 0,
+                    y: PrimerSpacing.xxsmall(tokens: tokens)
+                )
+                .padding(.top, PrimerSpacing.xsmall(tokens: tokens))
             }
         }
     }
