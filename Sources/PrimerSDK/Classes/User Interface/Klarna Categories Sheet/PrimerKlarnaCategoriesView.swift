@@ -71,6 +71,6 @@ struct PrimerKlarnaCategoriesView: View {
         }
         .padding(.horizontal, 15)
         .disabled(viewModel.shouldDisableKlarnaViews)
-        .opacity(viewModel.showBackButton ? 1 : 0)
+        .opacity(viewModel.showContinueButton ? 1 : 0)
     }
 }
