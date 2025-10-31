@@ -1,7 +1,7 @@
 //
 //  HeadlessUniversalCheckoutAutoTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -222,7 +222,6 @@ extension HeadlessUniversalCheckoutAutoTests {
 
     private func presentNativeUIManager(paymentMethod: PrimerPaymentMethod, expecting orderedExpectations: [XCTestExpectation]) throws {
 
-        
         guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethod.type })
         else {
             XCTFail("Failed to find payment method \(paymentMethod.type) in mocked API configuration response")
@@ -239,7 +238,6 @@ extension HeadlessUniversalCheckoutAutoTests {
             XCTFail(error.localizedDescription)
         }
 
-
         wait(for: orderedExpectations, timeout: timeout, enforceOrder: true)
 
         let expectUIDidDismissPaymentMethod = self.expectation(description: "Expected UI delegate method: UIDidDismissPaymentMethod")
@@ -247,7 +245,6 @@ extension HeadlessUniversalCheckoutAutoTests {
             expectUIDidDismissPaymentMethod.fulfill()
         }
         
-
         PrimerInternal.shared.dismiss()
         wait(for: [expectUIDidDismissPaymentMethod], timeout: 5.0)
     }

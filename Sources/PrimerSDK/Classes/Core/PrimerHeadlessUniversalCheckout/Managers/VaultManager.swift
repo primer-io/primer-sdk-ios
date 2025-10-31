@@ -1,7 +1,7 @@
 //
 //  VaultManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -33,7 +33,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         // MARK: Public functions
 
-        public override init() {
+        override public init() {
             PrimerInternal.shared.sdkIntegrationType = .headless
             PrimerInternal.shared.intent = .checkout
 
@@ -50,7 +50,7 @@ extension PrimerHeadlessUniversalCheckout {
             try self.validate()
         }
 
-        internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
+        func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
             var errors: [Error] = []
 
             guard let vaultedPaymentMethod = vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
@@ -259,7 +259,7 @@ extension PrimerHeadlessUniversalCheckout {
                 case .succeed:
                     return nil
 
-                case .continueWithNewClientToken(let newClientToken):
+                case let .continueWithNewClientToken(newClientToken):
                     let apiConfigurationModule = PrimerAPIConfigurationModule()
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
@@ -269,7 +269,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     return (decodedJWTToken, paymentMethodTokenData)
 
-                case .fail(let message):
+                case let .fail(message):
                     let merchantErr: Error
                     if let message {
                         merchantErr = PrimerError.merchantError(message: message)
@@ -281,7 +281,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                 switch resumeDecisionType {
-                case .continueWithNewClientToken(let newClientToken):
+                case let .continueWithNewClientToken(newClientToken):
                     let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
@@ -470,7 +470,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
-                case .fail(let message):
+                case let .fail(message):
                     let err: Error
                     if let message {
                         err = PrimerError.merchantError(message: message)
