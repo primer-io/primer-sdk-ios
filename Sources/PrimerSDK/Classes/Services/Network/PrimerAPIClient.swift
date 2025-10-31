@@ -1,7 +1,7 @@
 //
 //  PrimerAPIClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -15,7 +15,7 @@ let defaultNetworkService = DefaultNetworkService(
 // swiftlint:disable:next type_body_length
 final class PrimerAPIClient: PrimerAPIClientProtocol {
 
-    internal let networkService: NetworkServiceProtocol
+    let networkService: NetworkServiceProtocol
 
     // MARK: - Object lifecycle
 
@@ -29,7 +29,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success:
                 completion(.success(true))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
@@ -45,10 +45,10 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<Response.Body.VaultedPaymentMethods, Error>) in
             switch result {
-            case .success(let vaultedPaymentMethodsResponse):
+            case let .success(vaultedPaymentMethodsResponse):
                 AppState.current.selectedPaymentMethodId = vaultedPaymentMethodsResponse.data.first?.id
                 completion(.success(vaultedPaymentMethodsResponse))
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(err))
             }
         }
@@ -94,7 +94,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success:
                 completion(.success(()))
-            case .failure(let error):
+            case let .failure(error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(error))
             }
@@ -119,9 +119,9 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         let retryConfig = RetryConfig(enabled: true)
         networkService.request(endpoint, retryConfig: retryConfig) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
             switch result {
-            case .success(let result):
+            case let .success(result):
                 completion(.success(result), headers)
-            case .failure(let error):
+            case let .failure(error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(error), nil)
             }
@@ -330,9 +330,9 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request)
         networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
             switch result {
-            case .success(let result):
+            case let .success(result):
                 completion(.success(result), headers)
-            case .failure(let error):
+            case let .failure(error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(error), nil)
             }
@@ -481,7 +481,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success:
                 completion(.success(()))
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(err))
             }
         }
@@ -577,9 +577,9 @@ private extension PrimerAPIClient {
     func execute<T>(_ endpoint: Endpoint, completion: @escaping APICompletion<T>) -> PrimerCancellable? where T: Decodable {
         networkService.request(endpoint) { (result: Result<T, Error>) in
             switch result {
-            case .success(let result):
+            case let .success(result):
                 completion(.success(result))
-            case .failure(let error):
+            case let .failure(error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(error))
             }

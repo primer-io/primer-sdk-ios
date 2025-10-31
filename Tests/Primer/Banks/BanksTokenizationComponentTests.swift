@@ -1,7 +1,7 @@
 //
 //  BanksTokenizationComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -157,7 +157,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             switch step {
             case .loading:
                 expectIsLoadingStep.fulfill()
-            case .banksRetrieved(let banks):
+            case let .banksRetrieved(banks):
                 XCTAssertEqual(banks.first!.id, "bank_id")
                 expectDidGetBanksStep.fulfill()
             }
@@ -250,7 +250,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
             switch step {
             case .loading:
                 expectIsLoadingStep.fulfill()
-            case .banksRetrieved(let banks):
+            case let .banksRetrieved(banks):
                 XCTAssertEqual(banks.first!.id, "bank_id")
                 expectDidGetBanksStep.fulfill()
             }
