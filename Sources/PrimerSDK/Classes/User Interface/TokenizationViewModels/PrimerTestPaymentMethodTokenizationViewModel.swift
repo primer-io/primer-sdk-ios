@@ -1,7 +1,7 @@
 //
 //  PrimerTestPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -22,7 +22,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         180+(CGFloat(decisions.count)*tableView.rowHeight)
     }
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
