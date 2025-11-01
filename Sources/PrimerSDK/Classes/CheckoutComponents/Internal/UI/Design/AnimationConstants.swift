@@ -1,9 +1,8 @@
 //
 //  AnimationConstants.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created for pixel-perfect design system implementation
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import SwiftUI
@@ -35,4 +34,12 @@ struct AnimationConstants {
 
     /// Error state animation
     static let errorAnimation: Animation = .easeInOut(duration: errorDuration)
+
+    /// Error appearance animation with spring effect
+    static let errorSpringAnimation: Animation = .spring(response: 0.3, dampingFraction: 0.7)
+
+    // MARK: - Slide Offsets
+
+    /// Slide offset for error animations (horizontal and vertical)
+    static let errorSlideOffset: CGFloat = 10
 }
