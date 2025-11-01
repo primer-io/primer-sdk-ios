@@ -1,9 +1,8 @@
 //
 //  PrimerInputFieldContainer.swift
-//  PrimerSDK
 //
-//  Created by Primer on 25/10/2025.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -98,8 +97,7 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: iconSize, height: iconSize)
                     .foregroundColor(PrimerCheckoutColors.iconNegative(tokens: tokens))
-                    .offset(x: hasError ? 0 : -10)
-                    .opacity(hasError ? 1.0 : 0.0)
+                    .slideIn(isVisible: hasError, from: .leading)
             }
         }
         .padding(.leading, styling?.padding?.leading ?? PrimerSpacing.medium(tokens: tokens))
@@ -122,10 +120,8 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
             .font(PrimerFont.bodySmall(tokens: tokens))
             .foregroundColor(PrimerCheckoutColors.textNegative(tokens: tokens))
             .frame(height: hasError ? PrimerComponentHeight.errorMessage : 0)
-            .offset(y: hasError ? 0 : -10)
-            .opacity(hasError ? 1.0 : 0.0)
             .padding(.top, hasError ? PrimerSpacing.xsmall(tokens: tokens) : 0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)
+            .slideIn(isVisible: hasError, from: .top)
     }
 
     // MARK: - Initializer
