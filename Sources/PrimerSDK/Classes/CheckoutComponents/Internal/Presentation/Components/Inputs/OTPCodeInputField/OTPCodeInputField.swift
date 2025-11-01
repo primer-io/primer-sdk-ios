@@ -1,9 +1,8 @@
 //
 //  OTPCodeInputField.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -168,77 +167,28 @@ struct OTPCodeInputField: View, LogReporter {
 #if DEBUG
 // MARK: - Preview
 @available(iOS 15.0, *)
-struct OTPCodeInputField_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            // Light mode
-            VStack(spacing: 16) {
-                // Default state (scope-based)
-                OTPCodeInputField(
-                    label: "Enter OTP Code",
-                    placeholder: "000000",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
+#Preview("Light Mode") {
+    OTPCodeInputField(
+        label: "Enter OTP Code",
+        placeholder: "000000",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .environment(\.designTokens, MockDesignTokens.light)
+    .environment(\.diContainer, MockDIContainer())
+}
 
-                // Callback-based
-                OTPCodeInputField(
-                    label: "Verification Code",
-                    placeholder: "######",
-                    expectedLength: 6,
-                    onOTPCodeChange: { _ in },
-                    onValidationChange: { _ in }
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // No label
-                OTPCodeInputField(
-                    label: nil,
-                    placeholder: "Enter code",
-                    expectedLength: 6
-                )
-                .background(Color.gray.opacity(0.1))
-            }
-            .padding()
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Light Mode")
-
-            // Dark mode
-            VStack(spacing: 16) {
-                // Default state (scope-based)
-                OTPCodeInputField(
-                    label: "Enter OTP Code",
-                    placeholder: "000000",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // Callback-based
-                OTPCodeInputField(
-                    label: "Verification Code",
-                    placeholder: "######",
-                    expectedLength: 6,
-                    onOTPCodeChange: { _ in },
-                    onValidationChange: { _ in }
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // No label
-                OTPCodeInputField(
-                    label: nil,
-                    placeholder: "Enter code",
-                    expectedLength: 6
-                )
-                .background(Color.gray.opacity(0.1))
-            }
-            .padding()
-            .background(Color.black)
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("Dark Mode")
-        }
-    }
+@available(iOS 15.0, *)
+#Preview("Dark Mode") {
+    OTPCodeInputField(
+        label: "Enter OTP Code",
+        placeholder: "000000",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .background(Color.black)
+    .environment(\.designTokens, MockDesignTokens.dark)
+    .environment(\.diContainer, MockDIContainer())
+    .preferredColorScheme(.dark)
 }
 #endif

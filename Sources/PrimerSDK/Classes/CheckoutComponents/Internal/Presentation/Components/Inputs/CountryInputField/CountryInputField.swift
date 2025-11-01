@@ -1,9 +1,8 @@
 //
 //  CountryInputField.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -206,75 +205,28 @@ struct CountryInputField: View, LogReporter {
 #if DEBUG
 // MARK: - Preview
 @available(iOS 15.0, *)
-struct CountryInputField_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            // Light mode
-            VStack(spacing: 16) {
-                // Default state
-                CountryInputField(
-                    label: "Country",
-                    placeholder: "Select country",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
+#Preview("Light Mode") {
+    CountryInputField(
+        label: "Country",
+        placeholder: "Select country",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .environment(\.designTokens, MockDesignTokens.light)
+    .environment(\.diContainer, MockDIContainer())
+}
 
-                // With selected country
-                CountryInputField(
-                    label: "Country",
-                    placeholder: "Select country",
-                    scope: MockCardFormScope(),
-                    selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United States", dialCode: "+1", code: "US")
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // No label
-                CountryInputField(
-                    label: nil,
-                    placeholder: "Country",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
-            }
-            .padding()
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Light Mode")
-
-            // Dark mode
-            VStack(spacing: 16) {
-                // Default state
-                CountryInputField(
-                    label: "Country",
-                    placeholder: "Select country",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // With selected country
-                CountryInputField(
-                    label: "Country",
-                    placeholder: "Select country",
-                    scope: MockCardFormScope(),
-                    selectedCountry: CountryCode.PhoneNumberCountryCode(name: "United Kingdom", dialCode: "+44", code: "GB")
-                )
-                .background(Color.gray.opacity(0.1))
-
-                // No label
-                CountryInputField(
-                    label: nil,
-                    placeholder: "Country",
-                    scope: MockCardFormScope()
-                )
-                .background(Color.gray.opacity(0.1))
-            }
-            .padding()
-            .background(Color.black)
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("Dark Mode")
-        }
-    }
+@available(iOS 15.0, *)
+#Preview("Dark Mode") {
+    CountryInputField(
+        label: "Country",
+        placeholder: "Select country",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .background(Color.black)
+    .environment(\.designTokens, MockDesignTokens.dark)
+    .environment(\.diContainer, MockDIContainer())
+    .preferredColorScheme(.dark)
 }
 #endif
