@@ -1,247 +1,37 @@
 //
-//  CardNumberInputField.swift
-//  PrimerSDK - CheckoutComponents
+//  CardNumberInputField+UIViewRepresentable.swift
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import UIKit
 
 @available(iOS 15.0, *)
-struct CardNumberInputField: View, LogReporter {
-    let label: String?
-    let placeholder: String
-    let scope: any PrimerCardFormScope
-    let selectedNetwork: CardNetwork?
-    let styling: PrimerFieldStyling?
-
-    @Environment(\.diContainer) private var container
-    @State private var validationService: ValidationService?
-    @State private var cardNumber: String = ""
-    @State private var isValid: Bool?
-    @State private var cardNetwork: CardNetwork = .unknown
-    @State private var errorMessage: String?
-    @State private var surchargeAmount: String?
-    @State private var isFocused: Bool = false
-    @Environment(\.designTokens) private var tokens
-
-    init(
-        label: String?,
-        placeholder: String,
-        scope: any PrimerCardFormScope,
-        selectedNetwork: CardNetwork? = nil,
-        styling: PrimerFieldStyling? = nil
-    ) {
-        self.label = label
-        self.placeholder = placeholder
-        self.scope = scope
-        self.selectedNetwork = selectedNetwork
-        self.styling = styling
-    }
-
-    private var displayNetwork: CardNetwork {
-        return selectedNetwork ?? cardNetwork
-    }
-
-    private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            if let label = label {
-                Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
-            }
-
-            ZStack {
-                RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                    .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                            .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                            .animation(.easeInOut(duration: 0.2), value: isFocused)
-                    )
-
-                HStack {
-                    if let validationService = validationService {
-                        CardNumberTextField(
-                            scope: scope,
-                            cardNumber: $cardNumber,
-                            isValid: $isValid,
-                            cardNetwork: $cardNetwork,
-                            errorMessage: $errorMessage,
-                            isFocused: $isFocused,
-                            placeholder: placeholder,
-                            styling: styling,
-                            validationService: validationService
-                        )
-                        .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, displayNetwork != .unknown ?
-                                    (tokens?.primerSizeXxlarge ?? 60) :
-                                    (styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16))
-                        .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    } else {
-                        TextField(placeholder, text: .constant(""))
-                            .disabled(true)
-                            .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.trailing, styling?.padding?.trailing ?? tokens?.primerSpaceLarge ?? 16)
-                            .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
-                    }
-
-                    Spacer()
-                }
-
-                HStack {
-                    Spacer()
-
-                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                            .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    } else if displayNetwork != .unknown {
-                        VStack(spacing: 2) {
-                            if let icon = displayNetwork.icon {
-                                Image(uiImage: icon)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: tokens?.primerSizeLarge ?? 28, height: tokens?.primerSizeMedium ?? 20)
-                            }
-
-                            if let surchargeAmount = surchargeAmount {
-                                Text(surchargeAmount)
-                                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption2)
-                                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                                    .padding(.horizontal, 4)
-                                    .padding(.vertical, 1)
-                                    .background(tokens?.primerColorGray200 ?? Color(.systemGray5))
-                                    .cornerRadius(3)
-                            }
-                        }
-                        .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    }
-                }
-            }
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
-
-            Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
-                .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
-        }
-        .onAppear {
-            setupValidationService()
-        }
-        .onChange(of: isFocused) { _ in
-            _ = borderColor
-        }
-    }
-
-    private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for CardNumberInputField")
-            return
-        }
-
-        do {
-            validationService = try container.resolveSync(ValidationService.self)
-        } catch {
-            logger.error(message: "Failed to resolve ValidationService: \(error)")
-        }
-    }
-
-    private func updateSurchargeAmount(for network: CardNetwork) {
-        guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency else {
-            surchargeAmount = nil
-            return
-        }
-
-        surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
-    }
-}
-
-@available(iOS 15.0, *)
-private struct CardNumberTextField: UIViewRepresentable, LogReporter {
+struct CardNumberTextField: UIViewRepresentable, LogReporter {
     let scope: any PrimerCardFormScope
     @Binding var cardNumber: String
-    @Binding var isValid: Bool?
+    @Binding var isValid: Bool
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
+    let tokens: DesignTokens?
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
-        textField.keyboardType = .numberPad
-        textField.borderStyle = .none
 
-        if let customFont = styling?.font {
-            textField.font = UIFont(customFont)
-        } else {
-            textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        }
-
-        textField.backgroundColor = .clear
-
-        if let textColor = styling?.textColor {
-            textField.textColor = UIColor(textColor)
-        }
-
-        let placeholderFont: UIFont = {
-            if let customFont = styling?.font {
-                return UIFont(customFont)
-            } else if let interFont = UIFont(name: "InterVariable", size: 16) {
-                return interFont
-            }
-            return UIFont.systemFont(ofSize: 16, weight: .regular)
-        }()
-
-        let placeholderColor = styling?.placeholderColor != nil ? UIColor(styling!.placeholderColor!) : UIColor.systemGray
-
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholder,
-            attributes: [
-                .foregroundColor: placeholderColor,
-                .font: placeholderFont
-            ]
+        textField.configurePrimerStyle(
+            placeholder: placeholder,
+            configuration: .numberPad,
+            styling: styling,
+            tokens: tokens,
+            doneButtonTarget: context.coordinator,
+            doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
-
-        let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
-        accessoryView.backgroundColor = UIColor.systemGray6
-
-        let doneButton = UIButton(type: .system)
-        doneButton.setTitle("Done", for: .normal)
-        doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        doneButton.addTarget(context.coordinator, action: #selector(Coordinator.doneButtonTapped), for: .touchUpInside)
-
-        accessoryView.addSubview(doneButton)
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
-        ])
-
-        textField.inputAccessoryView = accessoryView
 
         return textField
     }
@@ -283,7 +73,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         private let validationService: ValidationService
         @Binding private var cardNumber: String
         @Binding private var cardNetwork: CardNetwork
-        @Binding private var isValid: Bool?
+        @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
         private var savedCursorPosition: Int = 0
@@ -295,7 +85,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             validationService: ValidationService,
             cardNumber: Binding<String>,
             cardNetwork: Binding<CardNetwork>,
-            isValid: Binding<Bool?>,
+            isValid: Binding<Bool>,
             errorMessage: Binding<String?>,
             isFocused: Binding<Bool>
         ) {
@@ -483,7 +273,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if newCardNumber.count >= 13 {
                 debouncedValidation(newCardNumber)
             } else if newCardNumber.isEmpty {
-                isValid = nil
+                isValid = false
                 errorMessage = nil
                 scope.clearFieldError(.cardNumber)
                 // Update scope validation state
@@ -609,7 +399,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         private func validateCardNumberWhileTyping(_ number: String) {
             if number.count < 13 {
-                isValid = nil
+                isValid = false
                 errorMessage = nil
                 // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
@@ -631,7 +421,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                         scope.updateCardNumberValidationState(true)
                     }
                 } else {
-                    isValid = nil
+                    isValid = false
                     errorMessage = nil
                     // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
@@ -649,7 +439,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                         scope.updateCardNumberValidationState(true)
                     }
                 } else {
-                    isValid = nil
+                    isValid = false
                     errorMessage = nil
                     // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
@@ -657,7 +447,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     }
                 }
             } else {
-                isValid = nil
+                isValid = false
                 errorMessage = nil
                 // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {

@@ -1,3 +1,9 @@
+//
+//  MockBankSelectorTokenizationModel.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 @testable import PrimerSDK
 
 final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding {
@@ -23,21 +29,17 @@ final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding
         self.paymentMethodType = paymentMethodType
     }
 
-
     func validate() async throws {}
-
 
     func retrieveListOfBanks() async throws -> [AdyenBank] {
         try await validate()
         return mockBanks
     }
 
-
     func filterBanks(query: String) -> [AdyenBank] {
         didCallFilter = true
         return [mockBanks[2]]
     }
-
 
     func tokenize(bankId: String) async throws {
         guard useSuccess else {
@@ -47,7 +49,6 @@ final class MockBankSelectorTokenizationModel: BankSelectorTokenizationProviding
             )
         }
     }
-
 
     func handlePaymentMethodTokenData() async throws {}
 

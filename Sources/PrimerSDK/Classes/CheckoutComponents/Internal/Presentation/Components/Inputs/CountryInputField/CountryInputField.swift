@@ -1,9 +1,8 @@
 //
 //  CountryInputField.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -52,34 +51,14 @@ struct CountryInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
-    // MARK: - Modifier Value Extraction
     // MARK: - Computed Properties
-
-    /// Dynamic border color based on field state
-    private var borderColor: Color {
-        let color: Color
-        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            color = styling?.errorBorderColor ?? tokens?.primerColorBorderOutlinedError ?? .red
-        } else if isFocused {
-            color = styling?.focusedBorderColor ?? tokens?.primerColorBorderOutlinedFocus ?? .blue
-        } else {
-            color = styling?.borderColor ?? tokens?.primerColorBorderOutlinedDefault ?? Color(FigmaDesignConstants.inputFieldBorderColor)
-        }
-        return color
-    }
-
-    /// Display text font for country field
-    private var countryTextFont: Font {
-        styling?.font ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .body)
-    }
 
     /// Text color for country display (placeholder vs selected)
     private var countryTextColor: Color {
-        if countryName.isEmpty {
-            return styling?.placeholderColor ?? tokens?.primerColorTextSecondary ?? .secondary
-        } else {
-            return styling?.textColor ?? tokens?.primerColorTextPrimary ?? .primary
+        guard !countryName.isEmpty else {
+            return styling?.placeholderColor ?? PrimerCheckoutColors.textPlaceholder(tokens: tokens)
         }
+        return styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)   
     }
 
     // MARK: - Initialization
@@ -102,82 +81,49 @@ struct CountryInputField: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FigmaDesignConstants.labelInputSpacing) {
-            // Label with custom styling support
-            if let label = label {
-                Text(label)
-                    .font(styling?.labelFont ?? (tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium)))
-                    .foregroundColor(styling?.labelColor ?? tokens?.primerColorTextSecondary ?? .secondary)
-            }
+        PrimerInputFieldContainer(
+            label: label,
+            styling: styling,
+            text: $countryName,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused,
+            textFieldBuilder: {
+                Button(action: {
+                    guard !isNavigating else {
+                        return
+                    }
 
-            // Country field with selector button using Button with HStack layout
-            Button(action: {
-                guard !isNavigating else {
-                    return
-                }
+                    isNavigating = true
 
-                isNavigating = true
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
 
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
+                    scope.navigateToCountrySelection()
 
-                scope.navigateToCountrySelection()
-
-                // Reset after shorter timeout - 1 second should be enough
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self.isNavigating = false
-                }
-            }, label: {
-                ZStack {
-                    // Background and border styling
-                    RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                        .fill(styling?.backgroundColor ?? tokens?.primerColorBackground ?? .white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: styling?.cornerRadius ?? FigmaDesignConstants.inputFieldRadius)
-                                .stroke(borderColor, lineWidth: styling?.borderWidth ?? 1)
-                                .animation(.easeInOut(duration: 0.2), value: isFocused)
-                        )
-
-                    // Content layout
-                    HStack {
+                    // Reset after shorter timeout - 1 second should be enough
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.isNavigating = false
+                    }
+                }) {
+                    HStack(spacing: 0) {
                         Text(countryName.isEmpty ? placeholder : countryName)
-                            .font(countryTextFont)
+                            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
                             .foregroundColor(countryTextColor)
                             .frame(maxWidth: .infinity, alignment: .leading)
-
-                        Spacer()
-
-                        // Right side icon (error icon or chevron)
-                        if let errorMessage = errorMessage, !errorMessage.isEmpty {
-                            // Error icon when validation fails
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
-                                .foregroundColor(tokens?.primerColorIconNegative ?? .defaultIconNegative)
-                        } else {
-                            // Chevron down icon when no error
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        }
+                        Spacer(minLength: 0)
                     }
-                    .padding(.leading, styling?.padding?.leading ?? tokens?.primerSpaceLarge ?? 16)
-                    .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    .padding(.vertical, styling?.padding?.top ?? tokens?.primerSpaceMedium ?? 12)
+                    .frame(height: PrimerSize.xxlarge(tokens: tokens))
+                    .contentShape(Rectangle())
                 }
-            })
-            .buttonStyle(PlainButtonStyle())
-            .disabled(isNavigating)
-            .frame(height: styling?.fieldHeight ?? FigmaDesignConstants.inputFieldHeight)
-
-            // Error message (always reserve space to prevent height changes)
-            Text(errorMessage ?? " ")
-                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
-                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
-                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
-                .opacity(errorMessage != nil ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
-        }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(isNavigating)
+            },
+            rightComponent: {
+                Image(systemName: "chevron.down")
+                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+            }
+        )
         .onAppear {
             isNavigating = false
             setupValidationService()
@@ -255,3 +201,32 @@ struct CountryInputField: View, LogReporter {
         }
     }
 }
+
+#if DEBUG
+// MARK: - Preview
+@available(iOS 15.0, *)
+#Preview("Light Mode") {
+    CountryInputField(
+        label: "Country",
+        placeholder: "Select country",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .environment(\.designTokens, MockDesignTokens.light)
+    .environment(\.diContainer, MockDIContainer())
+}
+
+@available(iOS 15.0, *)
+#Preview("Dark Mode") {
+    CountryInputField(
+        label: "Country",
+        placeholder: "Select country",
+        scope: MockCardFormScope()
+    )
+    .padding()
+    .background(Color.black)
+    .environment(\.designTokens, MockDesignTokens.dark)
+    .environment(\.diContainer, MockDIContainer())
+    .preferredColorScheme(.dark)
+}
+#endif

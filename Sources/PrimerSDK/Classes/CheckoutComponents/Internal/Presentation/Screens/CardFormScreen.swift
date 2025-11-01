@@ -20,67 +20,74 @@ struct CardFormScreen: View, LogReporter {
     @State private var formConfiguration: CardFormConfiguration = .default
 
     var body: some View {
-        VStack(spacing: 0) {
-            customHeader
-            mainContent
+        ScrollView {
+            VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
+                headerSection
+                formContent
+            }
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+            .padding(.vertical, PrimerSpacing.large(tokens: tokens))
+            .frame(maxWidth: UIScreen.main.bounds.width)
         }
         .navigationBarHidden(true)
+        .background(PrimerCheckoutColors.background(tokens: tokens))
     }
 
     @MainActor
-    private var customHeader: some View {
-        HStack {
-            // Back button - only show if context allows it
-            if scope.presentationContext.shouldShowBackButton {
-                Button(action: {
-                    scope.onBack()
-                }, label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.body.weight(.medium))
-                        Text(CheckoutComponentsStrings.backButton)
-                    }
-                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                })
+    private var headerSection: some View {
+        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+            // Navigation bar (Back/Cancel)
+            HStack {
+                if scope.presentationContext.shouldShowBackButton {
+                    Button(action: {
+                        scope.onBack()
+                    }, label: {
+                        HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+                            Image(systemName: "chevron.left")
+                                .font(PrimerFont.bodyMedium(tokens: tokens))
+                            Text(CheckoutComponentsStrings.backButton)
+                        }
+                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                    })
+                }
+
+                Spacer()
+
+                // Show close button based on dismissalMechanism setting
+                if scope.dismissalMechanism.contains(.closeButton) {
+                    Button(CheckoutComponentsStrings.cancelButton, action: {
+                        scope.onCancel()
+                    })
+                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                }
             }
 
-            Spacer()
-
-            // Show close button based on dismissalMechanism setting
-            if scope.dismissalMechanism.contains(.closeButton) {
-                Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            Rectangle()
-                .fill(tokens?.primerColorBackground ?? Color(.systemBackground))
-        )
-    }
-
-    @MainActor
-    private var mainContent: some View {
-        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+            // Title
             titleSection
+        }
+    }
+
+    @MainActor
+    private var formContent: some View {
+        VStack(spacing: PrimerSpacing.xlarge(tokens: tokens)) {
             dynamicFieldsSection
             submitButtonSection
         }
-        .padding(.top)
-        .background(tokens?.primerColorBackground ?? Color(.systemBackground))
         .onAppear {
             observeState()
         }
     }
 
     private var titleSection: some View {
-        Text(CheckoutComponentsStrings.cardPaymentTitle)
-            .font(.title2)
-            .fontWeight(.semibold)
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+        let fontSize = tokens?.primerTypographyTitleXlargeSize ?? 24
+        let fontWeight: Font.Weight = .semibold
+
+        return Text(CheckoutComponentsStrings.cardPaymentTitle)
+            .font(.system(size: fontSize, weight: fontWeight))
+            .tracking(tokens?.primerTypographyTitleXlargeLetterSpacing ?? -0.6)
+            .lineSpacing((tokens?.primerTypographyTitleXlargeLineHeight ?? 32) - fontSize)
+            .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
     }
 
     @MainActor
@@ -90,7 +97,7 @@ struct CardFormScreen: View, LogReporter {
         if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
-            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+            VStack(spacing: 0) {
                 // Render card fields dynamically based on configuration
                 cardFieldsSection
 
@@ -109,10 +116,9 @@ struct CardFormScreen: View, LogReporter {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
             AnyView(customSection())
-                .padding(.horizontal)
         } else {
-            VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-                // Render fields dynamically based on configuration
+            VStack(spacing: 0) {
+                // Render fields dynamically, inserting networks after card number
                 ForEach(0..<formConfiguration.cardFields.count, id: \.self) { index in
                     let fieldType = formConfiguration.cardFields[index]
 
@@ -120,7 +126,7 @@ struct CardFormScreen: View, LogReporter {
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
                        formConfiguration.cardFields[index + 1] == .cvv {
-                        HStack(spacing: FigmaDesignConstants.horizontalInputSpacing) {
+                        HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(.expiryDate)
                             renderField(.cvv)
                         }
@@ -129,24 +135,21 @@ struct CardFormScreen: View, LogReporter {
                               fieldType == .cvv {
                         // Skip CVV if it was already rendered with expiry date
                         EmptyView()
-                    } else if fieldType == .cardNumber {
-                        // Render card number field with allowed networks below it
-                        VStack(spacing: FigmaDesignConstants.sectionSpacing) {
-                            renderField(fieldType)
-
-                            // Show allowed card networks directly below card number
-                            let allowedNetworks = [CardNetwork].allowedCardNetworks
-                            if !allowedNetworks.isEmpty {
-                                AllowedCardNetworksView(allowedCardNetworks: allowedNetworks)
-                            }
-                        }
                     } else {
-                        // Render other fields normally
+                        // Render field
                         renderField(fieldType)
+                    }
+
+                    // Render networks as separate VStack child immediately after card number field
+                    if fieldType == .cardNumber {
+                        let allowedNetworks = [CardNetwork].allowedCardNetworks
+                        // Fallback for previews: show common networks if API config is not available
+                        let networksToShow = !allowedNetworks.isEmpty ? allowedNetworks : [.visa, .masterCard, .amex, .discover]
+                        AllowedCardNetworksView(allowedCardNetworks: networksToShow)
+                            .padding(.bottom, PrimerSpacing.medium(tokens: tokens))
                     }
                 }
             }
-            .padding(.horizontal)
         }
     }
 
@@ -160,7 +163,6 @@ struct CardFormScreen: View, LogReporter {
                         scope.updateSelectedCardNetwork(network)
                     }
                 })
-                .padding(.horizontal)
             } else {
                 defaultCobadgedCardsView
             }
@@ -168,11 +170,10 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var defaultCobadgedCardsView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
             Text(CheckoutComponentsStrings.selectNetworkTitle)
-                .font(.caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .padding(.horizontal)
+                .font(PrimerFont.caption(tokens: tokens))
+                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
 
             CardNetworkSelector(
                 availableNetworks: cardFormState.availableNetworks.map { $0.network },
@@ -184,7 +185,6 @@ struct CardFormScreen: View, LogReporter {
                     }
                 }
             )
-            .padding(.horizontal)
         }
     }
 
@@ -196,23 +196,20 @@ struct CardFormScreen: View, LogReporter {
             // Check for section-level override first
             if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
                 AnyView(customSection())
-                    .padding(.horizontal)
                     .id(refreshTrigger)
             } else {
-                VStack(alignment: .leading, spacing: FigmaDesignConstants.sectionSpacing) {
+                VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
                     // Billing address section title
                     Text(CheckoutComponentsStrings.billingAddressTitle)
-                        .font(.headline)
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                        .padding(.horizontal)
-
+                        .font(PrimerFont.headline(tokens: tokens))
+                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                    
                     // Render billing fields dynamically
-                    VStack(spacing: FigmaDesignConstants.sectionSpacing) {
+                    VStack(spacing: 0) {
                         ForEach(formConfiguration.billingFields, id: \.self) { fieldType in
                             renderField(fieldType)
                         }
                     }
-                    .padding(.horizontal)
                 }
                 .id(refreshTrigger)
             }
@@ -225,8 +222,6 @@ struct CardFormScreen: View, LogReporter {
         // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
             AnyView(customSection())
-                .padding(.horizontal)
-                .padding(.bottom)
         } else {
             Group {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
@@ -243,8 +238,6 @@ struct CardFormScreen: View, LogReporter {
                     .disabled(!cardFormState.isValid || cardFormState.isLoading)
                 }
             }
-            .padding(.horizontal)
-            .padding(.bottom)
         }
     }
 
@@ -252,18 +245,18 @@ struct CardFormScreen: View, LogReporter {
         HStack {
             if cardFormState.isLoading {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(0.8)
+                    .progressViewStyle(CircularProgressViewStyle(tint: PrimerCheckoutColors.white(tokens: tokens)))
+                    .scaleEffect(PrimerScale.small)
             } else {
                 Text(submitButtonText)
             }
         }
-        .font(.body)
-        .foregroundColor(.white)
+        .font(PrimerFont.body(tokens: tokens))
+        .foregroundColor(PrimerCheckoutColors.white(tokens: tokens))
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(submitButtonBackground)
-        .cornerRadius(8)
+        .cornerRadius(PrimerRadius.small(tokens: tokens))
     }
 
     private var submitButtonText: String {
@@ -314,8 +307,8 @@ struct CardFormScreen: View, LogReporter {
 
     private var submitButtonBackground: Color {
         cardFormState.isValid && !cardFormState.isLoading
-            ? (tokens?.primerColorTextPrimary ?? .blue)
-            : (tokens?.primerColorGray300 ?? Color(.systemGray3))
+            ? PrimerCheckoutColors.textPrimary(tokens: tokens)
+            : PrimerCheckoutColors.gray300(tokens: tokens)
     }
 
     private func submitAction() {
@@ -332,7 +325,7 @@ struct CardFormScreen: View, LogReporter {
                 bridgeController?.invalidateContentSize()
             }
 
-            for await state in await scope.state {
+            for await state in scope.state {
                 // Get form configuration outside of MainActor.run
                 let updatedFormConfig = await MainActor.run {
                     scope.getFormConfiguration()
@@ -554,9 +547,9 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 Text(CheckoutComponentsStrings.retailOutletNotImplemented)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding()
+                    .font(PrimerFont.caption(tokens: tokens))
+                    .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
+                    .padding(PrimerSpacing.large(tokens: tokens))
             }
 
         case .otp:
@@ -591,8 +584,180 @@ struct CardFormScreen: View, LogReporter {
             return network.network
         } else {
             // Get card number from structured data
-            let cardNumber = cardFormState.data[.cardNumber]
-            return CardNetwork(cardNumber: cardNumber)
+            let cardNumber: String? = nil
+            return CardNetwork(cardNumber: cardNumber ?? "")
         }
     }
 }
+
+// MARK: - Preview
+#if DEBUG
+@available(iOS 15.0, *)
+struct CardFormScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // All Fields - Comprehensive view of every field type
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .visa,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: [
+                        .countryCode,
+                        .addressLine1,
+                        .addressLine2,
+                        .city,
+                        .state,
+                        .postalCode,
+                        .firstName,
+                        .lastName,
+                        .email,
+                        .phoneNumber,
+                        .otp
+                    ]
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("All Fields - Light")
+
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .masterCard,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: [
+                        .countryCode,
+                        .addressLine1,
+                        .addressLine2,
+                        .city,
+                        .state,
+                        .postalCode,
+                        .firstName,
+                        .lastName,
+                        .email,
+                        .phoneNumber,
+                        .otp
+                    ]
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("All Fields - Dark")
+
+            // Card Fields Only - Minimal configuration
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .amex,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Card Fields Only - Light")
+
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .discover,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Card Fields Only - Dark")
+
+            // Co-badged Cards - Multiple networks
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .visa,
+                availableNetworks: [.visa, .masterCard, .discover],
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Co-badged Cards - Light")
+
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .visa,
+                availableNetworks: [.visa, .masterCard, .discover],
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Co-badged Cards - Dark")
+
+            // Loading State
+            CardFormScreen(scope: MockCardFormScope(
+                isLoading: true,
+                isValid: true,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Loading State")
+
+            // Valid State - Ready to submit
+            CardFormScreen(scope: MockCardFormScope(
+                isLoading: false,
+                isValid: true,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("Valid State")
+
+            // With Billing Address
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .masterCard,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv],
+                    billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("With Billing Address - Light")
+
+            CardFormScreen(scope: MockCardFormScope(
+                selectedNetwork: .jcb,
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv],
+                    billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .environment(\.diContainer, MockDIContainer())
+            .preferredColorScheme(.dark)
+            .previewDisplayName("With Billing Address - Dark")
+
+            // With Surcharge Amount
+            CardFormScreen(scope: MockCardFormScope(
+                isValid: true,
+                selectedNetwork: .visa,
+                surchargeAmount: "+ 1.50€",
+                formConfiguration: CardFormConfiguration(
+                    cardFields: [.cardNumber, .expiryDate, .cvv],
+                    billingFields: []
+                )
+            ))
+            .environment(\.designTokens, MockDesignTokens.light)
+            .environment(\.diContainer, MockDIContainer())
+            .previewDisplayName("With Surcharge")
+        }
+    }
+}
+#endif

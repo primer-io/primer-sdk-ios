@@ -60,10 +60,10 @@ struct BillingAddressView: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             // Name fields (horizontal layout) - Using closure properties
             if configuration.showFirstName || configuration.showLastName {
-                HStack(spacing: 16) {
+                HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
                     if configuration.showFirstName {
                         if let customField = (cardFormScope as? DefaultCardFormScope)?.firstNameField {
                             AnyView(customField(CheckoutComponentsStrings.firstNameLabel, styling))
@@ -186,7 +186,7 @@ struct BillingAddressView: View, LogReporter {
             } else {
                 // Fallback if scopes aren't available
                 Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
-                    .padding()
+                    .padding(PrimerSpacing.large(tokens: tokens))
             }
         }
     }

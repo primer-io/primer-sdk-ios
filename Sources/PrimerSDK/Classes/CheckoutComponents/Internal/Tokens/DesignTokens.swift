@@ -3,7 +3,7 @@ import SwiftUI
 
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
-internal class DesignTokens: Decodable {
+class DesignTokens: Decodable {
     public var primerColorBackground: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
     public var primerColorTextPrimary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
     public var primerColorTextPlaceholder: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
@@ -83,6 +83,7 @@ internal class DesignTokens: Decodable {
     public var primerSpaceMedium: CGFloat? = 12
     public var primerSpaceLarge: CGFloat? = 16
     public var primerSpaceXlarge: CGFloat? = 20
+    public var primerSpaceXxlarge: CGFloat? = 24
     public var primerSpaceBase: CGFloat? = 4
     public var primerSizeSmall: CGFloat? = 16
     public var primerSizeMedium: CGFloat? = 20
@@ -173,6 +174,7 @@ internal class DesignTokens: Decodable {
         case primerSpaceMedium
         case primerSpaceLarge
         case primerSpaceXlarge
+        case primerSpaceXxlarge
         case primerSpaceBase
         case primerSizeSmall
         case primerSizeMedium
@@ -182,6 +184,9 @@ internal class DesignTokens: Decodable {
         case primerSizeXxxlarge
         case primerSizeBase
     }
+
+    // Default initializer preserves default values
+    init() {}
 
     // Custom initializer to decode from JSON.
     required init(from decoder: Decoder) throws {
@@ -601,6 +606,7 @@ internal class DesignTokens: Decodable {
         self.primerSpaceMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceMedium)
         self.primerSpaceLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceLarge)
         self.primerSpaceXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXlarge)
+        self.primerSpaceXxlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXxlarge)
         self.primerSpaceBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceBase)
         self.primerSizeSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeSmall)
         self.primerSizeMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeMedium)
