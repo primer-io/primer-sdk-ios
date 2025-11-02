@@ -1,15 +1,14 @@
 //
 //  FontRegistration.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Style Dictionary Generator on 30.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 import CoreText
 
 /// Utility for registering custom fonts bundled with the SDK
-enum FontRegistration {
+enum FontRegistration: LogReporter {
 
     private static var isRegistered = false
     private static let lock = NSLock()
@@ -42,15 +41,25 @@ enum FontRegistration {
             forResource: fontNameWithoutExt,
             withExtension: "ttf"
         ) else {
+            logger.error(message: "⚠️ [FontRegistration] Failed to locate font file: \(fontFileName)")
             return
         }
 
-        guard let fontDataProvider = CGDataProvider(url: fontURL as CFURL),
-              let font = CGFont(fontDataProvider) else {
+        guard let fontDataProvider = CGDataProvider(url: fontURL as CFURL) else {
+            logger.error(message: "⚠️ [FontRegistration] Failed to create data provider for: \(fontFileName)")
+            return
+        }
+
+        guard let font = CGFont(fontDataProvider) else {
+            logger.error(message: "⚠️ [FontRegistration] Failed to create CGFont from: \(fontFileName)")
             return
         }
 
         var error: Unmanaged<CFError>?
-        _ = CTFontManagerRegisterGraphicsFont(font, &error)
+        let success = CTFontManagerRegisterGraphicsFont(font, &error)
+
+        if !success, let error = error?.takeRetainedValue() {
+            logger.error(message: "⚠️ [FontRegistration] Failed to register font \(fontFileName): \(error)")
+        }
     }
 }
