@@ -94,6 +94,11 @@ private extension ComposableContainer {
                     eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
                 )
             }
+
+        // Accessibility - Announcement Service
+        _ = try? await container.register(AccessibilityAnnouncementService.self)
+            .asSingleton()
+            .with { _ in DefaultAccessibilityAnnouncementService() }
     }
 
     /// Register validation framework.

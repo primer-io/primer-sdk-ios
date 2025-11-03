@@ -88,6 +88,13 @@ struct CardNumberInputField: View, LogReporter {
                 }
             }
         )
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.cardNumberField,
+            label: CheckoutComponentsStrings.a11yCardNumberLabel,
+            hint: CheckoutComponentsStrings.a11yCardNumberHint,
+            value: errorMessage,
+            traits: [.isButton]
+        ))
         .onAppear {
             setupValidationService()
         }

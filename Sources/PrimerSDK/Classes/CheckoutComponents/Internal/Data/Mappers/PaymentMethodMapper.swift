@@ -10,21 +10,21 @@ import UIKit
 /// Protocol for mapping between internal and public payment method representations.
 protocol PaymentMethodMapper {
     /// Maps an internal payment method to the public representation.
-    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod
 
     /// Maps multiple internal payment methods to public representations.
-    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod]
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod]
 }
 
 /// Default implementation of PaymentMethodMapper.
 final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
-    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod {
         let formattedSurcharge = formatSurcharge(internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
 
         // Debug logging for surcharge mapping
 
-        return PrimerComposablePaymentMethod(
+        return CheckoutPaymentMethod(
             id: internalMethod.id,
             type: internalMethod.type,
             name: internalMethod.name,
@@ -37,7 +37,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
         )
     }
 
-    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod] {
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod] {
         return internalMethods.map { mapToPublic($0) }
     }
 

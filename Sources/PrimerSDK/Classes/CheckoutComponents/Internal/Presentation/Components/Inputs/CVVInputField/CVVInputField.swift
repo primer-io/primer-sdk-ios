@@ -95,6 +95,13 @@ struct CVVInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.cvcField,
+            label: CheckoutComponentsStrings.a11yCVCLabel,
+            hint: CheckoutComponentsStrings.a11yCVCHint,
+            value: errorMessage,
+            traits: [.isButton]
+        ))
         .onAppear {
             setupValidationService()
         }
