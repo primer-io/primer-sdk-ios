@@ -13,6 +13,7 @@ struct CardFormScreen: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var cardFormState: StructuredCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
@@ -66,7 +67,7 @@ struct CardFormScreen: View, LogReporter {
                     .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                     .accessibility(config: AccessibilityConfiguration(
                         identifier: AccessibilityIdentifiers.Common.closeButton,
-                        label: CheckoutComponentsStrings.a11yClose,
+                        label: CheckoutComponentsStrings.a11yCancel,
                         traits: [.isButton]
                     ))
                 }
@@ -254,7 +255,9 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonContent: some View {
-        HStack {
+        let isEnabled = cardFormState.isValid && !cardFormState.isLoading
+
+        return HStack {
             if cardFormState.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: PrimerCheckoutColors.white(tokens: tokens)))
@@ -272,7 +275,8 @@ struct CardFormScreen: View, LogReporter {
         .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.submitButton,
             label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonText,
-            hint: cardFormState.isLoading ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
+            hint: cardFormState.isLoading ? nil : (isEnabled ? CheckoutComponentsStrings.a11ySubmitButtonHint :
+                                                    CheckoutComponentsStrings.a11ySubmitButtonDisabled),
             traits: [.isButton]
         ))
     }
@@ -349,17 +353,11 @@ struct CardFormScreen: View, LogReporter {
                 }
 
                 await MainActor.run {
-                    let previousErrorCount = self.cardFormState.fieldErrors.count
                     self.cardFormState = state
                     self.refreshTrigger = UUID()
 
                     // Update form configuration in case it changed
                     self.formConfiguration = updatedFormConfig
-
-                    // Move focus to first error field when new errors appear
-                    if state.fieldErrors.count > previousErrorCount {
-                        moveFocusToFirstError()
-                    }
 
                     // Update selected network if changed
                     if let selectedNetwork = state.selectedNetwork {
@@ -675,7 +673,21 @@ struct CardFormScreen: View, LogReporter {
         focusedField = nil
     }
 
-    /// Moves focus to the first field with a validation error
+    /// Moves focus to the first field with a validation error.
+    ///
+    /// **Important**: This should only be called in response to explicit user actions,
+    /// such as attempting to submit the form or requesting error navigation.
+    /// DO NOT call this automatically when errors appear during typing, as it creates
+    /// an accessibility trap preventing VoiceOver users from navigating freely.
+    ///
+    /// Valid use cases:
+    /// - User manually requests "jump to error" functionality
+    /// - After form submission is attempted (if we add validation-before-submit)
+    /// - Explicit accessibility navigation actions
+    ///
+    /// Invalid use cases:
+    /// - Automatic call when error count increases during typing (ACCESSIBILITY TRAP)
+    /// - Any automatic call during text input changes
     private func moveFocusToFirstError() {
         // Check for errors in card fields first
         for field in formConfiguration.cardFields {

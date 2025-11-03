@@ -816,14 +816,14 @@ struct CheckoutComponentsStrings {
         comment: "VoiceOver announcement during payment processing"
     )
 
-    // MARK: Payment Selection Accessibility
-
-    static let a11yPaymentSelectionHeader = NSLocalizedString(
-        "accessibility.paymentSelection.header",
+    static let a11ySubmitButtonDisabled = NSLocalizedString(
+        "accessibility.cardForm.submit.disabled",
         bundle: Bundle.primerResources,
-        value: "Select payment method",
-        comment: "VoiceOver header for payment method selection screen"
+        value: "Button disabled. Complete all required fields to enable payment",
+        comment: "VoiceOver hint when submit button is disabled due to validation errors"
     )
+
+    // MARK: Payment Selection Accessibility
 
     static let a11ySavedCardMasked = NSLocalizedString(
         "accessibility.paymentSelection.card.masked",
@@ -893,6 +893,13 @@ struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Close",
         comment: "VoiceOver label for close button"
+    )
+
+    static let a11yCancel = NSLocalizedString(
+        "accessibility.common.cancel",
+        bundle: Bundle.primerResources,
+        value: "Cancel",
+        comment: "VoiceOver label for cancel button"
     )
 
     static let a11yBack = NSLocalizedString(

@@ -19,6 +19,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
 
     var body: some View {
@@ -67,7 +68,7 @@ struct PaymentMethodSelectionScreen: View {
                     .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                     .accessibility(config: AccessibilityConfiguration(
                         identifier: AccessibilityIdentifiers.Common.closeButton,
-                        label: CheckoutComponentsStrings.a11yClose,
+                        label: CheckoutComponentsStrings.a11yCancel,
                         traits: [.isButton]
                     ))
             }
@@ -105,11 +106,6 @@ struct PaymentMethodSelectionScreen: View {
             errorSection
         }
         .background(PrimerCheckoutColors.background(tokens: tokens))
-        .accessibility(config: AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.PaymentSelection.container,
-            label: CheckoutComponentsStrings.a11yPaymentSelectionHeader,
-            traits: [.isHeader]
-        ))
     }
 
     @MainActor
@@ -229,6 +225,7 @@ struct PaymentMethodSelectionScreen: View {
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     .padding(.horizontal, PrimerSpacing.small(tokens: tokens))
+                    .accessibilityAddTraits(.isHeader)
                 }
             }
 

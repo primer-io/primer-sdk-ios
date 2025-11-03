@@ -53,9 +53,6 @@ enum AccessibilityIdentifiers {
 
     /// Payment method selection accessibility identifiers
     enum PaymentSelection {
-        /// Container for payment method list
-        static let container = "checkout_components_payment_selection_container"
-
         /// Header/title for payment method selection screen
         static let header = "checkout_components_payment_selection_header"
 

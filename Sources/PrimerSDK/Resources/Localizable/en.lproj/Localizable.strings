@@ -399,13 +399,11 @@
 "accessibility.cardForm.submit.label" = "Submit payment";
 "accessibility.cardForm.submit.hint" = "Double-tap to submit payment";
 "accessibility.cardForm.submit.loading" = "Processing payment, please wait";
+"accessibility.cardForm.submit.disabled" = "Button disabled. Complete all required fields to enable payment";
 
 /* Card Form - Save Button */
 "accessibility.cardForm.save.label" = "Save card";
 "accessibility.cardForm.save.hint" = "Double-tap to save this card for future use";
-
-/* Payment Selection - Header */
-"accessibility.paymentSelection.header" = "Select payment method";
 
 /* Payment Selection - Card Items */
 "accessibility.paymentSelection.card.label" = "card ending in masked digits";
@@ -432,6 +430,7 @@
 "accessibility.common.loading" = "Loading, please wait";
 "accessibility.common.close" = "Close";
 "accessibility.common.close.hint" = "Double-tap to close";
+"accessibility.common.cancel" = "Cancel";
 "accessibility.common.back" = "Go back";
 "accessibility.common.back.hint" = "Double-tap to go back";
 "accessibility.common.dismiss" = "Dismiss";

@@ -1,9 +1,8 @@
 //
 //  SelectCountryScreen.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -14,6 +13,7 @@ struct SelectCountryScreen: View {
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var countryState: PrimerSelectCountryState = .init()
 
     var body: some View {
@@ -38,6 +38,7 @@ struct SelectCountryScreen: View {
                 onDismiss?()
             }
             .foregroundColor(PrimerCheckoutColors.blue(tokens: tokens))
+            .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
         )
     }
 

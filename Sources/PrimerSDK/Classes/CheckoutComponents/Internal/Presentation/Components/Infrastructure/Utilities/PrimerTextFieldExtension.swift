@@ -1,9 +1,8 @@
 //
 //  PrimerTextFieldExtension.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import UIKit
@@ -146,10 +145,14 @@ extension UITextField {
         // Add keyboard accessory view with "Done" button
         let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: PrimerComponentHeight.keyboardAccessory))
         accessoryView.backgroundColor = UIColor.systemGray6
+        // Hide container from accessibility - only the button should be accessible
+        accessoryView.isAccessibilityElement = false
 
         let doneButton = UIButton(type: .system)
         doneButton.setTitle("Done", for: .normal)
         doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        doneButton.accessibilityLabel = "Done"
+        doneButton.accessibilityTraits = .button
         if let target = doneButtonTarget {
             doneButton.addTarget(target, action: doneButtonAction, for: .touchUpInside)
         }
