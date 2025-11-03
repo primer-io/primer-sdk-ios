@@ -1,9 +1,8 @@
 //
 //  PrimerFont.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Style Dictionary Generator on 30.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -52,6 +51,27 @@ struct PrimerFont {
 
         // Fallback to system font
         return .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+    }
+
+    /// Creates a UIFont with Dynamic Type scaling support.
+    ///
+    /// This method creates a font using the standard `uiFont` parameters and applies
+    /// UIFontMetrics scaling to support Dynamic Type accessibility feature. The returned
+    /// font will automatically scale based on the user's preferred content size category.
+    ///
+    /// - Parameters:
+    ///   - baseSize: Base font size in points (before Dynamic Type scaling)
+    ///   - weight: Font weight as numeric value (100-900, defaults to 400)
+    ///   - tokens: Optional design tokens for font family override
+    /// - Returns: UIFont scaled for user's Dynamic Type preference
+    static func scaledFont(
+        baseSize: CGFloat,
+        weight: CGFloat = 400,
+        tokens: DesignTokens? = nil
+    ) -> UIFont {
+        let family = tokens?.primerTypographyBodyMediumFont ?? "Inter"
+        let baseFont = uiFont(family: family, weight: weight, size: baseSize)
+        return UIFontMetrics.default.scaledFont(for: baseFont)
     }
 
     // MARK: - UIKit Typography Helpers
@@ -133,45 +153,94 @@ struct PrimerFont {
     }
 
     // MARK: - SwiftUI Typography Helpers
+    //
+    // All SwiftUI font helpers automatically scale with iOS Dynamic Type settings
+    // using UIFontMetrics.default.scaledFont(). This ensures text remains readable
+    // for users with low vision at all accessibility text sizes (xSmall through AX5).
 
     /// Title extra large (24pt, weight 500) - for major section titles
     static func titleXLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontTitleXLarge(tokens: tokens))
+        let baseFont = uiFontTitleXLarge(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Title large (16pt, weight 500) - for subsection titles
     static func titleLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontTitleLarge(tokens: tokens))
+        let baseFont = uiFontTitleLarge(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Body large (16pt, weight 400) - for large body text
     static func bodyLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodyLarge(tokens: tokens))
+        let baseFont = uiFontBodyLarge(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Body medium (14pt, weight 400) - for standard body text
     static func bodyMedium(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodyMedium(tokens: tokens))
+        let baseFont = uiFontBodyMedium(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Body small (12pt, weight 400) - for small body text and captions
     static func bodySmall(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodySmall(tokens: tokens))
+        let baseFont = uiFontBodySmall(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Large icon font (48pt, weight 400) - for large icon displays
     static func largeIcon(tokens: DesignTokens?) -> Font {
-        return Font(uiFontLargeIcon(tokens: tokens))
+        let baseFont = uiFontLargeIcon(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Extra large icon font (56pt, weight 400) - for extra large icon displays
     static func extraLargeIcon(tokens: DesignTokens?) -> Font {
-        return Font(uiFontExtraLargeIcon(tokens: tokens))
+        let baseFont = uiFontExtraLargeIcon(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
     }
 
     /// Small badge font (10pt, weight 500) - for compact badge text
     static func smallBadge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontSmallBadge(tokens: tokens))
+        let baseFont = uiFontSmallBadge(tokens: tokens)
+        let scaledFont = UIFontMetrics.default.scaledFont(for: baseFont)
+        return Font(scaledFont)
+    }
+
+    // MARK: - SwiftUI Dynamic Type Helpers
+
+    /// Creates a SwiftUI Font with Dynamic Type scaling support.
+    ///
+    /// This method creates a font that automatically scales based on the user's
+    /// Dynamic Type settings. For more granular control, use `@ScaledMetric` property
+    /// wrapper in your SwiftUI views:
+    ///
+    /// ```swift
+    /// @ScaledMetric var fontSize: CGFloat = 14
+    /// var body: some View {
+    ///     Text("Hello")
+    ///         .font(PrimerFont.scaledSwiftUIFont(baseSize: fontSize, weight: 400))
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - baseSize: Base font size in points (before Dynamic Type scaling)
+    ///   - weight: Font weight as numeric value (100-900, defaults to 400)
+    ///   - tokens: Optional design tokens for font family override
+    /// - Returns: SwiftUI Font scaled for user's Dynamic Type preference
+    static func scaledSwiftUIFont(
+        baseSize: CGFloat,
+        weight: CGFloat = 400,
+        tokens: DesignTokens? = nil
+    ) -> Font {
+        return Font(scaledFont(baseSize: baseSize, weight: weight, tokens: tokens))
     }
 
     // MARK: - Semantic Font Helpers

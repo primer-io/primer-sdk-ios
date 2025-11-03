@@ -97,6 +97,13 @@ struct ExpiryDateInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.expiryField,
+            label: CheckoutComponentsStrings.a11yExpiryLabel,
+            hint: CheckoutComponentsStrings.a11yExpiryHint,
+            value: errorMessage,
+            traits: [.isButton]
+        ))
         .onAppear {
             setupValidationService()
         }

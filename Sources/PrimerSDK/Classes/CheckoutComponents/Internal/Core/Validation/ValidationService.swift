@@ -1,9 +1,8 @@
 //
 //  ValidationService.swift
 //
-//
-//  Created by Boris on 26.3.25..
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -123,11 +122,11 @@ final class ValidationResultCache {
 /// Default implementation of the ValidationService
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
-    
+
     private let rulesFactory: RulesFactory
-    
+
     // MARK: - Initialization
-    
+
     init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
     }

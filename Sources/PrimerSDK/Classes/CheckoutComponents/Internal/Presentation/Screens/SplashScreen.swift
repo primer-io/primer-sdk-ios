@@ -1,9 +1,8 @@
 //
 //  SplashScreen.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -22,6 +21,10 @@ struct SplashScreen: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: PrimerCheckoutColors.borderFocus(tokens: tokens)))
                     .scaleEffect(PrimerScale.large)
                     .frame(width: PrimerComponentHeight.progressIndicator, height: PrimerComponentHeight.progressIndicator)
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                        label: CheckoutComponentsStrings.a11yLoading
+                    ))
 
                 VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary loading message
@@ -29,12 +32,14 @@ struct SplashScreen: View {
                         .font(PrimerFont.bodyLarge(tokens: tokens))
                         .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isStaticText)
 
                     // Secondary loading message
                     Text(CheckoutComponentsStrings.loadingWontTakeLong)
                         .font(PrimerFont.bodyMedium(tokens: tokens))
                         .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isStaticText)
                 }
             }
             .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))

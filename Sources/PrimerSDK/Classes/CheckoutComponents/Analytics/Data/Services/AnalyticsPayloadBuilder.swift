@@ -1,9 +1,8 @@
 //
 //  AnalyticsPayloadBuilder.swift
-//  PrimerSDK
 //
-//  Created by CheckoutComponents Analytics
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import UIKit
@@ -11,10 +10,6 @@ import UIKit
 /// Responsible for constructing analytics payloads from event data and session configuration.
 /// Handles payload assembly, device info integration, and SDK type detection.
 struct AnalyticsPayloadBuilder {
-
-    // MARK: - Initialization
-
-    init() {}
 
     // MARK: - Public Methods
 
@@ -37,7 +32,7 @@ struct AnalyticsPayloadBuilder {
 
         // Always include userAgent (system info)
         let userAgent = UIDevice.userAgent
-        
+
         // Only include optional fields if metadata is provided
         // This ensures SDK lifecycle events (metadata=nil) don't include these fields
         // which matches backend validation requirements

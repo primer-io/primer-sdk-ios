@@ -1,9 +1,8 @@
 //
 //  DefaultPaymentMethodSelectionScope.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -41,7 +40,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     public var screen: (() -> AnyView)?
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
-    public var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)?
+    public var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)?
     public var categoryHeader: ((_ category: String) -> AnyView)?
     public var emptyStateView: (() -> AnyView)?
 
@@ -49,6 +48,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+    private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
 
     // MARK: - Initialization
 
@@ -61,14 +61,25 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
         Task {
             await loadPaymentMethods()
+            await resolveAccessibilityService()
+        }
+    }
+
+    // MARK: - Accessibility Setup
+
+    private func resolveAccessibilityService() async {
+        do {
+            guard let container = await DIContainer.current else { return }
+            accessibilityAnnouncementService = try await container.resolve(AccessibilityAnnouncementService.self)
+        } catch {
+            // Failed to resolve AccessibilityAnnouncementService, accessibility announcements will be disabled
+            logger.debug(message: "[A11Y] Failed to resolve AccessibilityAnnouncementService: \(error.localizedDescription)")
         }
     }
 
     // MARK: - Setup
 
     private func loadPaymentMethods() async {
-        // Loading payment methods from checkout scope...
-
         // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
             // Checkout scope not available
@@ -94,7 +105,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     // Failed to resolve PaymentMethodMapper
                     // Fallback to manual creation without surcharge data
                     let composablePaymentMethods = paymentMethods.map { method in
-                        PrimerComposablePaymentMethod(
+                        CheckoutPaymentMethod(
                             id: method.id,
                             type: method.type,
                             name: method.name,
@@ -104,8 +115,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     }
                     internalState.paymentMethods = composablePaymentMethods
                     internalState.filteredPaymentMethods = composablePaymentMethods
-                    updateCategories()
-                    // Payment methods loaded and categorized successfully (without surcharge)
+                    // Payment methods loaded successfully (without surcharge)
                     break
                 }
 
@@ -115,10 +125,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                 internalState.paymentMethods = composablePaymentMethods
                 internalState.filteredPaymentMethods = composablePaymentMethods
 
-                // Group by category if needed
-                updateCategories()
-
-                // Payment methods loaded and categorized successfully with surcharge data
+                // Payment methods loaded successfully with surcharge data
                 break
             } else if case let .failure(error) = checkoutState {
                 // Checkout scope has error
@@ -130,10 +137,15 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     // MARK: - Public Methods
 
-    public func onPaymentMethodSelected(paymentMethod: PrimerComposablePaymentMethod) {
+    public func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
         // Payment method selected
 
         internalState.selectedPaymentMethod = paymentMethod
+
+        // Announce selection to VoiceOver users
+        let selectionMessage = "\(paymentMethod.name) selected"
+        accessibilityAnnouncementService?.announceStateChange(selectionMessage)
+        logger.debug(message: "[A11Y] Payment method selected announcement: \(selectionMessage)")
 
         // Track payment method selection
         Task {
@@ -175,54 +187,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     method.type.lowercased().contains(lowercasedQuery)
             }
         }
-
-        updateCategories()
     }
 
-    // MARK: - Private Methods
-
-    private func updateCategories() {
-        // Group payment methods by category
-        // For now, we'll use simple categories based on payment method type
-        var categorizedMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = []
-
-        let methodsToGroup = internalState.searchQuery.isEmpty
-            ? internalState.paymentMethods
-            : internalState.filteredPaymentMethods
-
-        // Cards category
-        let cardMethods = methodsToGroup.filter {
-            $0.type.contains("CARD") || $0.type == "PAYMENT_CARD"
-        }
-        if !cardMethods.isEmpty {
-            categorizedMethods.append((category: "Cards", methods: cardMethods))
-        }
-
-        // Wallets category
-        let walletMethods = methodsToGroup.filter {
-            ["PAYPAL", "APPLE_PAY", "GOOGLE_PAY"].contains($0.type)
-        }
-        if !walletMethods.isEmpty {
-            categorizedMethods.append((category: "Digital Wallets", methods: walletMethods))
-        }
-
-        // Bank transfers category
-        let bankMethods = methodsToGroup.filter {
-            $0.type.contains("BANK") || $0.type.contains("SEPA") || $0.type.contains("ACH")
-        }
-        if !bankMethods.isEmpty {
-            categorizedMethods.append((category: "Bank Transfers", methods: bankMethods))
-        }
-
-        // Other payment methods
-        let categorizedTypes = Set(cardMethods.map { $0.type } +
-                                    walletMethods.map { $0.type } +
-                                    bankMethods.map { $0.type })
-        let otherMethods = methodsToGroup.filter { !categorizedTypes.contains($0.type) }
-        if !otherMethods.isEmpty {
-            categorizedMethods.append((category: "Other Payment Methods", methods: otherMethods))
-        }
-
-        internalState.categorizedPaymentMethods = categorizedMethods
-    }
 }

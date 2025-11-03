@@ -1,9 +1,8 @@
 //
 //  PrimerPaymentMethodScope.swift
-//  PrimerSDK
 //
-//  Created by Boris on 26.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import Foundation
@@ -85,6 +84,13 @@ public protocol PaymentMethodProtocol {
         diContainer: any ContainerProtocol
     ) throws -> ScopeType
 
+    /// Creates the view for this payment method by retrieving its scope and rendering the appropriate UI.
+    /// This method handles both custom screens (if provided) and default screens.
+    /// - Parameter checkoutScope: The parent checkout scope that manages this payment method
+    /// - Returns: The view for this payment method, or nil if the scope cannot be retrieved
+    @MainActor
+    static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView?
+
     /// Provides custom UI for this payment method using ViewBuilder.
     /// - Parameter content: A ViewBuilder closure that uses the payment method's scope as a parameter,
     ///                      allowing full access to the payment method's state and behavior.
@@ -96,41 +102,25 @@ public protocol PaymentMethodProtocol {
     func defaultContent() -> AnyView
 }
 
-// MARK: - Payment Method Type Extensions
-
-/// Extension to provide CheckoutComponents-specific functionality to PrimerPaymentMethodType
-@available(iOS 15.0, *)
-extension PrimerPaymentMethodType {
-    /// Human-readable display name for the payment method in CheckoutComponents
-    public var checkoutComponentsDisplayName: String {
-        switch self {
-        case .paymentCard:
-            return "Card"
-        case .applePay:
-            return "Apple Pay"
-        case .googlePay:
-            return "Google Pay"
-        case .payPal:
-            return "PayPal"
-        default:
-            return rawValue.replacingOccurrences(of: "_", with: " ").capitalized
-        }
-    }
-}
-
 // MARK: - Payment Method Registry
 
 /// Registry for managing payment method implementations and their scope creation.
 /// Provides dynamic scope creation based on payment method types.
 @available(iOS 15.0, *)
 @MainActor
-internal class PaymentMethodRegistry: LogReporter {
+class PaymentMethodRegistry: LogReporter {
 
     /// Type-erased payment method creator function
     private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope
 
+    /// Type-erased view creator function
+    private typealias ViewCreator = @MainActor (any PrimerCheckoutScope) -> AnyView?
+
     /// Registry mapping payment method types to their scope creators
     private var creators: [String: ScopeCreator] = [:]
+
+    /// Registry mapping payment method types to their view creators
+    private var viewBuilders: [String: ViewCreator] = [:]
 
     /// Registry mapping scope types to their payment method identifiers
     private var typeToIdentifier: [String: String] = [:]
@@ -148,20 +138,23 @@ internal class PaymentMethodRegistry: LogReporter {
             try paymentMethodType.createScope(checkoutScope: checkoutScope, diContainer: diContainer)
         }
 
+        // Register view builder for dynamic UI creation
+        viewBuilders[typeKey] = { checkoutScope in
+            paymentMethodType.createView(checkoutScope: checkoutScope)
+        }
+
         // Register type-to-identifier mapping for type-safe lookups
         let scopeTypeName = String(describing: T.ScopeType.self)
         typeToIdentifier[scopeTypeName] = typeKey
 
-        // PAYMENT METHOD OPTIONS INTEGRATION: Log when payment methods requiring settings are registered
+        // PAYMENT METHOD OPTIONS INTEGRATION: Log when payment methods requiring special settings are registered
+        // Based on PrimerPaymentMethodOptionsProtocol: applePayOptions, klarnaOptions, stripeOptions
         if typeKey == PrimerPaymentMethodType.applePay.rawValue {
-            // Apple Pay payment method registered - will require ApplePayOptions from settings
-            logger.info(message: "✅ [PaymentMethodRegistry] Apple Pay payment method registered - requires PrimerSettings.paymentMethodOptions.applePayOptions configuration")
-        } else if typeKey == PrimerPaymentMethodType.googlePay.rawValue {
-            // Google Pay payment method registered - could use URL scheme for redirects
-            logger.info(message: "✅ [PaymentMethodRegistry] Google Pay payment method registered - may use URL scheme from PrimerSettings")
+            logger.info(message: "✅ [PaymentMethodRegistry] Apple Pay registered - requires PrimerSettings.paymentMethodOptions.applePayOptions")
+        } else if typeKey == PrimerPaymentMethodType.klarna.rawValue || typeKey == PrimerPaymentMethodType.primerTestKlarna.rawValue {
+            logger.info(message: "✅ [PaymentMethodRegistry] Klarna registered - requires PrimerSettings.paymentMethodOptions.klarnaOptions")
         } else if typeKey.contains("STRIPE") {
-            // Stripe payment method registered - will require StripeOptions from settings
-            logger.info(message: "✅ [PaymentMethodRegistry] Stripe payment method (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions configuration")
+            logger.info(message: "✅ [PaymentMethodRegistry] Stripe (\(typeKey)) registered - requires PrimerSettings.paymentMethodOptions.stripeOptions")
         } else {
             logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(typeKey) registered")
         }
@@ -240,5 +233,17 @@ internal class PaymentMethodRegistry: LogReporter {
     /// Returns all registered payment method types
     var registeredTypes: [String] {
         Array(creators.keys)
+    }
+
+    /// Retrieves the view for a specific payment method type
+    /// - Parameters:
+    ///   - paymentMethodType: The payment method type identifier
+    ///   - checkoutScope: The parent checkout scope
+    /// - Returns: The view for this payment method, or nil if not registered
+    func getView(for paymentMethodType: String, checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+        guard let viewBuilder = viewBuilders[paymentMethodType] else {
+            return nil
+        }
+        return viewBuilder(checkoutScope)
     }
 }

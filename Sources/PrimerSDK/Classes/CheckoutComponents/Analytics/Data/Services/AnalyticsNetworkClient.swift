@@ -1,9 +1,8 @@
 //
 //  AnalyticsNetworkClient.swift
-//  PrimerSDK
 //
-//  Created by CheckoutComponents Analytics
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -50,12 +49,12 @@ actor AnalyticsNetworkClient: LogReporter {
 
         // Encode payload (no pretty printing to match Android behavior)
         let encoder = JSONEncoder()
-        
+
         // IMPORTANT: Disable forward slash escaping - server may reject escaped slashes
         if #available(iOS 13.0, *) {
             encoder.outputFormatting = [.withoutEscapingSlashes]
         }
-        
+
         do {
             let jsonData = try encoder.encode(payload)
             request.httpBody = jsonData

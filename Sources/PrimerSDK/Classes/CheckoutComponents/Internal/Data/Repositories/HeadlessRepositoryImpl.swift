@@ -1,9 +1,8 @@
 //
 //  HeadlessRepositoryImpl.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 #if canImport(Primer3DS)
@@ -737,11 +736,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
         Task {
             await injectAnalyticsInteractor()
-            
+
             guard let interactor = analyticsInteractor else {
                 return
             }
-            
+
             await interactor.trackEvent(eventType, metadata: metadata)
         }
     }

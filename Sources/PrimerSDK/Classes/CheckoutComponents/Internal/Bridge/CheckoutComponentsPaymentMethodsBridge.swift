@@ -1,9 +1,8 @@
 //
 //  CheckoutComponentsPaymentMethodsBridge.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -175,27 +174,27 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             return paymentMethods
 
             /* Uncomment when ready to filter by registered payment methods only:
-            let registeredTypesArray = await PaymentMethodRegistry.shared.registeredTypes
-            let registeredTypes = Set(registeredTypesArray)
+             let registeredTypesArray = await PaymentMethodRegistry.shared.registeredTypes
+             let registeredTypes = Set(registeredTypesArray)
 
-            logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
+             logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
 
-            let filtered = paymentMethods.filter { method in
-                let isRegistered = registeredTypes.contains(method.type)
-                if !isRegistered {
-                    logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
-                }
-                return isRegistered
-            }
+             let filtered = paymentMethods.filter { method in
+             let isRegistered = registeredTypes.contains(method.type)
+             if !isRegistered {
+             logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
+             }
+             return isRegistered
+             }
 
-            logger.debug(message: "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types")
+             logger.debug(message: "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types")
 
-            for method in filtered {
-                logger.debug(message: "✅ [PaymentMethodsBridge] Keeping registered payment method: \(method.type)")
-            }
+             for method in filtered {
+             logger.debug(message: "✅ [PaymentMethodsBridge] Keeping registered payment method: \(method.type)")
+             }
 
-            return filtered
-            */
+             return filtered
+             */
         } else {
             // For iOS < 15.0, CheckoutComponents is not available, return empty array
             logger.debug(message: "🔍 [PaymentMethodsBridge] iOS < 15.0, CheckoutComponents not available, returning empty array")

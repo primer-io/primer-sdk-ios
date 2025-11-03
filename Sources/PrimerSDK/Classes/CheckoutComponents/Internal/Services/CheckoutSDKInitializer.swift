@@ -1,9 +1,8 @@
 //
 //  CheckoutSDKInitializer.swift
-//  PrimerSDK
 //
-//  Created by Boris on 23.12.24.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -77,9 +76,10 @@ final class CheckoutSDKInitializer {
 
         let checkoutScope = createCheckoutScope()
 
-        if presentationContext == .direct {
-            checkoutScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
-        }
+        // Note: Navigation is handled by DefaultCheckoutScope.loadPaymentMethods() which:
+        // - Waits for payment methods from server
+        // - If single payment method: navigates directly to it (any type, not just cards)
+        // - If multiple payment methods: shows payment method selection screen
 
         return InitializationResult(checkoutScope: checkoutScope)
     }

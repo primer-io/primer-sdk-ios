@@ -58,7 +58,7 @@ struct CountryInputField: View, LogReporter {
         guard !countryName.isEmpty else {
             return styling?.placeholderColor ?? PrimerCheckoutColors.textPlaceholder(tokens: tokens)
         }
-        return styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)   
+        return styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)
     }
 
     // MARK: - Initialization

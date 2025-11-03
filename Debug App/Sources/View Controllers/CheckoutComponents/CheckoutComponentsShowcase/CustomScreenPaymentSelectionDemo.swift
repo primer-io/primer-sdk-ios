@@ -1,9 +1,8 @@
 //
 //  CustomScreenPaymentSelectionDemo.swift
-//  Primer.io Debug App
 //
-//  Shows how to completely customize the PaymentMethodSelection screen UI
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import PrimerSDK
@@ -224,7 +223,7 @@ private struct CustomPaymentSelectionScreen: View {
     }
     
     @State private var selectionState = PrimerPaymentMethodSelectionState()
-    @State private var selectedMethod: PrimerComposablePaymentMethod?
+    @State private var selectedMethod: CheckoutPaymentMethod?
     @State private var animateCards = false
     
     var body: some View {
@@ -399,7 +398,7 @@ private struct CustomPaymentSelectionScreen: View {
         .padding(.vertical, 60)
     }
     
-    private func customPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
+    private func customPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
         Button(action: {
             withAnimation(.spring()) {
                 selectedMethod = method
@@ -489,7 +488,7 @@ private struct CustomPaymentSelectionScreen: View {
         .buttonStyle(PlainButtonStyle())
     }
     
-    private func iconForPaymentMethod(_ method: PrimerComposablePaymentMethod) -> String {
+    private func iconForPaymentMethod(_ method: CheckoutPaymentMethod) -> String {
         switch method.type {
         case "PAYMENT_CARD":
             return "creditcard.fill"

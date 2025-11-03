@@ -1,16 +1,19 @@
 //
 //  DefaultSelectCountryScope.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 /// Default implementation of PrimerSelectCountryScope with navigation integration
+///
+/// NOTE: Currently card-specific - holds reference to DefaultCardFormScope for billing address.
+/// If other payment methods require country selection in the future, this should be refactored
+/// to accept a generic payment method context instead of being tied to card payments.
 @available(iOS 15.0, *)
 @MainActor
-internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
+final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     // MARK: - Properties
 
@@ -72,8 +75,11 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
-                    // Assume we came from a payment method form, find which one
-                    let cardMethodType = "PAYMENT_CARD"
+                    // Multiple payment methods available - navigate back to card payment form
+                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
+                    // TODO: If other payment methods need country selection in the future, store the
+                    // originating payment method type instead of hardcoding to cards
+                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }
@@ -95,8 +101,11 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
-                    // Assume we came from a payment method form, find which one
-                    let cardMethodType = "PAYMENT_CARD"
+                    // Multiple payment methods available - navigate back to card payment form
+                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
+                    // TODO: If other payment methods need country selection in the future, store the
+                    // originating payment method type instead of hardcoding to cards
+                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }
@@ -141,7 +150,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
             .dialCode
 
         // Only include countries that have valid localized names
-        guard localizedName != "N/A" && !localizedName.isEmpty else {
+        guard localizedName != "N/A", !localizedName.isEmpty else {
             return nil
         }
 

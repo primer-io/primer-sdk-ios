@@ -112,18 +112,18 @@ struct OTPCodeInputField: View, LogReporter {
             .textContentType(.oneTimeCode)
             .frame(height: PrimerSize.xxlarge(tokens: tokens))
             .onChange(of: otpCode) { newValue in
-                    // Limit to expected length
-                    if newValue.count > expectedLength {
-                        otpCode = String(newValue.prefix(expectedLength))
+                // Limit to expected length
+                if newValue.count > expectedLength {
+                    otpCode = String(newValue.prefix(expectedLength))
+                } else {
+                    if let scope = scope {
+                        scope.updateOtpCode(newValue)
                     } else {
-                        if let scope = scope {
-                            scope.updateOtpCode(newValue)
-                        } else {
-                            onOTPCodeChange?(newValue)
-                        }
-                        validateOTPCode()
+                        onOTPCodeChange?(newValue)
                     }
+                    validateOTPCode()
                 }
+            }
         }
         .onAppear {
             setupValidationService()

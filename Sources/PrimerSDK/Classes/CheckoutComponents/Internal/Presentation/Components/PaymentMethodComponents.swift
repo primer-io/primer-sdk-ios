@@ -1,9 +1,8 @@
 //
 //  PaymentMethodComponents.swift
-//  PrimerSDK
 //
-//  Created by Boris on 15.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -18,28 +17,16 @@ struct PaymentMethodScreen: View {
 
     @ViewBuilder
     var body: some View {
-        // Truly generic dynamic scope resolution for ANY payment method
-        // Use checkout scope's cached method to ensure field customizations are preserved
-        // For card forms, use the generic method to ensure we get the right cached instance
-        if paymentMethodType == "PAYMENT_CARD",
-           let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
-            // Check if custom screen is provided, otherwise use default
-            if let customScreen = cardFormScope.screen {
-                AnyView(customScreen(cardFormScope))
-            } else {
-                AnyView(CardFormScreen(scope: cardFormScope))
-            }
-        } else if let container = DIContainer.currentSync,
-                  let _ = try? PaymentMethodRegistry.shared.createScope(
-                    for: paymentMethodType,
-                    checkoutScope: checkoutScope,
-                    diContainer: container
-                  ) {
-            // For non-card payment methods in the future, we'll add similar type checks here
-            // For now, show placeholder for non-card payment methods
-            AnyView(PaymentMethodPlaceholder(paymentMethodType: paymentMethodType))
+        // Truly generic dynamic view resolution via registry - NO hardcoded payment method checks!
+        // Each payment method registers its own view builder, making this fully extensible
+        if let paymentMethodView = PaymentMethodRegistry.shared.getView(
+            for: paymentMethodType,
+            checkoutScope: checkoutScope
+        ) {
+            // Payment method has a registered view implementation
+            paymentMethodView
         } else {
-            // This payment method doesn't have a scope implementation yet
+            // Payment method not registered or doesn't have view implementation yet
             // Show placeholder that works for any payment method type
             AnyView(PaymentMethodPlaceholder(paymentMethodType: paymentMethodType))
         }
@@ -55,9 +42,7 @@ struct PaymentMethodPlaceholder: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: paymentMethodIcon)
-                .font(PrimerFont.largeIcon(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
+            paymentMethodLogo
 
             Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
                 .font(PrimerFont.headline(tokens: tokens))
@@ -69,17 +54,24 @@ struct PaymentMethodPlaceholder: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var displayName: String {
-        PrimerPaymentMethodType(rawValue: paymentMethodType)?.checkoutComponentsDisplayName ?? paymentMethodType
+    /// Payment method logo using bundled assets (same pattern as PaymentMethodSelectionScreen)
+    private var paymentMethodLogo: some View {
+        // Use bundled asset images based on payment method type
+        let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType)
+        let imageName = paymentMethodType?.defaultImageName ?? .genericCard
+        let fallbackImage = imageName.image
+
+        return Image(uiImage: fallbackImage ?? UIImage())
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 80, height: 80)
     }
 
-    private var paymentMethodIcon: String {
-        switch paymentMethodType {
-        case "PAYMENT_CARD": return "creditcard"
-        case "APPLE_PAY": return "applelogo"
-        case "GOOGLE_PAY": return "wallet.pass"
-        case "PAYPAL": return "dollarsign.circle"
-        default: return "creditcard"
-        }
+    private var displayName: String {
+        // Use raw value with proper formatting as fallback
+        // Converts "PAYMENT_CARD" → "Payment Card", "PAYPAL" → "Paypal"
+        paymentMethodType
+            .replacingOccurrences(of: "_", with: " ")
+            .capitalized
     }
 }

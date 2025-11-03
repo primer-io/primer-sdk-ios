@@ -1,9 +1,8 @@
 //
 //  DefaultCheckoutScope.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -77,8 +76,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     public var errorScreen: ((_ message: String) -> any View)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
 
-    // Removed: paymentMethodScreens - now using PaymentMethodProtocol.content()
-
     // MARK: - Child Scopes
 
     private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
@@ -107,6 +104,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private let navigator: CheckoutNavigator
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+    private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
+
+    /// Stores the API-provided display name of the currently selected payment method for accessibility announcements
+    private var selectedPaymentMethodName: String?
 
     // MARK: - Internal Access
 
@@ -211,6 +212,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             // Resolve analytics interactor
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
+
+            // Resolve accessibility announcement service
+            accessibilityAnnouncementService = try? await container.resolve(AccessibilityAnnouncementService.self)
 
             // Interactor setup completed with bridge
         } catch {
@@ -355,6 +359,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Navigation state updating
         navigationState = newState
 
+        // Announce screen changes to VoiceOver users
+        announceScreenChange(for: newState)
+
         // Update navigation based on state (only if not syncing from navigator to avoid loops)
         if syncToNavigator {
             switch newState {
@@ -375,6 +382,49 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 // Dismissal is handled by the view layer through onCompletion callback
                 break
             }
+        }
+    }
+
+    /// Announces screen changes to VoiceOver users
+    private func announceScreenChange(for state: NavigationState) {
+        guard let service = accessibilityAnnouncementService else { return }
+
+        let message: String?
+        switch state {
+        case .loading:
+            message = CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
+        case .paymentMethodSelection:
+            message = CheckoutComponentsStrings.choosePaymentMethod
+        case let .paymentMethod(type):
+            // Use API-provided name for all payment methods
+            if let name = selectedPaymentMethodName {
+                // Primary: Use API-provided display name (e.g., "Card", "PayPal", "Klarna")
+                message = CheckoutComponentsStrings.a11yScreenPaymentMethod(name)
+            } else {
+                // Fallback: Format raw payment method type for display
+                // This should rarely be used as API always provides display names
+                // Converts "PAYMENT_CARD" → "Payment Card", "PAYPAL" → "Paypal"
+                let displayName = type
+                    .replacingOccurrences(of: "_", with: " ")
+                    .capitalized
+                message = CheckoutComponentsStrings.a11yScreenPaymentMethod(displayName)
+            }
+        case .selectCountry:
+            message = CheckoutComponentsStrings.a11yScreenCountrySelection
+        case .success:
+            message = CheckoutComponentsStrings.a11yScreenSuccess
+            selectedPaymentMethodName = nil // Clear after successful completion
+        case .failure:
+            message = CheckoutComponentsStrings.a11yScreenError
+            selectedPaymentMethodName = nil // Clear after error
+        case .dismissed:
+            message = nil // No announcement needed for dismissal
+            selectedPaymentMethodName = nil // Clear on dismiss
+        }
+
+        if let message = message {
+            service.announceScreenChange(message)
+            logger.debug(message: "[A11Y] Screen change announcement: \(message)")
         }
     }
 
@@ -532,12 +582,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         return type.rawValue
     }
 
-    // Removed: setPaymentMethodScreen - now using PaymentMethodProtocol.content()
-
-    // Removed: getPaymentMethodScreen - now using PaymentMethodProtocol.content()
-
-    // Removed: getPaymentMethodScreenByIdentifier - now using PaymentMethodProtocol.content()
-
     public func onDismiss() {
         // Checkout dismissed
 
@@ -564,6 +608,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         // Payment method selected
         // Available methods count logged
         // Checkout context logged
+
+        // Store the API-provided display name for accessibility announcements
+        selectedPaymentMethodName = method.name
 
         // Use dynamic scope creation instead of hardcoded switch statement
         do {
@@ -598,11 +645,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             } else {
                 // No scope registered for payment method
-                // Fallback: show error or stay on payment method selection
-                updateNavigationState(.failure(PrimerError.invalidArchitecture(
-                    description: "Payment method \\(method.type) is not supported",
-                    recoverSuggestion: "Register the payment method implementation"
-                )))
+                // Still navigate to payment method screen - PaymentMethodScreen will show placeholder UI
+                // This allows graceful handling of unimplemented payment methods with "Coming Soon" message
+                logger.debug(message: "⚠️ [DefaultCheckoutScope] Payment method \(method.type) not implemented, showing placeholder")
+                updateNavigationState(.paymentMethod(method.type))
             }
 
         } catch {

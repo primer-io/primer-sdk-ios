@@ -1,9 +1,8 @@
 //
 //  CardPaymentMethod.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 26.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -16,7 +15,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
     typealias ScopeType = DefaultCardFormScope
 
     /// The payment method type identifier for cards
-    static let paymentMethodType: String = "PAYMENT_CARD"
+    static let paymentMethodType: String = PrimerPaymentMethodType.paymentCard.rawValue
 
     /// Creates a card form scope for this payment method
     /// - Parameters:
@@ -40,24 +39,15 @@ struct CardPaymentMethod: PaymentMethodProtocol {
         // Determine the correct presentation context based on the number of available payment methods
         let logger = PrimerLogging.shared.logger
         let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
-        let checkoutContext = defaultCheckoutScope.presentationContext
-
-        logger.info(message: "🧭 [CardPaymentMethod] Creating card scope with context decision:")
-        logger.info(message: "🧭 [CardPaymentMethod]   - Available payment methods: \(availableMethodsCount)")
-        logger.info(message: "🧭 [CardPaymentMethod]   - Checkout scope context: \(checkoutContext)")
 
         let paymentMethodContext: PresentationContext
         if availableMethodsCount > 1 {
             // Multiple payment methods means we came from payment selection - show back button
             paymentMethodContext = .fromPaymentSelection
-            logger.info(message: "🧭 [CardPaymentMethod]   - Decision: MULTIPLE methods → using .fromPaymentSelection (back button will show)")
         } else {
             // Single payment method means direct navigation - no back button needed
             paymentMethodContext = .direct
-            logger.info(message: "🧭 [CardPaymentMethod]   - Decision: SINGLE method → using .direct (no back button)")
         }
-
-        logger.info(message: "🧭 [CardPaymentMethod]   - Final card scope context: \(paymentMethodContext)")
 
         do {
             let processCardInteractor: ProcessCardPaymentInteractor = try diContainer.resolveSync(ProcessCardPaymentInteractor.self)
@@ -89,6 +79,25 @@ struct CardPaymentMethod: PaymentMethodProtocol {
                 description: "ProcessCardPaymentInteractor could not be resolved",
                 recoverSuggestion: "Ensure CheckoutComponents DI registration runs before presenting the Card form."
             )
+        }
+    }
+
+    /// Creates the view for card payments by retrieving the card form scope and rendering the appropriate UI.
+    /// This method handles both custom screens (if provided via cardFormScope.screen) and the default CardFormScreen.
+    /// - Parameter checkoutScope: The parent checkout scope that manages this payment method
+    /// - Returns: The card form view, or nil if the scope cannot be retrieved
+    @MainActor
+    static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
+        // Get the cached card form scope from the checkout scope
+        guard let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) else {
+            return nil
+        }
+
+        // Check if custom screen is provided, otherwise use default
+        if let customScreen = cardFormScope.screen {
+            return AnyView(customScreen(cardFormScope))
+        } else {
+            return AnyView(CardFormScreen(scope: cardFormScope))
         }
     }
 

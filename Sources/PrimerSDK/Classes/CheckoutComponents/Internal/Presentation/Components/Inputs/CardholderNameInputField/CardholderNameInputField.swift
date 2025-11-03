@@ -91,6 +91,13 @@ struct CardholderNameInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.cardholderNameField,
+            label: CheckoutComponentsStrings.a11yCardholderNameLabel,
+            hint: CheckoutComponentsStrings.a11yCardholderNameHint,
+            value: errorMessage,
+            traits: [.isButton]
+        ))
         .onAppear {
             setupValidationService()
         }

@@ -1,9 +1,8 @@
 //
 //  ComposableContainer.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
@@ -95,6 +94,11 @@ private extension ComposableContainer {
                     eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
                 )
             }
+
+        // Accessibility - Announcement Service
+        _ = try? await container.register(AccessibilityAnnouncementService.self)
+            .asSingleton()
+            .with { _ in DefaultAccessibilityAnnouncementService() }
     }
 
     /// Register validation framework.
