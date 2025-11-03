@@ -13,6 +13,7 @@ struct ErrorScreen: View {
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var dismissTimer: Timer?
 
     init(error: PrimerError, onDismiss: (() -> Void)? = nil) {

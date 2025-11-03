@@ -92,7 +92,6 @@ final class AccessibilityIdentifiersTests: XCTestCase {
         identifiers.append(AccessibilityIdentifiers.CardForm.cardNetworkBadge("mastercard"))
 
         // PaymentSelection identifiers
-        identifiers.append(AccessibilityIdentifiers.PaymentSelection.container)
         identifiers.append(AccessibilityIdentifiers.PaymentSelection.header)
 
         // PaymentSelection dynamic identifiers (sample values)

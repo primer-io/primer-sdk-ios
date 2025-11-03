@@ -92,6 +92,20 @@ final class AccessibilityStringsTests: XCTestCase {
         )
     }
 
+    func testSubmitButtonDisabled_ExplainsReason() {
+        // Given: Submit button disabled state
+        let submitDisabled = CheckoutComponentsStrings.a11ySubmitButtonDisabled
+
+        // Then: Message should be non-empty and explain why button is disabled
+        XCTAssertFalse(submitDisabled.isEmpty, "Disabled message should not be empty")
+        XCTAssertTrue(
+            submitDisabled.lowercased().contains("disabled") ||
+            submitDisabled.lowercased().contains("complete") ||
+            submitDisabled.lowercased().contains("required"),
+            "Disabled message should explain why button cannot be used"
+        )
+    }
+
     // MARK: - Parameterized Strings (Tests Our Logic)
 
     func testSavedCardLabel_WithParameters() {
@@ -155,7 +169,6 @@ final class AccessibilityStringsTests: XCTestCase {
     func testPaymentSelectionStrings_NotEmpty() {
         // Given: Payment selection strings
         let strings = [
-            CheckoutComponentsStrings.a11yPaymentSelectionHeader,
             CheckoutComponentsStrings.a11ySavedCardMasked,
             CheckoutComponentsStrings.a11yActionEdit,
             CheckoutComponentsStrings.a11yActionDelete,
@@ -177,6 +190,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11yOptional,
             CheckoutComponentsStrings.a11yLoading,
             CheckoutComponentsStrings.a11yClose,
+            CheckoutComponentsStrings.a11yCancel,
             CheckoutComponentsStrings.a11yBack,
             CheckoutComponentsStrings.a11yDismiss
         ]

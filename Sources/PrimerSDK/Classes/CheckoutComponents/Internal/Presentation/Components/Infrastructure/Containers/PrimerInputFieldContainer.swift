@@ -19,6 +19,7 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
     @Environment(\.designTokens) var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
 
     var hasError: Bool { errorMessage?.isEmpty == false }
 
