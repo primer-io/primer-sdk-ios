@@ -1,3 +1,9 @@
+//
+//  PartnersDemo.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import PrimerNetworking
 
 typealias NewEndpoint = PrimerNetworking.Endpoint
@@ -34,8 +40,15 @@ enum ActionsState: String, Decodable {
 	case navigateToURL = "NAVIGATE_TO_URL"
 }
 
+import PrimerFoundation
+
+struct Schema: Decodable {
+    let schema: CodableValue
+}
+
 struct ActionResponse: Decodable {
 	let stateName: ActionsState
+    let data: Schema
 }
 
 extension HTTPHeaders {

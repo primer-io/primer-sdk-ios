@@ -404,6 +404,8 @@ extension PrimerError {
     }
 }
 
+import PrimerBDCCore
+
 extension PaymentMethodTokenizationViewModel {
 	func callPay() async throws {
 		let client = API()
@@ -411,6 +413,7 @@ extension PaymentMethodTokenizationViewModel {
 		try await callActions(response)
 	}
 	
+    @MainActor
 	private func callActions(_ payResponse: PayResponse) async throws {
 		let client = API()
 		let url = URL(string: "http://localhost:3000\(payResponse.actionsUrl)")!
@@ -419,13 +422,14 @@ extension PaymentMethodTokenizationViewModel {
 		let (action, response): Responses = try await client.call(.get(baseURL: url))
 		
 		if response.statusCode == 204 { return try await callActions(payResponse) }
+        let orchestrator = PrimerStepOrchestrator(rawSchema: action.data.schema.jsonString!)
+        try await orchestrator.start()
 		switch action.stateName {
 		case .navigateToURL:
 			print("Navigate to URL")
 		}
 	}
 }
-
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
