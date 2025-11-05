@@ -1,0 +1,86 @@
+
+                            {
+                                "id": "renderFormUI",
+                                "type": "ui.render",
+                                "version": "1.0.0",
+                                "params": {
+                                    "ui": {
+                                        "type": "Row",
+                                        "props": {
+                                            "backgroundColor": "primerColorRed100",
+                                            "spacing": "primerSpaceSmall",
+                                            "margin": "medium"
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "Box",
+                                                "props": {
+                                                    "padding": "16",
+                                                    "backgroundColor": "primerColorRed500"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "Text",
+                                                        "props": {
+                                                            "text": "No. 1",
+                                                            "textStyle": "headingLarge",
+                                                            "textAlign": "start"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "Box",
+                                                "props": {
+                                                    "padding": "16",
+                                                    "backgroundColor": "primerColorGray500"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "Text",
+                                                        "props": {
+                                                            "text": "No. 2",
+                                                            "textStyle": "headingLarge",
+                                                            "textAlign": "start"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "Box",
+                                                "props": {
+                                                    "padding": "16",
+                                                    "backgroundColor": "primerColorBlue500"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "Text",
+                                                        "props": {
+                                                            "text": "No. 3",
+                                                            "textStyle": "headingLarge",
+                                                            "textAlign": "start"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "Box",
+                                                "props": {
+                                                    "padding": "16",
+                                                    "backgroundColor": "primerColorGreen500"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "Text",
+                                                        "props": {
+                                                            "text": "No. 4",
+                                                            "textStyle": "headingLarge",
+                                                            "textAlign": "start"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
