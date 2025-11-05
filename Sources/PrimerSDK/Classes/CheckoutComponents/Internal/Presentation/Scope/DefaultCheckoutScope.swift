@@ -584,7 +584,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             )
 
             if let scope = scope {
-                // Successfully created scope for payment method
+                // Cache the scope for future retrieval by getPaymentMethodScope
+                paymentMethodScopeCache[method.type] = scope
 
                 // Store the current payment method scope for navigation
                 currentPaymentMethodScope = scope
