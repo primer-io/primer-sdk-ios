@@ -80,7 +80,7 @@ struct PreviewContainerWithRightComponent: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: iconSize, height: iconSize)
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         )
     }

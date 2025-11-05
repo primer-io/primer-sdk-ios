@@ -104,10 +104,10 @@ struct OTPCodeInputField: View, LogReporter {
                 text: $otpCode,
                 prompt: Text(placeholder)
                     .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
-                    .foregroundColor(styling?.placeholderColor ?? PrimerCheckoutColors.textPlaceholder(tokens: tokens))
+                    .foregroundColor(styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens))
             )
             .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
-            .foregroundColor(styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens))
             .keyboardType(.numberPad)
             .textContentType(.oneTimeCode)
             .frame(height: PrimerSize.xxlarge(tokens: tokens))

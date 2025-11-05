@@ -1,9 +1,8 @@
 //
 //  CardNetworkBadge.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 16.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -23,7 +22,6 @@ import SwiftUI
 /// ```
 @available(iOS 15.0, *)
 struct CardNetworkBadge: View, LogReporter {
-
     // MARK: - Properties
 
     /// The card network to display in the badge
@@ -46,66 +44,65 @@ struct CardNetworkBadge: View, LogReporter {
         } else {
             Text(network.displayName.prefix(2).uppercased())
                 .font(PrimerFont.smallBadge(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
+                .foregroundColor(CheckoutColors.primary(tokens: tokens))
                 .frame(width: PrimerSize.large(tokens: tokens), height: PrimerSize.small(tokens: tokens))
                 .overlay(
                     RoundedRectangle(cornerRadius: PrimerRadius.xsmall(tokens: tokens))
-                        .stroke(PrimerCheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
+                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
                 )
         }
-
     }
 }
 
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-struct CardNetworkBadge_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            // Light mode
-            VStack(spacing: 16) {
-                HStack(spacing: 8) {
-                    CardNetworkBadge(network: .visa)
-                    CardNetworkBadge(network: .masterCard)
-                    CardNetworkBadge(network: .amex)
-                    CardNetworkBadge(network: .discover)
-                }
+    @available(iOS 15.0, *)
+    struct CardNetworkBadge_Previews: PreviewProvider {
+        static var previews: some View {
+            Group {
+                // Light mode
+                VStack(spacing: 16) {
+                    HStack(spacing: 8) {
+                        CardNetworkBadge(network: .visa)
+                        CardNetworkBadge(network: .masterCard)
+                        CardNetworkBadge(network: .amex)
+                        CardNetworkBadge(network: .discover)
+                    }
 
-                HStack(spacing: 8) {
-                    CardNetworkBadge(network: .cartesBancaires)
-                    CardNetworkBadge(network: .diners)
-                    CardNetworkBadge(network: .jcb)
-                    CardNetworkBadge(network: .unknown)
+                    HStack(spacing: 8) {
+                        CardNetworkBadge(network: .cartesBancaires)
+                        CardNetworkBadge(network: .diners)
+                        CardNetworkBadge(network: .jcb)
+                        CardNetworkBadge(network: .unknown)
+                    }
                 }
+                .padding()
+                .environment(\.designTokens, MockDesignTokens.light)
+                .previewDisplayName("Light Mode")
+
+                // Dark mode
+                VStack(spacing: 16) {
+                    HStack(spacing: 8) {
+                        CardNetworkBadge(network: .visa)
+                        CardNetworkBadge(network: .masterCard)
+                        CardNetworkBadge(network: .amex)
+                        CardNetworkBadge(network: .discover)
+                    }
+
+                    HStack(spacing: 8) {
+                        CardNetworkBadge(network: .cartesBancaires)
+                        CardNetworkBadge(network: .diners)
+                        CardNetworkBadge(network: .jcb)
+                        CardNetworkBadge(network: .unknown)
+                    }
+                }
+                .padding()
+                .background(Color.black)
+                .environment(\.designTokens, MockDesignTokens.dark)
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Dark Mode")
             }
-            .padding()
-            .environment(\.designTokens, MockDesignTokens.light)
-            .previewDisplayName("Light Mode")
-
-            // Dark mode
-            VStack(spacing: 16) {
-                HStack(spacing: 8) {
-                    CardNetworkBadge(network: .visa)
-                    CardNetworkBadge(network: .masterCard)
-                    CardNetworkBadge(network: .amex)
-                    CardNetworkBadge(network: .discover)
-                }
-
-                HStack(spacing: 8) {
-                    CardNetworkBadge(network: .cartesBancaires)
-                    CardNetworkBadge(network: .diners)
-                    CardNetworkBadge(network: .jcb)
-                    CardNetworkBadge(network: .unknown)
-                }
-            }
-            .padding()
-            .background(Color.black)
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .preferredColorScheme(.dark)
-            .previewDisplayName("Dark Mode")
         }
     }
-}
 #endif

@@ -1,17 +1,15 @@
 //
-//  PrimerCheckoutColors.swift
-//  PrimerSDK - CheckoutComponents
+//  CheckoutColors.swift
 //
-//  Color utilities for consistent theming
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 // MARK: - Primer Colors
 
 /// Centralized color values with automatic token fallbacks for CheckoutComponents
-struct PrimerCheckoutColors {
-
+enum CheckoutColors {
     // MARK: - Public Color Helpers
 
     /// Primary text color (for main content)
@@ -82,42 +80,42 @@ struct PrimerCheckoutColors {
     // MARK: - Semantic UI Colors (for components without token mappings)
 
     /// White color (for button text on dark backgrounds)
-    static func white(tokens: DesignTokens?) -> Color {
+    static func white(tokens _: DesignTokens?) -> Color {
         return .white
     }
 
     /// Gray color (generic gray for subtle elements)
-    static func gray(tokens: DesignTokens?) -> Color {
+    static func gray(tokens _: DesignTokens?) -> Color {
         return .gray
     }
 
     /// Blue color (for links and action elements)
-    static func blue(tokens: DesignTokens?) -> Color {
+    static func blue(tokens _: DesignTokens?) -> Color {
         return .blue
     }
 
     /// Green color (for success states)
-    static func green(tokens: DesignTokens?) -> Color {
+    static func green(tokens _: DesignTokens?) -> Color {
         return .green
     }
 
     /// Orange color (for warning states)
-    static func orange(tokens: DesignTokens?) -> Color {
+    static func orange(tokens _: DesignTokens?) -> Color {
         return .orange
     }
 
     /// Primary system color (for main UI elements)
-    static func primary(tokens: DesignTokens?) -> Color {
+    static func primary(tokens _: DesignTokens?) -> Color {
         return .primary
     }
 
     /// Secondary system color (for supporting UI elements)
-    static func secondary(tokens: DesignTokens?) -> Color {
+    static func secondary(tokens _: DesignTokens?) -> Color {
         return .secondary
     }
 
     /// Clear color (for transparent backgrounds)
-    static func clear(tokens: DesignTokens?) -> Color {
+    static func clear(tokens _: DesignTokens?) -> Color {
         return .clear
     }
 }

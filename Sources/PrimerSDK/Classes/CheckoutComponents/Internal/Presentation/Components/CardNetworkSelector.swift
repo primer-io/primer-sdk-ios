@@ -38,17 +38,17 @@ struct CardNetworkSelector: View {
 
                     Text(selectedNetwork.displayName)
                         .font(PrimerFont.body(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.primary(tokens: tokens))
 
                     Spacer()
 
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.secondary(tokens: tokens))
                         .font(PrimerFont.caption(tokens: tokens))
                 }
                 .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
                 .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-                .background(PrimerCheckoutColors.gray100(tokens: tokens))
+                .background(CheckoutColors.gray100(tokens: tokens))
                 .cornerRadius(PrimerRadius.small(tokens: tokens))
             })
 
@@ -69,13 +69,13 @@ struct CardNetworkSelector: View {
 
                                     Text(network.displayName)
                                         .font(PrimerFont.body(tokens: tokens))
-                                        .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
+                                        .foregroundColor(CheckoutColors.primary(tokens: tokens))
 
                                     Spacer()
                                 }
                                 .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
                                 .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-                                .background(PrimerCheckoutColors.clear(tokens: tokens))
+                                .background(CheckoutColors.clear(tokens: tokens))
                             })
                             .buttonStyle(PlainButtonStyle())
 
@@ -86,10 +86,10 @@ struct CardNetworkSelector: View {
                         }
                     }
                 }
-                .background(PrimerCheckoutColors.gray100(tokens: tokens))
+                .background(CheckoutColors.gray100(tokens: tokens))
                 .cornerRadius(PrimerRadius.small(tokens: tokens))
                 .shadow(
-                    color: PrimerCheckoutColors.borderDefault(tokens: tokens),
+                    color: CheckoutColors.borderDefault(tokens: tokens),
                     radius: PrimerRadius.small(tokens: tokens),
                     x: 0,
                     y: PrimerSpacing.xxsmall(tokens: tokens)

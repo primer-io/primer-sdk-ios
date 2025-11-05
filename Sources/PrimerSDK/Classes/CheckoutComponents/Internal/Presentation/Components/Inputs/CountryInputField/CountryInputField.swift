@@ -56,9 +56,9 @@ struct CountryInputField: View, LogReporter {
     /// Text color for country display (placeholder vs selected)
     private var countryTextColor: Color {
         guard !countryName.isEmpty else {
-            return styling?.placeholderColor ?? PrimerCheckoutColors.textPlaceholder(tokens: tokens)
+            return styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens)
         }
-        return styling?.textColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)   
+        return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)   
     }
 
     // MARK: - Initialization
@@ -121,7 +121,7 @@ struct CountryInputField: View, LogReporter {
             },
             rightComponent: {
                 Image(systemName: "chevron.down")
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         )
         .onAppear {

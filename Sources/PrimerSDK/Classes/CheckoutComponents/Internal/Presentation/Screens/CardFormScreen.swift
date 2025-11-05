@@ -29,7 +29,7 @@ struct CardFormScreen: View, LogReporter {
             .frame(maxWidth: UIScreen.main.bounds.width)
         }
         .navigationBarHidden(true)
-        .background(PrimerCheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
     }
 
     @MainActor
@@ -46,7 +46,7 @@ struct CardFormScreen: View, LogReporter {
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
                         }
-                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     })
                 }
 
@@ -57,7 +57,7 @@ struct CardFormScreen: View, LogReporter {
                     Button(CheckoutComponentsStrings.cancelButton, action: {
                         scope.onCancel()
                     })
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 }
             }
 
@@ -85,7 +85,7 @@ struct CardFormScreen: View, LogReporter {
             .font(.system(size: fontSize, weight: fontWeight))
             .tracking(tokens?.primerTypographyTitleXlargeLetterSpacing ?? -0.6)
             .lineSpacing((tokens?.primerTypographyTitleXlargeLineHeight ?? 32) - fontSize)
-            .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -172,7 +172,7 @@ struct CardFormScreen: View, LogReporter {
         VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
             Text(CheckoutComponentsStrings.selectNetworkTitle)
                 .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
             CardNetworkSelector(
                 availableNetworks: cardFormState.availableNetworks.map { $0.network },
@@ -201,7 +201,7 @@ struct CardFormScreen: View, LogReporter {
                     // Billing address section title
                     Text(CheckoutComponentsStrings.billingAddressTitle)
                         .font(PrimerFont.headline(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     
                     // Render billing fields dynamically
                     VStack(spacing: 0) {
@@ -244,14 +244,14 @@ struct CardFormScreen: View, LogReporter {
         HStack {
             if cardFormState.isLoading {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: PrimerCheckoutColors.white(tokens: tokens)))
+                    .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
                     .scaleEffect(PrimerScale.small)
             } else {
                 Text(submitButtonText)
             }
         }
         .font(PrimerFont.body(tokens: tokens))
-        .foregroundColor(PrimerCheckoutColors.white(tokens: tokens))
+        .foregroundColor(CheckoutColors.white(tokens: tokens))
         .frame(maxWidth: .infinity)
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(submitButtonBackground)
@@ -306,8 +306,8 @@ struct CardFormScreen: View, LogReporter {
 
     private var submitButtonBackground: Color {
         cardFormState.isValid && !cardFormState.isLoading
-            ? PrimerCheckoutColors.textPrimary(tokens: tokens)
-            : PrimerCheckoutColors.gray300(tokens: tokens)
+            ? CheckoutColors.textPrimary(tokens: tokens)
+            : CheckoutColors.gray300(tokens: tokens)
     }
 
     private func submitAction() {
@@ -547,7 +547,7 @@ struct CardFormScreen: View, LogReporter {
             } else {
                 Text(CheckoutComponentsStrings.retailOutletNotImplemented)
                     .font(PrimerFont.caption(tokens: tokens))
-                    .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
+                    .foregroundColor(CheckoutColors.gray(tokens: tokens))
                     .padding(PrimerSpacing.large(tokens: tokens))
             }
 

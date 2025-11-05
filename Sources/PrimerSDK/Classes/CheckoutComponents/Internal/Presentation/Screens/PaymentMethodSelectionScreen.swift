@@ -56,14 +56,14 @@ struct PaymentMethodSelectionScreen: View {
 
             Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
                 .font(PrimerFont.titleXLarge(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
             Spacer()
 
             // Show close button based on dismissalMechanism setting
             if scope.dismissalMechanism.contains(.closeButton) {
                 Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
         }
     }
@@ -79,7 +79,7 @@ struct PaymentMethodSelectionScreen: View {
     private var titleSection: some View {
         return Text(CheckoutComponentsStrings.choosePaymentMethod)
             .font(PrimerFont.titleLarge(tokens: tokens))
-            .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.bottom, PrimerSpacing.small(tokens: tokens))
     }
@@ -97,7 +97,7 @@ struct PaymentMethodSelectionScreen: View {
 
             errorSection
         }
-        .background(PrimerCheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
     }
 
     @MainActor
@@ -109,11 +109,11 @@ struct PaymentMethodSelectionScreen: View {
             VStack(spacing: 16) {
                 Image(systemName: "creditcard.and.123")
                     .font(PrimerFont.largeIcon(tokens: tokens))
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
                 Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
                     .font(PrimerFont.body(tokens: tokens))
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.top, 100)
@@ -228,7 +228,7 @@ struct PaymentMethodSelectionScreen: View {
             .padding(PrimerSpacing.medium(tokens: tokens)) // Padding inside gray container
             .background(
                 RoundedRectangle(cornerRadius: PrimerRadius.large(tokens: tokens))
-                    .fill(PrimerCheckoutColors.gray100(tokens: tokens))
+                    .fill(CheckoutColors.gray100(tokens: tokens))
             )
         }
     }
@@ -237,13 +237,13 @@ struct PaymentMethodSelectionScreen: View {
     private func dynamicGroupHeaderColor(for groupName: String) -> Color {
         if groupName.hasPrefix("+") {
             // Positive surcharge - use positive color
-            return PrimerCheckoutColors.iconPositive(tokens: tokens)
+            return CheckoutColors.iconPositive(tokens: tokens)
         } else if groupName == CheckoutComponentsStrings.additionalFeeMayApply {
             // Unknown surcharge - use warning color
-            return PrimerCheckoutColors.textSecondary(tokens: tokens)
+            return CheckoutColors.textSecondary(tokens: tokens)
         } else {
             // No additional fee - use muted color
-            return PrimerCheckoutColors.textPlaceholder(tokens: tokens)
+            return CheckoutColors.textPlaceholder(tokens: tokens)
         }
     }
 
@@ -273,7 +273,7 @@ struct PaymentMethodSelectionScreen: View {
         if let error = selectionState.error {
             Text(error)
                 .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.borderError(tokens: tokens))
+                .foregroundColor(CheckoutColors.borderError(tokens: tokens))
                 .padding(PrimerSpacing.large(tokens: tokens))
         }
     }
@@ -362,13 +362,13 @@ private struct ModernPaymentMethodCardView: View {
         }
 
         // Fallback to design tokens for consistent styling
-        return PrimerCheckoutColors.background(tokens: tokens)
+        return CheckoutColors.background(tokens: tokens)
     }
 
     /// Dynamic text color using design tokens for consistent styling
     private var textColorForPaymentMethod: Color {
         // Use design tokens for consistent styling
-        return PrimerCheckoutColors.textPrimary(tokens: tokens)
+        return CheckoutColors.textPrimary(tokens: tokens)
     }
 }
 

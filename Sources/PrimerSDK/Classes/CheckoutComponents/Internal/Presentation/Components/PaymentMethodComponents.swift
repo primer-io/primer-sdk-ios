@@ -56,14 +56,14 @@ struct PaymentMethodPlaceholder: View {
         VStack(spacing: 16) {
             Image(systemName: paymentMethodIcon)
                 .font(PrimerFont.largeIcon(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.gray(tokens: tokens))
+                .foregroundColor(CheckoutColors.gray(tokens: tokens))
 
             Text(CheckoutComponentsStrings.paymentMethodDisplayName(displayName))
                 .font(PrimerFont.headline(tokens: tokens))
 
             Text(CheckoutComponentsStrings.implementationComingSoon)
                 .font(PrimerFont.subheadline(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.secondary(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

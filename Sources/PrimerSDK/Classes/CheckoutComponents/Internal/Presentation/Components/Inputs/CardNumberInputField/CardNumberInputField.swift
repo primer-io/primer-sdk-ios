@@ -79,10 +79,10 @@ struct CardNumberInputField: View, LogReporter {
                     if let surchargeAmount = surchargeAmount {
                         Text(surchargeAmount)
                             .font(PrimerFont.bodySmall(tokens: tokens))
-                            .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                             .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
                             .padding(.vertical, 1)
-                            .background(PrimerCheckoutColors.gray200(tokens: tokens))
+                            .background(CheckoutColors.gray200(tokens: tokens))
                             .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
                     }
                 }
