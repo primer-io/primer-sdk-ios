@@ -17,6 +17,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.4"),
 		.package(path: "/Users/henrycooper/partners-tech-poc/apps/ios/PrimerNetworking"),
+        .package(path: "/Users/henrycooper/partners-tech-poc/apps/ios/PrimerUI"),
         .package(path: "/Users/henrycooper/partners-tech-poc/apps/ios/PrimerBDCCore"),
         .package(path: "/Users/henrycooper/partners-tech-poc/apps/ios/PrimerFoundation")
     ],
@@ -26,6 +27,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
 				.product(name: "PrimerNetworking", package: "PrimerNetworking"),
+                .product(name: "PrimerUI", package: "PrimerUI"),
                 .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
                 .product(name: "PrimerFoundation", package: "PrimerFoundation"),
             ],
