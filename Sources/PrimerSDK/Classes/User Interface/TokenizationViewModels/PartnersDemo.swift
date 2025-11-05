@@ -25,10 +25,11 @@ struct PayContext: Encodable {
 
 struct PayBody: Encodable {
 	let locale = "en-US"
-	let plaform = "IOS_NATIVE"
-	let redirectionUrl = "primer:\\/\\/requestor.io.primer.sample\\/async"
-	let paymentMethodType = "ADYEN_IDEAL"
-	let paymentMethodConfigId = "e787b281-e4f9-4494-96e8-188917540654"
+	let plaform = "ANDROID"
+	let redirectionUrl = "merchant://primer.io"
+	let paymentMethodType = "ADYEN_AFFIRM"
+    let coreUrl = "https://api.sandbox.primer.io"
+	let paymentMethodConfigId = "e8aadd83-a5eb-4bb3-b124-65c9ebb85ed9"
 }
 
 struct PayResponse: Decodable {
@@ -36,19 +37,14 @@ struct PayResponse: Decodable {
 	let actionsUrl: String
 }
 
-enum ActionsState: String, Decodable {
-	case navigateToURL = "NAVIGATE_TO_URL"
-}
-
 import PrimerFoundation
+
+struct ActionResponse: Decodable {
+    let data: Schema
+}
 
 struct Schema: Decodable {
     let schema: CodableValue
-}
-
-struct ActionResponse: Decodable {
-	let stateName: ActionsState
-    let data: Schema
 }
 
 extension HTTPHeaders {

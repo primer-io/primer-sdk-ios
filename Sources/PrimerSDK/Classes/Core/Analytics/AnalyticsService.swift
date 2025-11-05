@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerStepResolver
 
 protocol AnalyticsServiceProtocol {
     func record(events: [Analytics.Event]) async throws
@@ -51,6 +52,7 @@ extension Analytics {
             self.batchSize = batchSize
             self.storage = storage
             self.apiClient = apiClient
+            Task { await PrimerStepResolverRegistry.shared.register(self, forStepType: .analyticsLog) }
         }
 
         func record(events: [Analytics.Event]) async throws {
@@ -244,7 +246,7 @@ extension Analytics {
                         self.logger.debug(message: message)
                         completion(nil)
                     }
-                case .failure(let err):
+                case let .failure(err):
                     Analytics.queue.async(flags: .barrier) {
                         // Log failure
                         let urlString = url.absoluteString

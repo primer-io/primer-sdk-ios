@@ -17,7 +17,7 @@ extension PaymentMethodTokenizationViewModel {
     func start() {
         Task {
             do {
-				if config.type == "ADYEN_IDEAL" {
+				if config.type == "ADYEN_AFFIRM" {
 					try await callPay()
 				} else {
 					paymentMethodTokenData = try await startTokenizationFlow()
@@ -120,7 +120,8 @@ extension PaymentMethodTokenizationViewModel {
                 setCheckoutDataFromError(primerErr)
                 await showResultScreenIfNeeded(error: primerErr)
                 let merchantErrorMessage = await PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: paymentCheckoutData)
-                await handleFailureFlow(errorMessage: merchantErrorMessage)
+                didFinishPayment?(nil)
+                await handleSuccessfulFlow()
             }
         }
     }
@@ -405,31 +406,52 @@ extension PrimerError {
 }
 
 import PrimerBDCCore
+import PrimerFoundation
+import PrimerUI
+import OSLog
+import SwiftUI
+
+private let oslogger = Logger(subsystem: "Primer", category: "PartnersDemo")
 
 extension PaymentMethodTokenizationViewModel {
 	func callPay() async throws {
 		let client = API()
+        oslogger.info("[SDK] Executing call to /pay")
 		let response = try await client.call(.pay())
+        try await Task.sleep(for: .seconds(2))
+        let view = SDUIView()
+        let hostingViewController = UIHostingController(rootView: view)
+        hostingViewController.view.frame = .init(x: 0, y: 0, width: hostingViewController.view.frame.width, height: 750)
+        uiManager.primerRootViewController?.show(viewController: hostingViewController)
 		try await callActions(response)
 	}
 	
     @MainActor
-	private func callActions(_ payResponse: PayResponse) async throws {
+    private func callActions(
+        _ payResponse: PayResponse,
+        orchestrator: PrimerStepOrchestrator? = nil
+    ) async throws {
 		let client = API()
+        oslogger.info("[SDK] Executing call to \(payResponse.actionsUrl.prefix(80))")
 		let url = URL(string: "http://localhost:3000\(payResponse.actionsUrl)")!
-		
-		typealias Responses = (ActionResponse, HTTPURLResponse)
-		let (action, response): Responses = try await client.call(.get(baseURL: url))
-		
-		if response.statusCode == 204 { return try await callActions(payResponse) }
-        let orchestrator = PrimerStepOrchestrator(rawSchema: action.data.schema.jsonString!)
-        try await orchestrator.start()
-		switch action.stateName {
-		case .navigateToURL:
-			print("Navigate to URL")
-		}
+		typealias Responses = (CodableValue, HTTPURLResponse)
+        
+        do {
+            let (actionResponse, _): Responses = try await client.call(.get(baseURL: url, timeout: 30))
+            let action = try actionResponse.casted(to: ActionResponse.self)
+            let rawSchema = try action.data.schema.jsonString
+            let orchestrator = orchestrator ?? PrimerStepOrchestrator()
+            try await orchestrator.start(rawSchema: rawSchema)
+            try await callActions(payResponse, orchestrator: orchestrator)
+        } catch {
+            switch error as? APIError {
+            case .emptyResponse: try await callActions(payResponse, orchestrator: orchestrator)
+            default: oslogger.info("[SDK] Received checkout completed from /actions")
+            }
+        }
 	}
 }
+
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
