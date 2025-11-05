@@ -9,7 +9,7 @@ import SwiftUI
 /// Data structure for grouping payment methods by surcharge status
 private struct PaymentMethodGroup {
     let group: String
-    let methods: [PrimerComposablePaymentMethod]
+    let methods: [CheckoutPaymentMethod]
 }
 
 /// Default payment method selection screen for CheckoutComponents
@@ -249,7 +249,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     @ViewBuilder
-    private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
+    private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
         if let customPaymentMethodItem = scope.paymentMethodItem {
             customPaymentMethodItem(method)
                 .onTapGesture {
@@ -296,7 +296,7 @@ struct PaymentMethodSelectionScreen: View {
 /// Modern payment method card view matching Image #2 design
 @available(iOS 15.0, *)
 private struct ModernPaymentMethodCardView: View {
-    let method: PrimerComposablePaymentMethod
+    let method: CheckoutPaymentMethod
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens

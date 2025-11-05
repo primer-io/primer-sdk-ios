@@ -102,6 +102,28 @@ public protocol PaymentMethodProtocol {
     func defaultContent() -> AnyView
 }
 
+// MARK: - Payment Method Type Extensions
+
+/// Extension to provide CheckoutComponents-specific functionality to PrimerPaymentMethodType
+@available(iOS 15.0, *)
+public extension PrimerPaymentMethodType {
+    /// Human-readable display name for the payment method in CheckoutComponents
+    var checkoutComponentsDisplayName: String {
+        switch self {
+        case .paymentCard:
+            return "Card"
+        case .applePay:
+            return "Apple Pay"
+        case .googlePay:
+            return "Google Pay"
+        case .payPal:
+            return "PayPal"
+        default:
+            return rawValue.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+}
+
 // MARK: - Payment Method Registry
 
 /// Registry for managing payment method implementations and their scope creation.
