@@ -1,9 +1,8 @@
 //
 //  CheckoutScopeObserver.swift
-//  PrimerSDK
 //
-//  Created by Boris on 15.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import PrimerUI
@@ -12,7 +11,7 @@ import PrimerUI
 
 /// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
 @available(iOS 15.0, *)
-internal struct CheckoutScopeObserver: View, LogReporter {
+struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
@@ -125,7 +124,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 // When modal is dismissed, reset the navigation state in the navigator
                 if let previousState = previousNavigationState {
                     switch previousState {
-                    case .paymentMethod(let paymentMethodType):
+                    case let .paymentMethod(paymentMethodType):
                         // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
                     case .paymentMethodSelection:
@@ -168,12 +167,8 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     @ViewBuilder
     private func getCurrentView() -> some View {
         switch scope.navigationState {
-        case .serverDrivenUI(let schema):
-            if #available(iOS 16.0, *) {
-                ContainerView(schema)
-            } else {
-                // Fallback on earlier versions
-            }
+        case let .serverDrivenUI(schema):
+            fatalError()
         case .loading:
             // Check if init screen is enabled in settings (UI Options integration)
             if scope.isInitScreenEnabled {
@@ -202,7 +197,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 ))
             }
 
-        case .paymentMethod(let paymentMethodType):
+        case let .paymentMethod(paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach
             AnyView(PaymentMethodScreen(
                 paymentMethodType: paymentMethodType,
@@ -213,7 +208,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             // Country selection is now handled via modal sheet, return the previous view
             if let previousState = previousNavigationState {
                 switch previousState {
-                case .paymentMethod(let paymentMethodType):
+                case let .paymentMethod(paymentMethodType):
                     AnyView(PaymentMethodScreen(
                         paymentMethodType: paymentMethodType,
                         checkoutScope: scope
@@ -232,7 +227,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 AnyView(LoadingScreen())
             }
 
-        case .success(let result):
+        case let .success(result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
                 if let customSuccess = scope.successScreen {
@@ -254,7 +249,7 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                 })
             }
 
-        case .failure(let error):
+        case let .failure(error):
             // Check if error screen is enabled in settings (UI Options integration)
             if scope.isErrorScreenEnabled {
                 if let customError = scope.errorScreen {

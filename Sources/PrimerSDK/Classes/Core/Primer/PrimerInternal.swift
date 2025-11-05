@@ -14,21 +14,25 @@ import Primer3DS
 private let _PrimerInternal = PrimerInternal()
 // swiftlint:enable identifier_name
 
+import OSLog
+
+private let oslogger = Logger(subsystem: "Primer", category: "PrimerDemo")
+
 final class PrimerInternal: LogReporter {
 
     // MARK: - PROPERTIES
 
-    internal var intent: PrimerSessionIntent?
-    internal var selectedPaymentMethodType: String?
+    var intent: PrimerSessionIntent?
+    var selectedPaymentMethodType: String?
 
-    internal let sdkSessionId = UUID().uuidString
-    internal var checkoutSessionId: String?
-    internal var timingEventId: String?
-    internal var sdkIntegrationType: PrimerSDKIntegrationType?
+    let sdkSessionId = UUID().uuidString
+    var checkoutSessionId: String?
+    var timingEventId: String?
+    var sdkIntegrationType: PrimerSDKIntegrationType?
 
     // MARK: - INITIALIZATION
 
-    internal static var shared: PrimerInternal {
+    static var shared: PrimerInternal {
         return _PrimerInternal
     }
 
@@ -49,7 +53,7 @@ final class PrimerInternal: LogReporter {
                                                name: UIApplication.willResignActiveNotification, object: nil)
     }
 
-    internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         #if canImport(Primer3DS)
         let is3DSHandled = Primer3DS.application(app, open: url, options: options)
 
@@ -63,6 +67,7 @@ final class PrimerInternal: LogReporter {
             if url.absoluteString.contains("/cancel") {
                 NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
             } else {
+                oslogger.info("Received deeplink with url: \(url.absoluteString.prefix(20))...")
                 NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
             }
             return true
@@ -71,7 +76,7 @@ final class PrimerInternal: LogReporter {
         return false
     }
 
-    internal func application(_ application: UIApplication,
+    func application(_ application: UIApplication,
                               continue userActivity: NSUserActivity,
                               restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         #if canImport(Primer3DS)
@@ -92,7 +97,7 @@ final class PrimerInternal: LogReporter {
      Configure SDK's settings
      */
 
-    internal func configure(settings: PrimerSettings? = nil) {
+    func configure(settings: PrimerSettings? = nil) {
         var events: [Analytics.Event] = []
 
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
@@ -119,7 +124,7 @@ final class PrimerInternal: LogReporter {
      Show Primer Checkout
      */
 
-    internal func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.sdkIntegrationType = .dropIn
         self.intent = .checkout
         self.selectedPaymentMethodType = nil
@@ -160,7 +165,7 @@ final class PrimerInternal: LogReporter {
         }
     }
 
-    internal func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.sdkIntegrationType = .dropIn
         self.intent = .vault
         self.selectedPaymentMethodType = nil
@@ -198,7 +203,7 @@ final class PrimerInternal: LogReporter {
         }
     }
 
-    internal func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
         self.selectedPaymentMethodType = paymentMethodType
 
@@ -243,7 +248,7 @@ final class PrimerInternal: LogReporter {
     }
 
     /** Dismisses any opened checkout sheet view. */
-    internal func dismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = []) {
+    func dismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = []) {
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
         let timingEvent = Analytics.Event.timer(
@@ -268,7 +273,7 @@ final class PrimerInternal: LogReporter {
         }
     }
 
-    internal func checkoutSessionIsActive() -> Bool {
+    func checkoutSessionIsActive() -> Bool {
         checkoutSessionId != nil
     }
 }
