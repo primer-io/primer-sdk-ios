@@ -583,7 +583,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 diContainer: container
             )
 
-            if let scope {
+            if let scope = scope {
+                // Cache the scope for future retrieval by getPaymentMethodScope
+                paymentMethodScopeCache[method.type] = scope
+
                 // Store the current payment method scope for navigation
                 currentPaymentMethodScope = scope
 
