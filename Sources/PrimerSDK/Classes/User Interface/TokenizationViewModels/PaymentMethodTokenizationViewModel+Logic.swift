@@ -405,6 +405,7 @@ extension PrimerError {
 }
 
 import PrimerBDCCore
+import PrimerFoundation
 
 extension PaymentMethodTokenizationViewModel {
 	func callPay() async throws {
@@ -414,22 +415,32 @@ extension PaymentMethodTokenizationViewModel {
 	}
 	
     @MainActor
-	private func callActions(_ payResponse: PayResponse) async throws {
+    private func callActions(
+        _ payResponse: PayResponse,
+        orchestrator: PrimerStepOrchestrator? = nil
+    ) async throws {
 		let client = API()
 		let url = URL(string: "http://localhost:3000\(payResponse.actionsUrl)")!
-		
-		typealias Responses = (ActionResponse, HTTPURLResponse)
-		let (action, response): Responses = try await client.call(.get(baseURL: url))
-		
-		if response.statusCode == 204 { return try await callActions(payResponse) }
-        let orchestrator = PrimerStepOrchestrator(rawSchema: action.data.schema.jsonString!)
-        try await orchestrator.start()
-		switch action.stateName {
-		case .navigateToURL:
-			print("Navigate to URL")
-		}
+		typealias Responses = (CodableValue, HTTPURLResponse)
+        
+        do {
+            let (actionResponse, _): Responses = try await client.call(.get(baseURL: url, timeout: 30))
+            let action = try actionResponse.casted(to: ActionResponse.self)
+            let jsonString = try action.data.schema.jsonString
+            let orchestrator = orchestrator ?? PrimerStepOrchestrator(rawSchema: jsonString)
+            try await orchestrator.start()
+            try await callActions(payResponse, orchestrator: orchestrator)
+        } catch {
+            switch error as? APIError {
+            case .emptyResponse: try await callActions(payResponse, orchestrator: orchestrator)
+            default:
+                // Decode and look for terminated status
+                print("terminated")
+            }
+        }
 	}
 }
+
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length

@@ -1009,6 +1009,9 @@
                      location = "group:AnalyticsService.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:AnalyticsService+BDC.swift">
+                  </FileRef>
+                  <FileRef
                      location = "group:AnalyticsStorage.swift">
                   </FileRef>
                </Group>
