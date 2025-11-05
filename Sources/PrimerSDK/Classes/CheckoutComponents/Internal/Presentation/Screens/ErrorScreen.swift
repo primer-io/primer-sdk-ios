@@ -1,15 +1,14 @@
 //
 //  ErrorScreen.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 /// Default error screen for CheckoutComponents with auto-dismiss functionality
 @available(iOS 15.0, *)
-internal struct ErrorScreen: View {
+struct ErrorScreen: View {
     let error: PrimerError
     let onDismiss: (() -> Void)?
 

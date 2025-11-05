@@ -1,14 +1,13 @@
 //
 //  ProcessCardPaymentInteractor.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Card payment data for processing.
-internal struct CardPaymentData {
+struct CardPaymentData {
     let cardNumber: String
     let cvv: String
     let expiryMonth: String
@@ -19,7 +18,7 @@ internal struct CardPaymentData {
 }
 
 /// Billing address data.
-internal struct BillingAddress {
+struct BillingAddress {
     let firstName: String?
     let lastName: String?
     let addressLine1: String?
@@ -32,7 +31,7 @@ internal struct BillingAddress {
 }
 
 /// Protocol for processing card payments.
-internal protocol ProcessCardPaymentInteractor {
+protocol ProcessCardPaymentInteractor {
     /// Processes a card payment with the provided data.
     /// - Parameter cardData: The card payment data to process.
     /// - Returns: The payment result.
@@ -40,7 +39,7 @@ internal protocol ProcessCardPaymentInteractor {
 }
 
 /// Default implementation using RawDataManager internally.
-internal final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
+final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
 
     private let repository: HeadlessRepository
 

@@ -1,16 +1,15 @@
 //
 //  PrimerFont.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Style Dictionary Generator on 30.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 /// Font utility for CheckoutComponents that provides Inter variable fonts
 /// with fallback to system fonts based on design tokens.
 @available(iOS 15.0, *)
-internal struct PrimerFont {
+struct PrimerFont {
 
     // MARK: - Font Family Names
 

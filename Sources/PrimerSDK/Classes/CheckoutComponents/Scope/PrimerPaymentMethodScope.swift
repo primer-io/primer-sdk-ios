@@ -1,9 +1,8 @@
 //
 //  PrimerPaymentMethodScope.swift
-//  PrimerSDK
 //
-//  Created by Boris on 26.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 import Foundation
@@ -124,7 +123,7 @@ extension PrimerPaymentMethodType {
 /// Provides dynamic scope creation based on payment method types.
 @available(iOS 15.0, *)
 @MainActor
-internal class PaymentMethodRegistry: LogReporter {
+class PaymentMethodRegistry: LogReporter {
 
     /// Type-erased payment method creator function
     private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope

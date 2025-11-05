@@ -1,20 +1,19 @@
 //
 //  GetPaymentMethodsInteractor.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Protocol for retrieving available payment methods.
-internal protocol GetPaymentMethodsInteractor {
+protocol GetPaymentMethodsInteractor {
     /// Fetches available payment methods for the current session.
     func execute() async throws -> [InternalPaymentMethod]
 }
 
 /// Default implementation of GetPaymentMethodsInteractor.
-internal final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
+final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
     private let repository: HeadlessRepository
 

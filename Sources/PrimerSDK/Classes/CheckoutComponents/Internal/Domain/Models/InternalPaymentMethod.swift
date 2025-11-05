@@ -1,16 +1,15 @@
 //
 //  InternalPaymentMethod.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import UIKit
 
 /// Internal representation of a payment method with full details.
 /// This is used internally and mapped to the public PrimerComposablePaymentMethod.
-internal struct InternalPaymentMethod: Equatable {
+struct InternalPaymentMethod: Equatable {
     let id: String
     let type: String
     let name: String
