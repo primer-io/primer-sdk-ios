@@ -1,9 +1,8 @@
 //
 //  DIContainter+SwiftUI.swift
 //
-//
-//  Created by Boris on 22. 5. 2025..
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -11,7 +10,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 extension DIContainer {
     /// Environment key for accessing the DI container in SwiftUI views
-    internal struct DIContainerEnvironmentKey: EnvironmentKey {
+    struct DIContainerEnvironmentKey: EnvironmentKey {
         static let defaultValue: (any ContainerProtocol)? = nil
     }
 

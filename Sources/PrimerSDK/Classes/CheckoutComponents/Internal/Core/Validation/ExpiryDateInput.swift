@@ -1,20 +1,19 @@
 //
 //  ExpiryDateInput.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Input structure for expiry date validation
-internal struct ExpiryDateInput {
+struct ExpiryDateInput {
     let month: String
     let year: String
 }
 
 /// Validation rule for expiry date inputs
-internal class ExpiryDateRule: ValidationRule {
+class ExpiryDateRule: ValidationRule {
 
     func validate(_ input: ExpiryDateInput) -> ValidationResult {
         let month = input.month.trimmingCharacters(in: .whitespacesAndNewlines)

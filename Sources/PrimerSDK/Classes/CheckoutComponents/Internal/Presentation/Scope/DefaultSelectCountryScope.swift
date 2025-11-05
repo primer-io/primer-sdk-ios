@@ -1,16 +1,15 @@
 //
 //  DefaultSelectCountryScope.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 /// Default implementation of PrimerSelectCountryScope with navigation integration
 @available(iOS 15.0, *)
 @MainActor
-internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
+final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     // MARK: - Properties
 
@@ -141,7 +140,7 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
             .dialCode
 
         // Only include countries that have valid localized names
-        guard localizedName != "N/A" && !localizedName.isEmpty else {
+        guard localizedName != "N/A", !localizedName.isEmpty else {
             return nil
         }
 

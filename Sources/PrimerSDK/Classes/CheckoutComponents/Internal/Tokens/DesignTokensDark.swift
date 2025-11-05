@@ -1,9 +1,15 @@
+//
+//  DesignTokensDark.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 // swiftlint:disable all
 import SwiftUI
 
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Dark theme.
-internal class DesignTokensDark: Decodable {
+class DesignTokensDark: Decodable {
     public var primerColorGray100: Color? = Color(red: 0.161, green: 0.161, blue: 0.161, opacity: 1)
     public var primerColorGray200: Color? = Color(red: 0.259, green: 0.259, blue: 0.259, opacity: 1)
     public var primerColorGray300: Color? = Color(red: 0.341, green: 0.341, blue: 0.341, opacity: 1)

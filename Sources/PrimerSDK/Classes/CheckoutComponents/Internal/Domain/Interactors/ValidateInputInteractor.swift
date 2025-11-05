@@ -1,14 +1,13 @@
 //
 //  ValidateInputInteractor.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Protocol for validating input fields.
-internal protocol ValidateInputInteractor {
+protocol ValidateInputInteractor {
     /// Validates a single input field value.
     /// - Parameters:
     ///   - value: The value to validate.
@@ -23,7 +22,7 @@ internal protocol ValidateInputInteractor {
 }
 
 /// Default implementation using the validation service.
-internal final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
+final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
 
     private let validationService: ValidationService
 

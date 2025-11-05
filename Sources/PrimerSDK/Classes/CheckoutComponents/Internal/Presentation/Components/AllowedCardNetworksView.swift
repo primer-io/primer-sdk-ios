@@ -1,16 +1,15 @@
 //
 //  AllowedCardNetworksView.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 16.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
 /// A SwiftUI component that displays a row of allowed card network badges
 /// as per Figma design requirements.
 @available(iOS 15.0, *)
-internal struct AllowedCardNetworksView: View, LogReporter {
+struct AllowedCardNetworksView: View, LogReporter {
 
     // MARK: - Properties
 
@@ -25,7 +24,7 @@ internal struct AllowedCardNetworksView: View, LogReporter {
 
     /// Creates a new AllowedCardNetworksView with the specified card networks
     /// - Parameter allowedCardNetworks: The array of card networks to display as badges
-    internal init(allowedCardNetworks: [CardNetwork]) {
+    init(allowedCardNetworks: [CardNetwork]) {
         self.allowedCardNetworks = allowedCardNetworks
     }
 
