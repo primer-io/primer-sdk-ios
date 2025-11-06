@@ -23,25 +23,25 @@ struct SuccessScreen: View {
 
     var body: some View {
         ZStack {
-            PrimerCheckoutColors.background(tokens: tokens)
+            CheckoutColors.background(tokens: tokens)
                 .ignoresSafeArea()
 
             VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(PrimerFont.extraLargeIcon(tokens: tokens))
-                    .foregroundColor(PrimerCheckoutColors.green(tokens: tokens))
+                    .foregroundColor(CheckoutColors.green(tokens: tokens))
 
                 VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary success message
                     Text(CheckoutComponentsStrings.paymentSuccessful)
                         .font(PrimerFont.bodyLarge(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
 
                     // Secondary redirect message
                     Text(CheckoutComponentsStrings.redirectConfirmationMessage)
                         .font(PrimerFont.bodyMedium(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
                 }
             }

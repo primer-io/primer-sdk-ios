@@ -26,29 +26,29 @@ struct ErrorScreen: View {
             // Error icon
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(PrimerFont.largeIcon(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.borderError(tokens: tokens))
+                .foregroundColor(CheckoutColors.borderError(tokens: tokens))
 
             // Error title
             Text(CheckoutComponentsStrings.somethingWentWrong)
                 .font(PrimerFont.titleLarge(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
             // Error message
             Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
                 .font(PrimerFont.bodyMedium(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
 
             // Auto-dismiss message
             Text(CheckoutComponentsStrings.autoDismissMessage)
                 .font(PrimerFont.bodySmall(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
                 .padding(.top, PrimerSpacing.large(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(PrimerCheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
         .onAppear {
             startAutoDismissTimer()
         }

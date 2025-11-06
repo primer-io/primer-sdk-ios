@@ -1,9 +1,8 @@
 //
 //  SDKInitializationViews.swift
-//  PrimerSDK
 //
-//  Created by Boris on 15.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -20,14 +19,14 @@ struct SDKInitializationErrorView: View {
         VStack(spacing: 20) {
             Image(systemName: "exclamationmark.triangle")
                 .font(PrimerFont.largeIcon(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.orange(tokens: tokens))
+                .foregroundColor(CheckoutColors.orange(tokens: tokens))
 
             Text(CheckoutComponentsStrings.paymentSystemError)
                 .font(PrimerFont.headline(tokens: tokens))
 
             Text(error.localizedDescription)
                 .font(PrimerFont.subheadline(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.secondary(tokens: tokens))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
 

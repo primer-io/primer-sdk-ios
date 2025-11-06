@@ -14,12 +14,12 @@ struct SplashScreen: View {
 
     var body: some View {
         ZStack {
-            PrimerCheckoutColors.background(tokens: tokens)
+            CheckoutColors.background(tokens: tokens)
                 .ignoresSafeArea()
 
             VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: PrimerCheckoutColors.borderFocus(tokens: tokens)))
+                    .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
                     .scaleEffect(PrimerScale.large)
                     .frame(width: PrimerComponentHeight.progressIndicator, height: PrimerComponentHeight.progressIndicator)
                     .accessibility(config: AccessibilityConfiguration(
@@ -31,14 +31,14 @@ struct SplashScreen: View {
                     // Primary loading message
                     Text(CheckoutComponentsStrings.loadingSecureCheckout)
                         .font(PrimerFont.bodyLarge(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
                         .accessibilityAddTraits(.isStaticText)
 
                     // Secondary loading message
                     Text(CheckoutComponentsStrings.loadingWontTakeLong)
                         .font(PrimerFont.bodyMedium(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
                         .accessibilityAddTraits(.isStaticText)
                 }

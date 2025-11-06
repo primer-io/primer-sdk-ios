@@ -30,14 +30,14 @@ struct SelectCountryScreen: View {
             searchBarSection
             countryListSection
         }
-        .background(PrimerCheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
         .navigationTitle(CheckoutComponentsStrings.selectCountryTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(
             trailing: Button(CheckoutComponentsStrings.cancelButton) {
                 onDismiss?()
             }
-            .foregroundColor(PrimerCheckoutColors.blue(tokens: tokens))
+            .foregroundColor(CheckoutColors.blue(tokens: tokens))
             .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
         )
     }
@@ -57,7 +57,7 @@ struct SelectCountryScreen: View {
     private var defaultSearchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
             TextField(CheckoutComponentsStrings.searchCountriesPlaceholder, text: Binding(
                 get: { countryState.searchQuery },
@@ -70,13 +70,13 @@ struct SelectCountryScreen: View {
                     scope.onSearch(query: "")
                 }, label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 })
             }
         }
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
         .padding(.vertical, PrimerSpacing.small(tokens: tokens))
-        .background(PrimerCheckoutColors.gray100(tokens: tokens))
+        .background(CheckoutColors.gray100(tokens: tokens))
         .cornerRadius(PrimerRadius.small(tokens: tokens))
         .padding(PrimerSpacing.large(tokens: tokens))
     }
@@ -96,11 +96,11 @@ struct SelectCountryScreen: View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             Image(systemName: "globe")
                 .font(PrimerFont.largeIcon(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
 
             Text(CheckoutComponentsStrings.noCountriesFound)
                 .font(PrimerFont.body(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -168,16 +168,16 @@ private struct CountryItemView: View {
                 VStack(alignment: .leading, spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
                     Text(country.name)
                         .font(PrimerFont.body(tokens: tokens))
-                        .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
                     if let dialCode = country.dialCode {
                         Text("\(country.code) • \(dialCode)")
                             .font(PrimerFont.caption(tokens: tokens))
-                            .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     } else {
                         Text(country.code)
                             .font(PrimerFont.caption(tokens: tokens))
-                            .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     }
                 }
 
@@ -186,7 +186,7 @@ private struct CountryItemView: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundColor(PrimerCheckoutColors.blue(tokens: tokens))
+                        .foregroundColor(CheckoutColors.blue(tokens: tokens))
                 }
             }
             .padding(.vertical, PrimerSpacing.small(tokens: tokens))

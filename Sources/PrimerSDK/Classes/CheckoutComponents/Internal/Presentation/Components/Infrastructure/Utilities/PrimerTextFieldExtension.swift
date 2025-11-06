@@ -118,28 +118,28 @@ extension UITextField {
         doneButtonAction: Selector
     ) {
         self.placeholder = placeholder
-        self.borderStyle = .none
-        self.backgroundColor = .clear
+        borderStyle = .none
+        backgroundColor = .clear
 
         // Apply keyboard configuration
-        self.keyboardType = configuration.keyboardType
-        self.autocapitalizationType = configuration.autocapitalizationType
-        self.autocorrectionType = configuration.autocorrectionType
-        self.textContentType = configuration.textContentType
-        self.returnKeyType = configuration.returnKeyType
-        self.isSecureTextEntry = configuration.isSecureTextEntry
+        keyboardType = configuration.keyboardType
+        autocapitalizationType = configuration.autocapitalizationType
+        autocorrectionType = configuration.autocorrectionType
+        textContentType = configuration.textContentType
+        returnKeyType = configuration.returnKeyType
+        isSecureTextEntry = configuration.isSecureTextEntry
 
         // Text styling with design tokens
         // Note: We ignore styling.font because SwiftUI Font cannot be properly converted to UIFont
         // Custom fonts would be lost in the conversion. Always use PrimerFont.uiFontBodyLarge instead.
-        self.font = PrimerFont.uiFontBodyLarge(tokens: tokens)
-        self.textColor = styling?.textColor.map(UIColor.init) ?? UIColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+        font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+        textColor = styling?.textColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPrimary(tokens: tokens))
 
         // Placeholder styling with design tokens
-        let placeholderColor = styling?.placeholderColor.map(UIColor.init) ?? UIColor(PrimerCheckoutColors.textPlaceholder(tokens: tokens))
-        self.attributedPlaceholder = NSAttributedString(
+        let placeholderColor = styling?.placeholderColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
+        attributedPlaceholder = NSAttributedString(
             string: placeholder,
-            attributes: [ .foregroundColor: placeholderColor, .font: font ]
+            attributes: [.foregroundColor: placeholderColor, .font: font]
         )
 
         // Add keyboard accessory view with "Done" button
@@ -161,9 +161,9 @@ extension UITextField {
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
+            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor),
         ])
 
-        self.inputAccessoryView = accessoryView
+        inputAccessoryView = accessoryView
     }
 }

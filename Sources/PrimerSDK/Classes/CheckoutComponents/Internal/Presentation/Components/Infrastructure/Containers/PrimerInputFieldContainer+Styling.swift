@@ -18,23 +18,23 @@ extension PrimerInputFieldContainer {
     }
 
     var labelForegroundColor: Color {
-        styling?.labelColor ?? PrimerCheckoutColors.textPrimary(tokens: tokens)
+        styling?.labelColor ?? CheckoutColors.textPrimary(tokens: tokens)
     }
 
     var errorMessageForegroundColor: Color {
-        PrimerCheckoutColors.textNegative(tokens: tokens)
+        CheckoutColors.textNegative(tokens: tokens)
     }
 
     var errorBorderColor: Color {
-        styling?.errorBorderColor ?? PrimerCheckoutColors.borderError(tokens: tokens)
+        styling?.errorBorderColor ?? CheckoutColors.borderError(tokens: tokens)
     }
 
     var focusedBorderColor: Color {
-        styling?.focusedBorderColor ?? PrimerCheckoutColors.borderFocus(tokens: tokens)
+        styling?.focusedBorderColor ?? CheckoutColors.borderFocus(tokens: tokens)
     }
 
     var defaultBorderColor: Color {
-        styling?.borderColor ?? PrimerCheckoutColors.borderDefault(tokens: tokens)
+        styling?.borderColor ?? CheckoutColors.borderDefault(tokens: tokens)
     }
 }
 

@@ -1,14 +1,13 @@
 //
 //  CardValidationRules.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 23.6.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Validation rule for card numbers.
-internal class CardNumberRule: ValidationRule {
+class CardNumberRule: ValidationRule {
 
     private let allowedCardNetworks: Set<CardNetwork>
 
@@ -90,7 +89,7 @@ internal class CardNumberRule: ValidationRule {
 }
 
 /// Validation rule for CVV/CVC codes.
-internal class CVVRule: ValidationRule {
+class CVVRule: ValidationRule {
 
     private let cardNetwork: CardNetwork?
 
@@ -123,7 +122,7 @@ internal class CVVRule: ValidationRule {
 }
 
 /// Validation rule for cardholder names.
-internal class CardholderNameRule: ValidationRule {
+class CardholderNameRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)

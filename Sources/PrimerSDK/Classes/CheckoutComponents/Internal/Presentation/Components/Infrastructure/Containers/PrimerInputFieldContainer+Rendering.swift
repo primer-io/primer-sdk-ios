@@ -46,7 +46,7 @@ extension PrimerInputFieldContainer {
 
     func makeTextFieldContainerBackgroundBackground() -> some View {
         RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-            .fill(styling?.backgroundColor ?? PrimerCheckoutColors.background(tokens: tokens))
+            .fill(styling?.backgroundColor ?? CheckoutColors.background(tokens: tokens))
     }
 
     func makeTextFieldContainerWarning() -> some View {
@@ -55,7 +55,7 @@ extension PrimerInputFieldContainer {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: iconSize, height: iconSize)
-            .foregroundColor(PrimerCheckoutColors.iconNegative(tokens: tokens))
+            .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
             .offset(x: hasError ? 0 : -10)
             .opacity(hasError ? 1.0 : 0.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)

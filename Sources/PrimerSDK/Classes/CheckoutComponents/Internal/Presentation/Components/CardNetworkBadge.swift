@@ -1,9 +1,8 @@
 //
 //  CardNetworkBadge.swift
-//  PrimerSDK - CheckoutComponents
 //
-//  Created by Boris on 16.7.25.
-//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
 
@@ -46,11 +45,11 @@ struct CardNetworkBadge: View, LogReporter {
         } else {
             Text(network.displayName.prefix(2).uppercased())
                 .font(PrimerFont.smallBadge(tokens: tokens))
-                .foregroundColor(PrimerCheckoutColors.primary(tokens: tokens))
+                .foregroundColor(CheckoutColors.primary(tokens: tokens))
                 .frame(width: PrimerSize.large(tokens: tokens), height: PrimerSize.small(tokens: tokens))
                 .overlay(
                     RoundedRectangle(cornerRadius: PrimerRadius.xsmall(tokens: tokens))
-                        .stroke(PrimerCheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
+                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
                 )
         }
 

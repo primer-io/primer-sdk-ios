@@ -91,9 +91,6 @@
                         location = "group:Design"
                         name = "Design">
                         <FileRef
-                           location = "group:PrimerCheckoutColors.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:AnimationConstants.swift">
                         </FileRef>
                         <FileRef
