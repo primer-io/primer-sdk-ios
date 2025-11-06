@@ -527,14 +527,14 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         structuredState.isLoading = true
 
         // Track payment submission
-        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+        await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
         do {
             try await sendBillingAddressIfNeeded()
             let cardData = try await prepareCardPaymentData()
 
             // Track payment processing started
-            await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+            await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
             let result = try await processCardPayment(cardData: cardData)
             await handlePaymentSuccess(result)
@@ -676,7 +676,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             if !wasValid {
                 Task {
                     await analyticsInteractor?.trackEvent(.paymentDetailsEntered,
-                                                          metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD")))
+                                                          metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
                 }
             }
         }
@@ -793,6 +793,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
         structuredState.setError(message, for: fieldType, errorCode: errorCode)
         // Set error for field
+
+        // Announce errors to VoiceOver
+        Task { @MainActor in
+            announceFieldErrors()
+        }
     }
 
     /// Implementation of clearFieldError using structured state
@@ -809,6 +814,34 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Implementation of getFormConfiguration
     public func getFormConfiguration() -> CardFormConfiguration {
         return formConfiguration
+    }
+
+    // MARK: - Accessibility Announcements
+
+    /// Announces field errors to VoiceOver users
+    /// Multi-field error handling - announces total count first, then first error
+    private func announceFieldErrors() {
+        guard let container = DIContainer.currentSync,
+              let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self) else {
+            return
+        }
+
+        let errorCount = structuredState.fieldErrors.count
+
+        guard errorCount > 0 else { return }
+
+        if errorCount == 1 {
+            // Single error - announce the error message directly
+            if let firstError = structuredState.fieldErrors.first {
+                announcementService.announceError(firstError.message)
+            }
+        } else {
+            // Multiple errors - announce count first, then first error details
+            let countMessage = CheckoutComponentsStrings.a11yMultipleErrors(errorCount)
+            let firstErrorMessage = structuredState.fieldErrors.first?.message ?? ""
+            let combinedMessage = "\(countMessage). \(firstErrorMessage)"
+            announcementService.announceError(combinedMessage)
+        }
     }
 
     // MARK: - ViewBuilder Method Implementations

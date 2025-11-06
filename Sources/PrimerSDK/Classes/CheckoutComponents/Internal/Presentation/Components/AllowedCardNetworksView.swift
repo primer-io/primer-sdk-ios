@@ -40,6 +40,7 @@ struct AllowedCardNetworksView: View, LogReporter {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityHidden(true) // Hide from VoiceOver - decorative badges only
         }
     }
 

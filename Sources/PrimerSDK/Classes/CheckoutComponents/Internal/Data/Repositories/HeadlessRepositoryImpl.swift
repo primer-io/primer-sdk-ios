@@ -736,11 +736,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func trackAnalyticsEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) {
         Task {
             await injectAnalyticsInteractor()
-            
+
             guard let interactor = analyticsInteractor else {
                 return
             }
-            
+
             await interactor.trackEvent(eventType, metadata: metadata)
         }
     }

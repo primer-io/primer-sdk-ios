@@ -23,7 +23,7 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// Called when a payment method is selected by the user.
     /// - Parameter paymentMethod: The selected payment method.
-    func onPaymentMethodSelected(paymentMethod: PrimerComposablePaymentMethod)
+    func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
 
     /// Cancels payment method selection and dismisses the screen.
     func onCancel()
@@ -36,7 +36,7 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// Individual payment method item component.
     /// Default implementation shows payment method with selection state.
-    var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)? { get set }
+    var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)? { get set }
 
     /// Category header component for grouping payment methods.
     /// Default implementation shows category name in uppercase.
@@ -53,33 +53,29 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 /// Represents the current state of available payment methods and loading status.
 public struct PrimerPaymentMethodSelectionState: Equatable {
     /// List of available payment methods.
-    public var paymentMethods: [PrimerComposablePaymentMethod] = []
+    public var paymentMethods: [CheckoutPaymentMethod] = []
 
     /// Indicates if payment methods are being loaded.
     public var isLoading: Bool = false
 
     /// The currently selected payment method.
-    public var selectedPaymentMethod: PrimerComposablePaymentMethod?
+    public var selectedPaymentMethod: CheckoutPaymentMethod?
 
     /// Current search query for filtering payment methods.
     public var searchQuery: String = ""
 
     /// Filtered payment methods based on search query.
-    public var filteredPaymentMethods: [PrimerComposablePaymentMethod] = []
-
-    /// Payment methods organized by category.
-    public var categorizedPaymentMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = []
+    public var filteredPaymentMethods: [CheckoutPaymentMethod] = []
 
     /// Error message if any operation fails.
     public var error: String?
 
     public init(
-        paymentMethods: [PrimerComposablePaymentMethod] = [],
+        paymentMethods: [CheckoutPaymentMethod] = [],
         isLoading: Bool = false,
-        selectedPaymentMethod: PrimerComposablePaymentMethod? = nil,
+        selectedPaymentMethod: CheckoutPaymentMethod? = nil,
         searchQuery: String = "",
-        filteredPaymentMethods: [PrimerComposablePaymentMethod] = [],
-        categorizedPaymentMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = [],
+        filteredPaymentMethods: [CheckoutPaymentMethod] = [],
         error: String? = nil
     ) {
         self.paymentMethods = paymentMethods
@@ -87,7 +83,6 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
         self.selectedPaymentMethod = selectedPaymentMethod
         self.searchQuery = searchQuery
         self.filteredPaymentMethods = filteredPaymentMethods
-        self.categorizedPaymentMethods = categorizedPaymentMethods
         self.error = error
     }
 
@@ -97,11 +92,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
             lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
             lhs.searchQuery == rhs.searchQuery &&
             lhs.filteredPaymentMethods == rhs.filteredPaymentMethods &&
-            lhs.error == rhs.error &&
-            lhs.categorizedPaymentMethods.count == rhs.categorizedPaymentMethods.count &&
-            zip(lhs.categorizedPaymentMethods, rhs.categorizedPaymentMethods).allSatisfy { left, right in
-                left.category == right.category && left.methods == right.methods
-            }
+            lhs.error == rhs.error
     }
 }
 
@@ -109,7 +100,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
 
 /// Represents a payment method available for selection.
 /// This is the public model exposed through the scope interface.
-public struct PrimerComposablePaymentMethod: Equatable, Identifiable {
+public struct CheckoutPaymentMethod: Equatable, Identifiable {
     /// Unique identifier for the payment method.
     public let id: String
 
@@ -159,7 +150,7 @@ public struct PrimerComposablePaymentMethod: Equatable, Identifiable {
         self.backgroundColor = backgroundColor
     }
 
-    public static func == (lhs: PrimerComposablePaymentMethod, rhs: PrimerComposablePaymentMethod) -> Bool {
+    public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {
         lhs.id == rhs.id &&
             lhs.type == rhs.type &&
             lhs.name == rhs.name &&

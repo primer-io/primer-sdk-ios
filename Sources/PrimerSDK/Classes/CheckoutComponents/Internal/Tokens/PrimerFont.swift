@@ -22,16 +22,17 @@ struct PrimerFont {
 
     // MARK: - Base Font Function
 
-    /// Creates a UIFont with design token parameters.
+    /// Creates a UIFont with design token parameters and automatic Dynamic Type scaling.
     ///
-    /// All typography flows through this function to ensure consistent Inter variable font loading.
+    /// All typography flows through this function to ensure consistent Inter variable font loading
+    /// with Dynamic Type support for accessibility.
     ///
     /// - Parameters:
     ///   - family: Font family name (defaults to "Inter")
     ///   - weight: Font weight as numeric value (100-900, defaults to 400)
     ///   - size: Font size in points (defaults to 14)
     ///   - isItalic: Whether to apply italic style (defaults to false)
-    /// - Returns: UIFont with Inter variable font or system font fallback
+    /// - Returns: UIFont with Inter variable font or system font fallback, scaled for Dynamic Type
     static func uiFont(
         family: String?,
         weight: CGFloat?,
@@ -42,15 +43,23 @@ struct PrimerFont {
         let fontSize = size ?? 14
         let fontWeight = weight ?? 400
 
+        let baseFont: UIFont
+
         // Attempt to load Inter variable font
         if fontFamily == "Inter" {
             if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
-                return customUIFont
+                baseFont = customUIFont
+            } else {
+                // Fallback to system font
+                baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
             }
+        } else {
+            // Use system font for non-Inter families
+            baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
         }
 
-        // Fallback to system font
-        return .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+        // Apply Dynamic Type scaling
+        return UIFontMetrics.default.scaledFont(for: baseFont)
     }
 
     // MARK: - UIKit Typography Helpers
@@ -132,6 +141,9 @@ struct PrimerFont {
     }
 
     // MARK: - SwiftUI Typography Helpers
+    //
+    // All SwiftUI font helpers automatically scale with iOS Dynamic Type settings.
+    // Scaling is applied in uiFont() to ensure consistent accessibility support.
 
     /// Title extra large (24pt, weight 500) - for major section titles
     static func titleXLarge(tokens: DesignTokens?) -> Font {

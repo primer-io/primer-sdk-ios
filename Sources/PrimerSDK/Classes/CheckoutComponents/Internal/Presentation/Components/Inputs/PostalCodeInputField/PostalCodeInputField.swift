@@ -109,6 +109,13 @@ struct PostalCodeInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.billingAddressField("postal_code"),
+            label: label ?? "Postal code",
+            hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
+            value: errorMessage,
+            traits: []
+        ))
         .onAppear {
             setupValidationService()
         }

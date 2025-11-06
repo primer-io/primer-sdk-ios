@@ -10,6 +10,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct SplashScreen: View {
     @Environment(\.designTokens) private var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
 
     var body: some View {
         ZStack {
@@ -21,6 +22,10 @@ struct SplashScreen: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
                     .scaleEffect(PrimerScale.large)
                     .frame(width: PrimerComponentHeight.progressIndicator, height: PrimerComponentHeight.progressIndicator)
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                        label: CheckoutComponentsStrings.a11yLoading
+                    ))
 
                 VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary loading message
@@ -28,12 +33,14 @@ struct SplashScreen: View {
                         .font(PrimerFont.bodyLarge(tokens: tokens))
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isStaticText)
 
                     // Secondary loading message
                     Text(CheckoutComponentsStrings.loadingWontTakeLong)
                         .font(PrimerFont.bodyMedium(tokens: tokens))
                         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isStaticText)
                 }
             }
             .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))

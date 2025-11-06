@@ -13,6 +13,7 @@ struct SelectCountryScreen: View {
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var countryState: PrimerSelectCountryState = .init()
 
     var body: some View {
@@ -37,6 +38,7 @@ struct SelectCountryScreen: View {
                 onDismiss?()
             }
             .foregroundColor(CheckoutColors.blue(tokens: tokens))
+            .accessibilityLabel(CheckoutComponentsStrings.a11yCancel)
         )
     }
 

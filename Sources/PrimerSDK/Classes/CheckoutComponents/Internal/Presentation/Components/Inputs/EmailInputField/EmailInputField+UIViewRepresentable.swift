@@ -89,6 +89,10 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {

@@ -89,6 +89,10 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -134,11 +138,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             // Update scope state
             scope.updateExpiryDate(newText)
 
-            // Validate if complete
+            // Validate silently during typing (no error messages shown)
             if newText.count == 5 { // MM/YY format
-                validateExpiryDate()
+                validateExpiryDateSilently()
             } else {
                 isValid = false
+                // Don't show error message during typing
                 errorMessage = nil
             }
 
@@ -201,7 +206,13 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             scope.updateExpiryYear(year)
         }
 
+        /// Validates expiry date and shows error messages (called on blur)
         private func validateExpiryDate() {
+            validateExpiryDateSilently(showErrors: true)
+        }
+
+        /// Validates expiry date without showing error messages (called during typing)
+        private func validateExpiryDateSilently(showErrors: Bool = false) {
             // Empty field handling - don't show errors for empty fields
             let trimmedExpiry = expiryDate.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedExpiry.isEmpty {
@@ -219,8 +230,10 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             guard components.count == 2 else {
                 isValid = false
-                errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
-                scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
+                if showErrors {
+                    errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
+                    scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
+                }
                 // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateExpiryValidationState(false)
@@ -238,7 +251,11 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             )
 
             isValid = result.isValid
-            errorMessage = result.errorMessage
+
+            // Only show error messages if showErrors is true (on blur)
+            if showErrors {
+                errorMessage = result.errorMessage
+            }
 
             // Update scope state based on validation
             if result.isValid {
@@ -248,7 +265,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     scope.updateExpiryValidationState(true)
                 }
             } else {
-                if let message = result.errorMessage {
+                if showErrors, let message = result.errorMessage {
                     scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
                 }
                 // Update scope validation state

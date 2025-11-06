@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 
 /// Internal representation of a payment method with full details.
-/// This is used internally and mapped to the public PrimerComposablePaymentMethod.
+/// This is used internally and mapped to the public CheckoutPaymentMethod.
 struct InternalPaymentMethod: Equatable {
     let id: String
     let type: String

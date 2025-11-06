@@ -20,7 +20,7 @@ struct CheckoutScopeObserver: View, LogReporter {
 
     // Design tokens state
     @StateObject private var designTokensManager = DesignTokensManager()
-    
+
     // Country selection modal state
     @State private var showingCountrySelection = false
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
@@ -190,8 +190,8 @@ struct CheckoutScopeObserver: View, LogReporter {
 
         case .paymentMethodSelection:
             // First check if the payment method selection scope itself has a custom screen
-            if let customScreen = scope.paymentMethodSelection.screen {
-                return AnyView(customScreen())
+            if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
+                return AnyView(customPaymentMethodSelectionScreen())
             }
             // Then check if the checkout scope has a custom payment selection screen
             else if let customPaymentSelection = scope.paymentMethodSelectionScreen {

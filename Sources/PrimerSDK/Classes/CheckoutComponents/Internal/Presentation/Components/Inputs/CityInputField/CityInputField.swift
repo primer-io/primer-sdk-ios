@@ -89,6 +89,13 @@ struct CityInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.billingAddressField("city"),
+            label: label ?? "City",
+            hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
+            value: errorMessage,
+            traits: []
+        ))
         .onAppear {
             setupValidationService()
         }

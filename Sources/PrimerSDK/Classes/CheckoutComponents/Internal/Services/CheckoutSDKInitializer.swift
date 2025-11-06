@@ -76,9 +76,10 @@ final class CheckoutSDKInitializer {
 
         let checkoutScope = createCheckoutScope()
 
-        if presentationContext == .direct {
-            checkoutScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
-        }
+        // Note: Navigation is handled by DefaultCheckoutScope.loadPaymentMethods() which:
+        // - Waits for payment methods from server
+        // - If single payment method: navigates directly to it (any type, not just cards)
+        // - If multiple payment methods: shows payment method selection screen
 
         return InitializationResult(checkoutScope: checkoutScope)
     }
