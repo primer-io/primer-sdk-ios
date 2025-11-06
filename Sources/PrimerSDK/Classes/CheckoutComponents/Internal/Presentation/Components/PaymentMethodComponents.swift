@@ -60,14 +60,14 @@ struct PaymentMethodPlaceholder: View {
 
                 Text(CheckoutComponentsStrings.implementationComingSoon)
                     .font(PrimerFont.subheadline(tokens: tokens))
-                    .foregroundColor(PrimerCheckoutColors.secondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.secondary(tokens: tokens))
 
                 Spacer()
             }
             .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(PrimerCheckoutColors.background(tokens: tokens))
+        .background(CheckoutColors.background(tokens: tokens))
     }
 
     /// Navigation bar with back button
@@ -83,7 +83,7 @@ struct PaymentMethodPlaceholder: View {
                             .font(PrimerFont.bodyMedium(tokens: tokens))
                         Text(CheckoutComponentsStrings.backButton)
                     }
-                    .foregroundColor(PrimerCheckoutColors.textPrimary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                 })
                 .accessibility(config: AccessibilityConfiguration(
                     identifier: AccessibilityIdentifiers.Common.backButton,
@@ -95,7 +95,7 @@ struct PaymentMethodPlaceholder: View {
                 Button(CheckoutComponentsStrings.cancelButton, action: {
                     checkoutScope.onDismiss()
                 })
-                .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .accessibility(config: AccessibilityConfiguration(
                     identifier: AccessibilityIdentifiers.Common.closeButton,
                     label: CheckoutComponentsStrings.a11yCancel,

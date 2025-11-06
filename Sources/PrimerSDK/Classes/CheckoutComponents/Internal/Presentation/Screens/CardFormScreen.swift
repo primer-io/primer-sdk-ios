@@ -64,7 +64,7 @@ struct CardFormScreen: View, LogReporter {
                     Button(CheckoutComponentsStrings.cancelButton, action: {
                         scope.onCancel()
                     })
-                    .foregroundColor(PrimerCheckoutColors.textSecondary(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     .accessibility(config: AccessibilityConfiguration(
                         identifier: AccessibilityIdentifiers.Common.closeButton,
                         label: CheckoutComponentsStrings.a11yCancel,
