@@ -170,3 +170,32 @@ struct PrimerScale {
     /// Used for reduced elements like button loaders
     static let small: CGFloat = 0.8
 }
+
+// MARK: - Primer Card Network Selector
+
+/// Centralized size values for card network selector components
+struct PrimerCardNetworkSelector {
+    /// Badge width (28px)
+    /// Width for the card network badge icon
+    static let badgeWidth: CGFloat = 28
+
+    /// Badge height (20px)
+    /// Height for the card network badge icon
+    static let badgeHeight: CGFloat = 20
+
+    /// Button frame width (34px)
+    /// Total button frame width including padding around badge
+    static let buttonFrameWidth: CGFloat = 34
+
+    /// Button frame height (26px)
+    /// Total button frame height including padding around badge
+    static let buttonFrameHeight: CGFloat = 26
+
+    /// Button total width (36px)
+    /// Total button width including border (used for layout calculations)
+    static let buttonTotalWidth: CGFloat = 36
+
+    /// Selected border height (28px)
+    /// Height of the selection border overlay
+    static let selectedBorderHeight: CGFloat = 28
+}

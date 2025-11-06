@@ -100,9 +100,6 @@ struct CardFormScreen: View, LogReporter {
                 // Render card fields dynamically based on configuration
                 cardFieldsSection
 
-                // Co-badged cards selection
-                cobadgedCardsSection
-
                 // Billing address fields if configured
                 billingAddressSection
             }
@@ -149,41 +146,6 @@ struct CardFormScreen: View, LogReporter {
                     }
                 }
             }
-        }
-    }
-
-    @MainActor
-    @ViewBuilder
-    private var cobadgedCardsSection: some View {
-        if cardFormState.availableNetworks.count > 1 {
-            if let customCobadgedCardsView = scope.cobadgedCardsView {
-                AnyView(customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
-                    Task { @MainActor in
-                        scope.updateSelectedCardNetwork(network)
-                    }
-                })
-            } else {
-                defaultCobadgedCardsView
-            }
-        }
-    }
-
-    private var defaultCobadgedCardsView: some View {
-        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-            Text(CheckoutComponentsStrings.selectNetworkTitle)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-
-            CardNetworkSelector(
-                availableNetworks: cardFormState.availableNetworks.map { $0.network },
-                selectedNetwork: $selectedCardNetwork,
-                onNetworkSelected: { network in
-                    selectedCardNetwork = network
-                    Task { @MainActor in
-                        scope.updateSelectedCardNetwork(network.rawValue)
-                    }
-                }
-            )
         }
     }
 
@@ -373,6 +335,7 @@ struct CardFormScreen: View, LogReporter {
                     placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
                     scope: scope,
                     selectedNetwork: getSelectedCardNetwork(),
+                    availableNetworks: cardFormState.availableNetworks.map { $0.network },
                     styling: defaultStyling
                 )
             }

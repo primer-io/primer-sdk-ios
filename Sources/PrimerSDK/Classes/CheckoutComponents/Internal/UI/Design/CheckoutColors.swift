@@ -67,6 +67,11 @@ enum CheckoutColors {
         return tokens?.primerColorGray300 ?? Color(.systemGray4)
     }
 
+    /// Gray 700 color (dark gray)
+    static func gray700(tokens: DesignTokens?) -> Color {
+        return tokens?.primerColorGray700 ?? Color(.systemGray)
+    }
+
     /// Placeholder text color
     static func textPlaceholder(tokens: DesignTokens?) -> Color {
         return tokens?.primerColorTextPlaceholder ?? Color(.tertiaryLabel)

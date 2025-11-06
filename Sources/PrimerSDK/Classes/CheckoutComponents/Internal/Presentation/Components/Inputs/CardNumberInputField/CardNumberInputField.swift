@@ -14,6 +14,7 @@ struct CardNumberInputField: View, LogReporter {
     let placeholder: String
     let scope: any PrimerCardFormScope
     let selectedNetwork: CardNetwork?
+    let availableNetworks: [CardNetwork]
     let styling: PrimerFieldStyling?
 
     // MARK: - Private Properties
@@ -25,6 +26,7 @@ struct CardNumberInputField: View, LogReporter {
     @State private var errorMessage: String?
     @State private var surchargeAmount: String?
     @State private var isFocused: Bool = false
+    @State private var localSelectedNetwork: CardNetwork = .unknown
     @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
@@ -35,12 +37,14 @@ struct CardNumberInputField: View, LogReporter {
         placeholder: String,
         scope: any PrimerCardFormScope,
         selectedNetwork: CardNetwork? = nil,
+        availableNetworks: [CardNetwork] = [],
         styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.scope = scope
         self.selectedNetwork = selectedNetwork
+        self.availableNetworks = availableNetworks
         self.styling = styling
     }
 
@@ -79,8 +83,20 @@ struct CardNumberInputField: View, LogReporter {
             },
             rightComponent: {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    if displayNetwork != .unknown {
-                        CardNetworkBadge(network: displayNetwork)
+                    // Show CardNetworkSelector for co-badged cards (multiple networks)
+                    if availableNetworks.count > 1 {
+                        CardNetworkSelector(
+                            availableNetworks: availableNetworks,
+                            selectedNetwork: $localSelectedNetwork,
+                            onNetworkSelected: { network in
+                                scope.updateSelectedCardNetwork(network.rawValue)
+                            }
+                        )
+                    } else if displayNetwork != .unknown {
+                        // Show single network badge for non-cobadged cards
+                        CardNetworkBadge(network: displayNetwork,
+                                         width: PrimerCardNetworkSelector.badgeWidth,
+                                         height: PrimerCardNetworkSelector.badgeHeight)
                     }
 
                     if let surchargeAmount {
@@ -97,6 +113,13 @@ struct CardNumberInputField: View, LogReporter {
         )
         .onAppear {
             setupValidationService()
+            // Initialize local selected network
+            localSelectedNetwork = displayNetwork
+        }
+        .onChange(of: selectedNetwork) { newNetwork in
+            if let newNetwork = newNetwork {
+                localSelectedNetwork = newNetwork
+            }
         }
     }
 
