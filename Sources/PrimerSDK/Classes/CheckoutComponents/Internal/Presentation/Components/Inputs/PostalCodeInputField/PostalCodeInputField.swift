@@ -112,7 +112,7 @@ struct PostalCodeInputField: View, LogReporter {
         .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.CardForm.billingAddressField("postal_code"),
             label: label ?? "Postal code",
-            hint: "Enter your postal code or ZIP code",
+            hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
             value: errorMessage,
             traits: []
         ))

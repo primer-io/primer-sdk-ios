@@ -763,6 +763,22 @@ struct CheckoutComponentsStrings {
         comment: "VoiceOver hint for cardholder name field"
     )
 
+    // MARK: Billing Address Accessibility Hints
+
+    static let a11yBillingAddressCityHint = NSLocalizedString(
+        "accessibility.cardForm.billingAddress.city.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter city name",
+        comment: "VoiceOver hint for billing address city field"
+    )
+
+    static let a11yBillingAddressPostalCodeHint = NSLocalizedString(
+        "accessibility.cardForm.billingAddress.postalCode.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter postal or ZIP code",
+        comment: "VoiceOver hint for billing address postal code field"
+    )
+
     // MARK: Card Form Accessibility Error Messages
 
     static let a11yCardNumberErrorInvalid = NSLocalizedString(

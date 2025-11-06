@@ -92,7 +92,7 @@ struct CityInputField: View, LogReporter {
         .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.CardForm.billingAddressField("city"),
             label: label ?? "City",
-            hint: "Enter your city",
+            hint: CheckoutComponentsStrings.a11yBillingAddressCityHint,
             value: errorMessage,
             traits: []
         ))
