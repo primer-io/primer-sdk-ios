@@ -96,7 +96,7 @@ struct CardholderNameInputField: View, LogReporter {
             label: CheckoutComponentsStrings.a11yCardholderNameLabel,
             hint: CheckoutComponentsStrings.a11yCardholderNameHint,
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()

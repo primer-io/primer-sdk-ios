@@ -100,7 +100,7 @@ struct CVVInputField: View, LogReporter {
             label: CheckoutComponentsStrings.a11yCVCLabel,
             hint: CheckoutComponentsStrings.a11yCVCHint,
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()

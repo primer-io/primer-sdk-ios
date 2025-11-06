@@ -102,7 +102,7 @@ struct ExpiryDateInputField: View, LogReporter {
             label: CheckoutComponentsStrings.a11yExpiryLabel,
             hint: CheckoutComponentsStrings.a11yExpiryHint,
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()

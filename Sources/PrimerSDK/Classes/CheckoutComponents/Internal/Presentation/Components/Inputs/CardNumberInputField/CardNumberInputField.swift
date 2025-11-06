@@ -93,7 +93,7 @@ struct CardNumberInputField: View, LogReporter {
             label: CheckoutComponentsStrings.a11yCardNumberLabel,
             hint: CheckoutComponentsStrings.a11yCardNumberHint,
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()

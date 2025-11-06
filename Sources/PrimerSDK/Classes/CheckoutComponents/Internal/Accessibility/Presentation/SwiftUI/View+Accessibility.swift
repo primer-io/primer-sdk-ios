@@ -23,16 +23,6 @@ extension View {
     ///         traits: [.isButton]
     ///     ))
     /// ```
-    ///
-    /// This modifier applies:
-    /// - Accessibility identifier for UI testing
-    /// - VoiceOver label describing the element
-    /// - Optional hint providing interaction guidance
-    /// - Optional value showing current state
-    /// - Semantic traits (button, header, etc.)
-    /// - Hidden state for decorative elements
-    /// - Sort priority for custom focus order
-    /// - Element grouping (combines children into single focusable element)
     func accessibility(config: AccessibilityConfiguration) -> some View {
         self
             .accessibilityElement(children: .combine)

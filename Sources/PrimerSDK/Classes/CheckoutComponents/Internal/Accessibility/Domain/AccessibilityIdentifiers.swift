@@ -18,22 +18,11 @@ enum AccessibilityIdentifiers {
 
     /// Card form accessibility identifiers
     enum CardForm {
-        /// Container for entire card form
         static let container = "checkout_components_card_form_container"
-
-        /// Card number input field
         static let cardNumberField = "checkout_components_card_form_card_number_field"
-
-        /// Expiry date input field
         static let expiryField = "checkout_components_card_form_expiry_field"
-
-        /// CVC/CVV security code input field
         static let cvcField = "checkout_components_card_form_cvc_field"
-
-        /// Cardholder name input field
         static let cardholderNameField = "checkout_components_card_form_cardholder_name_field"
-
-        /// Save card button
         static let saveButton = "checkout_components_card_form_save_button"
 
         /// Dynamic identifier for billing address fields
@@ -53,7 +42,6 @@ enum AccessibilityIdentifiers {
 
     /// Payment method selection accessibility identifiers
     enum PaymentSelection {
-        /// Header/title for payment method selection screen
         static let header = "checkout_components_payment_selection_header"
 
         /// Dynamic identifier for saved card items
@@ -78,25 +66,15 @@ enum AccessibilityIdentifiers {
 
     /// Common/shared UI element identifiers
     enum Common {
-        /// Primary submit button (e.g., "Pay $49.99")
         static let submitButton = "checkout_components_submit_button"
-
-        /// Close/dismiss button
         static let closeButton = "checkout_components_close_button"
-
-        /// Back navigation button
         static let backButton = "checkout_components_back_button"
-
-        /// Loading/progress indicator
         static let loadingIndicator = "checkout_components_loading_indicator"
     }
 
     /// Error state accessibility identifiers
     enum Error {
-        /// Container for error messages
         static let messageContainer = "checkout_components_error_message_container"
-
-        /// Dismiss error button
         static let dismissButton = "checkout_components_error_dismiss_button"
     }
 }

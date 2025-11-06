@@ -94,7 +94,7 @@ struct CityInputField: View, LogReporter {
             label: label ?? "City",
             hint: "Enter your city",
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()

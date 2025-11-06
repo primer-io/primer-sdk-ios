@@ -9,22 +9,14 @@ import SwiftUI
 /// Container for all accessibility metadata associated with a UI component
 struct AccessibilityConfiguration {
 
-    /// Unique accessibility identifier for automated testing
     let identifier: String
-
-    /// Human-readable description of element purpose
     let label: String
-
-    /// Additional context about interaction outcome
     let hint: String?
 
     /// Current value of element (e.g., "50%" for progress)
     let value: String?
 
-    /// Semantic role and state flags (uses SwiftUI's built-in AccessibilityTraits)
     let traits: SwiftUI.AccessibilityTraits
-
-    /// Whether element should be hidden from VoiceOver
     let isHidden: Bool
 
     /// Custom focus order priority (higher values appear first)

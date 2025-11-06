@@ -114,7 +114,7 @@ struct PostalCodeInputField: View, LogReporter {
             label: label ?? "Postal code",
             hint: "Enter your postal code or ZIP code",
             value: errorMessage,
-            traits: [.isButton]
+            traits: []
         ))
         .onAppear {
             setupValidationService()
