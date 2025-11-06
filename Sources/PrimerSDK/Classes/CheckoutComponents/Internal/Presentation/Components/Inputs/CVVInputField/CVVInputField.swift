@@ -75,7 +75,7 @@ struct CVVInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 CVVTextField(
                     cvv: $cvv,
                     isValid: $isValid,

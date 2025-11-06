@@ -76,7 +76,7 @@ struct ExpiryDateInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 ExpiryDateTextField(
                     expiryDate: $expiryDate,
                     month: $month,

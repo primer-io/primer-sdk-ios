@@ -7,85 +7,43 @@
 import SwiftUI
 import UIKit
 
-/// Configuration for PrimerTextField behavior and appearance
 @available(iOS 15.0, *)
 struct PrimerTextFieldConfiguration {
-    /// Keyboard type for the text field
     let keyboardType: UIKeyboardType
-
-    /// Autocapitalization behavior
     let autocapitalizationType: UITextAutocapitalizationType
-
-    /// Autocorrection behavior
     let autocorrectionType: UITextAutocorrectionType
-
-    /// Text content type for autofill suggestions
     let textContentType: UITextContentType?
-
-    /// Return key type
     let returnKeyType: UIReturnKeyType
-
-    /// Whether the text should be displayed as secure (e.g., CVV)
     let isSecureTextEntry: Bool
 
-    /// Default configuration for standard text input
-    static let standard = PrimerTextFieldConfiguration(
-        keyboardType: .default,
-        autocapitalizationType: .words,
-        autocorrectionType: .no,
-        textContentType: nil,
-        returnKeyType: .done,
-        isSecureTextEntry: false
-    )
+    static let standard = PrimerTextFieldConfiguration()
 
-    /// Configuration for email input
     static let email = PrimerTextFieldConfiguration(
         keyboardType: .emailAddress,
         autocapitalizationType: .none,
-        autocorrectionType: .no,
-        textContentType: .emailAddress,
-        returnKeyType: .done,
-        isSecureTextEntry: false
+        textContentType: .emailAddress
     )
 
-    /// Configuration for number pad input
     static let numberPad = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
-        autocapitalizationType: .none,
-        autocorrectionType: .no,
-        textContentType: nil,
-        returnKeyType: .done,
-        isSecureTextEntry: false
+        autocapitalizationType: .none
     )
 
-    /// Configuration for CVV input (secure, number pad, one-time code)
     static let cvv = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
         autocapitalizationType: .none,
-        autocorrectionType: .no,
         textContentType: .oneTimeCode,
-        returnKeyType: .done,
         isSecureTextEntry: true
     )
 
-    /// Configuration for postal code input (default keyboard, all caps)
     static let postalCode = PrimerTextFieldConfiguration(
-        keyboardType: .default,
-        autocapitalizationType: .allCharacters,
-        autocorrectionType: .no,
-        textContentType: nil,
-        returnKeyType: .done,
-        isSecureTextEntry: false
+        autocapitalizationType: .allCharacters
     )
 
-    /// Configuration for expiry date input (number pad, no autofill)
     static let expiryDate = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
         autocapitalizationType: .none,
-        autocorrectionType: .no,
-        textContentType: .none,
-        returnKeyType: .done,
-        isSecureTextEntry: false
+        textContentType: .none
     )
 
     init(
@@ -105,10 +63,8 @@ struct PrimerTextFieldConfiguration {
     }
 }
 
-/// UITextField extension for consistent Primer styling and configuration
 @available(iOS 15.0, *)
 extension UITextField {
-    /// Configures the text field with Primer design tokens and standard settings
     func configurePrimerStyle(
         placeholder: String,
         configuration: PrimerTextFieldConfiguration,
@@ -121,36 +77,50 @@ extension UITextField {
         borderStyle = .none
         backgroundColor = .clear
 
-        // Apply keyboard configuration
+        applyConfiguration(configuration)
+
+        let font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+        applyTextStyling(placeholder: placeholder, styling: styling, tokens: tokens, font: font)
+
+        inputAccessoryView = setupKeyboardAccessory(target: doneButtonTarget, action: doneButtonAction)
+    }
+
+    private func applyConfiguration(_ configuration: PrimerTextFieldConfiguration) {
         keyboardType = configuration.keyboardType
         autocapitalizationType = configuration.autocapitalizationType
         autocorrectionType = configuration.autocorrectionType
         textContentType = configuration.textContentType
         returnKeyType = configuration.returnKeyType
         isSecureTextEntry = configuration.isSecureTextEntry
+    }
 
-        // Text styling with design tokens
+    private func applyTextStyling(
+        placeholder: String,
+        styling: PrimerFieldStyling?,
+        tokens: DesignTokens?,
+        font: UIFont
+    ) {
         // Note: We ignore styling.font because SwiftUI Font cannot be properly converted to UIFont
         // Custom fonts would be lost in the conversion. Always use PrimerFont.uiFontBodyLarge instead.
-        font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+        self.font = font
         textColor = styling?.textColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPrimary(tokens: tokens))
 
-        // Placeholder styling with design tokens
         let placeholderColor = styling?.placeholderColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPlaceholder(tokens: tokens))
         attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [.foregroundColor: placeholderColor, .font: font]
         )
+    }
 
-        // Add keyboard accessory view with "Done" button
+    private func setupKeyboardAccessory(target: Any?, action: Selector) -> UIView {
         let accessoryView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: PrimerComponentHeight.keyboardAccessory))
         accessoryView.backgroundColor = UIColor.systemGray6
 
         let doneButton = UIButton(type: .system)
         doneButton.setTitle("Done", for: .normal)
         doneButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        if let target = doneButtonTarget {
-            doneButton.addTarget(target, action: doneButtonAction, for: .touchUpInside)
+        if let target {
+            doneButton.addTarget(target, action: action, for: .touchUpInside)
         }
 
         accessoryView.addSubview(doneButton)
@@ -160,6 +130,6 @@ extension UITextField {
             doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor),
         ])
 
-        inputAccessoryView = accessoryView
+        return accessoryView
     }
 }

@@ -70,7 +70,7 @@ struct StateInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 StateTextField(
                     state: $state,
                     isValid: $isValid,

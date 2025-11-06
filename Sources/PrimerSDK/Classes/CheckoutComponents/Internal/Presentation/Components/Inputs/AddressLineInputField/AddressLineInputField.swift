@@ -108,7 +108,7 @@ struct AddressLineInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 AddressLineTextField(
                     addressLine: $addressLine,
                     isValid: $isValid,

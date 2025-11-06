@@ -101,7 +101,7 @@ struct NameInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 NameTextField(
                     name: $name,
                     isValid: $isValid,

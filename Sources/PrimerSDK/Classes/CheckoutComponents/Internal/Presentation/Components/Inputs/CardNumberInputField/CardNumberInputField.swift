@@ -52,7 +52,7 @@ struct CardNumberInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                if let validationService = validationService {
+                if let validationService {
                     CardNumberTextField(
                         scope: scope,
                         cardNumber: $cardNumber,
@@ -76,7 +76,7 @@ struct CardNumberInputField: View, LogReporter {
                         CardNetworkBadge(network: displayNetwork)
                     }
 
-                    if let surchargeAmount = surchargeAmount {
+                    if let surchargeAmount {
                         Text(surchargeAmount)
                             .font(PrimerFont.bodySmall(tokens: tokens))
                             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))

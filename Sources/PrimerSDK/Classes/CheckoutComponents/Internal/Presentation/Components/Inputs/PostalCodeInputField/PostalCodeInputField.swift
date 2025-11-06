@@ -87,7 +87,7 @@ struct PostalCodeInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 PostalCodeTextField(
                     postalCode: $postalCode,
                     isValid: $isValid,

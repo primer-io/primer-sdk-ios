@@ -16,6 +16,7 @@
 		044F805B2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80562C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
 		044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80572C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift */; };
 		044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
+		0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
 		8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */; };
@@ -23,6 +24,7 @@
 		8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
+		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
 		A1DD4D4B2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4A2E3A856C00877A5D /* CheckoutComponentsMenuViewController.swift */; };
 		A1DD4D5A2E3A859F00877A5D /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4C2E3A859F00877A5D /* ShowcaseDemo.swift */; };
 		A1DD4D5B2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD4D4D2E3A859F00877A5D /* SingleFieldCustomisationDemo.swift */; };
@@ -71,6 +73,7 @@
 		F00C66152ACC67FA00187028 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
+		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
 		F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */; };
 		F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */; };
 		F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */; };
@@ -205,6 +208,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
+				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
+				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
+				87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,6 +471,9 @@
 			name = "Debug App SPM";
 			packageProductDependencies = (
 				F04510E22ACD98E100A0A48C /* PrimerSDK */,
+				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
+				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
+				87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -503,6 +512,9 @@
 			);
 			mainGroup = 1C9799A622D0CCDBBF94925B;
 			packageReferences = (
+				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
+				0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */,
+				87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -852,10 +864,52 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-nol-pay-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
+		87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-stripe-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-klarna-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */;
+			productName = PrimerNolPaySDK;
+		};
+		87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */;
+			productName = PrimerStripeSDK;
+		};
 		F04510E22ACD98E100A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PrimerSDK;
+		};
+		F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */;
+			productName = PrimerKlarnaSDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

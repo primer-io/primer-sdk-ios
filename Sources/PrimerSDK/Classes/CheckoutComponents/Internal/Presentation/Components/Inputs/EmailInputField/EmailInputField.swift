@@ -94,7 +94,7 @@ struct EmailInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService = validationService {
+            if let validationService {
                 EmailTextField(
                     email: $email,
                     isValid: $isValid,
