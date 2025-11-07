@@ -196,9 +196,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             let networkSurcharges = extractNetworkSurcharges(for: primerMethod.type)
 
             // Debug logging for surcharge data
+            // Note: primerMethod.id is a processor configuration ID (will be nil for cards)
+            // For accessibility, we use type as the stable identifier
 
             return InternalPaymentMethod(
-                id: primerMethod.id ?? primerMethod.type,
+                id: primerMethod.type,
                 type: primerMethod.type,
                 name: primerMethod.name,
                 icon: primerMethod.logo,

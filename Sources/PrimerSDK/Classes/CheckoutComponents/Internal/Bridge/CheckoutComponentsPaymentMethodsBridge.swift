@@ -44,9 +44,11 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             let backgroundColor = primerMethod.displayMetadata?.button.backgroundColor?.uiColor
 
             // Extract surcharge data for payment method
+            // Note: primerMethod.id is a processor configuration ID (will be nil for cards)
+            // For accessibility, we use type as the stable identifier
 
             return InternalPaymentMethod(
-                id: primerMethod.id ?? UUID().uuidString,
+                id: type,
                 type: type,
                 name: primerMethod.name,
                 icon: primerMethod.logo,

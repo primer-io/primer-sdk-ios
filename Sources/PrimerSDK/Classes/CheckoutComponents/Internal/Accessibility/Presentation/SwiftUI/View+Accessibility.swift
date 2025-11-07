@@ -25,7 +25,7 @@ extension View {
     /// ```
     func accessibility(config: AccessibilityConfiguration) -> some View {
         self
-            .accessibilityElement(children: .combine)
+            .accessibilityElement(children: .ignore)
             .accessibilityIdentifier(config.identifier)
             .accessibilityLabel(config.label)
             .modifier(ConditionalAccessibilityHint(hint: config.hint))

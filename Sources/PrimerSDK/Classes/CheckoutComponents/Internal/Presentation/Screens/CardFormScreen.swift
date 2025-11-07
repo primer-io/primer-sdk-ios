@@ -274,11 +274,57 @@ struct CardFormScreen: View, LogReporter {
         .cornerRadius(PrimerRadius.small(tokens: tokens))
         .accessibility(config: AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.Common.submitButton,
-            label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonText,
+            label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonAccessibilityLabel,
             hint: cardFormState.isLoading ? nil : (isEnabled ? CheckoutComponentsStrings.a11ySubmitButtonHint :
                                                     CheckoutComponentsStrings.a11ySubmitButtonDisabled),
             traits: [.isButton]
         ))
+    }
+
+    /// Accessibility-friendly version of submit button text for VoiceOver
+    /// Uses period as decimal separator to avoid misreading "6,00€" as "600 euros"
+    private var submitButtonAccessibilityLabel: String {
+        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
+        if scope.cardFormUIOptions?.payButtonAddNewCard == true {
+            return CheckoutComponentsStrings.addCardButton
+        }
+
+        // Only show amount in checkout intent and when currency is set
+        guard PrimerInternal.shared.intent == .checkout,
+              let currency = AppState.current.currency else {
+            return CheckoutComponentsStrings.payButton
+        }
+
+        let baseAmount = AppState.current.amount ?? 0
+
+        // Check if there's a surcharge from the detected card network
+        if let surchargeAmountString = cardFormState.surchargeAmount,
+           !surchargeAmountString.isEmpty,
+           cardFormState.selectedNetwork != nil {
+
+            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
+            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
+
+            // Remove all currency symbols
+            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
+            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
+
+            // Handle different decimal separators (European "," vs US ".")
+            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
+
+            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
+                // Convert to cents for calculation
+                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
+                let totalAmount = baseAmount + surchargeCents
+                // Use accessibility-friendly formatter
+                let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
+                return "Pay with \(accessibilityAmount)"
+            }
+        }
+
+        // No surcharge or parsing failed, use base amount with accessibility formatter
+        let accessibilityAmount = baseAmount.toAccessibilityCurrencyString(currency: currency)
+        return "Pay with \(accessibilityAmount)"
     }
 
     private var submitButtonText: String {
