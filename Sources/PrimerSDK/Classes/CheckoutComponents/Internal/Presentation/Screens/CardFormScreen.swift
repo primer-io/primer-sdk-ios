@@ -90,13 +90,8 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var titleSection: some View {
-        let fontSize = tokens?.primerTypographyTitleXlargeSize ?? 24
-        let fontWeight: Font.Weight = .semibold
-
         return Text(CheckoutComponentsStrings.cardPaymentTitle)
-            .font(.system(size: fontSize, weight: fontWeight))
-            .tracking(tokens?.primerTypographyTitleXlargeLetterSpacing ?? -0.6)
-            .lineSpacing((tokens?.primerTypographyTitleXlargeLineHeight ?? 32) - fontSize)
+            .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityAddTraits(.isHeader)

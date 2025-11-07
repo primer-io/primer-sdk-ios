@@ -28,7 +28,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     private var mainContent: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
             headerSection
             contentContainer
         }
@@ -233,7 +233,7 @@ struct PaymentMethodSelectionScreen: View {
             VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                 ForEach(group.methods, id: \.id) { method in
                     modernPaymentMethodCard(method)
-                        .frame(height: PrimerComponentHeight.paymentMethodCard)
+                        .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
                 }
             }
             .padding(PrimerSpacing.medium(tokens: tokens)) // Padding inside gray container
@@ -327,10 +327,12 @@ private struct ModernPaymentMethodCardView: View {
 
     /// Accessibility configuration for payment method card
     private var accessibilityConfiguration: AccessibilityConfiguration {
+        // Use type-based identifier (id is always set to type for payment methods)
+        // For saved/vaulted cards, a separate identifier pattern with last 4 digits is used
         AccessibilityConfiguration(
             identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
                 method.type.lowercased(),
-                uniqueId: method.id
+                uniqueId: nil
             ),
             label: method.name,
             traits: [.isButton]
@@ -341,6 +343,7 @@ private struct ModernPaymentMethodCardView: View {
         HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             paymentMethodLogo
             methodNameAndSurcharge
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -378,6 +381,8 @@ private struct ModernPaymentMethodCardView: View {
         return Text(method.name)
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(textColorForPaymentMethod)
+            .lineLimit(nil)
+            .multilineTextAlignment(.leading)
     }
 
     private var backgroundView: some View {

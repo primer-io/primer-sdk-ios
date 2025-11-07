@@ -13,7 +13,7 @@ extension PrimerInputFieldContainer {
         Text(label)
             .font(labelFont)
             .foregroundColor(labelForegroundColor)
-            .frame(height: PrimerComponentHeight.label)
+            .frame(minHeight: PrimerComponentHeight.label)
     }
 }
 
