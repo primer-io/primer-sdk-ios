@@ -472,6 +472,10 @@
         "type": "dimension",
         "value": "{primer.space.base} * 5.00"
       },
+      "xxlarge": {
+        "type": "dimension",
+        "value": "{primer.space.base} * 6.00"
+      },
       "base": {
         "type": "dimension",
         "value": 4

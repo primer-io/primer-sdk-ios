@@ -1,7 +1,7 @@
 //
 //  DefaultBanksComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -317,11 +317,11 @@ extension DefaultBanksComponentTests: PrimerHeadlessValidatableDelegate {
         case .validating:
             validationStatuses.append("validating")
 
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             validationStatuses.append("invalid")
             errors.forEach { validationErrors.append($0.errorDescription ?? "") }
 
-        case .error(error: let error):
+        case let .error(error: error):
             validationStatuses.append("error")
             validationErrors.append(error.errorDescription ?? "")
 
@@ -347,7 +347,7 @@ private final class MockSteppableDelegate: PrimerHeadlessSteppableDelegate {
         switch step {
         case .loading:
             break
-        case .banksRetrieved(banks: let banks):
+        case let .banksRetrieved(banks: banks):
             self.onReceiveBanks?(banks)
             self.banks = banks
         }

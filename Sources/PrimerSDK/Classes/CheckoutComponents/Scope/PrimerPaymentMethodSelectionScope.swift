@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 /// Scope interface for payment method selection screen interactions and customization.
 @available(iOS 15.0, *)

@@ -55,14 +55,14 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         // Country selected
 
         // Update the card form scope with selected country
-        if let cardFormScope = cardFormScope {
+        if let cardFormScope {
             cardFormScope.updateCountryCode(countryCode)
         } else {
             // CardFormScope is nil, cannot update country code
         }
 
         // For modal presentation, dismiss by restoring previous navigation state
-        if let checkoutScope = checkoutScope {
+        if let checkoutScope {
             // Find the previous payment method state to return to
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
@@ -85,7 +85,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     public func onCancel() {
         // Country selection cancelled
-        if let checkoutScope = checkoutScope {
+        if let checkoutScope {
             // For modal presentation, dismiss by restoring previous navigation state (same logic as onCountrySelected)
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,

@@ -43,6 +43,7 @@ class DesignTokens: Decodable {
     public var primerColorGray400: Color? = Color(red: 0.741, green: 0.741, blue: 0.741, opacity: 1)
     public var primerColorGray500: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)
     public var primerColorGray600: Color? = Color(red: 0.459, green: 0.459, blue: 0.459, opacity: 1)
+    public var primerColorGray700: Color? = Color(red: 0.294, green: 0.294, blue: 0.294, opacity: 1)
     public var primerColorGray900: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
     public var primerColorGray000: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
     public var primerColorGreen500: Color? = Color(red: 0.243, green: 0.714, blue: 0.561, opacity: 1)
@@ -89,6 +90,7 @@ class DesignTokens: Decodable {
     public var primerSpaceMedium: CGFloat? = 12
     public var primerSpaceLarge: CGFloat? = 16
     public var primerSpaceXlarge: CGFloat? = 20
+    public var primerSpaceXxlarge: CGFloat? = 24
     public var primerSpaceBase: CGFloat? = 4
     public var primerSizeSmall: CGFloat? = 16
     public var primerSizeMedium: CGFloat? = 20
@@ -133,6 +135,7 @@ class DesignTokens: Decodable {
         case primerColorGray400
         case primerColorGray500
         case primerColorGray600
+        case primerColorGray700
         case primerColorGray900
         case primerColorGray000
         case primerColorGreen500
@@ -179,6 +182,7 @@ class DesignTokens: Decodable {
         case primerSpaceMedium
         case primerSpaceLarge
         case primerSpaceXlarge
+        case primerSpaceXxlarge
         case primerSpaceBase
         case primerSizeSmall
         case primerSizeMedium
@@ -188,6 +192,9 @@ class DesignTokens: Decodable {
         case primerSizeXxxlarge
         case primerSizeBase
     }
+
+    // Default initializer preserves default values
+    init() {}
 
     // Custom initializer to decode from JSON.
     required init(from decoder: Decoder) throws {
@@ -490,6 +497,15 @@ class DesignTokens: Decodable {
             )
         }
 
+        if let primerColorGray700Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray700) {
+            self.primerColorGray700 = Color(
+                red: primerColorGray700Components[0],
+                green: primerColorGray700Components[1],
+                blue: primerColorGray700Components[2],
+                opacity: primerColorGray700Components[3]
+            )
+        }
+
         if let primerColorGray900Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray900) {
             self.primerColorGray900 = Color(
                 red: primerColorGray900Components[0],
@@ -607,6 +623,7 @@ class DesignTokens: Decodable {
         self.primerSpaceMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceMedium)
         self.primerSpaceLarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceLarge)
         self.primerSpaceXlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXlarge)
+        self.primerSpaceXxlarge = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceXxlarge)
         self.primerSpaceBase = try container.decodeIfPresent(CGFloat.self, forKey: .primerSpaceBase)
         self.primerSizeSmall = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeSmall)
         self.primerSizeMedium = try container.decodeIfPresent(CGFloat.self, forKey: .primerSizeMedium)

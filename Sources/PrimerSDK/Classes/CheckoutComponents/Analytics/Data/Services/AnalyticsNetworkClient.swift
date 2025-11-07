@@ -43,7 +43,7 @@ actor AnalyticsNetworkClient: LogReporter {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         // Add Authorization header if token is available
-        if let token = token {
+        if let token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 

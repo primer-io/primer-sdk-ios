@@ -1,7 +1,7 @@
 //
 //  HeadlessUniversalCheckoutManualTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -249,7 +249,6 @@ extension HeadlessUniversalCheckoutManualTests {
             expectUIDidDismissPaymentMethod.fulfill()
         }
 
-        
         PrimerInternal.shared.dismiss()
         wait(for: [expectUIDidDismissPaymentMethod], timeout: 5.0)
     }

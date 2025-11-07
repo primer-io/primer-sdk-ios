@@ -40,7 +40,7 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
 
     /// Human-readable description
     public var description: String {
-        if let name = name {
+        if let name {
             return "\(typeName)(name: \(name))"
         } else {
             return typeName
@@ -49,7 +49,7 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
 
     /// Debug description for more detailed logging
     public var debugDescription: String {
-        if let name = name {
+        if let name {
             return "TypeKey(type: \(typeName), id: \(typeId), name: \(name))"
         } else {
             return "TypeKey(type: \(typeName), id: \(typeId))"
