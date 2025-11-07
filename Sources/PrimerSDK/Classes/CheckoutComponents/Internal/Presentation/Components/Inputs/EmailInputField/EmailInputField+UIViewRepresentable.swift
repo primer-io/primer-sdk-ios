@@ -88,6 +88,7 @@ struct EmailTextField: UIViewRepresentable {
             self.onEmailChange = onEmailChange
             self.onValidationChange = onValidationChange
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -116,19 +117,14 @@ struct EmailTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = email
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
-            email = newText
+            email = currentText.replacingCharacters(in: textRange, with: string)
             if let scope {
-                scope.updateEmail(newText)
+                scope.updateEmail(email)
             } else {
-                onEmailChange?(newText)
+                onEmailChange?(email)
             }
-            // Simple validation while typing (don't show errors until focus loss)
-            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
-            // Update scope validation state while typing
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateEmailValidationState(isValid)
-            }
+            isValid = !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && email.contains("@")
+            scope?.updateValidationStateIfNeeded(for: .email, isValid: isValid)
             return false
         }
 
@@ -136,7 +132,7 @@ struct EmailTextField: UIViewRepresentable {
             let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields
             if trimmedEmail.isEmpty {
-                isValid = false // Email is required
+                isValid = false
                 errorMessage = nil
                 onValidationChange?(false)
                 return
@@ -148,7 +144,6 @@ struct EmailTextField: UIViewRepresentable {
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-            // Update scope state based on validation
             if let scope {
                 if result.isValid {
                     scope.clearFieldError(.email)

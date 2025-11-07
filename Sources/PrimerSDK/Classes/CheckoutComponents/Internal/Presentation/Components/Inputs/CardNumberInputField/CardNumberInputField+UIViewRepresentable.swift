@@ -96,6 +96,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             self._errorMessage = errorMessage
             self._isFocused = isFocused
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -250,9 +251,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 isValid = false
                 errorMessage = nil
                 scope.clearFieldError(.cardNumber)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
             }
         }
 
@@ -359,9 +358,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if number.count < 13 {
                 isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 return
             }
             let network = CardNetwork(cardNumber: number)
@@ -370,37 +367,27 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 if validationResult.isValid {
                     isValid = true
                     errorMessage = nil
-                    if let scope = scope as? DefaultCardFormScope {
-                        scope.updateCardNumberValidationState(true)
-                    }
+                    scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: true)
                 } else {
                     isValid = false
                     errorMessage = nil
-                    if let scope = scope as? DefaultCardFormScope {
-                        scope.updateCardNumberValidationState(false)
-                    }
+                    scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 }
             } else if number.count >= 16 {
                 let validationResult = validationService.validateCardNumber(number)
                 if validationResult.isValid {
                     isValid = true
                     errorMessage = nil
-                    if let scope = scope as? DefaultCardFormScope {
-                        scope.updateCardNumberValidationState(true)
-                    }
+                    scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: true)
                 } else {
                     isValid = false
                     errorMessage = nil
-                    if let scope = scope as? DefaultCardFormScope {
-                        scope.updateCardNumberValidationState(false)
-                    }
+                    scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 }
             } else {
                 isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
             }
         }
 
@@ -410,9 +397,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if trimmedNumber.isEmpty {
                 isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 return
             }
             let validationResult = validationService.validateCardNumber(number)
@@ -420,17 +405,13 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             if validationResult.isValid {
                 errorMessage = nil
                 scope.clearFieldError(.cardNumber)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(true)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: true)
             } else {
                 errorMessage = validationResult.errorMessage
                 if let errorMessage = validationResult.errorMessage {
                     scope.setFieldError(.cardNumber, message: errorMessage, errorCode: validationResult.errorCode)
                 }
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardNumberValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
             }
         }
         deinit {

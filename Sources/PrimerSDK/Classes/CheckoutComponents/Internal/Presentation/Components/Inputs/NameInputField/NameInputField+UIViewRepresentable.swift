@@ -93,6 +93,7 @@ struct NameTextField: UIViewRepresentable {
             self.onNameChange = onNameChange
             self.onValidationChange = onValidationChange
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -121,35 +122,23 @@ struct NameTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = name
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
-            name = newText
+            name = currentText.replacingCharacters(in: textRange, with: string)
             if let scope {
                 switch inputType {
                 case .firstName:
-                    scope.updateFirstName(newText)
+                    scope.updateFirstName(name)
                 case .lastName:
-                    scope.updateLastName(newText)
+                    scope.updateLastName(name)
                 case .phoneNumber:
-                    scope.updatePhoneNumber(newText)
+                    scope.updatePhoneNumber(name)
                 default:
                     break
                 }
             } else {
-                onNameChange?(newText)
+                onNameChange?(name)
             }
-            // Simple validation while typing (don't show errors until focus loss)
-            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            // Update scope validation state while typing
-            if let scope = scope as? DefaultCardFormScope {
-                switch inputType {
-                case .firstName:
-                    scope.updateFirstNameValidationState(isValid)
-                case .lastName:
-                    scope.updateLastNameValidationState(isValid)
-                default:
-                    break
-                }
-            }
+            isValid = !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
             return false
         }
 
@@ -157,20 +146,10 @@ struct NameTextField: UIViewRepresentable {
             let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
-                isValid = false // Name fields are required
+                isValid = false
                 errorMessage = nil
                 onValidationChange?(false)
-                // Update scope validation state for empty fields
-                if let scope = scope as? DefaultCardFormScope {
-                    switch inputType {
-                    case .firstName:
-                        scope.updateFirstNameValidationState(false)
-                    case .lastName:
-                        scope.updateLastNameValidationState(false)
-                    default:
-                        break
-                    }
-                }
+                scope?.updateValidationStateIfNeeded(for: inputType, isValid: false)
                 return
             }
             // Convert PrimerInputElementType to ValidationError.InputElementType
@@ -188,32 +167,13 @@ struct NameTextField: UIViewRepresentable {
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-            // Update scope state based on validation
             if let scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                        if let scope = scope as? DefaultCardFormScope {
-                        switch inputType {
-                        case .firstName:
-                            scope.updateFirstNameValidationState(true)
-                        case .lastName:
-                            scope.updateLastNameValidationState(true)
-                        default:
-                            break
-                        }
-                    }
+                    scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                        if let scope = scope as? DefaultCardFormScope {
-                        switch inputType {
-                        case .firstName:
-                            scope.updateFirstNameValidationState(false)
-                        case .lastName:
-                            scope.updateLastNameValidationState(false)
-                        default:
-                            break
-                        }
-                    }
+                    scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
                 }
             }
         }

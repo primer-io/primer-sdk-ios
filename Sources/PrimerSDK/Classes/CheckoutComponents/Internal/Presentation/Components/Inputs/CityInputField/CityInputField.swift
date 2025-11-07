@@ -10,7 +10,7 @@ import SwiftUI
 /// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 struct CityInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String

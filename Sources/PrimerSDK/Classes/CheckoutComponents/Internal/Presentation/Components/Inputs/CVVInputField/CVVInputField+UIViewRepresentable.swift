@@ -87,6 +87,7 @@ struct CVVTextField: UIViewRepresentable {
             self._isFocused = isFocused
             self.scope = scope
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -109,23 +110,22 @@ struct CVVTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cvv
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
             if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
-            if newText.count > expectedCVVLength {
+            let replacementLength = currentText.distance(from: textRange.lowerBound, to: textRange.upperBound)
+            let resultingLength = currentText.count - replacementLength + string.count
+            if resultingLength > expectedCVVLength {
                 return false
             }
-            cvv = newText
-            scope.updateCvv(newText)
-            if newText.count == expectedCVVLength {
+            cvv = currentText.replacingCharacters(in: textRange, with: string)
+            scope.updateCvv(cvv)
+            if cvv.count == expectedCVVLength {
                 validateCVV()
             } else {
                 isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCvvValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
             }
             return false
         }
@@ -136,28 +136,21 @@ struct CVVTextField: UIViewRepresentable {
             if trimmedCVV.isEmpty {
                 isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCvvValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
                 return
             }
-            // Create CVVRule with the current card network for non-empty fields
             let cvvRule = CVVRule(cardNetwork: cardNetwork)
             let result = cvvRule.validate(cvv)
             isValid = result.isValid
             errorMessage = result.errorMessage
             if result.isValid {
                 scope.clearFieldError(.cvv)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCvvValidationState(true)
-                }
+                scope.updateValidationStateIfNeeded(for: .cvv, isValid: true)
             } else {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
                 }
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCvvValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
             }
         }
     }

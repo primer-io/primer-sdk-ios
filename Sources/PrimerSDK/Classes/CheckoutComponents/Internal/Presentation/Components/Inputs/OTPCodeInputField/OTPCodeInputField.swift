@@ -9,7 +9,7 @@ import SwiftUI
 /// A SwiftUI component for OTP code input with validation
 @available(iOS 15.0, *)
 struct OTPCodeInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String
@@ -88,7 +88,6 @@ struct OTPCodeInputField: View, LogReporter {
             .textContentType(.oneTimeCode)
             .frame(height: PrimerSize.xxlarge(tokens: tokens))
             .onChange(of: otpCode) { newValue in
-                // Limit to expected length
                 if newValue.count > expectedLength {
                     otpCode = String(newValue.prefix(expectedLength))
                 } else {
@@ -121,13 +120,11 @@ struct OTPCodeInputField: View, LogReporter {
 
     @MainActor
     private func validateOTPCode() {
-        // Use OTPCodeRule with expected length
         let otpRule = OTPCodeRule(expectedLength: expectedLength)
         let result = otpRule.validate(otpCode)
         isValid = result.isValid
         errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
-        // Update scope state based on validation
         if let scope {
             if result.isValid {
                 scope.clearFieldError(.otp)

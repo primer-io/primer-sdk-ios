@@ -10,7 +10,7 @@ import SwiftUI
 /// and consistent styling with other card input fields.
 @available(iOS 15.0, *)
 struct CardholderNameInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String

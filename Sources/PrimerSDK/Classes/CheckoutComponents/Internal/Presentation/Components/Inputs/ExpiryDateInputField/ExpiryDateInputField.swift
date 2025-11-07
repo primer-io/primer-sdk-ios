@@ -10,7 +10,7 @@ import SwiftUI
 /// and validation to ensure dates are valid and not in the past.
 @available(iOS 15.0, *)
 struct ExpiryDateInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String

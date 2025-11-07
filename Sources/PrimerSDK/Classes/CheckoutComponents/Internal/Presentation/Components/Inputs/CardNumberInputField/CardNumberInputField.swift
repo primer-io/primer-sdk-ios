@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String

@@ -127,36 +127,25 @@ struct AddressLineTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = addressLine
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
-            addressLine = newText
+            addressLine = currentText.replacingCharacters(in: textRange, with: string)
             if let scope {
                 switch inputType {
                 case .addressLine1:
-                    scope.updateAddressLine1(newText)
+                    scope.updateAddressLine1(addressLine)
                 case .addressLine2:
-                    scope.updateAddressLine2(newText)
+                    scope.updateAddressLine2(addressLine)
                 default:
                     break
                 }
             } else {
-                onAddressChange?(newText)
+                onAddressChange?(addressLine)
             }
-            // Simple validation while typing (don't show errors until focus loss)
             if isRequired {
-                isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                isValid = !addressLine.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             } else {
                 isValid = true
             }
-            if let scope = scope as? DefaultCardFormScope {
-                switch inputType {
-                case .addressLine1:
-                    scope.updateAddressLine1ValidationState(isValid)
-                case .addressLine2:
-                    scope.updateAddressLine2ValidationState(isValid)
-                default:
-                    break
-                }
-            }
+            scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
             return false
         }
 
@@ -168,16 +157,7 @@ struct AddressLineTextField: UIViewRepresentable {
                 errorMessage = nil
                 onValidationChange?(isValid)
                 scope?.clearFieldError(inputType)
-                if let scope = scope as? DefaultCardFormScope {
-                    switch inputType {
-                    case .addressLine1:
-                        scope.updateAddressLine1ValidationState(isValid)
-                    case .addressLine2:
-                        scope.updateAddressLine2ValidationState(isValid)
-                    default:
-                        break
-                    }
-                }
+                scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
                 return
             }
             // Convert PrimerInputElementType to ValidationError.InputElementType
@@ -198,28 +178,10 @@ struct AddressLineTextField: UIViewRepresentable {
             if let scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    if let scope = scope as? DefaultCardFormScope {
-                        switch inputType {
-                        case .addressLine1:
-                            scope.updateAddressLine1ValidationState(true)
-                        case .addressLine2:
-                            scope.updateAddressLine2ValidationState(true)
-                        default:
-                            break
-                        }
-                    }
+                    scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    if let scope = scope as? DefaultCardFormScope {
-                        switch inputType {
-                        case .addressLine1:
-                            scope.updateAddressLine1ValidationState(false)
-                        case .addressLine2:
-                            scope.updateAddressLine2ValidationState(false)
-                        default:
-                            break
-                        }
-                    }
+                    scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
                 }
             }
         }

@@ -78,6 +78,7 @@ struct StateTextField: UIViewRepresentable {
             self._isFocused = isFocused
             self.scope = scope
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -106,15 +107,10 @@ struct StateTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = state
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
-            state = newText
-            scope.updateState(newText)
-            // Simple validation while typing (don't show errors until focus loss)
-            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            // Update scope validation state while typing
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateStateValidationState(isValid)
-            }
+            state = currentText.replacingCharacters(in: textRange, with: string)
+            scope.updateState(state)
+            isValid = !state.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            scope.updateValidationStateIfNeeded(for: .state, isValid: isValid)
             return false
         }
 
@@ -122,11 +118,9 @@ struct StateTextField: UIViewRepresentable {
             let trimmedState = state.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields
             if trimmedState.isEmpty {
-                isValid = false // State is required
+                isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateStateValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .state, isValid: false)
                 return
             }
             let result = validationService.validate(
@@ -135,17 +129,12 @@ struct StateTextField: UIViewRepresentable {
             )
             isValid = result.isValid
             errorMessage = result.errorMessage
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.state)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateStateValidationState(true)
-                }
+                scope.updateValidationStateIfNeeded(for: .state, isValid: true)
             } else if let message = result.errorMessage {
                 scope.setFieldError(.state, message: message, errorCode: result.errorCode)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateStateValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .state, isValid: false)
             }
         }
     }

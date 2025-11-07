@@ -16,7 +16,7 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
 
     private let coordinator: CheckoutCoordinator
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     /// Navigation state as AsyncStream (NO Combine)
     var navigationEvents: AsyncStream<CheckoutRoute> {

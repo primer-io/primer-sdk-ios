@@ -9,7 +9,7 @@ import SwiftUI
 /// A SwiftUI component for country selection with validation
 @available(iOS 15.0, *)
 struct CountryInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String
@@ -28,13 +28,6 @@ struct CountryInputField: View, LogReporter {
     @State private var isNavigating: Bool = false
     @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
-
-    private var countryTextColor: Color {
-        guard !countryName.isEmpty else {
-            return styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens)
-        }
-        return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
-    }
 
     // MARK: - Initialization
 
@@ -63,31 +56,14 @@ struct CountryInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                Button(action: {
-                    guard !isNavigating else {
-                        return
-                    }
-                    isNavigating = true
-                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                    impactFeedback.impactOccurred()
-                    scope.navigateToCountrySelection()
-                    // Reset after shorter timeout - 1 second should be enough
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.isNavigating = false
-                    }
-                }) {
-                    HStack(spacing: 0) {
-                        Text(countryName.isEmpty ? placeholder : countryName)
-                            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
-                            .foregroundColor(countryTextColor)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Spacer(minLength: 0)
-                    }
-                    .frame(height: PrimerSize.xxlarge(tokens: tokens))
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(PlainButtonStyle())
-                .disabled(isNavigating)
+                CountrySelectionButton(
+                    countryName: countryName,
+                    placeholder: placeholder,
+                    styling: styling,
+                    tokens: tokens,
+                    scope: scope,
+                    isNavigating: $isNavigating
+                )
             },
             rightComponent: {
                 Image(systemName: "chevron.down")
@@ -126,21 +102,11 @@ struct CountryInputField: View, LogReporter {
     /// Updates the field from external state changes using the provided country
     @MainActor
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
-        // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
         if let country, !country.name.isEmpty, !country.code.isEmpty {
             countryName = country.name
             countryCode = country.code
             validateCountry()
         }
-    }
-
-    /// Updates the selected country
-    @MainActor
-    func updateCountry(name: String, code: String) {
-        countryName = name
-        countryCode = code
-        scope.updateCountryCode(code)
-        validateCountry()
     }
 
     @MainActor
@@ -152,19 +118,12 @@ struct CountryInputField: View, LogReporter {
         )
         isValid = result.isValid
         errorMessage = result.errorMessage
-        // Update scope state based on validation
         if result.isValid {
             scope.clearFieldError(.countryCode)
-            // Update scope validation state
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateCountryCodeValidationState(true)
-            }
+            scope.updateValidationStateIfNeeded(for: .countryCode, isValid: true)
         } else if let message = result.errorMessage {
             scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
-            // Update scope validation state
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateCountryCodeValidationState(false)
-            }
+            scope.updateValidationStateIfNeeded(for: .countryCode, isValid: false)
         }
     }
 }

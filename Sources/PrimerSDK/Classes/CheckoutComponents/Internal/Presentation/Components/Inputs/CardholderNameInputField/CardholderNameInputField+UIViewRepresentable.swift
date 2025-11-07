@@ -79,6 +79,7 @@ struct CardholderNameTextField: UIViewRepresentable {
             self._isFocused = isFocused
             self.scope = scope
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -107,7 +108,6 @@ struct CardholderNameTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cardholderName
             guard let textRange = Range(range, in: currentText) else { return false }
-            let newText = currentText.replacingCharacters(in: textRange, with: string)
             // Validate allowed characters (letters, spaces, apostrophes, hyphens)
             if !string.isEmpty {
                 let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
@@ -116,14 +116,10 @@ struct CardholderNameTextField: UIViewRepresentable {
                     return false
                 }
             }
-            cardholderName = newText
-            scope.updateCardholderName(newText)
-            // Simple validation while typing
-            isValid = newText.count >= 2
-            // Update scope validation state while typing
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateCardholderNameValidationState(isValid)
-            }
+            cardholderName = currentText.replacingCharacters(in: textRange, with: string)
+            scope.updateCardholderName(cardholderName)
+            isValid = cardholderName.count >= 2
+            scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: isValid)
             return false
         }
 
@@ -131,11 +127,9 @@ struct CardholderNameTextField: UIViewRepresentable {
             let trimmedName = cardholderName.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
-                isValid = false // Cardholder name is required
+                isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardholderNameValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: false)
                 return
             }
             let result = validationService.validate(
@@ -144,19 +138,14 @@ struct CardholderNameTextField: UIViewRepresentable {
             )
             isValid = result.isValid
             errorMessage = result.errorMessage
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.cardholderName)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardholderNameValidationState(true)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: true)
             } else {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
                 }
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateCardholderNameValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: false)
             }
         }
     }

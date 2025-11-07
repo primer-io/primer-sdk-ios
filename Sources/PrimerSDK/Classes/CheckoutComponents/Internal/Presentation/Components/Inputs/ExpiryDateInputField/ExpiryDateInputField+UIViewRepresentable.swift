@@ -88,6 +88,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
             self._isFocused = isFocused
             self.scope = scope
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -121,9 +122,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
             expiryDate = newText
             textField.text = newText
             extractMonthAndYear(from: newText)
-            // Update scope state
             scope.updateExpiryDate(newText)
-            // Validate if complete
             if newText.count == 5 { // MM/YY format
                 validateExpiryDate()
             } else {
@@ -134,23 +133,19 @@ struct ExpiryDateTextField: UIViewRepresentable {
         }
 
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
-            // Handle deletion
             if string.isEmpty {
                 // If deleting the separator, also remove the character before it
                 if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
                     currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     return String(currentText.prefix(1))
                 }
-                // Normal deletion
                 if let textRange = Range(range, in: currentText) {
                     return currentText.replacingCharacters(in: textRange, with: "")
                 }
                 return currentText
             }
-            // Handle additions
             // Remove the / character temporarily for easier processing
             let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
-            // Calculate where to insert the new text
             var sanitizedLocation = range.location
             if range.location > 2 && currentText.count >= 3 && currentText.contains("/") {
                 sanitizedLocation -= 1
@@ -183,11 +178,9 @@ struct ExpiryDateTextField: UIViewRepresentable {
             // Empty field handling - don't show errors for empty fields
             let trimmedExpiry = expiryDate.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedExpiry.isEmpty {
-                isValid = false // Expiry date is required
+                isValid = false
                 errorMessage = nil
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateExpiryValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: false)
                 return
             }
             // Parse MM/YY format for non-empty fields
@@ -196,9 +189,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
                 isValid = false
                 errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
                 scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateExpiryValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: false)
                 return
             }
             let month = components[0].trimmingCharacters(in: .whitespacesAndNewlines)
@@ -210,19 +201,14 @@ struct ExpiryDateTextField: UIViewRepresentable {
             )
             isValid = result.isValid
             errorMessage = result.errorMessage
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.expiryDate)
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateExpiryValidationState(true)
-                }
+                scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: true)
             } else {
                 if let message = result.errorMessage {
                     scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
                 }
-                if let scope = scope as? DefaultCardFormScope {
-                    scope.updateExpiryValidationState(false)
-                }
+                scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: false)
             }
         }
     }

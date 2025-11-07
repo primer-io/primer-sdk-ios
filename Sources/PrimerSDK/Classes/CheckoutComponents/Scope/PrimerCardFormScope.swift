@@ -472,4 +472,52 @@ extension PrimerCardFormScope {
     }
 }
 
+// MARK: - Validation State Update Helper
+
+@available(iOS 15.0, *)
+extension PrimerCardFormScope {
+
+    /// Safely updates validation state if the scope is a DefaultCardFormScope.
+    /// This helper method eliminates the need for repeated conditional casting throughout input field coordinators.
+    /// - Parameters:
+    ///   - field: The input element type to update
+    ///   - isValid: The validation state to set
+    func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
+        guard let defaultScope = self as? DefaultCardFormScope else { return }
+
+        switch field {
+        case .cardNumber:
+            defaultScope.updateCardNumberValidationState(isValid)
+        case .cvv:
+            defaultScope.updateCvvValidationState(isValid)
+        case .expiryDate:
+            defaultScope.updateExpiryValidationState(isValid)
+        case .cardholderName:
+            defaultScope.updateCardholderNameValidationState(isValid)
+        case .email:
+            defaultScope.updateEmailValidationState(isValid)
+        case .firstName:
+            defaultScope.updateFirstNameValidationState(isValid)
+        case .lastName:
+            defaultScope.updateLastNameValidationState(isValid)
+        case .addressLine1:
+            defaultScope.updateAddressLine1ValidationState(isValid)
+        case .addressLine2:
+            defaultScope.updateAddressLine2ValidationState(isValid)
+        case .city:
+            defaultScope.updateCityValidationState(isValid)
+        case .state:
+            defaultScope.updateStateValidationState(isValid)
+        case .postalCode:
+            defaultScope.updatePostalCodeValidationState(isValid)
+        case .countryCode:
+            defaultScope.updateCountryCodeValidationState(isValid)
+        case .phoneNumber:
+            defaultScope.updatePhoneNumberValidationState(isValid)
+        case .retailer, .otp, .unknown, .all:
+            break // These fields don't have validation state updates
+        }
+    }
+}
+
 // swiftlint:enable identifier_name

@@ -9,7 +9,7 @@ import SwiftUI
 /// A SwiftUI component for credit card CVV input with validation based on card network.
 @available(iOS 15.0, *)
 struct CVVInputField: View, LogReporter {
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let label: String?
     let placeholder: String
