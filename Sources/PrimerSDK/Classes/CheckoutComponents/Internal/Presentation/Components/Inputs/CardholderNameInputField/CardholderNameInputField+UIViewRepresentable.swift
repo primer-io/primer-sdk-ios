@@ -82,6 +82,7 @@ struct CardholderNameTextField: UIViewRepresentable {
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -90,16 +91,19 @@ struct CardholderNameTextField: UIViewRepresentable {
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateCardholderName()
         }
+
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cardholderName
             guard let textRange = Range(range, in: currentText) else { return false }
@@ -122,6 +126,7 @@ struct CardholderNameTextField: UIViewRepresentable {
             }
             return false
         }
+
         private func validateCardholderName() {
             let trimmedName = cardholderName.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields

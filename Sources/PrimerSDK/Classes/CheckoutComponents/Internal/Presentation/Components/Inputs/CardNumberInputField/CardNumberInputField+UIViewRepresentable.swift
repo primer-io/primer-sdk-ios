@@ -99,18 +99,21 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.scope.clearFieldError(.cardNumber)
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
                 self.validateCardNumberFully(self.cardNumber)
             }
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             saveCursorPosition(textField)
             let currentText = cardNumber
@@ -140,6 +143,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             updateValidationState(newCardNumber)
             return false
         }
+
         private func processTextFieldChange(
             currentText: String,
             range: NSRange,
@@ -171,6 +175,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return newCardNumber
         }
+
         private func processDeletion(
             currentText: String,
             range: NSRange,
@@ -195,6 +200,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return currentText
         }
+
         private func processInsertion(
             currentText: String,
             range: NSRange,
@@ -212,6 +218,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 return currentText + insertText
             }
         }
+
         private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int {
             var unformattedPos = 0
             for i in 0..<index where i < formattedText.count {
@@ -222,6 +229,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return unformattedPos
         }
+
         private func updateCardNetworkIfNeeded(_ newCardNumber: String) {
             let newNetwork = CardNetwork(cardNumber: newCardNumber)
             if newNetwork != cardNetwork {
@@ -231,6 +239,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
             }
         }
+
         private func updateValidationState(_ newCardNumber: String) {
             if newCardNumber.count >= 6 {
                 debouncedNetworkDetection(newCardNumber)
@@ -246,11 +255,13 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
             }
         }
+
         private func saveCursorPosition(_ textField: UITextField) {
             if let selectedRange = textField.selectedTextRange {
                 savedCursorPosition = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
             }
         }
+
         private func restoreCursorPosition(textField: UITextField, formattedText: String, originalCursorPos: Int, isDeletion: Bool, insertedLength: Int) {
             var newCursorPosition: Int
             if isDeletion {
@@ -268,6 +279,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
             }
         }
+
         private func getUnformattedRange(formattedRange: NSRange, formattedText: String, unformattedText: String) -> NSRange {
             var digitCount = 0
             for (index, char) in formattedText.enumerated() {
@@ -291,6 +303,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return NSRange(location: unformattedLocation, length: unformattedLength)
         }
+
         private func handleDeletion(currentText: String, unformattedRange: NSRange) -> String {
             if unformattedRange.length > 0 {
                 if unformattedRange.location >= currentText.count {
@@ -309,6 +322,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return currentText
         }
+
         private func formatCardNumber(_ number: String, for network: CardNetwork) -> String {
             let gaps = network.validation?.gaps ?? [4, 8, 12]
             var formatted = ""
@@ -320,6 +334,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
             return formatted
         }
+
         private func debouncedValidation(_ number: String) {
             validationTimer?.invalidate()
             validationTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
@@ -327,6 +342,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 self.validateCardNumberWhileTyping(number)
             }
         }
+
         private func debouncedNetworkDetection(_ number: String) {
             networkDetectionTimer?.invalidate()
             networkDetectionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
@@ -334,9 +350,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 self.detectNetworksForCardNumber(number)
             }
         }
+
         private func detectNetworksForCardNumber(_ cardNumber: String) {
             logger.debug(message: "Detecting card networks")
         }
+
         private func validateCardNumberWhileTyping(_ number: String) {
             if number.count < 13 {
                 isValid = false
@@ -385,6 +403,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
             }
         }
+
         private func validateCardNumberFully(_ number: String) {
             validationTimer?.invalidate()
             let trimmedNumber = number.trimmingCharacters(in: .whitespacesAndNewlines)

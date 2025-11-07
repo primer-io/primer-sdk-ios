@@ -44,9 +44,10 @@ struct NameInputField: View, LogReporter {
         self.inputType = inputType
         self.scope = scope
         self.styling = styling
-        self.onNameChange = nil
-        self.onValidationChange = nil
+        onNameChange = nil
+        onValidationChange = nil
     }
+
     init(
         label: String?,
         placeholder: String,
@@ -58,7 +59,7 @@ struct NameInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.inputType = inputType
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onNameChange = onNameChange
         self.onValidationChange = onValidationChange
@@ -104,10 +105,10 @@ struct NameInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for NameInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for NameInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -118,7 +119,6 @@ struct NameInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     NameInputField(

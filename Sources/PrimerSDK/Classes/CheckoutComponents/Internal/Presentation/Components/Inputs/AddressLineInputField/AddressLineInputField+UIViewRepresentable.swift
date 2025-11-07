@@ -98,9 +98,11 @@ struct AddressLineTextField: UIViewRepresentable {
             self.onAddressChange = onAddressChange
             self.onValidationChange = onValidationChange
         }
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -109,16 +111,19 @@ struct AddressLineTextField: UIViewRepresentable {
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateAddress()
         }
+
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = addressLine
             guard let textRange = Range(range, in: currentText) else { return false }
@@ -154,6 +159,7 @@ struct AddressLineTextField: UIViewRepresentable {
             }
             return false
         }
+
         private func validateAddress() {
             let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields

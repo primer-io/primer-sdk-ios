@@ -47,9 +47,10 @@ struct AddressLineInputField: View, LogReporter {
         self.inputType = inputType
         self.scope = scope
         self.styling = styling
-        self.onAddressChange = nil
-        self.onValidationChange = nil
+        onAddressChange = nil
+        onValidationChange = nil
     }
+
     init(
         label: String?,
         placeholder: String,
@@ -63,7 +64,7 @@ struct AddressLineInputField: View, LogReporter {
         self.placeholder = placeholder
         self.isRequired = isRequired
         self.inputType = inputType
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onAddressChange = onAddressChange
         self.onValidationChange = onValidationChange
@@ -100,7 +101,8 @@ struct AddressLineInputField: View, LogReporter {
                 // Fallback view while loading validation service
                 TextField(placeholder, text: $addressLine)
                     .autocapitalization(.words)
-                    .disabled(true)            }
+                    .disabled(true)
+            }
         }
         .onAppear {
             setupValidationService()
@@ -108,10 +110,10 @@ struct AddressLineInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for AddressLineInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for AddressLineInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -122,7 +124,6 @@ struct AddressLineInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     AddressLineInputField(

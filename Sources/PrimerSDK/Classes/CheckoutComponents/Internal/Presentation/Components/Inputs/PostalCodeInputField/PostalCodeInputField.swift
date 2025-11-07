@@ -27,7 +27,7 @@ struct PostalCodeInputField: View, LogReporter {
     @State private var isFocused: Bool = false
     @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
-    
+
     private var keyboardTypeForCountry: UIKeyboardType {
         if countryCode == "US" {
             return .numberPad
@@ -92,9 +92,8 @@ struct PostalCodeInputField: View, LogReporter {
     // MARK: - Private Methods
 
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for PostalCodeInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for PostalCodeInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -105,7 +104,6 @@ struct PostalCodeInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     PostalCodeInputField(

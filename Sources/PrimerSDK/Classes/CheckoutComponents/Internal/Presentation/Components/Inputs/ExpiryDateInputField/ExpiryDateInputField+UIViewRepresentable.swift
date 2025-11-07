@@ -91,6 +91,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -98,12 +99,14 @@ struct ExpiryDateTextField: UIViewRepresentable {
                 self.scope.clearFieldError(.expiryDate)
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateExpiryDate()
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = expiryDate
             if string == "\n" {
@@ -129,6 +132,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
             }
             return false
         }
+
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
             // Handle deletion
             if string.isEmpty {
@@ -166,6 +170,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
                 return newSanitizedText
             }
         }
+
         private func extractMonthAndYear(from text: String) {
             let parts = text.components(separatedBy: "/")
             month = parts.count > 0 ? parts[0] : ""
@@ -173,6 +178,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
             scope.updateExpiryMonth(month)
             scope.updateExpiryYear(year)
         }
+
         private func validateExpiryDate() {
             // Empty field handling - don't show errors for empty fields
             let trimmedExpiry = expiryDate.trimmingCharacters(in: .whitespacesAndNewlines)

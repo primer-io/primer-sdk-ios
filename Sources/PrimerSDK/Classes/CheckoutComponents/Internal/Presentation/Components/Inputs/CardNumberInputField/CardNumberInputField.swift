@@ -103,9 +103,8 @@ struct CardNumberInputField: View, LogReporter {
     // MARK: - Private Methods
 
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for CardNumberInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardNumberInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -113,10 +112,12 @@ struct CardNumberInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
+
     private func updateSurchargeAmount(for network: CardNetwork) {
         guard let surcharge = network.surcharge,
               PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency else {
+              let currency = AppState.current.currency
+        else {
             surchargeAmount = nil
             return
         }
@@ -125,7 +126,6 @@ struct CardNumberInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CardNumberInputField(

@@ -81,6 +81,7 @@ struct CityTextField: UIViewRepresentable {
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -89,16 +90,19 @@ struct CityTextField: UIViewRepresentable {
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateCity()
         }
+
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = city
             guard let textRange = Range(range, in: currentText) else { return false }
@@ -113,6 +117,7 @@ struct CityTextField: UIViewRepresentable {
             }
             return false
         }
+
         private func validateCity() {
             let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
             // Empty field handling - don't show errors for empty fields

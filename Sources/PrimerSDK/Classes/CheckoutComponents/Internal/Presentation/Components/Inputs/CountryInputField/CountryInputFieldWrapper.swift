@@ -10,13 +10,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct CountryInputFieldWrapper: View, LogReporter {
     @ObservedObject var scope: DefaultCardFormScope
-    
+
     let label: String?
     let placeholder: String
     let styling: PrimerFieldStyling?
     let onValidationChange: ((Bool) -> Void)?
     let onOpenCountrySelector: (() -> Void)?
-    
+
     var body: some View {
         CountryInputField(
             label: label,
@@ -26,7 +26,7 @@ struct CountryInputFieldWrapper: View, LogReporter {
             styling: styling
         )
     }
-    
+
     /// Convert country code to CountryCode.PhoneNumberCountryCode
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
         // Access country code from structured state

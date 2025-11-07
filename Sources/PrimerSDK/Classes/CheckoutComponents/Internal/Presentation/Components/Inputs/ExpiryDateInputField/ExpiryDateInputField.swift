@@ -81,10 +81,10 @@ struct ExpiryDateInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for ExpiryDateInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for ExpiryDateInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -95,7 +95,6 @@ struct ExpiryDateInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     ExpiryDateInputField(

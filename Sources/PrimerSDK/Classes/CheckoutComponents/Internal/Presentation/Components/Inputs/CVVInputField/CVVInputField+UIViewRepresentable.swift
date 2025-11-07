@@ -90,6 +90,7 @@ struct CVVTextField: UIViewRepresentable {
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -97,12 +98,14 @@ struct CVVTextField: UIViewRepresentable {
                 self.scope.clearFieldError(.cvv)
             }
         }
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateCVV()
         }
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cvv
             guard let textRange = Range(range, in: currentText) else { return false }
@@ -126,6 +129,7 @@ struct CVVTextField: UIViewRepresentable {
             }
             return false
         }
+
         private func validateCVV() {
             // Empty field handling - don't show errors for empty fields
             let trimmedCVV = cvv.trimmingCharacters(in: .whitespacesAndNewlines)

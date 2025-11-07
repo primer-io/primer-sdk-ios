@@ -40,12 +40,13 @@ struct OTPCodeInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.expectedLength = 6 // Default OTP length
+        expectedLength = 6 // Default OTP length
         self.scope = scope
         self.styling = styling
-        self.onOTPCodeChange = nil
-        self.onValidationChange = nil
+        onOTPCodeChange = nil
+        onValidationChange = nil
     }
+
     init(
         label: String?,
         placeholder: String,
@@ -57,7 +58,7 @@ struct OTPCodeInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.expectedLength = expectedLength
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onOTPCodeChange = onOTPCodeChange
         self.onValidationChange = onValidationChange
@@ -87,18 +88,18 @@ struct OTPCodeInputField: View, LogReporter {
             .textContentType(.oneTimeCode)
             .frame(height: PrimerSize.xxlarge(tokens: tokens))
             .onChange(of: otpCode) { newValue in
-                    // Limit to expected length
-                    if newValue.count > expectedLength {
-                        otpCode = String(newValue.prefix(expectedLength))
+                // Limit to expected length
+                if newValue.count > expectedLength {
+                    otpCode = String(newValue.prefix(expectedLength))
+                } else {
+                    if let scope {
+                        scope.updateOtpCode(newValue)
                     } else {
-                        if let scope {
-                            scope.updateOtpCode(newValue)
-                        } else {
-                            onOTPCodeChange?(newValue)
-                        }
-                        validateOTPCode()
+                        onOTPCodeChange?(newValue)
                     }
+                    validateOTPCode()
                 }
+            }
         }
         .onAppear {
             setupValidationService()
@@ -106,10 +107,10 @@ struct OTPCodeInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for OTPCodeInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for OTPCodeInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -117,6 +118,7 @@ struct OTPCodeInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
+
     @MainActor
     private func validateOTPCode() {
         // Use OTPCodeRule with expected length
@@ -137,7 +139,6 @@ struct OTPCodeInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     OTPCodeInputField(

@@ -41,9 +41,10 @@ struct EmailInputField: View, LogReporter {
         self.placeholder = placeholder
         self.scope = scope
         self.styling = styling
-        self.onEmailChange = nil
-        self.onValidationChange = nil
+        onEmailChange = nil
+        onValidationChange = nil
     }
+
     init(
         label: String?,
         placeholder: String,
@@ -53,7 +54,7 @@ struct EmailInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onEmailChange = onEmailChange
         self.onValidationChange = onValidationChange
@@ -100,10 +101,10 @@ struct EmailInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for EmailInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for EmailInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -114,7 +115,6 @@ struct EmailInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     EmailInputField(

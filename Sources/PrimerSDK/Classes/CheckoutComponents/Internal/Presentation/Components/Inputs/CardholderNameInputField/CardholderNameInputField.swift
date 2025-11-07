@@ -78,10 +78,10 @@ struct CardholderNameInputField: View, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for CardholderNameInputField")
-            return
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardholderNameInputField")
         }
         do {
             validationService = try container.resolveSync(ValidationService.self)
@@ -92,7 +92,6 @@ struct CardholderNameInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CardholderNameInputField(
