@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 /// A SwiftUI component for city input with validation and consistent styling
 /// matching the card form field validation timing patterns.
@@ -13,40 +12,23 @@ import UIKit
 struct CityInputField: View, LogReporter {
     // MARK: - Public Properties
 
-    /// The label text shown above the field
     let label: String?
-
-    /// Placeholder text for the input field
     let placeholder: String
-
-    /// The card form scope for state management
     let scope: any PrimerCardFormScope
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
+
     // MARK: - Private Properties
 
-    /// The validation service resolved from DI environment
-    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
-
-    /// The city entered by the user
     @State private var city: String = ""
-
-    /// The validation state of the city
     @State private var isValid: Bool = false
-
-    /// Error message if validation fails
     @State private var errorMessage: String?
-
-    /// Focus state for input field styling
     @State private var isFocused: Bool = false
-
+    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    /// Creates a new CityInputField with comprehensive customization support
     init(
         label: String?,
         placeholder: String,
@@ -94,12 +76,12 @@ struct CityInputField: View, LogReporter {
         }
     }
 
+    // MARK: - Private Methods
     private func setupValidationService() {
         guard let container = container else {
             logger.error(message: "DIContainer not available for CityInputField")
             return
         }
-
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {

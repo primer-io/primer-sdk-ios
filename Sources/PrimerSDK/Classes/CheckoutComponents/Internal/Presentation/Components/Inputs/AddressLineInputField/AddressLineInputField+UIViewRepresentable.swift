@@ -5,15 +5,17 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 /// UIViewRepresentable wrapper for address line input with focus-based validation
 @available(iOS 15.0, *)
-struct AddressLineTextField: UIViewRepresentable, LogReporter {
+struct AddressLineTextField: UIViewRepresentable {
+    // MARK: - Properties
+
     @Binding var addressLine: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
+    
     let placeholder: String
     let isRequired: Bool
     let inputType: PrimerInputElementType
@@ -27,7 +29,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
-
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .standard,
@@ -36,7 +37,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
-
         return textField
     }
 
@@ -61,12 +61,14 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         )
     }
 
-    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
-        private let validationService: ValidationService
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        // MARK: - Properties
+
         @Binding private var addressLine: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
+        private let validationService: ValidationService
         private let isRequired: Bool
         private let inputType: PrimerInputElementType
         private let scope: (any PrimerCardFormScope)?
@@ -96,11 +98,9 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             self.onAddressChange = onAddressChange
             self.onValidationChange = onValidationChange
         }
-
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-
         func textFieldDidBeginEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
@@ -109,32 +109,22 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 // Don't set isValid = false immediately - let validation happen on text change or focus loss
             }
         }
-
         func textFieldDidEndEditing(_ textField: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
             validateAddress()
         }
-
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true
         }
-
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = addressLine
-
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
-
-            // Update state
             addressLine = newText
-
-            // Update scope or use callback
-            if let scope = scope {
+            if let scope {
                 switch inputType {
                 case .addressLine1:
                     scope.updateAddressLine1(newText)
@@ -146,15 +136,12 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             } else {
                 onAddressChange?(newText)
             }
-
             // Simple validation while typing (don't show errors until focus loss)
             if isRequired {
                 isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             } else {
-                isValid = true // Optional fields are always valid while typing
+                isValid = true
             }
-
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 switch inputType {
                 case .addressLine1:
@@ -165,23 +152,16 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                     break
                 }
             }
-
             return false
         }
-
         private func validateAddress() {
             let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
-
             // Empty field handling - don't show errors for empty fields
             if trimmedAddress.isEmpty {
-                isValid = isRequired ? false : true // Required fields are invalid when empty, optional fields are valid
-                errorMessage = nil // Never show error message for empty fields
+                isValid = isRequired ? false : true
+                errorMessage = nil
                 onValidationChange?(isValid)
-
-                // Clear any scope errors for empty fields
                 scope?.clearFieldError(inputType)
-
-                // Update scope validation state for empty fields
                 if let scope = scope as? DefaultCardFormScope {
                     switch inputType {
                     case .addressLine1:
@@ -194,33 +174,24 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 }
                 return
             }
-
             // Convert PrimerInputElementType to ValidationError.InputElementType
             let elementType: ValidationError.InputElementType = {
                 switch inputType {
-                case .addressLine1:
-                    return .addressLine1
-                case .addressLine2:
-                    return .addressLine2
-                default:
-                    return .addressLine1
+                case .addressLine1: .addressLine1
+                case .addressLine2: .addressLine2
+                default: .addressLine1
                 }
             }()
-
             let result = validationService.validate(
                 input: addressLine,
                 with: AddressRule(inputElementType: elementType, isRequired: isRequired)
             )
-
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-
-            // Update scope state based on validation
-            if let scope = scope {
+            if let scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .addressLine1:
@@ -233,7 +204,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                     }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .addressLine1:
@@ -245,7 +215,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                         }
                     }
                 }
-
             }
         }
     }

@@ -5,17 +5,19 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
+    // MARK: - Public Properties
+
     let label: String?
     let placeholder: String
     let scope: any PrimerCardFormScope
     let selectedNetwork: CardNetwork?
     let styling: PrimerFieldStyling?
 
-    @Environment(\.diContainer) private var container
+    // MARK: - Private Properties
+
     @State private var validationService: ValidationService?
     @State private var cardNumber: String = ""
     @State private var isValid: Bool = false
@@ -23,7 +25,10 @@ struct CardNumberInputField: View, LogReporter {
     @State private var errorMessage: String?
     @State private var surchargeAmount: String?
     @State private var isFocused: Bool = false
+    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
 
     init(
         label: String?,
@@ -43,6 +48,8 @@ struct CardNumberInputField: View, LogReporter {
         return selectedNetwork ?? cardNetwork
     }
 
+    // MARK: - Body
+
     var body: some View {
         PrimerInputFieldContainer(
             label: label,
@@ -54,12 +61,12 @@ struct CardNumberInputField: View, LogReporter {
             textFieldBuilder: {
                 if let validationService {
                     CardNumberTextField(
-                        scope: scope,
                         cardNumber: $cardNumber,
                         isValid: $isValid,
                         cardNetwork: $cardNetwork,
                         errorMessage: $errorMessage,
                         isFocused: $isFocused,
+                        scope: scope,
                         placeholder: placeholder,
                         styling: styling,
                         validationService: validationService,
@@ -93,19 +100,19 @@ struct CardNumberInputField: View, LogReporter {
         }
     }
 
+    // MARK: - Private Methods
+
     private func setupValidationService() {
         guard let container = container else {
             logger.error(message: "DIContainer not available for CardNumberInputField")
             return
         }
-
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
-
     private func updateSurchargeAmount(for network: CardNetwork) {
         guard let surcharge = network.surcharge,
               PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
@@ -113,7 +120,6 @@ struct CardNumberInputField: View, LogReporter {
             surchargeAmount = nil
             return
         }
-
         surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
     }
 }

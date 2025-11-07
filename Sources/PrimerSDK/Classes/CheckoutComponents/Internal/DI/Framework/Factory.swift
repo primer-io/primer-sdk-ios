@@ -56,7 +56,7 @@ public extension ContainerProtocol {
         _ factory: F,
         name: String? = nil
     ) async throws -> Self {
-        if let name = name {
+        if let name {
             _ = try await register(F.self)
                 .named(name)
                 .asSingleton()

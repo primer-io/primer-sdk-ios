@@ -13,7 +13,6 @@
 // swiftlint:disable identifier_name
 
 import SwiftUI
-import UIKit
 
 /// Scope interface for card form interactions, state management, and UI customization.
 /// Inherits from PrimerPaymentMethodScope for unified payment method architecture.

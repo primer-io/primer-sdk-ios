@@ -5,7 +5,6 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
 /// A SwiftUI component for credit card expiry date input with automatic formatting
 /// and validation to ensure dates are valid and not in the past.
@@ -13,46 +12,25 @@ import UIKit
 struct ExpiryDateInputField: View, LogReporter {
     // MARK: - Public Properties
 
-    /// The label text shown above the field
     let label: String?
-
-    /// Placeholder text for the input field
     let placeholder: String
-
-    /// The card form scope for state management
     let scope: any PrimerCardFormScope
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
 
     // MARK: - Private Properties
 
-    /// The validation service resolved from DI environment
-    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
-
-    /// The expiry date entered by the user
     @State private var expiryDate: String = ""
-
-    /// The extracted month value (MM)
     @State private var month: String = ""
-
-    /// The extracted year value (YY)
     @State private var year: String = ""
-
-    /// The validation state of the expiry date
     @State private var isValid: Bool = false
-
-    /// Error message if validation fails
     @State private var errorMessage: String?
-
-    /// Focus state for input field styling
     @State private var isFocused: Bool = false
-
+    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
-    /// Creates a new ExpiryDateInputField with comprehensive customization support
+
     init(
         label: String?,
         placeholder: String,
@@ -102,12 +80,12 @@ struct ExpiryDateInputField: View, LogReporter {
         }
     }
 
+    // MARK: - Private Methods
     private func setupValidationService() {
         guard let container = container else {
             logger.error(message: "DIContainer not available for ExpiryDateInputField")
             return
         }
-
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {

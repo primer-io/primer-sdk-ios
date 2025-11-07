@@ -125,7 +125,7 @@ public struct RequiredInjected<T>: DynamicProperty {
                 return resolved
             }
 
-            if let container = container,
+            if let container,
                let resolved = try? container.resolveSync(type, name: name) {
                 resolvedValue = resolved
                 return resolved
