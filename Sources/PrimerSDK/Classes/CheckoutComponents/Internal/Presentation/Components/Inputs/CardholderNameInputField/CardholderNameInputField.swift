@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for cardholder name input with validation
-/// and consistent styling with other card input fields.
 @available(iOS 15.0, *)
 struct CardholderNameInputField: View, LogReporter {
     // MARK: - Properties

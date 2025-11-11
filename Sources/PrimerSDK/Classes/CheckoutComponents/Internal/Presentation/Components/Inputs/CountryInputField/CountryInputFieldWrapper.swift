@@ -27,14 +27,11 @@ struct CountryInputFieldWrapper: View, LogReporter {
         )
     }
 
-    /// Convert country code to CountryCode.PhoneNumberCountryCode
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
-        // Access country code from structured state
         let code = scope.structuredState.data[.countryCode]
         guard !code.isEmpty else {
             return nil
         }
-        // Find the matching country from the phone number country codes
         let matchingCountry = CountryCode.phoneNumberCountryCodes.first { phoneCountry in
             phoneCountry.code.caseInsensitiveCompare(code) == .orderedSame
         }

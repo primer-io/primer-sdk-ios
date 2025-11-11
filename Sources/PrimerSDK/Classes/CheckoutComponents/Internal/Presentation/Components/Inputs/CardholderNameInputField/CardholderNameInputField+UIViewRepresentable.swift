@@ -107,7 +107,6 @@ struct CardholderNameTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cardholderName
-            guard let textRange = Range(range, in: currentText) else { return false }
             // Validate allowed characters (letters, spaces, apostrophes, hyphens)
             if !string.isEmpty {
                 let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
@@ -116,7 +115,7 @@ struct CardholderNameTextField: UIViewRepresentable {
                     return false
                 }
             }
-            cardholderName = currentText.replacingCharacters(in: textRange, with: string)
+            cardholderName = currentText.replacingCharacters(in: range, with: string)
             scope.updateCardholderName(cardholderName)
             isValid = cardholderName.count >= 2
             scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: isValid)
@@ -125,7 +124,6 @@ struct CardholderNameTextField: UIViewRepresentable {
 
         private func validateCardholderName() {
             let trimmedName = cardholderName.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
                 isValid = false
                 errorMessage = nil

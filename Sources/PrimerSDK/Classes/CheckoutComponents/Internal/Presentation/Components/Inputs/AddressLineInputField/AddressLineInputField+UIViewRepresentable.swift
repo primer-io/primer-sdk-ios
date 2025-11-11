@@ -126,8 +126,7 @@ struct AddressLineTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = addressLine
-            guard let textRange = Range(range, in: currentText) else { return false }
-            addressLine = currentText.replacingCharacters(in: textRange, with: string)
+            addressLine = currentText.replacingCharacters(in: range, with: string)
             if let scope {
                 switch inputType {
                 case .addressLine1:
@@ -140,18 +139,13 @@ struct AddressLineTextField: UIViewRepresentable {
             } else {
                 onAddressChange?(addressLine)
             }
-            if isRequired {
-                isValid = !addressLine.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            } else {
-                isValid = true
-            }
+            isValid = isRequired ? !addressLine.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty : true
             scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
             return false
         }
 
         private func validateAddress() {
             let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedAddress.isEmpty {
                 isValid = isRequired ? false : true
                 errorMessage = nil
@@ -160,14 +154,13 @@ struct AddressLineTextField: UIViewRepresentable {
                 scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
                 return
             }
-            // Convert PrimerInputElementType to ValidationError.InputElementType
-            let elementType: ValidationError.InputElementType = {
-                switch inputType {
-                case .addressLine1: .addressLine1
-                case .addressLine2: .addressLine2
-                default: .addressLine1
-                }
-            }()
+
+            let elementType: ValidationError.InputElementType = switch inputType {
+            case .addressLine1: .addressLine1
+            case .addressLine2: .addressLine2
+            default: .addressLine1
+            }
+
             let result = validationService.validate(
                 input: addressLine,
                 with: AddressRule(inputElementType: elementType, isRequired: isRequired)

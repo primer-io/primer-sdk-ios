@@ -116,8 +116,7 @@ struct EmailTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = email
-            guard let textRange = Range(range, in: currentText) else { return false }
-            email = currentText.replacingCharacters(in: textRange, with: string)
+            email = currentText.replacingCharacters(in: range, with: string)
             if let scope {
                 scope.updateEmail(email)
             } else {
@@ -130,7 +129,6 @@ struct EmailTextField: UIViewRepresentable {
 
         private func validateEmail() {
             let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedEmail.isEmpty {
                 isValid = false
                 errorMessage = nil

@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Generic container for Primer input fields that provides consistent styling, layout, and error handling
 @available(iOS 15.0, *)
 struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     let label: String?

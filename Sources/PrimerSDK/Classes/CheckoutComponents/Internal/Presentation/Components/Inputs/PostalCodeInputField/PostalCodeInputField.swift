@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for postal code input with validation and consistent styling
-/// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 struct PostalCodeInputField: View, LogReporter {
     // MARK: - Properties
@@ -29,10 +27,7 @@ struct PostalCodeInputField: View, LogReporter {
     @Environment(\.designTokens) private var tokens
 
     private var keyboardTypeForCountry: UIKeyboardType {
-        if countryCode == "US" {
-            return .numberPad
-        }
-        return .default
+        countryCode == "US" ? .numberPad : .default
     }
 
     // MARK: - Initialization

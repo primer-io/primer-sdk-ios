@@ -109,16 +109,15 @@ struct CVVTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cvv
-            guard let textRange = Range(range, in: currentText) else { return false }
             if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
-            let replacementLength = currentText.distance(from: textRange.lowerBound, to: textRange.upperBound)
+            let replacementLength = range.length
             let resultingLength = currentText.count - replacementLength + string.count
             if resultingLength > expectedCVVLength {
                 return false
             }
-            cvv = currentText.replacingCharacters(in: textRange, with: string)
+            cvv = currentText.replacingCharacters(in: range, with: string)
             scope.updateCvv(cvv)
             if cvv.count == expectedCVVLength {
                 validateCVV()
@@ -131,7 +130,6 @@ struct CVVTextField: UIViewRepresentable {
         }
 
         private func validateCVV() {
-            // Empty field handling - don't show errors for empty fields
             let trimmedCVV = cvv.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedCVV.isEmpty {
                 isValid = false

@@ -6,14 +6,11 @@
 
 import SwiftUI
 
-/// A SwiftUI component that displays a row of allowed card network badges
-/// as per Figma design requirements.
 @available(iOS 15.0, *)
 struct AllowedCardNetworksView: View, LogReporter {
 
     // MARK: - Properties
 
-    /// The array of allowed card networks to display
     let allowedCardNetworks: [CardNetwork]
 
     // MARK: - Environment
@@ -22,8 +19,6 @@ struct AllowedCardNetworksView: View, LogReporter {
 
     // MARK: - Initialization
 
-    /// Creates a new AllowedCardNetworksView with the specified card networks
-    /// - Parameter allowedCardNetworks: The array of card networks to display as badges
     init(allowedCardNetworks: [CardNetwork]) {
         self.allowedCardNetworks = allowedCardNetworks
     }

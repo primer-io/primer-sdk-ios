@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for address line input with validation and consistent styling
-/// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 struct AddressLineInputField: View, LogReporter {
     // MARK: - Properties

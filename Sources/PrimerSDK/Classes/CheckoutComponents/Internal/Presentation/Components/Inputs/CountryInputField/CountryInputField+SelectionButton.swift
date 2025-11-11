@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Button component for country selection with haptic feedback and navigation handling
 @available(iOS 15.0, *)
 struct CountrySelectionButton: View {
     // MARK: - Properties
@@ -55,7 +54,6 @@ struct CountrySelectionButton: View {
         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
         impactFeedback.impactOccurred()
         scope.navigateToCountrySelection()
-        // Reset after shorter timeout - 1 second should be enough
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.isNavigating = false
         }

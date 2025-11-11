@@ -121,8 +121,7 @@ struct PostalCodeTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = postalCode
-            guard let textRange = Range(range, in: currentText) else { return false }
-            postalCode = currentText.replacingCharacters(in: textRange, with: string)
+            postalCode = currentText.replacingCharacters(in: range, with: string)
             scope.updatePostalCode(postalCode)
             isValid = !postalCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             scope.updateValidationStateIfNeeded(for: .postalCode, isValid: isValid)
@@ -131,7 +130,6 @@ struct PostalCodeTextField: UIViewRepresentable {
 
         private func validatePostalCode() {
             let trimmedPostalCode = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedPostalCode.isEmpty {
                 isValid = false
                 errorMessage = nil

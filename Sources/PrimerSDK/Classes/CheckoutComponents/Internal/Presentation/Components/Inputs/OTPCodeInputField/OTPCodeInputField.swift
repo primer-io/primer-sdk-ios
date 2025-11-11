@@ -6,14 +6,12 @@
 
 import SwiftUI
 
-/// A SwiftUI component for OTP code input with validation
 @available(iOS 15.0, *)
 struct OTPCodeInputField: View, LogReporter {
     // MARK: - Properties
 
     let label: String?
     let placeholder: String
-    /// Expected length of the OTP code
     let expectedLength: Int
     let scope: (any PrimerCardFormScope)?
     let onOTPCodeChange: ((String) -> Void)?

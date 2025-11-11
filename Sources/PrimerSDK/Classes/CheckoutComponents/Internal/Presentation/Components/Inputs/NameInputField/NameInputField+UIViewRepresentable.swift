@@ -121,8 +121,7 @@ struct NameTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = name
-            guard let textRange = Range(range, in: currentText) else { return false }
-            name = currentText.replacingCharacters(in: textRange, with: string)
+            name = currentText.replacingCharacters(in: range, with: string)
             if let scope {
                 switch inputType {
                 case .firstName:
@@ -144,7 +143,6 @@ struct NameTextField: UIViewRepresentable {
 
         private func validateName() {
             let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
                 isValid = false
                 errorMessage = nil
@@ -152,14 +150,13 @@ struct NameTextField: UIViewRepresentable {
                 scope?.updateValidationStateIfNeeded(for: inputType, isValid: false)
                 return
             }
-            // Convert PrimerInputElementType to ValidationError.InputElementType
-            let elementType: ValidationError.InputElementType = {
-                switch inputType {
-                case .firstName: .firstName
-                case .lastName: .lastName
-                default: .firstName
-                }
-            }()
+
+            let elementType: ValidationError.InputElementType = switch inputType {
+            case .firstName: .firstName
+            case .lastName: .lastName
+            default: .firstName
+            }
+
             let result = validationService.validate(
                 input: name,
                 with: NameRule(inputElementType: elementType)

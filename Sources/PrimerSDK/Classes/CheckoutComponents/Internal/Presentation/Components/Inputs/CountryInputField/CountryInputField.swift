@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for country selection with validation
 @available(iOS 15.0, *)
 struct CountryInputField: View, LogReporter {
     // MARK: - Properties
@@ -93,13 +92,11 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the field from external state changes using the property
     @MainActor
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountry)
     }
 
-    /// Updates the field from external state changes using the provided country
     @MainActor
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
         if let country, !country.name.isEmpty, !country.code.isEmpty {
@@ -111,7 +108,7 @@ struct CountryInputField: View, LogReporter {
 
     @MainActor
     private func validateCountry() {
-        guard let validationService = validationService else { return }
+        guard let validationService else { return }
         let result = validationService.validate(
             input: countryCode,
             with: CountryCodeRule()

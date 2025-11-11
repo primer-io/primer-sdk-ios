@@ -139,10 +139,7 @@ struct ExpiryDateTextField: UIViewRepresentable {
                     currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     return String(currentText.prefix(1))
                 }
-                if let textRange = Range(range, in: currentText) {
-                    return currentText.replacingCharacters(in: textRange, with: "")
-                }
-                return currentText
+                return currentText.replacingCharacters(in: range, with: "")
             }
             // Remove the / character temporarily for easier processing
             let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
@@ -175,7 +172,6 @@ struct ExpiryDateTextField: UIViewRepresentable {
         }
 
         private func validateExpiryDate() {
-            // Empty field handling - don't show errors for empty fields
             let trimmedExpiry = expiryDate.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedExpiry.isEmpty {
                 isValid = false
@@ -183,7 +179,6 @@ struct ExpiryDateTextField: UIViewRepresentable {
                 scope.updateValidationStateIfNeeded(for: .expiryDate, isValid: false)
                 return
             }
-            // Parse MM/YY format for non-empty fields
             let components = expiryDate.components(separatedBy: "/")
             guard components.count == 2 else {
                 isValid = false

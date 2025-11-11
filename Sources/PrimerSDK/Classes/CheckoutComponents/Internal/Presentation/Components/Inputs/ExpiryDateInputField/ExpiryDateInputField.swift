@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-/// A SwiftUI component for credit card expiry date input with automatic formatting
-/// and validation to ensure dates are valid and not in the past.
 @available(iOS 15.0, *)
 struct ExpiryDateInputField: View, LogReporter {
     // MARK: - Properties

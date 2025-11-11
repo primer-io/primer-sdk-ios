@@ -106,8 +106,7 @@ struct CityTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = city
-            guard let textRange = Range(range, in: currentText) else { return false }
-            city = currentText.replacingCharacters(in: textRange, with: string)
+            city = currentText.replacingCharacters(in: range, with: string)
             scope.updateCity(city)
             isValid = !city.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             scope.updateValidationStateIfNeeded(for: .city, isValid: isValid)
@@ -116,7 +115,6 @@ struct CityTextField: UIViewRepresentable {
 
         private func validateCity() {
             let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
-            // Empty field handling - don't show errors for empty fields
             if trimmedCity.isEmpty {
                 isValid = false
                 errorMessage = nil
