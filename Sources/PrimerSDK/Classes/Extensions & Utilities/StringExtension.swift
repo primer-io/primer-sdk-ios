@@ -304,7 +304,17 @@ extension String {
     /// - Parameter nsRange: The NSRange to convert
     /// - Returns: The corresponding Range<String.Index>, or nil if conversion fails
     func range(from nsRange: NSRange) -> Range<String.Index>? {
-        return Range(nsRange, in: self)
+        print("[DEBUG] range(from:) input: '\(self)', nsRange: \(nsRange)")
+        let result = Range(nsRange, in: self)
+
+        if let result = result {
+            let substring = String(self[result])
+            print("[DEBUG] range(from:) converted successfully, substring: '\(substring)'")
+        } else {
+            print("[DEBUG] range(from:) conversion failed")
+        }
+
+        return result
     }
 
     /// Replaces characters in the given NSRange with a replacement string
@@ -313,8 +323,16 @@ extension String {
     ///   - replacement: The string to insert in place of the characters
     /// - Returns: A new string with the replacement applied, or the original string if the range is invalid
     func replacingCharacters(in nsRange: NSRange, with replacement: String) -> String {
-        guard let range = self.range(from: nsRange) else { return self }
-        return self.replacingCharacters(in: range, with: replacement)
+        print("[DEBUG] replacingCharacters input: '\(self)', nsRange: \(nsRange), replacement: '\(replacement)'")
+
+        guard let range = self.range(from: nsRange) else {
+            print("[DEBUG] Failed to convert NSRange to Range, returning original string")
+            return self
+        }
+
+        let result = self.replacingCharacters(in: range, with: replacement)
+        print("[DEBUG] replacingCharacters result: '\(result)'")
+        return result
     }
 
     /// Calculates the unformatted position from a formatted text position
@@ -324,6 +342,8 @@ extension String {
     ///   - separator: The separator character used in formatting (e.g., " " for card numbers, "/" for expiry dates)
     /// - Returns: The corresponding index in the unformatted text (excluding separators)
     func unformattedPosition(from formattedIndex: Int, separator: Character) -> Int {
+        print("[DEBUG] unformattedPosition input: '\(self)', formattedIndex: \(formattedIndex), separator: '\(separator)'")
+
         var unformattedPos = 0
         for i in 0..<min(formattedIndex, self.count) {
             let charIndex = self.index(self.startIndex, offsetBy: i)
@@ -331,6 +351,8 @@ extension String {
                 unformattedPos += 1
             }
         }
+
+        print("[DEBUG] unformattedPosition result: \(unformattedPos)")
         return unformattedPos
     }
 }

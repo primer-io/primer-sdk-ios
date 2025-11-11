@@ -370,7 +370,7 @@ final class StringExtensionTests: XCTestCase {
         // Delete (replace with empty string)
         let string3 = "Hello, World!"
         let range3 = NSRange(location: 5, length: 2)
-        XCTAssertEqual(string3.replacingCharacters(in: range3, with: ""), "Hello World!")
+        XCTAssertEqual(string3.replacingCharacters(in: range3, with: ""), "HelloWorld!")
 
         // Insert (zero-length range)
         let string4 = "Hello World!"
@@ -397,10 +397,10 @@ final class StringExtensionTests: XCTestCase {
         let cardRange = NSRange(location: 0, length: 4)
         XCTAssertEqual(cardNumber.replacingCharacters(in: cardRange, with: "5555"), "5555 1111 1111 1111")
 
-        // Test with emoji
+        // Test with emoji (NSRange length: 7 covers "Hello " but not the emoji which takes 2 UTF-16 units)
         let emojiString = "Hello 👋"
         let emojiRange = NSRange(location: 0, length: 7)
-        XCTAssertEqual(emojiString.replacingCharacters(in: emojiRange, with: "Hi"), "Hi")
+        XCTAssertEqual(emojiString.replacingCharacters(in: emojiRange, with: "Hi"), "Hi👋")
     }
 
     func testUnformattedPosition() {
