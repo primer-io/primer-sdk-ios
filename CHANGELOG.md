@@ -1,3 +1,9 @@
+## 2.42.2 (2025-11-11)
+
+### Fix
+
+- Open redirect URL if not a web-based scheme (#1392)
+
 ## 2.42.1 (2025-10-30)
 
 ### Fix
