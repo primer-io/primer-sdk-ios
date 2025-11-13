@@ -1,0 +1,63 @@
+//
+//  PaymentMethodMapper.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import Foundation
+import UIKit
+
+/// Protocol for mapping between internal and public payment method representations.
+protocol PaymentMethodMapper {
+    /// Maps an internal payment method to the public representation.
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod
+
+    /// Maps multiple internal payment methods to public representations.
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod]
+}
+
+/// Default implementation of PaymentMethodMapper.
+final class PaymentMethodMapperImpl: PaymentMethodMapper {
+
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
+        let formattedSurcharge = formatSurcharge(internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
+
+        // Debug logging for surcharge mapping
+
+        return PrimerComposablePaymentMethod(
+            id: internalMethod.id,
+            type: internalMethod.type,
+            name: internalMethod.name,
+            icon: internalMethod.icon,
+            metadata: internalMethod.metadata,
+            surcharge: internalMethod.surcharge,
+            hasUnknownSurcharge: internalMethod.hasUnknownSurcharge,
+            formattedSurcharge: formattedSurcharge,
+            backgroundColor: internalMethod.backgroundColor
+        )
+    }
+
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod] {
+        return internalMethods.map { mapToPublic($0) }
+    }
+
+    /// Format surcharge for display
+    private func formatSurcharge(_ surcharge: Int?, hasUnknownSurcharge: Bool) -> String? {
+
+        // Priority: unknown surcharge > actual surcharge > no fee
+        if hasUnknownSurcharge {
+            return CheckoutComponentsStrings.additionalFeeMayApply
+        }
+
+        guard let surcharge = surcharge,
+              surcharge > 0,
+              let currency = AppState.current.currency else {
+            return CheckoutComponentsStrings.noAdditionalFee
+        }
+
+        // Use existing currency formatting extension to match Drop-in/Headless behavior
+        let formatted = surcharge.toCurrencyString(currency: currency)
+        let result = "+\(formatted)" // "+" prefix for surcharges
+        return result
+    }
+}

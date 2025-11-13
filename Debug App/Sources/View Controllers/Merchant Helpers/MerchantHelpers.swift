@@ -68,7 +68,7 @@ struct MerchantMockDataManager {
                         discountAmount: nil,
                         taxAmount: nil)
                 ]),
-            paymentMethod: sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod,
+            paymentMethod: getPaymentMethod(sessionType: sessionType),
             testParams: nil)
     }
 
