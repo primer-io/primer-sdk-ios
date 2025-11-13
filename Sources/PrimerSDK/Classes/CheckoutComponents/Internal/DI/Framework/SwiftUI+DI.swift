@@ -11,7 +11,7 @@ import SwiftUI
 extension View {
     /// Inject dependencies into a view modifier
     func injectDependencies() -> some View {
-        self.modifier(DependencyInjectionModifier())
+        modifier(DependencyInjectionModifier())
     }
 
     /// Helper to resolve a dependency from the environment
@@ -20,7 +20,7 @@ extension View {
         name: String? = nil,
         perform action: @escaping (T) -> Void
     ) -> some View {
-        self.modifier(DependencyResolutionModifier(type: type, name: name, action: action))
+        modifier(DependencyResolutionModifier(type: type, name: name, action: action))
     }
 }
 
@@ -52,8 +52,7 @@ struct DependencyResolutionModifier<T>: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onAppear {
-                guard let container = container else {
-                    // DIContainer not available
+                guard let container else {
                     return
                 }
 
@@ -125,8 +124,9 @@ public struct RequiredInjected<T>: DynamicProperty {
                 return resolved
             }
 
-            if let container = container,
-               let resolved = try? container.resolveSync(type, name: name) {
+            if let container,
+               let resolved = try? container.resolveSync(type, name: name)
+            {
                 resolvedValue = resolved
                 return resolved
             }

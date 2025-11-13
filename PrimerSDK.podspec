@@ -25,7 +25,8 @@ Pod::Spec.new do |s|
                 "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
                 "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
                 "Sources/PrimerSDK/Resources/Nibs/*",
-                "Sources/PrimerSDK/Resources/JSONs/**/*.json"
+                "Sources/PrimerSDK/Resources/JSONs/**/*.json",
+                "Sources/PrimerSDK/Resources/Fonts/*.ttf"
             ]
         }
         ss.ios.pod_target_xcconfig = {

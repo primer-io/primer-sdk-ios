@@ -56,7 +56,7 @@ public extension ContainerProtocol {
         _ factory: F,
         name: String? = nil
     ) async throws -> Self {
-        if let name = name {
+        if let name {
             _ = try await register(F.self)
                 .named(name)
                 .asSingleton()
@@ -84,13 +84,11 @@ public extension ContainerProtocol {
         let builder = register(F.self)
         let namedBuilder = name != nil ? builder.named(name!) : builder
 
-        let policyBuilder: any RegistrationBuilder<F> = {
-            switch policy {
-            case .singleton: return namedBuilder.asSingleton()
-            case .transient: return namedBuilder.asTransient()
-            case .weak:      return namedBuilder.asWeak()
-            }
-        }()
+        let policyBuilder = switch policy {
+        case .singleton: namedBuilder.asSingleton()
+        case .transient: namedBuilder.asTransient()
+        case .weak:      namedBuilder.asWeak()
+        }
 
         _ = try await policyBuilder.with { _ in factory }
         return self
@@ -113,13 +111,11 @@ public extension ContainerProtocol {
         let builder = register(F.self)
         let namedBuilder = name != nil ? builder.named(name!) : builder
 
-        let policyBuilder: any RegistrationBuilder<F> = {
-            switch policy {
-            case .singleton: return namedBuilder.asSingleton()
-            case .transient: return namedBuilder.asTransient()
-            case .weak:      return namedBuilder.asWeak()
-            }
-        }()
+        let policyBuilder = switch policy {
+        case .singleton: namedBuilder.asSingleton()
+        case .transient: namedBuilder.asTransient()
+        case .weak:      namedBuilder.asWeak()
+        }
 
         _ = try await policyBuilder.with(factory)
         return self

@@ -461,7 +461,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 diContainer: container
             )
 
-            if let scope = scope {
+            if let scope {
                 // Cache the scope for future use
                 paymentMethodScopeCache[paymentMethodType] = scope
                 // Created and cached new scope for payment method
@@ -500,7 +500,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 diContainer: container
             )
 
-            if let scope = scope {
+            if let scope {
                 // Cache the scope using its identifier for future use
                 let scopeTypeName = String(describing: type(of: scope))
                 paymentMethodScopeCache[scopeTypeName] = scope
@@ -583,9 +583,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 diContainer: container
             )
 
-            if let scope = scope {
-                // Successfully created scope for payment method
-
+            if let scope {
                 // Store the current payment method scope for navigation
                 currentPaymentMethodScope = scope
 
