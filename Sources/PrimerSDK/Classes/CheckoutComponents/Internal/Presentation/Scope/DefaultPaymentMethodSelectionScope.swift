@@ -80,21 +80,15 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     // MARK: - Setup
 
     private func loadPaymentMethods() async {
-        // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
-            // Checkout scope not available
             internalState.error = CheckoutComponentsStrings.checkoutScopeNotAvailable
             return
         }
 
-        // Wait for the checkout scope to have loaded payment methods
         for await checkoutState in checkoutScope.state {
             if case .ready = checkoutState {
-                // Get payment methods directly from the checkout scope
                 let paymentMethods = checkoutScope.availablePaymentMethods
-                // Retrieved payment methods from checkout scope
 
-                // Convert internal payment methods to composable payment methods using PaymentMethodMapper
                 let mapper: PaymentMethodMapper
                 do {
                     guard let container = await DIContainer.current else {
@@ -102,7 +96,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     }
                     mapper = try await container.resolve(PaymentMethodMapper.self)
                 } catch {
-                    // Failed to resolve PaymentMethodMapper
                     // Fallback to manual creation without surcharge data
                     let composablePaymentMethods = paymentMethods.map { method in
                         CheckoutPaymentMethod(
@@ -115,20 +108,16 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     }
                     internalState.paymentMethods = composablePaymentMethods
                     internalState.filteredPaymentMethods = composablePaymentMethods
-                    // Payment methods loaded successfully (without surcharge)
                     break
                 }
 
-                // Use PaymentMethodMapper to properly format surcharge data
                 let composablePaymentMethods = mapper.mapToPublic(paymentMethods)
 
                 internalState.paymentMethods = composablePaymentMethods
                 internalState.filteredPaymentMethods = composablePaymentMethods
 
-                // Payment methods loaded successfully with surcharge data
                 break
             } else if case let .failure(error) = checkoutState {
-                // Checkout scope has error
                 internalState.error = error.localizedDescription
                 break
             }
@@ -138,21 +127,16 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     // MARK: - Public Methods
 
     public func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
-        // Payment method selected
-
         internalState.selectedPaymentMethod = paymentMethod
 
-        // Announce selection to VoiceOver users
         let selectionMessage = "\(paymentMethod.name) selected"
         accessibilityAnnouncementService?.announceStateChange(selectionMessage)
         logger.debug(message: "[A11Y] Payment method selected announcement: \(selectionMessage)")
 
-        // Track payment method selection
         Task {
             await trackPaymentMethodSelection(paymentMethod.type)
         }
 
-        // Notify checkout scope
         let internalMethod = InternalPaymentMethod(
             id: paymentMethod.id,
             type: paymentMethod.type,
@@ -168,14 +152,10 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     }
 
     public func onCancel() {
-        // Payment method selection cancelled
-        // Navigate back or dismiss
         checkoutScope?.onDismiss()
     }
 
     public func searchPaymentMethods(_ query: String) {
-        // Searching payment methods
-
         internalState.searchQuery = query
 
         if query.isEmpty {

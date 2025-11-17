@@ -10,25 +10,13 @@ import UIKit
 /// Configuration for PrimerTextField behavior and appearance
 @available(iOS 15.0, *)
 struct PrimerTextFieldConfiguration {
-    /// Keyboard type for the text field
     let keyboardType: UIKeyboardType
-
-    /// Autocapitalization behavior
     let autocapitalizationType: UITextAutocapitalizationType
-
-    /// Autocorrection behavior
     let autocorrectionType: UITextAutocorrectionType
-
-    /// Text content type for autofill suggestions
     let textContentType: UITextContentType?
-
-    /// Return key type
     let returnKeyType: UIReturnKeyType
-
-    /// Whether the text should be displayed as secure (e.g., CVV)
     let isSecureTextEntry: Bool
 
-    /// Default configuration for standard text input
     static let standard = PrimerTextFieldConfiguration(
         keyboardType: .default,
         autocapitalizationType: .words,

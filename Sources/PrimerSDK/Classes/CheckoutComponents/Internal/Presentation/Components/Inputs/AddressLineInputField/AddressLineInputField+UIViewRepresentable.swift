@@ -249,7 +249,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                         }
                     }
                 }
-
             }
         }
     }

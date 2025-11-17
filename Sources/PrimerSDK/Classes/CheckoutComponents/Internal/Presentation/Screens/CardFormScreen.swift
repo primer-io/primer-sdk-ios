@@ -852,7 +852,6 @@ struct CardFormScreen_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
             .previewDisplayName("Co-badged Cards - Dark")
 
-            // Loading State
             CardFormScreen(scope: MockCardFormScope(
                 isLoading: true,
                 isValid: true,

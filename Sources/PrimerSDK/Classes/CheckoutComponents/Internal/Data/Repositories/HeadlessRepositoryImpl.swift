@@ -26,14 +26,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     // MARK: - PrimerHeadlessUniversalCheckoutDelegate (Payment Completion)
 
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        // Prevent multiple completions
         guard !hasCompleted else {
-            // Payment completion delegate called multiple times
             return
         }
         hasCompleted = true
-
-        // Payment completed successfully
 
         let result = PaymentResult(
             paymentId: data.payment?.id ?? UUID().uuidString,
@@ -46,14 +42,11 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     }
 
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
-        // Prevent multiple completions
         guard !hasCompleted else {
-            // Payment failure delegate called after completion
             return
         }
         hasCompleted = true
 
-        // Payment failed via delegate
         completion(.failure(err))
     }
 
@@ -61,8 +54,6 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ data: PrimerCheckoutPaymentMethodData,
         decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
     ) {
-        // Will create payment
-        // Allow payment creation to proceed
         decisionHandler(.continuePaymentCreation())
     }
 
@@ -72,13 +63,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        // Payment method tokenized
         repository?.trackThreeDSChallengeIfNeeded(from: paymentMethodTokenData)
 
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
-        // This follows the pattern from MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
-        // Completing tokenization
         decisionHandler(.complete())
     }
 
@@ -86,7 +74,6 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         _ resumeToken: String,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
-        // Payment resumed with token
         decisionHandler(.complete())
     }
 
@@ -105,12 +92,8 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        // RawDataManager validation state: \(isValid)
-
-        // Handle validation failures only if we haven't completed yet
         if !isValid, let errors = errors, !errors.isEmpty, !hasCompleted {
             hasCompleted = true
-            // RawDataManager validation failed
             completion(.failure(errors.first!))
         }
     }
@@ -118,8 +101,6 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState state: PrimerValidationState) {
-        // RawDataManager received metadata
-        // Handle card network detection and metadata updates if needed
     }
 }
 
@@ -186,9 +167,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
-        // Fetching payment methods
-
-        // Get payment methods from PrimerAPIConfigurationModule
         let primerMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods ?? []
 
         // Map PrimerPaymentMethod to InternalPaymentMethod with surcharge data
@@ -320,8 +298,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         cardholderName: String,
         selectedNetwork: CardNetwork?
     ) async throws -> PaymentResult {
-        // Processing card payment via RawDataManager with proper delegate handling
-
         // PAYMENT METHOD OPTIONS INTEGRATION: Validate URL scheme if configured
         try await validatePaymentMethodOptions()
 
@@ -391,7 +367,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             cardData.cardNetwork = selectedNetwork
         }
 
-        // Card data prepared for payment processing
         return cardData
     }
 
@@ -402,20 +377,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        // Created RawDataManager with delegate, configuring...
-
         rawDataManager.configure { [weak self] _, error in
             guard let self = self else { return }
 
             if let error {
-                // RawDataManager configuration failed
                 continuation.resume(throwing: error)
                 return
             }
 
-            // RawDataManager configured successfully
-
-            // Set the raw data (this triggers validation automatically)
+            // This triggers validation automatically
             rawDataManager.rawData = cardData
 
             // Small delay to allow validation
@@ -435,9 +405,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        // Checking validation status...
-
-        // Verify data is valid before submitting
         if rawDataManager.isDataValid {
             // Raw data is valid, updating client session before payment submission...
 
@@ -473,8 +440,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             paymentHandlingMode = .auto
         }
 
-        // Processing payment in specified mode
-
         // CheckoutComponents currently only supports auto mode, but log the setting
         if paymentHandlingMode == .manual {
             // Manual payment handling not yet supported in CheckoutComponents - proceeding with auto mode
@@ -482,18 +447,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // This will trigger async payment processing and delegate callbacks
         rawDataManager.submit()
-        // Card payment submitted - waiting for completion via delegate...
     }
 
     private func handleValidationFailure(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        // Raw data validation failed
-
         // Check required input types for debugging
         let requiredInputs = rawDataManager.requiredInputElementTypes
-        // Required input element types validation failed
 
         let error = PrimerError.invalidValue(
             key: "cardData",
@@ -513,7 +474,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func setBillingAddress(_ billingAddress: BillingAddress) async throws {
-        // Setting billing address via Client Session Actions
     }
 
     /// Get network detection stream for real-time updates
@@ -524,15 +484,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Update card number in RawDataManager to trigger network detection
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-        // Updating card number in RawDataManager
-
         // Configure RawDataManager if needed
         rawDataManager?.configure { [weak self] _, error in
-            if let error {
-                // RawDataManager configuration failed
-            } else {
-                // RawDataManager configured successfully
-            }
         }
 
         // Update card data
@@ -540,14 +493,10 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Trigger network detection by setting raw data
         rawDataManager?.rawData = rawCardData
-
-        // Updated RawDataManager with card data
     }
 
     /// Handle user selection of a specific card network (for co-badged cards)
     func selectCardNetwork(_ cardNetwork: CardNetwork) async {
-        // User selected card network
-
         // Update the raw card data with selected network
         rawCardData.cardNetwork = cardNetwork
         rawDataManager?.rawData = rawCardData
@@ -795,10 +744,8 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState cardState: PrimerValidationState) {
         guard cardState is PrimerCardNumberEntryState else {
-            // Received non-card metadata
             return
         }
-        // RawDataManager fetching metadata for card state
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
@@ -806,7 +753,6 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
                               forState cardState: PrimerValidationState) {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
               cardState is PrimerCardNumberEntryState else {
-            // Received non-card metadata
             return
         }
 

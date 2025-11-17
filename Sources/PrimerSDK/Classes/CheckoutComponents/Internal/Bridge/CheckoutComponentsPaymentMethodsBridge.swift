@@ -12,7 +12,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
     func execute() async throws -> [InternalPaymentMethod] {
         logger.info(message: "🌉 [PaymentMethodsBridge] Starting payment methods bridge...")
 
-        // Get the current configuration from PrimerAPIConfiguration
         guard let configuration = PrimerAPIConfiguration.current else {
             logger.error(message: "❌ [PaymentMethodsBridge] No configuration available")
             throw PrimerError.missingPrimerConfiguration()
@@ -31,7 +30,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         let filteredMethods = await filterPaymentMethodsBySupport(paymentMethods)
         logger.info(message: "🔍 [PaymentMethodsBridge] Filtered to \(filteredMethods.count) payment methods based on CheckoutComponents support")
 
-        // Convert filtered PrimerPaymentMethod to InternalPaymentMethod with surcharge data
         let convertedMethods = filteredMethods.map { primerMethod -> InternalPaymentMethod in
             let type = primerMethod.type
 
@@ -40,7 +38,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             // Extract network surcharges for card payment methods
             let networkSurcharges = extractNetworkSurcharges(for: type)
 
-            // Extract background color from display metadata
             let backgroundColor = primerMethod.displayMetadata?.button.backgroundColor?.uiColor
 
             // Extract surcharge data for payment method
@@ -66,7 +63,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
 
         logger.info(message: "✅ [PaymentMethodsBridge] Successfully converted \(convertedMethods.count) payment methods")
 
-        // Log each converted method
         for (index, method) in convertedMethods.enumerated() {
             logger.debug(message: "💳 [PaymentMethodsBridge] Method \(index + 1): \(method.type) - \(method.name)")
         }
@@ -83,23 +79,19 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             return nil
         }
 
-        // Get client session payment method data
         let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
             return nil
         }
 
-        // Check for networks in payment method options
         guard let options = paymentMethodData.options else {
             return nil
         }
 
-        // Find the payment card option
         guard let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType }) else {
             return nil
         }
 
-        // Check for networks data - handle both array and dictionary formats
         if let networksArray = paymentCardOption["networks"] as? [[String: Any]] {
             return extractFromNetworksArray(networksArray)
         } else if let networksDict = paymentCardOption["networks"] as? [String: [String: Any]] {
