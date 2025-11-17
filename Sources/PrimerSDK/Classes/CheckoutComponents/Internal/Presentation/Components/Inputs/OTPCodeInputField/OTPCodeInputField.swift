@@ -112,7 +112,6 @@ struct OTPCodeInputField: View, LogReporter {
             .textContentType(.oneTimeCode)
             .frame(height: PrimerSize.xxlarge(tokens: tokens))
             .onChange(of: otpCode) { newValue in
-                // Limit to expected length
                 if newValue.count > expectedLength {
                     otpCode = String(newValue.prefix(expectedLength))
                 } else {
@@ -153,7 +152,6 @@ struct OTPCodeInputField: View, LogReporter {
         errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
 
-        // Update scope state based on validation
         if let scope = scope {
             if result.isValid {
                 scope.clearFieldError(.otp)

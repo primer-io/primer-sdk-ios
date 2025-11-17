@@ -300,7 +300,6 @@ struct CardFormScreen: View, LogReporter {
             // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
             var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
 
-            // Remove all currency symbols
             let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
             cleanString = cleanString.components(separatedBy: currencySymbols).joined()
 
@@ -345,8 +344,6 @@ struct CardFormScreen: View, LogReporter {
             // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
             var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
 
-            // Remove all currency symbols using CharacterSet
-            // Includes common currency symbols plus additional Unicode currency characters
             let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
             cleanString = cleanString.components(separatedBy: currencySymbols).joined()
 
@@ -381,14 +378,12 @@ struct CardFormScreen: View, LogReporter {
 
     private func observeState() {
         Task {
-            // Get initial form configuration
             await MainActor.run {
                 formConfiguration = scope.getFormConfiguration()
                 bridgeController?.invalidateContentSize()
             }
 
             for await state in scope.state {
-                // Get form configuration outside of MainActor.run
                 let updatedFormConfig = await MainActor.run {
                     scope.getFormConfiguration()
                 }
@@ -397,10 +392,8 @@ struct CardFormScreen: View, LogReporter {
                     self.cardFormState = state
                     self.refreshTrigger = UUID()
 
-                    // Update form configuration in case it changed
                     self.formConfiguration = updatedFormConfig
 
-                    // Update selected network if changed
                     if let selectedNetwork = state.selectedNetwork {
                         self.selectedCardNetwork = selectedNetwork.network
                     } else if state.availableNetworks.count == 1,
@@ -666,7 +659,6 @@ struct CardFormScreen: View, LogReporter {
         if let network = cardFormState.selectedNetwork {
             return network.network
         } else {
-            // Get card number from structured data
             let cardNumber: String? = nil
             return CardNetwork(cardNumber: cardNumber ?? "")
         }
@@ -677,11 +669,9 @@ struct CardFormScreen: View, LogReporter {
     /// Moves keyboard focus to the next field in logical order
     /// cardNumber → expiry → cvv → cardholderName → submit
     private func moveToNextField(from currentField: PrimerInputElementType) {
-        // Get the logical field order from form configuration
         let cardFields = formConfiguration.cardFields
         let billingFields = formConfiguration.billingFields
 
-        // Find current field index in card fields
         if let currentIndex = cardFields.firstIndex(of: currentField) {
             // Move to next card field if available
             if currentIndex + 1 < cardFields.count {
@@ -698,7 +688,6 @@ struct CardFormScreen: View, LogReporter {
             return
         }
 
-        // Find current field index in billing fields
         if let currentIndex = billingFields.firstIndex(of: currentField) {
             // Move to next billing field if available
             if currentIndex + 1 < billingFields.count {

@@ -117,14 +117,11 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = email
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-            // Update state
             email = newText
             if let scope = scope {
                 scope.updateEmail(newText)
@@ -135,7 +132,6 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateEmailValidationState(isValid)
             }
@@ -163,7 +159,6 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
 
-            // Update scope state based on validation
             if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(.email)

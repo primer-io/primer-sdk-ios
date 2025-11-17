@@ -111,10 +111,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = expiryDate
 
-            // Handle return key
             if string == "\n" {
                 textField.resignFirstResponder()
                 return false
@@ -125,17 +123,13 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 return false
             }
 
-            // Process the input
             let newText = processInput(currentText: currentText, range: range, string: string)
 
-            // Update the text field
             expiryDate = newText
             textField.text = newText
 
-            // Extract month and year
             extractMonthAndYear(from: newText)
 
-            // Update scope state
             scope.updateExpiryDate(newText)
 
             // Validate silently during typing (no error messages shown)
@@ -143,7 +137,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 validateExpiryDateSilently()
             } else {
                 isValid = false
-                // Don't show error message during typing
                 errorMessage = nil
             }
 
@@ -151,7 +144,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         }
 
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
-            // Handle deletion
             if string.isEmpty {
                 // If deleting the separator, also remove the character before it
                 if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
@@ -159,14 +151,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     return String(currentText.prefix(1))
                 }
 
-                // Normal deletion
                 if let textRange = Range(range, in: currentText) {
                     return currentText.replacingCharacters(in: textRange, with: "")
                 }
                 return currentText
             }
 
-            // Handle additions
             // Remove the / character temporarily for easier processing
             let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
 
@@ -176,7 +166,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 sanitizedLocation -= 1
             }
 
-            // Insert the new digits
             var newSanitizedText = sanitizedText
             if sanitizedLocation <= sanitizedText.count {
                 let index = newSanitizedText.index(newSanitizedText.startIndex, offsetBy: min(sanitizedLocation, newSanitizedText.count))
@@ -188,7 +177,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             // Limit to 4 digits total (MMYY format)
             newSanitizedText = String(newSanitizedText.prefix(4))
 
-            // Format with separator
             if newSanitizedText.count > 2 {
                 return "\(newSanitizedText.prefix(2))/\(newSanitizedText.dropFirst(2))"
             } else {
@@ -218,7 +206,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             if trimmedExpiry.isEmpty {
                 isValid = false // Expiry date is required
                 errorMessage = nil // Never show error message for empty fields
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateExpiryValidationState(false)
                 }
@@ -234,7 +221,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     errorMessage = CheckoutComponentsStrings.enterValidExpiryDate
                     scope.setFieldError(.expiryDate, message: CheckoutComponentsStrings.enterValidExpiryDate, errorCode: "invalid_format")
                 }
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateExpiryValidationState(false)
                 }
@@ -257,10 +243,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 errorMessage = result.errorMessage
             }
 
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.expiryDate)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateExpiryValidationState(true)
                 }
@@ -268,7 +252,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 if showErrors, let message = result.errorMessage {
                     scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
                 }
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateExpiryValidationState(false)
                 }

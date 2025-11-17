@@ -107,21 +107,17 @@ struct StateTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = state
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-            // Update state
             state = newText
             scope.updateState(newText)
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateStateValidationState(isValid)
             }
@@ -136,7 +132,6 @@ struct StateTextField: UIViewRepresentable, LogReporter {
             if trimmedState.isEmpty {
                 isValid = false // State is required
                 errorMessage = nil // Never show error message for empty fields
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateStateValidationState(false)
                 }
@@ -151,16 +146,13 @@ struct StateTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
 
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.state)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateStateValidationState(true)
                 }
             } else if let message = result.errorMessage {
                 scope.setFieldError(.state, message: message, errorCode: result.errorCode)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateStateValidationState(false)
                 }

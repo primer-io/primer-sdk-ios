@@ -185,16 +185,13 @@ struct CountryInputField: View, LogReporter {
         isValid = result.isValid
         errorMessage = result.errorMessage
 
-        // Update scope state based on validation
         if result.isValid {
             scope.clearFieldError(.countryCode)
-            // Update scope validation state
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateCountryCodeValidationState(true)
             }
         } else if let message = result.errorMessage {
             scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
-            // Update scope validation state
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateCountryCodeValidationState(false)
             }

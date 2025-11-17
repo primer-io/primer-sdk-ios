@@ -50,7 +50,6 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     private var paymentAmountHeader: some View {
         HStack {
-            // Get payment amount from app state or default
             let amount = AppState.current.amount ?? 9900 // Default to $99.00 if not available
             let currency = AppState.current.currency ?? Currency(code: "USD", decimalDigits: 2)
             let formattedAmount = amount.toCurrencyString(currency: currency)

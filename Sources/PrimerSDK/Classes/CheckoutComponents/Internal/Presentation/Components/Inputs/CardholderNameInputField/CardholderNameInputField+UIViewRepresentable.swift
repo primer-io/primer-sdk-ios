@@ -109,10 +109,8 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = cardholderName
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
@@ -125,14 +123,11 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
                 }
             }
 
-            // Update state
             cardholderName = newText
             scope.updateCardholderName(newText)
 
-            // Simple validation while typing
             isValid = newText.count >= 2
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateCardholderNameValidationState(isValid)
             }
@@ -147,7 +142,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             if trimmedName.isEmpty {
                 isValid = false // Cardholder name is required
                 errorMessage = nil // Never show error message for empty fields
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCardholderNameValidationState(false)
                 }
@@ -162,10 +156,8 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
 
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.cardholderName)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCardholderNameValidationState(true)
                 }
@@ -173,7 +165,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
                 }
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCardholderNameValidationState(false)
                 }

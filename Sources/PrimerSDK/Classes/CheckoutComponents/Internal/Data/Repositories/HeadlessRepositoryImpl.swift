@@ -206,18 +206,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return nil
         }
 
-        // Get client session payment method data
         let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
             return nil
         }
 
-        // Check for networks in payment method options
         guard let options = paymentMethodData.options else {
             return nil
         }
 
-        // Find the payment card option
         guard let paymentCardOption = options.first(where: { ($0["type"] as? String) == paymentMethodType }) else {
             return nil
         }
@@ -306,7 +303,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 // Check iOS version availability for PaymentCompletionHandler
                 if #available(iOS 15.0, *) {
                     do {
-                        // Create card data
                         let cardData = createCardData(
                             cardNumber: cardNumber,
                             cvv: cvv,
@@ -316,19 +312,16 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             selectedNetwork: selectedNetwork
                         )
 
-                        // Create payment handler and setup delegate
                         let paymentHandler = PaymentCompletionHandler(repository: self) { result in
                             continuation.resume(with: result)
                         }
                         PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
-                        // Create and configure RawDataManager
                         let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
                             paymentMethodType: "PAYMENT_CARD",
                             delegate: paymentHandler
                         )
 
-                        // Configure and submit payment
                         configureRawDataManagerAndSubmit(
                             rawDataManager: rawDataManager,
                             cardData: cardData,
@@ -362,7 +355,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             cardholderName: cardholderName.isEmpty ? nil : cardholderName
         )
 
-        // Set card network if selected (for co-badged cards)
         if let selectedNetwork {
             cardData.cardNetwork = selectedNetwork
         }
@@ -406,9 +398,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
         if rawDataManager.isDataValid {
-            // Raw data is valid, updating client session before payment submission...
-
-            // Update client session with payment method selection
             updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
                 guard let self = self else { return }
 
@@ -418,9 +407,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                     return
                 }
 
-                // Client session updated successfully, now submitting payment...
-
-                // Submit payment
                 Task {
                     await self.submitPaymentWithHandlingMode(rawDataManager: rawDataManager)
                 }
@@ -453,7 +439,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         continuation: CheckedContinuation<PaymentResult, Error>
     ) {
-        // Check required input types for debugging
         let requiredInputs = rawDataManager.requiredInputElementTypes
 
         let error = PrimerError.invalidValue(
@@ -484,20 +469,16 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Update card number in RawDataManager to trigger network detection
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-        // Configure RawDataManager if needed
         rawDataManager?.configure { [weak self] _, error in
         }
 
-        // Update card data
         rawCardData.cardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
 
-        // Trigger network detection by setting raw data
         rawDataManager?.rawData = rawCardData
     }
 
     /// Handle user selection of a specific card network (for co-badged cards)
     func selectCardNetwork(_ cardNetwork: CardNetwork) async {
-        // Update the raw card data with selected network
         rawCardData.cardNetwork = cardNetwork
         rawDataManager?.rawData = rawCardData
 
@@ -524,7 +505,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             network = "OTHER"
         }
 
-        // Create parameters matching Drop-in's dispatchActions format
         let params: [String: Any] = [
             "paymentMethodType": "PAYMENT_CARD",
             "binData": [
@@ -532,7 +512,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             ]
         ]
 
-        // Create action (single action for now - billing address would be added here if needed)
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
         // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)

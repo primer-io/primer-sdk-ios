@@ -122,17 +122,13 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = name
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-            // Update state
             name = newText
 
-            // Update scope or use callback
             if let scope = scope {
                 switch inputType {
                 case .firstName:
@@ -151,7 +147,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 switch inputType {
                 case .firstName:
@@ -174,7 +169,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
                 isValid = false // Name fields are required
                 errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(false)
-                // Update scope validation state for empty fields
                 if let scope = scope as? DefaultCardFormScope {
                     switch inputType {
                     case .firstName:
@@ -209,11 +203,9 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
 
-            // Update scope state based on validation
             if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .firstName:
@@ -226,7 +218,6 @@ struct NameTextField: UIViewRepresentable, LogReporter {
                     }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .firstName:

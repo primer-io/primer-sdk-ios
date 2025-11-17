@@ -110,10 +110,8 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = cvv
 
-            // Create the new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
@@ -122,22 +120,18 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
                 return false
             }
 
-            // Check max length
             if newText.count > expectedCVVLength {
                 return false
             }
 
-            // Update state
             cvv = newText
             scope.updateCvv(newText)
 
-            // Validate while typing
             if newText.count == expectedCVVLength {
                 validateCVV()
             } else {
                 isValid = false
                 errorMessage = nil
-                // Update scope validation state for incomplete CVV
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCvvValidationState(false)
                 }
@@ -152,7 +146,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             if trimmedCVV.isEmpty {
                 isValid = false // CVV is required
                 errorMessage = nil // Never show error message for empty fields
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCvvValidationState(false)
                 }
@@ -166,10 +159,8 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
 
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.cvv)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCvvValidationState(true)
                 }
@@ -177,7 +168,6 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
                 }
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCvvValidationState(false)
                 }

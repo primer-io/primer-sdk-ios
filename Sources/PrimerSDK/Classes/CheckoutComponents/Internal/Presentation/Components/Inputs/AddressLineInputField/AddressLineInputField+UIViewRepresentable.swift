@@ -127,17 +127,13 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = addressLine
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-            // Update state
             addressLine = newText
 
-            // Update scope or use callback
             if let scope = scope {
                 switch inputType {
                 case .addressLine1:
@@ -158,7 +154,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 isValid = true // Optional fields are always valid while typing
             }
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 switch inputType {
                 case .addressLine1:
@@ -182,10 +177,8 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                 errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(isValid)
 
-                // Clear any scope errors for empty fields
                 scope?.clearFieldError(inputType)
 
-                // Update scope validation state for empty fields
                 if let scope = scope as? DefaultCardFormScope {
                     switch inputType {
                     case .addressLine1:
@@ -220,11 +213,9 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
 
-            // Update scope state based on validation
             if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .addressLine1:
@@ -237,7 +228,6 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
                     }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    // Update scope validation state
                     if let scope = scope as? DefaultCardFormScope {
                         switch inputType {
                         case .addressLine1:

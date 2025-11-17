@@ -107,21 +107,17 @@ struct CityTextField: UIViewRepresentable, LogReporter {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Get current text
             let currentText = city
 
-            // Create new text
             guard let textRange = Range(range, in: currentText) else { return false }
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
-            // Update state
             city = newText
             scope.updateCity(newText)
 
             // Simple validation while typing (don't show errors until focus loss)
             isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-            // Update scope validation state while typing
             if let scope = scope as? DefaultCardFormScope {
                 scope.updateCityValidationState(isValid)
             }
@@ -136,7 +132,6 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             if trimmedCity.isEmpty {
                 isValid = false // City is required
                 errorMessage = nil // Never show error message for empty fields
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCityValidationState(false)
                 }
@@ -151,16 +146,13 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             isValid = result.isValid
             errorMessage = result.errorMessage
 
-            // Update scope state based on validation
             if result.isValid {
                 scope.clearFieldError(.city)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCityValidationState(true)
                 }
             } else if let message = result.errorMessage {
                 scope.setFieldError(.city, message: message, errorCode: result.errorCode)
-                // Update scope validation state
                 if let scope = scope as? DefaultCardFormScope {
                     scope.updateCityValidationState(false)
                 }
