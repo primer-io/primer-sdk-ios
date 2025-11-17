@@ -189,7 +189,7 @@ struct InternalCheckout: View {
             case .idle, .initializing:
                 SplashScreen()
             case .initialized:
-                if let checkoutScope = checkoutScope {
+                if let checkoutScope {
                     CheckoutScopeObserver(
                         scope: checkoutScope,
                         customContent: customContent,

@@ -61,7 +61,7 @@ public struct LengthRule: ValidationRule {
             )
         }
 
-        if let maxLength = maxLength, trimmed.count > maxLength {
+        if let maxLength, trimmed.count > maxLength {
             return .invalid(
                 code: "\(errorCodePrefix)-max",
                 message: "\(fieldName) must not exceed \(maxLength) characters"

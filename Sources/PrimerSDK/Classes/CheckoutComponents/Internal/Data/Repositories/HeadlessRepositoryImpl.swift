@@ -387,7 +387,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         )
 
         // Set card network if selected (for co-badged cards)
-        if let selectedNetwork = selectedNetwork {
+        if let selectedNetwork {
             cardData.cardNetwork = selectedNetwork
         }
 
@@ -407,7 +407,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager.configure { [weak self] _, error in
             guard let self = self else { return }
 
-            if let error = error {
+            if let error {
                 // RawDataManager configuration failed
                 continuation.resume(throwing: error)
                 return
@@ -445,7 +445,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
                 guard let self = self else { return }
 
-                if let error = error {
+                if let error {
                     // Client session update failed
                     continuation.resume(throwing: error)
                     return
@@ -528,7 +528,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         // Configure RawDataManager if needed
         rawDataManager?.configure { [weak self] _, error in
-            if let error = error {
+            if let error {
                 // RawDataManager configuration failed
             } else {
                 // RawDataManager configured successfully

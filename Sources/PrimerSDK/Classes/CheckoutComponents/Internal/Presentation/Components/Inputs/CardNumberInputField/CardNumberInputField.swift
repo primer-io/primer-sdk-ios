@@ -54,12 +54,12 @@ struct CardNumberInputField: View, LogReporter {
             textFieldBuilder: {
                 if let validationService = validationService {
                     CardNumberTextField(
-                        scope: scope,
                         cardNumber: $cardNumber,
                         isValid: $isValid,
                         cardNetwork: $cardNetwork,
                         errorMessage: $errorMessage,
                         isFocused: $isFocused,
+                        scope: scope,
                         placeholder: placeholder,
                         styling: styling,
                         validationService: validationService,

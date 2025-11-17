@@ -23,8 +23,100 @@
                location = "group:CheckoutComponents"
                name = "CheckoutComponents">
                <FileRef
+                  location = "group:CLAUDE.md">
+               </FileRef>
+               <FileRef
+                  location = "group:README.md">
+               </FileRef>
+               <FileRef
                   location = "group:CheckoutComponentsPrimer.swift">
                </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckout.swift">
+               </FileRef>
+               <Group
+                  location = "group:Accessibility"
+                  name = "Accessibility">
+                  <Group
+                     location = "group:Builders"
+                     name = "Builders">
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Analytics"
+                  name = "Analytics">
+                  <Group
+                     location = "group:Utils"
+                     name = "Utils">
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:AnalyticsPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventMetadata.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironment.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsSessionConfig.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventType.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsServiceProtocol.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:AnalyticsPayloadBuilder.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsNetworkClient.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironmentProvider.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventBuffer.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:DefaultAnalyticsInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsInteractorProtocol.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+               </Group>
                <Group
                   location = "group:Core"
                   name = "Core">
@@ -40,51 +132,6 @@
                   location = "group:Internal"
                   name = "Internal">
                   <Group
-                     location = "group:Accessibility"
-                     name = "Accessibility">
-                     <Group
-                        location = "group:Core"
-                        name = "Core">
-                        <FileRef
-                           location = "group:AccessibilityConfiguration.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AccessibilityConfigurable.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AccessibilityIdentifierProviding.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Domain"
-                        name = "Domain">
-                        <FileRef
-                           location = "group:AccessibilityIdentifiers.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Presentation"
-                        name = "Presentation">
-                        <Group
-                           location = "group:SwiftUI"
-                           name = "SwiftUI">
-                           <FileRef
-                              location = "group:View+Accessibility.swift">
-                           </FileRef>
-                        </Group>
-                     </Group>
-                     <Group
-                        location = "group:Services"
-                        name = "Services">
-                        <FileRef
-                           location = "group:AccessibilityAnnouncementService.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:DefaultAccessibilityAnnouncementService.swift">
-                        </FileRef>
-                     </Group>
-                  </Group>
-                  <Group
                      location = "group:UI"
                      name = "UI">
                      <Group
@@ -95,6 +142,9 @@
                         </FileRef>
                         <FileRef
                            location = "group:SlideInModifier.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CheckoutColors.swift">
                         </FileRef>
                         <FileRef
                            location = "group:PrimerLayout.swift">
@@ -242,6 +292,51 @@
                      <FileRef
                         location = "group:MockValidationService.swift">
                      </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Accessibility"
+                     name = "Accessibility">
+                     <Group
+                        location = "group:Core"
+                        name = "Core">
+                        <FileRef
+                           location = "group:AccessibilityConfiguration.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AccessibilityConfigurable.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AccessibilityIdentifierProviding.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Domain"
+                        name = "Domain">
+                        <FileRef
+                           location = "group:AccessibilityIdentifiers.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Presentation"
+                        name = "Presentation">
+                        <Group
+                           location = "group:SwiftUI"
+                           name = "SwiftUI">
+                           <FileRef
+                              location = "group:View+Accessibility.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:AccessibilityAnnouncementService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultAccessibilityAnnouncementService.swift">
+                        </FileRef>
+                     </Group>
                   </Group>
                   <Group
                      location = "group:Data"
@@ -439,6 +534,9 @@
                                  location = "group:CountryInputFieldWrapper.swift">
                               </FileRef>
                               <FileRef
+                                 location = "group:CountryInputField+SelectionButton.swift">
+                              </FileRef>
+                              <FileRef
                                  location = "group:CountryInputField.swift">
                               </FileRef>
                            </Group>
@@ -564,6 +662,17 @@
                   </Group>
                </Group>
                <Group
+                  location = "group:PaymentMethods"
+                  name = "PaymentMethods">
+                  <Group
+                     location = "group:Card"
+                     name = "Card">
+                     <FileRef
+                        location = "group:CardPaymentMethod.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <Group
                   location = "group:Scope"
                   name = "Scope">
                   <FileRef
@@ -584,109 +693,6 @@
                   <FileRef
                      location = "group:PrimerPaymentMethodSelectionScope.swift">
                   </FileRef>
-               </Group>
-               <Group
-                  location = "group:PaymentMethods"
-                  name = "PaymentMethods">
-                  <Group
-                     location = "group:Card"
-                     name = "Card">
-                     <FileRef
-                        location = "group:CardPaymentMethod.swift">
-                     </FileRef>
-                  </Group>
-               </Group>
-               <FileRef
-                  location = "group:README.md">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCheckout.swift">
-               </FileRef>
-               <Group
-                  location = "group:Accessibility"
-                  name = "Accessibility">
-                  <Group
-                     location = "group:Builders"
-                     name = "Builders">
-                  </Group>
-               </Group>
-               <FileRef
-                  location = "group:CLAUDE.md">
-               </FileRef>
-               <Group
-                  location = "group:Analytics"
-                  name = "Analytics">
-                  <Group
-                     location = "group:Utils"
-                     name = "Utils">
-                  </Group>
-                  <Group
-                     location = "group:Data"
-                     name = "Data">
-                     <Group
-                        location = "group:Models"
-                        name = "Models">
-                        <FileRef
-                           location = "group:AnalyticsPayload.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventMetadata.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEnvironment.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsSessionConfig.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventType.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Protocols"
-                        name = "Protocols">
-                        <FileRef
-                           location = "group:AnalyticsServiceProtocol.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Services"
-                        name = "Services">
-                        <FileRef
-                           location = "group:AnalyticsPayloadBuilder.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsNetworkClient.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventService.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEnvironmentProvider.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventBuffer.swift">
-                        </FileRef>
-                     </Group>
-                  </Group>
-                  <Group
-                     location = "group:Domain"
-                     name = "Domain">
-                     <Group
-                        location = "group:Interactors"
-                        name = "Interactors">
-                        <FileRef
-                           location = "group:DefaultAnalyticsInteractor.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Protocols"
-                        name = "Protocols">
-                        <FileRef
-                           location = "group:AnalyticsInteractorProtocol.swift">
-                        </FileRef>
-                     </Group>
-                  </Group>
                </Group>
             </Group>
             <Group
