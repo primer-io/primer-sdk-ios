@@ -5,54 +5,30 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
-import UIKit
 
-/// A SwiftUI component for email input with validation and consistent styling
-/// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 struct EmailInputField: View, LogReporter {
     // MARK: - Public Properties
 
-    /// The label text shown above the field
     let label: String?
-
-    /// Placeholder text for the input field
     let placeholder: String
-
-    /// The card form scope for state management
     let scope: (any PrimerCardFormScope)?
-
-    /// Callback when the email changes
     let onEmailChange: ((String) -> Void)?
-
-    /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
+
     // MARK: - Private Properties
 
-    /// The validation service resolved from DI environment
     @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
-
-    /// The email entered by the user
     @State private var email: String = ""
-
-    /// The validation state of the email
     @State private var isValid: Bool = false
-
-    /// Error message if validation fails
     @State private var errorMessage: String?
-
-    /// Focus state for input field styling
     @State private var isFocused: Bool = false
-
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    /// Creates a new EmailInputField with comprehensive customization support (scope-based)
     init(
         label: String?,
         placeholder: String,
@@ -67,7 +43,6 @@ struct EmailInputField: View, LogReporter {
         self.onValidationChange = nil
     }
 
-    /// Creates a new EmailInputField with comprehensive customization support (callback-based)
     init(
         label: String?,
         placeholder: String,

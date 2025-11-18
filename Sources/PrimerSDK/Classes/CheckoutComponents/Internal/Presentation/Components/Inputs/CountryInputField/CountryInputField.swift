@@ -5,65 +5,41 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
-/// A SwiftUI component for country selection with validation
 @available(iOS 15.0, *)
 struct CountryInputField: View, LogReporter {
     // MARK: - Public Properties
 
-    /// The label text shown above the field
     let label: String?
-
-    /// Placeholder text for the input field
     let placeholder: String
-
-    /// The card form scope for state management
     let scope: any PrimerCardFormScope
-
-    /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
+
     // MARK: - Private Properties
 
-    /// The validation service resolved from DI environment
     @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
-
-    /// The country name displayed
     @State private var countryName: String = ""
-
-    /// The country code (ISO 2-letter)
     @State private var countryCode: String = ""
-
-    /// The validation state
     @State private var isValid: Bool = false
-
-    /// Error message if validation fails
     @State private var errorMessage: String?
-
-    /// Focus state for input field styling
     @State private var isFocused: Bool = false
-
-    /// Debounce navigation to prevent multiple rapid calls
     @State private var isNavigating: Bool = false
-
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Computed Properties
 
-    /// Text color for country display (placeholder vs selected)
     private var countryTextColor: Color {
         guard !countryName.isEmpty else {
             return styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens)
         }
-        return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)   
+        return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
     }
 
     // MARK: - Initialization
 
-    /// Creates a new CountryInputField with comprehensive customization support
     init(
         label: String?,
         placeholder: String,
