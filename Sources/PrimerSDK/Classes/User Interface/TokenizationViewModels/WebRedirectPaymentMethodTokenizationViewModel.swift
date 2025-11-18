@@ -216,7 +216,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     continuation.resume()
                 } else {
                     continuation.resume(throwing: handled(
-                        primerError: .invalidUrl(url: url.absoluteString)
+                        primerError: .failedToRedirect(url: url.schemeAndHost)
                     ))
                 }
             }
