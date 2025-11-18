@@ -1,3 +1,13 @@
+## 2.42.3 (2025-11-18)
+
+### Fix
+
+- Remove `canOpenURL` when handling deeplinks (#1402)
+
+### Refactor
+
+- Improve error type for deep link handling (#1404)
+
 ## 2.42.2 (2025-11-11)
 
 ### Fix
