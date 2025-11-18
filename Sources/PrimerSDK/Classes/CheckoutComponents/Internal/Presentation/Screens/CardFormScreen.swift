@@ -13,10 +13,12 @@ struct CardFormScreen: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var cardFormState: StructuredCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
     @State private var formConfiguration: CardFormConfiguration = .default
+    @FocusState private var focusedField: PrimerInputElementType?
 
     var body: some View {
         ScrollView {
@@ -48,6 +50,11 @@ struct CardFormScreen: View, LogReporter {
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     })
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.Common.backButton,
+                        label: CheckoutComponentsStrings.a11yBack,
+                        traits: [.isButton]
+                    ))
                 }
 
                 Spacer()
@@ -58,6 +65,11 @@ struct CardFormScreen: View, LogReporter {
                         scope.onCancel()
                     })
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.Common.closeButton,
+                        label: CheckoutComponentsStrings.a11yCancel,
+                        traits: [.isButton]
+                    ))
                 }
             }
 
@@ -78,15 +90,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var titleSection: some View {
-        let fontSize = tokens?.primerTypographyTitleXlargeSize ?? 24
-        let fontWeight: Font.Weight = .semibold
-
         return Text(CheckoutComponentsStrings.cardPaymentTitle)
-            .font(.system(size: fontSize, weight: fontWeight))
-            .tracking(tokens?.primerTypographyTitleXlargeLetterSpacing ?? -0.6)
-            .lineSpacing((tokens?.primerTypographyTitleXlargeLineHeight ?? 32) - fontSize)
+            .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityAddTraits(.isHeader)
     }
 
     @MainActor
@@ -173,6 +181,7 @@ struct CardFormScreen: View, LogReporter {
             Text(CheckoutComponentsStrings.selectNetworkTitle)
                 .font(PrimerFont.caption(tokens: tokens))
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                .accessibilityAddTraits(.isHeader)
 
             CardNetworkSelector(
                 availableNetworks: cardFormState.availableNetworks.map { $0.network },
@@ -241,7 +250,9 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonContent: some View {
-        HStack {
+        let isEnabled = cardFormState.isValid && !cardFormState.isLoading
+
+        return HStack {
             if cardFormState.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
@@ -256,6 +267,58 @@ struct CardFormScreen: View, LogReporter {
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(submitButtonBackground)
         .cornerRadius(PrimerRadius.small(tokens: tokens))
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.Common.submitButton,
+            label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonAccessibilityLabel,
+            hint: cardFormState.isLoading ? nil : (isEnabled ? CheckoutComponentsStrings.a11ySubmitButtonHint :
+                                                    CheckoutComponentsStrings.a11ySubmitButtonDisabled),
+            traits: [.isButton]
+        ))
+    }
+
+    /// Accessibility-friendly version of submit button text for VoiceOver
+    /// Uses period as decimal separator to avoid misreading "6,00€" as "600 euros"
+    private var submitButtonAccessibilityLabel: String {
+        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
+        if scope.cardFormUIOptions?.payButtonAddNewCard == true {
+            return CheckoutComponentsStrings.addCardButton
+        }
+
+        // Only show amount in checkout intent and when currency is set
+        guard PrimerInternal.shared.intent == .checkout,
+              let currency = AppState.current.currency else {
+            return CheckoutComponentsStrings.payButton
+        }
+
+        let baseAmount = AppState.current.amount ?? 0
+
+        // Check if there's a surcharge from the detected card network
+        if let surchargeAmountString = cardFormState.surchargeAmount,
+           !surchargeAmountString.isEmpty,
+           cardFormState.selectedNetwork != nil {
+
+            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
+            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
+
+            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
+            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
+
+            // Handle different decimal separators (European "," vs US ".")
+            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
+
+            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
+                // Convert to cents for calculation
+                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
+                let totalAmount = baseAmount + surchargeCents
+                // Use accessibility-friendly formatter
+                let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
+                return "Pay with \(accessibilityAmount)"
+            }
+        }
+
+        // No surcharge or parsing failed, use base amount with accessibility formatter
+        let accessibilityAmount = baseAmount.toAccessibilityCurrencyString(currency: currency)
+        return "Pay with \(accessibilityAmount)"
     }
 
     private var submitButtonText: String {
@@ -281,11 +344,8 @@ struct CardFormScreen: View, LogReporter {
             // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
             var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
 
-            // Remove common currency symbols
-            let currencySymbols = ["€", "$", "£", "¥", "₹", "¢"]
-            for symbol in currencySymbols {
-                cleanString = cleanString.replacingOccurrences(of: symbol, with: "")
-            }
+            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
+            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
 
             // Handle different decimal separators (European "," vs US ".")
             cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
@@ -318,14 +378,12 @@ struct CardFormScreen: View, LogReporter {
 
     private func observeState() {
         Task {
-            // Get initial form configuration
             await MainActor.run {
                 formConfiguration = scope.getFormConfiguration()
                 bridgeController?.invalidateContentSize()
             }
 
             for await state in scope.state {
-                // Get form configuration outside of MainActor.run
                 let updatedFormConfig = await MainActor.run {
                     scope.getFormConfiguration()
                 }
@@ -334,10 +392,8 @@ struct CardFormScreen: View, LogReporter {
                     self.cardFormState = state
                     self.refreshTrigger = UUID()
 
-                    // Update form configuration in case it changed
                     self.formConfiguration = updatedFormConfig
 
-                    // Update selected network if changed
                     if let selectedNetwork = state.selectedNetwork {
                         self.selectedCardNetwork = selectedNetwork.network
                     } else if state.availableNetworks.count == 1,
@@ -367,6 +423,7 @@ struct CardFormScreen: View, LogReporter {
         case .cardNumber:
             if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .cardNumber)
             } else {
                 CardNumberInputField(
                     label: fieldLabel ?? "Card Number",
@@ -375,11 +432,14 @@ struct CardFormScreen: View, LogReporter {
                     selectedNetwork: getSelectedCardNetwork(),
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .cardNumber)
+                .onSubmit { moveToNextField(from: .cardNumber) }
             }
 
         case .expiryDate:
             if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .expiryDate)
             } else {
                 ExpiryDateInputField(
                     label: fieldLabel ?? "",
@@ -387,11 +447,14 @@ struct CardFormScreen: View, LogReporter {
                     scope: scope,
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .expiryDate)
+                .onSubmit { moveToNextField(from: .expiryDate) }
             }
 
         case .cvv:
             if let customField = (scope as? DefaultCardFormScope)?.cvvField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .cvv)
             } else {
                 CVVInputField(
                     label: fieldLabel ?? "",
@@ -400,11 +463,14 @@ struct CardFormScreen: View, LogReporter {
                     cardNetwork: getCardNetworkForCvv(),
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .cvv)
+                .onSubmit { moveToNextField(from: .cvv) }
             }
 
         case .cardholderName:
             if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .cardholderName)
             } else {
                 CardholderNameInputField(
                     label: fieldLabel ?? "",
@@ -412,11 +478,14 @@ struct CardFormScreen: View, LogReporter {
                     scope: scope,
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .cardholderName)
+                .onSubmit { moveToNextField(from: .cardholderName) }
             }
 
         case .postalCode:
             if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .postalCode)
             } else {
                 PostalCodeInputField(
                     label: fieldLabel ?? "",
@@ -424,11 +493,14 @@ struct CardFormScreen: View, LogReporter {
                     scope: scope,
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .postalCode)
+                .onSubmit { moveToNextField(from: .postalCode) }
             }
 
         case .countryCode:
             if let customField = (scope as? DefaultCardFormScope)?.countryField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .countryCode)
             } else {
                 CountryInputField(
                     label: fieldLabel ?? "",
@@ -436,11 +508,14 @@ struct CardFormScreen: View, LogReporter {
                     scope: scope,
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .countryCode)
+                .onSubmit { moveToNextField(from: .countryCode) }
             }
 
         case .city:
             if let customField = (scope as? DefaultCardFormScope)?.cityField {
                 AnyView(customField(fieldLabel, defaultStyling))
+                    .focused($focusedField, equals: .city)
             } else {
                 CityInputField(
                     label: fieldLabel ?? "",
@@ -448,6 +523,8 @@ struct CardFormScreen: View, LogReporter {
                     scope: scope,
                     styling: defaultStyling
                 )
+                .focused($focusedField, equals: .city)
+                .onSubmit { moveToNextField(from: .city) }
             }
 
         case .state:
@@ -582,9 +659,80 @@ struct CardFormScreen: View, LogReporter {
         if let network = cardFormState.selectedNetwork {
             return network.network
         } else {
-            // Get card number from structured data
             let cardNumber: String? = nil
             return CardNetwork(cardNumber: cardNumber ?? "")
+        }
+    }
+
+    // MARK: - Focus Management
+
+    /// Moves keyboard focus to the next field in logical order
+    /// cardNumber → expiry → cvv → cardholderName → submit
+    private func moveToNextField(from currentField: PrimerInputElementType) {
+        let cardFields = formConfiguration.cardFields
+        let billingFields = formConfiguration.billingFields
+
+        if let currentIndex = cardFields.firstIndex(of: currentField) {
+            // Move to next card field if available
+            if currentIndex + 1 < cardFields.count {
+                focusedField = cardFields[currentIndex + 1]
+                return
+            }
+            // If last card field, move to first billing field if available
+            if !billingFields.isEmpty {
+                focusedField = billingFields.first
+                return
+            }
+            // Otherwise, clear focus (moves to submit button)
+            focusedField = nil
+            return
+        }
+
+        if let currentIndex = billingFields.firstIndex(of: currentField) {
+            // Move to next billing field if available
+            if currentIndex + 1 < billingFields.count {
+                focusedField = billingFields[currentIndex + 1]
+                return
+            }
+            // If last field, clear focus (moves to submit button)
+            focusedField = nil
+            return
+        }
+
+        // Default: clear focus
+        focusedField = nil
+    }
+
+    /// Moves focus to the first field with a validation error.
+    ///
+    /// **Important**: This should only be called in response to explicit user actions,
+    /// such as attempting to submit the form or requesting error navigation.
+    /// DO NOT call this automatically when errors appear during typing, as it creates
+    /// an accessibility trap preventing VoiceOver users from navigating freely.
+    ///
+    /// Valid use cases:
+    /// - User manually requests "jump to error" functionality
+    /// - After form submission is attempted (if we add validation-before-submit)
+    /// - Explicit accessibility navigation actions
+    ///
+    /// Invalid use cases:
+    /// - Automatic call when error count increases during typing (ACCESSIBILITY TRAP)
+    /// - Any automatic call during text input changes
+    private func moveFocusToFirstError() {
+        // Check for errors in card fields first
+        for field in formConfiguration.cardFields {
+            if cardFormState.hasError(for: field) {
+                focusedField = field
+                return
+            }
+        }
+
+        // Then check billing fields
+        for field in formConfiguration.billingFields {
+            if cardFormState.hasError(for: field) {
+                focusedField = field
+                return
+            }
         }
     }
 }
@@ -693,7 +841,6 @@ struct CardFormScreen_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
             .previewDisplayName("Co-badged Cards - Dark")
 
-            // Loading State
             CardFormScreen(scope: MockCardFormScope(
                 isLoading: true,
                 isValid: true,

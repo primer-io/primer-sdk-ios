@@ -7,6 +7,10 @@
 import SwiftUI
 
 /// Default implementation of PrimerSelectCountryScope with navigation integration
+///
+/// NOTE: Currently card-specific - holds reference to DefaultCardFormScope for billing address.
+/// If other payment methods require country selection in the future, this should be refactored
+/// to accept a generic payment method context instead of being tied to card payments.
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
@@ -52,64 +56,52 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
     // MARK: - Navigation Methods
 
     public func onCountrySelected(countryCode: String, countryName: String) {
-        // Country selected
-
-        // Update the card form scope with selected country
         if let cardFormScope {
             cardFormScope.updateCountryCode(countryCode)
-        } else {
-            // CardFormScope is nil, cannot update country code
         }
 
-        // For modal presentation, dismiss by restoring previous navigation state
         if let checkoutScope {
-            // Find the previous payment method state to return to
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
                    let singleMethod = checkoutScope.availablePaymentMethods.first {
-                    // Return to single payment method
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
-                    // Assume we came from a payment method form, find which one
-                    let cardMethodType = "PAYMENT_CARD"
+                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
+                    // TODO: If other payment methods need country selection in the future, store the
+                    // originating payment method type instead of hardcoding to cards
+                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }
             } else {
-                // Fallback to payment method selection
                 checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
             }
         }
     }
 
     public func onCancel() {
-        // Country selection cancelled
         if let checkoutScope {
-            // For modal presentation, dismiss by restoring previous navigation state (same logic as onCountrySelected)
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
                    let singleMethod = checkoutScope.availablePaymentMethods.first {
-                    // Return to single payment method
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
-                    // Assume we came from a payment method form, find which one
-                    let cardMethodType = "PAYMENT_CARD"
+                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
+                    // TODO: If other payment methods need country selection in the future, store the
+                    // originating payment method type instead of hardcoding to cards
+                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 }
             } else {
-                // Fallback to payment method selection
                 checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
             }
-        } else {
-            // For sheet presentation, the sheet will be dismissed by the onDismiss callback
         }
     }
 
     public func onSearch(query: String) {
-        // Country search
         internalState.searchQuery = query
         filterCountries(with: query)
     }
@@ -117,12 +109,9 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
     // MARK: - Private Methods
 
     private func loadAvailableCountries() {
-        // Load all available countries from CountryCode enum with localization and dial codes
         let allCountries = CountryCode.allCases.compactMap { countryCode in
             convertCountryCodeToPrimerCountry(countryCode)
-        }.sorted { $0.name < $1.name } // Sort alphabetically by localized name
-
-        // Loaded countries for selection
+        }.sorted { $0.name < $1.name }
 
         internalState.countries = allCountries
         internalState.filteredCountries = allCountries
@@ -134,12 +123,10 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         let localizedName = countryCode.country
         let flagEmoji = countryCode.flag
 
-        // Find matching dial code from phone number country codes
         let dialCode = CountryCode.phoneNumberCountryCodes
             .first { $0.code.uppercased() == code.uppercased() }?
             .dialCode
 
-        // Only include countries that have valid localized names
         guard localizedName != "N/A", !localizedName.isEmpty else {
             return nil
         }
@@ -156,14 +143,12 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         if query.isEmpty {
             internalState.filteredCountries = internalState.countries
         } else {
-            // Enhanced search with diacritic-insensitive and comprehensive filtering
             let normalizedQuery = query.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
 
             internalState.filteredCountries = internalState.countries.filter { country in
                 let normalizedCountryName = country.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
                 let normalizedCountryCode = country.code.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
 
-                // Search by country name, country code, or dial code
                 return normalizedCountryName.contains(normalizedQuery) ||
                     normalizedCountryCode.contains(normalizedQuery) ||
                     (country.dialCode?.contains(query) ?? false)

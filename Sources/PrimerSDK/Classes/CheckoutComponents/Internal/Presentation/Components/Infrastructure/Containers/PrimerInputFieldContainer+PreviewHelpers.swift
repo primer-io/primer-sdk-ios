@@ -9,9 +9,9 @@ import SwiftUI
 #if DEBUG
 @available(iOS 15.0, *)
 struct PreviewContainer: View {
-    private let label: String?
-    private let text: String
-    private let errorMessage: String?
+    let label: String?
+    let text: String
+    let errorMessage: String?
 
     @State private var currentText: String
     @State private var isValid = true
@@ -22,8 +22,8 @@ struct PreviewContainer: View {
         self.label = label
         self.text = text
         self.errorMessage = errorMessage
-        self._currentText = State(wrappedValue: text)
-        self._currentErrorMessage = State(wrappedValue: errorMessage)
+        self._currentText = State(initialValue: text)
+        self._currentErrorMessage = State(initialValue: errorMessage)
     }
 
     var body: some View {
@@ -45,8 +45,8 @@ struct PreviewContainer: View {
 
 @available(iOS 15.0, *)
 struct PreviewContainerWithRightComponent: View {
-    private let label: String?
-    private let text: String
+    let label: String?
+    let text: String
 
     @State private var currentText: String
     @State private var isValid = true
@@ -57,7 +57,7 @@ struct PreviewContainerWithRightComponent: View {
     init(label: String?, text: String) {
         self.label = label
         self.text = text
-        self._currentText = State(wrappedValue: text)
+        self._currentText = State(initialValue: text)
     }
 
     var body: some View {

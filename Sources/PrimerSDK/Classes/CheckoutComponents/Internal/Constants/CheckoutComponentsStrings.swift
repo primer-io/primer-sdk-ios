@@ -698,4 +698,296 @@ struct CheckoutComponentsStrings {
         value: "Retail outlet selection not yet implemented",
         comment: "Message for retail outlet feature not yet available"
     )
+
+    // MARK: - ⚠️ ACCESSIBILITY STRINGS (PHASE 3 - TO BE EXPORTED) ⚠️
+    // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
+    // These strings must be added to all 42 .lproj files for WCAG 2.1 AA compliance
+
+    // MARK: Card Form Accessibility Labels
+
+    static let a11yCardNumberLabel = NSLocalizedString(
+        "accessibility.cardForm.cardNumber.label",
+        bundle: Bundle.primerResources,
+        value: "Card number, required",
+        comment: "VoiceOver label for card number field (includes required indicator)"
+    )
+
+    static let a11yExpiryLabel = NSLocalizedString(
+        "accessibility.cardForm.expiry.label",
+        bundle: Bundle.primerResources,
+        value: "Expiry date, required",
+        comment: "VoiceOver label for expiry date field (includes required indicator)"
+    )
+
+    static let a11yCVCLabel = NSLocalizedString(
+        "accessibility.cardForm.cvc.label",
+        bundle: Bundle.primerResources,
+        value: "Security code, required",
+        comment: "VoiceOver label for CVC/CVV field (includes required indicator)"
+    )
+
+    static let a11yCardholderNameLabel = NSLocalizedString(
+        "accessibility.cardForm.cardholderName.label",
+        bundle: Bundle.primerResources,
+        value: "Cardholder name",
+        comment: "VoiceOver label for cardholder name field"
+    )
+
+    // MARK: Card Form Accessibility Hints
+
+    static let a11yCardNumberHint = NSLocalizedString(
+        "accessibility.cardForm.cardNumber.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter your 16-digit card number",
+        comment: "VoiceOver hint for card number field"
+    )
+
+    static let a11yExpiryHint = NSLocalizedString(
+        "accessibility.cardForm.expiry.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter expiry date in MM/YY format",
+        comment: "VoiceOver hint for expiry date field"
+    )
+
+    static let a11yCVCHint = NSLocalizedString(
+        "accessibility.cardForm.cvc.hint",
+        bundle: Bundle.primerResources,
+        value: "3 or 4 digit code on back of card",
+        comment: "VoiceOver hint for CVC/CVV field"
+    )
+
+    static let a11yCardholderNameHint = NSLocalizedString(
+        "accessibility.cardForm.cardholderName.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter name as shown on card",
+        comment: "VoiceOver hint for cardholder name field"
+    )
+
+    // MARK: Billing Address Accessibility Hints
+
+    static let a11yBillingAddressCityHint = NSLocalizedString(
+        "accessibility.cardForm.billingAddress.city.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter city name",
+        comment: "VoiceOver hint for billing address city field"
+    )
+
+    static let a11yBillingAddressPostalCodeHint = NSLocalizedString(
+        "accessibility.cardForm.billingAddress.postalCode.hint",
+        bundle: Bundle.primerResources,
+        value: "Enter postal or ZIP code",
+        comment: "VoiceOver hint for billing address postal code field"
+    )
+
+    // MARK: Card Form Accessibility Error Messages
+
+    static let a11yCardNumberErrorInvalid = NSLocalizedString(
+        "accessibility.cardForm.cardNumber.error.invalid",
+        bundle: Bundle.primerResources,
+        value: "Invalid card number. Please check and try again.",
+        comment: "VoiceOver error announcement for invalid card number"
+    )
+
+    static let a11yCardNumberErrorEmpty = NSLocalizedString(
+        "accessibility.cardForm.cardNumber.error.empty",
+        bundle: Bundle.primerResources,
+        value: "Card number is required.",
+        comment: "VoiceOver error announcement for empty card number"
+    )
+
+    static let a11yExpiryErrorInvalid = NSLocalizedString(
+        "accessibility.cardForm.expiry.error.invalid",
+        bundle: Bundle.primerResources,
+        value: "Invalid expiry date.",
+        comment: "VoiceOver error announcement for invalid expiry"
+    )
+
+    static let a11yCVCErrorInvalid = NSLocalizedString(
+        "accessibility.cardForm.cvc.error.invalid",
+        bundle: Bundle.primerResources,
+        value: "Invalid security code.",
+        comment: "VoiceOver error announcement for invalid CVC"
+    )
+
+    // MARK: Submit Button Accessibility
+
+    static let a11ySubmitButtonLabel = NSLocalizedString(
+        "accessibility.cardForm.submit.label",
+        bundle: Bundle.primerResources,
+        value: "Submit payment",
+        comment: "VoiceOver label for submit payment button"
+    )
+
+    static let a11ySubmitButtonHint = NSLocalizedString(
+        "accessibility.cardForm.submit.hint",
+        bundle: Bundle.primerResources,
+        value: "Double-tap to submit payment",
+        comment: "VoiceOver hint for submit payment button"
+    )
+
+    static let a11ySubmitButtonLoading = NSLocalizedString(
+        "accessibility.cardForm.submit.loading",
+        bundle: Bundle.primerResources,
+        value: "Processing payment, please wait",
+        comment: "VoiceOver announcement during payment processing"
+    )
+
+    static let a11ySubmitButtonDisabled = NSLocalizedString(
+        "accessibility.cardForm.submit.disabled",
+        bundle: Bundle.primerResources,
+        value: "Button disabled. Complete all required fields to enable payment",
+        comment: "VoiceOver hint when submit button is disabled due to validation errors"
+    )
+
+    // MARK: Payment Selection Accessibility
+
+    static let a11ySavedCardMasked = NSLocalizedString(
+        "accessibility.paymentSelection.card.masked",
+        bundle: Bundle.primerResources,
+        value: "card ending in masked digits",
+        comment: "VoiceOver label for saved card with masked last 4 digits (privacy protection)"
+    )
+
+    static func a11ySavedCardLabel(cardType: String, expiry: String) -> String {
+        let format = NSLocalizedString(
+            "accessibility.paymentSelection.card.full",
+            bundle: Bundle.primerResources,
+            value: "%@ card ending in masked digits, expires %@",
+            comment: "VoiceOver full saved card announcement with card type and expiry"
+        )
+        return String(format: format, cardType, expiry)
+    }
+
+    // MARK: Custom Actions for VoiceOver Rotor
+
+    static let a11yActionEdit = NSLocalizedString(
+        "accessibility.action.edit",
+        bundle: Bundle.primerResources,
+        value: "Edit card details",
+        comment: "VoiceOver custom action to edit saved card"
+    )
+
+    static let a11yActionDelete = NSLocalizedString(
+        "accessibility.action.delete",
+        bundle: Bundle.primerResources,
+        value: "Delete card",
+        comment: "VoiceOver custom action to delete saved card"
+    )
+
+    static let a11yActionSetDefault = NSLocalizedString(
+        "accessibility.action.setDefault",
+        bundle: Bundle.primerResources,
+        value: "Set as default payment method",
+        comment: "VoiceOver custom action to set default payment method"
+    )
+
+    // MARK: Common Accessibility Strings
+
+    static let a11yRequired = NSLocalizedString(
+        "accessibility.common.required",
+        bundle: Bundle.primerResources,
+        value: "required",
+        comment: "VoiceOver indicator that field is required"
+    )
+
+    static let a11yOptional = NSLocalizedString(
+        "accessibility.common.optional",
+        bundle: Bundle.primerResources,
+        value: "optional",
+        comment: "VoiceOver indicator that field is optional"
+    )
+
+    static let a11yLoading = NSLocalizedString(
+        "accessibility.common.loading",
+        bundle: Bundle.primerResources,
+        value: "Loading, please wait",
+        comment: "VoiceOver loading announcement"
+    )
+
+    static let a11yClose = NSLocalizedString(
+        "accessibility.common.close",
+        bundle: Bundle.primerResources,
+        value: "Close",
+        comment: "VoiceOver label for close button"
+    )
+
+    static let a11yCancel = NSLocalizedString(
+        "accessibility.common.cancel",
+        bundle: Bundle.primerResources,
+        value: "Cancel",
+        comment: "VoiceOver label for cancel button"
+    )
+
+    static let a11yBack = NSLocalizedString(
+        "accessibility.common.back",
+        bundle: Bundle.primerResources,
+        value: "Go back",
+        comment: "VoiceOver label for back button"
+    )
+
+    static let a11yDismiss = NSLocalizedString(
+        "accessibility.common.dismiss",
+        bundle: Bundle.primerResources,
+        value: "Dismiss",
+        comment: "VoiceOver label for dismiss button"
+    )
+
+    // MARK: Screen Change Announcements
+
+    static func a11yScreenPaymentMethod(_ paymentMethodName: String) -> String {
+        let format = NSLocalizedString(
+            "accessibility.screen.paymentMethod",
+            bundle: Bundle.primerResources,
+            value: "%@ payment method",
+            comment: "VoiceOver screen change announcement for payment method screens. Parameter is the payment method name (e.g., 'PayPal', 'Apple Pay')"
+        )
+        return String(format: format, paymentMethodName)
+    }
+
+    static let a11yScreenSuccess = NSLocalizedString(
+        "accessibility.screen.success",
+        bundle: Bundle.primerResources,
+        value: "Payment successful",
+        comment: "VoiceOver screen change announcement for success screen"
+    )
+
+    static let a11yScreenError = NSLocalizedString(
+        "accessibility.screen.error",
+        bundle: Bundle.primerResources,
+        value: "Payment error occurred",
+        comment: "VoiceOver screen change announcement for error screen"
+    )
+
+    static let a11yScreenCountrySelection = NSLocalizedString(
+        "accessibility.screen.countrySelection",
+        bundle: Bundle.primerResources,
+        value: "Select country",
+        comment: "VoiceOver screen change announcement for country selection"
+    )
+
+    static let a11yScreenLoadingPaymentMethods = NSLocalizedString(
+        "accessibility.screen.loadingPaymentMethods",
+        bundle: Bundle.primerResources,
+        value: "Loading payment methods",
+        comment: "VoiceOver screen change announcement for loading payment methods"
+    )
+
+    // MARK: Error Announcements
+
+    static func a11yMultipleErrors(_ count: Int) -> String {
+        let format = NSLocalizedString(
+            "accessibility.error.multipleErrors",
+            bundle: Bundle.primerResources,
+            value: "%d errors found",
+            comment: "VoiceOver announcement for multiple validation errors"
+        )
+        return String(format: format, count)
+    }
+
+    static let a11yGenericError = NSLocalizedString(
+        "accessibility.error.generic",
+        bundle: Bundle.primerResources,
+        value: "An error occurred. Please try again.",
+        comment: "VoiceOver generic error announcement"
+    )
 }

@@ -9,7 +9,7 @@ import SwiftUI
 /// Data structure for grouping payment methods by surcharge status
 private struct PaymentMethodGroup {
     let group: String
-    let methods: [PrimerComposablePaymentMethod]
+    let methods: [CheckoutPaymentMethod]
 }
 
 /// Default payment method selection screen for CheckoutComponents
@@ -19,6 +19,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
 
     var body: some View {
@@ -27,7 +28,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     private var mainContent: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
             headerSection
             contentContainer
         }
@@ -49,7 +50,6 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     private var paymentAmountHeader: some View {
         HStack {
-            // Get payment amount from app state or default
             let amount = AppState.current.amount ?? 9900 // Default to $99.00 if not available
             let currency = AppState.current.currency ?? Currency(code: "USD", decimalDigits: 2)
             let formattedAmount = amount.toCurrencyString(currency: currency)
@@ -57,6 +57,7 @@ struct PaymentMethodSelectionScreen: View {
             Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
                 .font(PrimerFont.titleXLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                .accessibilityAddTraits(.isStaticText)
 
             Spacer()
 
@@ -64,6 +65,11 @@ struct PaymentMethodSelectionScreen: View {
             if scope.dismissalMechanism.contains(.closeButton) {
                 Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.Common.closeButton,
+                        label: CheckoutComponentsStrings.a11yCancel,
+                        traits: [.isButton]
+                    ))
             }
         }
     }
@@ -82,6 +88,7 @@ struct PaymentMethodSelectionScreen: View {
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.bottom, PrimerSpacing.small(tokens: tokens))
+            .accessibilityAddTraits(.isHeader)
     }
 
     @MainActor
@@ -110,10 +117,12 @@ struct PaymentMethodSelectionScreen: View {
                 Image(systemName: "creditcard.and.123")
                     .font(PrimerFont.largeIcon(tokens: tokens))
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibilityHidden(true)
 
                 Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
                     .font(PrimerFont.body(tokens: tokens))
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibilityAddTraits(.isStaticText)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.top, 100)
@@ -215,6 +224,7 @@ struct PaymentMethodSelectionScreen: View {
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     .padding(.horizontal, PrimerSpacing.small(tokens: tokens))
+                    .accessibilityAddTraits(.isHeader)
                 }
             }
 
@@ -222,7 +232,7 @@ struct PaymentMethodSelectionScreen: View {
             VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                 ForEach(group.methods, id: \.id) { method in
                     modernPaymentMethodCard(method)
-                        .frame(height: PrimerComponentHeight.paymentMethodCard)
+                        .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
                 }
             }
             .padding(PrimerSpacing.medium(tokens: tokens)) // Padding inside gray container
@@ -249,7 +259,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     @ViewBuilder
-    private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
+    private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
         if let customPaymentMethodItem = scope.paymentMethodItem {
             customPaymentMethodItem(method)
                 .onTapGesture {
@@ -275,6 +285,11 @@ struct PaymentMethodSelectionScreen: View {
                 .font(PrimerFont.caption(tokens: tokens))
                 .foregroundColor(CheckoutColors.borderError(tokens: tokens))
                 .padding(PrimerSpacing.large(tokens: tokens))
+                .accessibility(config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.Error.messageContainer,
+                    label: error,
+                    traits: [.isStaticText]
+                ))
         }
     }
 
@@ -296,7 +311,7 @@ struct PaymentMethodSelectionScreen: View {
 /// Modern payment method card view matching Image #2 design
 @available(iOS 15.0, *)
 private struct ModernPaymentMethodCardView: View {
-    let method: PrimerComposablePaymentMethod
+    let method: CheckoutPaymentMethod
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -306,12 +321,28 @@ private struct ModernPaymentMethodCardView: View {
             contentView
         }
         .buttonStyle(ModernCardButtonStyle())
+        .accessibility(config: accessibilityConfiguration)
+    }
+
+    /// Accessibility configuration for payment method card
+    private var accessibilityConfiguration: AccessibilityConfiguration {
+        // Use type-based identifier (id is always set to type for payment methods)
+        // For saved/vaulted cards, a separate identifier pattern with last 4 digits is used
+        AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
+                method.type.lowercased(),
+                uniqueId: nil
+            ),
+            label: method.name,
+            traits: [.isButton]
+        )
     }
 
     private var contentView: some View {
         HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             paymentMethodLogo
             methodNameAndSurcharge
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
@@ -326,6 +357,7 @@ private struct ModernPaymentMethodCardView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: PrimerComponentWidth.paymentMethodIcon, height: PrimerSize.large(tokens: tokens))
+                .accessibilityHidden(true)
         } else {
             paymentMethodLogoPlaceholder
         }
@@ -341,12 +373,15 @@ private struct ModernPaymentMethodCardView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: PrimerComponentWidth.paymentMethodIcon, height: PrimerSize.large(tokens: tokens))
+            .accessibilityHidden(true)
     }
 
     private var methodNameAndSurcharge: some View {
         return Text(method.name)
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(textColorForPaymentMethod)
+            .lineLimit(nil)
+            .multilineTextAlignment(.leading)
     }
 
     private var backgroundView: some View {

@@ -13,7 +13,7 @@ extension PrimerInputFieldContainer {
         Text(label)
             .font(labelFont)
             .foregroundColor(labelForegroundColor)
-            .frame(height: PrimerComponentHeight.label)
+            .frame(minHeight: PrimerComponentHeight.label)
     }
 }
 
@@ -74,5 +74,31 @@ extension PrimerInputFieldContainer {
             .opacity(hasError ? 1.0 : 0.0)
             .padding(.top, errorMessageTopPadding)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)
+            .accessibility(config: AccessibilityConfiguration(
+                identifier: AccessibilityIdentifiers.Error.messageContainer,
+                label: errorMessage,
+                traits: [.isStaticText]
+            ))
+            .onAppear {
+                // Announce error to VoiceOver when error appears
+                if hasError {
+                    announceError(errorMessage)
+                }
+            }
+            .onChange(of: errorMessage) { newError in
+                // Announce error when it changes
+                if hasError {
+                    announceError(newError)
+                }
+            }
+    }
+
+    private func announceError(_ message: String) {
+        Task { @MainActor in
+            if let container = DIContainer.currentSync,
+               let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self) {
+                announcementService.announceError(message)
+            }
+        }
     }
 }

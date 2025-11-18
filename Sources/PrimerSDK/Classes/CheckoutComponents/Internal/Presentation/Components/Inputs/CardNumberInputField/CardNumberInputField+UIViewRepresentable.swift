@@ -5,11 +5,10 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 @available(iOS 15.0, *)
 struct CardNumberTextField: UIViewRepresentable, LogReporter {
-    // MARK: - Properties
-
     @Binding var cardNumber: String
     @Binding var isValid: Bool
     @Binding var cardNetwork: CardNetwork
@@ -25,6 +24,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .numberPad,
@@ -33,6 +33,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -99,6 +100,10 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {

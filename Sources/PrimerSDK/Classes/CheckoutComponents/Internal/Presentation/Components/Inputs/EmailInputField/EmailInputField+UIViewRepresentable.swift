@@ -5,17 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 /// UIViewRepresentable wrapper for email input with focus-based validation
 @available(iOS 15.0, *)
-struct EmailTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct EmailTextField: UIViewRepresentable, LogReporter {
     @Binding var email: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
@@ -27,6 +25,7 @@ struct EmailTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .email,
@@ -35,6 +34,7 @@ struct EmailTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -57,14 +57,12 @@ struct EmailTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
         @Binding private var email: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
         private let scope: (any PrimerCardFormScope)?
         private let onEmailChange: ((String) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
@@ -91,6 +89,10 @@ struct EmailTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -116,33 +118,48 @@ struct EmailTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = email
-            email = currentText.replacingCharacters(in: range, with: string)
-            if let scope {
-                scope.updateEmail(email)
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            email = newText
+            if let scope = scope {
+                scope.updateEmail(newText)
             } else {
-                onEmailChange?(email)
+                onEmailChange?(newText)
             }
-            isValid = !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && email.contains("@")
-            scope?.updateValidationStateIfNeeded(for: .email, isValid: isValid)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
+
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateEmailValidationState(isValid)
+            }
+
             return false
         }
 
         private func validateEmail() {
             let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Empty field handling - don't show errors for empty fields
             if trimmedEmail.isEmpty {
-                isValid = false
-                errorMessage = nil
+                isValid = false // Email is required
+                errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(false)
                 return
             }
+
             let result = validationService.validate(
                 input: email,
                 with: EmailRule()
             )
+
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-            if let scope {
+
+            if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(.email)
                 } else if let message = result.errorMessage {

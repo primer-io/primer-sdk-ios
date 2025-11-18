@@ -5,17 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 /// UIViewRepresentable wrapper for state input with focus-based validation
 @available(iOS 15.0, *)
-struct StateTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct StateTextField: UIViewRepresentable, LogReporter {
     @Binding var state: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
@@ -25,6 +23,7 @@ struct StateTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .standard,
@@ -33,6 +32,7 @@ struct StateTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -53,14 +53,12 @@ struct StateTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
         @Binding private var state: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
         private let scope: any PrimerCardFormScope
 
         init(
@@ -81,6 +79,10 @@ struct StateTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -106,33 +108,54 @@ struct StateTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = state
-            state = currentText.replacingCharacters(in: range, with: string)
-            scope.updateState(state)
-            isValid = !state.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            scope.updateValidationStateIfNeeded(for: .state, isValid: isValid)
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            state = newText
+            scope.updateState(newText)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateStateValidationState(isValid)
+            }
+
             return false
         }
 
         private func validateState() {
             let trimmedState = state.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Empty field handling - don't show errors for empty fields
             if trimmedState.isEmpty {
-                isValid = false
-                errorMessage = nil
-                scope.updateValidationStateIfNeeded(for: .state, isValid: false)
+                isValid = false // State is required
+                errorMessage = nil // Never show error message for empty fields
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(false)
+                }
                 return
             }
+
             let result = validationService.validate(
                 input: state,
                 with: StateRule()
             )
+
             isValid = result.isValid
             errorMessage = result.errorMessage
+
             if result.isValid {
                 scope.clearFieldError(.state)
-                scope.updateValidationStateIfNeeded(for: .state, isValid: true)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(true)
+                }
             } else if let message = result.errorMessage {
                 scope.setFieldError(.state, message: message, errorCode: result.errorCode)
-                scope.updateValidationStateIfNeeded(for: .state, isValid: false)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateStateValidationState(false)
+                }
             }
         }
     }

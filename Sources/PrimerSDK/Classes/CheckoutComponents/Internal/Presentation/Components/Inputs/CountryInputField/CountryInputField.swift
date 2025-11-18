@@ -5,10 +5,11 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 @available(iOS 15.0, *)
 struct CountryInputField: View, LogReporter {
-    // MARK: - Properties
+    // MARK: - Public Properties
 
     let label: String?
     let placeholder: String
@@ -18,6 +19,7 @@ struct CountryInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var countryName: String = ""
     @State private var countryCode: String = ""
@@ -25,8 +27,16 @@ struct CountryInputField: View, LogReporter {
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
     @State private var isNavigating: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Computed Properties
+
+    private var countryTextColor: Color {
+        guard !countryName.isEmpty else {
+            return styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens)
+        }
+        return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
+    }
 
     // MARK: - Initialization
 
@@ -55,14 +65,35 @@ struct CountryInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                CountrySelectionButton(
-                    countryName: countryName,
-                    placeholder: placeholder,
-                    styling: styling,
-                    tokens: tokens,
-                    scope: scope,
-                    isNavigating: $isNavigating
-                )
+                Button(action: {
+                    guard !isNavigating else {
+                        return
+                    }
+
+                    isNavigating = true
+
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
+
+                    scope.navigateToCountrySelection()
+
+                    // Reset after shorter timeout - 1 second should be enough
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.isNavigating = false
+                    }
+                }) {
+                    HStack(spacing: 0) {
+                        Text(countryName.isEmpty ? placeholder : countryName)
+                            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                            .foregroundColor(countryTextColor)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(height: PrimerSize.xxlarge(tokens: tokens))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(isNavigating)
             },
             rightComponent: {
                 Image(systemName: "chevron.down")
@@ -79,12 +110,12 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    // MARK: - Private Methods
-
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for CountryInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CountryInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -92,40 +123,60 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
+    /// Updates the field from external state changes using the property
     @MainActor
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountry)
     }
 
+    /// Updates the field from external state changes using the provided country
     @MainActor
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
-        if let country, !country.name.isEmpty, !country.code.isEmpty {
+        // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
+        if let country = country, !country.name.isEmpty, !country.code.isEmpty {
             countryName = country.name
             countryCode = country.code
             validateCountry()
         }
     }
 
+    /// Updates the selected country
+    @MainActor
+    func updateCountry(name: String, code: String) {
+        countryName = name
+        countryCode = code
+        scope.updateCountryCode(code)
+        validateCountry()
+    }
+
     @MainActor
     private func validateCountry() {
-        guard let validationService else { return }
+        guard let validationService = validationService else { return }
+
         let result = validationService.validate(
             input: countryCode,
             with: CountryCodeRule()
         )
+
         isValid = result.isValid
         errorMessage = result.errorMessage
+
         if result.isValid {
             scope.clearFieldError(.countryCode)
-            scope.updateValidationStateIfNeeded(for: .countryCode, isValid: true)
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateCountryCodeValidationState(true)
+            }
         } else if let message = result.errorMessage {
             scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
-            scope.updateValidationStateIfNeeded(for: .countryCode, isValid: false)
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateCountryCodeValidationState(false)
+            }
         }
     }
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CountryInputField(

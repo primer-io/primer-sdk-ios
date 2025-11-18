@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct NameInputField: View, LogReporter {
-    // MARK: - Properties
+    // MARK: - Public Properties
 
     let label: String?
     let placeholder: String
@@ -20,12 +20,12 @@ struct NameInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var name: String = ""
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
@@ -42,8 +42,8 @@ struct NameInputField: View, LogReporter {
         self.inputType = inputType
         self.scope = scope
         self.styling = styling
-        onNameChange = nil
-        onValidationChange = nil
+        self.onNameChange = nil
+        self.onValidationChange = nil
     }
 
     init(
@@ -57,7 +57,7 @@ struct NameInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.inputType = inputType
-        scope = nil
+        self.scope = nil
         self.styling = styling
         self.onNameChange = onNameChange
         self.onValidationChange = onValidationChange
@@ -74,7 +74,7 @@ struct NameInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService {
+            if let validationService = validationService {
                 NameTextField(
                     name: $name,
                     isValid: $isValid,
@@ -102,12 +102,12 @@ struct NameInputField: View, LogReporter {
         }
     }
 
-    // MARK: - Private Methods
-
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for NameInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for NameInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -117,6 +117,7 @@ struct NameInputField: View, LogReporter {
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     NameInputField(

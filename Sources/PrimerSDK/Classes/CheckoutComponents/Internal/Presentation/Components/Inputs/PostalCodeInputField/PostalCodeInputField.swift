@@ -5,10 +5,11 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 @available(iOS 15.0, *)
 struct PostalCodeInputField: View, LogReporter {
-    // MARK: - Properties
+    // MARK: - Public Properties
 
     let label: String?
     let placeholder: String
@@ -18,16 +19,21 @@ struct PostalCodeInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var postalCode: String = ""
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Computed Properties
+
     private var keyboardTypeForCountry: UIKeyboardType {
-        countryCode == "US" ? .numberPad : .default
+        if countryCode == "US" {
+            return .numberPad
+        }
+        return .default
     }
 
     // MARK: - Initialization
@@ -57,7 +63,7 @@ struct PostalCodeInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService {
+            if let validationService = validationService {
                 PostalCodeTextField(
                     postalCode: $postalCode,
                     isValid: $isValid,
@@ -79,17 +85,24 @@ struct PostalCodeInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.billingAddressField("postal_code"),
+            label: label ?? "Postal code",
+            hint: CheckoutComponentsStrings.a11yBillingAddressPostalCodeHint,
+            value: errorMessage,
+            traits: []
+        ))
         .onAppear {
             setupValidationService()
         }
     }
 
-    // MARK: - Private Methods
-
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for PostalCodeInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for PostalCodeInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -99,6 +112,7 @@ struct PostalCodeInputField: View, LogReporter {
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     PostalCodeInputField(

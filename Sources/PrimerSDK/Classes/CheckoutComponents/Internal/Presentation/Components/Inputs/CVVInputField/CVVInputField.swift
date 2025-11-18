@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CVVInputField: View, LogReporter {
-    // MARK: - Properties
+    // MARK: - Public Properties
 
     let label: String?
     let placeholder: String
@@ -18,12 +18,12 @@ struct CVVInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var cvv: String = ""
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
@@ -53,7 +53,7 @@ struct CVVInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService {
+            if let validationService = validationService {
                 CVVTextField(
                     cvv: $cvv,
                     isValid: $isValid,
@@ -73,15 +73,24 @@ struct CVVInputField: View, LogReporter {
                     .disabled(true)
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.cvcField,
+            label: CheckoutComponentsStrings.a11yCVCLabel,
+            hint: CheckoutComponentsStrings.a11yCVCHint,
+            value: errorMessage,
+            traits: []
+        ))
         .onAppear {
             setupValidationService()
         }
     }
 
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for CVVInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CVVInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -91,6 +100,7 @@ struct CVVInputField: View, LogReporter {
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CVVInputField(

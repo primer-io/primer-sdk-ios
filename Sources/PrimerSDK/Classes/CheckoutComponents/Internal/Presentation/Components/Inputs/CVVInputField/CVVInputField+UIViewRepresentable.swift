@@ -5,17 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 /// UIViewRepresentable wrapper for CVV text field
 @available(iOS 15.0, *)
-struct CVVTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding var cvv: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let cardNetwork: CardNetwork
     let styling: PrimerFieldStyling?
@@ -26,6 +24,7 @@ struct CVVTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .cvv,
@@ -34,6 +33,7 @@ struct CVVTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -55,15 +55,13 @@ struct CVVTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
+        private let cardNetwork: CardNetwork
         @Binding private var cvv: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
-        private let cardNetwork: CardNetwork
         private let scope: any PrimerCardFormScope
 
         private var expectedCVVLength: Int {
@@ -90,6 +88,10 @@ struct CVVTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -109,46 +111,66 @@ struct CVVTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cvv
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            // Only allow numbers
             if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
-            let replacementLength = range.length
-            let resultingLength = currentText.count - replacementLength + string.count
-            if resultingLength > expectedCVVLength {
+
+            if newText.count > expectedCVVLength {
                 return false
             }
-            cvv = currentText.replacingCharacters(in: range, with: string)
-            scope.updateCvv(cvv)
-            if cvv.count == expectedCVVLength {
+
+            cvv = newText
+            scope.updateCvv(newText)
+
+            if newText.count == expectedCVVLength {
                 validateCVV()
             } else {
                 isValid = false
                 errorMessage = nil
-                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
             }
+
             return false
         }
 
         private func validateCVV() {
+            // Empty field handling - don't show errors for empty fields
             let trimmedCVV = cvv.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedCVV.isEmpty {
-                isValid = false
-                errorMessage = nil
-                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
+                isValid = false // CVV is required
+                errorMessage = nil // Never show error message for empty fields
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
                 return
             }
+
+            // Create CVVRule with the current card network for non-empty fields
             let cvvRule = CVVRule(cardNetwork: cardNetwork)
             let result = cvvRule.validate(cvv)
+
             isValid = result.isValid
             errorMessage = result.errorMessage
+
             if result.isValid {
                 scope.clearFieldError(.cvv)
-                scope.updateValidationStateIfNeeded(for: .cvv, isValid: true)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(true)
+                }
             } else {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
                 }
-                scope.updateValidationStateIfNeeded(for: .cvv, isValid: false)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCvvValidationState(false)
+                }
             }
         }
     }

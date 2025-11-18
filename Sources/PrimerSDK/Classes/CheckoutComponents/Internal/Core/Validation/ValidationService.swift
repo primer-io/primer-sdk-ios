@@ -122,11 +122,11 @@ final class ValidationResultCache {
 /// Default implementation of the ValidationService
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
-    
+
     private let rulesFactory: RulesFactory
-    
+
     // MARK: - Initialization
-    
+
     init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
     }

@@ -5,17 +5,15 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
+import UIKit
 
 /// UIViewRepresentable wrapper for name input with focus-based validation
 @available(iOS 15.0, *)
-struct NameTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct NameTextField: UIViewRepresentable, LogReporter {
     @Binding var name: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let inputType: PrimerInputElementType
     let styling: PrimerFieldStyling?
@@ -28,6 +26,7 @@ struct NameTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .standard,
@@ -36,6 +35,7 @@ struct NameTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -59,14 +59,12 @@ struct NameTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
         @Binding private var name: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
         private let inputType: PrimerInputElementType
         private let scope: (any PrimerCardFormScope)?
         private let onNameChange: ((String) -> Void)?
@@ -96,6 +94,10 @@ struct NameTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -121,56 +123,111 @@ struct NameTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = name
-            name = currentText.replacingCharacters(in: range, with: string)
-            if let scope {
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            name = newText
+
+            if let scope = scope {
                 switch inputType {
                 case .firstName:
-                    scope.updateFirstName(name)
+                    scope.updateFirstName(newText)
                 case .lastName:
-                    scope.updateLastName(name)
+                    scope.updateLastName(newText)
                 case .phoneNumber:
-                    scope.updatePhoneNumber(name)
+                    scope.updatePhoneNumber(newText)
                 default:
                     break
                 }
             } else {
-                onNameChange?(name)
+                onNameChange?(newText)
             }
-            isValid = !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
+            if let scope = scope as? DefaultCardFormScope {
+                switch inputType {
+                case .firstName:
+                    scope.updateFirstNameValidationState(isValid)
+                case .lastName:
+                    scope.updateLastNameValidationState(isValid)
+                default:
+                    break
+                }
+            }
+
             return false
         }
 
         private func validateName() {
             let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
-                isValid = false
-                errorMessage = nil
+                isValid = false // Name fields are required
+                errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(false)
-                scope?.updateValidationStateIfNeeded(for: inputType, isValid: false)
+                if let scope = scope as? DefaultCardFormScope {
+                    switch inputType {
+                    case .firstName:
+                        scope.updateFirstNameValidationState(false)
+                    case .lastName:
+                        scope.updateLastNameValidationState(false)
+                    default:
+                        break
+                    }
+                }
                 return
             }
 
-            let elementType: ValidationError.InputElementType = switch inputType {
-            case .firstName: .firstName
-            case .lastName: .lastName
-            default: .firstName
-            }
+            // Convert PrimerInputElementType to ValidationError.InputElementType
+            let elementType: ValidationError.InputElementType = {
+                switch inputType {
+                case .firstName:
+                    return .firstName
+                case .lastName:
+                    return .lastName
+                default:
+                    return .firstName
+                }
+            }()
 
             let result = validationService.validate(
                 input: name,
                 with: NameRule(inputElementType: elementType)
             )
+
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-            if let scope {
+
+            if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .firstName:
+                            scope.updateFirstNameValidationState(true)
+                        case .lastName:
+                            scope.updateLastNameValidationState(true)
+                        default:
+                            break
+                        }
+                    }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .firstName:
+                            scope.updateFirstNameValidationState(false)
+                        case .lastName:
+                            scope.updateLastNameValidationState(false)
+                        default:
+                            break
+                        }
+                    }
                 }
             }
         }

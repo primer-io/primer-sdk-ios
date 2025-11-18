@@ -8,14 +8,11 @@ import SwiftUI
 
 /// UIViewRepresentable wrapper for cardholder name input
 @available(iOS 15.0, *)
-struct CardholderNameTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     @Binding var cardholderName: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let styling: PrimerFieldStyling?
     let validationService: ValidationService
@@ -25,6 +22,7 @@ struct CardholderNameTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .standard,
@@ -33,7 +31,9 @@ struct CardholderNameTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         textField.font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+
         return textField
     }
 
@@ -54,14 +54,12 @@ struct CardholderNameTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
         @Binding private var cardholderName: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
         private let scope: any PrimerCardFormScope
 
         init(
@@ -82,6 +80,10 @@ struct CardholderNameTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -107,6 +109,10 @@ struct CardholderNameTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cardholderName
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
             // Validate allowed characters (letters, spaces, apostrophes, hyphens)
             if !string.isEmpty {
                 let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
@@ -115,36 +121,54 @@ struct CardholderNameTextField: UIViewRepresentable {
                     return false
                 }
             }
-            cardholderName = currentText.replacingCharacters(in: range, with: string)
-            scope.updateCardholderName(cardholderName)
-            isValid = cardholderName.count >= 2
-            scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: isValid)
+
+            cardholderName = newText
+            scope.updateCardholderName(newText)
+
+            isValid = newText.count >= 2
+
+            if let scope = scope as? DefaultCardFormScope {
+                scope.updateCardholderNameValidationState(isValid)
+            }
+
             return false
         }
 
         private func validateCardholderName() {
             let trimmedName = cardholderName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Empty field handling - don't show errors for empty fields
             if trimmedName.isEmpty {
-                isValid = false
-                errorMessage = nil
-                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: false)
+                isValid = false // Cardholder name is required
+                errorMessage = nil // Never show error message for empty fields
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardholderNameValidationState(false)
+                }
                 return
             }
+
             let result = validationService.validate(
                 input: cardholderName,
                 with: CardholderNameRule()
             )
+
             isValid = result.isValid
             errorMessage = result.errorMessage
+
             if result.isValid {
                 scope.clearFieldError(.cardholderName)
-                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: true)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardholderNameValidationState(true)
+                }
             } else {
                 if let message = result.errorMessage {
                     scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
                 }
-                scope.updateValidationStateIfNeeded(for: .cardholderName, isValid: false)
+                if let scope = scope as? DefaultCardFormScope {
+                    scope.updateCardholderNameValidationState(false)
+                }
             }
+
         }
     }
 }

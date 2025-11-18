@@ -58,9 +58,6 @@ public final class DIContainer: LogReporter {
     @MainActor
     public static var currentSync: (any ContainerProtocol)? {
         let container = shared.cachedContainer
-        if container == nil {
-            // No container available
-        }
         return container
     }
 
@@ -78,22 +75,17 @@ public final class DIContainer: LogReporter {
         Task { @MainActor in
             self.cachedContainer = container
         }
-
-        // DIContainer initialized
     }
 
     /// Create a new container instance
     public static func createContainer() -> any ContainerProtocol {
-        // Creating new container
         return Container()
     }
 
     /// Set the global container instance
     public static func setContainer(_ container: any ContainerProtocol) async {
-        // Setting global container
         await shared.storage.setContainer(container)
 
-        // Update cached reference for synchronous access on MainActor
         await MainActor.run {
             shared.cachedContainer = container
         }
@@ -108,7 +100,6 @@ public final class DIContainer: LogReporter {
 
     /// Set up a container with the application's dependencies
     public static func setupMainContainer() async {
-        // Setting up main container
         let container = Container()
         await registerDependencies(in: container)
         await setContainer(container)
@@ -127,11 +118,9 @@ public final class DIContainer: LogReporter {
         _ container: any ContainerProtocol,
         perform action: () async throws -> T
     ) async rethrows -> T {
-        // Switching to temporary container
         let previous = await shared.storage.getContainer()
         let previousSync = await MainActor.run { shared.cachedContainer }
 
-        // Swap in immediately with proper MainActor isolation (thread-safe)
         await shared.storage.setContainer(container)
         await MainActor.run {
             shared.cachedContainer = container
@@ -139,17 +128,15 @@ public final class DIContainer: LogReporter {
 
         do {
             let result = try await action()
-            // Restoring previous container
             await shared.storage.setContainer(previous)
             await MainActor.run {
-                shared.cachedContainer = previousSync  // Thread-safe restoration
+                shared.cachedContainer = previousSync
             }
             return result
         } catch {
-            // Restoring previous container after error
             await shared.storage.setContainer(previous)
             await MainActor.run {
-                shared.cachedContainer = previousSync  // Thread-safe restoration after error
+                shared.cachedContainer = previousSync
             }
             throw error
         }
@@ -157,7 +144,6 @@ public final class DIContainer: LogReporter {
 
     /// Add a scoped container
     public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) async {
-        // Setting scoped container
         await shared.storage.setScopedContainer(container, for: scopeId)
     }
 
@@ -168,15 +154,11 @@ public final class DIContainer: LogReporter {
 
     /// Remove a scoped container
     public static func removeScopedContainer(for scopeId: String) async {
-        // Removing scoped container
         await shared.storage.removeScopedContainer(for: scopeId)
     }
 
     /// Register the application's dependencies in the provided container
     private static func registerDependencies(in container: Container) async {
-        // Registering application dependencies
-
-        // Register the container itself
         Task {
             _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
                 return container
@@ -186,7 +168,6 @@ public final class DIContainer: LogReporter {
 
     /// Create a container with mock dependencies for testing
     public static func createMockContainer() async -> any ContainerProtocol {
-        // Creating mock container
         let container = Container()
         await registerMockDependencies(in: container)
         return container
@@ -194,9 +175,6 @@ public final class DIContainer: LogReporter {
 
     /// Register mock dependencies for testing
     private static func registerMockDependencies(in container: Container) async {
-        // Registering mock dependencies
-
-        // Register mocks using separate functions for better organization
         await registerMockRepositories(container)
         await registerMockUseCases(container)
         await registerMockServices(container)
@@ -204,19 +182,13 @@ public final class DIContainer: LogReporter {
 
     /// Register mock repositories
     private static func registerMockRepositories(_ container: Container) async {
-        // Registering mock repositories
-        // Register mock repositories here
     }
 
     /// Register mock use cases
     private static func registerMockUseCases(_ container: Container) async {
-        // Registering mock use cases
-        // Register mock use cases here
     }
 
     /// Register mock services
     private static func registerMockServices(_ container: Container) async {
-        // Registering mock services
-        // Register mock services here
     }
 }

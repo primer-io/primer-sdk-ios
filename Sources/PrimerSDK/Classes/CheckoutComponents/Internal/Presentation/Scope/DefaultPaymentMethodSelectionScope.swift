@@ -40,7 +40,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     public var screen: (() -> AnyView)?
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
-    public var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)?
+    public var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)?
     public var categoryHeader: ((_ category: String) -> AnyView)?
     public var emptyStateView: (() -> AnyView)?
 
@@ -48,6 +48,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+    private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
 
     // MARK: - Initialization
 
@@ -60,29 +61,34 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
         Task {
             await loadPaymentMethods()
+            await resolveAccessibilityService()
+        }
+    }
+
+    // MARK: - Accessibility Setup
+
+    private func resolveAccessibilityService() async {
+        do {
+            guard let container = await DIContainer.current else { return }
+            accessibilityAnnouncementService = try await container.resolve(AccessibilityAnnouncementService.self)
+        } catch {
+            // Failed to resolve AccessibilityAnnouncementService, accessibility announcements will be disabled
+            logger.debug(message: "[A11Y] Failed to resolve AccessibilityAnnouncementService: \(error.localizedDescription)")
         }
     }
 
     // MARK: - Setup
 
     private func loadPaymentMethods() async {
-        // Loading payment methods from checkout scope...
-
-        // Get payment methods from the checkout scope instead of loading them again
         guard let checkoutScope = checkoutScope else {
-            // Checkout scope not available
             internalState.error = CheckoutComponentsStrings.checkoutScopeNotAvailable
             return
         }
 
-        // Wait for the checkout scope to have loaded payment methods
         for await checkoutState in checkoutScope.state {
             if case .ready = checkoutState {
-                // Get payment methods directly from the checkout scope
                 let paymentMethods = checkoutScope.availablePaymentMethods
-                // Retrieved payment methods from checkout scope
 
-                // Convert internal payment methods to composable payment methods using PaymentMethodMapper
                 let mapper: PaymentMethodMapper
                 do {
                     guard let container = await DIContainer.current else {
@@ -90,10 +96,9 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     }
                     mapper = try await container.resolve(PaymentMethodMapper.self)
                 } catch {
-                    // Failed to resolve PaymentMethodMapper
                     // Fallback to manual creation without surcharge data
                     let composablePaymentMethods = paymentMethods.map { method in
-                        PrimerComposablePaymentMethod(
+                        CheckoutPaymentMethod(
                             id: method.id,
                             type: method.type,
                             name: method.name,
@@ -103,24 +108,16 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     }
                     internalState.paymentMethods = composablePaymentMethods
                     internalState.filteredPaymentMethods = composablePaymentMethods
-                    updateCategories()
-                    // Payment methods loaded and categorized successfully (without surcharge)
                     break
                 }
 
-                // Use PaymentMethodMapper to properly format surcharge data
                 let composablePaymentMethods = mapper.mapToPublic(paymentMethods)
 
                 internalState.paymentMethods = composablePaymentMethods
                 internalState.filteredPaymentMethods = composablePaymentMethods
 
-                // Group by category if needed
-                updateCategories()
-
-                // Payment methods loaded and categorized successfully with surcharge data
                 break
             } else if case let .failure(error) = checkoutState {
-                // Checkout scope has error
                 internalState.error = error.localizedDescription
                 break
             }
@@ -129,17 +126,17 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     // MARK: - Public Methods
 
-    public func onPaymentMethodSelected(paymentMethod: PrimerComposablePaymentMethod) {
-        // Payment method selected
-
+    public func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
         internalState.selectedPaymentMethod = paymentMethod
 
-        // Track payment method selection
+        let selectionMessage = "\(paymentMethod.name) selected"
+        accessibilityAnnouncementService?.announceStateChange(selectionMessage)
+        logger.debug(message: "[A11Y] Payment method selected announcement: \(selectionMessage)")
+
         Task {
             await trackPaymentMethodSelection(paymentMethod.type)
         }
 
-        // Notify checkout scope
         let internalMethod = InternalPaymentMethod(
             id: paymentMethod.id,
             type: paymentMethod.type,
@@ -155,14 +152,10 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     }
 
     public func onCancel() {
-        // Payment method selection cancelled
-        // Navigate back or dismiss
         checkoutScope?.onDismiss()
     }
 
     public func searchPaymentMethods(_ query: String) {
-        // Searching payment methods
-
         internalState.searchQuery = query
 
         if query.isEmpty {
@@ -174,54 +167,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
                     method.type.lowercased().contains(lowercasedQuery)
             }
         }
-
-        updateCategories()
     }
 
-    // MARK: - Private Methods
-
-    private func updateCategories() {
-        // Group payment methods by category
-        // For now, we'll use simple categories based on payment method type
-        var categorizedMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = []
-
-        let methodsToGroup = internalState.searchQuery.isEmpty
-            ? internalState.paymentMethods
-            : internalState.filteredPaymentMethods
-
-        // Cards category
-        let cardMethods = methodsToGroup.filter {
-            $0.type.contains("CARD") || $0.type == "PAYMENT_CARD"
-        }
-        if !cardMethods.isEmpty {
-            categorizedMethods.append((category: "Cards", methods: cardMethods))
-        }
-
-        // Wallets category
-        let walletMethods = methodsToGroup.filter {
-            ["PAYPAL", "APPLE_PAY", "GOOGLE_PAY"].contains($0.type)
-        }
-        if !walletMethods.isEmpty {
-            categorizedMethods.append((category: "Digital Wallets", methods: walletMethods))
-        }
-
-        // Bank transfers category
-        let bankMethods = methodsToGroup.filter {
-            $0.type.contains("BANK") || $0.type.contains("SEPA") || $0.type.contains("ACH")
-        }
-        if !bankMethods.isEmpty {
-            categorizedMethods.append((category: "Bank Transfers", methods: bankMethods))
-        }
-
-        // Other payment methods
-        let categorizedTypes = Set(cardMethods.map { $0.type } +
-                                    walletMethods.map { $0.type } +
-                                    bankMethods.map { $0.type })
-        let otherMethods = methodsToGroup.filter { !categorizedTypes.contains($0.type) }
-        if !otherMethods.isEmpty {
-            categorizedMethods.append((category: "Other Payment Methods", methods: otherMethods))
-        }
-
-        internalState.categorizedPaymentMethods = categorizedMethods
-    }
 }

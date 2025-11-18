@@ -8,16 +8,13 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
-    // MARK: - Properties
-
     let label: String?
     let placeholder: String
     let scope: any PrimerCardFormScope
     let selectedNetwork: CardNetwork?
     let styling: PrimerFieldStyling?
 
-    // MARK: - Private Properties
-
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var cardNumber: String = ""
     @State private var isValid: Bool = false
@@ -25,10 +22,7 @@ struct CardNumberInputField: View, LogReporter {
     @State private var errorMessage: String?
     @State private var surchargeAmount: String?
     @State private var isFocused: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
-
-    // MARK: - Initialization
 
     init(
         label: String?,
@@ -48,8 +42,6 @@ struct CardNumberInputField: View, LogReporter {
         return selectedNetwork ?? cardNetwork
     }
 
-    // MARK: - Body
-
     var body: some View {
         PrimerInputFieldContainer(
             label: label,
@@ -59,7 +51,7 @@ struct CardNumberInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                if let validationService {
+                if let validationService = validationService {
                     CardNumberTextField(
                         cardNumber: $cardNumber,
                         isValid: $isValid,
@@ -83,7 +75,7 @@ struct CardNumberInputField: View, LogReporter {
                         CardNetworkBadge(network: displayNetwork)
                     }
 
-                    if let surchargeAmount {
+                    if let surchargeAmount = surchargeAmount {
                         Text(surchargeAmount)
                             .font(PrimerFont.bodySmall(tokens: tokens))
                             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -95,17 +87,24 @@ struct CardNumberInputField: View, LogReporter {
                 }
             }
         )
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.CardForm.cardNumberField,
+            label: CheckoutComponentsStrings.a11yCardNumberLabel,
+            hint: CheckoutComponentsStrings.a11yCardNumberHint,
+            value: errorMessage,
+            traits: []
+        ))
         .onAppear {
             setupValidationService()
         }
     }
 
-    // MARK: - Private Methods
-
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for CardNumberInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CardNumberInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -116,16 +115,17 @@ struct CardNumberInputField: View, LogReporter {
     private func updateSurchargeAmount(for network: CardNetwork) {
         guard let surcharge = network.surcharge,
               PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency
-        else {
+              let currency = AppState.current.currency else {
             surchargeAmount = nil
             return
         }
+
         surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
     }
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CardNumberInputField(

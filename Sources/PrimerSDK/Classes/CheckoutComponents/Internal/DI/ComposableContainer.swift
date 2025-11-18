@@ -21,27 +21,17 @@ final class ComposableContainer: LogReporter {
 
     /// Configure and register all dependencies for CheckoutComponents.
     func configure() async {
-        // Starting CheckoutComponents DI configuration
-
-        // Register core infrastructure
         await registerInfrastructure()
 
-        // Register validation system
         await registerValidation()
 
-        // Register domain layer
         await registerDomain()
 
-        // Register data layer
         await registerData()
 
-        // Register presentation layer
         await registerPresentation()
 
-        // Set as global container
         await DIContainer.setContainer(container)
-
-        // DI configuration completed
 
         #if DEBUG
         await performHealthCheck()
@@ -61,23 +51,18 @@ private extension ComposableContainer {
 
     /// Register infrastructure components.
     func registerInfrastructure() async {
-        // Registering infrastructure
-
         _ = try? await container.register(PrimerSettings.self)
             .asSingleton()
             .with { _ in self.settings }
 
-        // Theme provided by PrimerSettings for components
         _ = try? await container.register(PrimerThemeProtocol.self)
             .asSingleton()
             .with { _ in self.settings.uiOptions.theme }
 
-        // Design tokens manager
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()
             .with { _ in DesignTokensManager() }
 
-        // Analytics - Event Service (Data Layer)
         _ = try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
             .asSingleton()
             .with { _ in
@@ -86,7 +71,6 @@ private extension ComposableContainer {
                 )
             }
 
-        // Analytics - Interactor (Domain Layer)
         _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
             .asSingleton()
             .with { resolver in
@@ -94,18 +78,18 @@ private extension ComposableContainer {
                     eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
                 )
             }
+
+        _ = try? await container.register(AccessibilityAnnouncementService.self)
+            .asSingleton()
+            .with { _ in DefaultAccessibilityAnnouncementService() }
     }
 
     /// Register validation framework.
     func registerValidation() async {
-        // Registering validation
-
-        // Rules factory
         _ = try? await container.register(RulesFactory.self)
             .asSingleton()
             .with { _ in DefaultRulesFactory() }
 
-        // Validation service
         _ = try? await container.register(ValidationService.self)
             .asSingleton()
             .with { resolver in
@@ -116,9 +100,6 @@ private extension ComposableContainer {
 
     /// Register domain layer (interactors, models).
     func registerDomain() async {
-        // Registering domain layer
-
-        // Register interactors
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
             .asTransient()
             .with { resolver in
@@ -154,14 +135,10 @@ private extension ComposableContainer {
 
     /// Register data layer (repositories, mappers).
     func registerData() async {
-        // Registering data layer
-
-        // Register repository
         _ = try? await container.register(HeadlessRepository.self)
             .asSingleton()
             .with { _ in HeadlessRepositoryImpl() }
 
-        // Register mapper
         _ = try? await container.register(PaymentMethodMapper.self)
             .asSingleton()
             .with { _ in PaymentMethodMapperImpl() }
@@ -169,20 +146,16 @@ private extension ComposableContainer {
 
     /// Register presentation layer (scopes, view models).
     func registerPresentation() async {
-        // Registering presentation layer
     }
 
     #if DEBUG
     /// Perform health check on the container.
     func performHealthCheck() async {
-        // Performing health check
-
         let diagnostics = await container.getDiagnostics()
-        // Total registrations: \(diagnostics.totalRegistrations)
 
         let healthReport = await container.performHealthCheck()
         if healthReport.status == .healthy {
-            // Container is healthy
+            logger.debug(message: "Container is healthy")
         } else {
             logger.warn(message: "Health issues: \(healthReport.issues)")
         }

@@ -20,7 +20,7 @@ struct CheckoutScopeObserver: View, LogReporter {
 
     // Design tokens state
     @StateObject private var designTokensManager = DesignTokensManager()
-    
+
     // Country selection modal state
     @State private var showingCountrySelection = false
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
@@ -88,7 +88,6 @@ struct CheckoutScopeObserver: View, LogReporter {
             // Apply any scope customizations (only after SDK is initialized)
             scopeCustomization?(scope)
 
-            // Set up design tokens
             Task {
                 await setupDesignTokens()
             }
@@ -133,7 +132,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                 if let previousNavigationState {
                     switch previousNavigationState {
                     case let .paymentMethod(paymentMethodType):
-                        // Update the navigator to reflect we're back at the payment method
                         scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
                     case .paymentMethodSelection:
                         scope.checkoutNavigator.navigateToPaymentSelection()
@@ -190,8 +188,8 @@ struct CheckoutScopeObserver: View, LogReporter {
 
         case .paymentMethodSelection:
             // First check if the payment method selection scope itself has a custom screen
-            if let customScreen = scope.paymentMethodSelection.screen {
-                return AnyView(customScreen())
+            if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
+                return AnyView(customPaymentMethodSelectionScreen())
             }
             // Then check if the checkout scope has a custom payment selection screen
             else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
@@ -239,7 +237,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                     return AnyView(customSuccess(result))
                 } else {
                     return AnyView(SuccessScreen(result: result) {
-                        // Handle auto-dismiss with completion callback
                         logger.info(message: "Success screen auto-dismiss, calling completion callback")
                         onCompletion?()
                     })
@@ -261,7 +258,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                     return AnyView(customError(error.localizedDescription))
                 } else {
                     return AnyView(ErrorScreen(error: error) {
-                        // Handle auto-dismiss with completion callback
                         logger.info(message: "Error screen auto-dismiss, calling completion callback")
                         onCompletion?()
                     })

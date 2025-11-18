@@ -216,7 +216,6 @@ public actor Container: ContainerProtocol, LogReporter {
             throw ContainerError.circularDependency(key, path: resolutionOrder + [key])
         }
 
-        // Track resolution
         resolutionStack.insert(key)
         resolutionOrder.append(key)
 
@@ -371,8 +370,6 @@ public actor Container: ContainerProtocol, LogReporter {
         for key in factories.keys where !keysToIgnore.contains(key) {
             factories.removeValue(forKey: key)
         }
-
-        // Container reset
     }
 
     // MARK: - Memory Management

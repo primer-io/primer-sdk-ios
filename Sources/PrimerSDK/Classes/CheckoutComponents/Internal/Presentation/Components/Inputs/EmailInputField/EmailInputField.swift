@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct EmailInputField: View, LogReporter {
-    // MARK: - Properties
+    // MARK: - Public Properties
 
     let label: String?
     let placeholder: String
@@ -19,12 +19,12 @@ struct EmailInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var email: String = ""
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
@@ -39,8 +39,8 @@ struct EmailInputField: View, LogReporter {
         self.placeholder = placeholder
         self.scope = scope
         self.styling = styling
-        onEmailChange = nil
-        onValidationChange = nil
+        self.onEmailChange = nil
+        self.onValidationChange = nil
     }
 
     init(
@@ -52,7 +52,7 @@ struct EmailInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
-        scope = nil
+        self.scope = nil
         self.styling = styling
         self.onEmailChange = onEmailChange
         self.onValidationChange = onValidationChange
@@ -69,7 +69,7 @@ struct EmailInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused
         ) {
-            if let validationService {
+            if let validationService = validationService {
                 EmailTextField(
                     email: $email,
                     isValid: $isValid,
@@ -98,12 +98,12 @@ struct EmailInputField: View, LogReporter {
         }
     }
 
-    // MARK: - Private Methods
-
     private func setupValidationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for EmailInputField")
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for EmailInputField")
+            return
         }
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -113,6 +113,7 @@ struct EmailInputField: View, LogReporter {
 }
 
 #if DEBUG
+// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     EmailInputField(

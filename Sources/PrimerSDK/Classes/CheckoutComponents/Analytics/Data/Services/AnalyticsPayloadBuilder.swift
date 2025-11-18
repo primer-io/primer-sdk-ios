@@ -11,10 +11,6 @@ import UIKit
 /// Handles payload assembly, device info integration, and SDK type detection.
 struct AnalyticsPayloadBuilder {
 
-    // MARK: - Initialization
-
-    init() {}
-
     // MARK: - Public Methods
 
     /// Construct a complete analytics payload
@@ -36,7 +32,7 @@ struct AnalyticsPayloadBuilder {
 
         // Always include userAgent (system info)
         let userAgent = UIDevice.userAgent
-        
+
         // Only include optional fields if metadata is provided
         // This ensures SDK lifecycle events (metadata=nil) don't include these fields
         // which matches backend validation requirements

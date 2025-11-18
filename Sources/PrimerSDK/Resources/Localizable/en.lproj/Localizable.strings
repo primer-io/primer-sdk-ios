@@ -350,3 +350,119 @@
 /* Upload the screenshot in your banking app. - QR code screen subtitle label */
 "uploadScreenshot" = "Upload the screenshot in your banking app";
 
+/* ACCESSIBILITY STRINGS - CheckoutComponents */
+
+/* Card Form - Card Number Field */
+"accessibility.cardForm.cardNumber.label" = "Card number, required";
+"accessibility.cardForm.cardNumber.hint" = "Enter your 16-digit card number";
+"accessibility.cardForm.cardNumber.error.invalid" = "Invalid card number. Please check and try again.";
+"accessibility.cardForm.cardNumber.error.empty" = "Card number is required.";
+
+/* Card Form - Expiry Field */
+"accessibility.cardForm.expiry.label" = "Expiry date, required";
+"accessibility.cardForm.expiry.hint" = "Enter expiry date in MM/YY format";
+"accessibility.cardForm.expiry.error.invalid" = "Invalid expiry date.";
+"accessibility.cardForm.expiry.error.expired" = "Card has expired.";
+
+/* Card Form - CVC Field */
+"accessibility.cardForm.cvc.label" = "Security code, required";
+"accessibility.cardForm.cvc.hint" = "3 or 4 digit code on back of card";
+"accessibility.cardForm.cvc.error.invalid" = "Invalid security code.";
+
+/* Card Form - Cardholder Name Field */
+"accessibility.cardForm.cardholderName.label" = "Cardholder name";
+"accessibility.cardForm.cardholderName.hint" = "Enter name as shown on card";
+
+/* Card Form - Billing Address Fields */
+"accessibility.cardForm.billingAddress.line1.label" = "Address line 1, required";
+"accessibility.cardForm.billingAddress.line1.hint" = "Enter street address";
+"accessibility.cardForm.billingAddress.line2.label" = "Address line 2";
+"accessibility.cardForm.billingAddress.line2.hint" = "Apartment, suite, or unit number";
+"accessibility.cardForm.billingAddress.city.label" = "City, required";
+"accessibility.cardForm.billingAddress.city.hint" = "Enter city name";
+"accessibility.cardForm.billingAddress.state.label" = "State or region";
+"accessibility.cardForm.billingAddress.state.hint" = "Enter state, region, or county";
+"accessibility.cardForm.billingAddress.postalCode.label" = "Postal code, required";
+"accessibility.cardForm.billingAddress.postalCode.hint" = "Enter postal or ZIP code";
+"accessibility.cardForm.billingAddress.country.label" = "Country, required";
+"accessibility.cardForm.billingAddress.country.hint" = "Select your country";
+"accessibility.cardForm.billingAddress.firstName.label" = "First name, required";
+"accessibility.cardForm.billingAddress.firstName.hint" = "Enter your first name";
+"accessibility.cardForm.billingAddress.lastName.label" = "Last name, required";
+"accessibility.cardForm.billingAddress.lastName.hint" = "Enter your last name";
+"accessibility.cardForm.billingAddress.email.label" = "Email address, required";
+"accessibility.cardForm.billingAddress.email.hint" = "Enter your email address";
+"accessibility.cardForm.billingAddress.phoneNumber.label" = "Phone number";
+"accessibility.cardForm.billingAddress.phoneNumber.hint" = "Enter your phone number";
+
+/* Card Form - Submit Button */
+"accessibility.cardForm.submit.label" = "Submit payment";
+"accessibility.cardForm.submit.hint" = "Double-tap to submit payment";
+"accessibility.cardForm.submit.loading" = "Processing payment, please wait";
+"accessibility.cardForm.submit.disabled" = "Button disabled. Complete all required fields to enable payment";
+
+/* Card Form - Save Button */
+"accessibility.cardForm.save.label" = "Save card";
+"accessibility.cardForm.save.hint" = "Double-tap to save this card for future use";
+
+/* Payment Selection - Card Items */
+"accessibility.paymentSelection.card.label" = "card ending in masked digits";
+"accessibility.paymentSelection.card.expiry" = "expires %@";
+"accessibility.paymentSelection.card.hint" = "Double-tap to select this payment method";
+
+/* Payment Selection - Payment Method Items */
+"accessibility.paymentSelection.bankTransfer.label" = "Bank transfer";
+"accessibility.paymentSelection.bankTransfer.hint" = "Double-tap to pay by bank transfer";
+
+/* Payment Selection - Custom Actions */
+"accessibility.paymentSelection.action.edit" = "Edit card details";
+"accessibility.paymentSelection.action.delete" = "Delete card";
+"accessibility.paymentSelection.action.setDefault" = "Set as default payment method";
+
+/* Payment Selection - Action Feedback */
+"accessibility.paymentSelection.feedback.setDefault" = "Card set as default";
+"accessibility.paymentSelection.feedback.deleted" = "Card deleted";
+"accessibility.paymentSelection.feedback.editMode" = "Edit mode";
+
+/* Common Elements */
+"accessibility.common.required" = "required";
+"accessibility.common.optional" = "optional";
+"accessibility.common.loading" = "Loading, please wait";
+"accessibility.common.close" = "Close";
+"accessibility.common.close.hint" = "Double-tap to close";
+"accessibility.common.cancel" = "Cancel";
+"accessibility.common.back" = "Go back";
+"accessibility.common.back.hint" = "Double-tap to go back";
+"accessibility.common.dismiss" = "Dismiss";
+"accessibility.common.dismiss.hint" = "Double-tap to dismiss";
+
+/* Screen Change Announcements */
+"accessibility.screen.paymentMethod" = "%@ payment method";
+"accessibility.screen.success" = "Payment successful";
+"accessibility.screen.error" = "Payment error occurred";
+"accessibility.screen.countrySelection" = "Select country";
+"accessibility.screen.loadingPaymentMethods" = "Loading payment methods";
+
+/* Error Messages */
+"accessibility.error.multipleErrors" = "%d errors found";
+"accessibility.error.generic" = "An error occurred. Please try again.";
+"accessibility.error.dismiss" = "Dismiss error";
+
+/* Section Headers */
+"accessibility.section.billingAddress" = "Billing address";
+"accessibility.section.cardDetails" = "Card details";
+"accessibility.section.paymentMethods" = "Payment methods";
+"accessibility.section.savedCards" = "Saved cards";
+
+/* Dynamic Content Announcements */
+"accessibility.announcement.fieldRequired" = "This field is required";
+"accessibility.announcement.fieldOptional" = "This field is optional";
+"accessibility.announcement.loadingComplete" = "Content loaded";
+"accessibility.announcement.paymentMethodSelected" = "Payment method selected";
+"accessibility.announcement.cardFormOpened" = "Card form opened";
+"accessibility.announcement.validationError" = "Validation error occurred";
+
+/* Focus Announcements */
+"accessibility.focus.movedToError" = "Focus moved to first error";
+"accessibility.focus.returnedToPrevious" = "Focus returned to previous element";
+

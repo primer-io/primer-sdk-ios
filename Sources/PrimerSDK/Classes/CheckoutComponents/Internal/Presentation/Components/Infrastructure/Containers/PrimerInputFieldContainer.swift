@@ -6,6 +6,7 @@
 
 import SwiftUI
 
+/// Generic container for Primer input fields that provides consistent styling, layout, and error handling
 @available(iOS 15.0, *)
 struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     let label: String?
@@ -18,6 +19,7 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
     @Environment(\.designTokens) var tokens
+    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
 
     var hasError: Bool { errorMessage?.isEmpty == false }
 

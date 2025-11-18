@@ -8,14 +8,11 @@ import SwiftUI
 
 /// UIViewRepresentable wrapper for address line input with focus-based validation
 @available(iOS 15.0, *)
-struct AddressLineTextField: UIViewRepresentable {
-    // MARK: - Properties
-
+struct AddressLineTextField: UIViewRepresentable, LogReporter {
     @Binding var addressLine: String
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
     let placeholder: String
     let isRequired: Bool
     let inputType: PrimerInputElementType
@@ -29,6 +26,7 @@ struct AddressLineTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
+
         textField.configurePrimerStyle(
             placeholder: placeholder,
             configuration: .standard,
@@ -37,6 +35,7 @@ struct AddressLineTextField: UIViewRepresentable {
             doneButtonTarget: context.coordinator,
             doneButtonAction: #selector(Coordinator.doneButtonTapped)
         )
+
         return textField
     }
 
@@ -61,14 +60,12 @@ struct AddressLineTextField: UIViewRepresentable {
         )
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        // MARK: - Properties
-
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
         @Binding private var addressLine: String
         @Binding private var isValid: Bool
         @Binding private var errorMessage: String?
         @Binding private var isFocused: Bool
-        private let validationService: ValidationService
         private let isRequired: Bool
         private let inputType: PrimerInputElementType
         private let scope: (any PrimerCardFormScope)?
@@ -101,6 +98,10 @@ struct AddressLineTextField: UIViewRepresentable {
 
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            // Post accessibility notification to move focus away from the now-hidden Done button
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -126,55 +127,116 @@ struct AddressLineTextField: UIViewRepresentable {
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = addressLine
-            addressLine = currentText.replacingCharacters(in: range, with: string)
-            if let scope {
+
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            addressLine = newText
+
+            if let scope = scope {
                 switch inputType {
                 case .addressLine1:
-                    scope.updateAddressLine1(addressLine)
+                    scope.updateAddressLine1(newText)
                 case .addressLine2:
-                    scope.updateAddressLine2(addressLine)
+                    scope.updateAddressLine2(newText)
                 default:
                     break
                 }
             } else {
-                onAddressChange?(addressLine)
+                onAddressChange?(newText)
             }
-            isValid = isRequired ? !addressLine.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty : true
-            scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            if isRequired {
+                isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            } else {
+                isValid = true // Optional fields are always valid while typing
+            }
+
+            if let scope = scope as? DefaultCardFormScope {
+                switch inputType {
+                case .addressLine1:
+                    scope.updateAddressLine1ValidationState(isValid)
+                case .addressLine2:
+                    scope.updateAddressLine2ValidationState(isValid)
+                default:
+                    break
+                }
+            }
+
             return false
         }
 
         private func validateAddress() {
             let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Empty field handling - don't show errors for empty fields
             if trimmedAddress.isEmpty {
-                isValid = isRequired ? false : true
-                errorMessage = nil
+                isValid = isRequired ? false : true // Required fields are invalid when empty, optional fields are valid
+                errorMessage = nil // Never show error message for empty fields
                 onValidationChange?(isValid)
+
                 scope?.clearFieldError(inputType)
-                scope?.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
+
+                if let scope = scope as? DefaultCardFormScope {
+                    switch inputType {
+                    case .addressLine1:
+                        scope.updateAddressLine1ValidationState(isValid)
+                    case .addressLine2:
+                        scope.updateAddressLine2ValidationState(isValid)
+                    default:
+                        break
+                    }
+                }
                 return
             }
 
-            let elementType: ValidationError.InputElementType = switch inputType {
-            case .addressLine1: .addressLine1
-            case .addressLine2: .addressLine2
-            default: .addressLine1
-            }
+            // Convert PrimerInputElementType to ValidationError.InputElementType
+            let elementType: ValidationError.InputElementType = {
+                switch inputType {
+                case .addressLine1:
+                    return .addressLine1
+                case .addressLine2:
+                    return .addressLine2
+                default:
+                    return .addressLine1
+                }
+            }()
 
             let result = validationService.validate(
                 input: addressLine,
                 with: AddressRule(inputElementType: elementType, isRequired: isRequired)
             )
+
             isValid = result.isValid
             errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
-            if let scope {
+
+            if let scope = scope {
                 if result.isValid {
                     scope.clearFieldError(inputType)
-                    scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .addressLine1:
+                            scope.updateAddressLine1ValidationState(true)
+                        case .addressLine2:
+                            scope.updateAddressLine2ValidationState(true)
+                        default:
+                            break
+                        }
+                    }
                 } else if let message = result.errorMessage {
                     scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
-                    scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
+                    if let scope = scope as? DefaultCardFormScope {
+                        switch inputType {
+                        case .addressLine1:
+                            scope.updateAddressLine1ValidationState(false)
+                        case .addressLine2:
+                            scope.updateAddressLine2ValidationState(false)
+                        default:
+                            break
+                        }
+                    }
                 }
             }
         }

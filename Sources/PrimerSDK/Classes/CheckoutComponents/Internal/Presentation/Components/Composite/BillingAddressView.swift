@@ -155,12 +155,10 @@ struct BillingAddressView: View, LogReporter {
         }
         .sheet(isPresented: $showCountrySelector) {
             if let defaultCardFormScope = cardFormScope as? DefaultCardFormScope {
-                // Create a custom country scope that updates both code and name
                 let countryScope = BillingAddressCountryScope(
                     cardFormScope: defaultCardFormScope,
                     onCountrySelected: { code, name in
                         // Update country state atomically to fix one-step delay bug
-                        // Find the dial code from the available countries
                         let dialCode = CountryCode.phoneNumberCountryCodes
                             .first { $0.code == code }?.dialCode ?? ""
 
