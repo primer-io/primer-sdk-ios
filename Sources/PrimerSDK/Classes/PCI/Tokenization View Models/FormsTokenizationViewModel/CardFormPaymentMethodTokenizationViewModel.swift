@@ -66,7 +66,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
     var countries = CountryCode.allCases
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
@@ -81,7 +81,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         return tableView
     }()
 
-    internal lazy var searchableTextField: PrimerSearchTextField = {
+    lazy var searchableTextField: PrimerSearchTextField = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -118,7 +118,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         return options?.postalCode == true
     }
 
-    internal lazy var countrySelectorViewController: CountrySelectorViewController = {
+    lazy var countrySelectorViewController: CountrySelectorViewController = {
         CountrySelectorViewController(viewModel: self)
     }()
 
@@ -301,13 +301,13 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     // MARK: All billing address fields
 
-    internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
+    var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
         return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
 
-    internal var billingAddressFields: [[BillingAddressField]] {
+    var billingAddressFields: [[BillingAddressField]] {
         guard isShowingBillingAddressFieldsRequired else { return [] }
         return [
             [countryField],
@@ -319,17 +319,17 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         ]
     }
 
-    internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
+    var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
     // swiftlint:disable:next identifier_name
-    internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
+    var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
     }
 
-    internal var formView: PrimerFormView {
+    var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView],
@@ -761,7 +761,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
                 if primerTextFieldView.isEmpty {
                     // If the text field is empty, assign the default invalid error message.
                     cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
-                } else if let count = primerTextFieldView.textField.text?.count, count >= 2 && count < 45 {
+                } else if let count = primerTextFieldView.textField.text?.count, count >= 2, count < 45 {
                     // If the count of characters is between 2 (inclusive) and 45 (exclusive),
                     // assign the error message specific to cardholder length.
                     cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidCardholderLengthErrorMessage
@@ -891,7 +891,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
             // Update labels immediately
             configureAmountLabels(cardNetwork: cardNetwork)
-        } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
+        } else if cardNumberContainerView.rightImage != nil, (cardNetwork?.icon == nil || cardNetwork == .unknown) {
             // Unselect payment method and remove the card network icon if unknown or nil
             cardNumberContainerView.rightImage = nil
 
@@ -1052,12 +1052,20 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
                 self.alternativelySelectedCardNetwork = nil
                 self.handleCardNetworkDetection(newNetworks[0])
 
-                // 3) Multiple possible networks: show generic/“unknown” icon
+            // 3) Multiple possible networks: check for auto-selection or show generic icon
             } else if newNetworks.count > 1 {
-                self.cardNumberContainerView.resetCardNetworkSelection()
-                self.cardNumberContainerView.rightImage = CardNetwork.unknown.icon
+                if let autoSelected = metadataModel.autoSelectedCardNetwork {
+                    // Auto-selected network (e.g., EFTPOS co-badge)
+                    self.alternativelySelectedCardNetwork = autoSelected.network
+                    self.cardNumberContainerView.selectedCardNetwork = autoSelected
+                    self.handleCardNetworkDetection(autoSelected.network)
+                } else {
+                    // Show generic/"unknown" icon
+                    self.cardNumberContainerView.resetCardNetworkSelection()
+                    self.cardNumberContainerView.rightImage = CardNetwork.unknown.icon
+                }
 
-                // 4) No networks (user cleared the field): wipe everything
+            // 4) No networks (user cleared the field): wipe everything
             } else {
                 // Remember if we had any selection
                 let hadSelection = (self.alternativelySelectedCardNetwork != nil)

@@ -351,8 +351,145 @@ final class CardValidationServiceTests: XCTestCase {
         )
     }
 
+    // MARK: - EFTPOS Auto-selection Tests
+
+    func testCreateValidationMetadata_eftposVisa_eftposFirst_autoSelectsEftpos() {
+        // Given: Merchant prefers EFTPOS over Visa for lower fees
+        let sut = createCardValidationService(allowedNetworks: [.eftpos, .visa, .masterCard])
+
+        // When: Card detected as EFTPOS + Visa co-badge
+        let metadata = sut.createValidationMetadata(networks: [.visa, .eftpos], source: .remote)
+
+        // Then: Should auto-select EFTPOS (first in merchant's preference order)
+        XCTAssertEqual(metadata.source, .remote, "Should preserve source")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.eftpos, .visa],
+            "Should order networks by merchant preference"
+        )
+        XCTAssertNotNil(metadata.autoSelectedCardNetwork, "Should have auto-selected network for EFTPOS co-badge")
+        XCTAssertEqual(
+            metadata.autoSelectedCardNetwork?.network,
+            .eftpos,
+            "Should auto-select EFTPOS when it's first in merchant preference"
+        )
+    }
+
+    func testCreateValidationMetadata_eftposVisa_visaFirst_autoSelectsVisa() {
+        // Given: Merchant prefers Visa over EFTPOS
+        let sut = createCardValidationService(allowedNetworks: [.visa, .eftpos, .masterCard])
+
+        // When: Card detected as EFTPOS + Visa co-badge
+        let metadata = sut.createValidationMetadata(networks: [.visa, .eftpos], source: .remote)
+
+        // Then: Should auto-select Visa (first in merchant's preference order)
+        XCTAssertEqual(metadata.source, .remote, "Should preserve source")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.visa, .eftpos],
+            "Should order networks by merchant preference"
+        )
+        XCTAssertNotNil(metadata.autoSelectedCardNetwork, "Should have auto-selected network for EFTPOS co-badge")
+        XCTAssertEqual(
+            metadata.autoSelectedCardNetwork?.network,
+            .visa,
+            "Should auto-select Visa when it's first in merchant preference"
+        )
+    }
+
+    func testCreateValidationMetadata_eftposMastercard_eftposFirst_autoSelectsEftpos() {
+        // Given: Merchant prefers EFTPOS over Mastercard
+        let sut = createCardValidationService(allowedNetworks: [.eftpos, .masterCard, .visa])
+
+        // When: Card detected as EFTPOS + Mastercard co-badge
+        let metadata = sut.createValidationMetadata(networks: [.masterCard, .eftpos], source: .remote)
+
+        // Then: Should auto-select EFTPOS
+        XCTAssertNotNil(metadata.autoSelectedCardNetwork, "Should have auto-selected network for EFTPOS co-badge")
+        XCTAssertEqual(
+            metadata.autoSelectedCardNetwork?.network,
+            .eftpos,
+            "Should auto-select EFTPOS for EFTPOS + Mastercard co-badge"
+        )
+    }
+
+    func testCreateValidationMetadata_singleEftpos_noAutoSelection() {
+        // Given: Merchant allows EFTPOS
+        let sut = createCardValidationService(allowedNetworks: [.eftpos, .visa, .masterCard])
+
+        // When: Card detected as only EFTPOS (single network)
+        let metadata = sut.createValidationMetadata(networks: [.eftpos], source: .remote)
+
+        // Then: Should NOT auto-select (only co-badges require auto-selection)
+        XCTAssertNil(metadata.autoSelectedCardNetwork, "Should not auto-select for single network")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.eftpos],
+            "Should have single selectable network"
+        )
+    }
+
+    func testCreateValidationMetadata_visaMastercard_noAutoSelection() {
+        // Given: Standard merchant configuration
+        let sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+
+        // When: Card detected as Visa + Mastercard (no EFTPOS)
+        let metadata = sut.createValidationMetadata(networks: [.visa, .masterCard], source: .remote)
+
+        // Then: Should NOT auto-select (EU co-badges remain unchanged)
+        XCTAssertNil(metadata.autoSelectedCardNetwork, "Should not auto-select for non-EFTPOS co-badges")
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.visa, .masterCard],
+            "Should preserve merchant order without auto-selection"
+        )
+    }
+
+    func testCreateValidationMetadata_cartesBancairesVisa_noAutoSelection() {
+        // Given: EU merchant configuration
+        let sut = createCardValidationService(allowedNetworks: [.cartesBancaires, .visa, .masterCard])
+
+        // When: Card detected as Cartes Bancaires + Visa (EU co-badge)
+        let metadata = sut.createValidationMetadata(networks: [.visa, .cartesBancaires], source: .remote)
+
+        // Then: Should NOT auto-select (EU regulations allow user choice)
+        XCTAssertNil(
+            metadata.autoSelectedCardNetwork,
+            "Should not auto-select for EU co-badges (CB/Visa)"
+        )
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.cartesBancaires, .visa],
+            "Should preserve merchant order for EU co-badges"
+        )
+    }
+
+    func testCreateValidationMetadata_eftposNotAllowed_noAutoSelection() {
+        // Given: Merchant doesn't support EFTPOS
+        let sut = createCardValidationService(allowedNetworks: [.visa, .masterCard])
+
+        // When: Card detected as EFTPOS + Visa but EFTPOS not allowed
+        let metadata = sut.createValidationMetadata(networks: [.visa, .eftpos], source: .remote)
+
+        // Then: Should only have Visa as selectable, no auto-selection
+        XCTAssertNil(
+            metadata.autoSelectedCardNetwork,
+            "Should not auto-select when EFTPOS is detected but not allowed"
+        )
+        XCTAssertEqual(
+            metadata.selectableCardNetworks?.items.map { $0.network },
+            [.visa],
+            "Should only have allowed networks as selectable"
+        )
+        XCTAssertEqual(
+            metadata.detectedCardNetworks.items.map { $0.network },
+            [.visa, .eftpos],
+            "Should still show EFTPOS in detected networks"
+        )
+    }
+
     // MARK: - Helper Methods
-    
+
     private func createCardValidationService(
         allowedNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks
     ) -> CardValidationService {

@@ -287,6 +287,12 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return nil
     }
 
+    /// Determines whether this card network allows user selection in co-badged scenarios
+    /// Returns false for local networks (like EFTPOS) that should auto-route
+    var allowsUserSelection: Bool {
+        return ![CardNetwork].selectionDisallowedCardNetworks.contains(self)
+    }
+
     var assetName: String {
         rawValue.lowercased().filter { $0.isLetter }
     }
@@ -326,6 +332,15 @@ extension [CardNetwork]: LogReporter {
             return []
         }
         return networkStrings.compactMap { CardNetwork(rawValue: $0) }
+    }
+
+    /// A set of card networks that disallow user selection in co-badged scenarios
+    /// These networks will be auto-selected based on merchant's orderedAllowedCardNetworks configuration
+    /// instead of showing a dropdown selector
+    static var selectionDisallowedCardNetworks: Set<CardNetwork> {
+        // EFTPOS is a local Australian network that should auto-route without user interaction
+        // This can be extended in the future for other local networks via remote configuration
+        return [.eftpos]
     }
 
     /// A list of all card networks, used by default when a merchant does not specify the networks they support

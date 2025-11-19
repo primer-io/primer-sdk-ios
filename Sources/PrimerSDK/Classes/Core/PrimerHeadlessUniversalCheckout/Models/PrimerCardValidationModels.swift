@@ -79,9 +79,14 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
 
     public let detectedCardNetworks: PrimerCardNetworksMetadata
 
+    /// The automatically selected card network for co-badged cards with selection-disallowed networks (e.g., EFTPOS)
+    /// This is set when a co-badged card contains a network that disallows user selection
+    public let autoSelectedCardNetwork: PrimerCardNetwork?
+
     init(source: PrimerCardValidationSource,
          selectableCardNetworks: [PrimerCardNetwork]?,
-         detectedCardNetworks: [PrimerCardNetwork]) {
+         detectedCardNetworks: [PrimerCardNetwork],
+         autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
         self.source = source
 
         if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
@@ -100,5 +105,7 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
             items: detectedCardNetworks,
             preferred: PrimerCardNetwork(network: preferredNetwork)
         )
+
+        self.autoSelectedCardNetwork = autoSelectedCardNetwork
     }
 }

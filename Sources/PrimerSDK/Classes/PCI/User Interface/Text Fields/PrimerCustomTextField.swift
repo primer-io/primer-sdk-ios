@@ -26,6 +26,7 @@ class PrimerCustomFieldView: UIView {
 
     private var textFieldStackView: UIStackView!  // Stack view containing the text field and dropdown
     private var networksDropdownView: UIView?  // Dropdown view for displaying available card networks
+    private var dualBadgeStackView: UIStackView?  // Non-interactive dual-badge display for selection-disallowed co-badges
     private var presentationButton: UIButton!  // Button used to trigger menu programmatically
 
     private var surchargeView: UIView?  // The surcharge view
@@ -90,6 +91,7 @@ class PrimerCustomFieldView: UIView {
         setupErrorLabel()
         constrainVerticalStackView()
         setupSurchargeView()
+        setupDualBadgeDisplayView()
     }
 
     // Function to reset the card network selection to the initial state
@@ -205,6 +207,59 @@ class PrimerCustomFieldView: UIView {
         setDropdownViewConstraints(dropdownView)
     }
 
+    private func setupDualBadgeDisplayView() {
+        guard dualBadgeStackView == nil else { return }
+
+        // Create and configure the badge stack view once
+        let badgeStack = UIStackView()
+        badgeStack.axis = .horizontal
+        badgeStack.alignment = .center
+        badgeStack.spacing = 8
+        badgeStack.isUserInteractionEnabled = false
+        badgeStack.isHidden = true
+        badgeStack.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        badgeStack.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
+        dualBadgeStackView = badgeStack
+        textFieldStackView.addArrangedSubview(badgeStack)
+    }
+
+    private func updateDualBadgeContent() {
+        guard let badgeStack = dualBadgeStackView else { return }
+
+        // Remove existing badges
+        badgeStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        // Add new badges
+        for network in cardNetworks {
+            let badgeContainer = createBadgeView(for: network)
+            badgeStack.addArrangedSubview(badgeContainer)
+        }
+    }
+
+    private func createBadgeView(for network: PrimerCardNetwork) -> UIView {
+        let badgeContainer = UIView()
+
+        let imageView = UIImageView(image: network.network.icon)
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 2
+        imageView.clipsToBounds = true
+
+        badgeContainer.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: badgeContainer.topAnchor),
+            imageView.bottomAnchor.constraint(equalTo: badgeContainer.bottomAnchor),
+            imageView.leadingAnchor.constraint(equalTo: badgeContainer.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: badgeContainer.trailingAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 28),
+            imageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        return badgeContainer
+    }
+
     // MARK: - Helper Methods
 
     // Creates the dropdown view container
@@ -313,26 +368,36 @@ class PrimerCustomFieldView: UIView {
         dropdownView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
 
-    // Updates dropdown visibility based on the number of card networks
     private func updateNetworksDropdownViewVisibility() {
-
         if #available(iOS 15.0, *) {
             setupUIMenuForButton()
         }
 
+        let hasSelectionDisallowedNetwork = cardNetworks.contains { network in
+            [CardNetwork].selectionDisallowedCardNetworks.contains(network.network)
+        }
+
         if cardNetworks.count > 1 {
-            if networksDropdownView == nil {
-                setupNetworksDropdownView()
+            if hasSelectionDisallowedNetwork {
+                updateDualBadgeContent()
+                dualBadgeStackView?.isHidden = false
+                networksDropdownView?.isHidden = true
+                rightImageViewContainer.isHidden = true
+            } else {
+                if networksDropdownView == nil {
+                    setupNetworksDropdownView()
+                }
+                networksDropdownView?.isHidden = false
+                dualBadgeStackView?.isHidden = true
+                rightImageViewContainer.isHidden = true
             }
-            networksDropdownView?.isHidden = false
-            rightImageViewContainer.isHidden = true
         } else {
             networksDropdownView?.isHidden = true
+            dualBadgeStackView?.isHidden = true
             rightImageViewContainer.isHidden = false
         }
     }
 
-    // Configures the right image view container in the text field stack view
     private func setupRightImageViewContainer(in stackView: UIStackView) {
         rightImageView.contentMode = .scaleAspectFit
         stackView.addArrangedSubview(rightImageViewContainer)
