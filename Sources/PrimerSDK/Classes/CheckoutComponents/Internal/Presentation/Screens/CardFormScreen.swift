@@ -292,31 +292,16 @@ struct CardFormScreen: View, LogReporter {
 
         let baseAmount = AppState.current.amount ?? 0
 
-        // Check if there's a surcharge from the detected card network
-        if let surchargeAmountString = cardFormState.surchargeAmount,
-           !surchargeAmountString.isEmpty,
+        // Check if there's a surcharge from the detected card network (use raw amount)
+        if let surchargeRaw = cardFormState.surchargeAmountRaw,
            cardFormState.selectedNetwork != nil {
-
-            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
-            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
-
-            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
-            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
-
-            // Handle different decimal separators (European "," vs US ".")
-            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
-
-            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
-                // Convert to cents for calculation
-                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
-                let totalAmount = baseAmount + surchargeCents
-                // Use accessibility-friendly formatter
-                let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
-                return "Pay with \(accessibilityAmount)"
-            }
+            let totalAmount = baseAmount + surchargeRaw
+            // Use accessibility-friendly formatter
+            let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
+            return "Pay with \(accessibilityAmount)"
         }
 
-        // No surcharge or parsing failed, use base amount with accessibility formatter
+        // No surcharge, use base amount with accessibility formatter
         let accessibilityAmount = baseAmount.toAccessibilityCurrencyString(currency: currency)
         return "Pay with \(accessibilityAmount)"
     }
@@ -335,31 +320,15 @@ struct CardFormScreen: View, LogReporter {
 
         let baseAmount = AppState.current.amount ?? 0
 
-        // Check if there's a surcharge from the detected card network
-        if let surchargeAmountString = cardFormState.surchargeAmount,
-           !surchargeAmountString.isEmpty,
+        // Check if there's a surcharge from the detected card network (use raw amount)
+        if let surchargeRaw = cardFormState.surchargeAmountRaw,
            cardFormState.selectedNetwork != nil {
-
-            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
-            // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
-            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
-
-            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
-            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
-
-            // Handle different decimal separators (European "," vs US ".")
-            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
-
-            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
-                // Convert to cents for calculation (surcharge is in major currency units, need minor units)
-                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
-                let totalAmount = baseAmount + surchargeCents
-                let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
-                return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
-            }
+            let totalAmount = baseAmount + surchargeRaw
+            let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
+            return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
         }
 
-        // No surcharge or parsing failed, use base amount
+        // No surcharge, use base amount
         let formattedBaseAmount = baseAmount.toCurrencyString(currency: currency)
         return CheckoutComponentsStrings.paymentAmountTitle(formattedBaseAmount)
     }

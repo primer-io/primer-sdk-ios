@@ -42,8 +42,10 @@ struct CheckoutScopeObserver: View, LogReporter {
             } else {
                 NavigationView { contentView }
                     .navigationViewStyle(.stack)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         }
+        .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     }
 
     private var contentView: some View {

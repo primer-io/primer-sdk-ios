@@ -70,19 +70,20 @@ struct CardNumberInputField: View, LogReporter {
                 }
             },
             rightComponent: {
-                VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    if displayNetwork != .unknown {
-                        CardNetworkBadge(network: displayNetwork)
-                    }
-
+                HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                     if let surchargeAmount = surchargeAmount {
                         Text(surchargeAmount)
-                            .font(PrimerFont.bodySmall(tokens: tokens))
-                            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                            .font(PrimerFont.caption(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                             .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
-                            .padding(.vertical, 1)
+                            .padding(.vertical, 2)
                             .background(CheckoutColors.gray200(tokens: tokens))
                             .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
+                            .frame(height: PrimerSize.small(tokens: tokens))
+                    }
+
+                    if displayNetwork != .unknown {
+                        CardNetworkBadge(network: displayNetwork)
                     }
                 }
             }
@@ -96,6 +97,14 @@ struct CardNumberInputField: View, LogReporter {
         ))
         .onAppear {
             setupValidationService()
+        }
+        .onChange(of: cardNetwork) { newNetwork in
+            updateSurchargeAmount(for: newNetwork)
+        }
+        .onChange(of: selectedNetwork) { newNetwork in
+            if let newNetwork = newNetwork {
+                updateSurchargeAmount(for: newNetwork)
+            }
         }
     }
 
@@ -114,7 +123,6 @@ struct CardNumberInputField: View, LogReporter {
 
     private func updateSurchargeAmount(for network: CardNetwork) {
         guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
               let currency = AppState.current.currency else {
             surchargeAmount = nil
             return

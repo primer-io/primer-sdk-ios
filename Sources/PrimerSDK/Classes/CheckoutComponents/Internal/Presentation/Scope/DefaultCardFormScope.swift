@@ -549,18 +549,20 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Updates the surcharge amount based on the selected card network
     private func updateSurchargeAmount(for network: CardNetwork?) {
         guard let network = network else {
+            structuredState.surchargeAmountRaw = nil
             structuredState.surchargeAmount = nil
             return
         }
 
         guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
               let currency = AppState.current.currency else {
+            structuredState.surchargeAmountRaw = nil
             structuredState.surchargeAmount = nil
             return
         }
 
         let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+        structuredState.surchargeAmountRaw = surcharge
         structuredState.surchargeAmount = formattedSurcharge
     }
 

@@ -155,7 +155,7 @@ struct PaymentMethodSelectionScreen: View {
             return [PaymentMethodGroup(group: "", methods: methods)]
         }
 
-        // Group 1: Methods with positive surcharges
+        // Group 1: Methods with positive surcharges - create separate groups for each unique surcharge amount
         let surchargeMethods = methods.filter { method in
             if let surcharge = method.surcharge, surcharge > 0 {
                 return true
@@ -163,14 +163,18 @@ struct PaymentMethodSelectionScreen: View {
             return false
         }
 
-        if !surchargeMethods.isEmpty {
-            let highestSurcharge = surchargeMethods.compactMap { $0.surcharge }.max() ?? 0
+        // Group by unique surcharge amounts
+        let uniqueSurcharges = Set(surchargeMethods.compactMap { $0.surcharge })
+        let sortedSurcharges = uniqueSurcharges.sorted()
+
+        for surcharge in sortedSurcharges {
+            let methodsWithThisSurcharge = surchargeMethods.filter { $0.surcharge == surcharge }
             let currency = AppState.current.currency ?? Currency(code: "EUR", decimalDigits: 2)
-            let formattedSurcharge = "+\(highestSurcharge.toCurrencyString(currency: currency))"
+            let formattedSurcharge = "+\(surcharge.toCurrencyString(currency: currency))"
 
             groups.append(PaymentMethodGroup(
                 group: formattedSurcharge,
-                methods: surchargeMethods
+                methods: methodsWithThisSurcharge
             ))
         }
 
@@ -246,14 +250,14 @@ struct PaymentMethodSelectionScreen: View {
     /// Get appropriate color for group header using design tokens
     private func dynamicGroupHeaderColor(for groupName: String) -> Color {
         if groupName.hasPrefix("+") {
-            // Positive surcharge - use positive color
-            return CheckoutColors.iconPositive(tokens: tokens)
+            // Positive surcharge - use primary text color (black)
+            return CheckoutColors.textPrimary(tokens: tokens)
         } else if groupName == CheckoutComponentsStrings.additionalFeeMayApply {
-            // Unknown surcharge - use warning color
+            // Unknown surcharge - use secondary text color
             return CheckoutColors.textSecondary(tokens: tokens)
         } else {
             // No additional fee - use muted color
-            return CheckoutColors.textPlaceholder(tokens: tokens)
+            return CheckoutColors.textSecondary(tokens: tokens)
         }
     }
 
