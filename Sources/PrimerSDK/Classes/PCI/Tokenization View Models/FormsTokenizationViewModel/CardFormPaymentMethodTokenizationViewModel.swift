@@ -45,6 +45,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                                              expiryDate: "",
                                              cvv: "",
                                              cardholderName: "")
+    private var isRawDataInitialized = false
     fileprivate var currentlyAvailableCardNetworks: [PrimerCardNetwork]?
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -134,7 +135,12 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             guard let self = self else { return }
             self.alternativelySelectedCardNetwork = cardNetwork.network
             self.rawCardData.cardNetwork = cardNetwork.network
-            self.rawDataManager?.rawData = self.rawCardData
+
+            if !self.isRawDataInitialized {
+                self.rawDataManager?.rawData = self.rawCardData
+                self.isRawDataInitialized = true
+            }
+
             self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
 
             configureAmountLabels(cardNetwork: cardNetwork.network)
@@ -865,17 +871,24 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
                              didDetectCardNetwork cardNetwork: CardNetwork?) {
         if let text = primerTextFieldView.textField.internalText {
-            rawCardData.cardNumber = text.replacingOccurrences(of: " ", with: "")
-            rawDataManager?.rawData = rawCardData
+            let sanitizedText = text.replacingOccurrences(of: " ", with: "")
+            guard rawCardData.cardNumber != sanitizedText else { return }
+
+            if !isRawDataInitialized {
+                rawCardData.cardNumber = sanitizedText
+                rawDataManager?.rawData = rawCardData
+                isRawDataInitialized = true
+            } else {
+                rawCardData.cardNumber = sanitizedText
+            }
         }
     }
 
     private func handleCardNetworkDetection(_ cardNetwork: CardNetwork?) {
-        guard alternativelySelectedCardNetwork == nil
-        else { return }
+        guard alternativelySelectedCardNetwork == nil else { return }
+        guard rawCardData.cardNetwork != cardNetwork else { return }
 
         self.rawCardData.cardNetwork = cardNetwork
-        self.rawDataManager?.rawData = self.rawCardData
 
         var network = cardNetwork?.rawValue.uppercased()
 
@@ -985,39 +998,21 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Swift.Error]?) {
-        let errorsDescription = errors?.map(\.localizedDescription).joined(separator: ", ")
-        logger.debug(message: "dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
-    }
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              metadataDidChange metadata: [String: Any]?) {
-        logger.debug(message: "metadataDidChange: \(metadata ?? [:])")
-    }
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState cardState: PrimerValidationState) {
-        guard let state = cardState as? PrimerCardNumberEntryState else {
+        guard cardState is PrimerCardNumberEntryState else {
             logger.error(message: "Received non-card metadata. Ignoring ...")
             return
         }
-        logger.debug(message: "willFetchCardMetadataForState: \(state.cardNumber)")
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState cardState: PrimerValidationState) {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
-              let stateModel = cardState as? PrimerCardNumberEntryState else {
+              cardState is PrimerCardNumberEntryState else {
             logger.error(message: "Received non-card metadata. Ignoring ...")
             return
         }
-
-        let metadataDescription = metadataModel.selectableCardNetworks?.items
-            .map(\.displayName)
-            .joined(separator: ", ") ?? "n/a"
-        logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(stateModel.cardNumber)")
 
         var primerNetworks: [PrimerCardNetwork]
         if metadataModel.source == .remote,
@@ -1040,19 +1035,15 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         currentlyAvailableCardNetworks = filteredNetworks
         cardNumberContainerView.cardNetworks = filteredNetworks
 
-        // 1) Set default on first non-empty detection
         if defaultCardNetwork == nil, let first = newNetworks.first {
             defaultCardNetwork = first
         }
 
         DispatchQueue.main.async {
-            // 2) Exactly one network: reset any manual selection and apply it
             if newNetworks.count == 1 {
                 self.cardNumberContainerView.resetCardNetworkSelection()
                 self.alternativelySelectedCardNetwork = nil
                 self.handleCardNetworkDetection(newNetworks[0])
-
-            // 3) Multiple possible networks: check for auto-selection or show generic icon
             } else if newNetworks.count > 1 {
                 if let autoSelected = metadataModel.autoSelectedCardNetwork {
                     // Auto-selected network (e.g., EFTPOS co-badge)
@@ -1064,8 +1055,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
                     self.cardNumberContainerView.resetCardNetworkSelection()
                     self.cardNumberContainerView.rightImage = CardNetwork.unknown.icon
                 }
-
-            // 4) No networks (user cleared the field): wipe everything
             } else {
                 // Remember if we had any selection
                 let hadSelection = (self.alternativelySelectedCardNetwork != nil)
