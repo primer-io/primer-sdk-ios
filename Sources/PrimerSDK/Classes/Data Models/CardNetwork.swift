@@ -287,8 +287,14 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return nil
     }
 
+    /// Determines whether this card network allows user selection in co-badged scenarios
+    /// Returns false for local networks (like EFTPOS) that should auto-route
+    var allowsUserSelection: Bool {
+        ![CardNetwork].selectionDisallowedCardNetworks.contains(self)
+    }
+
     var assetName: String {
-        rawValue.lowercased().filter { $0.isLetter }
+        rawValue.lowercased().filter(\.isLetter)
     }
     public init(cardNumber: String) {
         self = CardNetworkParser.shared.cardNetwork(from: cardNumber) ?? .unknown
@@ -328,10 +334,17 @@ extension [CardNetwork]: LogReporter {
         return networkStrings.compactMap { CardNetwork(rawValue: $0) }
     }
 
+    /// A set of card networks that disallow user selection in co-badged scenarios
+    /// When detected, the first network from merchant's orderedAllowedCardNetworks will be auto-selected
+    /// instead of showing a dropdown selector
+    static var selectionDisallowedCardNetworks: Set<CardNetwork> {
+        [.eftpos]
+    }
+
     /// A list of all card networks, used by default when a merchant does not specify the networks they support
     /// Also used to configure suppoted networks for Apple Pay
     static var allCardNetworks: Self {
-        return Element.allCases
+        Element.allCases
     }
 }
 // swiftlint:enable type_body_length

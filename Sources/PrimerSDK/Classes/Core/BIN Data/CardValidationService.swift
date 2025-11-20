@@ -16,7 +16,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     static let maximumBinLength = 8
 
     private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
-        return self.rawDataManager.delegate
+        self.rawDataManager.delegate
     }
 
     private let apiClient: PrimerAPIClientBINDataProtocol
@@ -35,7 +35,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
 
     private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
-        return metadataCacheQueue.sync { metadataCacheBacking[key] }
+        metadataCacheQueue.sync { metadataCacheBacking[key] }
     }
 
     private func setCachedMetadata(_ metadata: PrimerCardNumberEntryMetadata, for key: String) {
@@ -169,10 +169,13 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
+        let containsDisallowedNetwork = networks.contains(where: [CardNetwork].selectionDisallowedCardNetworks.contains)
+
         return .init(
             source: source,
             selectableCardNetworks: selectable.isEmpty ? nil : selectable,
-            detectedCardNetworks: detected
+            detectedCardNetworks: detected,
+            autoSelectedCardNetwork: containsDisallowedNetwork && selectable.count > 1 ? selectable.first : nil
         )
     }
 
@@ -181,7 +184,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     private func sendEvent(forNetworks networks: [PrimerCardNetwork], source: PrimerCardValidationSource) {
         let event = Analytics.Event.ui(
             action: .view,
-            context: .init(cardNetworks: networks.map { $0.network.rawValue }),
+            context: .init(cardNetworks: networks.map(\.network.rawValue)),
             extra: "Source = \(source.rawValue)",
             objectType: .list,
             objectId: .cardNetwork,
