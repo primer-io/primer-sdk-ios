@@ -169,14 +169,13 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
-        // Auto-select first network for co-badged cards with selection-disallowed networks (e.g., EFTPOS)
-        let autoSelectedNetwork = networks.contains(where: { [CardNetwork].selectionDisallowedCardNetworks.contains($0) }) ? selectable.first : nil
+        let containsDisallowedNetwork = networks.contains(where: [CardNetwork].selectionDisallowedCardNetworks.contains)
 
         return .init(
             source: source,
             selectableCardNetworks: selectable.isEmpty ? nil : selectable,
             detectedCardNetworks: detected,
-            autoSelectedCardNetwork: autoSelectedNetwork
+            autoSelectedCardNetwork: containsDisallowedNetwork ? selectable.first : nil
         )
     }
 

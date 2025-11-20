@@ -227,10 +227,8 @@ class PrimerCustomFieldView: UIView {
     private func updateDualBadgeContent() {
         guard let badgeStack = dualBadgeStackView else { return }
 
-        // Remove existing badges
         badgeStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        // Add new badges
         for network in cardNetworks {
             let badgeContainer = createBadgeView(for: network)
             badgeStack.addArrangedSubview(badgeContainer)
