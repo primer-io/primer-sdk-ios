@@ -13,16 +13,16 @@ struct CountryInputField: View, LogReporter {
 
     let label: String?
     let placeholder: String
-    let scope: any PrimerCardFormScope
-    let selectedCountry: CountryCode.PhoneNumberCountryCode?
     let styling: PrimerFieldStyling?
 
     // MARK: - Private Properties
 
+    @ObservedObject private var scope: DefaultCardFormScope
     @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var countryName: String = ""
     @State private var countryCode: String = ""
+    @State private var countryFlag: String?
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
@@ -38,19 +38,21 @@ struct CountryInputField: View, LogReporter {
         return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
     }
 
+    private var selectedCountryFromScope: PrimerCountry? {
+        scope.structuredState.selectedCountry
+    }
+
     // MARK: - Initialization
 
     init(
         label: String?,
         placeholder: String,
-        scope: any PrimerCardFormScope,
-        selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
+        scope: DefaultCardFormScope,
         styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.scope = scope
-        self.selectedCountry = selectedCountry
         self.styling = styling
     }
 
@@ -82,7 +84,14 @@ struct CountryInputField: View, LogReporter {
                         self.isNavigating = false
                     }
                 }) {
-                    HStack(spacing: 0) {
+                    HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+                        // Flag emoji
+                        if let flag = countryFlag, !countryName.isEmpty {
+                            Text(flag)
+                                .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                        }
+
+                        // Country name or placeholder
                         Text(countryName.isEmpty ? placeholder : countryName)
                             .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
                             .foregroundColor(countryTextColor)
@@ -105,7 +114,7 @@ struct CountryInputField: View, LogReporter {
             setupValidationService()
             updateFromExternalState()
         }
-        .onChange(of: selectedCountry) { newCountry in
+        .onChange(of: selectedCountryFromScope) { newCountry in
             updateFromExternalState(with: newCountry)
         }
     }
@@ -126,16 +135,17 @@ struct CountryInputField: View, LogReporter {
     /// Updates the field from external state changes using the property
     @MainActor
     private func updateFromExternalState() {
-        updateFromExternalState(with: selectedCountry)
+        updateFromExternalState(with: selectedCountryFromScope)
     }
 
     /// Updates the field from external state changes using the provided country
     @MainActor
-    private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
-        // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
+    private func updateFromExternalState(with country: PrimerCountry?) {
+        // Update directly from the PrimerCountry object from the scope
         if let country = country, !country.name.isEmpty, !country.code.isEmpty {
             countryName = country.name
             countryCode = country.code
+            countryFlag = country.flag
             validateCountry()
         }
     }
@@ -147,6 +157,18 @@ struct CountryInputField: View, LogReporter {
         countryCode = code
         scope.updateCountryCode(code)
         validateCountry()
+    }
+
+    /// Clears field error
+    @MainActor
+    private func clearFieldError() {
+        scope.clearFieldError(.countryCode)
+    }
+
+    /// Sets field error
+    @MainActor
+    private func setFieldError(message: String, errorCode: String?) {
+        scope.setFieldError(.countryCode, message: message, errorCode: errorCode)
     }
 
     @MainActor
@@ -162,44 +184,17 @@ struct CountryInputField: View, LogReporter {
         errorMessage = result.errorMessage
 
         if result.isValid {
-            scope.clearFieldError(.countryCode)
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateCountryCodeValidationState(true)
-            }
+            clearFieldError()
+            scope.updateCountryCodeValidationState(true)
         } else if let message = result.errorMessage {
-            scope.setFieldError(.countryCode, message: message, errorCode: result.errorCode)
-            if let scope = scope as? DefaultCardFormScope {
-                scope.updateCountryCodeValidationState(false)
-            }
+            setFieldError(message: message, errorCode: result.errorCode)
+            scope.updateCountryCodeValidationState(false)
         }
     }
 }
 
 #if DEBUG
 // MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    CountryInputField(
-        label: "Country",
-        placeholder: "Select country",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
-
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    CountryInputField(
-        label: "Country",
-        placeholder: "Select country",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+// Note: Previews are disabled for CountryInputField because it requires DefaultCardFormScope
+// which has complex initialization dependencies. Use the Debug App to test this component.
 #endif

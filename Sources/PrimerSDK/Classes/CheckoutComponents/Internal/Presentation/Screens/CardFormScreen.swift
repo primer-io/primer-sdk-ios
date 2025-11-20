@@ -498,11 +498,11 @@ struct CardFormScreen: View, LogReporter {
             if let customField = (scope as? DefaultCardFormScope)?.countryField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .countryCode)
-            } else {
+            } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
                 CountryInputField(
                     label: fieldLabel ?? "",
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                    scope: scope,
+                    scope: defaultCardFormScope,
                     styling: defaultStyling
                 )
                 .focused($focusedField, equals: .countryCode)

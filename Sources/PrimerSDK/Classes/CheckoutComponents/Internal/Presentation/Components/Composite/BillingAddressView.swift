@@ -27,16 +27,13 @@ struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
     /// The card form scope for handling updates
-    let cardFormScope: any PrimerCardFormScope
+    let cardFormScope: DefaultCardFormScope
 
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
 
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
-
-    /// Currently selected country (atomic state for bug-free updates)
-    @State private var selectedCountry: CountryCode.PhoneNumberCountryCode?
 
     /// Show country selector
     @State private var showCountrySelector = false
@@ -47,7 +44,7 @@ struct BillingAddressView: View, LogReporter {
 
     /// Creates a new BillingAddressView with comprehensive customization support
     init(
-        cardFormScope: any PrimerCardFormScope,
+        cardFormScope: DefaultCardFormScope,
         configuration: BillingAddressConfiguration,
         styling: PrimerFieldStyling? = nil
     ) {
@@ -64,7 +61,7 @@ struct BillingAddressView: View, LogReporter {
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                     if configuration.showFirstName {
-                        if let customField = (cardFormScope as? DefaultCardFormScope)?.firstNameField {
+                        if let customField = cardFormScope.firstNameField {
                             AnyView(customField(CheckoutComponentsStrings.firstNameLabel, styling))
                         } else {
                             defaultFirstNameField()
@@ -72,7 +69,7 @@ struct BillingAddressView: View, LogReporter {
                     }
 
                     if configuration.showLastName {
-                        if let customField = (cardFormScope as? DefaultCardFormScope)?.lastNameField {
+                        if let customField = cardFormScope.lastNameField {
                             AnyView(customField(CheckoutComponentsStrings.lastNameLabel, styling))
                         } else {
                             defaultLastNameField()
@@ -83,7 +80,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Country - Show first to match Drop-in layout
             if configuration.showCountry {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.countryField {
+                if let customField = cardFormScope.countryField {
                     AnyView(customField(CheckoutComponentsStrings.countryLabel, styling))
                 } else {
                     defaultCountryField()
@@ -92,7 +89,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Address Line 1
             if configuration.showAddressLine1 {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine1Field {
+                if let customField = cardFormScope.addressLine1Field {
                     AnyView(customField(CheckoutComponentsStrings.addressLine1Label, styling))
                 } else {
                     defaultAddressLine1Field()
@@ -101,7 +98,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.postalCodeField {
+                if let customField = cardFormScope.postalCodeField {
                     AnyView(customField(CheckoutComponentsStrings.postalCodeLabel, styling))
                 } else {
                     defaultPostalCodeField()
@@ -110,7 +107,7 @@ struct BillingAddressView: View, LogReporter {
 
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.stateField {
+                if let customField = cardFormScope.stateField {
                     AnyView(customField(CheckoutComponentsStrings.stateLabel, styling))
                 } else {
                     defaultStateField()
@@ -119,7 +116,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Address Line 2 (Optional)
             if configuration.showAddressLine2 {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.addressLine2Field {
+                if let customField = cardFormScope.addressLine2Field {
                     AnyView(customField(CheckoutComponentsStrings.addressLine2Label, styling))
                 } else {
                     defaultAddressLine2Field()
@@ -128,7 +125,7 @@ struct BillingAddressView: View, LogReporter {
 
             // City - After address fields
             if configuration.showCity {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.cityField {
+                if let customField = cardFormScope.cityField {
                     AnyView(customField(CheckoutComponentsStrings.cityLabel, styling))
                 } else {
                     defaultCityField()
@@ -137,7 +134,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Email - Near the end
             if configuration.showEmail {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.emailField {
+                if let customField = cardFormScope.emailField {
                     AnyView(customField(CheckoutComponentsStrings.emailLabel, styling))
                 } else {
                     defaultEmailField()
@@ -146,7 +143,7 @@ struct BillingAddressView: View, LogReporter {
 
             // Phone Number - Last field
             if configuration.showPhoneNumber {
-                if let customField = (cardFormScope as? DefaultCardFormScope)?.phoneNumberField {
+                if let customField = cardFormScope.phoneNumberField {
                     AnyView(customField(CheckoutComponentsStrings.phoneNumberLabel, styling))
                 } else {
                     defaultPhoneNumberField()
@@ -154,37 +151,21 @@ struct BillingAddressView: View, LogReporter {
             }
         }
         .sheet(isPresented: $showCountrySelector) {
-            if let defaultCardFormScope = cardFormScope as? DefaultCardFormScope {
-                let countryScope = BillingAddressCountryScope(
-                    cardFormScope: defaultCardFormScope,
-                    onCountrySelected: { code, name in
-                        // Update country state atomically to fix one-step delay bug
-                        let dialCode = CountryCode.phoneNumberCountryCodes
-                            .first { $0.code == code }?.dialCode ?? ""
+            let countryScope = BillingAddressCountryScope(
+                cardFormScope: cardFormScope,
+                onCountrySelected: { code, _ in
+                    // Update country in the scope - field will observe the change
+                    cardFormScope.updateCountryCode(code)
+                    showCountrySelector = false
+                }
+            )
 
-                        let newCountry = CountryCode.PhoneNumberCountryCode(
-                            name: name,
-                            dialCode: dialCode,
-                            code: code
-                        )
-                        selectedCountry = newCountry
-                        cardFormScope.updateCountryCode(code)
-                        showCountrySelector = false
-                    }
-                )
-
-                SelectCountryScreen(
-                    scope: countryScope,
-                    onDismiss: {
-                        showCountrySelector = false
-                    }
-                )
-                // .primerModifier() removed - use standard SwiftUI modifiers
-            } else {
-                // Fallback if scopes aren't available
-                Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
-                    .padding(PrimerSpacing.large(tokens: tokens))
-            }
+            SelectCountryScreen(
+                scope: countryScope,
+                onDismiss: {
+                    showCountrySelector = false
+                }
+            )
         }
     }
 
@@ -218,7 +199,6 @@ struct BillingAddressView: View, LogReporter {
             label: CheckoutComponentsStrings.countryLabel,
             placeholder: CheckoutComponentsStrings.countrySelectorPlaceholder,
             scope: cardFormScope,
-            selectedCountry: selectedCountry,
             styling: styling
         )
         .onTapGesture {
