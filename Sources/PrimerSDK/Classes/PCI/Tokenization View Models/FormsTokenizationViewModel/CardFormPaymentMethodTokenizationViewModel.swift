@@ -164,11 +164,11 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     // MARK: - Expiry date field
 
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
+        PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
 
     private lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
+        PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
 
     // MARK: - CVV field
@@ -302,7 +302,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     // MARK: All billing address fields
 
     var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
@@ -320,13 +320,13 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
-        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map(\.fieldView)
     }
 
     // swiftlint:disable:next identifier_name
     var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
-        return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        return allVisibleBillingAddressFields.map { $0.map(\.containerFieldView) }
     }
 
     var formView: PrimerFormView {
@@ -836,7 +836,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         }
 
         if isShowingBillingAddressFieldsRequired {
-            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map(\.isTextValid))
         }
 
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
@@ -915,7 +915,7 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        dataSource.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -987,7 +987,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Swift.Error]?) {
-        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        let errorsDescription = errors?.map(\.localizedDescription).joined(separator: ", ")
         logger.debug(message: "dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
     }
 
@@ -1015,7 +1015,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         }
 
         let metadataDescription = metadataModel.selectableCardNetworks?.items
-            .map { $0.displayName }
+            .map(\.displayName)
             .joined(separator: ", ") ?? "n/a"
         logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(stateModel.cardNumber)")
 
@@ -1033,7 +1033,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         }
 
         let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
-        let newNetworks = filteredNetworks.map { $0.network }
+        let newNetworks = filteredNetworks.map(\.network)
         guard newNetworks != lastRemoteNetworkValues else { return }
         lastRemoteNetworkValues = newNetworks
 

@@ -299,12 +299,12 @@ final class CardValidationServiceTests: XCTestCase {
         // Then
         XCTAssertEqual(metadata.source, .remote, "Should preserve source")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.visa, .masterCard],
             "Should order selectable networks according to allowed list"
         )
         XCTAssertEqual(
-            metadata.detectedCardNetworks.items.map { $0.network },
+            metadata.detectedCardNetworks.items.map(\.network),
             [.visa, .masterCard],
             "Should include all allowed networks in detected list"
         )
@@ -321,7 +321,7 @@ final class CardValidationServiceTests: XCTestCase {
         XCTAssertEqual(metadata.source, .remote, "Should preserve source")
         XCTAssertNil(metadata.selectableCardNetworks, "Should have no selectable networks when none are allowed")
         XCTAssertEqual(
-            metadata.detectedCardNetworks.items.map { $0.network },
+            metadata.detectedCardNetworks.items.map(\.network),
             [.masterCard, .visa],
             "Should show all detected networks even if none are allowed"
         )
@@ -340,12 +340,12 @@ final class CardValidationServiceTests: XCTestCase {
         // Then
         XCTAssertEqual(metadata.source, .remote, "Should preserve source")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.masterCard, .visa, .jcb, .amex],
             "Should order selectable networks according to allowed list"
         )
         XCTAssertEqual(
-            metadata.detectedCardNetworks.items.map { $0.network },
+            metadata.detectedCardNetworks.items.map(\.network),
             [.masterCard, .visa, .jcb, .amex, .elo],
             "Should include allowed networks first, then unallowed"
         )
@@ -363,7 +363,7 @@ final class CardValidationServiceTests: XCTestCase {
         // Then: Should auto-select EFTPOS (first in merchant's preference order)
         XCTAssertEqual(metadata.source, .remote, "Should preserve source")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.eftpos, .visa],
             "Should order networks by merchant preference"
         )
@@ -385,7 +385,7 @@ final class CardValidationServiceTests: XCTestCase {
         // Then: Should auto-select Visa (first in merchant's preference order)
         XCTAssertEqual(metadata.source, .remote, "Should preserve source")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.visa, .eftpos],
             "Should order networks by merchant preference"
         )
@@ -423,7 +423,7 @@ final class CardValidationServiceTests: XCTestCase {
         // Then: Should NOT auto-select (only co-badges require auto-selection)
         XCTAssertNil(metadata.autoSelectedCardNetwork, "Should not auto-select for single network")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.eftpos],
             "Should have single selectable network"
         )
@@ -439,7 +439,7 @@ final class CardValidationServiceTests: XCTestCase {
         // Then: Should NOT auto-select (EU co-badges remain unchanged)
         XCTAssertNil(metadata.autoSelectedCardNetwork, "Should not auto-select for non-EFTPOS co-badges")
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.visa, .masterCard],
             "Should preserve merchant order without auto-selection"
         )
@@ -458,7 +458,7 @@ final class CardValidationServiceTests: XCTestCase {
             "Should not auto-select for EU co-badges (CB/Visa)"
         )
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.cartesBancaires, .visa],
             "Should preserve merchant order for EU co-badges"
         )
@@ -477,12 +477,12 @@ final class CardValidationServiceTests: XCTestCase {
             "Should not auto-select when EFTPOS is detected but not allowed"
         )
         XCTAssertEqual(
-            metadata.selectableCardNetworks?.items.map { $0.network },
+            metadata.selectableCardNetworks?.items.map(\.network),
             [.visa],
             "Should only have allowed networks as selectable"
         )
         XCTAssertEqual(
-            metadata.detectedCardNetworks.items.map { $0.network },
+            metadata.detectedCardNetworks.items.map(\.network),
             [.visa, .eftpos],
             "Should still show EFTPOS in detected networks"
         )
@@ -533,8 +533,8 @@ final class CardValidationServiceTests: XCTestCase {
         if shouldHaveSelectableNetworks {
             XCTAssertNotNil(networks.selectableCardNetworks, "Should have selectable networks")
             XCTAssertEqual(
-                networks.detectedCardNetworks.items.map { $0.network },
-                networks.selectableCardNetworks?.items.map { $0.network },
+                networks.detectedCardNetworks.items.map(\.network),
+                networks.selectableCardNetworks?.items.map(\.network),
                 "Detected and selectable networks should match when all are allowed"
             )
         }

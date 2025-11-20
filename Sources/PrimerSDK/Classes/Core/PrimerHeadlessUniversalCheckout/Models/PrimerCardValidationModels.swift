@@ -34,7 +34,7 @@ public final class PrimerCardNetwork: NSObject {
     public let network: CardNetwork
 
     public var allowed: Bool {
-        return [CardNetwork].allowedCardNetworks.contains(network)
+        [CardNetwork].allowedCardNetworks.contains(network)
     }
 
     init(displayName: String, network: CardNetwork) {
@@ -55,7 +55,7 @@ public final class PrimerCardNetwork: NSObject {
     }
 
     override public var description: String {
-        return "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
+        "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
     }
 }
 
@@ -99,7 +99,7 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
         }
 
         let preferredNetwork = [CardNetwork].allowedCardNetworks.first {
-            detectedCardNetworks.map { $0.network }.contains($0)
+            detectedCardNetworks.map(\.network).contains($0)
         }
         self.detectedCardNetworks = PrimerCardNetworksMetadata(
             items: detectedCardNetworks,
