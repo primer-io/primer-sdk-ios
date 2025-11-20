@@ -170,11 +170,11 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     // MARK: - Expiry date field
 
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
+        PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
 
     private lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
+        PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
 
     // MARK: - CVV field
@@ -308,7 +308,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     // MARK: All billing address fields
 
     var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
@@ -927,7 +927,7 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        dataSource.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

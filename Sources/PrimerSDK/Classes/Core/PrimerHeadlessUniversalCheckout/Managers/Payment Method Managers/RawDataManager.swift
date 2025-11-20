@@ -189,7 +189,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
-            return self.rawDataTokenizationBuilder.requiredInputElementTypes
+            self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
 
         public func submit() {

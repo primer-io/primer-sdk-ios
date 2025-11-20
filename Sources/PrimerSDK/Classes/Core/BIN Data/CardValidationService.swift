@@ -16,7 +16,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     static let maximumBinLength = 8
 
     private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
-        return self.rawDataManager.delegate
+        self.rawDataManager.delegate
     }
 
     private let apiClient: PrimerAPIClientBINDataProtocol
