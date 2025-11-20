@@ -59,10 +59,10 @@ struct BillingAddressView: View, LogReporter {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+        VStack(spacing: 0) {
             // Name fields (horizontal layout) - Using closure properties
             if configuration.showFirstName || configuration.showLastName {
-                HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+                HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                     if configuration.showFirstName {
                         if let customField = (cardFormScope as? DefaultCardFormScope)?.firstNameField {
                             AnyView(customField(CheckoutComponentsStrings.firstNameLabel, styling))
@@ -301,7 +301,6 @@ struct BillingAddressView: View, LogReporter {
             styling: styling
         )
     }
-
 }
 
 // MARK: - Custom Country Scope for Billing Address
@@ -310,15 +309,14 @@ struct BillingAddressView: View, LogReporter {
 @available(iOS 15.0, *)
 @MainActor
 final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
-
     private let cardFormScope: DefaultCardFormScope
     private let onCountrySelectedCallback: (String, String) -> Void
     private var defaultScope: DefaultSelectCountryScope
 
     init(cardFormScope: DefaultCardFormScope, onCountrySelected: @escaping (String, String) -> Void) {
         self.cardFormScope = cardFormScope
-        self.onCountrySelectedCallback = onCountrySelected
-        self.defaultScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: nil)
+        onCountrySelectedCallback = onCountrySelected
+        defaultScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: nil)
     }
 
     var state: AsyncStream<PrimerSelectCountryState> {

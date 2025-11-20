@@ -82,6 +82,10 @@ private extension ComposableContainer {
         _ = try? await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
             .with { _ in DefaultAccessibilityAnnouncementService() }
+
+        _ = try? await container.register(ConfigurationService.self)
+            .asSingleton()
+            .with { _ in DefaultConfigurationService() }
     }
 
     /// Register validation framework.
