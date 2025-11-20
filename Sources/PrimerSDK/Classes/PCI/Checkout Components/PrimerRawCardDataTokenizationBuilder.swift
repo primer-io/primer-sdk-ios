@@ -27,6 +27,11 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                     }
                 }
 
+                // Trigger initial validation for newly set data
+                // This is necessary because didSet observers don't fire during initialization
+                // so onDataDidChange won't be called for the initial data
+                rawCardData.onDataDidChange?()
+
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
                 if newCardNetwork != self.cardNetwork {
                     self.cardNetwork = newCardNetwork
