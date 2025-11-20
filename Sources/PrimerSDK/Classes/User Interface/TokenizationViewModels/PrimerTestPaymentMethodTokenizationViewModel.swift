@@ -40,6 +40,12 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
 
     // MARK: - Overrides
 
+    override func validate() throws {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
+            throw handled(primerError: .invalidClientToken())
+        }
+    }
+
     override func start() {
         checkoutEventsNotifierModule.didStartTokenization = {
             self.enableUserInteraction(false)
@@ -240,11 +246,11 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     // MARK: - Table View delegate methods
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
+        UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-        return 8
+        8
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -254,11 +260,11 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 66
+        66
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
+        UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -282,7 +288,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     // MARK: - Table View data source methods
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return decisions.count
+        decisions.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
