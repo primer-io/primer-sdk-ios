@@ -193,7 +193,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
         let event = Analytics.Event.ui(
             action: .view,
-            context: .init(cardNetworks: networks.map { $0.network.rawValue }),
+            context: .init(cardNetworks: networks.map(\.network.rawValue)),
             extra: "Source = \(source.rawValue)",
             objectType: .list,
             objectId: .cardNetwork,

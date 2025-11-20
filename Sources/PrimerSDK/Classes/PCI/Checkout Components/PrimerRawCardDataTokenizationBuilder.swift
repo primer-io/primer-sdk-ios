@@ -102,7 +102,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         // Validate card network before tokenization (only if card number is valid)
         // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-        if !rawData.cardNumber.isEmpty && rawData.cardNumber.isValidCardNumber {
+        if !rawData.cardNumber.isEmpty, rawData.cardNumber.isValidCardNumber {
             let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 throw handled(primerError: .invalidValue(key: "cardNetwork",
@@ -152,7 +152,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         // Remotely validated card network
         if let cardNetworksMetadata = cardNetworksMetadata {
             let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+                cardNetworksMetadata.detectedCardNetworks.items.map(\.network) != [.unknown]
 
             if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {

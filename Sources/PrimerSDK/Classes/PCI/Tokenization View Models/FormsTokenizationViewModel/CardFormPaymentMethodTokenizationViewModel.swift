@@ -326,13 +326,13 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
-        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map(\.fieldView)
     }
 
     // swiftlint:disable:next identifier_name
     var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
-        return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        return allVisibleBillingAddressFields.map { $0.map(\.containerFieldView) }
     }
 
     var formView: PrimerFormView {
@@ -842,7 +842,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         }
 
         if isShowingBillingAddressFieldsRequired {
-            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map(\.isTextValid))
         }
 
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
@@ -1027,7 +1027,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         }
 
         let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
-        let newNetworks = filteredNetworks.map { $0.network }
+        let newNetworks = filteredNetworks.map(\.network)
         guard newNetworks != lastRemoteNetworkValues else { return }
         lastRemoteNetworkValues = newNetworks
 
