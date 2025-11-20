@@ -335,11 +335,9 @@ extension [CardNetwork]: LogReporter {
     }
 
     /// A set of card networks that disallow user selection in co-badged scenarios
-    /// These networks will be auto-selected based on merchant's orderedAllowedCardNetworks configuration
+    /// When detected, the first network from merchant's orderedAllowedCardNetworks will be auto-selected
     /// instead of showing a dropdown selector
     static var selectionDisallowedCardNetworks: Set<CardNetwork> {
-        // EFTPOS is a local Australian network that should auto-route without user interaction
-        // This can be extended in the future for other local networks via remote configuration
         [.eftpos]
     }
 
