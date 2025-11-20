@@ -12,6 +12,7 @@ import PrimerKlarnaSDK
 final class PrimerKlarnaCategoriesViewModel: ObservableObject {
     @Published var paymentCategories: [KlarnaPaymentCategory] = []
     @Published var showBackButton: Bool = false
+    @Published var showContinueButton = false
     @Published var isAuthorizing: Bool = false
     @Published var shouldDisableKlarnaViews: Bool = false
 
@@ -21,5 +22,6 @@ final class PrimerKlarnaCategoriesViewModel: ObservableObject {
     ) {
         self.paymentCategories = paymentCategories
         self.showBackButton = showBackButton
+        showContinueButton = !paymentCategories.isEmpty
     }
 }
