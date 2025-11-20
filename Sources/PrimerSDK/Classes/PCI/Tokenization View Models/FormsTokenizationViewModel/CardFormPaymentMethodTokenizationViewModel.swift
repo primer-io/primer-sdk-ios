@@ -874,19 +874,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             let sanitizedText = text.replacingOccurrences(of: " ", with: "")
             guard rawCardData.cardNumber != sanitizedText else { return }
 
+            rawCardData.cardNumber = sanitizedText
+
             if !isRawDataInitialized {
-                rawCardData.cardNumber = sanitizedText
                 rawDataManager?.rawData = rawCardData
                 isRawDataInitialized = true
-            } else {
-                rawCardData.cardNumber = sanitizedText
             }
         }
     }
 
     private func handleCardNetworkDetection(_ cardNetwork: CardNetwork?) {
-        guard alternativelySelectedCardNetwork == nil else { return }
-        guard rawCardData.cardNetwork != cardNetwork else { return }
+        guard alternativelySelectedCardNetwork == nil,
+              rawCardData.cardNetwork != cardNetwork else { return }
 
         self.rawCardData.cardNetwork = cardNetwork
 
