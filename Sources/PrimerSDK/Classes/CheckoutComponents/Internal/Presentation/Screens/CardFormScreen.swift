@@ -208,7 +208,6 @@ struct CardFormScreen: View, LogReporter {
             // Check for section-level override first
             if let customSection = defaultScope.billingAddressSection {
                 AnyView(customSection())
-                    .id(refreshTrigger)
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
                     // Billing address section title
@@ -216,14 +215,33 @@ struct CardFormScreen: View, LogReporter {
                         .font(PrimerFont.headline(tokens: tokens))
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
-                    // Use the existing BillingAddressView component
-                    BillingAddressView(
-                        cardFormScope: scope,
-                        configuration: defaultScope.getBillingAddressConfiguration(),
-                        styling: nil
-                    )
+                    // Render billing address fields using the same pattern as card fields
+                    VStack(spacing: 0) {
+                        ForEach(0 ..< formConfiguration.billingFields.count, id: \.self) { index in
+                            let fieldType = formConfiguration.billingFields[index]
+
+                            // Check if this is firstName followed by lastName - render them horizontally
+                            if fieldType == .firstName,
+                               index + 1 < formConfiguration.billingFields.count,
+                               formConfiguration.billingFields[index + 1] == .lastName
+                            {
+                                HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
+                                    renderField(.firstName)
+                                    renderField(.lastName)
+                                }
+                            } else if index > 0,
+                                      formConfiguration.billingFields[index - 1] == .firstName,
+                                      fieldType == .lastName
+                            {
+                                // Skip lastName if it was already rendered with firstName
+                                EmptyView()
+                            } else {
+                                // Render field
+                                renderField(fieldType)
+                            }
+                        }
+                    }
                 }
-                .id(refreshTrigger)
             }
         }
     }

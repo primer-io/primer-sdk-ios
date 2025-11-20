@@ -22,19 +22,7 @@ struct CountryInputFieldWrapper: View, LogReporter {
             label: label,
             placeholder: placeholder,
             scope: scope,
-            selectedCountry: selectedCountryFromCode,
             styling: styling
         )
-    }
-
-    private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
-        let code = scope.structuredState.data[.countryCode]
-        guard !code.isEmpty else {
-            return nil
-        }
-        let matchingCountry = CountryCode.phoneNumberCountryCodes.first { phoneCountry in
-            phoneCountry.code.caseInsensitiveCompare(code) == .orderedSame
-        }
-        return matchingCountry
     }
 }
