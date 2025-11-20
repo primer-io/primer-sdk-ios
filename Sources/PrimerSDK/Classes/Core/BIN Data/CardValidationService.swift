@@ -175,7 +175,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             source: source,
             selectableCardNetworks: selectable.isEmpty ? nil : selectable,
             detectedCardNetworks: detected,
-            autoSelectedCardNetwork: containsDisallowedNetwork ? selectable.first : nil
+            autoSelectedCardNetwork: containsDisallowedNetwork && selectable.count > 1 ? selectable.first : nil
         )
     }
 
