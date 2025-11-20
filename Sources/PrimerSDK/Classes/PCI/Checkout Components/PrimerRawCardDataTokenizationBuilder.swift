@@ -48,7 +48,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
-            guard let rawDataManager = rawDataManager else { return }
+            guard let rawDataManager else { return }
 
             DispatchQueue.main.async {
                 rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
