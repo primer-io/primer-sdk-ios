@@ -28,6 +28,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     private let allowedCardNetworks: [CardNetwork]
 
     private var mostRecentCardNumber: String?
+    private var lastAnalyticsEventTime: Date?
+    private var lastValidatedCardNumber: String?
 
     // MARK: Thread‐safe metadata cache
 
@@ -35,7 +37,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
 
     private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
-        return metadataCacheQueue.sync { metadataCacheBacking[key] }
+        metadataCacheQueue.sync { metadataCacheBacking[key] }
     }
 
     private func setCachedMetadata(_ metadata: PrimerCardNumberEntryMetadata, for key: String) {
@@ -60,7 +62,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let sanitizedCardNumber = cardNumber.withoutWhiteSpace
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
 
-        // Don't validate if the BIN (first eight digits) hasn't changed
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
         if let mostRecent = mostRecentCardNumber,
            mostRecent.prefix(Self.maximumBinLength) == bin {
@@ -71,8 +72,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
 
         mostRecentCardNumber = sanitizedCardNumber
+        lastValidatedCardNumber = nil
 
-        // Don't validate if incomplete BIN (less than eight digits)
         if sanitizedCardNumber.count < Self.maximumBinLength {
             useLocalValidation(withCardState: cardState, isFallback: false)
             return
@@ -153,6 +154,9 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: cardMetadata,
                                         forState: cardState)
 
+        guard lastValidatedCardNumber != cardState.cardNumber else { return }
+
+        lastValidatedCardNumber = cardState.cardNumber
         Task {
             try? await self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
@@ -179,6 +183,14 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     // MARK: Analytics
 
     private func sendEvent(forNetworks networks: [PrimerCardNetwork], source: PrimerCardValidationSource) {
+        // Throttle analytics events to prevent queue backup during rapid validation
+        let now = Date()
+        if let lastEventTime = lastAnalyticsEventTime,
+           now.timeIntervalSince(lastEventTime) < 1.0 {
+            return
+        }
+        lastAnalyticsEventTime = now
+
         let event = Analytics.Event.ui(
             action: .view,
             context: .init(cardNetworks: networks.map { $0.network.rawValue }),

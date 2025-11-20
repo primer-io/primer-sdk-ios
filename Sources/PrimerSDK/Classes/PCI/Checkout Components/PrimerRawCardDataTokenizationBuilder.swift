@@ -31,15 +31,10 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 if newCardNetwork != self.cardNetwork {
                     self.cardNetwork = newCardNetwork
                 }
-
             } else {
                 if self.cardNetwork != .unknown {
                     self.cardNetwork = .unknown
                 }
-            }
-
-            if let rawData = self.rawData {
-                Task { try? await self.validateRawData(rawData) }
             }
         }
     }
@@ -53,9 +48,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
-            guard let rawDataManager = rawDataManager else {
-                return
-            }
+            guard let rawDataManager = rawDataManager else { return }
 
             DispatchQueue.main.async {
                 rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
