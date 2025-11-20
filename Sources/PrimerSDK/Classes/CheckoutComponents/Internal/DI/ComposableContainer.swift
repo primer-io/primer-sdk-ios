@@ -136,7 +136,7 @@ private extension ComposableContainer {
     /// Register data layer (repositories, mappers).
     func registerData() async {
         _ = try? await container.register(HeadlessRepository.self)
-            .asSingleton()
+            .asTransient()  // Changed from singleton to transient - creates fresh instance per resolution
             .with { _ in HeadlessRepositoryImpl() }
 
         _ = try? await container.register(PaymentMethodMapper.self)

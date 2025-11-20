@@ -141,10 +141,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
-    init() {
-        // HeadlessRepositoryImpl initialized
-    }
-
     @available(iOS 15.0, *)
     private func injectSettings() async {
         guard settings == nil else { return }
@@ -459,7 +455,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Get network detection stream for real-time updates
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
-        return self.networkDetectionStream
+        self.networkDetectionStream
     }
 
     /// Update card number in RawDataManager to trigger network detection
@@ -468,7 +464,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.configure { [weak self] _, error in
         }
 
-        rawCardData.cardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        rawCardData.cardNumber = sanitizedCardNumber
+
+        // If card number is too short for BIN lookup (< 8 digits) and we have cached networks, clear them
+        // This ensures the picker disappears when user deletes below the BIN lookup threshold
+        if sanitizedCardNumber.count < 8, !lastDetectedNetworks.isEmpty {
+            lastDetectedNetworks = []
+            networkDetectionContinuation.yield([])
+        }
 
         rawDataManager?.rawData = rawCardData
     }
@@ -707,7 +711,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        let errorsDescription = errors?.map(\.localizedDescription).joined(separator: ", ")
         // RawDataManager validation state updated
     }
 
@@ -731,11 +735,6 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
             return
         }
 
-        let metadataDescription = metadataModel.selectableCardNetworks?.items
-            .map { $0.displayName }
-            .joined(separator: ", ") ?? "n/a"
-        // RawDataManager received metadata
-
         // Extract networks following traditional SDK pattern
         var primerNetworks: [PrimerCardNetwork]
         if metadataModel.source == .remote,
@@ -758,7 +757,6 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
         // Only emit if networks changed to avoid duplicate notifications
         if cardNetworks != lastDetectedNetworks {
             lastDetectedNetworks = cardNetworks
-            // Co-badged networks detected
 
             // Emit networks via AsyncStream for SwiftUI consumption
             networkDetectionContinuation.yield(cardNetworks)
