@@ -83,9 +83,9 @@ struct CardNumberInputField: View, LogReporter {
             },
             rightComponent: {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    // Show CardNetworkSelector for co-badged cards (multiple networks)
+                    // Show InlineCardNetworkSelector for co-badged cards (multiple networks)
                     if availableNetworks.count > 1 {
-                        CardNetworkSelector(
+                        InlineCardNetworkSelector(
                             availableNetworks: availableNetworks,
                             selectedNetwork: $localSelectedNetwork,
                             onNetworkSelected: { network in

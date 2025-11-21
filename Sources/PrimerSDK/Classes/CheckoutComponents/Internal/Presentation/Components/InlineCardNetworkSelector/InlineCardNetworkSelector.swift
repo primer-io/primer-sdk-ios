@@ -1,5 +1,5 @@
 //
-//  CardNetworkSelector.swift
+//  InlineCardNetworkSelector.swift
 //
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -8,7 +8,7 @@ import SwiftUI
 
 /// A SwiftUI component for selecting between co-badged card networks using a segmented control
 @available(iOS 15.0, *)
-struct CardNetworkSelector: View {
+struct InlineCardNetworkSelector: View {
     // MARK: - Properties
 
     /// Available card networks to choose from
@@ -28,7 +28,7 @@ struct CardNetworkSelector: View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
                 ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
-                    NetworkButton(
+                    InlineCardNetworkButton(
                         network: network,
                         isSelected: selectedNetwork == network,
                         isFirst: index == 0,
@@ -106,7 +106,7 @@ struct CardNetworkSelector: View {
         Text("Co-badged Card Networks")
             .font(.headline)
 
-        CardNetworkSelector(
+        InlineCardNetworkSelector(
             availableNetworks: [.visa, .cartesBancaires],
             selectedNetwork: .constant(.visa),
             onNetworkSelected: { network in
@@ -125,7 +125,7 @@ struct CardNetworkSelector: View {
             .font(.headline)
             .foregroundColor(.white)
 
-        CardNetworkSelector(
+        InlineCardNetworkSelector(
             availableNetworks: [.visa, .cartesBancaires],
             selectedNetwork: .constant(.cartesBancaires),
             onNetworkSelected: { network in
@@ -145,7 +145,7 @@ struct CardNetworkSelector: View {
         Text("Multiple Networks")
             .font(.headline)
 
-        CardNetworkSelector(
+        InlineCardNetworkSelector(
             availableNetworks: [.visa, .masterCard, .cartesBancaires],
             selectedNetwork: .constant(.masterCard),
             onNetworkSelected: { network in
@@ -163,7 +163,7 @@ struct CardNetworkSelector: View {
         Text("Five Networks")
             .font(.headline)
 
-        CardNetworkSelector(
+        InlineCardNetworkSelector(
             availableNetworks: [.visa, .masterCard, .cartesBancaires, .amex, .discover],
             selectedNetwork: .constant(.cartesBancaires),
             onNetworkSelected: { network in
