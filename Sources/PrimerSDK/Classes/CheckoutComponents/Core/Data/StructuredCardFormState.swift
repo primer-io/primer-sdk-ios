@@ -146,6 +146,9 @@ public struct StructuredCardFormState: Equatable {
 
     // MARK: - Additional Information
 
+    /// Surcharge amount in smallest currency unit (e.g., cents)
+    public var surchargeAmountRaw: Int?
+
     /// Surcharge amount to display (formatted string)
     public var surchargeAmount: String?
 
@@ -160,6 +163,7 @@ public struct StructuredCardFormState: Equatable {
         selectedCountry: PrimerCountry? = nil,
         selectedNetwork: PrimerCardNetwork? = nil,
         availableNetworks: [PrimerCardNetwork] = [],
+        surchargeAmountRaw: Int? = nil,
         surchargeAmount: String? = nil
     ) {
         self.configuration = configuration
@@ -170,6 +174,7 @@ public struct StructuredCardFormState: Equatable {
         self.selectedCountry = selectedCountry
         self.selectedNetwork = selectedNetwork
         self.availableNetworks = availableNetworks
+        self.surchargeAmountRaw = surchargeAmountRaw
         self.surchargeAmount = surchargeAmount
     }
 

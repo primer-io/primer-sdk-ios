@@ -90,7 +90,7 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var titleSection: some View {
-        return Text(CheckoutComponentsStrings.cardPaymentTitle)
+        Text(CheckoutComponentsStrings.cardPaymentTitle)
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,20 +126,22 @@ struct CardFormScreen: View, LogReporter {
         } else {
             VStack(spacing: 0) {
                 // Render fields dynamically, inserting networks after card number
-                ForEach(0..<formConfiguration.cardFields.count, id: \.self) { index in
+                ForEach(0 ..< formConfiguration.cardFields.count, id: \.self) { index in
                     let fieldType = formConfiguration.cardFields[index]
 
                     // Check if this is expiry date followed by CVV - render them horizontally
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
-                       formConfiguration.cardFields[index + 1] == .cvv {
+                       formConfiguration.cardFields[index + 1] == .cvv
+                    {
                         HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(.expiryDate)
                             renderField(.cvv)
                         }
                     } else if index > 0,
                               formConfiguration.cardFields[index - 1] == .expiryDate,
-                              fieldType == .cvv {
+                              fieldType == .cvv
+                    {
                         // Skip CVV if it was already rendered with expiry date
                         EmptyView()
                     } else {
@@ -165,7 +167,7 @@ struct CardFormScreen: View, LogReporter {
     private var cobadgedCardsSection: some View {
         if cardFormState.availableNetworks.count > 1 {
             if let customCobadgedCardsView = scope.cobadgedCardsView {
-                AnyView(customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
+                AnyView(customCobadgedCardsView(cardFormState.availableNetworks.map(\.network.rawValue)) { network in
                     Task { @MainActor in
                         scope.updateSelectedCardNetwork(network)
                     }
@@ -184,7 +186,7 @@ struct CardFormScreen: View, LogReporter {
                 .accessibilityAddTraits(.isHeader)
 
             CardNetworkSelector(
-                availableNetworks: cardFormState.availableNetworks.map { $0.network },
+                availableNetworks: cardFormState.availableNetworks.map(\.network),
                 selectedNetwork: $selectedCardNetwork,
                 onNetworkSelected: { network in
                     selectedCardNetwork = network
@@ -200,26 +202,46 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     private var billingAddressSection: some View {
         // Only show if configuration includes billing fields
-        if !formConfiguration.billingFields.isEmpty {
+        if !formConfiguration.billingFields.isEmpty,
+           let defaultScope = scope as? DefaultCardFormScope
+        {
             // Check for section-level override first
-            if let customSection = (scope as? DefaultCardFormScope)?.billingAddressSection {
+            if let customSection = defaultScope.billingAddressSection {
                 AnyView(customSection())
-                    .id(refreshTrigger)
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
                     // Billing address section title
                     Text(CheckoutComponentsStrings.billingAddressTitle)
                         .font(PrimerFont.headline(tokens: tokens))
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                    
-                    // Render billing fields dynamically
+
+                    // Render billing address fields using the same pattern as card fields
                     VStack(spacing: 0) {
-                        ForEach(formConfiguration.billingFields, id: \.self) { fieldType in
-                            renderField(fieldType)
+                        ForEach(0 ..< formConfiguration.billingFields.count, id: \.self) { index in
+                            let fieldType = formConfiguration.billingFields[index]
+
+                            // Check if this is firstName followed by lastName - render them horizontally
+                            if fieldType == .firstName,
+                               index + 1 < formConfiguration.billingFields.count,
+                               formConfiguration.billingFields[index + 1] == .lastName
+                            {
+                                HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
+                                    renderField(.firstName)
+                                    renderField(.lastName)
+                                }
+                            } else if index > 0,
+                                      formConfiguration.billingFields[index - 1] == .firstName,
+                                      fieldType == .lastName
+                            {
+                                // Skip lastName if it was already rendered with firstName
+                                EmptyView()
+                            } else {
+                                // Render field
+                                renderField(fieldType)
+                            }
                         }
                     }
                 }
-                .id(refreshTrigger)
             }
         }
     }
@@ -235,7 +257,7 @@ struct CardFormScreen: View, LogReporter {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
                     AnyView(customButton(submitButtonText))
                         .onTapGesture {
-                            if cardFormState.isValid && !cardFormState.isLoading {
+                            if cardFormState.isValid, !cardFormState.isLoading {
                                 submitAction()
                             }
                         }
@@ -271,7 +293,7 @@ struct CardFormScreen: View, LogReporter {
             identifier: AccessibilityIdentifiers.Common.submitButton,
             label: cardFormState.isLoading ? CheckoutComponentsStrings.a11ySubmitButtonLoading : submitButtonAccessibilityLabel,
             hint: cardFormState.isLoading ? nil : (isEnabled ? CheckoutComponentsStrings.a11ySubmitButtonHint :
-                                                    CheckoutComponentsStrings.a11ySubmitButtonDisabled),
+                CheckoutComponentsStrings.a11ySubmitButtonDisabled),
             traits: [.isButton]
         ))
     }
@@ -286,37 +308,24 @@ struct CardFormScreen: View, LogReporter {
 
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
-              let currency = AppState.current.currency else {
+              let currency = AppState.current.currency
+        else {
             return CheckoutComponentsStrings.payButton
         }
 
         let baseAmount = AppState.current.amount ?? 0
 
-        // Check if there's a surcharge from the detected card network
-        if let surchargeAmountString = cardFormState.surchargeAmount,
-           !surchargeAmountString.isEmpty,
-           cardFormState.selectedNetwork != nil {
-
-            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
-            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
-
-            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
-            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
-
-            // Handle different decimal separators (European "," vs US ".")
-            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
-
-            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
-                // Convert to cents for calculation
-                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
-                let totalAmount = baseAmount + surchargeCents
-                // Use accessibility-friendly formatter
-                let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
-                return "Pay with \(accessibilityAmount)"
-            }
+        // Check if there's a surcharge from the detected card network (use raw amount)
+        if let surchargeRaw = cardFormState.surchargeAmountRaw,
+           cardFormState.selectedNetwork != nil
+        {
+            let totalAmount = baseAmount + surchargeRaw
+            // Use accessibility-friendly formatter
+            let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
+            return "Pay with \(accessibilityAmount)"
         }
 
-        // No surcharge or parsing failed, use base amount with accessibility formatter
+        // No surcharge, use base amount with accessibility formatter
         let accessibilityAmount = baseAmount.toAccessibilityCurrencyString(currency: currency)
         return "Pay with \(accessibilityAmount)"
     }
@@ -329,37 +338,23 @@ struct CardFormScreen: View, LogReporter {
 
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
-              let currency = AppState.current.currency else {
+              let currency = AppState.current.currency
+        else {
             return CheckoutComponentsStrings.payButton
         }
 
         let baseAmount = AppState.current.amount ?? 0
 
-        // Check if there's a surcharge from the detected card network
-        if let surchargeAmountString = cardFormState.surchargeAmount,
-           !surchargeAmountString.isEmpty,
-           cardFormState.selectedNetwork != nil {
-
-            // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
-            // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
-            var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
-
-            let currencySymbols = CharacterSet(charactersIn: "$€£¥₹₽₩₪₨₦₴₵₸₺₼₾¢฿₡₢₣₤₥₧₫₭₮₯₰₱₲₳₶₷₿﷼")
-            cleanString = cleanString.components(separatedBy: currencySymbols).joined()
-
-            // Handle different decimal separators (European "," vs US ".")
-            cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
-
-            if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
-                // Convert to cents for calculation (surcharge is in major currency units, need minor units)
-                let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
-                let totalAmount = baseAmount + surchargeCents
-                let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
-                return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
-            }
+        // Check if there's a surcharge from the detected card network (use raw amount)
+        if let surchargeRaw = cardFormState.surchargeAmountRaw,
+           cardFormState.selectedNetwork != nil
+        {
+            let totalAmount = baseAmount + surchargeRaw
+            let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
+            return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
         }
 
-        // No surcharge or parsing failed, use base amount
+        // No surcharge, use base amount
         let formattedBaseAmount = baseAmount.toCurrencyString(currency: currency)
         return CheckoutComponentsStrings.paymentAmountTitle(formattedBaseAmount)
     }
@@ -389,20 +384,22 @@ struct CardFormScreen: View, LogReporter {
                 }
 
                 await MainActor.run {
-                    self.cardFormState = state
-                    self.refreshTrigger = UUID()
+                    cardFormState = state
+                    refreshTrigger = UUID()
 
-                    self.formConfiguration = updatedFormConfig
+                    formConfiguration = updatedFormConfig
 
                     if let selectedNetwork = state.selectedNetwork {
-                        self.selectedCardNetwork = selectedNetwork.network
+                        selectedCardNetwork = selectedNetwork.network
                     } else if state.availableNetworks.count == 1,
-                              let firstNetwork = state.availableNetworks.first {
-                        self.selectedCardNetwork = firstNetwork.network
+                              let firstNetwork = state.availableNetworks.first
+                    {
+                        selectedCardNetwork = firstNetwork.network
                     } else if state.availableNetworks.count > 1 {
                         if let firstNetwork = state.availableNetworks.first,
-                           self.selectedCardNetwork == .unknown {
-                            self.selectedCardNetwork = firstNetwork.network
+                           selectedCardNetwork == .unknown
+                        {
+                            selectedCardNetwork = firstNetwork.network
                         }
                     }
                 }
@@ -501,11 +498,11 @@ struct CardFormScreen: View, LogReporter {
             if let customField = (scope as? DefaultCardFormScope)?.countryField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .countryCode)
-            } else {
+            } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
                 CountryInputField(
                     label: fieldLabel ?? "",
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                    scope: scope,
+                    scope: defaultCardFormScope,
                     styling: defaultStyling
                 )
                 .focused($focusedField, equals: .countryCode)
@@ -644,6 +641,7 @@ struct CardFormScreen: View, LogReporter {
             EmptyView()
         }
     }
+
     // swiftlint:enable cyclomatic_complexity function_body_length
 
     // MARK: - Helper Methods
@@ -738,172 +736,173 @@ struct CardFormScreen: View, LogReporter {
 }
 
 // MARK: - Preview
+
 #if DEBUG
-@available(iOS 15.0, *)
-struct CardFormScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            // All Fields - Comprehensive view of every field type
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .visa,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: [
-                        .countryCode,
-                        .addressLine1,
-                        .addressLine2,
-                        .city,
-                        .state,
-                        .postalCode,
-                        .firstName,
-                        .lastName,
-                        .email,
-                        .phoneNumber,
-                        .otp
-                    ]
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("All Fields - Light")
+    @available(iOS 15.0, *)
+    struct CardFormScreen_Previews: PreviewProvider {
+        static var previews: some View {
+            Group {
+                // All Fields - Comprehensive view of every field type
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .visa,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: [
+                            .countryCode,
+                            .addressLine1,
+                            .addressLine2,
+                            .city,
+                            .state,
+                            .postalCode,
+                            .firstName,
+                            .lastName,
+                            .email,
+                            .phoneNumber,
+                            .otp,
+                        ]
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("All Fields - Light")
 
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .masterCard,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: [
-                        .countryCode,
-                        .addressLine1,
-                        .addressLine2,
-                        .city,
-                        .state,
-                        .postalCode,
-                        .firstName,
-                        .lastName,
-                        .email,
-                        .phoneNumber,
-                        .otp
-                    ]
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("All Fields - Dark")
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .masterCard,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: [
+                            .countryCode,
+                            .addressLine1,
+                            .addressLine2,
+                            .city,
+                            .state,
+                            .postalCode,
+                            .firstName,
+                            .lastName,
+                            .email,
+                            .phoneNumber,
+                            .otp,
+                        ]
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.dark)
+                .environment(\.diContainer, MockDIContainer())
+                .preferredColorScheme(.dark)
+                .previewDisplayName("All Fields - Dark")
 
-            // Card Fields Only - Minimal configuration
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .amex,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Card Fields Only - Light")
+                // Card Fields Only - Minimal configuration
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .amex,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("Card Fields Only - Light")
 
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .discover,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("Card Fields Only - Dark")
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .discover,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.dark)
+                .environment(\.diContainer, MockDIContainer())
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Card Fields Only - Dark")
 
-            // Co-badged Cards - Multiple networks
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .visa,
-                availableNetworks: [.visa, .masterCard, .discover],
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Co-badged Cards - Light")
+                // Co-badged Cards - Multiple networks
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .visa,
+                    availableNetworks: [.visa, .masterCard, .discover],
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("Co-badged Cards - Light")
 
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .visa,
-                availableNetworks: [.visa, .masterCard, .discover],
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("Co-badged Cards - Dark")
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .visa,
+                    availableNetworks: [.visa, .masterCard, .discover],
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.dark)
+                .environment(\.diContainer, MockDIContainer())
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Co-badged Cards - Dark")
 
-            CardFormScreen(scope: MockCardFormScope(
-                isLoading: true,
-                isValid: true,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Loading State")
+                CardFormScreen(scope: MockCardFormScope(
+                    isLoading: true,
+                    isValid: true,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("Loading State")
 
-            // Valid State - Ready to submit
-            CardFormScreen(scope: MockCardFormScope(
-                isLoading: false,
-                isValid: true,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("Valid State")
+                // Valid State - Ready to submit
+                CardFormScreen(scope: MockCardFormScope(
+                    isLoading: false,
+                    isValid: true,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("Valid State")
 
-            // With Billing Address
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .masterCard,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv],
-                    billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("With Billing Address - Light")
+                // With Billing Address
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .masterCard,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv],
+                        billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("With Billing Address - Light")
 
-            CardFormScreen(scope: MockCardFormScope(
-                selectedNetwork: .jcb,
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv],
-                    billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.dark)
-            .environment(\.diContainer, MockDIContainer())
-            .preferredColorScheme(.dark)
-            .previewDisplayName("With Billing Address - Dark")
+                CardFormScreen(scope: MockCardFormScope(
+                    selectedNetwork: .jcb,
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv],
+                        billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.dark)
+                .environment(\.diContainer, MockDIContainer())
+                .preferredColorScheme(.dark)
+                .previewDisplayName("With Billing Address - Dark")
 
-            // With Surcharge Amount
-            CardFormScreen(scope: MockCardFormScope(
-                isValid: true,
-                selectedNetwork: .visa,
-                surchargeAmount: "+ 1.50€",
-                formConfiguration: CardFormConfiguration(
-                    cardFields: [.cardNumber, .expiryDate, .cvv],
-                    billingFields: []
-                )
-            ))
-            .environment(\.designTokens, MockDesignTokens.light)
-            .environment(\.diContainer, MockDIContainer())
-            .previewDisplayName("With Surcharge")
+                // With Surcharge Amount
+                CardFormScreen(scope: MockCardFormScope(
+                    isValid: true,
+                    selectedNetwork: .visa,
+                    surchargeAmount: "+ 1.50€",
+                    formConfiguration: CardFormConfiguration(
+                        cardFields: [.cardNumber, .expiryDate, .cvv],
+                        billingFields: []
+                    )
+                ))
+                .environment(\.designTokens, MockDesignTokens.light)
+                .environment(\.diContainer, MockDIContainer())
+                .previewDisplayName("With Surcharge")
+            }
         }
     }
-}
 #endif

@@ -7,8 +7,7 @@
 import Foundation
 
 /// Centralized strings for CheckoutComponents to make localization easier
-struct CheckoutComponentsStrings {
-
+enum CheckoutComponentsStrings {
     // MARK: - Screen Titles (REUSING EXISTING KEYS)
 
     static let checkoutTitle = NSLocalizedString(
@@ -26,10 +25,10 @@ struct CheckoutComponentsStrings {
     )
 
     static let billingAddressTitle = NSLocalizedString(
-        "primer-iban-form-add-bank-account",
+        "primer-card-form-billing-address",
         bundle: Bundle.primerResources,
-        value: "Billing Address",
-        comment: "Billing Address section title"
+        value: "Billing address",
+        comment: "Billing address section title - Card Form"
     )
 
     // MARK: - Buttons (REUSING EXISTING KEYS)
@@ -487,6 +486,7 @@ struct CheckoutComponentsStrings {
     }
 
     // MARK: - ⚠️ CHECKOUTCOMPONENTS-SPECIFIC STRINGS (PHASE 2 - TO BE EXPORTED) ⚠️
+
     // These strings are unique to CheckoutComponents and need to be added to all .lproj files
 
     static let selectNetworkTitle = NSLocalizedString(
@@ -700,6 +700,7 @@ struct CheckoutComponentsStrings {
     )
 
     // MARK: - ⚠️ ACCESSIBILITY STRINGS (PHASE 3 - TO BE EXPORTED) ⚠️
+
     // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
     // These strings must be added to all 42 .lproj files for WCAG 2.1 AA compliance
 
