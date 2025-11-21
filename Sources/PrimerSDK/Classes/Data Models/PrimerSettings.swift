@@ -9,7 +9,7 @@ import PassKit
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -62,7 +62,7 @@ public enum PrimerPaymentHandling: String, Codable {
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -216,9 +216,9 @@ public final class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public final class PrimerStripeOptions: Codable {
+public final class PrimerStripeOptions: Codable, Equatable {
 
-    public enum MandateData: Codable {
+    public enum MandateData: Codable, Equatable {
         case fullMandate(text: String)
         case templateMandate(merchantName: String)
     }
@@ -229,6 +229,11 @@ public final class PrimerStripeOptions: Codable {
     public init(publishableKey: String, mandateData: MandateData? = nil) {
         self.publishableKey = publishableKey
         self.mandateData = mandateData
+    }
+
+    public static func == (lhs: PrimerStripeOptions, rhs: PrimerStripeOptions) -> Bool {
+        return lhs.publishableKey == rhs.publishableKey &&
+               lhs.mandateData == rhs.mandateData
     }
 }
 
@@ -268,7 +273,7 @@ public final class PrimerUIOptions: Codable {
     public internal(set) var dismissalMechanism: [DismissalMechanism]
     public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
     public internal(set) var appearanceMode: PrimerAppearanceMode
-    public let theme: PrimerTheme
+    public var theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
         case isInitScreenEnabled,
@@ -344,7 +349,7 @@ public struct PrimerDebugOptions: Codable {
 
 // MARK: - 3DS OPTIONS
 
-public struct PrimerThreeDsOptions: Codable {
+public struct PrimerThreeDsOptions: Codable, Equatable {
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {
@@ -357,6 +362,6 @@ public struct PrimerThreeDsOptions: Codable {
 public enum PrimerApiVersion: String, Codable {
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_4
+    public static let latest: PrimerApiVersion = .V2_4
 }
 // swiftlint:enable identifier_name
