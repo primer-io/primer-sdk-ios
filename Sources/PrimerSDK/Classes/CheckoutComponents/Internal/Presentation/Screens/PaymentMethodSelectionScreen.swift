@@ -83,7 +83,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     private var titleSection: some View {
-        return Text(CheckoutComponentsStrings.choosePaymentMethod)
+        Text(CheckoutComponentsStrings.choosePaymentMethod)
             .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -164,7 +164,7 @@ struct PaymentMethodSelectionScreen: View {
         }
 
         // Group by unique surcharge amounts
-        let uniqueSurcharges = Set(surchargeMethods.compactMap { $0.surcharge })
+        let uniqueSurcharges = Set(surchargeMethods.compactMap(\.surcharge))
         let sortedSurcharges = uniqueSurcharges.sorted()
 
         for surcharge in sortedSurcharges {
@@ -199,7 +199,7 @@ struct PaymentMethodSelectionScreen: View {
 
         // Group 3: Methods with unknown surcharges
         let unknownFeeMethods = methods.filter { method in
-            return method.hasUnknownSurcharge
+            method.hasUnknownSurcharge
         }
 
         if !unknownFeeMethods.isEmpty {
@@ -381,7 +381,7 @@ private struct ModernPaymentMethodCardView: View {
     }
 
     private var methodNameAndSurcharge: some View {
-        return Text(method.name)
+        Text(method.name)
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(textColorForPaymentMethod)
             .lineLimit(nil)
@@ -407,7 +407,7 @@ private struct ModernPaymentMethodCardView: View {
     /// Dynamic text color using design tokens for consistent styling
     private var textColorForPaymentMethod: Color {
         // Use design tokens for consistent styling
-        return CheckoutColors.textPrimary(tokens: tokens)
+        CheckoutColors.textPrimary(tokens: tokens)
     }
 }
 

@@ -39,7 +39,7 @@ struct CardNumberInputField: View, LogReporter {
     }
 
     private var displayNetwork: CardNetwork {
-        return selectedNetwork ?? cardNetwork
+        selectedNetwork ?? cardNetwork
     }
 
     var body: some View {

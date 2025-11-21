@@ -34,7 +34,7 @@ public final class PrimerCardNetwork: NSObject {
     public let network: CardNetwork
 
     public var allowed: Bool {
-        return [CardNetwork].allowedCardNetworks.contains(network)
+        [CardNetwork].allowedCardNetworks.contains(network)
     }
 
     init(displayName: String, network: CardNetwork) {
@@ -55,7 +55,7 @@ public final class PrimerCardNetwork: NSObject {
     }
 
     override public var description: String {
-        return "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
+        "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
     }
 }
 
@@ -79,9 +79,14 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
 
     public let detectedCardNetworks: PrimerCardNetworksMetadata
 
+    /// The automatically selected card network for co-badged cards with selection-disallowed networks (e.g., EFTPOS)
+    /// This is set when a co-badged card contains a network that disallows user selection
+    public let autoSelectedCardNetwork: PrimerCardNetwork?
+
     init(source: PrimerCardValidationSource,
          selectableCardNetworks: [PrimerCardNetwork]?,
-         detectedCardNetworks: [PrimerCardNetwork]) {
+         detectedCardNetworks: [PrimerCardNetwork],
+         autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
         self.source = source
 
         if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
@@ -94,11 +99,13 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
         }
 
         let preferredNetwork = [CardNetwork].allowedCardNetworks.first {
-            detectedCardNetworks.map { $0.network }.contains($0)
+            detectedCardNetworks.map(\.network).contains($0)
         }
         self.detectedCardNetworks = PrimerCardNetworksMetadata(
             items: detectedCardNetworks,
             preferred: PrimerCardNetwork(network: preferredNetwork)
         )
+
+        self.autoSelectedCardNetwork = autoSelectedCardNetwork
     }
 }
