@@ -35,9 +35,6 @@ struct BillingAddressView: View, LogReporter {
     /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
 
-    /// Show country selector
-    @State private var showCountrySelector = false
-
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
@@ -150,23 +147,6 @@ struct BillingAddressView: View, LogReporter {
                 }
             }
         }
-        .sheet(isPresented: $showCountrySelector) {
-            let countryScope = BillingAddressCountryScope(
-                cardFormScope: cardFormScope,
-                onCountrySelected: { code, _ in
-                    // Update country in the scope - field will observe the change
-                    cardFormScope.updateCountryCode(code)
-                    showCountrySelector = false
-                }
-            )
-
-            SelectCountryScreen(
-                scope: countryScope,
-                onDismiss: {
-                    showCountrySelector = false
-                }
-            )
-        }
     }
 
     // MARK: - Default Field Implementations
@@ -201,9 +181,6 @@ struct BillingAddressView: View, LogReporter {
             scope: cardFormScope,
             styling: styling
         )
-        .onTapGesture {
-            showCountrySelector = true
-        }
     }
 
     @ViewBuilder
@@ -280,55 +257,5 @@ struct BillingAddressView: View, LogReporter {
             scope: cardFormScope,
             styling: styling
         )
-    }
-}
-
-// MARK: - Custom Country Scope for Billing Address
-
-/// Custom country scope that handles country selection for billing address
-@available(iOS 15.0, *)
-@MainActor
-final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
-    private let cardFormScope: DefaultCardFormScope
-    private let onCountrySelectedCallback: (String, String) -> Void
-    private var defaultScope: DefaultSelectCountryScope
-
-    init(cardFormScope: DefaultCardFormScope, onCountrySelected: @escaping (String, String) -> Void) {
-        self.cardFormScope = cardFormScope
-        onCountrySelectedCallback = onCountrySelected
-        defaultScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: nil)
-    }
-
-    var state: AsyncStream<PrimerSelectCountryState> {
-        defaultScope.state
-    }
-
-    var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? {
-        get { defaultScope.screen }
-        set { defaultScope.screen = newValue }
-    }
-
-    var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? {
-        get { defaultScope.searchBar }
-        set { defaultScope.searchBar = newValue }
-    }
-
-    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? {
-        get { defaultScope.countryItem }
-        set { defaultScope.countryItem = newValue }
-    }
-
-    func onCountrySelected(countryCode: String, countryName: String) {
-        logger.debug(message: "Billing address country selected: \(countryName) (\(countryCode))")
-        onCountrySelectedCallback(countryCode, countryName)
-    }
-
-    func onCancel() {
-        logger.debug(message: "Billing address country selection cancelled")
-        // Sheet will be dismissed by onDismiss callback
-    }
-
-    func onSearch(query: String) {
-        defaultScope.onSearch(query: query)
     }
 }
