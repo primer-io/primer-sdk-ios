@@ -34,7 +34,7 @@ struct InlineCardNetworkButton: View {
         .buttonStyle(PlainButtonStyle())
         .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorButton(network.rawValue))
         .accessibilityLabel(network.displayName)
-        .accessibilityHint(isSelected ? nil : CheckoutComponentsStrings.a11yInlineNetworkButtonHint)
+        .accessibilityHint(isSelected ? "" : CheckoutComponentsStrings.a11yInlineNetworkButtonHint)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
     }
 
