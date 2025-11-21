@@ -1,3 +1,27 @@
+## 2.42.3 (2025-11-18)
+
+### Fix
+
+- Remove `canOpenURL` when handling deeplinks (#1402)
+
+### Refactor
+
+- Improve error type for deep link handling (#1404)
+
+## 2.42.2 (2025-11-11)
+
+### Fix
+
+- Open redirect URL if not a web-based scheme (#1392)
+
+## 2.42.1 (2025-10-30)
+
+### Fix
+
+- Show Continue button in KlarnaCategoriesView (#1394)
+- Hide back button in Klarna vc if no stack (#1388)
+- Ensure main thread on InternalCardComponentsManager loading state (#1383)
+
 ## 2.42.0 (2025-10-07)
 
 ### Feat

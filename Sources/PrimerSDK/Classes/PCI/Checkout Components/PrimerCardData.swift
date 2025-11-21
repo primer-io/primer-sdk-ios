@@ -29,13 +29,10 @@ public final class PrimerCardData: PrimerRawData {
         }
     }
 
-    public var cardNetwork: CardNetwork? {
-        didSet {
-            if cardNetwork != oldValue {
-                self.onDataDidChange?()
-            }
-        }
-    }
+    // Note: cardNetwork is derived/detected data, not user input.
+    // It intentionally does not have a didSet that triggers onDataDidChange() to avoid duplicate validations.
+    // The validation flow already receives this value through the rawData parameter.
+    public var cardNetwork: CardNetwork?
 
     private enum CodingKeys: String, CodingKey {
         case cardNumber,

@@ -89,6 +89,7 @@ public enum PrimerError: PrimerErrorProtocol {
         status: String,
         diagnosticsId: String = .uuid
     )
+    case failedToRedirect(url: String, diagnosticsId: String = .uuid)
     case failedToCreatePayment(paymentMethodType: String, description: String, diagnosticsId: String = .uuid)
     case failedToResumePayment(paymentMethodType: String, description: String, diagnosticsId: String = .uuid)
     case applePayTimedOut(diagnosticsId: String = .uuid)
@@ -115,6 +116,7 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerInputElement: "missing-primer-input-element"
         case .cancelled: "payment-cancelled"
         case .failedToCreateSession: "failed-to-create-session"
+        case .failedToRedirect: "failed-to-redirect"
         case .invalidArchitecture: "invalid-architecture"
         case .invalidClientSessionValue: "invalid-client-session-value"
         case .invalidUrl: "invalid-url"
@@ -166,6 +168,7 @@ public enum PrimerError: PrimerErrorProtocol {
              let .missingPrimerInputElement(_, id),
              let .cancelled(_, id),
              let .failedToCreateSession(_, id),
+             let .failedToRedirect(_, id),
              let .invalidUrl(_, id),
              let .invalidArchitecture(_, _, id),
              let .invalidClientSessionValue(_, _, _, id),
@@ -218,6 +221,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) cancelled"
         case let .failedToCreateSession(error: error, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
+        case let .failedToRedirect(url, _):
+            return "Failed to redirect to \(url)"
         case let .invalidArchitecture(description, _, _):
             return "\(description)"
         case let .invalidClientSessionValue(name, value, _, _):
@@ -283,7 +288,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
     public var errorUserInfo: [String: Any] {
@@ -317,6 +322,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .cancelled:
             return nil
         case .failedToCreateSession:
+            return nil
+        case .failedToRedirect:
             return nil
         case .invalidUrl:
             return nil
@@ -399,7 +406,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     var exposedError: Error {
-        return self
+        self
     }
 
     var analyticsContext: [String: Any] {

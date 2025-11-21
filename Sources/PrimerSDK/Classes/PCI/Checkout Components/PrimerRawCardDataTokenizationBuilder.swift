@@ -27,19 +27,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                     }
                 }
 
+                // Trigger initial validation for newly set data
+                // This is necessary because didSet observers don't fire during initialization
+                // so onDataDidChange won't be called for the initial data
+                rawCardData.onDataDidChange?()
+
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
                 if newCardNetwork != self.cardNetwork {
                     self.cardNetwork = newCardNetwork
                 }
-
             } else {
                 if self.cardNetwork != .unknown {
                     self.cardNetwork = .unknown
                 }
-            }
-
-            if let rawData = self.rawData {
-                Task { try? await self.validateRawData(rawData) }
             }
         }
     }
@@ -53,9 +53,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
-            guard let rawDataManager = rawDataManager else {
-                return
-            }
+            guard let rawDataManager else { return }
 
             DispatchQueue.main.async {
                 rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
@@ -109,7 +107,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
         // Validate card network before tokenization (only if card number is valid)
         // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-        if !rawData.cardNumber.isEmpty && rawData.cardNumber.isValidCardNumber {
+        if !rawData.cardNumber.isEmpty, rawData.cardNumber.isValidCardNumber {
             let cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
             if !self.allowedCardNetworks.contains(cardNetwork) {
                 throw handled(primerError: .invalidValue(key: "cardNetwork",
@@ -152,29 +150,38 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
             throw err
         }
 
-        // Invalid card number error - check this FIRST before network validation
+        // Locally validated card network
+        // Use user-selected network if available (for co-badged cards), otherwise auto-detect
+        var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
+
+        // Remotely validated card network
+        if let cardNetworksMetadata = cardNetworksMetadata {
+            let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
+                cardNetworksMetadata.detectedCardNetworks.items.map(\.network) != [.unknown]
+
+            if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+               let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                cardNetwork = network
+            }
+        }
+
+        // Always trigger network validation (even for partial/invalid cards)
+        // CardValidationService handles:
+        // - < 8 digits: local validation
+        // - >= 8 digits: remote BIN lookup
+        // - Empty: local validation with empty networks
+        // This ensures picker appears as user types, not just when card is fully valid
+        self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+
+        // Invalid card number error - check this FIRST before network type validation
         if rawData.cardNumber.isEmpty {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number can not be blank."))
         } else if !rawData.cardNumber.isValidCardNumber {
             errors.append(PrimerValidationError.invalidCardnumber(message: "Card number is not valid."))
         } else {
-            // Only validate network if card number is valid
-            // Locally validated card network
-            // Use user-selected network if available (for co-badged cards), otherwise auto-detect
-            var cardNetwork = rawData.cardNetwork ?? CardNetwork(cardNumber: rawData.cardNumber)
-
-            // Remotely validated card network
+            // Only validate network TYPE (allowed/disallowed) when card number is valid
+            // This prevents "unsupported-card-type" errors for empty/partial cards
             if let cardNetworksMetadata = cardNetworksMetadata {
-                let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                    cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
-
-                if didDetectNetwork, cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-                   let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
-                    cardNetwork = network
-                } else {
-                    return
-                }
-
                 // Unsupported card type error
                 if !self.allowedCardNetworks.contains(cardNetwork) {
                     let err = PrimerValidationError.invalidCardType(
@@ -191,8 +198,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                     )
                     errors.append(err)
                 }
-
-                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
             }
         }
 
