@@ -17,21 +17,17 @@ import SafariServices
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     @available(*, deprecated, message: "Use _:didReceiveCardMetadata:forState: instead")
-    @objc optional
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               metadataDidChange metadata: [String: Any]?)
 
-    @objc optional
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?)
 
-    @objc optional
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState state: PrimerValidationState)
 
-    @objc optional
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState state: PrimerValidationState)
 }
@@ -58,13 +54,7 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
-                // Synchronously update rawDataTokenizationBuilder
                 rawDataTokenizationBuilder.rawData = rawData
-
-                // Explicitly validate if data exists
-                if let rawData {
-                    Task { try? await validateRawData(rawData) }
-                }
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
@@ -107,7 +97,7 @@ extension PrimerHeadlessUniversalCheckout {
         /// The `isUsedInDropIn` flag enables support for Drop-In integration flow,
         /// expanding the utility of RawDataManager to both Headless and Drop-In use cases.
         /// When set to true, it configures the RawDataManager to behave as a Drop-In integration.
-        required public init(paymentMethodType: String,
+        public required init(paymentMethodType: String,
                              delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
                              isUsedInDropIn: Bool = false) throws {
             if isUsedInDropIn {
@@ -199,7 +189,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
-            return self.rawDataTokenizationBuilder.requiredInputElementTypes
+            self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
 
         public func submit() {
@@ -322,7 +312,7 @@ extension PrimerHeadlessUniversalCheckout {
             decisionHandlerHasBeenCalled = true
 
             switch paymentCreationDecision.type {
-            case .abort(let errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
+            case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
             case .continue: return
             }
         }
@@ -377,7 +367,7 @@ extension PrimerHeadlessUniversalCheckout {
                 switch resumeType {
                 case .succeed:
                     return nil
-                case .continueWithNewClientToken(let newClientToken):
+                case let .continueWithNewClientToken(newClientToken):
                     let apiConfigurationModule = PrimerAPIConfigurationModule()
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
@@ -386,7 +376,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                     return decodedJWTToken
-                case .fail(let message):
+                case let .fail(message):
                     let err: Error
                     if let message {
                         err = PrimerError.merchantError(message: message)
@@ -397,7 +387,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                 switch resumeDecisionType {
-                case .continueWithNewClientToken(let newClientToken):
+                case let .continueWithNewClientToken(newClientToken):
                     let apiConfigurationModule = PrimerAPIConfigurationModule()
                     try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
@@ -610,7 +600,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
-                case .fail(let message):
+                case let .fail(message):
                     let err: Error
                     if let message {
                         err = PrimerError.merchantError(message: message)
@@ -720,9 +710,9 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
 
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in
             switch result {
-            case .failure(let err):
+            case let .failure(err):
                 completion(nil, err)
-            case .success(let res):
+            case let .success(res):
                 self.initializationData = res
                 completion(self.initializationData, nil)
             }
