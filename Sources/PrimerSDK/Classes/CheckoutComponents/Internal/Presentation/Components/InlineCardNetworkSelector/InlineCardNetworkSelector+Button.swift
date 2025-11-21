@@ -32,6 +32,10 @@ struct InlineCardNetworkButton: View {
             .background(backgroundColor)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorButton(network.rawValue))
+        .accessibilityLabel(network.displayName)
+        .accessibilityHint(isSelected ? nil : CheckoutComponentsStrings.a11yInlineNetworkButtonHint)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
     }
 
     private var backgroundColor: Color {

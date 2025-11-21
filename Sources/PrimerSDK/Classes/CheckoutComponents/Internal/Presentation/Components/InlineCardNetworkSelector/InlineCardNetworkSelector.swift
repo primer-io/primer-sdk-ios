@@ -55,6 +55,7 @@ struct InlineCardNetworkSelector: View {
             RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
                 .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard)
         )
+        .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorContainer)
         .overlay(
             GeometryReader { _ in
                 if let selectedIndex = availableNetworks.firstIndex(of: selectedNetwork) {

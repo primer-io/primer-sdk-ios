@@ -38,6 +38,16 @@ enum AccessibilityIdentifiers {
         static func cardNetworkBadge(_ network: String) -> String {
             "checkout_components_card_form_\(network.lowercased())_badge"
         }
+
+        /// Accessibility identifier for the inline card network selector container
+        static let inlineNetworkSelectorContainer = "checkout_components_card_form_inline_network_selector"
+
+        /// Dynamic identifier for inline card network selector buttons
+        /// - Parameter network: Card network name (e.g., "visa", "mastercard")
+        /// - Returns: Unique identifier for network selector button
+        static func inlineNetworkSelectorButton(_ network: String) -> String {
+            "checkout_components_card_form_inline_network_selector_\(network.lowercased())_button"
+        }
     }
 
     /// Payment method selection accessibility identifiers
