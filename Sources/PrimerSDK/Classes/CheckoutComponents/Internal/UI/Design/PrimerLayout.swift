@@ -12,37 +12,37 @@ import CoreGraphics
 struct PrimerSpacing {
     /// Extra extra small spacing (2px)
     static func xxsmall(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceXxsmall ?? 2
+        tokens?.primerSpaceXxsmall ?? 2
     }
 
     /// Extra small spacing (4px)
     static func xsmall(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceXsmall ?? 4
+        tokens?.primerSpaceXsmall ?? 4
     }
 
     /// Small spacing (8px)
     static func small(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceSmall ?? 8
+        tokens?.primerSpaceSmall ?? 8
     }
 
     /// Medium spacing (12px)
     static func medium(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceMedium ?? 12
+        tokens?.primerSpaceMedium ?? 12
     }
 
     /// Large spacing (16px)
     static func large(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceLarge ?? 16
+        tokens?.primerSpaceLarge ?? 16
     }
 
     /// Extra large spacing (20px)
     static func xlarge(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceXlarge ?? 20
+        tokens?.primerSpaceXlarge ?? 20
     }
 
     /// Extra extra large spacing (24px)
     static func xxlarge(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSpaceXxlarge ?? 24
+        tokens?.primerSpaceXxlarge ?? 24
     }
 }
 
@@ -52,32 +52,32 @@ struct PrimerSpacing {
 struct PrimerSize {
     /// Small size (16px)
     static func small(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeSmall ?? 16
+        tokens?.primerSizeSmall ?? 16
     }
 
     /// Medium size (20px)
     static func medium(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeMedium ?? 20
+        tokens?.primerSizeMedium ?? 20
     }
 
     /// Large size (24px)
     static func large(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeLarge ?? 24
+        tokens?.primerSizeLarge ?? 24
     }
 
     /// Extra large size (32px)
     static func xlarge(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeXlarge ?? 32
+        tokens?.primerSizeXlarge ?? 32
     }
 
     /// Extra extra large size (44px)
     static func xxlarge(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeXxlarge ?? 44
+        tokens?.primerSizeXxlarge ?? 44
     }
 
     /// Extra extra extra large size (56px)
     static func xxxlarge(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerSizeXxxlarge ?? 56
+        tokens?.primerSizeXxxlarge ?? 56
     }
 }
 
@@ -87,22 +87,22 @@ struct PrimerSize {
 struct PrimerRadius {
     /// Extra small radius (2px)
     static func xsmall(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerRadiusXsmall ?? 2
+        tokens?.primerRadiusXsmall ?? 2
     }
 
     /// Small radius (4px)
     static func small(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerRadiusSmall ?? 4
+        tokens?.primerRadiusSmall ?? 4
     }
 
     /// Medium radius (8px)
     static func medium(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerRadiusMedium ?? 8
+        tokens?.primerRadiusMedium ?? 8
     }
 
     /// Large radius (12px)
     static func large(tokens: DesignTokens?) -> CGFloat {
-        return tokens?.primerRadiusLarge ?? 12
+        tokens?.primerRadiusLarge ?? 12
     }
 }
 
@@ -169,4 +169,33 @@ struct PrimerScale {
     /// Small scale (0.8)
     /// Used for reduced elements like button loaders
     static let small: CGFloat = 0.8
+}
+
+// MARK: - Primer Card Network Selector
+
+/// Centralized size values for card network selector components
+struct PrimerCardNetworkSelector {
+    /// Badge width (28px)
+    /// Width for the card network badge icon
+    static let badgeWidth: CGFloat = 28
+
+    /// Badge height (20px)
+    /// Height for the card network badge icon
+    static let badgeHeight: CGFloat = 20
+
+    /// Button frame width (34px)
+    /// Total button frame width including padding around badge
+    static let buttonFrameWidth: CGFloat = 34
+
+    /// Button frame height (26px)
+    /// Total button frame height including padding around badge
+    static let buttonFrameHeight: CGFloat = 26
+
+    /// Button total width (36px)
+    /// Total button width including border (used for layout calculations)
+    static let buttonTotalWidth: CGFloat = 36
+
+    /// Selected border height (28px)
+    /// Height of the selection border overlay
+    static let selectedBorderHeight: CGFloat = 28
 }
