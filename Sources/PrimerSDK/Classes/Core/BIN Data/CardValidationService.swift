@@ -12,11 +12,10 @@ protocol CardValidationService {
 }
 
 final class DefaultCardValidationService: CardValidationService, LogReporter {
-
     static let maximumBinLength = 8
 
     private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
-        self.rawDataManager.delegate
+        rawDataManager.delegate
     }
 
     private let apiClient: PrimerAPIClientBINDataProtocol
@@ -37,7 +36,9 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
 
     private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
-        metadataCacheQueue.sync { metadataCacheBacking[key] }
+        metadataCacheQueue.sync {
+            metadataCacheBacking[key]
+        }
     }
 
     private func setCachedMetadata(_ metadata: PrimerCardNumberEntryMetadata, for key: String) {
@@ -49,7 +50,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35)) {
+         debouncer: Debouncer = .init(delay: 0.35))
+    {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -63,8 +65,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
 
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
+
         if let mostRecent = mostRecentCardNumber,
-           mostRecent.prefix(Self.maximumBinLength) == bin {
+           mostRecent.prefix(Self.maximumBinLength) == bin
+        {
             if let cached = getCachedMetadata(for: bin) {
                 handle(cardMetadata: cached, forCardState: cardState)
             }
@@ -88,7 +92,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchMetadataForState: cardState)
 
-        if let cached = getCachedMetadata(for: cardState.cardNumber) {
+        let cacheKey = cardState.cardNumber
+        if let cached = getCachedMetadata(for: cacheKey) {
             return handle(cardMetadata: cached, forCardState: cardState)
         }
 
@@ -145,7 +150,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        setCachedMetadata(cardMetadata, for: cardState.cardNumber)
+        let cacheKey = cardState.cardNumber
+        setCachedMetadata(cardMetadata, for: cacheKey)
 
         let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
         sendEvent(forNetworks: trackable.items, source: cardMetadata.source)
@@ -154,7 +160,9 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: cardMetadata,
                                         forState: cardState)
 
-        guard lastValidatedCardNumber != cardState.cardNumber else { return }
+        guard lastValidatedCardNumber != cardState.cardNumber else {
+            return
+        }
 
         lastValidatedCardNumber = cardState.cardNumber
         Task {
@@ -165,7 +173,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     // MARK: Model generation
 
     func createValidationMetadata(networks: [CardNetwork],
-                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
+    {
         let selectable = allowedCardNetworks
             .filter { networks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
@@ -189,7 +198,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         // Throttle analytics events to prevent queue backup during rapid validation
         let now = Date()
         if let lastEventTime = lastAnalyticsEventTime,
-           now.timeIntervalSince(lastEventTime) < 1.0 {
+           now.timeIntervalSince(lastEventTime) < 1.0
+        {
             return
         }
         lastAnalyticsEventTime = now
