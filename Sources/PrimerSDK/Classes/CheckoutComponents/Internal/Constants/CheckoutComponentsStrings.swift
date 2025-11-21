@@ -779,6 +779,15 @@ struct CheckoutComponentsStrings {
         comment: "VoiceOver hint for billing address postal code field"
     )
 
+    // MARK: Inline Network Selector Accessibility
+
+    static let a11yInlineNetworkButtonHint = NSLocalizedString(
+        "accessibility.cardForm.inlineNetworkSelector.button.hint",
+        bundle: Bundle.primerResources,
+        value: "Double tap to select this network",
+        comment: "VoiceOver hint for inline network selector button"
+    )
+
     // MARK: Card Form Accessibility Error Messages
 
     static let a11yCardNumberErrorInvalid = NSLocalizedString(

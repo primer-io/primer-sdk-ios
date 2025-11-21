@@ -90,7 +90,7 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var titleSection: some View {
-        return Text(CheckoutComponentsStrings.cardPaymentTitle)
+        Text(CheckoutComponentsStrings.cardPaymentTitle)
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -107,9 +107,6 @@ struct CardFormScreen: View, LogReporter {
             VStack(spacing: 0) {
                 // Render card fields dynamically based on configuration
                 cardFieldsSection
-
-                // Co-badged cards selection
-                cobadgedCardsSection
 
                 // Billing address fields if configured
                 billingAddressSection
@@ -160,42 +157,6 @@ struct CardFormScreen: View, LogReporter {
         }
     }
 
-    @MainActor
-    @ViewBuilder
-    private var cobadgedCardsSection: some View {
-        if cardFormState.availableNetworks.count > 1 {
-            if let customCobadgedCardsView = scope.cobadgedCardsView {
-                AnyView(customCobadgedCardsView(cardFormState.availableNetworks.map { $0.network.rawValue }) { network in
-                    Task { @MainActor in
-                        scope.updateSelectedCardNetwork(network)
-                    }
-                })
-            } else {
-                defaultCobadgedCardsView
-            }
-        }
-    }
-
-    private var defaultCobadgedCardsView: some View {
-        VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-            Text(CheckoutComponentsStrings.selectNetworkTitle)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                .accessibilityAddTraits(.isHeader)
-
-            CardNetworkSelector(
-                availableNetworks: cardFormState.availableNetworks.map { $0.network },
-                selectedNetwork: $selectedCardNetwork,
-                onNetworkSelected: { network in
-                    selectedCardNetwork = network
-                    Task { @MainActor in
-                        scope.updateSelectedCardNetwork(network.rawValue)
-                    }
-                }
-            )
-        }
-    }
-
     @ViewBuilder
     @MainActor
     private var billingAddressSection: some View {
@@ -235,7 +196,7 @@ struct CardFormScreen: View, LogReporter {
                 if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
                     AnyView(customButton(submitButtonText))
                         .onTapGesture {
-                            if cardFormState.isValid && !cardFormState.isLoading {
+                            if cardFormState.isValid, !cardFormState.isLoading {
                                 submitAction()
                             }
                         }
@@ -391,7 +352,6 @@ struct CardFormScreen: View, LogReporter {
                 await MainActor.run {
                     self.cardFormState = state
                     self.refreshTrigger = UUID()
-
                     self.formConfiguration = updatedFormConfig
 
                     if let selectedNetwork = state.selectedNetwork {
@@ -430,6 +390,7 @@ struct CardFormScreen: View, LogReporter {
                     placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
                     scope: scope,
                     selectedNetwork: getSelectedCardNetwork(),
+                    availableNetworks: cardFormState.availableNetworks.map(\.network),
                     styling: defaultStyling
                 )
                 .focused($focusedField, equals: .cardNumber)
