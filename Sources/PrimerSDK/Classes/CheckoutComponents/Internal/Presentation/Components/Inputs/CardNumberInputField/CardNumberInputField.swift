@@ -86,23 +86,29 @@ struct CardNumberInputField: View, LogReporter {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
                     // Show network selector for co-badged cards (multiple networks)
                     if availableNetworks.count > 1 {
-                        switch networkSelectorStyle {
-                        case .dropdown:
-                            DropdownCardNetworkSelector(
-                                availableNetworks: availableNetworks,
-                                selectedNetwork: $localSelectedNetwork,
-                                onNetworkSelected: { network in
-                                    scope.updateSelectedCardNetwork(network.rawValue)
-                                }
-                            )
-                        case .inline:
-                            InlineCardNetworkSelector(
-                                availableNetworks: availableNetworks,
-                                selectedNetwork: $localSelectedNetwork,
-                                onNetworkSelected: { network in
-                                    scope.updateSelectedCardNetwork(network.rawValue)
-                                }
-                            )
+                        // Check if any network disallows user selection (e.g., EFTPOS)
+                        if availableNetworks.contains(where: { !$0.allowsUserSelection }) {
+                            // Show non-interactive dual badge display
+                            DualBadgeDisplay(networks: availableNetworks)
+                        } else {
+                            switch networkSelectorStyle {
+                            case .dropdown:
+                                DropdownCardNetworkSelector(
+                                    availableNetworks: availableNetworks,
+                                    selectedNetwork: $localSelectedNetwork,
+                                    onNetworkSelected: { network in
+                                        scope.updateSelectedCardNetwork(network.rawValue)
+                                    }
+                                )
+                            case .inline:
+                                InlineCardNetworkSelector(
+                                    availableNetworks: availableNetworks,
+                                    selectedNetwork: $localSelectedNetwork,
+                                    onNetworkSelected: { network in
+                                        scope.updateSelectedCardNetwork(network.rawValue)
+                                    }
+                                )
+                            }
                         }
                     } else if displayNetwork != .unknown {
                         // Show single network badge for non-cobadged cards
