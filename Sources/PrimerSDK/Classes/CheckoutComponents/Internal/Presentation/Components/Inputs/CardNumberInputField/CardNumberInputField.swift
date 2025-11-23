@@ -27,6 +27,7 @@ struct CardNumberInputField: View, LogReporter {
     @State private var surchargeAmount: String?
     @State private var isFocused: Bool = false
     @State private var localSelectedNetwork: CardNetwork = .unknown
+    @State private var networkSelectorStyle: CardNetworkSelectorStyle = .dropdown
     @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
 
@@ -83,15 +84,26 @@ struct CardNumberInputField: View, LogReporter {
             },
             rightComponent: {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    // Show InlineCardNetworkSelector for co-badged cards (multiple networks)
+                    // Show network selector for co-badged cards (multiple networks)
                     if availableNetworks.count > 1 {
-                        InlineCardNetworkSelector(
-                            availableNetworks: availableNetworks,
-                            selectedNetwork: $localSelectedNetwork,
-                            onNetworkSelected: { network in
-                                scope.updateSelectedCardNetwork(network.rawValue)
-                            }
-                        )
+                        switch networkSelectorStyle {
+                        case .dropdown:
+                            DropdownCardNetworkSelector(
+                                availableNetworks: availableNetworks,
+                                selectedNetwork: $localSelectedNetwork,
+                                onNetworkSelected: { network in
+                                    scope.updateSelectedCardNetwork(network.rawValue)
+                                }
+                            )
+                        case .inline:
+                            InlineCardNetworkSelector(
+                                availableNetworks: availableNetworks,
+                                selectedNetwork: $localSelectedNetwork,
+                                onNetworkSelected: { network in
+                                    scope.updateSelectedCardNetwork(network.rawValue)
+                                }
+                            )
+                        }
                     } else if displayNetwork != .unknown {
                         // Show single network badge for non-cobadged cards
                         CardNetworkBadge(network: displayNetwork,
@@ -140,6 +152,14 @@ struct CardNumberInputField: View, LogReporter {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
+        }
+
+        // Load network selector style from settings
+        do {
+            let settings = try container.resolveSync(PrimerSettings.self)
+            networkSelectorStyle = settings.paymentMethodOptions.cardPaymentOptions.networkSelectorStyle
+        } catch {
+            logger.debug(message: "[A11Y] Using default network selector style: dropdown")
         }
     }
 

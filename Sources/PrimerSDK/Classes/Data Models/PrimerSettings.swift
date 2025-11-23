@@ -232,24 +232,37 @@ public final class PrimerStripeOptions: Codable, Equatable {
     }
 
     public static func == (lhs: PrimerStripeOptions, rhs: PrimerStripeOptions) -> Bool {
-        return lhs.publishableKey == rhs.publishableKey &&
+        lhs.publishableKey == rhs.publishableKey &&
                lhs.mandateData == rhs.mandateData
     }
 }
 
 // MARK: Card Payment
 
+/// Defines how the card network selector is displayed for co-badged cards
+public enum CardNetworkSelectorStyle: String, Codable {
+    /// Inline badge buttons (legacy style)
+    case inline
+    /// Dropdown menu with chevron (default)
+    case dropdown
+}
+
 public final class PrimerCardPaymentOptions: Codable {
 
     let is3DSOnVaultingEnabled: Bool
 
+    /// The style of card network selector for co-badged cards (default: .dropdown)
+    public let networkSelectorStyle: CardNetworkSelectorStyle
+
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
+        self.networkSelectorStyle = .dropdown
     }
 
-    public init() {
+    public init(networkSelectorStyle: CardNetworkSelectorStyle = .dropdown) {
         self.is3DSOnVaultingEnabled = true
+        self.networkSelectorStyle = networkSelectorStyle
     }
 }
 

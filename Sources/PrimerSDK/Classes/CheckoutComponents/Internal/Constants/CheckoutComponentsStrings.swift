@@ -788,6 +788,22 @@ struct CheckoutComponentsStrings {
         comment: "VoiceOver hint for inline network selector button"
     )
 
+    // MARK: Dropdown Network Selector Accessibility
+
+    static let a11yDropdownNetworkSelectorLabel = NSLocalizedString(
+        "accessibility.cardForm.dropdownNetworkSelector.label",
+        bundle: Bundle.primerResources,
+        value: "Card network selector",
+        comment: "VoiceOver label for dropdown network selector"
+    )
+
+    static let a11yDropdownNetworkSelectorHint = NSLocalizedString(
+        "accessibility.cardForm.dropdownNetworkSelector.hint",
+        bundle: Bundle.primerResources,
+        value: "Double tap to select a different card network",
+        comment: "VoiceOver hint for dropdown network selector"
+    )
+
     // MARK: Card Form Accessibility Error Messages
 
     static let a11yCardNumberErrorInvalid = NSLocalizedString(

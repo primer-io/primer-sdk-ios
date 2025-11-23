@@ -48,6 +48,9 @@ enum AccessibilityIdentifiers {
         static func inlineNetworkSelectorButton(_ network: String) -> String {
             "checkout_components_card_form_inline_network_selector_\(network.lowercased())_button"
         }
+
+        /// Accessibility identifier for the dropdown card network selector button
+        static let dropdownNetworkSelectorButton = "checkout_components_card_form_dropdown_network_selector_button"
     }
 
     /// Payment method selection accessibility identifiers
