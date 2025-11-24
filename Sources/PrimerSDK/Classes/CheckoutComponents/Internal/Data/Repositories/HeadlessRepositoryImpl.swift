@@ -16,7 +16,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     private let completion: (Result<PaymentResult, Error>) -> Void
     private var hasCompleted = false
     private weak var repository: HeadlessRepositoryImpl?
-    private var validationCompletion: ((Bool) -> Void)?
+    private var validationCompletion: ((Bool, [Error]?) -> Void)?
 
     init(repository: HeadlessRepositoryImpl, completion: @escaping (Result<PaymentResult, Error>) -> Void) {
         self.repository = repository
@@ -24,7 +24,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         super.init()
     }
 
-    func setValidationCompletion(_ validationCompletion: @escaping (Bool) -> Void) {
+    func setValidationCompletion(_ validationCompletion: @escaping (Bool, [Error]?) -> Void) {
         self.validationCompletion = validationCompletion
     }
 
@@ -97,16 +97,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        // If we're waiting for validation, notify the completion handler
+        // Notify validation completion handler - continuation is resumed in submitPaymentWithValidation
         if let validationCompletion {
-            self.validationCompletion = nil // Clear it so it only fires once
-            validationCompletion(isValid)
-        }
-
-        // Also handle the invalid case for early error reporting
-        if !isValid, let errors = errors, !errors.isEmpty, !hasCompleted {
-            hasCompleted = true
-            completion(.failure(errors.first!))
+            self.validationCompletion = nil
+            validationCompletion(isValid, errors)
         }
     }
 
@@ -411,7 +405,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             }
 
             // Set up validation callback to be notified when validation completes
-            paymentHandler.setValidationCompletion { [weak self] isValid in
+            paymentHandler.setValidationCompletion { [weak self] isValid, errors in
                 guard let self else { return }
 
                 DispatchQueue.main.async {
@@ -421,7 +415,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                         rawDataManager: rawDataManager,
                         selectedNetwork: selectedNetwork,
                         continuation: continuation,
-                        validationResult: isValid
+                        validationResult: isValid,
+                        validationErrors: errors
                     )
                 }
             }
@@ -436,7 +431,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
-        validationResult: Bool
+        validationResult: Bool,
+        validationErrors: [Error]?
     ) {
         // Use the validationResult from the callback instead of rawDataManager.isDataValid
         // to avoid race condition where the property hasn't been updated yet
@@ -455,7 +451,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 }
             }
         } else {
-            handleValidationFailure(rawDataManager: rawDataManager, continuation: continuation)
+            handleValidationFailure(
+                rawDataManager: rawDataManager,
+                continuation: continuation,
+                validationErrors: validationErrors
+            )
         }
     }
 
@@ -480,16 +480,32 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     private func handleValidationFailure(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-        continuation: CheckedContinuation<PaymentResult, Error>
+        continuation: CheckedContinuation<PaymentResult, Error>,
+        validationErrors: [Error]?
     ) {
-        let requiredInputs = rawDataManager.requiredInputElementTypes
-
-        let error = PrimerError.invalidValue(
-            key: "cardData",
-            value: nil,
-            reason: "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
-        )
-        continuation.resume(throwing: error)
+        // Use the actual validation errors from the delegate if available
+        if let validationErrors = validationErrors, !validationErrors.isEmpty {
+            // If there's a single validation error, use it directly
+            if validationErrors.count == 1, let error = validationErrors.first {
+                continuation.resume(throwing: error)
+            } else {
+                // If there are multiple errors, wrap them in an underlying errors container
+                let error = PrimerError.underlyingErrors(
+                    errors: validationErrors,
+                    diagnosticsId: .uuid
+                )
+                continuation.resume(throwing: error)
+            }
+        } else {
+            // Fallback to generic error if no validation errors are available
+            let requiredInputs = rawDataManager.requiredInputElementTypes
+            let error = PrimerError.invalidValue(
+                key: "cardData",
+                value: nil,
+                reason: "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
+            )
+            continuation.resume(throwing: error)
+        }
     }
 
     private func handleiOS14Fallback(continuation: CheckedContinuation<PaymentResult, Error>) {

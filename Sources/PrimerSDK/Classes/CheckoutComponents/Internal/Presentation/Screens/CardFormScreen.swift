@@ -39,7 +39,6 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     private var headerSection: some View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-            // Navigation bar (Back/Cancel)
             HStack {
                 if scope.presentationContext.shouldShowBackButton {
                     Button(action: {
@@ -61,7 +60,6 @@ struct CardFormScreen: View, LogReporter {
 
                 Spacer()
 
-                // Show close button based on dismissalMechanism setting
                 if scope.dismissalMechanism.contains(.closeButton) {
                     Button(CheckoutComponentsStrings.cancelButton, action: {
                         scope.onCancel()
@@ -75,7 +73,6 @@ struct CardFormScreen: View, LogReporter {
                 }
             }
 
-            // Title
             titleSection
         }
     }
@@ -103,15 +100,11 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var dynamicFieldsSection: some View {
-        // Check for complete screen override first
         if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
             VStack(spacing: 0) {
-                // Render card fields dynamically based on configuration
                 cardFieldsSection
-
-                // Billing address fields if configured
                 billingAddressSection
             }
         }
@@ -120,16 +113,13 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var cardFieldsSection: some View {
-        // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
             AnyView(customSection())
         } else {
             VStack(spacing: 0) {
-                // Render fields dynamically, inserting networks after card number
                 ForEach(0 ..< formConfiguration.cardFields.count, id: \.self) { index in
                     let fieldType = formConfiguration.cardFields[index]
 
-                    // Check if this is expiry date followed by CVV - render them horizontally
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
                        formConfiguration.cardFields[index + 1] == .cvv
@@ -142,17 +132,13 @@ struct CardFormScreen: View, LogReporter {
                               formConfiguration.cardFields[index - 1] == .expiryDate,
                               fieldType == .cvv
                     {
-                        // Skip CVV if it was already rendered with expiry date
                         EmptyView()
                     } else {
-                        // Render field
                         renderField(fieldType)
                     }
 
-                    // Render networks as separate VStack child immediately after card number field
                     if fieldType == .cardNumber {
                         let allowedNetworks = [CardNetwork].allowedCardNetworks
-                        // Fallback for previews: show common networks if API config is not available
                         let networksToShow = !allowedNetworks.isEmpty ? allowedNetworks : [.visa, .masterCard, .amex, .discover]
                         AllowedCardNetworksView(allowedCardNetworks: networksToShow)
                             .padding(.bottom, PrimerSpacing.medium(tokens: tokens))
@@ -165,26 +151,21 @@ struct CardFormScreen: View, LogReporter {
     @ViewBuilder
     @MainActor
     private var billingAddressSection: some View {
-        // Only show if configuration includes billing fields
         if !formConfiguration.billingFields.isEmpty,
            let defaultScope = scope as? DefaultCardFormScope
         {
-            // Check for section-level override first
             if let customSection = defaultScope.billingAddressSection {
                 AnyView(customSection())
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-                    // Billing address section title
                     Text(CheckoutComponentsStrings.billingAddressTitle)
                         .font(PrimerFont.headline(tokens: tokens))
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
-                    // Render billing address fields using the same pattern as card fields
                     VStack(spacing: 0) {
                         ForEach(0 ..< formConfiguration.billingFields.count, id: \.self) { index in
                             let fieldType = formConfiguration.billingFields[index]
 
-                            // Check if this is firstName followed by lastName - render them horizontally
                             if fieldType == .firstName,
                                index + 1 < formConfiguration.billingFields.count,
                                formConfiguration.billingFields[index + 1] == .lastName
@@ -197,10 +178,8 @@ struct CardFormScreen: View, LogReporter {
                                       formConfiguration.billingFields[index - 1] == .firstName,
                                       fieldType == .lastName
                             {
-                                // Skip lastName if it was already rendered with firstName
                                 EmptyView()
                             } else {
-                                // Render field
                                 renderField(fieldType)
                             }
                         }
@@ -213,7 +192,6 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var submitButtonSection: some View {
-        // Check for section-level override first
         if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
             AnyView(customSection())
         } else {
@@ -262,65 +240,60 @@ struct CardFormScreen: View, LogReporter {
         ))
     }
 
-    /// Accessibility-friendly version of submit button text for VoiceOver
-    /// Uses period as decimal separator to avoid misreading "6,00€" as "600 euros"
+    /// Accessibility-friendly version of submit button text for VoiceOver.
+    /// Uses period as decimal separator to avoid misreading "6,00€" as "600 euros".
     private var submitButtonAccessibilityLabel: String {
-        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
         if scope.cardFormUIOptions?.payButtonAddNewCard == true {
             return CheckoutComponentsStrings.addCardButton
         }
 
-        // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
               let currency = configurationService?.currency
         else {
             return CheckoutComponentsStrings.payButton
         }
 
-        let baseAmount = configurationService?.amount ?? 0
+        let amount = configurationService?.amount ?? 0
+        let merchantAmount = configurationService?.apiConfiguration?.clientSession?.order?.merchantAmount
 
-        // Check if there's a surcharge from the detected card network (use raw amount)
-        if let surchargeRaw = cardFormState.surchargeAmountRaw,
+        if let merchantAmount = merchantAmount,
+           let surchargeRaw = cardFormState.surchargeAmountRaw,
            cardFormState.selectedNetwork != nil
         {
-            let totalAmount = baseAmount + surchargeRaw
-            // Use accessibility-friendly formatter
+            let totalAmount = merchantAmount + surchargeRaw
             let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
             return "Pay with \(accessibilityAmount)"
         }
 
-        // No surcharge, use base amount with accessibility formatter
-        let accessibilityAmount = baseAmount.toAccessibilityCurrencyString(currency: currency)
+        let accessibilityAmount = amount.toAccessibilityCurrencyString(currency: currency)
         return "Pay with \(accessibilityAmount)"
     }
 
     private var submitButtonText: String {
-        // Check if custom button text is configured (e.g., "Add New Card" for vaulting)
         if scope.cardFormUIOptions?.payButtonAddNewCard == true {
             return CheckoutComponentsStrings.addCardButton
         }
 
-        // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
               let currency = configurationService?.currency
         else {
             return CheckoutComponentsStrings.payButton
         }
 
-        let baseAmount = configurationService?.amount ?? 0
+        let amount = configurationService?.amount ?? 0
+        let merchantAmount = configurationService?.apiConfiguration?.clientSession?.order?.merchantAmount
 
-        // Check if there's a surcharge from the detected card network (use raw amount)
-        if let surchargeRaw = cardFormState.surchargeAmountRaw,
+        if let merchantAmount = merchantAmount,
+           let surchargeRaw = cardFormState.surchargeAmountRaw,
            cardFormState.selectedNetwork != nil
         {
-            let totalAmount = baseAmount + surchargeRaw
+            let totalAmount = merchantAmount + surchargeRaw
             let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
             return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
         }
 
-        // No surcharge, use base amount
-        let formattedBaseAmount = baseAmount.toCurrencyString(currency: currency)
-        return CheckoutComponentsStrings.paymentAmountTitle(formattedBaseAmount)
+        let formattedAmount = amount.toCurrencyString(currency: currency)
+        return CheckoutComponentsStrings.paymentAmountTitle(formattedAmount)
     }
 
     private var submitButtonBackground: Color {
@@ -647,53 +620,35 @@ struct CardFormScreen: View, LogReporter {
         let billingFields = formConfiguration.billingFields
 
         if let currentIndex = cardFields.firstIndex(of: currentField) {
-            // Move to next card field if available
             if currentIndex + 1 < cardFields.count {
                 focusedField = cardFields[currentIndex + 1]
                 return
             }
-            // If last card field, move to first billing field if available
             if !billingFields.isEmpty {
                 focusedField = billingFields.first
                 return
             }
-            // Otherwise, clear focus (moves to submit button)
             focusedField = nil
             return
         }
 
         if let currentIndex = billingFields.firstIndex(of: currentField) {
-            // Move to next billing field if available
             if currentIndex + 1 < billingFields.count {
                 focusedField = billingFields[currentIndex + 1]
                 return
             }
-            // If last field, clear focus (moves to submit button)
             focusedField = nil
             return
         }
 
-        // Default: clear focus
         focusedField = nil
     }
 
     /// Moves focus to the first field with a validation error.
     ///
-    /// **Important**: This should only be called in response to explicit user actions,
-    /// such as attempting to submit the form or requesting error navigation.
-    /// DO NOT call this automatically when errors appear during typing, as it creates
-    /// an accessibility trap preventing VoiceOver users from navigating freely.
-    ///
-    /// Valid use cases:
-    /// - User manually requests "jump to error" functionality
-    /// - After form submission is attempted (if we add validation-before-submit)
-    /// - Explicit accessibility navigation actions
-    ///
-    /// Invalid use cases:
-    /// - Automatic call when error count increases during typing (ACCESSIBILITY TRAP)
-    /// - Any automatic call during text input changes
+    /// **Important**: Only call in response to explicit user actions (form submission, navigation request).
+    /// DO NOT call automatically during typing as it creates an accessibility trap.
     private func moveFocusToFirstError() {
-        // Check for errors in card fields first
         for field in formConfiguration.cardFields {
             if cardFormState.hasError(for: field) {
                 focusedField = field
@@ -701,7 +656,6 @@ struct CardFormScreen: View, LogReporter {
             }
         }
 
-        // Then check billing fields
         for field in formConfiguration.billingFields {
             if cardFormState.hasError(for: field) {
                 focusedField = field

@@ -247,6 +247,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
                         self.structuredState.selectedNetwork = PrimerCardNetwork(network: network)
                         self.updateSurchargeAmount(for: network)
                     } else {
+                        self.structuredState.selectedNetwork = nil
                         self.updateSurchargeAmount(for: nil)
                     }
                 }
@@ -405,8 +406,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateSelectedCardNetwork(_ network: String) {
         if let cardNetwork = CardNetwork(rawValue: network) {
-            structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
-            updateSurchargeAmount(for: cardNetwork)
+            if cardNetwork == .unknown {
+                structuredState.selectedNetwork = nil
+                updateSurchargeAmount(for: nil)
+            } else {
+                structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
+                updateSurchargeAmount(for: cardNetwork)
+            }
         }
 
         updateCardData()
@@ -604,6 +610,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Surcharge Management
 
     /// Updates the surcharge amount based on the selected card network
+    /// Only sets surcharge when merchantAmount is nil (using totalOrderAmount)
+    /// When merchantAmount exists, it already includes the surcharge from backend
     private func updateSurchargeAmount(for network: CardNetwork?) {
         guard let network else {
             structuredState.surchargeAmountRaw = nil
@@ -612,6 +620,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
 
         guard let surcharge = network.surcharge,
+              configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
               let currency = configurationService.currency
         else {
             structuredState.surchargeAmountRaw = nil

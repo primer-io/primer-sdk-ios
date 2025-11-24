@@ -84,7 +84,18 @@ struct CardNumberInputField: View, LogReporter {
                 }
             },
             rightComponent: {
-                VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
+                HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+                    if let surchargeAmount {
+                        Text(surchargeAmount)
+                            .font(PrimerFont.caption(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                            .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
+                            .padding(.vertical, 2)
+                            .background(CheckoutColors.gray200(tokens: tokens))
+                            .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
+                            .frame(height: PrimerSize.small(tokens: tokens))
+                    }
+
                     if availableNetworks.count > 1 {
                         if availableNetworks.contains(where: { !$0.allowsUserSelection }) {
                             DualBadgeDisplay(networks: availableNetworks)
@@ -109,21 +120,6 @@ struct CardNumberInputField: View, LogReporter {
                             }
                         }
                     } else if displayNetwork != .unknown {
-                        CardNetworkBadge(network: displayNetwork)
-                    }
-
-                    if let surchargeAmount {
-                        Text(surchargeAmount)
-                            .font(PrimerFont.caption(tokens: tokens))
-                            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                            .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
-                            .padding(.vertical, 2)
-                            .background(CheckoutColors.gray200(tokens: tokens))
-                            .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
-                            .frame(height: PrimerSize.small(tokens: tokens))
-                    }
-
-                    if displayNetwork != .unknown {
                         CardNetworkBadge(network: displayNetwork)
                     }
                 }
