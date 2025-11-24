@@ -16,6 +16,8 @@ struct DropdownCardNetworkSelector: View {
     @Binding var selectedNetwork: CardNetwork
     let onNetworkSelected: ((CardNetwork) -> Void)?
 
+    // MARK: - Private Properties
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body
@@ -38,11 +40,7 @@ struct DropdownCardNetworkSelector: View {
             }
         } label: {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                CardNetworkBadge(
-                    network: selectedNetwork,
-                    width: PrimerCardNetworkSelector.badgeWidth,
-                    height: PrimerCardNetworkSelector.badgeHeight
-                )
+                CardNetworkBadge(network: selectedNetwork)
 
                 Image(systemName: "chevron.down")
                     .font(.system(size: PrimerCardNetworkSelector.chevronFontSize, weight: .medium))

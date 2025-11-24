@@ -15,6 +15,8 @@ struct InlineCardNetworkSelector: View {
     @Binding var selectedNetwork: CardNetwork
     let onNetworkSelected: ((CardNetwork) -> Void)?
 
+    // MARK: - Private Properties
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body

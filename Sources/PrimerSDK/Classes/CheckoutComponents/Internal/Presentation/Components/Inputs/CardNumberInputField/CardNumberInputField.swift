@@ -112,9 +112,7 @@ struct CardNumberInputField: View, LogReporter {
                         }
                     } else if displayNetwork != .unknown {
                         // Show single network badge for non-cobadged cards
-                        CardNetworkBadge(network: displayNetwork,
-                                         width: PrimerCardNetworkSelector.badgeWidth,
-                                         height: PrimerCardNetworkSelector.badgeHeight)
+                        CardNetworkBadge(network: displayNetwork)
                     }
 
                     if let surchargeAmount {

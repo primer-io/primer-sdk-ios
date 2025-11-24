@@ -24,7 +24,7 @@ struct DualBadgeDisplay: View {
 
     let networks: [CardNetwork]
 
-    // MARK: - Environment
+    // MARK: - Private Properties
 
     @Environment(\.designTokens) private var tokens
 
@@ -33,11 +33,7 @@ struct DualBadgeDisplay: View {
     var body: some View {
         HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
             ForEach(networks, id: \.self) { network in
-                CardNetworkBadge(
-                    network: network,
-                    width: PrimerCardNetworkSelector.badgeWidth,
-                    height: PrimerCardNetworkSelector.badgeHeight
-                )
+                CardNetworkBadge(network: network)
             }
         }
         .allowsHitTesting(false)

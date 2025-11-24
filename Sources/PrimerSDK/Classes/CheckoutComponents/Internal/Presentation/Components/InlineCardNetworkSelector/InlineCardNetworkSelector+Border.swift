@@ -10,11 +10,22 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct RoundedCorners: InsettableShape {
-    let topLeft: CGFloat
-    let topRight: CGFloat
-    let bottomLeft: CGFloat
-    let bottomRight: CGFloat
-    var insetAmount: CGFloat = 0
+    // MARK: - Private Properties
+
+    private let topLeft: CGFloat
+    private let topRight: CGFloat
+    private let bottomLeft: CGFloat
+    private let bottomRight: CGFloat
+    private var insetAmount: CGFloat = 0
+
+    // MARK: - Init
+
+    init(topLeft: CGFloat, topRight: CGFloat, bottomLeft: CGFloat, bottomRight: CGFloat) {
+        self.topLeft = topLeft
+        self.topRight = topRight
+        self.bottomLeft = bottomLeft
+        self.bottomRight = bottomRight
+    }
 
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -27,8 +38,8 @@ struct RoundedCorners: InsettableShape {
             path.addArc(
                 center: CGPoint(x: rect.maxX - topRight, y: rect.minY + topRight),
                 radius: topRight,
-                startAngle: Angle(degrees: -90),
-                endAngle: Angle(degrees: 0),
+                startAngle: .degrees(-90),
+                endAngle: .degrees(0),
                 clockwise: false
             )
         }
@@ -38,8 +49,8 @@ struct RoundedCorners: InsettableShape {
             path.addArc(
                 center: CGPoint(x: rect.maxX - bottomRight, y: rect.maxY - bottomRight),
                 radius: bottomRight,
-                startAngle: Angle(degrees: 0),
-                endAngle: Angle(degrees: 90),
+                startAngle: .degrees(0),
+                endAngle: .degrees(90),
                 clockwise: false
             )
         }
@@ -49,8 +60,8 @@ struct RoundedCorners: InsettableShape {
             path.addArc(
                 center: CGPoint(x: rect.minX + bottomLeft, y: rect.maxY - bottomLeft),
                 radius: bottomLeft,
-                startAngle: Angle(degrees: 90),
-                endAngle: Angle(degrees: 180),
+                startAngle: .degrees(90),
+                endAngle: .degrees(180),
                 clockwise: false
             )
         }
@@ -60,8 +71,8 @@ struct RoundedCorners: InsettableShape {
             path.addArc(
                 center: CGPoint(x: rect.minX + topLeft, y: rect.minY + topLeft),
                 radius: topLeft,
-                startAngle: Angle(degrees: 180),
-                endAngle: Angle(degrees: 270),
+                startAngle: .degrees(180),
+                endAngle: .degrees(270),
                 clockwise: false
             )
         }

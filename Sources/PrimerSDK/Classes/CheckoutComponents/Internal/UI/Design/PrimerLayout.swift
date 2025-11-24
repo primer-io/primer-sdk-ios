@@ -119,7 +119,7 @@ struct PrimerScale {
 
 // MARK: - Primer Card Network Selector
 
-struct PrimerCardNetworkSelector {
+enum PrimerCardNetworkSelector {
     static let badgeWidth: CGFloat = 28
     static let badgeHeight: CGFloat = 20
     static let buttonFrameWidth: CGFloat = 34

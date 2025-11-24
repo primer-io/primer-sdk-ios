@@ -25,30 +25,10 @@ struct CardNetworkBadge: View, LogReporter {
     // MARK: - Properties
 
     let network: CardNetwork
-    let width: CGFloat?
-    let height: CGFloat?
 
-    // MARK: - Environment
+    // MARK: - Private Properties
 
     @Environment(\.designTokens) private var tokens
-
-    // MARK: - Initialization
-
-    init(network: CardNetwork, width: CGFloat? = nil, height: CGFloat? = nil) {
-        self.network = network
-        self.width = width
-        self.height = height
-    }
-
-    // MARK: - Computed Properties
-
-    private var badgeWidth: CGFloat {
-        width ?? PrimerCardNetworkSelector.badgeWidth
-    }
-
-    private var badgeHeight: CGFloat {
-        height ?? PrimerCardNetworkSelector.badgeHeight
-    }
 
     // MARK: - Body
 
@@ -58,13 +38,13 @@ struct CardNetworkBadge: View, LogReporter {
             Image(uiImage: icon)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: badgeWidth, height: badgeHeight)
+                .frame(width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight)
                 .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
         } else {
             Text(network.displayName.prefix(2).uppercased())
                 .font(PrimerFont.smallBadge(tokens: tokens))
                 .foregroundColor(CheckoutColors.primary(tokens: tokens))
-                .frame(width: badgeWidth, height: badgeHeight)
+                .frame(width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight)
                 .overlay(
                     RoundedRectangle(cornerRadius: PrimerRadius.xsmall(tokens: tokens))
                         .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
