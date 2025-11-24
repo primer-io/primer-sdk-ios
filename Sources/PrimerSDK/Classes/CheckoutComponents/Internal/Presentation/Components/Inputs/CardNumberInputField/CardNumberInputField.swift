@@ -8,13 +8,17 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct CardNumberInputField: View, LogReporter {
+    // MARK: - Properties
+
     let label: String?
     let placeholder: String
     let scope: any PrimerCardFormScope
     let selectedNetwork: CardNetwork?
+    let availableNetworks: [CardNetwork]
     let styling: PrimerFieldStyling?
 
-    @Environment(\.diContainer) private var container
+    // MARK: - Private Properties
+
     @State private var validationService: ValidationService?
     @State private var cardNumber: String = ""
     @State private var isValid: Bool = false
@@ -22,25 +26,34 @@ struct CardNumberInputField: View, LogReporter {
     @State private var errorMessage: String?
     @State private var surchargeAmount: String?
     @State private var isFocused: Bool = false
+    @State private var localSelectedNetwork: CardNetwork = .unknown
+    @State private var networkSelectorStyle: CardNetworkSelectorStyle = .dropdown
+    @Environment(\.diContainer) private var container
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
 
     init(
         label: String?,
         placeholder: String,
         scope: any PrimerCardFormScope,
         selectedNetwork: CardNetwork? = nil,
+        availableNetworks: [CardNetwork] = [],
         styling: PrimerFieldStyling? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.scope = scope
         self.selectedNetwork = selectedNetwork
+        self.availableNetworks = availableNetworks
         self.styling = styling
     }
 
     private var displayNetwork: CardNetwork {
-        return selectedNetwork ?? cardNetwork
+        selectedNetwork ?? cardNetwork
     }
+
+    // MARK: - Body
 
     var body: some View {
         PrimerInputFieldContainer(
@@ -51,7 +64,7 @@ struct CardNumberInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                if let validationService = validationService {
+                if let validationService {
                     CardNumberTextField(
                         cardNumber: $cardNumber,
                         isValid: $isValid,
@@ -71,11 +84,34 @@ struct CardNumberInputField: View, LogReporter {
             },
             rightComponent: {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    if displayNetwork != .unknown {
+                    if availableNetworks.count > 1 {
+                        if availableNetworks.contains(where: { !$0.allowsUserSelection }) {
+                            DualBadgeDisplay(networks: availableNetworks)
+                        } else {
+                            switch networkSelectorStyle {
+                            case .dropdown:
+                                DropdownCardNetworkSelector(
+                                    availableNetworks: availableNetworks,
+                                    selectedNetwork: $localSelectedNetwork,
+                                    onNetworkSelected: { network in
+                                        scope.updateSelectedCardNetwork(network.rawValue)
+                                    }
+                                )
+                            case .inline:
+                                InlineCardNetworkSelector(
+                                    availableNetworks: availableNetworks,
+                                    selectedNetwork: $localSelectedNetwork,
+                                    onNetworkSelected: { network in
+                                        scope.updateSelectedCardNetwork(network.rawValue)
+                                    }
+                                )
+                            }
+                        }
+                    } else if displayNetwork != .unknown {
                         CardNetworkBadge(network: displayNetwork)
                     }
 
-                    if let surchargeAmount = surchargeAmount {
+                    if let surchargeAmount {
                         Text(surchargeAmount)
                             .font(PrimerFont.bodySmall(tokens: tokens))
                             .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -96,36 +132,49 @@ struct CardNumberInputField: View, LogReporter {
         ))
         .onAppear {
             setupValidationService()
+            localSelectedNetwork = displayNetwork
+        }
+        .onChange(of: selectedNetwork) { newNetwork in
+            if let newNetwork = newNetwork {
+                localSelectedNetwork = newNetwork
+            }
         }
     }
 
-    private func setupValidationService() {
-        guard let container = container else {
-            logger.error(message: "DIContainer not available for CardNumberInputField")
-            return
-        }
+    // MARK: - Private Methods
 
+    private func setupValidationService() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardNumberInputField")
+        }
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
+        }
+
+        // Load network selector style from settings
+        do {
+            let settings = try container.resolveSync(PrimerSettings.self)
+            networkSelectorStyle = settings.paymentMethodOptions.cardPaymentOptions.networkSelectorStyle
+        } catch {
+            logger.debug(message: "[A11Y] Using default network selector style: dropdown")
         }
     }
 
     private func updateSurchargeAmount(for network: CardNetwork) {
         guard let surcharge = network.surcharge,
               PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency else {
+              let currency = AppState.current.currency
+        else {
             surchargeAmount = nil
             return
         }
-
         surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
     }
 }
 
 #if DEBUG
-// MARK: - Preview
 @available(iOS 15.0, *)
 #Preview("Light Mode") {
     CardNumberInputField(
