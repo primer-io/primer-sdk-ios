@@ -84,11 +84,8 @@ struct CardNumberInputField: View, LogReporter {
             },
             rightComponent: {
                 VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
-                    // Show network selector for co-badged cards (multiple networks)
                     if availableNetworks.count > 1 {
-                        // Check if any network disallows user selection (e.g., EFTPOS)
                         if availableNetworks.contains(where: { !$0.allowsUserSelection }) {
-                            // Show non-interactive dual badge display
                             DualBadgeDisplay(networks: availableNetworks)
                         } else {
                             switch networkSelectorStyle {
@@ -111,7 +108,6 @@ struct CardNumberInputField: View, LogReporter {
                             }
                         }
                     } else if displayNetwork != .unknown {
-                        // Show single network badge for non-cobadged cards
                         CardNetworkBadge(network: displayNetwork)
                     }
 
@@ -136,7 +132,6 @@ struct CardNumberInputField: View, LogReporter {
         ))
         .onAppear {
             setupValidationService()
-            // Initialize local selected network
             localSelectedNetwork = displayNetwork
         }
         .onChange(of: selectedNetwork) { newNetwork in
