@@ -24,13 +24,8 @@ import SwiftUI
 struct CardNetworkBadge: View, LogReporter {
     // MARK: - Properties
 
-    /// The card network to display in the badge
     let network: CardNetwork
-
-    /// Optional custom width (defaults to PrimerSize.large)
     let width: CGFloat?
-
-    /// Optional custom height (defaults to PrimerSize.small)
     let height: CGFloat?
 
     // MARK: - Environment

@@ -12,13 +12,8 @@ import SwiftUI
 struct DropdownCardNetworkSelector: View {
     // MARK: - Properties
 
-    /// Available card networks to choose from
     let availableNetworks: [CardNetwork]
-
-    /// Currently selected network
     @Binding var selectedNetwork: CardNetwork
-
-    /// Callback when network is selected
     let onNetworkSelected: ((CardNetwork) -> Void)?
 
     @Environment(\.designTokens) private var tokens

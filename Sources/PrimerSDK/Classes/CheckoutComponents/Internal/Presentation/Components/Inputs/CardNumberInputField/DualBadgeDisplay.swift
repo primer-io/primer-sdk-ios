@@ -22,7 +22,6 @@ import SwiftUI
 struct DualBadgeDisplay: View {
     // MARK: - Properties
 
-    /// The card networks to display as badges
     let networks: [CardNetwork]
 
     // MARK: - Environment

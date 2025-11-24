@@ -20,10 +20,8 @@ struct RoundedCorners: InsettableShape {
         var path = Path()
         let rect = rect.insetBy(dx: insetAmount, dy: insetAmount)
 
-        // Start from top left
         path.move(to: CGPoint(x: rect.minX + topLeft, y: rect.minY))
 
-        // Top edge and top right corner
         path.addLine(to: CGPoint(x: rect.maxX - topRight, y: rect.minY))
         if topRight > 0 {
             path.addArc(
@@ -35,7 +33,6 @@ struct RoundedCorners: InsettableShape {
             )
         }
 
-        // Right edge and bottom right corner
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - bottomRight))
         if bottomRight > 0 {
             path.addArc(
@@ -47,7 +44,6 @@ struct RoundedCorners: InsettableShape {
             )
         }
 
-        // Bottom edge and bottom left corner
         path.addLine(to: CGPoint(x: rect.minX + bottomLeft, y: rect.maxY))
         if bottomLeft > 0 {
             path.addArc(
@@ -59,7 +55,6 @@ struct RoundedCorners: InsettableShape {
             )
         }
 
-        // Left edge and top left corner
         path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + topLeft))
         if topLeft > 0 {
             path.addArc(

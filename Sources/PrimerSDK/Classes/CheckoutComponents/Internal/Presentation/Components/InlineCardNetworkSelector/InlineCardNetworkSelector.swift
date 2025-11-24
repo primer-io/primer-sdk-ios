@@ -11,13 +11,8 @@ import SwiftUI
 struct InlineCardNetworkSelector: View {
     // MARK: - Properties
 
-    /// Available card networks to choose from
     let availableNetworks: [CardNetwork]
-
-    /// Currently selected network
     @Binding var selectedNetwork: CardNetwork
-
-    /// Callback when network is selected
     let onNetworkSelected: ((CardNetwork) -> Void)?
 
     @Environment(\.designTokens) private var tokens
@@ -37,7 +32,6 @@ struct InlineCardNetworkSelector: View {
                 }
                 .id(network.rawValue)
 
-                // Add divider between items (but not after the last one)
                 if index < availableNetworks.count - 1 {
                     Rectangle()
                         .fill(baseBorderColor)
