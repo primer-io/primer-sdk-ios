@@ -98,7 +98,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
         // If we're waiting for validation, notify the completion handler
-        if let validationCompletion = validationCompletion {
+        if let validationCompletion {
             self.validationCompletion = nil // Clear it so it only fires once
             validationCompletion(isValid)
         }
@@ -377,7 +377,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         paymentHandler: PaymentCompletionHandler
     ) {
         rawDataManager.configure { [weak self] _, error in
-            guard let self = self else { return }
+            guard let self else { return }
 
             if let error {
                 continuation.resume(throwing: error)
@@ -386,7 +386,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
             // Set up validation callback to be notified when validation completes
             paymentHandler.setValidationCompletion { [weak self] isValid in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 DispatchQueue.main.async {
                     // Use the callback's isValid parameter instead of re-checking the property

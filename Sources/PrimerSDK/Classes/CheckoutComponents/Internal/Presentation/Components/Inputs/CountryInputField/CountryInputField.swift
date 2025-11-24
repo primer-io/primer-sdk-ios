@@ -86,8 +86,8 @@ struct CountryInputField: View, LogReporter {
                 }) {
                     HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                         // Flag emoji
-                        if let flag = countryFlag, !countryName.isEmpty {
-                            Text(flag)
+                        if let countryFlag, !countryName.isEmpty {
+                            Text(countryFlag)
                                 .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
                         }
 

@@ -139,8 +139,11 @@ private extension ComposableContainer {
 
     /// Register data layer (repositories, mappers).
     func registerData() async {
+        // HeadlessRepository uses transient scope to ensure each checkout session gets a fresh instance.
+        // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
+        // between checkout sessions when the user dismisses and re-presents the checkout UI.
         _ = try? await container.register(HeadlessRepository.self)
-            .asTransient()  // Changed from singleton to transient - creates fresh instance per resolution
+            .asTransient()
             .with { _ in HeadlessRepositoryImpl() }
 
         _ = try? await container.register(PaymentMethodMapper.self)
