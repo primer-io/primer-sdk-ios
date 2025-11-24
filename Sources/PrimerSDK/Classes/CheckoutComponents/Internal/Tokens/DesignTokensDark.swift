@@ -16,6 +16,7 @@ class DesignTokensDark: Decodable {
     public var primerColorGray400: Color? = Color(red: 0.522, green: 0.522, blue: 0.522, opacity: 1)
     public var primerColorGray500: Color? = Color(red: 0.463, green: 0.459, blue: 0.467, opacity: 1)
     public var primerColorGray600: Color? = Color(red: 0.780, green: 0.780, blue: 0.780, opacity: 1)
+    public var primerColorGray700: Color? = Color(red: 0.858, green: 0.858, blue: 0.858, opacity: 1)
     public var primerColorGray900: Color? = Color(red: 0.937, green: 0.937, blue: 0.937, opacity: 1)
     public var primerColorGray000: Color? = Color(red: 0.090, green: 0.086, blue: 0.098, opacity: 1)
     public var primerColorGreen500: Color? = Color(red: 0.153, green: 0.694, blue: 0.490, opacity: 1)
@@ -33,6 +34,7 @@ class DesignTokensDark: Decodable {
         case primerColorGray400
         case primerColorGray500
         case primerColorGray600
+        case primerColorGray700
         case primerColorGray900
         case primerColorGray000
         case primerColorGreen500
@@ -98,6 +100,15 @@ class DesignTokensDark: Decodable {
                 green: primerColorGray600Components[1],
                 blue: primerColorGray600Components[2],
                 opacity: primerColorGray600Components[3]
+            )
+        }
+
+        if let primerColorGray700Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray700) {
+            self.primerColorGray700 = Color(
+                red: primerColorGray700Components[0],
+                green: primerColorGray700Components[1],
+                blue: primerColorGray700Components[2],
+                opacity: primerColorGray700Components[3]
             )
         }
 
