@@ -26,26 +26,22 @@ struct InlineCardNetworkSelector: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
-                    InlineCardNetworkButton(
-                        network: network,
-                        isSelected: selectedNetwork == network,
-                        isFirst: index == 0,
-                        isLast: index == availableNetworks.count - 1,
-                        tokens: tokens
-                    ) {
-                        selectedNetwork = network
-                        onNetworkSelected?(network)
-                    }
-                    .id(network.rawValue)
+            ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
+                InlineCardNetworkButton(
+                    network: network,
+                    isSelected: selectedNetwork == network,
+                    tokens: tokens
+                ) {
+                    selectedNetwork = network
+                    onNetworkSelected?(network)
+                }
+                .id(network.rawValue)
 
-                    // Add divider between items (but not after the last one)
-                    if index < availableNetworks.count - 1 {
-                        Rectangle()
-                            .fill(baseBorderColor)
-                            .frame(width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight)
-                    }
+                // Add divider between items (but not after the last one)
+                if index < availableNetworks.count - 1 {
+                    Rectangle()
+                        .fill(baseBorderColor)
+                        .frame(width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight)
                 }
             }
         }
@@ -75,7 +71,7 @@ struct InlineCardNetworkSelector: View {
         )
     }
 
-    func getOffset(selectedIndex: Int) -> CGFloat {
+    private func getOffset(selectedIndex: Int) -> CGFloat {
         guard selectedIndex > 0 else { return 0 }
         return CGFloat(selectedIndex) * (PrimerCardNetworkSelector.buttonFrameWidth + borderWidth)
     }

@@ -50,8 +50,12 @@ struct DropdownCardNetworkSelector: View {
                 )
 
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .medium))
-                    .frame(width: 20, height: 20, alignment: .center)
+                    .font(.system(size: PrimerCardNetworkSelector.chevronFontSize, weight: .medium))
+                    .frame(
+                        width: PrimerCardNetworkSelector.chevronSize,
+                        height: PrimerCardNetworkSelector.chevronSize,
+                        alignment: .center
+                    )
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             }
             .contentShape(Rectangle())
