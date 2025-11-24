@@ -15,7 +15,7 @@ jobs:
     name: "Unit Tests - SDK & Debug App"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ github.ref }}
       - name: Run SDK and Debug App tests
@@ -41,7 +41,7 @@ jobs:
       should-run-stripe: ${{ steps.changes.outputs.stripe }}
       should-run-any: ${{ steps.changes.outputs.any }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
@@ -100,7 +100,7 @@ jobs:
     steps:
       - name: Git - Checkout
         if: ${{ !matrix.skip }}
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -125,7 +125,7 @@ jobs:
     name: "Build app with SPM Integration"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -166,7 +166,7 @@ jobs:
     runs-on: macos-latest
     if: always() && !cancelled() && needs.unit-tests-sdk-and-debug-app.result == 'success' && (needs.check-optional-tests.outputs.should-run-any != 'true' || needs.optional-sdk-tests.result == 'success')
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Determine coverage files
@@ -211,7 +211,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
