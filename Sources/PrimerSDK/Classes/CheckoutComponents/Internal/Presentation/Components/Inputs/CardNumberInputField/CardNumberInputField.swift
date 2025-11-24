@@ -20,6 +20,7 @@ struct CardNumberInputField: View, LogReporter {
     // MARK: - Private Properties
 
     @State private var validationService: ValidationService?
+    @State private var configurationService: ConfigurationService?
     @State private var cardNumber: String = ""
     @State private var isValid: Bool = false
     @State private var cardNetwork: CardNetwork = .unknown
@@ -166,6 +167,12 @@ struct CardNumberInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
 
+        do {
+            configurationService = try container.resolveSync(ConfigurationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ConfigurationService: \(error)")
+        }
+
         // Load network selector style from settings
         do {
             let settings = try container.resolveSync(PrimerSettings.self)
@@ -176,9 +183,10 @@ struct CardNumberInputField: View, LogReporter {
     }
 
     private func updateSurchargeAmount(for network: CardNetwork) {
-        guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency
+        guard let configurationService,
+              let surcharge = network.surcharge,
+              configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+              let currency = configurationService.currency
         else {
             surchargeAmount = nil
             return

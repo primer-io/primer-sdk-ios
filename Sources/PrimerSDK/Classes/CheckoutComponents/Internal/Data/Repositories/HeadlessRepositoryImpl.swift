@@ -131,6 +131,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// PrimerSettings for accessing SDK configurations (iOS 15.0+ only)
     private var settings: PrimerSettings?
 
+    /// ConfigurationService for accessing API configuration
+    private var configurationService: ConfigurationService?
+
     // MARK: - Co-Badged Cards Support
 
     /// RawDataManager for co-badged cards detection (follows traditional SDK pattern)
@@ -174,8 +177,31 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
+    @available(iOS 15.0, *)
+    private func injectConfigurationService() async {
+        guard configurationService == nil else { return }
+
+        do {
+            guard let container = await DIContainer.current else {
+                return
+            }
+
+            configurationService = try await container.resolve(ConfigurationService.self)
+        } catch {
+        }
+    }
+
+    @available(iOS 15.0, *)
+    private func ensureConfigurationService() async {
+        if configurationService == nil {
+            await injectConfigurationService()
+        }
+    }
+
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
-        let primerMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods ?? []
+        await ensureConfigurationService()
+
+        let primerMethods = configurationService?.apiConfiguration?.paymentMethods ?? []
 
         // Map PrimerPaymentMethod to InternalPaymentMethod with surcharge data
         let mappedMethods = primerMethods.map { primerMethod in
@@ -210,7 +236,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return nil
         }
 
-        let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        let session = configurationService?.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
             return nil
         }

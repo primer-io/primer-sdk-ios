@@ -13,11 +13,13 @@ struct CardFormScreen: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var cardFormState: StructuredCardFormState = .init()
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
     @State private var formConfiguration: CardFormConfiguration = .default
+    @State private var configurationService: ConfigurationService?
     @FocusState private var focusedField: PrimerInputElementType?
 
     var body: some View {
@@ -85,6 +87,7 @@ struct CardFormScreen: View, LogReporter {
             submitButtonSection
         }
         .onAppear {
+            resolveConfigurationService()
             observeState()
         }
     }
@@ -269,12 +272,12 @@ struct CardFormScreen: View, LogReporter {
 
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
-              let currency = AppState.current.currency
+              let currency = configurationService?.currency
         else {
             return CheckoutComponentsStrings.payButton
         }
 
-        let baseAmount = AppState.current.amount ?? 0
+        let baseAmount = configurationService?.amount ?? 0
 
         // Check if there's a surcharge from the detected card network (use raw amount)
         if let surchargeRaw = cardFormState.surchargeAmountRaw,
@@ -299,12 +302,12 @@ struct CardFormScreen: View, LogReporter {
 
         // Only show amount in checkout intent and when currency is set
         guard PrimerInternal.shared.intent == .checkout,
-              let currency = AppState.current.currency
+              let currency = configurationService?.currency
         else {
             return CheckoutComponentsStrings.payButton
         }
 
-        let baseAmount = AppState.current.amount ?? 0
+        let baseAmount = configurationService?.amount ?? 0
 
         // Check if there's a surcharge from the detected card network (use raw amount)
         if let surchargeRaw = cardFormState.surchargeAmountRaw,
@@ -329,6 +332,17 @@ struct CardFormScreen: View, LogReporter {
     private func submitAction() {
         Task {
             await (scope as? DefaultCardFormScope)?.submit()
+        }
+    }
+
+    private func resolveConfigurationService() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardFormScreen")
+        }
+        do {
+            configurationService = try container.resolveSync(ConfigurationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ConfigurationService: \(error)")
         }
     }
 

@@ -17,6 +17,12 @@ protocol ConfigurationService {
 
     /// Get billing address options if available
     var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? { get }
+
+    /// Get the current currency from the client session
+    var currency: Currency? { get }
+
+    /// Get the current amount from the client session (merchant amount or total order amount)
+    var amount: Int? { get }
 }
 
 /// Default implementation that wraps access to PrimerAPIConfigurationModule
@@ -34,5 +40,14 @@ final class DefaultConfigurationService: ConfigurationService {
         checkoutModules?
             .first(where: { $0.type == "BILLING_ADDRESS" })?
             .options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+    }
+
+    var currency: Currency? {
+        apiConfiguration?.clientSession?.order?.currencyCode
+    }
+
+    var amount: Int? {
+        apiConfiguration?.clientSession?.order?.merchantAmount ??
+        apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
 }

@@ -4,6 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// swiftlint:disable file_length
+
 import Foundation
 
 /// Centralized strings for CheckoutComponents to make localization easier
@@ -1017,3 +1019,5 @@ enum CheckoutComponentsStrings {
         comment: "VoiceOver generic error announcement"
     )
 }
+
+// swiftlint:enable file_length

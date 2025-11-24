@@ -612,7 +612,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
 
         guard let surcharge = network.surcharge,
-              let currency = AppState.current.currency
+              let currency = configurationService.currency
         else {
             structuredState.surchargeAmountRaw = nil
             structuredState.surchargeAmount = nil

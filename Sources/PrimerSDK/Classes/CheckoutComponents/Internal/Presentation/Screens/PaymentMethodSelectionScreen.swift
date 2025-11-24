@@ -19,8 +19,10 @@ struct PaymentMethodSelectionScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
+    @State private var configurationService: ConfigurationService?
 
     var body: some View {
         mainContent
@@ -33,6 +35,7 @@ struct PaymentMethodSelectionScreen: View {
             contentContainer
         }
         .onAppear {
+            resolveConfigurationService()
             observeState()
         }
     }
@@ -50,8 +53,8 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     private var paymentAmountHeader: some View {
         HStack {
-            let amount = AppState.current.amount ?? 9900 // Default to $99.00 if not available
-            let currency = AppState.current.currency ?? Currency(code: "USD", decimalDigits: 2)
+            let amount = configurationService?.amount ?? 9900 // Default to $99.00 if not available
+            let currency = configurationService?.currency ?? Currency(code: "USD", decimalDigits: 2)
             let formattedAmount = amount.toCurrencyString(currency: currency)
 
             Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
@@ -169,7 +172,7 @@ struct PaymentMethodSelectionScreen: View {
 
         for surcharge in sortedSurcharges {
             let methodsWithThisSurcharge = surchargeMethods.filter { $0.surcharge == surcharge }
-            let currency = AppState.current.currency ?? Currency(code: "EUR", decimalDigits: 2)
+            let currency = configurationService?.currency ?? Currency(code: "EUR", decimalDigits: 2)
             let formattedSurcharge = "+\(surcharge.toCurrencyString(currency: currency))"
 
             groups.append(PaymentMethodGroup(
@@ -294,6 +297,17 @@ struct PaymentMethodSelectionScreen: View {
                     label: error,
                     traits: [.isStaticText]
                 ))
+        }
+    }
+
+    private func resolveConfigurationService() {
+        guard let container else {
+            return
+        }
+        do {
+            configurationService = try container.resolveSync(ConfigurationService.self)
+        } catch {
+            // Failed to resolve ConfigurationService, will use defaults
         }
     }
 

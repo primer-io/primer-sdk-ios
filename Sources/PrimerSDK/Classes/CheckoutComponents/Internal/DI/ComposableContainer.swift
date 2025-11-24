@@ -148,7 +148,10 @@ private extension ComposableContainer {
 
         _ = try? await container.register(PaymentMethodMapper.self)
             .asSingleton()
-            .with { _ in PaymentMethodMapperImpl() }
+            .with { container in
+                let configService = try await container.resolve(ConfigurationService.self)
+                return PaymentMethodMapperImpl(configurationService: configService)
+            }
     }
 
     /// Register presentation layer (scopes, view models).
@@ -159,6 +162,7 @@ private extension ComposableContainer {
     /// Perform health check on the container.
     func performHealthCheck() async {
         let diagnostics = await container.getDiagnostics()
+        logger.debug(message: "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)")
 
         let healthReport = await container.performHealthCheck()
         if healthReport.status == .healthy {
