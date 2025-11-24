@@ -252,7 +252,7 @@ public final class PrimerCardPaymentOptions: Codable {
     let is3DSOnVaultingEnabled: Bool
 
     /// The style of card network selector for co-badged cards (default: .dropdown)
-    public let networkSelectorStyle: CardNetworkSelectorStyle
+    let networkSelectorStyle: CardNetworkSelectorStyle
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
