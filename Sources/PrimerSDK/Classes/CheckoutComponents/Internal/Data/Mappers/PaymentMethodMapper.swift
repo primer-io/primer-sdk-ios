@@ -17,7 +17,14 @@ protocol PaymentMethodMapper {
 }
 
 /// Default implementation of PaymentMethodMapper.
+@available(iOS 15.0, *)
 final class PaymentMethodMapperImpl: PaymentMethodMapper {
+
+    private let configurationService: ConfigurationService
+
+    init(configurationService: ConfigurationService) {
+        self.configurationService = configurationService
+    }
 
     func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod {
         let formattedSurcharge = formatSurcharge(internalMethod.surcharge, hasUnknownSurcharge: internalMethod.hasUnknownSurcharge)
@@ -36,7 +43,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
     }
 
     func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod] {
-        return internalMethods.map { mapToPublic($0) }
+        internalMethods.map { mapToPublic($0) }
     }
 
     /// Format surcharge for display
@@ -49,7 +56,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
         guard let surcharge = surcharge,
               surcharge > 0,
-              let currency = AppState.current.currency else {
+              let currency = configurationService.currency else {
             return CheckoutComponentsStrings.noAdditionalFee
         }
 

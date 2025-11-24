@@ -198,7 +198,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 throw ContainerError.containerUnavailable
             }
 
-            paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
+            let configService = try await container.resolve(ConfigurationService.self)
+            paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge(configurationService: configService)
 
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
@@ -485,14 +486,14 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? {
-        return getPaymentMethodScope(for: methodType.rawValue)
+        getPaymentMethodScope(for: methodType.rawValue)
     }
 
     // MARK: - Payment Method Screen Management
 
     /// Type mapping from payment method enum to string identifier
     private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
-        return type.rawValue
+        type.rawValue
     }
 
     public func onDismiss() {

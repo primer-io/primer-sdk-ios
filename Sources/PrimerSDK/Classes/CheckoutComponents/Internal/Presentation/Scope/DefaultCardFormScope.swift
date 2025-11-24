@@ -7,8 +7,8 @@
 // swiftlint:disable file_length
 // swiftlint:disable identifier_name
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// Validation state tracking for individual fields
 private struct FieldValidationStates: Equatable {
@@ -75,6 +75,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public var errorView: ((_ error: String) -> any View)?
 
     // MARK: - Field-Level Customization Properties
+
     public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
     public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
     public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
@@ -94,11 +95,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public var submitButton: ((_ text: String) -> any View)?
 
     // MARK: - Section-Level Customization Properties
+
     public var cardInputSection: (() -> any View)?
     public var billingAddressSection: (() -> any View)?
     public var submitButtonSection: (() -> any View)?
 
     // MARK: - Default Styling Properties
+
     public var defaultFieldStyling: [String: PrimerFieldStyling]?
 
     // MARK: - Private Properties
@@ -108,6 +111,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private let validateInputInteractor: ValidateInputInteractor?
     private let cardNetworkDetectionInteractor: CardNetworkDetectionInteractor?
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+    private let configurationService: ConfigurationService
 
     /// Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
@@ -123,6 +127,47 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Form configuration determining which fields are displayed
     private var formConfiguration: CardFormConfiguration = .default
+
+    /// Builds billing address fields array based on API configuration
+    /// Returns empty array if billing address is not required (postalCode field must be enabled)
+    private func buildBillingAddressFields() -> [PrimerInputElementType] {
+        // Billing address is only shown if postalCode is explicitly enabled
+        guard let options = configurationService.billingAddressOptions,
+              options.postalCode == true
+        else {
+            return []
+        }
+
+        var fields: [PrimerInputElementType] = []
+
+        // Add fields that are not explicitly disabled (nil means show by default)
+        if options.countryCode != false {
+            fields.append(.countryCode)
+        }
+        if options.firstName != false {
+            fields.append(.firstName)
+        }
+        if options.lastName != false {
+            fields.append(.lastName)
+        }
+        if options.addressLine1 != false {
+            fields.append(.addressLine1)
+        }
+        if options.addressLine2 != false {
+            fields.append(.addressLine2)
+        }
+        // postalCode is always included when billing address is shown (we already checked it's true)
+        fields.append(.postalCode)
+
+        if options.city != false {
+            fields.append(.city)
+        }
+        if options.state != false {
+            fields.append(.state)
+        }
+
+        return fields
+    }
 
     /// Computed property to get the selected country from the country code
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
@@ -142,7 +187,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         processCardPaymentInteractor: ProcessCardPaymentInteractor,
         validateInputInteractor: ValidateInputInteractor? = nil,
         cardNetworkDetectionInteractor: CardNetworkDetectionInteractor? = nil,
-        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
+        configurationService: ConfigurationService
     ) {
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
@@ -150,6 +196,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         self.validateInputInteractor = validateInputInteractor
         self.cardNetworkDetectionInteractor = cardNetworkDetectionInteractor
         self.analyticsInteractor = analyticsInteractor
+        self.configurationService = configurationService
+
+        // Initialize form configuration with billing address fields from API
+        let billingFields = buildBillingAddressFields()
+        formConfiguration = CardFormConfiguration(
+            cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
+            billingFields: billingFields,
+            requiresBillingAddress: !billingFields.isEmpty
+        )
 
         if cardNetworkDetectionInteractor != nil {
             setupNetworkDetectionStream()
@@ -158,9 +213,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     private func getCardNetworkForCvv() -> CardNetwork {
         if let selectedNetwork = structuredState.selectedNetwork {
-            return selectedNetwork.network
+            selectedNetwork.network
         } else {
-            return CardNetwork(cardNumber: structuredState.data[.cardNumber])
+            CardNetwork(cardNumber: structuredState.data[.cardNumber])
         }
     }
 
@@ -192,6 +247,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
                         self.structuredState.selectedNetwork = PrimerCardNetwork(network: network)
                         self.updateSurchargeAmount(for: network)
                     } else {
+                        self.structuredState.selectedNetwork = nil
                         self.updateSurchargeAmount(for: nil)
                     }
                 }
@@ -331,10 +387,12 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     public func updateCountryCode(_ countryCode: String) {
         structuredState.data[.countryCode] = countryCode
 
-        if let country = CountryCode.phoneNumberCountryCodes.first(where: { $0.code.uppercased() == countryCode.uppercased() }) {
+        if let country = CountryCode.phoneNumberCountryCodes.first(where: { $0.code.uppercased() == countryCode.uppercased() }),
+           let countryCodeEnum = CountryCode(rawValue: country.code) {
             structuredState.selectedCountry = PrimerCountry(
                 code: country.code,
                 name: country.name,
+                flag: countryCodeEnum.flag,
                 dialCode: country.dialCode
             )
         }
@@ -348,8 +406,13 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     public func updateSelectedCardNetwork(_ network: String) {
         if let cardNetwork = CardNetwork(rawValue: network) {
-            structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
-            updateSurchargeAmount(for: cardNetwork)
+            if cardNetwork == .unknown {
+                structuredState.selectedNetwork = nil
+                updateSurchargeAmount(for: nil)
+            } else {
+                structuredState.selectedNetwork = PrimerCardNetwork(network: cardNetwork)
+                updateSurchargeAmount(for: cardNetwork)
+            }
         }
 
         updateCardData()
@@ -482,7 +545,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
         do {
             try await ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
-            self.billingAddressSent = true
+            billingAddressSent = true
         } catch {
             throw error
         }
@@ -522,7 +585,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
 
     private func getSelectedCardNetwork() -> CardNetwork? {
-        return structuredState.selectedNetwork?.network
+        structuredState.selectedNetwork?.network
     }
 
     private func processCardPayment(cardData: CardPaymentData) async throws -> PaymentResult {
@@ -547,20 +610,26 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - Surcharge Management
 
     /// Updates the surcharge amount based on the selected card network
+    /// Only sets surcharge when merchantAmount is nil (using totalOrderAmount)
+    /// When merchantAmount exists, it already includes the surcharge from backend
     private func updateSurchargeAmount(for network: CardNetwork?) {
-        guard let network = network else {
+        guard let network else {
+            structuredState.surchargeAmountRaw = nil
             structuredState.surchargeAmount = nil
             return
         }
 
         guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency else {
+              configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+              let currency = configurationService.currency
+        else {
+            structuredState.surchargeAmountRaw = nil
             structuredState.surchargeAmount = nil
             return
         }
 
         let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+        structuredState.surchargeAmountRaw = surcharge
         structuredState.surchargeAmount = formattedSurcharge
     }
 
@@ -681,7 +750,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Implementation of getFieldValue using structured state
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
-        return structuredState.data[fieldType]
+        structuredState.data[fieldType]
     }
 
     /// Implementation of setFieldError using structured state
@@ -700,12 +769,30 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     /// Implementation of getFieldError using structured state
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
-        return structuredState.errorMessage(for: fieldType)
+        structuredState.errorMessage(for: fieldType)
     }
 
     /// Implementation of getFormConfiguration
     public func getFormConfiguration() -> CardFormConfiguration {
-        return formConfiguration
+        formConfiguration
+    }
+
+    /// Returns billing address configuration for BillingAddressView
+    /// Converts the field list into a view-ready configuration
+    func getBillingAddressConfiguration() -> BillingAddressConfiguration {
+        let fields = formConfiguration.billingFields
+        return BillingAddressConfiguration(
+            showFirstName: fields.contains(.firstName),
+            showLastName: fields.contains(.lastName),
+            showEmail: fields.contains(.email),
+            showPhoneNumber: fields.contains(.phoneNumber),
+            showAddressLine1: fields.contains(.addressLine1),
+            showAddressLine2: fields.contains(.addressLine2),
+            showCity: fields.contains(.city),
+            showState: fields.contains(.state),
+            showPostalCode: fields.contains(.postalCode),
+            showCountry: fields.contains(.countryCode)
+        )
     }
 
     // MARK: - Accessibility Announcements
@@ -714,7 +801,8 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     /// Multi-field error handling - announces total count first, then first error
     private func announceFieldErrors() {
         guard let container = DIContainer.currentSync,
-              let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self) else {
+              let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self)
+        else {
             return
         }
 
@@ -786,6 +874,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             onOpenCountrySelector: nil
         ).asAny()
     }
+
     public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
         PostalCodeInputField(
             label: label,

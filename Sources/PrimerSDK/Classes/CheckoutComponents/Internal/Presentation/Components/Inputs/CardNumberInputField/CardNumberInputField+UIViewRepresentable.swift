@@ -59,7 +59,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         var formatted = ""
         for (index, char) in number.enumerated() {
             formatted.append(char)
-            if gaps.contains(index + 1) && index + 1 < number.count {
+            if gaps.contains(index + 1), index + 1 < number.count {
                 formatted.append(" ")
             }
         }
@@ -165,7 +165,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     formattedText: formattedText
                 )
             } else {
-                let filteredText = string.filter { $0.isNumber }
+                let filteredText = string.filter(\.isNumber)
                 if filteredText.isEmpty {
                     return currentText
                 }
@@ -199,7 +199,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     upToIndex: range.location,
                     in: formattedText
                 )
-                if unformattedPos > 0 && unformattedPos <= currentText.count {
+                if unformattedPos > 0, unformattedPos <= currentText.count {
                     let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
                     return currentText.removing(at: index)
                 }
@@ -240,9 +240,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             let newNetwork = CardNetwork(cardNumber: newCardNumber)
             if newNetwork != cardNetwork {
                 cardNetwork = newNetwork
-                if newNetwork != .unknown {
-                    scope.updateSelectedCardNetwork(newNetwork.rawValue)
-                }
+                scope.updateSelectedCardNetwork(newNetwork.rawValue)
             }
         }
 
@@ -317,10 +315,10 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 let endIndex = currentText.index(startIndex, offsetBy: min(unformattedRange.length, currentText.count - unformattedRange.location))
                 return currentText.replacingCharacters(in: startIndex..<endIndex, with: "")
             }
-            if unformattedRange.location >= currentText.count && !currentText.isEmpty {
+            if unformattedRange.location >= currentText.count, !currentText.isEmpty {
                 return String(currentText.dropLast())
             }
-            if unformattedRange.location > 0 && unformattedRange.location <= currentText.count {
+            if unformattedRange.location > 0, unformattedRange.location <= currentText.count {
                 let index = currentText.index(currentText.startIndex, offsetBy: unformattedRange.location - 1)
                 return currentText.removing(at: index)
             }
@@ -332,7 +330,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             var formatted = ""
             for (index, char) in number.enumerated() {
                 formatted.append(char)
-                if gaps.contains(index + 1) && index + 1 < number.count {
+                if gaps.contains(index + 1), index + 1 < number.count {
                     formatted.append(" ")
                 }
             }
@@ -366,6 +364,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 return
             }
+
             let network = CardNetwork(cardNumber: number)
             if network != .unknown, let validation = network.validation, validation.lengths.contains(number.count) {
                 let validationResult = validationService.validateCardNumber(number)
@@ -405,6 +404,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
                 return
             }
+
             let validationResult = validationService.validateCardNumber(number)
             isValid = validationResult.isValid
             if validationResult.isValid {

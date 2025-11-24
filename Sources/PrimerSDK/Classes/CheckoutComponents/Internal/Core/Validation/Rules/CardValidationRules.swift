@@ -25,7 +25,7 @@ class CardNumberRule: ValidationRule {
         }
 
         // Check if all digits - use error structure with automatic message resolution
-        if !cleanedNumber.allSatisfy({ $0.isNumber }) {
+        if !cleanedNumber.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
@@ -57,6 +57,14 @@ class CardNumberRule: ValidationRule {
                     code: "unsupported-card-type",
                     message: CheckoutComponentsStrings.formErrorCardTypeNotSupported
                 )
+                return .invalid(error: error)
+            }
+
+            // Check if card length matches the detected network's valid lengths
+            if detectedNetwork != .unknown,
+               let validation = detectedNetwork.validation,
+               !validation.lengths.contains(cleanedNumber.count) {
+                let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
                 return .invalid(error: error)
             }
         }
@@ -105,7 +113,7 @@ class CVVRule: ValidationRule {
         }
 
         // Check if all digits - use error structure with automatic message resolution
-        if !value.allSatisfy({ $0.isNumber }) {
+        if !value.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
             return .invalid(error: error)
         }

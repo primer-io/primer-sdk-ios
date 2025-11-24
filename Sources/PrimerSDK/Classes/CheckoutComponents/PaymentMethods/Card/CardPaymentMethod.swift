@@ -54,6 +54,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
             let validateInputInteractor = try? diContainer.resolveSync(ValidateInputInteractor.self)
             let cardNetworkDetectionInteractor = try? diContainer.resolveSync(CardNetworkDetectionInteractor.self)
             let analyticsInteractor = try? diContainer.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
+            let configurationService: ConfigurationService = try diContainer.resolveSync(ConfigurationService.self)
 
             if validateInputInteractor == nil {
                 logger.debug(message: "⚠️ [CardPaymentMethod] ValidateInputInteractor not registered – using local validation only")
@@ -69,14 +70,15 @@ struct CardPaymentMethod: PaymentMethodProtocol {
                 processCardPaymentInteractor: processCardInteractor,
                 validateInputInteractor: validateInputInteractor,
                 cardNetworkDetectionInteractor: cardNetworkDetectionInteractor,
-                analyticsInteractor: analyticsInteractor
+                analyticsInteractor: analyticsInteractor,
+                configurationService: configurationService
             )
         } catch let primerError as PrimerError {
             throw primerError
         } catch {
             logger.error(message: "❌ [CardPaymentMethod] Failed to resolve card payment dependencies: \(error)")
             throw PrimerError.invalidArchitecture(
-                description: "ProcessCardPaymentInteractor could not be resolved",
+                description: "Required card payment dependencies could not be resolved",
                 recoverSuggestion: "Ensure CheckoutComponents DI registration runs before presenting the Card form."
             )
         }

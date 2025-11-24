@@ -16,11 +16,16 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     private let completion: (Result<PaymentResult, Error>) -> Void
     private var hasCompleted = false
     private weak var repository: HeadlessRepositoryImpl?
+    private var validationCompletion: ((Bool, [Error]?) -> Void)?
 
     init(repository: HeadlessRepositoryImpl, completion: @escaping (Result<PaymentResult, Error>) -> Void) {
         self.repository = repository
         self.completion = completion
         super.init()
+    }
+
+    func setValidationCompletion(_ validationCompletion: @escaping (Bool, [Error]?) -> Void) {
+        self.validationCompletion = validationCompletion
     }
 
     // MARK: - PrimerHeadlessUniversalCheckoutDelegate (Payment Completion)
@@ -92,9 +97,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        if !isValid, let errors = errors, !errors.isEmpty, !hasCompleted {
-            hasCompleted = true
-            completion(.failure(errors.first!))
+        // Notify validation completion handler - continuation is resumed in submitPaymentWithValidation
+        if let validationCompletion {
+            self.validationCompletion = nil
+            validationCompletion(isValid, errors)
         }
     }
 
@@ -119,6 +125,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// PrimerSettings for accessing SDK configurations (iOS 15.0+ only)
     private var settings: PrimerSettings?
 
+    /// ConfigurationService for accessing API configuration
+    private var configurationService: ConfigurationService?
+
     // MARK: - Co-Badged Cards Support
 
     /// RawDataManager for co-badged cards detection (follows traditional SDK pattern)
@@ -141,10 +150,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
-    init() {
-        // HeadlessRepositoryImpl initialized
-    }
-
     @available(iOS 15.0, *)
     private func injectSettings() async {
         guard settings == nil else { return }
@@ -166,8 +171,31 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
+    @available(iOS 15.0, *)
+    private func injectConfigurationService() async {
+        guard configurationService == nil else { return }
+
+        do {
+            guard let container = await DIContainer.current else {
+                return
+            }
+
+            configurationService = try await container.resolve(ConfigurationService.self)
+        } catch {
+        }
+    }
+
+    @available(iOS 15.0, *)
+    private func ensureConfigurationService() async {
+        if configurationService == nil {
+            await injectConfigurationService()
+        }
+    }
+
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
-        let primerMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods ?? []
+        await ensureConfigurationService()
+
+        let primerMethods = configurationService?.apiConfiguration?.paymentMethods ?? []
 
         // Map PrimerPaymentMethod to InternalPaymentMethod with surcharge data
         let mappedMethods = primerMethods.map { primerMethod in
@@ -202,7 +230,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             return nil
         }
 
-        let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        let session = configurationService?.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
             return nil
         }
@@ -322,7 +350,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             rawDataManager: rawDataManager,
                             cardData: cardData,
                             selectedNetwork: selectedNetwork,
-                            continuation: continuation
+                            continuation: continuation,
+                            paymentHandler: paymentHandler
                         )
                     } catch {
                         // Failed to setup payment
@@ -344,8 +373,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?
     ) -> PrimerCardData {
         let formattedExpiryDate = "\(expiryMonth)/\(expiryYear)"
+        let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
         let cardData = PrimerCardData(
-            cardNumber: cardNumber.replacingOccurrences(of: " ", with: ""),
+            cardNumber: sanitizedCardNumber,
             expiryDate: formattedExpiryDate,
             cvv: cvv,
             cardholderName: cardholderName.isEmpty ? nil : cardholderName
@@ -363,27 +393,36 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         cardData: PrimerCardData,
         selectedNetwork: CardNetwork?,
-        continuation: CheckedContinuation<PaymentResult, Error>
+        continuation: CheckedContinuation<PaymentResult, Error>,
+        paymentHandler: PaymentCompletionHandler
     ) {
         rawDataManager.configure { [weak self] _, error in
-            guard let self = self else { return }
+            guard let self else { return }
 
             if let error {
                 continuation.resume(throwing: error)
                 return
             }
 
-            // This triggers validation automatically
-            rawDataManager.rawData = cardData
+            // Set up validation callback to be notified when validation completes
+            paymentHandler.setValidationCompletion { [weak self] isValid, errors in
+                guard let self else { return }
 
-            // Small delay to allow validation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.submitPaymentWithValidation(
-                    rawDataManager: rawDataManager,
-                    selectedNetwork: selectedNetwork,
-                    continuation: continuation
-                )
+                DispatchQueue.main.async {
+                    // Use the callback's isValid parameter instead of re-checking the property
+                    // to avoid race condition where the property hasn't been updated yet
+                    self.submitPaymentWithValidation(
+                        rawDataManager: rawDataManager,
+                        selectedNetwork: selectedNetwork,
+                        continuation: continuation,
+                        validationResult: isValid,
+                        validationErrors: errors
+                    )
+                }
             }
+
+            // This triggers validation automatically and will call the delegate when done
+            rawDataManager.rawData = cardData
         }
     }
 
@@ -391,9 +430,13 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func submitPaymentWithValidation(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
         selectedNetwork: CardNetwork?,
-        continuation: CheckedContinuation<PaymentResult, Error>
+        continuation: CheckedContinuation<PaymentResult, Error>,
+        validationResult: Bool,
+        validationErrors: [Error]?
     ) {
-        if rawDataManager.isDataValid {
+        // Use the validationResult from the callback instead of rawDataManager.isDataValid
+        // to avoid race condition where the property hasn't been updated yet
+        if validationResult {
             updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
                 guard let self = self else { return }
 
@@ -408,7 +451,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 }
             }
         } else {
-            handleValidationFailure(rawDataManager: rawDataManager, continuation: continuation)
+            handleValidationFailure(
+                rawDataManager: rawDataManager,
+                continuation: continuation,
+                validationErrors: validationErrors
+            )
         }
     }
 
@@ -433,16 +480,32 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     private func handleValidationFailure(
         rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-        continuation: CheckedContinuation<PaymentResult, Error>
+        continuation: CheckedContinuation<PaymentResult, Error>,
+        validationErrors: [Error]?
     ) {
-        let requiredInputs = rawDataManager.requiredInputElementTypes
-
-        let error = PrimerError.invalidValue(
-            key: "cardData",
-            value: nil,
-            reason: "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
-        )
-        continuation.resume(throwing: error)
+        // Use the actual validation errors from the delegate if available
+        if let validationErrors = validationErrors, !validationErrors.isEmpty {
+            // If there's a single validation error, use it directly
+            if validationErrors.count == 1, let error = validationErrors.first {
+                continuation.resume(throwing: error)
+            } else {
+                // If there are multiple errors, wrap them in an underlying errors container
+                let error = PrimerError.underlyingErrors(
+                    errors: validationErrors,
+                    diagnosticsId: .uuid
+                )
+                continuation.resume(throwing: error)
+            }
+        } else {
+            // Fallback to generic error if no validation errors are available
+            let requiredInputs = rawDataManager.requiredInputElementTypes
+            let error = PrimerError.invalidValue(
+                key: "cardData",
+                value: nil,
+                reason: "Card data validation failed. Required inputs: \(requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", "))"
+            )
+            continuation.resume(throwing: error)
+        }
     }
 
     private func handleiOS14Fallback(continuation: CheckedContinuation<PaymentResult, Error>) {
@@ -459,7 +522,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Get network detection stream for real-time updates
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
-        return self.networkDetectionStream
+        self.networkDetectionStream
     }
 
     /// Update card number in RawDataManager to trigger network detection
@@ -468,7 +531,15 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.configure { [weak self] _, error in
         }
 
-        rawCardData.cardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        rawCardData.cardNumber = sanitizedCardNumber
+
+        // If card number is too short for BIN lookup (< 8 digits) and we have cached networks, clear them
+        // This ensures the picker disappears when user deletes below the BIN lookup threshold
+        if sanitizedCardNumber.count < 8, !lastDetectedNetworks.isEmpty {
+            lastDetectedNetworks = []
+            networkDetectionContinuation.yield([])
+        }
 
         rawDataManager?.rawData = rawCardData
     }
@@ -707,7 +778,7 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
-        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        let errorsDescription = errors?.map(\.localizedDescription).joined(separator: ", ")
         // RawDataManager validation state updated
     }
 
@@ -731,11 +802,6 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
             return
         }
 
-        let metadataDescription = metadataModel.selectableCardNetworks?.items
-            .map { $0.displayName }
-            .joined(separator: ", ") ?? "n/a"
-        // RawDataManager received metadata
-
         // Extract networks following traditional SDK pattern
         var primerNetworks: [PrimerCardNetwork]
         if metadataModel.source == .remote,
@@ -758,7 +824,6 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
         // Only emit if networks changed to avoid duplicate notifications
         if cardNetworks != lastDetectedNetworks {
             lastDetectedNetworks = cardNetworks
-            // Co-badged networks detected
 
             // Emit networks via AsyncStream for SwiftUI consumption
             networkDetectionContinuation.yield(cardNetworks)

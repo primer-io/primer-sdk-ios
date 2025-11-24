@@ -20,6 +20,7 @@ struct CardNumberInputField: View, LogReporter {
     // MARK: - Private Properties
 
     @State private var validationService: ValidationService?
+    @State private var configurationService: ConfigurationService?
     @State private var cardNumber: String = ""
     @State private var isValid: Bool = false
     @State private var cardNetwork: CardNetwork = .unknown
@@ -83,7 +84,18 @@ struct CardNumberInputField: View, LogReporter {
                 }
             },
             rightComponent: {
-                VStack(spacing: PrimerSpacing.xxsmall(tokens: tokens)) {
+                HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
+                    if let surchargeAmount {
+                        Text(surchargeAmount)
+                            .font(PrimerFont.caption(tokens: tokens))
+                            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                            .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
+                            .padding(.vertical, 2)
+                            .background(CheckoutColors.gray200(tokens: tokens))
+                            .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
+                            .frame(height: PrimerSize.small(tokens: tokens))
+                    }
+
                     if availableNetworks.count > 1 {
                         if availableNetworks.contains(where: { !$0.allowsUserSelection }) {
                             DualBadgeDisplay(networks: availableNetworks)
@@ -110,16 +122,6 @@ struct CardNumberInputField: View, LogReporter {
                     } else if displayNetwork != .unknown {
                         CardNetworkBadge(network: displayNetwork)
                     }
-
-                    if let surchargeAmount {
-                        Text(surchargeAmount)
-                            .font(PrimerFont.bodySmall(tokens: tokens))
-                            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                            .padding(.horizontal, PrimerSpacing.xsmall(tokens: tokens))
-                            .padding(.vertical, 1)
-                            .background(CheckoutColors.gray200(tokens: tokens))
-                            .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
-                    }
                 }
             }
         )
@@ -139,6 +141,14 @@ struct CardNumberInputField: View, LogReporter {
                 localSelectedNetwork = newNetwork
             }
         }
+        .onChange(of: cardNetwork) { newNetwork in
+            updateSurchargeAmount(for: newNetwork)
+        }
+        .onChange(of: selectedNetwork) { newNetwork in
+            if let newNetwork {
+                updateSurchargeAmount(for: newNetwork)
+            }
+        }
     }
 
     // MARK: - Private Methods
@@ -153,6 +163,12 @@ struct CardNumberInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
 
+        do {
+            configurationService = try container.resolveSync(ConfigurationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ConfigurationService: \(error)")
+        }
+
         // Load network selector style from settings
         do {
             let settings = try container.resolveSync(PrimerSettings.self)
@@ -163,9 +179,10 @@ struct CardNumberInputField: View, LogReporter {
     }
 
     private func updateSurchargeAmount(for network: CardNetwork) {
-        guard let surcharge = network.surcharge,
-              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-              let currency = AppState.current.currency
+        guard let configurationService,
+              let surcharge = network.surcharge,
+              configurationService.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+              let currency = configurationService.currency
         else {
             surchargeAmount = nil
             return

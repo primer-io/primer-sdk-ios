@@ -450,7 +450,7 @@ extension PrimerCardFormScope {
 
     /// Get field value from state - override with actual implementation
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
-        return ""
+        ""
     }
 
     /// Set field error - override to support structured errors
@@ -463,12 +463,12 @@ extension PrimerCardFormScope {
 
     /// Get field error - override to support structured errors
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
-        return nil
+        nil
     }
 
     /// Get form configuration - override with actual configuration
     public func getFormConfiguration() -> CardFormConfiguration {
-        return CardFormConfiguration.default
+        CardFormConfiguration.default
     }
 }
 

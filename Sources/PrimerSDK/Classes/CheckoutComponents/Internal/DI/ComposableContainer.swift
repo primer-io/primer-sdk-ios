@@ -29,8 +29,6 @@ final class ComposableContainer: LogReporter {
 
         await registerData()
 
-        await registerPresentation()
-
         await DIContainer.setContainer(container)
 
         #if DEBUG
@@ -82,6 +80,10 @@ private extension ComposableContainer {
         _ = try? await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
             .with { _ in DefaultAccessibilityAnnouncementService() }
+
+        _ = try? await container.register(ConfigurationService.self)
+            .asSingleton()
+            .with { _ in DefaultConfigurationService() }
     }
 
     /// Register validation framework.
@@ -135,23 +137,26 @@ private extension ComposableContainer {
 
     /// Register data layer (repositories, mappers).
     func registerData() async {
+        // HeadlessRepository uses transient scope to ensure each checkout session gets a fresh instance.
+        // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
+        // between checkout sessions when the user dismisses and re-presents the checkout UI.
         _ = try? await container.register(HeadlessRepository.self)
-            .asSingleton()
+            .asTransient()
             .with { _ in HeadlessRepositoryImpl() }
 
         _ = try? await container.register(PaymentMethodMapper.self)
             .asSingleton()
-            .with { _ in PaymentMethodMapperImpl() }
-    }
-
-    /// Register presentation layer (scopes, view models).
-    func registerPresentation() async {
+            .with { container in
+                let configService = try await container.resolve(ConfigurationService.self)
+                return PaymentMethodMapperImpl(configurationService: configService)
+            }
     }
 
     #if DEBUG
     /// Perform health check on the container.
     func performHealthCheck() async {
         let diagnostics = await container.getDiagnostics()
+        logger.debug(message: "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)")
 
         let healthReport = await container.performHealthCheck()
         if healthReport.status == .healthy {

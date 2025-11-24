@@ -34,19 +34,12 @@ final class CardNetworkDetectionInteractorImpl: CardNetworkDetectionInteractor, 
     }
 
     func detectNetworks(for cardNumber: String) async {
-        logger.debug(message: "🌐 [NetworkDetection] Triggering detection for card number")
-
-        // Only trigger if we have enough digits (BIN range)
-        guard cardNumber.replacingOccurrences(of: " ", with: "").count >= 6 else {
-            logger.debug(message: "🌐 [NetworkDetection] Card number too short for network detection")
-            return
-        }
-
+        // Always call repository to allow cache clearing logic to run
+        // The repository will handle the < 8 digit case by clearing networks
         await repository.updateCardNumberInRawDataManager(cardNumber)
     }
 
     func selectNetwork(_ network: CardNetwork) async {
-        logger.info(message: "🌐 [NetworkDetection] User selected network: \(network.displayName)")
         await repository.selectCardNetwork(network)
     }
 }

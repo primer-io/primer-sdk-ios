@@ -19,8 +19,10 @@ struct PaymentMethodSelectionScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
+    @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
+    @State private var configurationService: ConfigurationService?
 
     var body: some View {
         mainContent
@@ -33,6 +35,7 @@ struct PaymentMethodSelectionScreen: View {
             contentContainer
         }
         .onAppear {
+            resolveConfigurationService()
             observeState()
         }
     }
@@ -50,8 +53,8 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     private var paymentAmountHeader: some View {
         HStack {
-            let amount = AppState.current.amount ?? 9900 // Default to $99.00 if not available
-            let currency = AppState.current.currency ?? Currency(code: "USD", decimalDigits: 2)
+            let amount = configurationService?.amount ?? 9900 // Default to $99.00 if not available
+            let currency = configurationService?.currency ?? Currency(code: "USD", decimalDigits: 2)
             let formattedAmount = amount.toCurrencyString(currency: currency)
 
             Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
@@ -83,7 +86,7 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     private var titleSection: some View {
-        return Text(CheckoutComponentsStrings.choosePaymentMethod)
+        Text(CheckoutComponentsStrings.choosePaymentMethod)
             .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -155,7 +158,7 @@ struct PaymentMethodSelectionScreen: View {
             return [PaymentMethodGroup(group: "", methods: methods)]
         }
 
-        // Group 1: Methods with positive surcharges
+        // Group 1: Methods with positive surcharges - create separate groups for each unique surcharge amount
         let surchargeMethods = methods.filter { method in
             if let surcharge = method.surcharge, surcharge > 0 {
                 return true
@@ -163,14 +166,18 @@ struct PaymentMethodSelectionScreen: View {
             return false
         }
 
-        if !surchargeMethods.isEmpty {
-            let highestSurcharge = surchargeMethods.compactMap { $0.surcharge }.max() ?? 0
-            let currency = AppState.current.currency ?? Currency(code: "EUR", decimalDigits: 2)
-            let formattedSurcharge = "+\(highestSurcharge.toCurrencyString(currency: currency))"
+        // Group by unique surcharge amounts
+        let uniqueSurcharges = Set(surchargeMethods.compactMap(\.surcharge))
+        let sortedSurcharges = uniqueSurcharges.sorted()
+
+        for surcharge in sortedSurcharges {
+            let methodsWithThisSurcharge = surchargeMethods.filter { $0.surcharge == surcharge }
+            let currency = configurationService?.currency ?? Currency(code: "EUR", decimalDigits: 2)
+            let formattedSurcharge = "+\(surcharge.toCurrencyString(currency: currency))"
 
             groups.append(PaymentMethodGroup(
                 group: formattedSurcharge,
-                methods: surchargeMethods
+                methods: methodsWithThisSurcharge
             ))
         }
 
@@ -195,7 +202,7 @@ struct PaymentMethodSelectionScreen: View {
 
         // Group 3: Methods with unknown surcharges
         let unknownFeeMethods = methods.filter { method in
-            return method.hasUnknownSurcharge
+            method.hasUnknownSurcharge
         }
 
         if !unknownFeeMethods.isEmpty {
@@ -246,14 +253,14 @@ struct PaymentMethodSelectionScreen: View {
     /// Get appropriate color for group header using design tokens
     private func dynamicGroupHeaderColor(for groupName: String) -> Color {
         if groupName.hasPrefix("+") {
-            // Positive surcharge - use positive color
-            return CheckoutColors.iconPositive(tokens: tokens)
+            // Positive surcharge - use primary text color (black)
+            return CheckoutColors.textPrimary(tokens: tokens)
         } else if groupName == CheckoutComponentsStrings.additionalFeeMayApply {
-            // Unknown surcharge - use warning color
+            // Unknown surcharge - use secondary text color
             return CheckoutColors.textSecondary(tokens: tokens)
         } else {
             // No additional fee - use muted color
-            return CheckoutColors.textPlaceholder(tokens: tokens)
+            return CheckoutColors.textSecondary(tokens: tokens)
         }
     }
 
@@ -290,6 +297,17 @@ struct PaymentMethodSelectionScreen: View {
                     label: error,
                     traits: [.isStaticText]
                 ))
+        }
+    }
+
+    private func resolveConfigurationService() {
+        guard let container else {
+            return
+        }
+        do {
+            configurationService = try container.resolveSync(ConfigurationService.self)
+        } catch {
+            // Failed to resolve ConfigurationService, will use defaults
         }
     }
 
@@ -377,7 +395,7 @@ private struct ModernPaymentMethodCardView: View {
     }
 
     private var methodNameAndSurcharge: some View {
-        return Text(method.name)
+        Text(method.name)
             .font(PrimerFont.bodyLarge(tokens: tokens))
             .foregroundColor(textColorForPaymentMethod)
             .lineLimit(nil)
@@ -403,7 +421,7 @@ private struct ModernPaymentMethodCardView: View {
     /// Dynamic text color using design tokens for consistent styling
     private var textColorForPaymentMethod: Color {
         // Use design tokens for consistent styling
-        return CheckoutColors.textPrimary(tokens: tokens)
+        CheckoutColors.textPrimary(tokens: tokens)
     }
 }
 

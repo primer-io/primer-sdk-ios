@@ -7,12 +7,19 @@
 import Foundation
 
 /// Bridge to connect CheckoutComponents to the existing SDK payment methods
+@available(iOS 15.0, *)
 class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogReporter {
+
+    private let configurationService: ConfigurationService
+
+    init(configurationService: ConfigurationService) {
+        self.configurationService = configurationService
+    }
 
     func execute() async throws -> [InternalPaymentMethod] {
         logger.info(message: "🌉 [PaymentMethodsBridge] Starting payment methods bridge...")
 
-        guard let configuration = PrimerAPIConfiguration.current else {
+        guard let configuration = configurationService.apiConfiguration else {
             logger.error(message: "❌ [PaymentMethodsBridge] No configuration available")
             throw PrimerError.missingPrimerConfiguration()
         }
@@ -75,7 +82,7 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             return nil
         }
 
-        let session = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        let session = configurationService.apiConfiguration?.clientSession
         guard let paymentMethodData = session?.paymentMethod else {
             return nil
         }
