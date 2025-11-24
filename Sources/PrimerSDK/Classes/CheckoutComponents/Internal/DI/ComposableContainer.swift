@@ -29,8 +29,6 @@ final class ComposableContainer: LogReporter {
 
         await registerData()
 
-        await registerPresentation()
-
         await DIContainer.setContainer(container)
 
         #if DEBUG
@@ -152,10 +150,6 @@ private extension ComposableContainer {
                 let configService = try await container.resolve(ConfigurationService.self)
                 return PaymentMethodMapperImpl(configurationService: configService)
             }
-    }
-
-    /// Register presentation layer (scopes, view models).
-    func registerPresentation() async {
     }
 
     #if DEBUG
