@@ -123,53 +123,34 @@ private struct ExampleRow: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private func makeVStack() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(example.name)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text(example.description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            
+
             makePaymentMethodsHStack()
-            
-            if let customization = example.customization {
-                makeCustomizationHStack(customization: customization)
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
     }
-    
+
     private func makePaymentMethodsHStack() -> some View {
         HStack {
             Text("Payment Methods:")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             Text(example.paymentMethods.joined(separator: ", "))
                 .font(.caption)
                 .fontWeight(.medium)
                 .foregroundColor(.blue)
-            
-            Spacer()
-        }
-    }
-    
-    private func makeCustomizationHStack(customization: ExampleConfig.CheckoutCustomization) -> some View {
-        HStack {
-            Text("Style:")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            Text(String(describing: customization))
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundColor(.green)
-            
+
             Spacer()
         }
     }

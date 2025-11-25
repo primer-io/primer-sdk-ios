@@ -473,12 +473,12 @@ extension CheckoutComponentsPrimer {
 
     /// Check if CheckoutComponents is available on this iOS version
     @objc public static var isAvailable: Bool {
-        return true // Since we're already in an @available(iOS 15.0, *) context
+        true // Since we're already in an @available(iOS 15.0, *) context
     }
 
     /// Check if checkout is currently being presented
     @objc public static var isPresenting: Bool {
-        return shared.isPresentingCheckout || shared.activeCheckoutController != nil
+        shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
 
     private func findPresentingViewController() -> UIViewController? {
