@@ -21,10 +21,6 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     func testSettingsFlowThroughEntireStack() async throws {
         // Given: Custom settings with full configuration
-        let themeData = PrimerThemeData()
-        themeData.text.title.defaultColor = .purple
-        let customTheme = PrimerTheme(with: themeData)
-
         let klarnaOptions = PrimerKlarnaOptions(
             recurringPaymentDescription: "Test Subscription"
         )
@@ -42,8 +38,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
                 isErrorScreenEnabled: nil,
                 dismissalMechanism: nil,
                 cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: true),
-                appearanceMode: .dark,
-                theme: customTheme
+                appearanceMode: .dark
             ),
             clientSessionCachingEnabled: true,
             apiVersion: .V2_4
@@ -60,7 +55,6 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
         // Then: All settings should be accessible and correct
         let resolvedSettings = try await container.resolve(PrimerSettings.self)
-        let resolvedTheme = try await container.resolve(PrimerThemeProtocol.self)
 
         // Verify all aspects of settings
         XCTAssertEqual(resolvedSettings.paymentHandling, .manual)
@@ -77,48 +71,6 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertEqual(urlScheme, "testapp")
         XCTAssertEqual(resolvedSettings.uiOptions.appearanceMode, .dark)
         XCTAssertEqual(resolvedSettings.uiOptions.cardFormUIOptions?.payButtonAddNewCard, true)
-        // Cast protocol to concrete type for identity comparison
-        if let concreteTheme = resolvedTheme as? PrimerTheme {
-            XCTAssertTrue(concreteTheme === customTheme)
-            XCTAssertEqual(concreteTheme.text.title.color, .purple)
-        } else {
-            XCTFail("Resolved theme should be PrimerTheme instance")
-        }
-    }
-
-    func testSettingsAndThemeAvailableSimultaneously() async throws {
-        // Given: Settings with custom theme
-        let themeData = PrimerThemeData()
-        themeData.colors.primary = .blue
-        let customTheme = PrimerTheme(with: themeData)
-        let settings = PrimerSettings(
-            uiOptions: PrimerUIOptions(theme: customTheme)
-        )
-
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        // When: Resolve both settings and theme concurrently
-        async let settingsTask = container.resolve(PrimerSettings.self)
-        async let themeTask = container.resolve(PrimerThemeProtocol.self)
-
-        let (resolvedSettings, resolvedTheme) = try await (settingsTask, themeTask)
-
-        // Then: Both should be available and consistent
-        XCTAssertNotNil(resolvedSettings)
-        XCTAssertNotNil(resolvedTheme)
-        XCTAssertTrue(resolvedSettings.uiOptions.theme === customTheme)
-        if let concreteTheme = resolvedTheme as? PrimerTheme {
-            XCTAssertTrue(concreteTheme === customTheme)
-            XCTAssertEqual(concreteTheme.colors.primary, .blue)
-        } else {
-            XCTFail("Resolved theme should be PrimerTheme instance")
-        }
     }
 
     // MARK: - Settings Immutability Tests
@@ -143,34 +95,6 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertTrue(firstResolve === secondResolve)
         XCTAssertTrue(secondResolve === thirdResolve)
         XCTAssertTrue(firstResolve === settings)
-    }
-
-    func testThemeReferenceStabilityAcrossResolutions() async throws {
-        // Given: Settings with theme
-        let customTheme = PrimerTheme()
-        let settings = PrimerSettings(
-            uiOptions: PrimerUIOptions(theme: customTheme)
-        )
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        // When: Resolve theme multiple times
-        let firstTheme = try await container.resolve(PrimerThemeProtocol.self)
-        let secondTheme = try await container.resolve(PrimerThemeProtocol.self)
-
-        // Then: All should be same instance
-        // Cast to concrete type for identity comparison
-        if let first = firstTheme as? PrimerTheme, let second = secondTheme as? PrimerTheme {
-            XCTAssertTrue(first === second)
-            XCTAssertTrue(first === customTheme)
-        } else {
-            XCTFail("Resolved themes should be PrimerTheme instances")
-        }
     }
 
     // MARK: - Payment Method Options Integration Tests
@@ -224,9 +148,6 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     func testAllUIOptionsAccessible() async throws {
         // Given: Settings with all UI options configured
-        let themeData = PrimerThemeData()
-        themeData.text.title.fontSize = 24
-        let customTheme = PrimerTheme(with: themeData)
         let cardFormOptions = PrimerCardFormUIOptions(payButtonAddNewCard: true)
 
         let settings = PrimerSettings(
@@ -236,8 +157,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
                 isErrorScreenEnabled: true,
                 dismissalMechanism: nil,
                 cardFormUIOptions: cardFormOptions,
-                appearanceMode: .dark,
-                theme: customTheme
+                appearanceMode: .dark
             )
         )
 
@@ -250,15 +170,8 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         }
 
         let resolved = try await container.resolve(PrimerSettings.self)
-        let resolvedTheme = try await container.resolve(PrimerThemeProtocol.self)
 
         // Then: All UI options should be accessible
-        if let concreteTheme = resolvedTheme as? PrimerTheme {
-            XCTAssertTrue(concreteTheme === customTheme)
-            XCTAssertEqual(concreteTheme.text.title.fontSize, 24)
-        } else {
-            XCTFail("Resolved theme should be PrimerTheme instance")
-        }
         XCTAssertEqual(resolved.uiOptions.appearanceMode, .dark)
         XCTAssertFalse(resolved.uiOptions.isInitScreenEnabled)
         XCTAssertTrue(resolved.uiOptions.isSuccessScreenEnabled)

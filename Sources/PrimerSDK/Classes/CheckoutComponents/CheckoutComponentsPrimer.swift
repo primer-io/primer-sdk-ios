@@ -128,6 +128,34 @@ public extension CheckoutComponentsDelegate {
             clientToken: clientToken,
             from: viewController,
             primerSettings: primerSettings,
+            primerTheme: PrimerCheckoutTheme(),
+            components: PrimerComponents(),
+            completion: completion
+        )
+    }
+
+    /// Present the CheckoutComponents UI with full configuration
+    /// - Parameters:
+    ///   - clientToken: The client token for the session
+    ///   - viewController: The view controller to present from
+    ///   - primerSettings: Configuration settings to apply for this checkout session
+    ///   - primerTheme: Theme configuration for design tokens
+    ///   - components: Immutable UI component configuration
+    ///   - completion: Optional completion handler
+    public static func presentCheckout(
+        clientToken: String,
+        from viewController: UIViewController,
+        primerSettings: PrimerSettings,
+        primerTheme: PrimerCheckoutTheme,
+        components: PrimerComponents,
+        completion: (() -> Void)? = nil
+    ) {
+        shared.presentCheckout(
+            clientToken: clientToken,
+            from: viewController,
+            primerSettings: primerSettings,
+            primerTheme: primerTheme,
+            components: components,
             completion: completion
         )
     }
@@ -141,7 +169,7 @@ public extension CheckoutComponentsDelegate {
     public static func presentCheckout<Content: View>(
         clientToken: String,
         from viewController: UIViewController,
-        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
+        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
         completion: (() -> Void)? = nil
     ) {
         presentCheckout(
@@ -164,7 +192,7 @@ public extension CheckoutComponentsDelegate {
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
-        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
+        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
@@ -247,11 +275,8 @@ public extension CheckoutComponentsDelegate {
 
         lastPaymentResult = result
 
-        // Dismiss CheckoutComponents first, then call delegate
-        dismissDirectly()
-
-        // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+        // Dismiss CheckoutComponents first, then call delegate after dismissal completes
+        dismissDirectly { [weak self] in
             if let delegate = self?.delegate, let paymentResult = self?.lastPaymentResult {
                 delegate.checkoutComponentsDidCompleteWithSuccess(paymentResult)
             } else {
@@ -264,11 +289,8 @@ public extension CheckoutComponentsDelegate {
     func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
 
-        // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
-        dismissDirectly()
-
-        // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+        // Dismiss CheckoutComponents first, then call delegate after dismissal completes
+        dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
                 delegate.checkoutComponentsDidFailWithError(error)
             } else {
@@ -291,6 +313,8 @@ public extension CheckoutComponentsDelegate {
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
+        primerTheme: PrimerCheckoutTheme,
+        components: PrimerComponents,
         completion: (() -> Void)?
     ) {
         guard !isPresentingCheckout else {
@@ -306,6 +330,8 @@ public extension CheckoutComponentsDelegate {
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
                 settings: primerSettings,
+                theme: primerTheme,
+                components: components,
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
@@ -324,11 +350,10 @@ public extension CheckoutComponentsDelegate {
 
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
-            viewController.present(bridgeController, animated: true)
-
-            isPresentingCheckout = false
-
-            completion?()
+            viewController.present(bridgeController, animated: true) { [weak self] in
+                self?.isPresentingCheckout = false
+                completion?()
+            }
         }
     }
 
@@ -336,7 +361,9 @@ public extension CheckoutComponentsDelegate {
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
-        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
+        primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+        components: PrimerComponents = PrimerComponents(),
+        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
         completion: (() -> Void)?
     ) {
         guard !isPresentingCheckout else {
@@ -349,13 +376,15 @@ public extension CheckoutComponentsDelegate {
 
         Task { @MainActor in
             // SDK initialization is now handled automatically by PrimerCheckout
-            let customContentWrapper: (PrimerCheckoutScope) -> AnyView = { scope in
+            let customContentWrapper: (any PrimerCheckoutScope) -> AnyView = { scope in
                 AnyView(customContent(scope))
             }
 
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
                 settings: primerSettings,
+                theme: primerTheme,
+                components: components,
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
@@ -375,22 +404,26 @@ public extension CheckoutComponentsDelegate {
 
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
 
-            viewController.present(bridgeController, animated: true)
-
-            isPresentingCheckout = false
-
-            completion?()
+            viewController.present(bridgeController, animated: true) { [weak self] in
+                self?.isPresentingCheckout = false
+                completion?()
+            }
         }
     }
 
     // MARK: - Direct Dismissal
 
     /// Internal method for dismissing checkout directly
-    func dismissDirectly() {
+    /// - Parameter completion: Optional completion handler called after dismissal animation completes
+    func dismissDirectly(completion: (() -> Void)? = nil) {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
                 self?.activeCheckoutController = nil
+                completion?()
             }
+        } else {
+            // No controller to dismiss, call completion immediately
+            completion?()
         }
     }
 

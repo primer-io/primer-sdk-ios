@@ -8,27 +8,33 @@ import SwiftUI
 
 /// Pure SwiftUI implementation for CheckoutComponents SDK.
 ///
-/// Example usage:
+/// Example usage (minimal):
 /// ```swift
-/// PrimerCheckout(
-///     clientToken: "your_client_token",
-///     settings: PrimerSettings()
-/// )
+/// PrimerCheckout(clientToken: "your_client_token")
 /// ```
 ///
-/// With scope customization:
+/// With component customization:
 /// ```swift
 /// PrimerCheckout(
 ///     clientToken: "your_client_token",
-///     settings: PrimerSettings(),
-///     scope: { checkoutScope in
-///         // Customize components using type-safe API
-///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
-///             cardFormScope.cardNumberField = { label, styling in
-///                 CustomCardNumberField()
-///             }
-///         }
-///     }
+///     primerSettings: PrimerSettings(),
+///     primerTheme: PrimerCheckoutTheme(),
+///     components: PrimerComponents(
+///         checkout: .init(
+///             splash: { AnyView(CustomSplash()) },
+///             navigation: .init(
+///                 onSuccess: { { print("Success!") } }
+///             )
+///         ),
+///         paymentMethodConfigurations: [
+///             PrimerComponents.CardForm(
+///                 cardDetails: .init(
+///                     cardNumber: { AnyView(CustomCardNumberField()) }
+///                 )
+///             )
+///         ]
+///     ),
+///     onCompletion: { print("Checkout completed") }
 /// )
 /// ```
 @available(iOS 15.0, *)
@@ -41,8 +47,11 @@ public struct PrimerCheckout: View {
     /// Configuration settings for the checkout experience.
     private let settings: PrimerSettings
 
-    /// Optional scope configuration closure for customizing UI components.
-    private let scope: ((PrimerCheckoutScope) -> Void)?
+    /// Theme configuration for design tokens.
+    private let theme: PrimerCheckoutTheme
+
+    /// Immutable configuration for UI component customization.
+    private let components: PrimerComponents
 
     /// Optional custom content builder for complete UI replacement
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
@@ -56,21 +65,24 @@ public struct PrimerCheckout: View {
     /// Presentation context determining navigation behavior
     private let presentationContext: PresentationContext
 
-    /// Creates a new PrimerCheckout view.
+    /// Creates a new PrimerCheckout view with the new immutable configuration API.
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
-    ///   - primerSettings: Configuration settings including payment options and UI preferences.
-    ///   - scope: Optional closure to customize UI components through the scope interface.
+    ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
+    ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
+    ///   - components: Immutable UI component configuration. Default: `PrimerComponents()`
     ///   - onCompletion: Optional completion callback called when checkout completes or dismisses.
     public init(
         clientToken: String,
         primerSettings: PrimerSettings = PrimerSettings(),
-        scope: ((PrimerCheckoutScope) -> Void)? = nil,
+        primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+        components: PrimerComponents = PrimerComponents(),
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = primerSettings
-        self.scope = scope
+        self.theme = primerTheme
+        self.components = components
         self.customContent = nil
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: CheckoutNavigator())
@@ -81,6 +93,8 @@ public struct PrimerCheckout: View {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
+        primerTheme: PrimerCheckoutTheme,
+        components: PrimerComponents,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
@@ -88,7 +102,8 @@ public struct PrimerCheckout: View {
     ) {
         self.clientToken = clientToken
         self.settings = primerSettings
-        self.scope = nil
+        self.theme = primerTheme
+        self.components = components
         self.customContent = nil
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: navigator)
@@ -99,6 +114,8 @@ public struct PrimerCheckout: View {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
+        primerTheme: PrimerCheckoutTheme,
+        components: PrimerComponents,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
@@ -107,7 +124,8 @@ public struct PrimerCheckout: View {
     ) {
         self.clientToken = clientToken
         self.settings = primerSettings
-        self.scope = nil
+        self.theme = primerTheme
+        self.components = components
         self.customContent = customContent
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: navigator)
@@ -115,16 +133,25 @@ public struct PrimerCheckout: View {
     }
 
     public var body: some View {
-        InternalCheckout(
+        let checkoutContent = InternalCheckout(
             clientToken: clientToken,
             settings: settings,
+            theme: theme,
+            components: components,
             diContainer: DIContainer.shared,
             navigator: navigator,
-            scope: scope,
             customContent: customContent,
             presentationContext: presentationContext,
             onCompletion: onCompletion
         )
+        .environment(\.primerTheme, theme)
+
+        // Apply custom container if provided, otherwise pass through unchanged
+        if let container = components.container {
+            container { AnyView(checkoutContent) }
+        } else {
+            AnyView(checkoutContent)
+        }
     }
 }
 
@@ -136,9 +163,10 @@ public struct PrimerCheckout: View {
 struct InternalCheckout: View {
     private let clientToken: String
     private let settings: PrimerSettings
+    private let theme: PrimerCheckoutTheme
+    private let components: PrimerComponents
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
-    private let scope: ((PrimerCheckoutScope) -> Void)?
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
     private let presentationContext: PresentationContext
     private let onCompletion: (() -> Void)?
@@ -158,18 +186,20 @@ struct InternalCheckout: View {
     init(
         clientToken: String,
         settings: PrimerSettings,
+        theme: PrimerCheckoutTheme,
+        components: PrimerComponents,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        scope: ((PrimerCheckoutScope) -> Void)?,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
         presentationContext: PresentationContext,
         onCompletion: (() -> Void)?
     ) {
         self.clientToken = clientToken
         self.settings = settings
+        self.theme = theme
+        self.components = components
         self.diContainer = diContainer
         self.navigator = navigator
-        self.scope = scope
         self.customContent = customContent
         self.presentationContext = presentationContext
         self.onCompletion = onCompletion
@@ -187,24 +217,21 @@ struct InternalCheckout: View {
         VStack(spacing: 0) {
             switch initializationState {
             case .idle, .initializing:
-                SplashScreen()
+                splashContent
             case .initialized:
                 if let checkoutScope {
                     CheckoutScopeObserver(
                         scope: checkoutScope,
+                        components: components,
+                        theme: theme,
                         customContent: customContent,
-                        scopeCustomization: scope,
                         onCompletion: onCompletion
                     )
                 } else {
-                    SplashScreen()
+                    splashContent
                 }
             case let .failed(error):
-                SDKInitializationErrorView(error: error) {
-                    Task {
-                        await initializeSDK()
-                    }
-                }
+                errorContent(error: error)
             }
         }
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
@@ -213,6 +240,30 @@ struct InternalCheckout: View {
         }
         .onDisappear {
             sdkInitializer.cleanup()
+        }
+    }
+
+    // MARK: - Content Builders
+
+    @ViewBuilder
+    private var splashContent: some View {
+        if let customSplash = components.checkout.splash {
+            customSplash()
+        } else {
+            SplashScreen()
+        }
+    }
+
+    @ViewBuilder
+    private func errorContent(error: PrimerError) -> some View {
+        if let customError = components.checkout.error.content {
+            customError(error.localizedDescription)
+        } else {
+            SDKInitializationErrorView(error: error) {
+                Task {
+                    await initializeSDK()
+                }
+            }
         }
     }
 

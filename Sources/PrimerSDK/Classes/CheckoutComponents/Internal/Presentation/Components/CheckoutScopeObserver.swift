@@ -4,6 +4,14 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// swiftlint:disable cyclomatic_complexity function_body_length
+// TODO: Refactor CheckoutScopeObserver to reduce complexity (currently 21, max 12) and function length (101 lines, max 100)
+//
+//  CheckoutScopeObserver.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import SwiftUI
 
 // MARK: - Checkout Scope Observer
@@ -12,8 +20,9 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
+    private let components: PrimerComponents
+    private let theme: PrimerCheckoutTheme
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
     private let onCompletion: (() -> Void)?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.bridgeController) private var bridgeController
@@ -26,23 +35,26 @@ struct CheckoutScopeObserver: View, LogReporter {
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
 
     init(scope: DefaultCheckoutScope,
+         components: PrimerComponents = PrimerComponents(),
+         theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
          customContent: ((PrimerCheckoutScope) -> AnyView)?,
-         scopeCustomization: ((PrimerCheckoutScope) -> Void)?,
          onCompletion: (() -> Void)?) {
         self.scope = scope
+        self.components = components
+        self.theme = theme
         self.customContent = customContent
-        self.scopeCustomization = scopeCustomization
         self.onCompletion = onCompletion
     }
 
     var body: some View {
         Group {
             if bridgeController != nil {
-                contentView
+                contentView  // NO navigation wrapper - for UIKit bridge (prevents sizing issues)
             } else {
-                NavigationView { contentView }
-                    .navigationViewStyle(.stack)
-                    .navigationBarTitleDisplayMode(.inline)
+                // Pure SwiftUI - use BackportedNavigationStack for iOS 16+ NavigationStack
+                BackportedNavigationStack {
+                    contentView
+                }
             }
         }
         .background(CheckoutColors.background(tokens: designTokensManager.tokens))
@@ -86,9 +98,11 @@ struct CheckoutScopeObserver: View, LogReporter {
         .environmentObject(scope)
         .environment(\.diContainer, DIContainer.currentSync)
         .environment(\.designTokens, designTokensManager.tokens)
+        .environment(\.primerComponents, components)
+        .environment(\.primerCheckoutScope, scope)
         .onAppear {
-            // Apply any scope customizations (only after SDK is initialized)
-            scopeCustomization?(scope)
+            // Configure scope with PrimerComponents (only after SDK is initialized)
+            scope.configure(with: components)
 
             Task {
                 await setupDesignTokens()
@@ -177,8 +191,8 @@ struct CheckoutScopeObserver: View, LogReporter {
         case .loading:
             // Check if init screen is enabled in settings (UI Options integration)
             if scope.isInitScreenEnabled {
-                if let customLoading = scope.loadingScreen {
-                    return AnyView(customLoading())
+                if let customSplash = scope.splashScreen {
+                    return AnyView(customSplash())
                 } else {
                     return AnyView(SplashScreen())
                 }
@@ -189,16 +203,21 @@ struct CheckoutScopeObserver: View, LogReporter {
             }
 
         case .paymentMethodSelection:
-            // First check if the payment method selection scope itself has a custom screen
-            if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
+            // First check if components has a custom screen
+            if let customScreen = components.paymentMethodSelection.screen {
+                return AnyView(customScreen())
+            }
+            // Then check if the payment method selection scope itself has a custom screen (legacy)
+            else if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
                 return AnyView(customPaymentMethodSelectionScreen())
             }
-            // Then check if the checkout scope has a custom payment selection screen
+            // Then check if the checkout scope has a custom payment selection screen (legacy)
             else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
                 return AnyView(customPaymentSelection(scope.paymentMethodSelection))
             } else {
                 return AnyView(PaymentMethodSelectionScreen(
-                    scope: scope.paymentMethodSelection
+                    scope: scope.paymentMethodSelection,
+                    components: components
                 ))
             }
 
@@ -294,6 +313,10 @@ struct CheckoutScopeObserver: View, LogReporter {
 
     private func setupDesignTokens() async {
         logger.info(message: "Setting up design tokens...")
+
+        // Apply merchant theme overrides
+        designTokensManager.applyTheme(theme)
+
         await loadDesignTokens(for: colorScheme)
     }
 
@@ -307,3 +330,4 @@ struct CheckoutScopeObserver: View, LogReporter {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity function_body_length

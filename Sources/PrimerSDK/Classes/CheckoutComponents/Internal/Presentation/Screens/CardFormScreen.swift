@@ -4,6 +4,14 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// swiftlint:disable file_length
+// TODO: Refactor CardFormScreen to reduce file length (currently 814 lines, max 800)
+//
+//  CardFormScreen.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import SwiftUI
 
 /// Default card form screen for CheckoutComponents with dynamic field rendering
@@ -15,7 +23,13 @@ struct CardFormScreen: View, LogReporter {
     @Environment(\.bridgeController) private var bridgeController
     @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
+    @Environment(\.primerComponents) private var components
     @State private var cardFormState: StructuredCardFormState = .init()
+
+    /// CardForm configuration with fallback to defaults
+    private var cardFormConfig: PrimerComponents.CardForm {
+        components.configuration(for: PrimerComponents.CardForm.self) ?? PrimerComponents.CardForm()
+    }
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
     @State private var formConfiguration: CardFormConfiguration = .default
@@ -34,6 +48,7 @@ struct CardFormScreen: View, LogReporter {
         }
         .navigationBarHidden(true)
         .background(CheckoutColors.background(tokens: tokens))
+        .environment(\.primerCardFormScope, scope)
     }
 
     @MainActor
@@ -90,7 +105,8 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var titleSection: some View {
-        Text(CheckoutComponentsStrings.cardPaymentTitle)
+        let title = cardFormConfig.title ?? CheckoutComponentsStrings.cardPaymentTitle
+        return Text(title)
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -100,7 +116,12 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var dynamicFieldsSection: some View {
-        if let customScreen = scope.screen {
+        // First check components configuration
+        if let customScreen = cardFormConfig.screen {
+            customScreen()
+        }
+        // Then check legacy scope configuration
+        else if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
             VStack(spacing: 0) {
@@ -113,7 +134,12 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var cardFieldsSection: some View {
-        if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
+        // First check components configuration
+        if let customContent = cardFormConfig.cardDetails.content {
+            customContent()
+        }
+        // Then check legacy scope configuration
+        else if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
             AnyView(customSection())
         } else {
             VStack(spacing: 0) {
@@ -154,7 +180,12 @@ struct CardFormScreen: View, LogReporter {
         if !formConfiguration.billingFields.isEmpty,
            let defaultScope = scope as? DefaultCardFormScope
         {
-            if let customSection = defaultScope.billingAddressSection {
+            // First check components configuration
+            if let customContent = cardFormConfig.billingAddress.content {
+                customContent()
+            }
+            // Then check legacy scope configuration
+            else if let customSection = defaultScope.billingAddressSection {
                 AnyView(customSection())
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -192,7 +223,17 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var submitButtonSection: some View {
-        if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
+        // First check components configuration
+        if let customContent = cardFormConfig.submitButton.content {
+            customContent()
+                .onTapGesture {
+                    if cardFormState.isValid, !cardFormState.isLoading {
+                        submitAction()
+                    }
+                }
+        }
+        // Then check legacy scope configuration
+        else if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
             AnyView(customSection())
         } else {
             Group {
@@ -215,9 +256,10 @@ struct CardFormScreen: View, LogReporter {
 
     private var submitButtonContent: some View {
         let isEnabled = cardFormState.isValid && !cardFormState.isLoading
+        let showLoadingIndicator = cardFormConfig.submitButton.showLoadingIndicator
 
         return HStack {
-            if cardFormState.isLoading {
+            if cardFormState.isLoading, showLoadingIndicator {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
                     .scaleEffect(PrimerScale.small)
@@ -270,6 +312,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonText: String {
+        // First check components configuration
+        if let customText = cardFormConfig.submitButton.text {
+            return customText
+        }
+
         if scope.cardFormUIOptions?.payButtonAddNewCard == true {
             return CheckoutComponentsStrings.addCardButton
         }
@@ -366,7 +413,13 @@ struct CardFormScreen: View, LogReporter {
 
         switch fieldType {
         case .cardNumber:
-            if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
+            // First check components configuration
+            if let customField = cardFormConfig.cardDetails.cardNumber {
+                customField()
+                    .focused($focusedField, equals: .cardNumber)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .cardNumber)
             } else {
@@ -383,7 +436,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .expiryDate:
-            if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
+            // First check components configuration
+            if let customField = cardFormConfig.cardDetails.expiryDate {
+                customField()
+                    .focused($focusedField, equals: .expiryDate)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .expiryDate)
             } else {
@@ -398,7 +457,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .cvv:
-            if let customField = (scope as? DefaultCardFormScope)?.cvvField {
+            // First check components configuration
+            if let customField = cardFormConfig.cardDetails.cvv {
+                customField()
+                    .focused($focusedField, equals: .cvv)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.cvvField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .cvv)
             } else {
@@ -414,7 +479,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .cardholderName:
-            if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
+            // First check components configuration
+            if let customField = cardFormConfig.cardDetails.cardholderName {
+                customField()
+                    .focused($focusedField, equals: .cardholderName)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .cardholderName)
             } else {
@@ -429,7 +500,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .postalCode:
-            if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.postalCode {
+                customField()
+                    .focused($focusedField, equals: .postalCode)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .postalCode)
             } else {
@@ -444,7 +521,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .countryCode:
-            if let customField = (scope as? DefaultCardFormScope)?.countryField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.countryCode {
+                customField()
+                    .focused($focusedField, equals: .countryCode)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.countryField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .countryCode)
             } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
@@ -459,7 +542,13 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .city:
-            if let customField = (scope as? DefaultCardFormScope)?.cityField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.city {
+                customField()
+                    .focused($focusedField, equals: .city)
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.cityField {
                 AnyView(customField(fieldLabel, defaultStyling))
                     .focused($focusedField, equals: .city)
             } else {
@@ -474,7 +563,12 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .state:
-            if let customField = (scope as? DefaultCardFormScope)?.stateField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.state {
+                customField()
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.stateField {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 StateInputField(
@@ -486,7 +580,12 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .addressLine1:
-            if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.addressLine1 {
+                customField()
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 AddressLineInputField(
@@ -500,7 +599,12 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .addressLine2:
-            if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.addressLine2 {
+                customField()
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 AddressLineInputField(
@@ -527,7 +631,12 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .firstName:
-            if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.firstName {
+                customField()
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 NameInputField(
@@ -540,7 +649,12 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .lastName:
-            if let customField = (scope as? DefaultCardFormScope)?.lastNameField {
+            // First check components configuration
+            if let customField = cardFormConfig.billingAddress.lastName {
+                customField()
+            }
+            // Then check legacy scope configuration
+            else if let customField = (scope as? DefaultCardFormScope)?.lastNameField {
                 AnyView(customField(fieldLabel, defaultStyling))
             } else {
                 NameInputField(
@@ -845,3 +959,4 @@ struct CardFormScreen: View, LogReporter {
     .environment(\.diContainer, MockDIContainer())
 }
 #endif
+// swiftlint:enable file_length

@@ -16,16 +16,29 @@ private struct PaymentMethodGroup {
 @available(iOS 15.0, *)
 struct PaymentMethodSelectionScreen: View {
     let scope: PrimerPaymentMethodSelectionScope
+    private let componentsOverride: PrimerComponents?
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
     @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
+    @Environment(\.primerComponents) private var environmentComponents
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
     @State private var configurationService: ConfigurationService?
 
+    /// The active components configuration (from override or environment)
+    private var components: PrimerComponents {
+        componentsOverride ?? environmentComponents
+    }
+
+    init(scope: PrimerPaymentMethodSelectionScope, components: PrimerComponents? = nil) {
+        self.scope = scope
+        self.componentsOverride = components
+    }
+
     var body: some View {
         mainContent
+            .environment(\.primerPaymentMethodSelectionScope, scope)
     }
 
     @MainActor
@@ -86,7 +99,8 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     private var titleSection: some View {
-        Text(CheckoutComponentsStrings.choosePaymentMethod)
+        let title = components.paymentMethodSelection.title ?? CheckoutComponentsStrings.choosePaymentMethod
+        return Text(title)
             .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -267,7 +281,15 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
-        if let customPaymentMethodItem = scope.paymentMethodItem {
+        // First check components configuration
+        if let customPaymentMethodItem = components.paymentMethodSelection.paymentMethodItem {
+            customPaymentMethodItem(method)
+                .onTapGesture {
+                    scope.onPaymentMethodSelected(paymentMethod: method)
+                }
+        }
+        // Then check legacy scope configuration
+        else if let customPaymentMethodItem = scope.paymentMethodItem {
             customPaymentMethodItem(method)
                 .onTapGesture {
                     scope.onPaymentMethodSelected(paymentMethod: method)

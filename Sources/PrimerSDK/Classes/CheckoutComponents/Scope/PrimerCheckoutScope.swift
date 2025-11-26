@@ -20,13 +20,9 @@ public protocol PrimerCheckoutScope: AnyObject {
     /// Default implementation provides standard checkout container.
     var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
 
-    /// Splash screen shown during initialization.
+    /// Splash screen shown during initialization and loading.
     /// Default implementation shows Primer branding.
     var splashScreen: (() -> any View)? { get set }
-
-    /// Loading screen shown during async operations.
-    /// Default implementation shows activity indicator.
-    var loadingScreen: (() -> any View)? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController

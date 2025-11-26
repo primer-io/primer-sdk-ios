@@ -53,10 +53,6 @@ private extension ComposableContainer {
             .asSingleton()
             .with { _ in self.settings }
 
-        _ = try? await container.register(PrimerThemeProtocol.self)
-            .asSingleton()
-            .with { _ in self.settings.uiOptions.theme }
-
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()
             .with { _ in DesignTokensManager() }

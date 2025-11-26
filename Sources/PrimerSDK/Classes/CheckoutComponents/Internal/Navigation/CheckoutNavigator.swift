@@ -16,6 +16,20 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
 
     private let coordinator: CheckoutCoordinator
 
+    // MARK: - Navigation Callbacks
+
+    /// Custom navigation callbacks from PrimerComponents configuration.
+    /// When set, these callbacks are invoked INSTEAD of default navigation behavior.
+    private(set) var navigationCallbacks: NavigationCallbacks?
+
+    /// Configuration holder for all navigation callbacks
+    struct NavigationCallbacks {
+        let checkout: PrimerComponents.Checkout.Navigation
+        let paymentMethodSelection: PrimerComponents.PaymentMethodSelection.Navigation
+        let cardFormNavigation: PrimerComponents.CardForm.Navigation
+        let countrySelectionNavigation: PrimerComponents.CardForm.SelectCountry.Navigation
+    }
+
     // MARK: - Properties
 
     /// Navigation state as AsyncStream (NO Combine)
@@ -42,6 +56,20 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
         // Initialized with state-driven navigation
     }
 
+    // MARK: - Configuration
+
+    /// Configures navigation callbacks from PrimerComponents
+    /// - Parameter components: The PrimerComponents configuration
+    func configure(with components: PrimerComponents) {
+        let cardFormConfig = components.configuration(for: PrimerComponents.CardForm.self) ?? PrimerComponents.CardForm()
+        navigationCallbacks = NavigationCallbacks(
+            checkout: components.checkout.navigation,
+            paymentMethodSelection: components.paymentMethodSelection.navigation,
+            cardFormNavigation: cardFormConfig.navigation,
+            countrySelectionNavigation: cardFormConfig.selectCountry.navigation
+        )
+    }
+
     // MARK: - Navigation Methods
 
     /// Navigate to loading screen
@@ -56,28 +84,99 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
 
     /// Navigate to a generic payment method flow
     func navigateToPaymentMethod(_ paymentMethodType: String, context: PresentationContext = .fromPaymentSelection) {
+        // Check for custom onPaymentMethodSelected callback
+        if let callback = navigationCallbacks?.paymentMethodSelection.onPaymentMethodSelected {
+            callback(paymentMethodType)
+            return
+        }
         coordinator.navigate(to: .paymentMethod(paymentMethodType, context))
     }
 
     /// Navigate to country selection
     func navigateToCountrySelection() {
+        // Check for custom showCountrySelection callback
+        if let callback = navigationCallbacks?.cardFormNavigation.showCountrySelection {
+            callback()
+            return
+        }
         coordinator.navigate(to: .selectCountry)
     }
 
     /// Navigate to error screen with PrimerError (handled by CheckoutComponentsPrimer delegate)
     func navigateToError(_ error: PrimerError) {
+        // Check for custom onError callback
+        if let callback = navigationCallbacks?.checkout.onError {
+            callback(error.localizedDescription)
+            return
+        }
         coordinator.handlePaymentFailure(error)
         // Error handling is now managed by CheckoutComponentsPrimer delegate
     }
 
     /// Navigate back
     func navigateBack() {
+        // Check for custom onBack callback
+        if let callback = navigationCallbacks?.checkout.onBack {
+            callback()
+            return
+        }
         coordinator.goBack()
     }
 
-    /// Dismiss the entire checkout flow
+    /// Dismiss the entire checkout flow (cancel action)
     func dismiss() {
+        // Check for custom onCancel callback
+        if let callback = navigationCallbacks?.checkout.onCancel {
+            callback()
+            return
+        }
         coordinator.dismiss()
+    }
+
+    // MARK: - Additional Navigation Callback Methods
+
+    /// Handle retry action after error
+    func handleRetry() {
+        // Check for custom onRetry callback
+        if let callback = navigationCallbacks?.checkout.onRetry {
+            callback()
+            return
+        }
+        // Default behavior: navigate back to payment method selection
+        coordinator.navigate(to: .paymentMethodSelection)
+    }
+
+    /// Handle "other payment methods" action
+    func handleOtherPaymentMethods() {
+        // Check for custom onOtherPaymentMethods callback
+        if let callback = navigationCallbacks?.checkout.onOtherPaymentMethods {
+            callback()
+            return
+        }
+        // Default behavior: navigate to payment method selection
+        coordinator.navigate(to: .paymentMethodSelection)
+    }
+
+    /// Handle successful payment completion
+    func handleSuccess() {
+        // Check for custom onSuccess callback
+        if let callback = navigationCallbacks?.checkout.onSuccess {
+            callback()
+            return
+        }
+        // Default behavior: let coordinator handle success (typically shows success screen)
+        // Note: Success state is typically handled by the coordinator through handlePaymentSuccess
+    }
+
+    /// Handle country selection with code and name
+    func handleCountrySelected(code: String, name: String) {
+        // Check for custom onCountrySelected callback
+        if let callback = navigationCallbacks?.countrySelectionNavigation.onCountrySelected {
+            callback(code, name)
+            return
+        }
+        // Default behavior: dismiss country selection modal
+        // Note: Country selection is typically handled by the SelectCountryScope
     }
 
     // MARK: - Coordinator Access

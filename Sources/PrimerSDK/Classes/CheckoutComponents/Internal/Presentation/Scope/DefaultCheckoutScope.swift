@@ -71,7 +71,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     public var container: ((_ content: @escaping () -> AnyView) -> any View)?
     public var splashScreen: (() -> any View)?
-    public var loadingScreen: (() -> any View)?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
     public var errorScreen: ((_ message: String) -> any View)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
@@ -559,6 +558,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
         updateState(.success(result))
 
+        // Invoke custom success callback if configured
+        navigator.handleSuccess()
+
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
             amount: result.amount?.description ?? "N/A"
@@ -568,6 +570,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     func handlePaymentError(_ error: PrimerError) {
         updateState(.failure(error))
+        // Note: Error callback is invoked via navigateToError in updateNavigationState
         updateNavigationState(.failure(error))
     }
 
@@ -577,5 +580,38 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         Task { @MainActor in
             updateState(.dismissed)
         }
+    }
+
+    // MARK: - Configuration
+
+    /// Configures the checkout scope with PrimerComponents.
+    /// Maps immutable component configuration to internal scope properties.
+    /// - Parameter components: The immutable component configuration
+    func configure(with components: PrimerComponents) {
+        // Configure checkout screens
+        if let splash = components.checkout.splash {
+            splashScreen = { AnyView(splash()) }
+        }
+
+        if let success = components.checkout.success {
+            successScreen = { _ in success() }
+        }
+
+        if let errorContent = components.checkout.error.content {
+            errorScreen = { message in AnyView(errorContent(message)) }
+        }
+
+        // Configure container
+        if let customContainer = components.container {
+            container = { content in
+                AnyView(customContainer(content))
+            }
+        }
+
+        // Configure navigator with navigation callbacks
+        navigator.configure(with: components)
+
+        // Note: Payment method selection and card form configuration
+        // is handled by accessing components directly from scopes
     }
 }

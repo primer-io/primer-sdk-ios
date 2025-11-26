@@ -20,6 +20,7 @@ struct SelectCountryScreen: View {
         NavigationView {
             mainContent
         }
+        .environment(\.primerSelectCountryScope, scope)
         .onAppear {
             observeState()
         }
