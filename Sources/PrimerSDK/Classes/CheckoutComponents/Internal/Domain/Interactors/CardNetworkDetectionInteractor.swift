@@ -6,19 +6,13 @@
 
 import Foundation
 
-/// Protocol for card network detection business logic
 protocol CardNetworkDetectionInteractor {
-    /// Stream of detected card networks for real-time updates
     var networkDetectionStream: AsyncStream<[CardNetwork]> { get }
-
-    /// Trigger network detection for a given card number
     func detectNetworks(for cardNumber: String) async
-
-    /// Handle user selection of a specific network for co-badged cards
+    /// For co-badged cards with multiple networks
     func selectNetwork(_ network: CardNetwork) async
 }
 
-/// Implementation of card network detection interactor
 @available(iOS 15.0, *)
 final class CardNetworkDetectionInteractorImpl: CardNetworkDetectionInteractor, LogReporter {
 

@@ -55,21 +55,4 @@ enum NetworkingUtils {
             }
         }
     }
-
-//    /// Request a client session with Result type for more flexible error handling
-//    /// - Parameters:
-//    ///   - body: The client session request configuration
-//    ///   - apiVersion: The API version to use for the request
-//    /// - Returns: Result containing either the client token or an error
-//    static func requestClientSessionResult(
-//        body: ClientSessionRequestBody,
-//        apiVersion: PrimerApiVersion
-//    ) async -> Result<String, Error> {
-//        do {
-//            let token = try await requestClientSession(body: body, apiVersion: apiVersion)
-//            return .success(token)
-//        } catch {
-//            return .failure(error)
-//        }
-//    }
 }

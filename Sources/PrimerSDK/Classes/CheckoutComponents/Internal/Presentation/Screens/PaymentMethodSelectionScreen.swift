@@ -26,7 +26,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @State private var configurationService: ConfigurationService?
     @State private var resolvedComponents: PrimerComponents = PrimerComponents()
 
-    /// The active components configuration (from override or DI)
     private var components: PrimerComponents {
         componentsOverride ?? resolvedComponents
     }

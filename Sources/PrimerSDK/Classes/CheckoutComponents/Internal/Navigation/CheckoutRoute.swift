@@ -13,7 +13,6 @@ public enum PresentationContext {
     case direct                    // Presented directly (e.g., single payment method)
     case fromPaymentSelection     // Reached from payment method selection
 
-    /// Whether the back button should be shown
     var shouldShowBackButton: Bool {
         switch self {
         case .direct:
@@ -67,7 +66,6 @@ enum CheckoutRoute: Hashable, Identifiable {
 
     // MARK: - Route Properties
 
-    /// Human-readable name for debugging and analytics
     var routeName: String {
         switch self {
         case .splash: return "Splash Screen"
@@ -81,7 +79,6 @@ enum CheckoutRoute: Hashable, Identifiable {
         }
     }
 
-    /// Defines how this route should be navigated to
     var navigationBehavior: NavigationBehavior {
         switch self {
         case .splash:
@@ -97,7 +94,6 @@ enum CheckoutRoute: Hashable, Identifiable {
         }
     }
 
-    /// Analytics parameters for tracking navigation events
     var analyticsParameters: [String: Any] {
         var params = ["route_id": id, "route_name": routeName]
 

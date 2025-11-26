@@ -8,37 +8,31 @@ import Foundation
 
 /// Type-safe key structure for dependency identification
 public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
-    /// The unique identifier for the type
     private let typeId: ObjectIdentifier
     /// The type name for debugging and display purposes
     private let typeName: String
     /// Optional name to distinguish between multiple registrations of the same type
     private let name: String?
 
-    /// Initialize with type and optional name
     public init(_ type: Any.Type, name: String? = nil) {
         self.typeId = ObjectIdentifier(type)
         self.typeName = String(reflecting: type)
         self.name = name
     }
 
-    /// Convenience method to check if this key represents a specific type
     public func represents<T>(_ type: T.Type) -> Bool {
-        return typeId == ObjectIdentifier(type)
+        typeId == ObjectIdentifier(type)
     }
 
-    /// Hash implementation
     public func hash(into hasher: inout Hasher) {
         hasher.combine(typeId)
         hasher.combine(name)
     }
 
-    /// Equality implementation
     public static func == (lhs: TypeKey, rhs: TypeKey) -> Bool {
-        return lhs.typeId == rhs.typeId && lhs.name == rhs.name
+        lhs.typeId == rhs.typeId && lhs.name == rhs.name
     }
 
-    /// Human-readable description
     public var description: String {
         if let name {
             return "\(typeName)(name: \(name))"

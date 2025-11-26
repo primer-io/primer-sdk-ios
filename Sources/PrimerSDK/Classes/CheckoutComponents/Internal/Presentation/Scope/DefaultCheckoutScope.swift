@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Default implementation of PrimerCheckoutScope
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
@@ -45,13 +44,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Properties
 
-    /// The current checkout state
     @Published private var internalState = PrimerCheckoutState.initializing
-
-    /// The current navigation state
     @Published var navigationState = NavigationState.loading
 
-    /// State stream for external observation
     public var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -93,10 +88,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Dynamic Payment Method Scope
 
-    /// The currently active payment method scope (dynamically created)
     private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
-
-    /// Cache of created payment method scopes by type
     private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
 
     // MARK: - Services
@@ -107,12 +99,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
 
-    /// Stores the API-provided display name of the currently selected payment method for accessibility announcements
+    // Stores the API-provided display name for accessibility announcements
     private var selectedPaymentMethodName: String?
 
     // MARK: - Internal Access
 
-    /// Provides access to the navigator for child scopes
     var checkoutNavigator: CheckoutNavigator {
         navigator
     }
@@ -123,48 +114,41 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private let settings: PrimerSettings
     var availablePaymentMethods: [InternalPaymentMethod] = []
 
-    // MARK: - UI Settings Access (for settings-based screen control)
+    // MARK: - UI Settings Access
 
-    /// Whether the initialization loading screen should be shown
     var isInitScreenEnabled: Bool {
         settings.uiOptions.isInitScreenEnabled
     }
 
-    /// Whether the success screen should be shown after successful payment
     var isSuccessScreenEnabled: Bool {
         settings.uiOptions.isSuccessScreenEnabled
     }
 
-    /// Whether the error screen should be shown after failed payment
     var isErrorScreenEnabled: Bool {
         settings.uiOptions.isErrorScreenEnabled
     }
 
-    /// Exposes card form UI options for child scopes
     var cardFormUIOptions: PrimerCardFormUIOptions? {
         settings.uiOptions.cardFormUIOptions
     }
 
-    /// Available dismissal mechanisms (gestures, close button)
     var dismissalMechanism: [DismissalMechanism] {
         settings.uiOptions.dismissalMechanism
     }
 
-    // MARK: - Debug Settings Access (critical for 3DS security)
+    // MARK: - Debug Settings Access
 
-    /// Whether 3DS sanity checks are enabled (CRITICAL for security in production)
+    // 3DS sanity checks - CRITICAL for security in production
     var is3DSSanityCheckEnabled: Bool {
         settings.debugOptions.is3DSSanityCheckEnabled
     }
 
     // MARK: - Payment Settings
 
-    /// Payment handling mode from settings
     public var paymentHandling: PrimerPaymentHandling {
         settings.paymentHandling
     }
 
-    /// The presentation context for navigation behavior
     let presentationContext: PresentationContext
 
     // MARK: - Initialization
@@ -185,7 +169,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         observeNavigationEvents()
     }
 
-    /// Registers all available payment method implementations with the registry
     @MainActor
     private func registerPaymentMethods() {
         CardPaymentMethod.register()
@@ -339,7 +322,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
     }
 
-    /// Announces screen changes to VoiceOver users
     private func announceScreenChange(for state: NavigationState) {
         guard let service = accessibilityAnnouncementService else { return }
 
@@ -496,7 +478,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Payment Method Screen Management
 
-    /// Type mapping from payment method enum to string identifier
     private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
         type.rawValue
     }
@@ -580,7 +561,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         updateNavigationState(.failure(error))
     }
 
-    /// Handle auto-dismiss from success or error screens
     func handleAutoDismiss() {
         // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
         Task { @MainActor in
@@ -590,9 +570,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Configuration
 
-    /// Configures the checkout scope with PrimerComponents.
-    /// Maps immutable component configuration to internal scope properties.
-    /// - Parameter components: The immutable component configuration
     func configure(with components: PrimerComponents) {
         // Configure checkout screens
         if let splash = components.checkout.splash {
