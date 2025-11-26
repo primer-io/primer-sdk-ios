@@ -73,9 +73,8 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         return convertedMethods
     }
 
-    // MARK: - Surcharge Extraction Methods (from HeadlessRepositoryImpl)
+    // MARK: - Surcharge Extraction Methods
 
-    /// Extract network-specific surcharges from client session configuration
     private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
         // Only card payment methods have network-specific surcharges
         guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
@@ -104,7 +103,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         }
     }
 
-    /// Extract surcharges from networks array (traditional format)
     private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
@@ -130,7 +128,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    /// Extract surcharges from networks dictionary
     private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
@@ -152,7 +149,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    /// Get required input elements for a payment method type
     private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -162,7 +158,6 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         }
     }
 
-    /// Filter payment methods based on CheckoutComponents support (only show implemented payment methods)
     private func filterPaymentMethodsBySupport(_ paymentMethods: [PrimerPaymentMethod]) async -> [PrimerPaymentMethod] {
         if #available(iOS 15.0, *) {
             // TODO: Enable registry-based filtering once more payment methods are implemented

@@ -14,19 +14,12 @@ extension PrimerComponents {
     /// Configuration for payment method selection screen.
     public struct PaymentMethodSelection {
 
-        /// Custom title for the screen
         public let title: String?
-
-        /// Full screen override component
         public let screen: Component?
-
-        /// Custom payment method item renderer
         public let paymentMethodItem: PaymentMethodItemComponent?
-
-        /// Navigation callback overrides
         public let navigation: Navigation
 
-        /// Creates a new payment method selection configuration.
+        /// Creates a payment method selection configuration.
         /// - Parameters:
         ///   - title: Custom title. Default: nil (uses SDK default)
         ///   - screen: Full screen override. Default: nil (uses SDK default)
@@ -46,15 +39,10 @@ extension PrimerComponents {
 
         // MARK: - Nested Types
 
-        /// Navigation callback overrides for payment method selection
         public struct Navigation {
-            /// Called when user selects a payment method
-            /// - Parameter paymentMethodType: The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL")
+            /// Called when user selects a payment method with type identifier (e.g., "PAYMENT_CARD", "PAYPAL").
             public let onPaymentMethodSelected: ((_ paymentMethodType: String) -> Void)?
 
-            /// Creates a new navigation configuration.
-            /// - Parameters:
-            ///   - onPaymentMethodSelected: Selection callback. Default: nil (uses SDK default)
             public init(onPaymentMethodSelected: ((_ paymentMethodType: String) -> Void)? = nil) {
                 self.onPaymentMethodSelected = onPaymentMethodSelected
             }

@@ -29,24 +29,16 @@ import SwiftUI
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct SelectCountryProvider<Content: View>: View {
-    /// Callback when a country is selected
     private let onCountrySelected: ((String, String) -> Void)?
-
-    /// Callback when user cancels (navigates back without selecting)
-    /// Note: Cancel is typically handled by the navigation system. This callback
-    /// is provided for custom navigation hierarchies.
+    /// For custom navigation hierarchies (typically handled by navigation system).
     private let onCancel: (() -> Void)?
-
-    /// Content builder that receives the select country scope
     private let content: (any PrimerSelectCountryScope) -> Content
 
     @Environment(\.primerSelectCountryScope) private var countryScope
     @Environment(\.primerComponents) private var components
-
-    /// Tracks the last seen selected country to detect new selections
     @State private var lastSelectedCountryCode: String?
 
-    /// Creates a SelectCountryProvider with navigation callbacks.
+    /// Creates a SelectCountryProvider.
     /// - Parameters:
     ///   - onCountrySelected: Called when user selects a country with (code, name)
     ///   - onCancel: Called when user cancels the selection (optional, typically handled by navigation)

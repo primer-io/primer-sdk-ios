@@ -6,15 +6,13 @@
 
 import SwiftUI
 
-/// SwiftUI View extensions for dependency injection
 @available(iOS 15.0, *)
 extension View {
-    /// Inject dependencies into a view modifier
+
     func injectDependencies() -> some View {
         modifier(DependencyInjectionModifier())
     }
 
-    /// Helper to resolve a dependency from the environment
     func withResolvedDependency<T>(
         _ type: T.Type,
         name: String? = nil,
@@ -24,7 +22,6 @@ extension View {
     }
 }
 
-/// View modifier that validates DI container is available
 @available(iOS 15.0, *)
 struct DependencyInjectionModifier: ViewModifier {
     @Environment(\.diContainer) private var container
@@ -40,7 +37,6 @@ struct DependencyInjectionModifier: ViewModifier {
     }
 }
 
-/// View modifier that resolves a specific dependency
 @available(iOS 15.0, *)
 struct DependencyResolutionModifier<T>: ViewModifier {
     let type: T.Type

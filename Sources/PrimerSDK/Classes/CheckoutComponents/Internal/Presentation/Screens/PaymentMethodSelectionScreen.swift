@@ -26,7 +26,6 @@ struct PaymentMethodSelectionScreen: View {
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
     @State private var configurationService: ConfigurationService?
 
-    /// The active components configuration (from override or environment)
     private var components: PrimerComponents {
         componentsOverride ?? environmentComponents
     }

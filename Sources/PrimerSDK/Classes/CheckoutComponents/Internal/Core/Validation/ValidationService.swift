@@ -6,39 +6,24 @@
 
 import Foundation
 
-/// Service that provides validation for all input field types in the Primer SDK
 public protocol ValidationService {
-    /// Validates a card number
     func validateCardNumber(_ number: String) -> ValidationResult
-
-    /// Validates an expiry date
     func validateExpiry(month: String, year: String) -> ValidationResult
-
-    /// Validates a CVV
     func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult
-
-    /// Validates a cardholder name
     func validateCardholderName(_ name: String) -> ValidationResult
-
-    /// Validates any field type with the provided value
     func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult
-
-    /// Validates a field using a specific validation rule
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T
 
     // MARK: - Structured State Support
 
-    /// Validates form data using structured state approach
     /// Returns structured field errors for granular error handling
     @available(iOS 15.0, *)
     func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError]
 
-    /// Validates form data for specific fields only
     /// Useful for partial validation during user input
     @available(iOS 15.0, *)
     func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError]
 
-    /// Validates a single field and returns structured error
     @available(iOS 15.0, *)
     func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError?
 }
@@ -91,9 +76,8 @@ final class ValidationResultCache {
         }
     }
 
-    /// Generates cache key for validation input
     private func cacheKey(for input: String, type: String, context: String = "") -> String {
-        return "\(type)_\(input)_\(context)".hash.description
+        "\(type)_\(input)_\(context)".hash.description
     }
 
     /// Retrieves cached validation result or performs validation
@@ -119,7 +103,6 @@ final class ValidationResultCache {
     }
 }
 
-/// Default implementation of the ValidationService
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
 
@@ -139,7 +122,7 @@ extension DefaultValidationService {
 
     public func validateCardNumber(_ number: String) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for card number validation
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: number,
             type: "cardNumber"
         ) {
@@ -163,7 +146,7 @@ extension DefaultValidationService {
 
     public func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for CVV validation with card network context
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: cvv,
             type: "cvv",
             context: cardNetwork.rawValue
@@ -175,7 +158,7 @@ extension DefaultValidationService {
 
     public func validateCardholderName(_ name: String) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for cardholder name validation
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: name,
             type: "cardholderName"
         ) {
@@ -284,18 +267,16 @@ extension DefaultValidationService {
     // swiftlint:enable all
 
     public func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
-        return rule.validate(input)
+        rule.validate(input)
     }
 
     // MARK: - Structured State Support Implementation
 
-    /// Implementation of validateFormData for structured state
     @available(iOS 15.0, *)
     public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        return validateFields(configuration.allFields, formData: formData)
+        validateFields(configuration.allFields, formData: formData)
     }
 
-    /// Implementation of validateFields for partial validation
     @available(iOS 15.0, *)
     public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
         var fieldErrors: [FieldError] = []
@@ -310,7 +291,6 @@ extension DefaultValidationService {
         return fieldErrors
     }
 
-    /// Implementation of validateFieldWithStructuredResult
     @available(iOS 15.0, *)
     public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
         let result = validateField(type: type, value: value)

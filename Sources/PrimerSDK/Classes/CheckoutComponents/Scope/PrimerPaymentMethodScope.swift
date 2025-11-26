@@ -13,7 +13,6 @@ import Foundation
 @MainActor
 public protocol PrimerPaymentMethodScope: AnyObject {
 
-    /// The type of state this scope manages
     associatedtype State: Equatable
 
     /// The current state of the payment method scope as an async stream.
@@ -21,25 +20,20 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 
     // MARK: - Lifecycle Methods
 
-    /// Starts the payment method flow and initializes the scope.
     /// Called when the payment method is selected and the scope becomes active.
     func start()
 
-    /// Submits the payment method for processing.
     /// Called when the user confirms the payment with this method.
     func submit()
 
-    /// Cancels the payment method flow and returns to payment method selection.
     /// Called when the user cancels or navigates back.
     func cancel()
 
     // MARK: - Navigation Support
 
-    /// Called when the scope should handle navigation back to the previous screen.
     /// Default implementation calls cancel().
     func onBack()
 
-    /// Called when the scope should dismiss itself (e.g., on error or completion).
     /// Default implementation calls cancel().
     func onDismiss()
 }
@@ -49,12 +43,10 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 @available(iOS 15.0, *)
 extension PrimerPaymentMethodScope {
 
-    /// Default implementation navigates back by canceling the current flow.
     public func onBack() {
         cancel()
     }
 
-    /// Default implementation dismisses by canceling the current flow.
     public func onDismiss() {
         cancel()
     }
@@ -67,7 +59,6 @@ extension PrimerPaymentMethodScope {
 @available(iOS 15.0, *)
 public protocol PaymentMethodProtocol {
 
-    /// The type of scope this payment method creates
     associatedtype ScopeType: PrimerPaymentMethodScope
 
     /// The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL", "APPLE_PAY")
@@ -110,22 +101,13 @@ public protocol PaymentMethodProtocol {
 @MainActor
 class PaymentMethodRegistry: LogReporter {
 
-    /// Type-erased payment method creator function
     private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope
-
-    /// Type-erased view creator function
     private typealias ViewCreator = @MainActor (any PrimerCheckoutScope) -> AnyView?
 
-    /// Registry mapping payment method types to their scope creators
     private var creators: [String: ScopeCreator] = [:]
-
-    /// Registry mapping payment method types to their view creators
     private var viewBuilders: [String: ViewCreator] = [:]
-
-    /// Registry mapping scope types to their payment method identifiers
     private var typeToIdentifier: [String: String] = [:]
 
-    /// Shared instance for global registration
     static let shared = PaymentMethodRegistry()
 
     private init() {}
@@ -227,10 +209,9 @@ class PaymentMethodRegistry: LogReporter {
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
     ) throws -> T? {
-        return try createScope(for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
+        try createScope(for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
-    /// Returns all registered payment method types
     var registeredTypes: [String] {
         Array(creators.keys)
     }

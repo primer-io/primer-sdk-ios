@@ -6,14 +6,12 @@
 
 import SwiftUI
 
-/// Direction for slide-in animation
 enum SlideDirection {
     case leading
     case trailing
     case top
     case bottom
 
-    /// Returns the axis for the slide direction
     var axis: Axis {
         switch self {
         case .leading, .trailing:
@@ -23,7 +21,6 @@ enum SlideDirection {
         }
     }
 
-    /// Returns the offset multiplier (-1 or 1) based on direction
     var offsetMultiplier: CGFloat {
         switch self {
         case .leading, .top:
@@ -36,10 +33,7 @@ enum SlideDirection {
 
 /// A view modifier that animates a view sliding in/out with fade effect
 struct SlideInModifier: ViewModifier {
-    /// Whether the view should be visible
     let isVisible: Bool
-
-    /// The direction from which the view slides in
     let direction: SlideDirection
 
     /// The distance to slide (default uses AnimationConstants.errorSlideOffset)
@@ -70,7 +64,6 @@ struct SlideInModifier: ViewModifier {
             .animation(animation, value: isVisible)
     }
 
-    /// Calculates the offset value based on visibility and direction
     private var offsetValue: CGFloat {
         isVisible ? 0 : slideDistance * direction.offsetMultiplier
     }

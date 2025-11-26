@@ -6,16 +6,13 @@
 
 import SwiftUI
 
-/// Default implementation of PrimerPaymentMethodSelectionScope
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
-    /// The current payment method selection state
     @Published private var internalState = PrimerPaymentMethodSelectionState()
 
-    /// State stream for external observation
     public var state: AsyncStream<PrimerPaymentMethodSelectionState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -31,7 +28,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
         }
     }
 
-    /// Available dismissal mechanisms from settings
     public var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }

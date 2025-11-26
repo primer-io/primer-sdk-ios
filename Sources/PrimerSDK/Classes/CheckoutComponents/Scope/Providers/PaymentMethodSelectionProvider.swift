@@ -30,22 +30,15 @@ import SwiftUI
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct PaymentMethodSelectionProvider<Content: View>: View {
-    /// Callback when a payment method is selected
     private let onPaymentMethodSelected: ((String) -> Void)?
-
-    /// Callback when user cancels
     private let onCancel: (() -> Void)?
-
-    /// Content builder that receives the payment method selection scope
     private let content: (any PrimerPaymentMethodSelectionScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
     @Environment(\.primerComponents) private var components
-
-    /// Tracks the last seen selected payment method to detect new selections
     @State private var lastSelectedPaymentMethodType: String?
 
-    /// Creates a PaymentMethodSelectionProvider with navigation callbacks.
+    /// Creates a PaymentMethodSelectionProvider.
     /// - Parameters:
     ///   - onPaymentMethodSelected: Called when user selects a payment method with the type identifier
     ///   - onCancel: Called when user cancels the selection
