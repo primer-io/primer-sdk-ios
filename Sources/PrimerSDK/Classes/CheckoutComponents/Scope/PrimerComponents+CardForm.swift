@@ -14,28 +14,15 @@ extension PrimerComponents {
     /// Configuration for card payment form.
     public struct CardForm {
 
-        /// Custom form title
         public let title: String?
-
-        /// Card details section configuration
         public let cardDetails: CardDetails
-
-        /// Billing address section configuration
         public let billingAddress: BillingAddress
-
-        /// Country picker configuration
         public let selectCountry: SelectCountry
-
-        /// Submit button configuration
         public let submitButton: SubmitButton
-
-        /// Navigation callback overrides
         public let navigation: Navigation
-
-        /// Full form screen override
         public let screen: Component?
 
-        /// Creates a new card form configuration.
+        /// Creates a card form configuration.
         /// - Parameters:
         ///   - title: Custom title. Default: nil (uses SDK default)
         ///   - cardDetails: Card details config. Default: CardDetails()
@@ -64,27 +51,16 @@ extension PrimerComponents {
 
         // MARK: - Card Details
 
-        /// Card details section configuration
+        /// Card details section configuration.
         public struct CardDetails {
-            /// Custom section content layout
             public let content: Component?
-
-            /// Custom card number field
             public let cardNumber: Component?
-
-            /// Custom expiry date field
             public let expiryDate: Component?
-
-            /// Custom CVV field
             public let cvv: Component?
-
-            /// Custom cardholder name field
             public let cardholderName: Component?
-
-            /// Custom card network selector
             public let cardNetwork: Component?
 
-            /// Creates a new card details configuration.
+            /// Creates a card details configuration.
             /// - Parameters:
             ///   - content: Custom section layout. Default: nil (uses SDK default)
             ///   - cardNumber: Custom card number field. Default: nil (uses SDK default)
@@ -111,36 +87,19 @@ extension PrimerComponents {
 
         // MARK: - Billing Address
 
-        /// Billing address section configuration
+        /// Billing address section configuration.
         public struct BillingAddress {
-            /// Custom section content layout
             public let content: Component?
-
-            /// Custom country code field
             public let countryCode: Component?
-
-            /// Custom first name field
             public let firstName: Component?
-
-            /// Custom last name field
             public let lastName: Component?
-
-            /// Custom address line 1 field
             public let addressLine1: Component?
-
-            /// Custom address line 2 field
             public let addressLine2: Component?
-
-            /// Custom postal code field
             public let postalCode: Component?
-
-            /// Custom city field
             public let city: Component?
-
-            /// Custom state field
             public let state: Component?
 
-            /// Creates a new billing address configuration.
+            /// Creates a billing address configuration.
             /// - Parameters:
             ///   - content: Custom section layout. Default: nil (uses SDK default)
             ///   - countryCode: Custom country code field. Default: nil (uses SDK default)
@@ -176,24 +135,14 @@ extension PrimerComponents {
 
         // MARK: - Select Country
 
-        /// Country picker configuration
         public struct SelectCountry {
-            /// Custom picker title
             public let title: String?
-
-            /// Search bar configuration
             public let searchBar: SearchBar
-
-            /// Custom country item renderer
             public let countryItem: CountryItemComponent?
-
-            /// Full screen override
             public let screen: Component?
-
-            /// Navigation callback overrides
             public let navigation: Navigation
 
-            /// Creates a new country picker configuration.
+            /// Creates a country picker configuration.
             /// - Parameters:
             ///   - title: Custom title. Default: nil (uses SDK default)
             ///   - searchBar: Search bar config. Default: SearchBar()
@@ -214,15 +163,11 @@ extension PrimerComponents {
                 self.navigation = navigation
             }
 
-            /// Search bar configuration
             public struct SearchBar {
-                /// Custom placeholder text
                 public let placeholder: String?
-
-                /// Custom search bar component
                 public let content: Component?
 
-                /// Creates a new search bar configuration.
+                /// Creates a search bar configuration.
                 /// - Parameters:
                 ///   - placeholder: Custom placeholder. Default: nil (uses SDK default)
                 ///   - content: Custom search bar. Default: nil (uses SDK default)
@@ -232,15 +177,11 @@ extension PrimerComponents {
                 }
             }
 
-            /// Navigation callback overrides
             public struct Navigation {
-                /// Called when country is selected
-                /// - Parameters:
-                ///   - code: The ISO country code (e.g., "US", "GB")
-                ///   - name: The country display name (e.g., "United States", "United Kingdom")
+                /// Called when country is selected with ISO code (e.g., "US") and display name (e.g., "United States").
                 public let onCountrySelected: ((_ code: String, _ name: String) -> Void)?
 
-                /// Creates a new navigation configuration.
+                /// Creates a navigation configuration.
                 /// - Parameters:
                 ///   - onCountrySelected: Selection callback. Default: nil (uses SDK default)
                 public init(onCountrySelected: ((_ code: String, _ name: String) -> Void)? = nil) {
@@ -251,18 +192,13 @@ extension PrimerComponents {
 
         // MARK: - Submit Button
 
-        /// Submit button configuration
         public struct SubmitButton {
-            /// Custom button text
             public let text: String?
-
-            /// Whether to show loading indicator during submission
+            /// Shows loading indicator during submission.
             public let showLoadingIndicator: Bool
-
-            /// Custom button component
             public let content: Component?
 
-            /// Creates a new submit button configuration.
+            /// Creates a submit button configuration.
             /// - Parameters:
             ///   - text: Custom button text. Default: nil (uses SDK default)
             ///   - showLoadingIndicator: Show loading indicator. Default: true
@@ -280,12 +216,10 @@ extension PrimerComponents {
 
         // MARK: - Navigation
 
-        /// Navigation callback overrides for card form
         public struct Navigation {
-            /// Called to show country selection
             public let showCountrySelection: (() -> Void)?
 
-            /// Creates a new navigation configuration.
+            /// Creates a navigation configuration.
             /// - Parameters:
             ///   - showCountrySelection: Country selection callback. Default: nil (uses SDK default)
             public init(showCountrySelection: (() -> Void)? = nil) {
@@ -300,11 +234,7 @@ extension PrimerComponents {
 @available(iOS 15.0, *)
 extension PrimerComponents.CardForm: PaymentMethodConfiguration {
 
-    /// Card payment method type identifier.
     public static var paymentMethodType: String {
         PrimerPaymentMethodType.paymentCard.rawValue
     }
-
-    // Note: `screen: Component?` property already exists in CardForm,
-    // satisfying the protocol requirement.
 }

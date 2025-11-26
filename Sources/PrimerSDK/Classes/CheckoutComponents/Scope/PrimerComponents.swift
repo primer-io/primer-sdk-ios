@@ -35,19 +35,12 @@ import SwiftUI
 @available(iOS 15.0, *)
 public struct PrimerComponents {
 
-    /// Checkout flow screens configuration
     public let checkout: Checkout
-
-    /// Payment method selection screen configuration
     public let paymentMethodSelection: PaymentMethodSelection
-
-    /// Custom container wrapper for checkout content
     public let container: ContainerComponent?
-
-    /// Internal dictionary storage for O(1) lookup by payment method type
     private let paymentMethodConfigurations: [String: any PaymentMethodConfiguration]
 
-    /// Creates a new PrimerComponents configuration.
+    /// Creates a PrimerComponents configuration.
     /// - Parameters:
     ///   - checkout: Checkout flow screens. Default: `Checkout()`
     ///   - paymentMethodSelection: Payment method picker. Default: `PaymentMethodSelection()`

@@ -6,8 +6,6 @@
 
 import SwiftUI
 
-/// Default implementation of PrimerSelectCountryScope with navigation integration
-///
 /// NOTE: Currently card-specific - holds reference to DefaultCardFormScope for billing address.
 /// If other payment methods require country selection in the future, this should be refactored
 /// to accept a generic payment method context instead of being tied to card payments.
@@ -17,7 +15,6 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     // MARK: - Properties
 
-    /// State stream for external observation
     public var state: AsyncStream<PrimerSelectCountryState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -127,7 +124,6 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         internalState.filteredCountries = allCountries
     }
 
-    /// Converts a CountryCode enum value to PrimerCountry model
     private func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
         let code = countryCode.rawValue
         let localizedName = countryCode.country

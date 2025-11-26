@@ -6,15 +6,11 @@
 
 import SwiftUI
 
-/// A composite SwiftUI view containing all card input fields
 @available(iOS 15.0, *)
 struct CardDetailsView: View {
     // MARK: - Properties
 
-    /// The card form scope for handling updates
     let cardFormScope: any PrimerCardFormScope
-
-    /// Currently detected card network
     @State private var cardNetwork: CardNetwork = .unknown
 
     @Environment(\.designTokens) private var tokens

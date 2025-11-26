@@ -20,7 +20,6 @@ protocol RetentionStrategy: Sendable {
     ) async throws -> Any
 }
 
-/// Concrete strategies
 struct TransientStrategy: RetentionStrategy {
     func instance(for key: TypeKey,
                   registration: Container.FactoryRegistration,

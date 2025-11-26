@@ -67,7 +67,6 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
         }
     }
 
-    /// Helper method for handling payment failure.
     /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentFailure(_ error: PrimerError) {
         navigate(to: .failure(error))

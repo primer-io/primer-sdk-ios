@@ -19,19 +19,12 @@ import SwiftUI
 @available(iOS 15.0, *)
 public struct PrimerCheckoutTheme {
 
-    /// Optional color token overrides
     public let colors: ColorOverrides?
-
-    /// Optional radius token overrides
     public let radius: RadiusOverrides?
-
-    /// Optional spacing token overrides
     public let spacing: SpacingOverrides?
-
-    /// Optional size token overrides
     public let sizes: SizeOverrides?
 
-    /// Creates a new theme configuration with optional overrides.
+    /// Creates a theme configuration.
     /// - Parameters:
     ///   - colors: Color token overrides. Default: nil (uses internal defaults)
     ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
@@ -60,7 +53,6 @@ public struct ColorOverrides {
 
     // MARK: Brand & Primary Colors
 
-    /// Primary brand color (internal: primerColorBrand)
     public var primerColorBrand: Color?
 
     // MARK: Grays (matching internal DesignTokens)
@@ -112,7 +104,6 @@ public struct ColorOverrides {
     public var primerColorFocus: Color?
     public var primerColorLoader: Color?
 
-    /// Creates color overrides with all optional properties.
     public init(
         primerColorBrand: Color? = nil,
         primerColorGray000: Color? = nil,
@@ -199,7 +190,6 @@ public struct RadiusOverrides {
     /// Internal: primerRadiusBase (default: 4)
     public var primerRadiusBase: CGFloat?
 
-    /// Creates radius overrides with all optional properties.
     public init(
         primerRadiusXsmall: CGFloat? = nil,
         primerRadiusSmall: CGFloat? = nil,
@@ -238,7 +228,6 @@ public struct SpacingOverrides {
     /// Internal: primerSpaceBase (default: 4)
     public var primerSpaceBase: CGFloat?
 
-    /// Creates spacing overrides with all optional properties.
     public init(
         primerSpaceXxsmall: CGFloat? = nil,
         primerSpaceXsmall: CGFloat? = nil,
@@ -281,7 +270,6 @@ public struct SizeOverrides {
     /// Internal: primerSizeBase (default: 4)
     public var primerSizeBase: CGFloat?
 
-    /// Creates size overrides with all optional properties.
     public init(
         primerSizeSmall: CGFloat? = nil,
         primerSizeMedium: CGFloat? = nil,

@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Default error screen for CheckoutComponents with auto-dismiss functionality
 @available(iOS 15.0, *)
 struct ErrorScreen: View {
     let error: PrimerError

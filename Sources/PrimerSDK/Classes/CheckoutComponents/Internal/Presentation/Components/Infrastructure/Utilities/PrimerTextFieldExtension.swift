@@ -7,7 +7,6 @@
 import SwiftUI
 import UIKit
 
-/// Configuration for PrimerTextField behavior and appearance
 @available(iOS 15.0, *)
 struct PrimerTextFieldConfiguration {
     let keyboardType: UIKeyboardType
@@ -26,7 +25,6 @@ struct PrimerTextFieldConfiguration {
         isSecureTextEntry: false
     )
 
-    /// Configuration for email input
     static let email = PrimerTextFieldConfiguration(
         keyboardType: .emailAddress,
         autocapitalizationType: .none,
@@ -36,7 +34,6 @@ struct PrimerTextFieldConfiguration {
         isSecureTextEntry: false
     )
 
-    /// Configuration for number pad input
     static let numberPad = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
         autocapitalizationType: .none,
@@ -46,7 +43,7 @@ struct PrimerTextFieldConfiguration {
         isSecureTextEntry: false
     )
 
-    /// Configuration for CVV input (secure, number pad, one-time code)
+    /// Secure entry with number pad and one-time code content type
     static let cvv = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
         autocapitalizationType: .none,
@@ -56,7 +53,7 @@ struct PrimerTextFieldConfiguration {
         isSecureTextEntry: true
     )
 
-    /// Configuration for postal code input (default keyboard, all caps)
+    /// Uses all caps auto-capitalization
     static let postalCode = PrimerTextFieldConfiguration(
         keyboardType: .default,
         autocapitalizationType: .allCharacters,
@@ -66,7 +63,7 @@ struct PrimerTextFieldConfiguration {
         isSecureTextEntry: false
     )
 
-    /// Configuration for expiry date input (number pad, no autofill)
+    /// Number pad with no autofill
     static let expiryDate = PrimerTextFieldConfiguration(
         keyboardType: .numberPad,
         autocapitalizationType: .none,
@@ -93,10 +90,8 @@ struct PrimerTextFieldConfiguration {
     }
 }
 
-/// UITextField extension for consistent Primer styling and configuration
 @available(iOS 15.0, *)
 extension UITextField {
-    /// Configures the text field with Primer design tokens and standard settings
     func configurePrimerStyle(
         placeholder: String,
         configuration: PrimerTextFieldConfiguration,

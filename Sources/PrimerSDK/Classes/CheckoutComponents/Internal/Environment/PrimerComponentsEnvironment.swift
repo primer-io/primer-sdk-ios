@@ -8,7 +8,6 @@ import SwiftUI
 
 // MARK: - Environment Key for PrimerComponents
 
-/// Environment key to provide PrimerComponents configuration to all views in the hierarchy
 @available(iOS 15.0, *)
 private struct PrimerComponentsKey: EnvironmentKey {
     static let defaultValue: PrimerComponents = PrimerComponents()
@@ -16,7 +15,6 @@ private struct PrimerComponentsKey: EnvironmentKey {
 
 @available(iOS 15.0, *)
 extension EnvironmentValues {
-    /// The PrimerComponents configuration for customizing checkout UI
     var primerComponents: PrimerComponents {
         get { self[PrimerComponentsKey.self] }
         set { self[PrimerComponentsKey.self] = newValue }

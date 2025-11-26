@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Result of a payment operation.
 public struct PaymentResult {
     public let paymentId: String
     public let status: PaymentStatus
@@ -38,7 +37,6 @@ public struct PaymentResult {
     }
 }
 
-/// Status of a payment.
 public enum PaymentStatus {
     case pending
     case processing

@@ -6,22 +6,11 @@
 
 import Foundation
 
-/// Protocol for validating input fields.
 protocol ValidateInputInteractor {
-    /// Validates a single input field value.
-    /// - Parameters:
-    ///   - value: The value to validate.
-    ///   - type: The type of input field.
-    /// - Returns: The validation result.
     func validate(value: String, type: PrimerInputElementType) async -> ValidationResult
-
-    /// Validates multiple input fields.
-    /// - Parameter fields: Dictionary of field types and their values.
-    /// - Returns: Dictionary of field types and their validation results.
     func validateMultiple(fields: [PrimerInputElementType: String]) async -> [PrimerInputElementType: ValidationResult]
 }
 
-/// Default implementation using the validation service.
 final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
 
     private let validationService: ValidationService

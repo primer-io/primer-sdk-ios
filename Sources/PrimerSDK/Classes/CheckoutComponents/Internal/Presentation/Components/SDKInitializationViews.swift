@@ -8,7 +8,6 @@ import SwiftUI
 
 // MARK: - SDK Initialization UI Components
 
-/// Error view shown when SDK initialization fails
 @available(iOS 15.0, *)
 struct SDKInitializationErrorView: View {
     let error: PrimerError

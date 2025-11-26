@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Configuration for which billing address fields to show
 @available(iOS 15.0, *)
 struct BillingAddressConfiguration {
     let showFirstName: Bool
@@ -21,25 +20,18 @@ struct BillingAddressConfiguration {
     let showCountry: Bool
 }
 
-/// A composite SwiftUI view containing billing address fields with dynamic layout
 @available(iOS 15.0, *)
 struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
-    /// The card form scope for handling updates
     let cardFormScope: DefaultCardFormScope
-
-    /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
 
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    /// Creates a new BillingAddressView with comprehensive customization support
     init(
         cardFormScope: DefaultCardFormScope,
         configuration: BillingAddressConfiguration,
