@@ -144,7 +144,6 @@ public struct PrimerCheckout: View {
             presentationContext: presentationContext,
             onCompletion: onCompletion
         )
-        .environment(\.primerTheme, theme)
 
         // Apply custom container if provided, otherwise pass through unchanged
         if let container = components.container {
@@ -207,6 +206,8 @@ struct InternalCheckout: View {
         self.sdkInitializer = CheckoutSDKInitializer(
             clientToken: clientToken,
             primerSettings: settings,
+            primerTheme: theme,
+            primerComponents: components,
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext
@@ -248,6 +249,18 @@ struct InternalCheckout: View {
     @ViewBuilder
     private var splashContent: some View {
         if let customSplash = components.checkout.splash {
+            customSplash()
+        } else {
+            SplashScreen()
+        }
+    }
+
+    @ViewBuilder
+    private var loadingContent: some View {
+        if let customLoading = components.checkout.loading {
+            customLoading()
+        } else if let customSplash = components.checkout.splash {
+            // Fall back to splash if loading not provided
             customSplash()
         } else {
             SplashScreen()

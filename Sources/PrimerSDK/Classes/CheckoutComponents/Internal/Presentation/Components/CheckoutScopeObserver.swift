@@ -98,7 +98,6 @@ struct CheckoutScopeObserver: View, LogReporter {
         .environmentObject(scope)
         .environment(\.diContainer, DIContainer.currentSync)
         .environment(\.designTokens, designTokensManager.tokens)
-        .environment(\.primerComponents, components)
         .environment(\.primerCheckoutScope, scope)
         .onAppear {
             // Configure scope with PrimerComponents (only after SDK is initialized)

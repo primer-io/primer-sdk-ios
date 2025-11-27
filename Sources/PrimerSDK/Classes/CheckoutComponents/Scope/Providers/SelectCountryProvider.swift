@@ -28,7 +28,7 @@ import SwiftUI
 ///
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
-public struct SelectCountryProvider<Content: View>: View {
+public struct SelectCountryProvider<Content: View>: View, LogReporter {
     /// Callback when a country is selected
     private let onCountrySelected: ((String, String) -> Void)?
 
@@ -41,7 +41,8 @@ public struct SelectCountryProvider<Content: View>: View {
     private let content: (any PrimerSelectCountryScope) -> Content
 
     @Environment(\.primerSelectCountryScope) private var countryScope
-    @Environment(\.primerComponents) private var components
+    @Environment(\.diContainer) private var container
+    @State private var components: PrimerComponents = PrimerComponents()
 
     /// Tracks the last seen selected country to detect new selections
     @State private var lastSelectedCountryCode: String?
@@ -65,6 +66,9 @@ public struct SelectCountryProvider<Content: View>: View {
         if let countryScope {
             content(countryScope)
                 .environment(\.primerSelectCountryScope, countryScope)
+                .onAppear {
+                    resolveComponents()
+                }
                 .task {
                     await observeCountrySelection()
                 }
@@ -72,6 +76,17 @@ public struct SelectCountryProvider<Content: View>: View {
             // Fallback when scope is not available
             Text("Country selection scope not available")
                 .foregroundColor(.secondary)
+        }
+    }
+
+    private func resolveComponents() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for SelectCountryProvider")
+        }
+        do {
+            components = try container.resolveSync(PrimerComponents.self)
+        } catch {
+            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 

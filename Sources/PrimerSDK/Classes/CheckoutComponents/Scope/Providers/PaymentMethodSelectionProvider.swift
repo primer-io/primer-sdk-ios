@@ -29,7 +29,7 @@ import SwiftUI
 ///
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
-public struct PaymentMethodSelectionProvider<Content: View>: View {
+public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     /// Callback when a payment method is selected
     private let onPaymentMethodSelected: ((String) -> Void)?
 
@@ -40,7 +40,8 @@ public struct PaymentMethodSelectionProvider<Content: View>: View {
     private let content: (any PrimerPaymentMethodSelectionScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
-    @Environment(\.primerComponents) private var components
+    @Environment(\.diContainer) private var container
+    @State private var components: PrimerComponents = PrimerComponents()
 
     /// Tracks the last seen selected payment method to detect new selections
     @State private var lastSelectedPaymentMethodType: String?
@@ -65,6 +66,9 @@ public struct PaymentMethodSelectionProvider<Content: View>: View {
             let selectionScope = checkoutScope.paymentMethodSelection
             content(selectionScope)
                 .environment(\.primerPaymentMethodSelectionScope, selectionScope)
+                .onAppear {
+                    resolveComponents()
+                }
                 .task {
                     await observePaymentMethodSelection(selectionScope: selectionScope)
                 }
@@ -75,6 +79,17 @@ public struct PaymentMethodSelectionProvider<Content: View>: View {
             // Fallback when scope is not available
             Text("Payment selection scope not available")
                 .foregroundColor(.secondary)
+        }
+    }
+
+    private func resolveComponents() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for PaymentMethodSelectionProvider")
+        }
+        do {
+            components = try container.resolveSync(PrimerComponents.self)
+        } catch {
+            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 

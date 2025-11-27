@@ -32,20 +32,6 @@ private struct PrimerSelectCountryScopeKey: EnvironmentKey {
     static let defaultValue: PrimerSelectCountryScope? = nil
 }
 
-// MARK: - Configuration Environment Keys
-
-/// Environment key to provide PrimerComponents configuration to custom views
-@available(iOS 15.0, *)
-private struct PublicPrimerComponentsKey: EnvironmentKey {
-    static let defaultValue: PrimerComponents = PrimerComponents()
-}
-
-/// Environment key to provide PrimerCheckoutTheme to custom views
-@available(iOS 15.0, *)
-private struct PrimerCheckoutThemeKey: EnvironmentKey {
-    static let defaultValue: PrimerCheckoutTheme = PrimerCheckoutTheme()
-}
-
 // MARK: - EnvironmentValues Extension
 
 @available(iOS 15.0, *)
@@ -118,22 +104,5 @@ public extension EnvironmentValues {
     var primerSelectCountryScope: PrimerSelectCountryScope? {
         get { self[PrimerSelectCountryScopeKey.self] }
         set { self[PrimerSelectCountryScopeKey.self] = newValue }
-    }
-
-    /// The PrimerCheckoutTheme configuration for custom styling
-    ///
-    /// Access from any custom view to apply consistent theming:
-    /// ```swift
-    /// struct ThemedView: View {
-    ///     @Environment(\.primerTheme) private var theme
-    ///
-    ///     var body: some View {
-    ///         // Use theme colors, spacing, etc.
-    ///     }
-    /// }
-    /// ```
-    var primerTheme: PrimerCheckoutTheme {
-        get { self[PrimerCheckoutThemeKey.self] }
-        set { self[PrimerCheckoutThemeKey.self] = newValue }
     }
 }

@@ -23,8 +23,8 @@ struct CardFormScreen: View, LogReporter {
     @Environment(\.bridgeController) private var bridgeController
     @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
-    @Environment(\.primerComponents) private var components
     @State private var cardFormState: StructuredCardFormState = .init()
+    @State private var components: PrimerComponents = PrimerComponents()
 
     /// CardForm configuration with fallback to defaults
     private var cardFormConfig: PrimerComponents.CardForm {
@@ -99,6 +99,7 @@ struct CardFormScreen: View, LogReporter {
             submitButtonSection
         }
         .onAppear {
+            resolveComponents()
             resolveConfigurationService()
             observeState()
         }
@@ -352,6 +353,17 @@ struct CardFormScreen: View, LogReporter {
     private func submitAction() {
         Task {
             await (scope as? DefaultCardFormScope)?.submit()
+        }
+    }
+
+    private func resolveComponents() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardFormScreen")
+        }
+        do {
+            components = try container.resolveSync(PrimerComponents.self)
+        } catch {
+            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 

@@ -31,7 +31,7 @@ import SwiftUI
 ///
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
-public struct CardFormProvider<Content: View>: View {
+public struct CardFormProvider<Content: View>: View, LogReporter {
     /// Callback when payment succeeds
     private let onSuccess: ((CheckoutPaymentResult) -> Void)?
 
@@ -48,7 +48,8 @@ public struct CardFormProvider<Content: View>: View {
     private let content: (any PrimerCardFormScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
-    @Environment(\.primerComponents) private var components
+    @Environment(\.diContainer) private var container
+    @State private var components: PrimerComponents = PrimerComponents()
 
     /// Creates a CardFormProvider with navigation callbacks.
     /// - Parameters:
@@ -77,6 +78,9 @@ public struct CardFormProvider<Content: View>: View {
         {
             content(cardFormScope)
                 .environment(\.primerCardFormScope, cardFormScope)
+                .onAppear {
+                    resolveComponents()
+                }
                 .task {
                     await observeCheckoutState()
                 }
@@ -87,6 +91,17 @@ public struct CardFormProvider<Content: View>: View {
             // Fallback when scope is not available
             Text("Card form scope not available")
                 .foregroundColor(.secondary)
+        }
+    }
+
+    private func resolveComponents() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardFormProvider")
+        }
+        do {
+            components = try container.resolveSync(PrimerComponents.self)
+        } catch {
+            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
