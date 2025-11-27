@@ -71,6 +71,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     public var container: ((_ content: @escaping () -> AnyView) -> any View)?
     public var splashScreen: (() -> any View)?
+    public var loadingScreen: (() -> any View)?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
     public var errorScreen: ((_ message: String) -> any View)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
