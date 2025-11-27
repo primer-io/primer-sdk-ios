@@ -21,6 +21,8 @@ final class CheckoutSDKInitializer {
 
     private let clientToken: String
     private let primerSettings: PrimerSettings
+    private let primerTheme: PrimerCheckoutTheme
+    private let primerComponents: PrimerComponents
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
@@ -32,6 +34,8 @@ final class CheckoutSDKInitializer {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
+        primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
+        primerComponents: PrimerComponents = PrimerComponents(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
@@ -39,6 +43,8 @@ final class CheckoutSDKInitializer {
     ) {
         self.clientToken = clientToken
         self.primerSettings = primerSettings
+        self.primerTheme = primerTheme
+        self.primerComponents = primerComponents
         self.diContainer = diContainer
         self.navigator = navigator
         self.presentationContext = presentationContext
@@ -55,7 +61,11 @@ final class CheckoutSDKInitializer {
         // Core SDK (KlarnaHelpers, ACHHelpers, 3DS, etc.) uses PrimerSettings.current
         DependencyContainer.register(primerSettings)
 
-        let composableContainer = ComposableContainer(settings: primerSettings)
+        let composableContainer = ComposableContainer(
+            settings: primerSettings,
+            theme: primerTheme,
+            components: primerComponents
+        )
         await composableContainer.configure()
 
         // Resolve analytics interactor
@@ -109,7 +119,7 @@ final class CheckoutSDKInitializer {
     }
 
     private func createCheckoutScope() -> DefaultCheckoutScope {
-        return DefaultCheckoutScope(
+        DefaultCheckoutScope(
             clientToken: clientToken,
             settings: primerSettings,
             diContainer: diContainer,

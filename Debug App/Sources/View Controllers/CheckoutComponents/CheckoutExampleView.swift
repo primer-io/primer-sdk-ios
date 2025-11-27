@@ -13,21 +13,21 @@ struct CheckoutExampleView: View {
     private let settings: PrimerSettings
     private let apiVersion: PrimerApiVersion
     private let configuredClientSession: ClientSessionRequestBody?
-    
+
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @SwiftUI.Environment(\.colorScheme) private var colorScheme
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var checkoutCompleted = false
-    
+
     init(example: ExampleConfig, settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil) {
         self.example = example
         self.settings = settings
         self.apiVersion = apiVersion
         self.configuredClientSession = clientSession
     }
-    
+
     var body: some View {
         NavigationView {
             contentView
@@ -41,7 +41,7 @@ struct CheckoutExampleView: View {
             await createSession()
         }
     }
-    
+
     @ViewBuilder
     private var contentView: some View {
         Group {
@@ -58,22 +58,20 @@ struct CheckoutExampleView: View {
                     example: example,
                     clientToken: clientToken,
                     settings: settings,
-                    apiVersion: apiVersion,
-                    configuredClientSession: configuredClientSession,
                     onCompletion: onCheckoutCompletion
                 )
             }
         }
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Cancel") { 
-                dismiss() 
+            Button("Cancel") {
+                dismiss()
             }
         }
-        
+
         ToolbarItem(placement: .navigationBarTrailing) {
             if shouldShowInfoButton {
                 Button("Info") {
@@ -84,16 +82,16 @@ struct CheckoutExampleView: View {
             }
         }
     }
-    
+
     private var shouldShowInfoButton: Bool {
         !isLoading && error == nil
     }
-    
+
     private func onCheckoutCompletion() {
         checkoutCompleted = true
         dismiss()
     }
-    
+
     private func createSession() async {
         isLoading = true
         error = nil
@@ -128,7 +126,7 @@ private struct LoadingView: View {
         VStack(spacing: 20) {
             ProgressView()
                 .scaleEffect(1.5)
-            
+
             Text("Creating session...")
                 .font(.headline)
                 .foregroundColor(.secondary)
@@ -142,22 +140,22 @@ private struct LoadingView: View {
 private struct ErrorView: View {
     fileprivate let error: String
     fileprivate let onRetry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
                 .foregroundColor(.orange)
-            
+
             Text("Session Creation Failed")
                 .font(.headline)
-            
+
             Text(error)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            
+
             Button("Retry") {
                 onRetry()
             }
@@ -174,82 +172,25 @@ private struct CheckoutContentView: View {
     fileprivate let example: ExampleConfig
     fileprivate let clientToken: String
     fileprivate let settings: PrimerSettings
-    fileprivate let apiVersion: PrimerApiVersion
-    fileprivate let configuredClientSession: ClientSessionRequestBody?
     fileprivate let onCompletion: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Example info header
             ExampleInfoHeader(example: example)
-            
-            // Choose integration approach based on example type
-            if isDefaultExample {
-                // Direct SwiftUI integration - now completely automatic!
-                directSwiftUIContent
-            } else {
-                // Customized examples - show the actual CheckoutComponents with customization
-                customizedSwiftUIContent
-            }
-        }
-    }
-    
-    private var isDefaultExample: Bool {
-        example.customization == nil
-    }
-    
-    @ViewBuilder
-    private var directSwiftUIContent: some View {
-        // Simple, clean integration - PrimerCheckout handles everything automatically!
-        VStack {
-            Text("Pure SwiftUI PrimerCheckout")
-                .font(.headline)
-                .padding()
-            
-            Text("Client Token: \(clientToken.prefix(20))...")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.bottom)
-            
-            // This is all the merchant needs to do - PrimerCheckout handles SDK initialization automatically!
-            PrimerCheckout(
-                clientToken: clientToken,
-                primerSettings: settings,
-                onCompletion: onCompletion
-            )
-        }
-    }
-    
-    @ViewBuilder
-    private var customizedSwiftUIContent: some View {
-        // Route to the actual showcase demo files for customized examples
-        switch example.name {
-        case "Single Field Customisation":
-            SingleFieldCustomisationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Step-by-Step Navigation":
-            SingleInputFieldDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Mixed Components":
-            MixedComponentsDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Dynamic Layouts":
-            CustomCardFormLayoutDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Property Reassignment":
-            PropertyReassignmentDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Conditional Customization":
-            RuntimeCustomizationDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        case "Custom Payment Selection Screen":
-            CustomScreenPaymentSelectionDemo(settings: settings, apiVersion: apiVersion, clientSession: configuredClientSession)
-        default:
-            // Fallback to default implementation
+
+            // Simple, clean integration - PrimerCheckout handles everything automatically!
             VStack {
-                Text("\(example.name) Demo")
+                Text("Pure SwiftUI PrimerCheckout")
                     .font(.headline)
                     .padding()
-                
-                Text("Custom demo implementation")
-                    .font(.subheadline)
+
+                Text("Client Token: \(clientToken.prefix(20))...")
+                    .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.bottom)
-                
+
+                // This is all the merchant needs to do - PrimerCheckout handles SDK initialization automatically!
                 PrimerCheckout(
                     clientToken: clientToken,
                     primerSettings: settings,
@@ -258,14 +199,14 @@ private struct CheckoutContentView: View {
             }
         }
     }
-    
+
     // MARK: - Example Info Header
-    
+
     @available(iOS 15.0, *)
     private struct ExampleInfoHeader: View {
         fileprivate let example: ExampleConfig
         @State private var isExpanded = false
-        
+
         var body: some View {
             VStack(spacing: 0) {
                 Button(action: { isExpanded.toggle() }) {
@@ -274,14 +215,14 @@ private struct CheckoutContentView: View {
                             Text(example.description)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            
+
                             Text("Payment Methods: \(example.paymentMethods.joined(separator: ", "))")
                                 .font(.caption)
                                 .foregroundColor(.blue)
                         }
-                        
+
                         Spacer()
-                        
+
                         Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -290,26 +231,6 @@ private struct CheckoutContentView: View {
                     .background(Color(.systemGroupedBackground))
                 }
                 .buttonStyle(.plain)
-                
-                if isExpanded {
-                    VStack(alignment: .leading, spacing: 8) {
-                        if let customization = example.customization {
-                            HStack {
-                                Text("Style Configuration:")
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                Text(String(describing: customization))
-                                    .font(.caption)
-                                    .foregroundColor(.green)
-                                Spacer()
-                            }
-                        }
-                        
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                    .background(Color(.systemGroupedBackground))
-                }
             }
             .overlay(
                 Rectangle()

@@ -92,7 +92,7 @@ CheckoutComponents supports separate theme configuration:
 
 ```swift
 // Create a custom theme
-let customTheme = PrimerTheme()
+let customTheme = PrimerCheckoutTheme()
 customTheme.colorScheme.primaryColor = .purple
 customTheme.cornerRadius = 12
 
