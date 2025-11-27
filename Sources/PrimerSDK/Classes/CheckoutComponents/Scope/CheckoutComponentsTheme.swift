@@ -31,22 +31,34 @@ public struct PrimerCheckoutTheme {
     /// Optional size token overrides
     public let sizes: SizeOverrides?
 
+    /// Optional typography token overrides
+    public let typography: TypographyOverrides?
+
+    /// Optional border width token overrides
+    public let borderWidth: BorderWidthOverrides?
+
     /// Creates a new theme configuration with optional overrides.
     /// - Parameters:
     ///   - colors: Color token overrides. Default: nil (uses internal defaults)
     ///   - radius: Radius token overrides. Default: nil (uses internal defaults)
     ///   - spacing: Spacing token overrides. Default: nil (uses internal defaults)
     ///   - sizes: Size token overrides. Default: nil (uses internal defaults)
+    ///   - typography: Typography token overrides. Default: nil (uses internal defaults)
+    ///   - borderWidth: Border width token overrides. Default: nil (uses internal defaults)
     public init(
         colors: ColorOverrides? = nil,
         radius: RadiusOverrides? = nil,
         spacing: SpacingOverrides? = nil,
-        sizes: SizeOverrides? = nil
+        sizes: SizeOverrides? = nil,
+        typography: TypographyOverrides? = nil,
+        borderWidth: BorderWidthOverrides? = nil
     ) {
         self.colors = colors
         self.radius = radius
         self.spacing = spacing
         self.sizes = sizes
+        self.typography = typography
+        self.borderWidth = borderWidth
     }
 }
 
@@ -106,6 +118,23 @@ public struct ColorOverrides {
     public var primerColorBorderOutlinedDisabled: Color?
     public var primerColorBorderOutlinedError: Color?
     public var primerColorBorderOutlinedSelected: Color?
+    public var primerColorBorderOutlinedLoading: Color?
+
+    // MARK: Border Transparent Colors
+
+    public var primerColorBorderTransparentDefault: Color?
+    public var primerColorBorderTransparentHover: Color?
+    public var primerColorBorderTransparentActive: Color?
+    public var primerColorBorderTransparentFocus: Color?
+    public var primerColorBorderTransparentDisabled: Color?
+    public var primerColorBorderTransparentSelected: Color?
+
+    // MARK: Icon Colors
+
+    public var primerColorIconPrimary: Color?
+    public var primerColorIconDisabled: Color?
+    public var primerColorIconNegative: Color?
+    public var primerColorIconPositive: Color?
 
     // MARK: Other
 
@@ -144,6 +173,17 @@ public struct ColorOverrides {
         primerColorBorderOutlinedDisabled: Color? = nil,
         primerColorBorderOutlinedError: Color? = nil,
         primerColorBorderOutlinedSelected: Color? = nil,
+        primerColorBorderOutlinedLoading: Color? = nil,
+        primerColorBorderTransparentDefault: Color? = nil,
+        primerColorBorderTransparentHover: Color? = nil,
+        primerColorBorderTransparentActive: Color? = nil,
+        primerColorBorderTransparentFocus: Color? = nil,
+        primerColorBorderTransparentDisabled: Color? = nil,
+        primerColorBorderTransparentSelected: Color? = nil,
+        primerColorIconPrimary: Color? = nil,
+        primerColorIconDisabled: Color? = nil,
+        primerColorIconNegative: Color? = nil,
+        primerColorIconPositive: Color? = nil,
         primerColorFocus: Color? = nil,
         primerColorLoader: Color? = nil
     ) {
@@ -177,6 +217,17 @@ public struct ColorOverrides {
         self.primerColorBorderOutlinedDisabled = primerColorBorderOutlinedDisabled
         self.primerColorBorderOutlinedError = primerColorBorderOutlinedError
         self.primerColorBorderOutlinedSelected = primerColorBorderOutlinedSelected
+        self.primerColorBorderOutlinedLoading = primerColorBorderOutlinedLoading
+        self.primerColorBorderTransparentDefault = primerColorBorderTransparentDefault
+        self.primerColorBorderTransparentHover = primerColorBorderTransparentHover
+        self.primerColorBorderTransparentActive = primerColorBorderTransparentActive
+        self.primerColorBorderTransparentFocus = primerColorBorderTransparentFocus
+        self.primerColorBorderTransparentDisabled = primerColorBorderTransparentDisabled
+        self.primerColorBorderTransparentSelected = primerColorBorderTransparentSelected
+        self.primerColorIconPrimary = primerColorIconPrimary
+        self.primerColorIconDisabled = primerColorIconDisabled
+        self.primerColorIconNegative = primerColorIconNegative
+        self.primerColorIconPositive = primerColorIconPositive
         self.primerColorFocus = primerColorFocus
         self.primerColorLoader = primerColorLoader
     }
@@ -298,5 +349,101 @@ public struct SizeOverrides {
         self.primerSizeXxlarge = primerSizeXxlarge
         self.primerSizeXxxlarge = primerSizeXxxlarge
         self.primerSizeBase = primerSizeBase
+    }
+}
+
+// MARK: - TypographyOverrides
+
+/// Optional typography token overrides for customizing text styles.
+@available(iOS 15.0, *)
+public struct TypographyOverrides {
+
+    // MARK: - Typography Style
+
+    /// Individual typography style configuration.
+    public struct TypographyStyle {
+        /// Custom font family name (e.g., "Inter")
+        public var font: String?
+        /// Letter spacing in points
+        public var letterSpacing: CGFloat?
+        /// Font weight
+        public var weight: Font.Weight?
+        /// Font size in points
+        public var size: CGFloat?
+        /// Line height in points
+        public var lineHeight: CGFloat?
+
+        /// Creates a typography style with optional properties.
+        public init(
+            font: String? = nil,
+            letterSpacing: CGFloat? = nil,
+            weight: Font.Weight? = nil,
+            size: CGFloat? = nil,
+            lineHeight: CGFloat? = nil
+        ) {
+            self.font = font
+            self.letterSpacing = letterSpacing
+            self.weight = weight
+            self.size = size
+            self.lineHeight = lineHeight
+        }
+    }
+
+    // MARK: - Token Properties
+
+    /// Title extra large: Inter, -0.6 letter spacing, weight 550, size 24, line height 32
+    public var titleXlarge: TypographyStyle?
+
+    /// Title large: Inter, -0.2 letter spacing, weight 550, size 16, line height 20
+    public var titleLarge: TypographyStyle?
+
+    /// Body large: Inter, -0.2 letter spacing, weight 400, size 16, line height 20
+    public var bodyLarge: TypographyStyle?
+
+    /// Body medium: Inter, 0 letter spacing, weight 400, size 14, line height 20
+    public var bodyMedium: TypographyStyle?
+
+    /// Body small: Inter, 0 letter spacing, weight 400, size 12, line height 16
+    public var bodySmall: TypographyStyle?
+
+    /// Creates typography overrides with all optional properties.
+    public init(
+        titleXlarge: TypographyStyle? = nil,
+        titleLarge: TypographyStyle? = nil,
+        bodyLarge: TypographyStyle? = nil,
+        bodyMedium: TypographyStyle? = nil,
+        bodySmall: TypographyStyle? = nil
+    ) {
+        self.titleXlarge = titleXlarge
+        self.titleLarge = titleLarge
+        self.bodyLarge = bodyLarge
+        self.bodyMedium = bodyMedium
+        self.bodySmall = bodySmall
+    }
+}
+
+// MARK: - BorderWidthOverrides
+
+/// Optional border width token overrides.
+@available(iOS 15.0, *)
+public struct BorderWidthOverrides {
+    /// Internal: primerBorderWidthThin (default: 1)
+    public var primerBorderWidthThin: CGFloat?
+
+    /// Internal: primerBorderWidthMedium (default: 2)
+    public var primerBorderWidthMedium: CGFloat?
+
+    /// Internal: primerBorderWidthThick (default: 3)
+    public var primerBorderWidthThick: CGFloat?
+
+    /// Creates border width overrides with all optional properties.
+    public init(
+        primerBorderWidthThin: CGFloat? = nil,
+        primerBorderWidthMedium: CGFloat? = nil,
+        primerBorderWidthThick: CGFloat? = nil
+    ) {
+        self.primerBorderWidthThin = primerBorderWidthThin
+        self.primerBorderWidthMedium = primerBorderWidthMedium
+        self.primerBorderWidthThick = primerBorderWidthThick
     }
 }

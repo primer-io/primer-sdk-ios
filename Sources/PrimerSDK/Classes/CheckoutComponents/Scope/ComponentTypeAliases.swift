@@ -8,22 +8,22 @@ import SwiftUI
 
 // MARK: - Component Type Aliases
 
-/// Basic UI component returning type-erased view
+/// Basic UI component returning any View (wrapped in AnyView at usage site internally)
 @available(iOS 15.0, *)
-public typealias Component = () -> AnyView
+public typealias Component = () -> any View
 
 /// Container component that wraps content with custom presentation
 @available(iOS 15.0, *)
-public typealias ContainerComponent = (@escaping () -> AnyView) -> AnyView
+public typealias ContainerComponent = (@escaping () -> any View) -> any View
 
 /// Error display component receiving error message
 @available(iOS 15.0, *)
-public typealias ErrorComponent = (String) -> AnyView
+public typealias ErrorComponent = (String) -> any View
 
 /// Payment method item customization receiving method data
 @available(iOS 15.0, *)
-public typealias PaymentMethodItemComponent = (CheckoutPaymentMethod) -> AnyView
+public typealias PaymentMethodItemComponent = (CheckoutPaymentMethod) -> any View
 
 /// Country item customization receiving country data
 @available(iOS 15.0, *)
-public typealias CountryItemComponent = (PrimerCountry) -> AnyView
+public typealias CountryItemComponent = (PrimerCountry) -> any View

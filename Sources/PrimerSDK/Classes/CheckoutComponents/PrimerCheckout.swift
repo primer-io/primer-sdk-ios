@@ -147,7 +147,7 @@ public struct PrimerCheckout: View {
 
         // Apply custom container if provided, otherwise pass through unchanged
         if let container = components.container {
-            container { AnyView(checkoutContent) }
+            AnyView(container { AnyView(checkoutContent) })
         } else {
             AnyView(checkoutContent)
         }
@@ -178,6 +178,7 @@ struct InternalCheckout: View {
     enum InitializationState {
         case idle
         case initializing
+        case retrying
         case initialized
         case failed(PrimerError)
     }
@@ -219,6 +220,8 @@ struct InternalCheckout: View {
             switch initializationState {
             case .idle, .initializing:
                 splashContent
+            case .retrying:
+                loadingContent
             case .initialized:
                 if let checkoutScope {
                     CheckoutScopeObserver(
@@ -249,7 +252,7 @@ struct InternalCheckout: View {
     @ViewBuilder
     private var splashContent: some View {
         if let customSplash = components.checkout.splash {
-            customSplash()
+            AnyView(customSplash())
         } else {
             SplashScreen()
         }
@@ -258,23 +261,26 @@ struct InternalCheckout: View {
     @ViewBuilder
     private var loadingContent: some View {
         if let customLoading = components.checkout.loading {
-            customLoading()
-        } else if let customSplash = components.checkout.splash {
-            // Fall back to splash if loading not provided
-            customSplash()
+            AnyView(customLoading())
         } else {
-            SplashScreen()
+            VStack {
+                Spacer()
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
     @ViewBuilder
     private func errorContent(error: PrimerError) -> some View {
         if let customError = components.checkout.error.content {
-            customError(error.localizedDescription)
+            AnyView(customError(error.localizedDescription))
         } else {
             SDKInitializationErrorView(error: error) {
                 Task {
-                    await initializeSDK()
+                    await initializeSDK(isRetry: true)
                 }
             }
         }
@@ -282,10 +288,17 @@ struct InternalCheckout: View {
 
     // MARK: - Private Methods
 
-    private func initializeSDK() async {
-        guard case .idle = initializationState else { return }
+    private func initializeSDK(isRetry: Bool = false) async {
+        switch initializationState {
+        case .idle:
+            break
+        case .failed:
+            break
+        default:
+            return
+        }
 
-        initializationState = .initializing
+        initializationState = isRetry ? .retrying : .initializing
 
         do {
             let result = try await sdkInitializer.initialize()

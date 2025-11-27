@@ -71,6 +71,51 @@ final class DesignTokensManager: ObservableObject {
         return tokens?[keyPath: keyPath] ?? 0
     }
 
+    /// Returns a border width value, checking merchant overrides first, then internal tokens.
+    func borderWidth(
+        _ keyPath: KeyPath<DesignTokens, CGFloat>,
+        override overrideKeyPath: KeyPath<BorderWidthOverrides, CGFloat?>? = nil
+    ) -> CGFloat {
+        if let overrideKeyPath,
+           let borderWidthOverrides = themeOverrides?.borderWidth,
+           let overrideValue = borderWidthOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 1
+    }
+
+    /// Returns a typography style, checking merchant overrides first.
+    /// - Parameter overrideKeyPath: Key path to the merchant override typography property
+    /// - Returns: The typography style from merchant override if set, otherwise nil
+    func typography(override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?) -> TypographyOverrides.TypographyStyle? {
+        guard let overrideKeyPath,
+              let typographyOverrides = themeOverrides?.typography else {
+            return nil
+        }
+        return typographyOverrides[keyPath: overrideKeyPath]
+    }
+
+    /// Creates a Font using typography overrides or defaults.
+    /// - Parameters:
+    ///   - overrideKeyPath: Key path to the merchant override typography property
+    ///   - defaultSize: Default font size if no override is set
+    ///   - defaultWeight: Default font weight if no override is set
+    /// - Returns: A configured Font
+    func font(
+        override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?,
+        defaultSize: CGFloat,
+        defaultWeight: Font.Weight = .regular
+    ) -> Font {
+        let style = typography(override: overrideKeyPath)
+        let size = style?.size ?? defaultSize
+        let weight = style?.weight ?? defaultWeight
+
+        if let fontName = style?.font {
+            return Font.custom(fontName, size: size).weight(weight)
+        }
+        return Font.system(size: size, weight: weight)
+    }
+
     // MARK: - Token Loading
 
     /// Loads and merges the design token JSON files based on the current color scheme.

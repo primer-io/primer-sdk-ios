@@ -14,8 +14,12 @@ extension PrimerComponents {
     /// Configuration for checkout flow screens and navigation.
     public struct Checkout {
 
-        /// Custom splash screen component shown during initialization and loading.
+        /// Custom splash screen component shown during SDK initialization.
         public let splash: Component?
+
+        /// Custom loading screen component shown during loading operations (after initialization).
+        /// If not provided, falls back to splash screen, then SDK default.
+        public let loading: Component?
 
         /// Custom success screen component
         public let success: Component?
@@ -28,17 +32,20 @@ extension PrimerComponents {
 
         /// Creates a new checkout configuration.
         /// - Parameters:
-        ///   - splash: Custom splash screen shown during initialization and loading. Default: nil (uses SDK default)
+        ///   - splash: Custom splash screen shown during SDK initialization. Default: nil (uses SDK default)
+        ///   - loading: Custom loading screen shown during loading operations. Default: nil (falls back to splash, then SDK default)
         ///   - success: Custom success screen. Default: nil (uses SDK default)
         ///   - error: Error screen configuration. Default: Error()
         ///   - navigation: Navigation callbacks. Default: Navigation()
         public init(
             splash: Component? = nil,
+            loading: Component? = nil,
             success: Component? = nil,
             error: Error = Error(),
             navigation: Navigation = Navigation()
         ) {
             self.splash = splash
+            self.loading = loading
             self.success = success
             self.error = error
             self.navigation = navigation

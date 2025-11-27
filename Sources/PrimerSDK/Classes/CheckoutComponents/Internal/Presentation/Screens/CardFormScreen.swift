@@ -119,7 +119,7 @@ struct CardFormScreen: View, LogReporter {
     private var dynamicFieldsSection: some View {
         // First check components configuration
         if let customScreen = cardFormConfig.screen {
-            customScreen()
+            AnyView(customScreen())
         }
         // Then check legacy scope configuration
         else if let customScreen = scope.screen {
@@ -137,7 +137,7 @@ struct CardFormScreen: View, LogReporter {
     private var cardFieldsSection: some View {
         // First check components configuration
         if let customContent = cardFormConfig.cardDetails.content {
-            customContent()
+            AnyView(customContent())
         }
         // Then check legacy scope configuration
         else if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
@@ -183,7 +183,7 @@ struct CardFormScreen: View, LogReporter {
         {
             // First check components configuration
             if let customContent = cardFormConfig.billingAddress.content {
-                customContent()
+                AnyView(customContent())
             }
             // Then check legacy scope configuration
             else if let customSection = defaultScope.billingAddressSection {
@@ -226,7 +226,7 @@ struct CardFormScreen: View, LogReporter {
     private var submitButtonSection: some View {
         // First check components configuration
         if let customContent = cardFormConfig.submitButton.content {
-            customContent()
+            AnyView(customContent())
                 .onTapGesture {
                     if cardFormState.isValid, !cardFormState.isLoading {
                         submitAction()
@@ -427,7 +427,7 @@ struct CardFormScreen: View, LogReporter {
         case .cardNumber:
             // First check components configuration
             if let customField = cardFormConfig.cardDetails.cardNumber {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .cardNumber)
             }
             // Then check legacy scope configuration
@@ -450,7 +450,7 @@ struct CardFormScreen: View, LogReporter {
         case .expiryDate:
             // First check components configuration
             if let customField = cardFormConfig.cardDetails.expiryDate {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .expiryDate)
             }
             // Then check legacy scope configuration
@@ -471,7 +471,7 @@ struct CardFormScreen: View, LogReporter {
         case .cvv:
             // First check components configuration
             if let customField = cardFormConfig.cardDetails.cvv {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .cvv)
             }
             // Then check legacy scope configuration
@@ -493,7 +493,7 @@ struct CardFormScreen: View, LogReporter {
         case .cardholderName:
             // First check components configuration
             if let customField = cardFormConfig.cardDetails.cardholderName {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .cardholderName)
             }
             // Then check legacy scope configuration
@@ -514,7 +514,7 @@ struct CardFormScreen: View, LogReporter {
         case .postalCode:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.postalCode {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .postalCode)
             }
             // Then check legacy scope configuration
@@ -535,7 +535,7 @@ struct CardFormScreen: View, LogReporter {
         case .countryCode:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.countryCode {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .countryCode)
             }
             // Then check legacy scope configuration
@@ -556,7 +556,7 @@ struct CardFormScreen: View, LogReporter {
         case .city:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.city {
-                customField()
+                AnyView(customField())
                     .focused($focusedField, equals: .city)
             }
             // Then check legacy scope configuration
@@ -577,7 +577,7 @@ struct CardFormScreen: View, LogReporter {
         case .state:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.state {
-                customField()
+                AnyView(customField())
             }
             // Then check legacy scope configuration
             else if let customField = (scope as? DefaultCardFormScope)?.stateField {
@@ -594,7 +594,7 @@ struct CardFormScreen: View, LogReporter {
         case .addressLine1:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.addressLine1 {
-                customField()
+                AnyView(customField())
             }
             // Then check legacy scope configuration
             else if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
@@ -613,7 +613,7 @@ struct CardFormScreen: View, LogReporter {
         case .addressLine2:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.addressLine2 {
-                customField()
+                AnyView(customField())
             }
             // Then check legacy scope configuration
             else if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
@@ -645,7 +645,7 @@ struct CardFormScreen: View, LogReporter {
         case .firstName:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.firstName {
-                customField()
+                AnyView(customField())
             }
             // Then check legacy scope configuration
             else if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
@@ -663,7 +663,7 @@ struct CardFormScreen: View, LogReporter {
         case .lastName:
             // First check components configuration
             if let customField = cardFormConfig.billingAddress.lastName {
-                customField()
+                AnyView(customField())
             }
             // Then check legacy scope configuration
             else if let customField = (scope as? DefaultCardFormScope)?.lastNameField {

@@ -113,7 +113,9 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     private var paymentMethodsList: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if selectionState.paymentMethods.isEmpty {
+                if selectionState.isLoading {
+                    loadingView
+                } else if selectionState.paymentMethods.isEmpty {
                     emptyStateView
                 } else {
                     paymentMethodsContent
@@ -123,6 +125,22 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
             errorSection
         }
         .background(CheckoutColors.background(tokens: tokens))
+    }
+
+    @MainActor
+    @ViewBuilder
+    private var loadingView: some View {
+        if let customLoading = components.checkout.loading {
+            AnyView(customLoading())
+        } else {
+            VStack {
+                Spacer()
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, minHeight: 200)
+        }
     }
 
     @MainActor
@@ -284,14 +302,14 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
         // First check components configuration
         if let customPaymentMethodItem = components.paymentMethodSelection.paymentMethodItem {
-            customPaymentMethodItem(method)
+            AnyView(customPaymentMethodItem(method))
                 .onTapGesture {
                     scope.onPaymentMethodSelected(paymentMethod: method)
                 }
         }
         // Then check legacy scope configuration
         else if let customPaymentMethodItem = scope.paymentMethodItem {
-            customPaymentMethodItem(method)
+            AnyView(customPaymentMethodItem(method))
                 .onTapGesture {
                     scope.onPaymentMethodSelected(paymentMethod: method)
                 }

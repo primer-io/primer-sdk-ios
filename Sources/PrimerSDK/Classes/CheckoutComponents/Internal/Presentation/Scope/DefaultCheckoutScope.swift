@@ -101,6 +101,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     // MARK: - Services
 
     private let navigator: CheckoutNavigator
+    private var configurationService: ConfigurationService?
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
@@ -198,6 +199,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             }
 
             let configService = try await container.resolve(ConfigurationService.self)
+            configurationService = configService
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge(configurationService: configService)
 
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -237,7 +239,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
-                updateState(.ready)
+                // Get amount and currency from configuration
+                let totalAmount = configurationService?.amount ?? 0
+                let currencyCode = configurationService?.currency?.code ?? ""
+                updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
                 if availablePaymentMethods.count == 1,
                    let singlePaymentMethod = availablePaymentMethods.first {
@@ -594,7 +599,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
 
         if let success = components.checkout.success {
-            successScreen = { _ in success() }
+            successScreen = { _ in AnyView(success()) }
         }
 
         if let errorContent = components.checkout.error.content {
