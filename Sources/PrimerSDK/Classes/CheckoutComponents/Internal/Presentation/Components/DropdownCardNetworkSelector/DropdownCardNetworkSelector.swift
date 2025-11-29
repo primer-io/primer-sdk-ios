@@ -62,47 +62,47 @@ struct DropdownCardNetworkSelector: View {
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-private struct DropdownCardNetworkSelectorPreviewWrapper: View {
-    let networks: [CardNetwork]
-    @State private var selected: CardNetwork
+    @available(iOS 15.0, *)
+    private struct DropdownCardNetworkSelectorPreviewWrapper: View {
+        let networks: [CardNetwork]
+        @State private var selected: CardNetwork
 
-    init(networks: [CardNetwork]) {
-        self.networks = networks
-        _selected = State(initialValue: networks.first ?? .unknown)
+        init(networks: [CardNetwork]) {
+            self.networks = networks
+            _selected = State(initialValue: networks.first ?? .unknown)
+        }
+
+        var body: some View {
+            DropdownCardNetworkSelector(
+                availableNetworks: networks,
+                selectedNetwork: $selected,
+                onNetworkSelected: { network in
+                    print("Selected: \(network.displayName)")
+                }
+            )
+        }
     }
 
-    var body: some View {
-        DropdownCardNetworkSelector(
-            availableNetworks: networks,
-            selectedNetwork: $selected,
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
+    @available(iOS 15.0, *)
+    #Preview("Light Mode - Two Networks") {
+        DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard])
+            .padding()
+            .environment(\.designTokens, MockDesignTokens.light)
     }
-}
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - Two Networks") {
-    DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard])
-        .padding()
-        .environment(\.designTokens, MockDesignTokens.light)
-}
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode - Two Networks") {
+        DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard])
+            .padding()
+            .background(Color.black)
+            .environment(\.designTokens, MockDesignTokens.dark)
+            .preferredColorScheme(.dark)
+    }
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode - Two Networks") {
-    DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard])
-        .padding()
-        .background(Color.black)
-        .environment(\.designTokens, MockDesignTokens.dark)
-        .preferredColorScheme(.dark)
-}
-
-@available(iOS 15.0, *)
-#Preview("Light Mode - Three Networks") {
-    DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard, .cartesBancaires])
-        .padding()
-        .environment(\.designTokens, MockDesignTokens.light)
-}
+    @available(iOS 15.0, *)
+    #Preview("Light Mode - Three Networks") {
+        DropdownCardNetworkSelectorPreviewWrapper(networks: [.visa, .masterCard, .cartesBancaires])
+            .padding()
+            .environment(\.designTokens, MockDesignTokens.light)
+    }
 #endif

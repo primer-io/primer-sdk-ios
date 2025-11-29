@@ -4,13 +4,12 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
-import UIKit
 @testable import PrimerSDK
+import UIKit
+import XCTest
 
 @available(iOS 15.0, *)
 final class AccessibilityAnnouncementServiceTests: XCTestCase {
-
     var service: AccessibilityAnnouncementService!
 
     override func setUp() {
@@ -88,7 +87,7 @@ final class AccessibilityAnnouncementServiceTests: XCTestCase {
         let queue = DispatchQueue(label: "test.concurrent", attributes: .concurrent)
 
         // When: Making concurrent announcements
-        for i in 0..<10 {
+        for i in 0 ..< 10 {
             queue.async {
                 self.service.announceError("Error \(i)")
                 self.service.announceStateChange("State \(i)")
@@ -108,7 +107,7 @@ final class AccessibilityAnnouncementServiceTests: XCTestCase {
 
         // When: Measuring announcement performance
         measure {
-            for _ in 0..<100 {
+            for _ in 0 ..< 100 {
                 self.service.announceError(message)
             }
         }

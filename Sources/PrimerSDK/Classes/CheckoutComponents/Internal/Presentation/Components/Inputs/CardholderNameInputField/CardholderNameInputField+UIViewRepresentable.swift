@@ -37,7 +37,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != cardholderName {
             textField.text = cardholderName
         }
@@ -71,10 +71,10 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
-            self._cardholderName = cardholderName
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _cardholderName = cardholderName
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.scope = scope
         }
 
@@ -86,7 +86,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -95,7 +95,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -107,7 +107,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = cardholderName
 
             guard let textRange = Range(range, in: currentText) else { return false }
@@ -168,7 +168,6 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
                     scope.updateCardholderNameValidationState(false)
                 }
             }
-
         }
     }
 }

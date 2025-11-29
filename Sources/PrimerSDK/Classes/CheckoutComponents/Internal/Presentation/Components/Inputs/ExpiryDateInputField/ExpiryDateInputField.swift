@@ -100,30 +100,32 @@ struct ExpiryDateInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    ExpiryDateInputField(
-        label: "Expiry Date",
-        placeholder: "MM / YY",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    ExpiryDateInputField(
-        label: "Expiry Date",
-        placeholder: "MM / YY",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        ExpiryDateInputField(
+            label: "Expiry Date",
+            placeholder: "MM / YY",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        ExpiryDateInputField(
+            label: "Expiry Date",
+            placeholder: "MM / YY",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

@@ -7,7 +7,6 @@
 import Foundation
 
 enum AccessibilityIdentifiers {
-
     enum CardForm {
         static let container = "checkout_components_card_form_container"
         static let cardNumberField = "checkout_components_card_form_card_number_field"

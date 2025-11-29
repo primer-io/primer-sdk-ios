@@ -47,7 +47,6 @@ protocol RulesFactory {
 
 /// Default implementation of RulesFactory
 final class DefaultRulesFactory: RulesFactory {
-
     func createCardNumberRule(allowedCardNetworks: [CardNetwork]? = nil) -> CardNumberRule {
         // Use provided networks or default to allowed networks from client session
         let networks = allowedCardNetworks ?? [CardNetwork].allowedCardNetworks
@@ -55,44 +54,44 @@ final class DefaultRulesFactory: RulesFactory {
     }
 
     func createExpiryDateRule() -> ExpiryDateRule {
-        return ExpiryDateRule()
+        ExpiryDateRule()
     }
 
     func createCVVRule(cardNetwork: CardNetwork) -> CVVRule {
-        return CVVRule(cardNetwork: cardNetwork)
+        CVVRule(cardNetwork: cardNetwork)
     }
 
     func createCardholderNameRule() -> CardholderNameRule {
-        return CardholderNameRule()
+        CardholderNameRule()
     }
 
     // MARK: - Billing Address Validation Rules Implementation
 
     func createFirstNameRule() -> FirstNameRule {
-        return FirstNameRule()
+        FirstNameRule()
     }
 
     func createLastNameRule() -> LastNameRule {
-        return LastNameRule()
+        LastNameRule()
     }
 
     func createEmailValidationRule() -> EmailValidationRule {
-        return EmailValidationRule()
+        EmailValidationRule()
     }
 
     func createPhoneNumberValidationRule() -> PhoneNumberValidationRule {
-        return PhoneNumberValidationRule()
+        PhoneNumberValidationRule()
     }
 
     func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool = true) -> AddressFieldRule {
-        return AddressFieldRule(inputType: inputType, isRequired: isRequired)
+        AddressFieldRule(inputType: inputType, isRequired: isRequired)
     }
 
     func createBillingPostalCodeRule() -> BillingPostalCodeRule {
-        return BillingPostalCodeRule()
+        BillingPostalCodeRule()
     }
 
     func createBillingCountryCodeRule() -> BillingCountryCodeRule {
-        return BillingCountryCodeRule()
+        BillingCountryCodeRule()
     }
 }

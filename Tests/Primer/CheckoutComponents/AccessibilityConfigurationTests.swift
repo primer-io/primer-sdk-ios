@@ -4,13 +4,12 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
-import SwiftUI
 @testable import PrimerSDK
+import SwiftUI
+import XCTest
 
 @available(iOS 15.0, *)
 final class AccessibilityConfigurationTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testInitWithAllProperties() {

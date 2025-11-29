@@ -9,7 +9,6 @@ import Foundation
 /// Repository protocol for accessing the headless SDK functionality.
 /// This abstracts the PrimerHeadlessUniversalCheckout SDK.
 protocol HeadlessRepository {
-
     /// Fetches available payment methods.
     /// - Returns: Array of available payment methods.
     func getPaymentMethods() async throws -> [InternalPaymentMethod]

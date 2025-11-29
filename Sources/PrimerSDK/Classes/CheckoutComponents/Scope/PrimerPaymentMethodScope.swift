@@ -4,15 +4,14 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.
 /// This protocol enables unified payment method handling with type-safe scope associations.
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerPaymentMethodScope: AnyObject {
-
     /// The type of state this scope manages
     associatedtype State: Equatable
 
@@ -47,15 +46,14 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 // MARK: - Default Implementations
 
 @available(iOS 15.0, *)
-extension PrimerPaymentMethodScope {
-
+public extension PrimerPaymentMethodScope {
     /// Default implementation navigates back by canceling the current flow.
-    public func onBack() {
+    func onBack() {
         cancel()
     }
 
     /// Default implementation dismisses by canceling the current flow.
-    public func onDismiss() {
+    func onDismiss() {
         cancel()
     }
 }
@@ -66,7 +64,6 @@ extension PrimerPaymentMethodScope {
 /// Enables self-registration and dynamic scope creation for different payment methods.
 @available(iOS 15.0, *)
 public protocol PaymentMethodProtocol {
-
     /// The type of scope this payment method creates
     associatedtype ScopeType: PrimerPaymentMethodScope
 
@@ -109,7 +106,6 @@ public protocol PaymentMethodProtocol {
 @available(iOS 15.0, *)
 @MainActor
 class PaymentMethodRegistry: LogReporter {
-
     /// Type-erased payment method creator function
     private typealias ScopeCreator = @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope
 
@@ -227,7 +223,7 @@ class PaymentMethodRegistry: LogReporter {
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
     ) throws -> T? {
-        return try createScope(for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
+        try createScope(for: methodType.rawValue, checkoutScope: checkoutScope, diContainer: diContainer)
     }
 
     /// Returns all registered payment method types

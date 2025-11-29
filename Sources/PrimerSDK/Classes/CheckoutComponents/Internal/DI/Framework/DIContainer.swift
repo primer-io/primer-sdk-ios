@@ -15,14 +15,14 @@ public final class DIContainer: LogReporter {
     /// Isolated actor for thread-safe container operations
     private actor ContainerStorage {
         var container: (any ContainerProtocol)?
-        var scopedContainers: [String: (any ContainerProtocol)] = [:]
+        var scopedContainers: [String: any ContainerProtocol] = [:]
 
         init(container: (any ContainerProtocol)? = nil) {
             self.container = container
         }
 
         func getContainer() -> (any ContainerProtocol)? {
-            return container
+            container
         }
 
         func setContainer(_ newContainer: (any ContainerProtocol)?) {
@@ -30,10 +30,10 @@ public final class DIContainer: LogReporter {
         }
 
         func getScopedContainer(for scopeId: String) -> (any ContainerProtocol)? {
-            return scopedContainers[scopeId]
+            scopedContainers[scopeId]
         }
 
-        func setScopedContainer(_ container: (any ContainerProtocol), for scopeId: String) {
+        func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) {
             scopedContainers[scopeId] = container
         }
 
@@ -48,7 +48,7 @@ public final class DIContainer: LogReporter {
     /// Access to the current container (async)
     public static var current: (any ContainerProtocol)? {
         get async {
-            return await shared.storage.getContainer()
+            await shared.storage.getContainer()
         }
     }
 
@@ -69,7 +69,7 @@ public final class DIContainer: LogReporter {
     /// Private initializer for singleton
     private init() {
         let container = Container()
-        self.storage = ContainerStorage(container: container)
+        storage = ContainerStorage(container: container)
 
         // Initialize cached container on MainActor to prevent race conditions
         Task { @MainActor in
@@ -79,7 +79,7 @@ public final class DIContainer: LogReporter {
 
     /// Create a new container instance
     public static func createContainer() -> any ContainerProtocol {
-        return Container()
+        Container()
     }
 
     /// Set the global container instance
@@ -149,7 +149,7 @@ public final class DIContainer: LogReporter {
 
     /// Get a scoped container
     public static func scopedContainer(for scopeId: String) async -> (any ContainerProtocol)? {
-        return await shared.storage.getScopedContainer(for: scopeId)
+        await shared.storage.getScopedContainer(for: scopeId)
     }
 
     /// Remove a scoped container
@@ -161,7 +161,7 @@ public final class DIContainer: LogReporter {
     private static func registerDependencies(in container: Container) async {
         Task {
             _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
-                return container
+                container
             }
         }
     }
@@ -181,14 +181,11 @@ public final class DIContainer: LogReporter {
     }
 
     /// Register mock repositories
-    private static func registerMockRepositories(_ container: Container) async {
-    }
+    private static func registerMockRepositories(_: Container) async {}
 
     /// Register mock use cases
-    private static func registerMockUseCases(_ container: Container) async {
-    }
+    private static func registerMockUseCases(_: Container) async {}
 
     /// Register mock services
-    private static func registerMockServices(_ container: Container) async {
-    }
+    private static func registerMockServices(_: Container) async {}
 }

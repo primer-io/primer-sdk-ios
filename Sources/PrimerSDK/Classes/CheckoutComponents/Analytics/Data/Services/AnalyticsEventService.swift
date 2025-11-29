@@ -10,7 +10,6 @@ import UIKit
 /// Core analytics event service responsible for orchestrating event tracking.
 /// Thread-safe actor that coordinates payload building, buffering, and network transmission.
 actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogReporter {
-
     // MARK: - Dependencies
 
     private let payloadBuilder: AnalyticsPayloadBuilder
@@ -55,7 +54,7 @@ actor AnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol, LogRepo
     // MARK: - AnalyticsServiceProtocol
 
     func initialize(config: AnalyticsSessionConfig) async {
-        self.sessionConfig = config
+        sessionConfig = config
 
         // Flush any events that arrived before initialization completed
         let bufferedEvents = await eventBuffer.flush()

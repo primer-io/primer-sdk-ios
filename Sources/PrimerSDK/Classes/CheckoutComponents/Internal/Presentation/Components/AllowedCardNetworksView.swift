@@ -8,7 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct AllowedCardNetworksView: View, LogReporter {
-
     // MARK: - Properties
 
     let allowedCardNetworks: [CardNetwork]
@@ -38,5 +37,4 @@ struct AllowedCardNetworksView: View, LogReporter {
             .accessibilityHidden(true)
         }
     }
-
 }

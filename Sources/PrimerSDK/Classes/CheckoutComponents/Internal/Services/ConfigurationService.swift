@@ -48,6 +48,6 @@ final class DefaultConfigurationService: ConfigurationService {
 
     var amount: Int? {
         apiConfiguration?.clientSession?.order?.merchantAmount ??
-        apiConfiguration?.clientSession?.order?.totalOrderAmount
+            apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
 }

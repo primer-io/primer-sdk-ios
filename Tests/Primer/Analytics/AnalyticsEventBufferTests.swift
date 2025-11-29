@@ -8,7 +8,6 @@
 import XCTest
 
 final class AnalyticsEventBufferTests: XCTestCase {
-
     private var buffer: AnalyticsEventBuffer!
 
     override func setUp() async throws {
@@ -204,7 +203,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
     func testConcurrentBuffering_IsThreadSafe() async {
         // When - buffer events concurrently
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<100 {
+            for i in 0 ..< 100 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
@@ -224,7 +223,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
     func testConcurrentFlushAndBuffer_IsThreadSafe() async {
         // Given - pre-buffer some events
         let baseTimestamp = Int(Date().timeIntervalSince1970)
-        for i in 0..<10 {
+        for i in 0 ..< 10 {
             await buffer.buffer(
                 eventType: .paymentSuccess,
                 metadata: .payment(PaymentEvent(paymentMethod: "PAYMENT_CARD", paymentId: "pay_\(i)")),
@@ -238,7 +237,7 @@ final class AnalyticsEventBufferTests: XCTestCase {
                 _ = await self.buffer.flush()
             }
 
-            for i in 10..<20 {
+            for i in 10 ..< 20 {
                 group.addTask {
                     await self.buffer.buffer(
                         eventType: .paymentSuccess,

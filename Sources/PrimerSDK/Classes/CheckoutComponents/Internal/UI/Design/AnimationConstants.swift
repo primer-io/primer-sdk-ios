@@ -8,8 +8,7 @@ import Foundation
 import SwiftUI
 
 /// Animation specifications matching Figma design system
-struct AnimationConstants {
-
+enum AnimationConstants {
     // MARK: - Duration
 
     /// Standard duration for focus state transitions (0.2 seconds)

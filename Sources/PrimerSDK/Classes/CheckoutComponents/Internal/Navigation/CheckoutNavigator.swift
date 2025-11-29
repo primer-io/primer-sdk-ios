@@ -11,7 +11,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutNavigator: ObservableObject, LogReporter {
-
     // MARK: - Private Properties
 
     private let coordinator: CheckoutCoordinator

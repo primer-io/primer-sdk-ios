@@ -39,7 +39,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != name {
             textField.text = name
         }
@@ -82,10 +82,10 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             onValidationChange: ((Bool) -> Void)?
         ) {
             self.validationService = validationService
-            self._name = name
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _name = name
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.inputType = inputType
             self.scope = scope
             self.onNameChange = onNameChange
@@ -100,7 +100,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -109,7 +109,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -121,7 +121,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = name
 
             guard let textRange = Range(range, in: currentText) else { return false }

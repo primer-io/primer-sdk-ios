@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Demonstrates mixing default and custom components
 @available(iOS 15.0, *)
@@ -13,12 +13,12 @@ struct MixedComponentsDemo: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
-    
+
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
-    
+
     var body: some View {
         VStack {
             if isDismissed {
@@ -38,24 +38,24 @@ struct MixedComponentsDemo: View {
             await createSession()
         }
     }
-    
+
     // MARK: - State Views
-    
+
     private var dismissedStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.green)
-            
+
             Text("Demo Completed")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Mixed components demo has been dismissed")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             Button("Reset Demo") {
                 isDismissed = false
                 Task { await createSession() }
@@ -65,7 +65,7 @@ struct MixedComponentsDemo: View {
         .frame(height: 300)
         .padding()
     }
-    
+
     private var loadingStateView: some View {
         VStack(spacing: 12) {
             ProgressView()
@@ -76,7 +76,7 @@ struct MixedComponentsDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func errorStateView(_ errorMessage: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -95,13 +95,13 @@ struct MixedComponentsDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func checkoutView(clientToken: String) -> some View {
         VStack {
             Text("Mixed Default/Custom Components")
                 .font(.headline)
                 .padding()
-            
+
             Text("Some fields use default styling while others are heavily customized")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -121,6 +121,7 @@ struct MixedComponentsDemo: View {
     }
 
     // MARK: - Scope Customization
+
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         checkoutScope.container = { content in
             AnyView(
@@ -130,28 +131,28 @@ struct MixedComponentsDemo: View {
                 }
             )
         }
-        
+
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Configure custom fields for mixed styling demo
             customizeScope(cardFormScope: cardFormScope)
-            
+
             // Override the card form screen with mixed components demo
             cardFormScope.screen = { _ in
                 MixedStyleCardFormView(cardFormScope: cardFormScope)
             }
         }
     }
-    
+
     // MARK: - Scope Customization
-    
+
     /// Configure custom fields for mixed styling demonstration
-    private func customizeScope(cardFormScope: DefaultCardFormScope) {
+    private func customizeScope(cardFormScope _: DefaultCardFormScope) {
         // No longer setting custom fields via closures since we'll use ViewBuilder methods directly in the view
     }
-    
+
     // MARK: - Session Creation
-    
+
     /// Creates a session for this demo
     private func createSession() async {
         isLoading = true
@@ -162,24 +163,24 @@ struct MixedComponentsDemo: View {
 
         // Request client token using the session configuration
         do {
-            self.clientToken = try await NetworkingUtils.requestClientSession(
+            clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: self.apiVersion
+                apiVersion: apiVersion
             )
-            self.isLoading = false
+            isLoading = false
         } catch {
             self.error = error.localizedDescription
-            self.isLoading = false
+            isLoading = false
         }
     }
-    
+
     /// Creates session body using the main controller's configuration
     private func createSessionBody() -> ClientSessionRequestBody {
         // Use the configured session from MerchantSessionAndSettingsViewController
         guard let configuredSession = clientSession else {
             fatalError("No session configuration provided - MixedComponentsDemo requires configured session from main controller")
         }
-        
+
         return configuredSession
     }
 }
@@ -188,12 +189,12 @@ struct MixedComponentsDemo: View {
 @available(iOS 15.0, *)
 private struct MixedStyleCardFormView: View {
     let cardFormScope: DefaultCardFormScope
-    
+
     @State private var cardState: StructuredCardFormState?
     @State private var showTooltip = false
     @State private var isCardFlipped = false
     @State private var stateTask: Task<Void, Never>?
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -219,7 +220,7 @@ private struct MixedStyleCardFormView: View {
                     }
                 }
                 .padding(.horizontal)
-                
+
                 if showTooltip {
                     Text("This demo shows how to mix default Primer styling with custom components for specific fields")
                         .font(.caption)
@@ -231,7 +232,7 @@ private struct MixedStyleCardFormView: View {
                             removal: .scale.combined(with: .opacity)
                         ))
                 }
-                
+
                 // Card visualization (custom)
                 CardVisualization(
                     cardNumber: cardState?.data[.cardNumber] ?? "",
@@ -240,7 +241,7 @@ private struct MixedStyleCardFormView: View {
                     isFlipped: $isCardFlipped
                 )
                 .padding(.horizontal)
-                
+
                 // Form fields
                 VStack(spacing: 20) {
                     // Card number - Custom fancy style using ViewBuilder method
@@ -252,7 +253,7 @@ private struct MixedStyleCardFormView: View {
                             Text("*")
                                 .foregroundColor(.red)
                         }
-                        
+
                         // Use ViewBuilder method with custom gradient styling
                         AnyView(
                             cardFormScope.PrimerCardNumberField(
@@ -287,24 +288,24 @@ private struct MixedStyleCardFormView: View {
                         )
                         .frame(height: 50)
                     }
-                    
+
                     HStack(spacing: 16) {
                         // Expiry date - Default style using ViewBuilder method
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Expiry Date")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             // Use ViewBuilder method with default styling
                             AnyView(
                                 cardFormScope.PrimerExpiryDateField(
                                     label: nil,
-                                    styling: nil  // Use default styling
+                                    styling: nil // Use default styling
                                 )
                             )
                             .frame(height: 50)
                         }
-                        
+
                         // CVV - Custom interactive style using ViewBuilder method
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
@@ -314,7 +315,7 @@ private struct MixedStyleCardFormView: View {
                                 Text("*")
                                     .foregroundColor(.red)
                             }
-                            
+
                             HStack {
                                 // Use ViewBuilder method with custom orange styling
                                 AnyView(
@@ -336,7 +337,7 @@ private struct MixedStyleCardFormView: View {
                                         isCardFlipped = true
                                     }
                                 }
-                                
+
                                 Button {
                                     withAnimation(.spring()) {
                                         isCardFlipped.toggle()
@@ -348,25 +349,25 @@ private struct MixedStyleCardFormView: View {
                             }
                         }
                     }
-                    
+
                     // Cardholder name - Default style using ViewBuilder method
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Cardholder Name")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         // Use ViewBuilder method with default styling
                         AnyView(
                             cardFormScope.PrimerCardholderNameField(
                                 label: nil,
-                                styling: nil  // Use default styling
+                                styling: nil // Use default styling
                             )
                         )
                         .frame(height: 50)
                     }
                 }
                 .padding()
-                
+
                 // Submit button - Custom animated style
                 if let state = cardState {
                     VStack(alignment: .leading, spacing: 8) {
@@ -378,7 +379,7 @@ private struct MixedStyleCardFormView: View {
                                 .foregroundColor(.red)
                         }
                         .padding(.horizontal)
-                        
+
                         Button(action: {
                             cardFormScope.onSubmit()
                         }) {
@@ -397,7 +398,7 @@ private struct MixedStyleCardFormView: View {
                                             RoundedRectangle(cornerRadius: 16)
                                         )
                                         .overlay(
-                                            GeometryReader { geometry in
+                                            GeometryReader { _ in
                                                 Rectangle()
                                                     .fill(Color.white.opacity(0.3))
                                                     .frame(width: 100)
@@ -408,7 +409,7 @@ private struct MixedStyleCardFormView: View {
                                             .mask(RoundedRectangle(cornerRadius: 16))
                                         )
                                 }
-                                
+
                                 Text("Submit Payment")
                                     .foregroundColor(.white)
                                     .fontWeight(.semibold)
@@ -433,7 +434,7 @@ private struct MixedStyleCardFormView: View {
             stateTask?.cancel()
         }
     }
-    
+
     private func startObservingState() {
         stateTask?.cancel()
         stateTask = Task {
@@ -446,7 +447,6 @@ private struct MixedStyleCardFormView: View {
             }
         }
     }
-    
 }
 
 /// Card visualization component
@@ -456,7 +456,7 @@ private struct CardVisualization: View {
     let expiryDate: String
     let cardholderName: String
     @Binding var isFlipped: Bool
-    
+
     var body: some View {
         ZStack {
             // Card back
@@ -469,18 +469,18 @@ private struct CardVisualization: View {
                             .fill(Color.black)
                             .frame(height: 40)
                             .padding(.top, 20)
-                        
+
                         HStack {
                             Rectangle()
                                 .fill(Color.white.opacity(0.8))
                                 .frame(width: 200, height: 30)
-                            
+
                             Text("CVV")
                                 .foregroundColor(.white)
                                 .padding(.horizontal)
                         }
                         .padding()
-                        
+
                         Spacer()
                     }
                 )
@@ -489,7 +489,7 @@ private struct CardVisualization: View {
                     axis: (x: 0, y: 1, z: 0)
                 )
                 .opacity(isFlipped ? 1 : 0)
-            
+
             // Card front
             RoundedRectangle(cornerRadius: 16)
                 .fill(
@@ -509,11 +509,11 @@ private struct CardVisualization: View {
                                 .foregroundColor(.white)
                             Spacer()
                         }
-                        
+
                         Text(formatCardNumber(cardNumber))
                             .font(.system(size: 22, weight: .medium, design: .monospaced))
                             .foregroundColor(.white)
-                        
+
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("EXPIRES")
@@ -523,9 +523,9 @@ private struct CardVisualization: View {
                                     .font(.system(.body, design: .monospaced))
                                     .foregroundColor(.white)
                             }
-                            
+
                             Spacer()
-                            
+
                             VStack(alignment: .trailing) {
                                 Text(cardholderName.isEmpty ? "YOUR NAME" : cardholderName.uppercased())
                                     .font(.system(.body, design: .default))
@@ -543,21 +543,21 @@ private struct CardVisualization: View {
         }
         .animation(.spring(), value: isFlipped)
     }
-    
+
     private func formatCardNumber(_ number: String) -> String {
         let cleaned = number.replacingOccurrences(of: " ", with: "")
         if cleaned.isEmpty {
             return "•••• •••• •••• ••••"
         }
-        
+
         var formatted = ""
         for (index, char) in cleaned.enumerated() {
-            if index > 0 && index % 4 == 0 {
+            if index > 0, index % 4 == 0 {
                 formatted += " "
             }
             formatted += String(char)
         }
-        
+
         // Pad with bullets
         let remaining = 16 - cleaned.count
         if remaining > 0 {
@@ -565,24 +565,23 @@ private struct CardVisualization: View {
             var paddedBullets = ""
             for (index, char) in bullets.enumerated() {
                 let adjustedIndex = cleaned.count + index
-                if adjustedIndex > 0 && adjustedIndex % 4 == 0 {
+                if adjustedIndex > 0, adjustedIndex % 4 == 0 {
                     paddedBullets += " "
                 }
                 paddedBullets += String(char)
             }
             formatted += paddedBullets
         }
-        
+
         return formatted
     }
-    
 }
 
 /// Shimmer effect modifier
 @available(iOS 15.0, *)
 private struct ShimmerEffect: ViewModifier {
     @State private var phase: CGFloat = 0
-    
+
     func body(content: Content) -> some View {
         content
             .onAppear {

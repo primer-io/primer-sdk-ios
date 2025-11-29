@@ -21,7 +21,6 @@ protocol CardNetworkDetectionInteractor {
 /// Implementation of card network detection interactor
 @available(iOS 15.0, *)
 final class CardNetworkDetectionInteractorImpl: CardNetworkDetectionInteractor, LogReporter {
-
     private let repository: HeadlessRepository
 
     var networkDetectionStream: AsyncStream<[CardNetwork]> {

@@ -8,10 +8,11 @@ import Foundation
 import SwiftUI
 
 // MARK: - Presentation Context
+
 @available(iOS 15.0, *)
 public enum PresentationContext {
-    case direct                    // Presented directly (e.g., single payment method)
-    case fromPaymentSelection     // Reached from payment method selection
+    case direct // Presented directly (e.g., single payment method)
+    case fromPaymentSelection // Reached from payment method selection
 
     /// Whether the back button should be shown
     var shouldShowBackButton: Bool {
@@ -25,14 +26,16 @@ public enum PresentationContext {
 }
 
 // MARK: - Navigation Behavior
+
 @available(iOS 15.0, *)
 enum NavigationBehavior {
-    case push       // Add to stack
-    case reset      // Replace entire stack
-    case replace    // Replace current route
+    case push // Add to stack
+    case reset // Replace entire stack
+    case replace // Replace current route
 }
 
 // MARK: - Checkout Route Implementation
+
 @available(iOS 15.0, *)
 enum CheckoutRoute: Hashable, Identifiable {
     case splash
@@ -89,9 +92,9 @@ enum CheckoutRoute: Hashable, Identifiable {
         case .loading:
             return .replace // Replace splash with loading
         case .paymentMethodSelection:
-            return .reset  // Always reset to payment methods as root
+            return .reset // Always reset to payment methods as root
         case .selectCountry, .paymentMethod:
-            return .push   // Standard forward navigation
+            return .push // Standard forward navigation
         case .success, .failure:
             return .replace // Replace current screen with result
         }

@@ -4,12 +4,11 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 final class AccessibilityIdentifiersTests: XCTestCase {
-
     // MARK: - Uniqueness Tests
 
     func testAllAccessibilityIdentifiersAreUnique() {
@@ -51,7 +50,7 @@ final class AccessibilityIdentifiersTests: XCTestCase {
         let allIdentifiers = collectAllAccessibilityIdentifiers()
 
         // When: Filter empty identifiers
-        let emptyIdentifiers = allIdentifiers.filter { $0.isEmpty }
+        let emptyIdentifiers = allIdentifiers.filter(\.isEmpty)
 
         // Then: No identifier should be empty
         XCTAssertTrue(

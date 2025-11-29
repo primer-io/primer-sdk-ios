@@ -4,12 +4,11 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import CoreText
+import UIKit
 
 /// Utility for registering custom fonts bundled with the SDK
 enum FontRegistration: LogReporter {
-
     private static var isRegistered = false
     private static let lock = NSLock()
 
@@ -23,7 +22,7 @@ enum FontRegistration: LogReporter {
         guard !isRegistered else { return }
 
         let fontNames = [
-            "InterVariable.ttf"
+            "InterVariable.ttf",
         ]
 
         for fontName in fontNames {

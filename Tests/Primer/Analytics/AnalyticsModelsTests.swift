@@ -10,12 +10,11 @@ import XCTest
 // MARK: - AnalyticsPayload Tests
 
 final class AnalyticsPayloadTests: XCTestCase {
-
     func testAnalyticsPayload_EncodesAllRequiredFields() throws {
         // Given
         let payload = AnalyticsPayload(
             id: "test-id-123",
-            timestamp: 1234567890,
+            timestamp: 1_234_567_890,
             sdkType: "IOS_NATIVE",
             eventName: "SDK_INIT_START",
             checkoutSessionId: "cs_123",
@@ -44,7 +43,7 @@ final class AnalyticsPayloadTests: XCTestCase {
 
         // Then
         XCTAssertEqual(json["id"] as? String, "test-id-123")
-        XCTAssertEqual(json["timestamp"] as? Int, 1234567890)
+        XCTAssertEqual(json["timestamp"] as? Int, 1_234_567_890)
         XCTAssertEqual(json["sdkType"] as? String, "IOS_NATIVE")
         XCTAssertEqual(json["eventName"] as? String, "SDK_INIT_START")
         XCTAssertEqual(json["checkoutSessionId"] as? String, "cs_123")
@@ -167,7 +166,6 @@ final class AnalyticsPayloadTests: XCTestCase {
 // MARK: - AnalyticsEventMetadata Tests
 
 final class AnalyticsEventMetadataTests: XCTestCase {
-
     // MARK: - GeneralEvent Tests
 
     func testGeneralEvent_InitializesWithDefaultLocale() {
@@ -349,7 +347,7 @@ final class AnalyticsEventMetadataTests: XCTestCase {
     func testAnalyticsEventMetadata_LocaleAccessor_WorksForAllCases() {
         // Given
         let testLocale = "ja-JP"
-        
+
         let generalMetadata: AnalyticsEventMetadata = .general(GeneralEvent(locale: testLocale))
         let paymentMetadata: AnalyticsEventMetadata = .payment(PaymentEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD"))
         let threeDSMetadata: AnalyticsEventMetadata = .threeDS(ThreeDSEvent(locale: testLocale, paymentMethod: "PAYMENT_CARD", provider: "Test", response: "05"))
@@ -366,7 +364,6 @@ final class AnalyticsEventMetadataTests: XCTestCase {
 // MARK: - AnalyticsEventType Tests
 
 final class AnalyticsEventTypeTests: XCTestCase {
-
     func testAnalyticsEventType_AllTypesHaveCorrectRawValues() {
         // Then
         XCTAssertEqual(AnalyticsEventType.sdkInitStart.rawValue, "SDK_INIT_START")
@@ -424,7 +421,7 @@ final class AnalyticsEventTypeTests: XCTestCase {
             .paymentSuccess,
             .paymentFailure,
             .paymentReattempted,
-            .paymentFlowExited
+            .paymentFlowExited,
         ]
 
         // Then
@@ -435,7 +432,6 @@ final class AnalyticsEventTypeTests: XCTestCase {
 // MARK: - AnalyticsEnvironment Tests
 
 final class AnalyticsEnvironmentTests: XCTestCase {
-
     func testAnalyticsEnvironment_AllEnvironmentsHaveCorrectRawValues() {
         // Then
         XCTAssertEqual(AnalyticsEnvironment.dev.rawValue, "DEV")
@@ -472,7 +468,6 @@ final class AnalyticsEnvironmentTests: XCTestCase {
 // MARK: - AnalyticsSessionConfig Tests
 
 final class AnalyticsSessionConfigTests: XCTestCase {
-
     func testAnalyticsSessionConfig_InitializesWithAllFields() {
         // When
         let config = AnalyticsSessionConfig(

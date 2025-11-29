@@ -8,7 +8,7 @@ import CoreGraphics
 
 // MARK: - Primer Spacing
 
-struct PrimerSpacing {
+enum PrimerSpacing {
     static func xxsmall(tokens: DesignTokens?) -> CGFloat {
         tokens?.primerSpaceXxsmall ?? 2
     }
@@ -40,7 +40,7 @@ struct PrimerSpacing {
 
 // MARK: - Primer Size
 
-struct PrimerSize {
+enum PrimerSize {
     static func small(tokens: DesignTokens?) -> CGFloat {
         tokens?.primerSizeSmall ?? 16
     }
@@ -68,7 +68,7 @@ struct PrimerSize {
 
 // MARK: - Primer Radius
 
-struct PrimerRadius {
+enum PrimerRadius {
     static func xsmall(tokens: DesignTokens?) -> CGFloat {
         tokens?.primerRadiusXsmall ?? 2
     }
@@ -88,7 +88,7 @@ struct PrimerRadius {
 
 // MARK: - Primer Component Heights
 
-struct PrimerComponentHeight {
+enum PrimerComponentHeight {
     static let label: CGFloat = 16
     static let errorMessage: CGFloat = 16
     static let keyboardAccessory: CGFloat = 44
@@ -98,21 +98,21 @@ struct PrimerComponentHeight {
 
 // MARK: - Primer Component Widths
 
-struct PrimerComponentWidth {
+enum PrimerComponentWidth {
     static let paymentMethodIcon: CGFloat = 32
     static let cvvFieldMax: CGFloat = 120
 }
 
 // MARK: - Primer Border Widths
 
-struct PrimerBorderWidth {
+enum PrimerBorderWidth {
     static let thin: CGFloat = 0.5
     static let standard: CGFloat = 1
 }
 
 // MARK: - Primer Scale Factors
 
-struct PrimerScale {
+enum PrimerScale {
     static let large: CGFloat = 2.0
     static let small: CGFloat = 0.8
 }

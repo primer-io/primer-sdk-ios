@@ -10,7 +10,6 @@ import Foundation
 /// This keeps the data model (PrimerPaymentMethodType) clean and UI-agnostic
 @available(iOS 15.0, *)
 extension PrimerPaymentMethodType {
-
     /// Returns the default ImageName for this payment method type
     /// Used when server doesn't provide a payment method icon
     /// Follows the same pattern as DropIn UI's TokenizationResponse.icon
@@ -21,7 +20,7 @@ extension PrimerPaymentMethodType {
         case .paymentCard: .creditCard
         case .applePay: .appleIcon
         case .goCardless, .stripeAch: .achBank
-        case .googlePay: .appleIcon  // Uses same icon as Apple Pay
+        case .googlePay: .appleIcon // Uses same icon as Apple Pay
         default: .genericCard
         }
     }

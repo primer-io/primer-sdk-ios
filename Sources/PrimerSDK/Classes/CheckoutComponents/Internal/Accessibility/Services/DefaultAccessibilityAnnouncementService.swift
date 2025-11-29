@@ -7,7 +7,6 @@
 import UIKit
 
 final class DefaultAccessibilityAnnouncementService: AccessibilityAnnouncementService, LogReporter {
-
     func announceError(_ message: String) {
         logger.debug(message: "[A11Y] Announcing error: \(message)")
         UIAccessibility.post(notification: .announcement, argument: message)

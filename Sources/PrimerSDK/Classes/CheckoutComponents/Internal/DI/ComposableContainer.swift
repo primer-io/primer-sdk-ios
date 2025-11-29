@@ -10,12 +10,11 @@ import Foundation
 /// Registers all dependencies needed for the checkout flow.
 @available(iOS 15.0, *)
 final class ComposableContainer: LogReporter {
-
     private let container: Container
     private let settings: PrimerSettings
 
     init(settings: PrimerSettings) {
-        self.container = Container()
+        container = Container()
         self.settings = settings
     }
 
@@ -32,7 +31,7 @@ final class ComposableContainer: LogReporter {
         await DIContainer.setContainer(container)
 
         #if DEBUG
-        await performHealthCheck()
+            await performHealthCheck()
         #endif
     }
 
@@ -46,7 +45,6 @@ final class ComposableContainer: LogReporter {
 
 @available(iOS 15.0, *)
 private extension ComposableContainer {
-
     /// Register infrastructure components.
     func registerInfrastructure() async {
         _ = try? await container.register(PrimerSettings.self)
@@ -72,8 +70,8 @@ private extension ComposableContainer {
         _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
             .asSingleton()
             .with { resolver in
-                DefaultAnalyticsInteractor(
-                    eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+                try DefaultAnalyticsInteractor(
+                    eventService: await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
                 )
             }
 
@@ -105,32 +103,32 @@ private extension ComposableContainer {
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
             .asTransient()
             .with { resolver in
-                GetPaymentMethodsInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                try GetPaymentMethodsInteractorImpl(
+                    repository: await resolver.resolve(HeadlessRepository.self)
                 )
             }
 
         _ = try? await container.register(ProcessCardPaymentInteractor.self)
             .asTransient()
             .with { resolver in
-                ProcessCardPaymentInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                try ProcessCardPaymentInteractorImpl(
+                    repository: await resolver.resolve(HeadlessRepository.self)
                 )
             }
 
         _ = try? await container.register(ValidateInputInteractor.self)
             .asTransient()
             .with { resolver in
-                ValidateInputInteractorImpl(
-                    validationService: try await resolver.resolve(ValidationService.self)
+                try ValidateInputInteractorImpl(
+                    validationService: await resolver.resolve(ValidationService.self)
                 )
             }
 
         _ = try? await container.register(CardNetworkDetectionInteractor.self)
             .asTransient()
             .with { resolver in
-                CardNetworkDetectionInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                try CardNetworkDetectionInteractorImpl(
+                    repository: await resolver.resolve(HeadlessRepository.self)
                 )
             }
     }
@@ -153,17 +151,17 @@ private extension ComposableContainer {
     }
 
     #if DEBUG
-    /// Perform health check on the container.
-    func performHealthCheck() async {
-        let diagnostics = await container.getDiagnostics()
-        logger.debug(message: "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)")
+        /// Perform health check on the container.
+        func performHealthCheck() async {
+            let diagnostics = await container.getDiagnostics()
+            logger.debug(message: "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)")
 
-        let healthReport = await container.performHealthCheck()
-        if healthReport.status == .healthy {
-            logger.debug(message: "Container is healthy")
-        } else {
-            logger.warn(message: "Health issues: \(healthReport.issues)")
+            let healthReport = await container.performHealthCheck()
+            if healthReport.status == .healthy {
+                logger.debug(message: "Container is healthy")
+            } else {
+                logger.warn(message: "Health issues: \(healthReport.issues)")
+            }
         }
-    }
     #endif
 }

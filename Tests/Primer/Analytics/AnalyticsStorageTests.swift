@@ -4,11 +4,10 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class AnalyticsStorageTests: XCTestCase {
-
     var storage: Analytics.Storage!
 
     let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
@@ -16,7 +15,7 @@ final class AnalyticsStorageTests: XCTestCase {
     let events = [
         Analytics.Event.message(message: "Test #1", messageType: .other, severity: .info),
         Analytics.Event.message(message: "Test #2", messageType: .other, severity: .info),
-        Analytics.Event.message(message: "Test #3", messageType: .other, severity: .info)
+        Analytics.Event.message(message: "Test #3", messageType: .other, severity: .info),
     ]
 
     override func setUpWithError() throws {
