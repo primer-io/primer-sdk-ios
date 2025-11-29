@@ -9,7 +9,6 @@ import Foundation
 /// Responsible for sending analytics payloads via HTTP to the analytics service.
 /// Handles request construction, authorization, and response validation.
 actor AnalyticsNetworkClient: LogReporter {
-
     // MARK: - Public Methods
 
     /// Send an analytics payload to the specified endpoint
@@ -73,7 +72,7 @@ actor AnalyticsNetworkClient: LogReporter {
 
         logger.debug(message: "📊 [Analytics] Response status code: \(httpResponse.statusCode)")
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             if let responseString = String(data: data, encoding: .utf8), !responseString.isEmpty {
                 logger.error(message: "❌ [Analytics] Request failed with status \(httpResponse.statusCode) - \(responseString)")
             } else {

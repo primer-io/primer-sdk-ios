@@ -38,7 +38,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != expiryDate {
             textField.text = expiryDate
         }
@@ -78,12 +78,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
-            self._expiryDate = expiryDate
-            self._month = month
-            self._year = year
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _expiryDate = expiryDate
+            _month = month
+            _year = year
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.scope = scope
         }
 
@@ -95,7 +95,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -103,7 +103,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -119,7 +119,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
 
             // Only allow numbers and return for non-numeric input except deletion
-            if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+            if !string.isEmpty, !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
 
@@ -146,8 +146,9 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
             if string.isEmpty {
                 // If deleting the separator, also remove the character before it
-                if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
-                    currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
+                if range.location == 2, range.length == 1, currentText.count >= 3,
+                    currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/"
+                {
                     return String(currentText.prefix(1))
                 }
 
@@ -162,7 +163,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             // Calculate where to insert the new text
             var sanitizedLocation = range.location
-            if range.location > 2 && currentText.count >= 3 && currentText.contains("/") {
+            if range.location > 2, currentText.count >= 3, currentText.contains("/") {
                 sanitizedLocation -= 1
             }
 

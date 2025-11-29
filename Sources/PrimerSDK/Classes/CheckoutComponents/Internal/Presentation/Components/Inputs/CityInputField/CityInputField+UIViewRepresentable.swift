@@ -36,7 +36,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != city {
             textField.text = city
         }
@@ -70,10 +70,10 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
-            self._city = city
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _city = city
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.scope = scope
         }
 
@@ -85,7 +85,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -94,7 +94,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -106,7 +106,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = city
 
             guard let textRange = Range(range, in: currentText) else { return false }

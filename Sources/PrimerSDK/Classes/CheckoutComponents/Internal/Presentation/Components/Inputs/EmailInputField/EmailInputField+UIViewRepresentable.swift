@@ -38,7 +38,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != email {
             textField.text = email
         }
@@ -78,10 +78,10 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             onValidationChange: ((Bool) -> Void)?
         ) {
             self.validationService = validationService
-            self._email = email
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _email = email
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.scope = scope
             self.onEmailChange = onEmailChange
             self.onValidationChange = onValidationChange
@@ -95,7 +95,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -104,7 +104,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -116,7 +116,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = email
 
             guard let textRange = Range(range, in: currentText) else { return false }

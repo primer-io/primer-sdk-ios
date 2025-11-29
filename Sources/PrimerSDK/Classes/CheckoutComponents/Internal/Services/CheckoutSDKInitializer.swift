@@ -10,7 +10,6 @@ import Foundation
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutSDKInitializer {
-
     // MARK: - Types
 
     struct InitializationResult {
@@ -24,7 +23,7 @@ final class CheckoutSDKInitializer {
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
-    private let configurationModule: (PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding)
+    private let configurationModule: PrimerAPIConfigurationModuleProtocol & AnalyticsSessionConfigProviding
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     // MARK: - Initialization
@@ -109,7 +108,7 @@ final class CheckoutSDKInitializer {
     }
 
     private func createCheckoutScope() -> DefaultCheckoutScope {
-        return DefaultCheckoutScope(
+        DefaultCheckoutScope(
             clientToken: clientToken,
             settings: primerSettings,
             diContainer: diContainer,
@@ -130,7 +129,7 @@ final class CheckoutSDKInitializer {
             sdkVersion: sdkVersion
         ) else {
             #if DEBUG
-            print("⚠️ Unable to create analytics session config")
+                print("⚠️ Unable to create analytics session config")
             #endif
             return
         }

@@ -10,7 +10,6 @@ import UIKit
 /// Responsible for constructing analytics payloads from event data and session configuration.
 /// Handles payload assembly, device info integration, and SDK type detection.
 struct AnalyticsPayloadBuilder {
-
     // MARK: - Public Methods
 
     /// Construct a complete analytics payload
@@ -67,6 +66,6 @@ struct AnalyticsPayloadBuilder {
 
     /// Detect SDK type based on React Native bridge availability
     private func detectSDKType() -> String {
-        return NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
+        NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
     }
 }

@@ -14,11 +14,10 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
-
     // MARK: - Properties
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerSelectCountryState> {
+    var state: AsyncStream<PrimerSelectCountryState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await value in $internalState.values {
@@ -35,9 +34,9 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     // MARK: - UI Customization Properties
 
-    public var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
-    public var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)?
-    public var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)?
+    var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
+    var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)?
+    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)?
 
     // MARK: - Private Properties
 
@@ -55,7 +54,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     // MARK: - Navigation Methods
 
-    public func onCountrySelected(countryCode: String, countryName: String) {
+    func onCountrySelected(countryCode: String, countryName _: String) {
         if let cardFormScope {
             cardFormScope.updateCountryCode(countryCode)
         }
@@ -63,7 +62,8 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         if let checkoutScope {
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
-                   let singleMethod = checkoutScope.availablePaymentMethods.first {
+                   let singleMethod = checkoutScope.availablePaymentMethods.first
+                {
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
@@ -80,11 +80,12 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         }
     }
 
-    public func onCancel() {
+    func onCancel() {
         if let checkoutScope {
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
-                   let singleMethod = checkoutScope.availablePaymentMethods.first {
+                   let singleMethod = checkoutScope.availablePaymentMethods.first
+                {
                     let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
                     checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
                 } else {
@@ -101,7 +102,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         }
     }
 
-    public func onSearch(query: String) {
+    func onSearch(query: String) {
         internalState.searchQuery = query
         filterCountries(with: query)
     }

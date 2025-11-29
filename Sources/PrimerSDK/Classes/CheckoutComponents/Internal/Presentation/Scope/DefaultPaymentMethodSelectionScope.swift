@@ -16,7 +16,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     @Published private var internalState = PrimerPaymentMethodSelectionState()
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerPaymentMethodSelectionState> {
+    var state: AsyncStream<PrimerPaymentMethodSelectionState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await value in $internalState.values {
@@ -32,17 +32,17 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     }
 
     /// Available dismissal mechanisms from settings
-    public var dismissalMechanism: [DismissalMechanism] {
+    var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }
 
     // MARK: - UI Customization Properties
 
-    public var screen: (() -> AnyView)?
-    public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
-    public var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)?
-    public var categoryHeader: ((_ category: String) -> AnyView)?
-    public var emptyStateView: (() -> AnyView)?
+    var screen: (() -> AnyView)?
+    var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
+    var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)?
+    var categoryHeader: ((_ category: String) -> AnyView)?
+    var emptyStateView: (() -> AnyView)?
 
     // MARK: - Private Properties
 
@@ -126,7 +126,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     // MARK: - Public Methods
 
-    public func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
+    func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod) {
         internalState.selectedPaymentMethod = paymentMethod
 
         let selectionMessage = "\(paymentMethod.name) selected"
@@ -151,11 +151,11 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
         await analyticsInteractor?.trackEvent(.paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType)))
     }
 
-    public func onCancel() {
+    func onCancel() {
         checkoutScope?.onDismiss()
     }
 
-    public func searchPaymentMethods(_ query: String) {
+    func searchPaymentMethods(_ query: String) {
         internalState.searchQuery = query
 
         if query.isEmpty {
@@ -168,5 +168,4 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
             }
         }
     }
-
 }

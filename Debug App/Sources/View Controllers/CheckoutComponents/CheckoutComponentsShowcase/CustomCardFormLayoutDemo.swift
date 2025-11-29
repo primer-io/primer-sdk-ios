@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Demonstrates dynamic card form layouts
 @available(iOS 15.0, *)
@@ -13,12 +13,12 @@ struct CustomCardFormLayoutDemo: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
-    
+
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
-    
+
     var body: some View {
         VStack {
             if isDismissed {
@@ -38,24 +38,24 @@ struct CustomCardFormLayoutDemo: View {
             await createSession()
         }
     }
-    
+
     // MARK: - State Views
-    
+
     private var dismissedStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.green)
-            
+
             Text("Demo Completed")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Dynamic layouts demo has been dismissed")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             Button("Reset Demo") {
                 isDismissed = false
                 Task { await createSession() }
@@ -65,7 +65,7 @@ struct CustomCardFormLayoutDemo: View {
         .frame(height: 300)
         .padding()
     }
-    
+
     private var loadingStateView: some View {
         VStack(spacing: 12) {
             ProgressView()
@@ -76,7 +76,7 @@ struct CustomCardFormLayoutDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func errorStateView(_ errorMessage: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -95,13 +95,13 @@ struct CustomCardFormLayoutDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func checkoutView(clientToken: String) -> some View {
         VStack {
             Text("Dynamic Card Form Layouts")
                 .font(.headline)
                 .padding()
-            
+
             Text("Switch between different layout arrangements at runtime")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -119,8 +119,9 @@ struct CustomCardFormLayoutDemo: View {
             )
         }
     }
-    
+
     // MARK: - Scope Customization
+
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         checkoutScope.container = { content in
             AnyView(
@@ -130,7 +131,7 @@ struct CustomCardFormLayoutDemo: View {
                 }
             )
         }
-        
+
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with dynamic layout options
@@ -139,9 +140,9 @@ struct CustomCardFormLayoutDemo: View {
             }
         }
     }
-    
+
     // MARK: - Session Creation
-    
+
     /// Creates a session for this demo
     private func createSession() async {
         isLoading = true
@@ -152,24 +153,24 @@ struct CustomCardFormLayoutDemo: View {
 
         // Request client token using the session configuration
         do {
-            self.clientToken = try await NetworkingUtils.requestClientSession(
+            clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: self.apiVersion
+                apiVersion: apiVersion
             )
-            self.isLoading = false
+            isLoading = false
         } catch {
             self.error = error.localizedDescription
-            self.isLoading = false
+            isLoading = false
         }
     }
-    
+
     /// Creates session body using the main controller's configuration
     private func createSessionBody() -> ClientSessionRequestBody {
         // Use the configured session from MerchantSessionAndSettingsViewController
         guard let configuredSession = clientSession else {
             fatalError("No session configuration provided - CustomCardFormLayoutDemo requires configured session from main controller")
         }
-        
+
         return configuredSession
     }
 }
@@ -187,11 +188,11 @@ private enum CardFormLayout: String, CaseIterable {
 @available(iOS 15.0, *)
 private struct DynamicLayoutCardFormView: View {
     let cardFormScope: DefaultCardFormScope
-    
+
     @State private var selectedLayout: CardFormLayout = .vertical
     @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Layout selector
@@ -214,7 +215,7 @@ private struct DynamicLayoutCardFormView: View {
                 .padding()
             }
             .background(Color.gray.opacity(0.05))
-            
+
             ScrollView {
                 VStack(spacing: 20) {
                     // Dynamic layout content
@@ -231,7 +232,7 @@ private struct DynamicLayoutCardFormView: View {
                         }
                     }
                     .padding()
-                    
+
                     // Submit button
                     if let state = cardState {
                         Button(action: {
@@ -257,7 +258,7 @@ private struct DynamicLayoutCardFormView: View {
             stateTask?.cancel()
         }
     }
-    
+
     private func startObservingState() {
         stateTask?.cancel()
         stateTask = Task {
@@ -270,7 +271,7 @@ private struct DynamicLayoutCardFormView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var verticalLayout: some View {
         VStack(spacing: 16) {
@@ -290,7 +291,7 @@ private struct DynamicLayoutCardFormView: View {
                 )
                 .frame(height: 50)
             }
-            
+
             // Expiry date with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("Expiry Date")
@@ -307,7 +308,7 @@ private struct DynamicLayoutCardFormView: View {
                 )
                 .frame(height: 50)
             }
-            
+
             // CVV with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("CVV")
@@ -324,7 +325,7 @@ private struct DynamicLayoutCardFormView: View {
                 )
                 .frame(height: 50)
             }
-            
+
             // Cardholder name with custom styling
             VStack(alignment: .leading, spacing: 4) {
                 Text("Cardholder Name")
@@ -343,7 +344,7 @@ private struct DynamicLayoutCardFormView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var horizontalLayout: some View {
         ScrollView(.horizontal, showsIndicators: true) {
@@ -364,7 +365,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(width: 200, height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
                         .font(.caption)
@@ -381,7 +382,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(width: 100, height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CVV")
                         .font(.caption)
@@ -398,7 +399,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(width: 80, height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Name")
                         .font(.caption)
@@ -418,7 +419,7 @@ private struct DynamicLayoutCardFormView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var gridLayout: some View {
         VStack(spacing: 16) {
@@ -439,7 +440,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
                         .font(.caption)
@@ -457,7 +458,7 @@ private struct DynamicLayoutCardFormView: View {
                     .frame(height: 50)
                 }
             }
-            
+
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CVV")
@@ -475,7 +476,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cardholder")
                         .font(.caption)
@@ -495,7 +496,7 @@ private struct DynamicLayoutCardFormView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var compactLayout: some View {
         VStack(spacing: 12) {
@@ -516,7 +517,7 @@ private struct DynamicLayoutCardFormView: View {
                 )
                 .frame(height: 50)
             }
-            
+
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Expiry")
@@ -535,7 +536,7 @@ private struct DynamicLayoutCardFormView: View {
                     )
                     .frame(height: 50)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CVV")
                         .font(.caption)
@@ -554,7 +555,7 @@ private struct DynamicLayoutCardFormView: View {
                     .frame(height: 50)
                 }
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("Cardholder Name")
                     .font(.caption)
@@ -574,5 +575,4 @@ private struct DynamicLayoutCardFormView: View {
             }
         }
     }
-    
 }

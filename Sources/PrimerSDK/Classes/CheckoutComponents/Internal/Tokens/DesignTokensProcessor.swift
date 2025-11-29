@@ -4,21 +4,21 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 /// Utility class for processing design token dictionaries.
 /// Provides static methods for merging, reference resolution, color conversion,
 /// flattening, and math expression evaluation.
 enum DesignTokensProcessor {
-
     // MARK: - Dictionary Operations
 
     static func mergeDictionaries(_ base: [String: Any], with override: [String: Any]) -> [String: Any] {
         var merged = base
         for (key, overrideValue) in override {
             if let baseDict = base[key] as? [String: Any],
-               let overrideDict = overrideValue as? [String: Any] {
+               let overrideDict = overrideValue as? [String: Any]
+            {
                 merged[key] = mergeDictionaries(baseDict, with: overrideDict)
             } else {
                 merged[key] = overrideValue
@@ -30,7 +30,7 @@ enum DesignTokensProcessor {
     // MARK: - Token Reference Resolution
 
     static func resolveReferences(in dict: [String: Any]) -> [String: Any] {
-        (0..<10).reduce(dict) { current, _ in
+        (0 ..< 10).reduce(dict) { current, _ in
             var hasUnresolved = false
             let resolved = resolvePass(current, root: current, hasUnresolved: &hasUnresolved)
             return hasUnresolved ? resolved : current
@@ -110,10 +110,10 @@ enum DesignTokensProcessor {
         let alpha: CGFloat
 
         if sanitized.count == 8 { // RRGGBBAA
-            red = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
-            green = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
-            blue = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
-            alpha = CGFloat(rgb & 0x000000FF) / 255.0
+            red = CGFloat((rgb & 0xFF00_0000) >> 24) / 255.0
+            green = CGFloat((rgb & 0x00FF_0000) >> 16) / 255.0
+            blue = CGFloat((rgb & 0x0000_FF00) >> 8) / 255.0
+            alpha = CGFloat(rgb & 0x0000_00FF) / 255.0
         } else if sanitized.count == 6 { // RRGGBB
             red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
             green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
@@ -158,7 +158,7 @@ enum DesignTokensProcessor {
     }
 
     static func resolveFlattenedReferences(in flatDict: [String: Any], source: [String: Any]) -> [String: Any] {
-        (0..<10).reduce(flatDict) { current, _ in
+        (0 ..< 10).reduce(flatDict) { current, _ in
             var hasUnresolved = false
             let resolved = current.reduce(into: [String: Any]()) { result, pair in
                 let (key, value) = pair
@@ -196,7 +196,8 @@ enum DesignTokensProcessor {
             // Otherwise, replace reference in string
             if let resolved = flatDict[flatKey] ?? resolveReference(reference, in: source),
                var stringResult = result as? String,
-               let fullRange = Range(match.range, in: stringResult) {
+               let fullRange = Range(match.range, in: stringResult)
+            {
                 stringResult.replaceSubrange(fullRange, with: "\(resolved)")
                 result = stringResult
             } else {
@@ -223,7 +224,7 @@ enum DesignTokensProcessor {
     private static func evaluateExpression(_ expression: String) -> Double? {
         let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
         let operators: [(Character, (Double, Double) -> Double)] = [
-            ("*", *), ("/", /), ("+", +), ("-", -)
+            ("*", *), ("/", /), ("+", +), ("-", -),
         ]
 
         for (symbol, operation) in operators {

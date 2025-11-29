@@ -4,12 +4,11 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 final class AppearanceModeTests: XCTestCase {
-
     // MARK: - Helper Classes
 
     /// Test helper to access private applyAppearanceMode method
@@ -168,7 +167,7 @@ final class AppearanceModeTests: XCTestCase {
         let allCases: [(PrimerAppearanceMode, UIUserInterfaceStyle)] = [
             (.system, .unspecified),
             (.light, .light),
-            (.dark, .dark)
+            (.dark, .dark),
         ]
 
         // When/Then: Each mode should apply the correct interface style

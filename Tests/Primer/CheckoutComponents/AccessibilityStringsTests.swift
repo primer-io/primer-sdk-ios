@@ -4,12 +4,11 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 final class AccessibilityStringsTests: XCTestCase {
-
     // MARK: - Card Form Field Strings (Grouped)
 
     func testCardFormFieldStrings_NotEmpty() {
@@ -22,7 +21,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11yCVCLabel,
             CheckoutComponentsStrings.a11yCVCHint,
             CheckoutComponentsStrings.a11yCardholderNameLabel,
-            CheckoutComponentsStrings.a11yCardholderNameHint
+            CheckoutComponentsStrings.a11yCardholderNameHint,
         ]
 
         // Then: All strings should be non-empty
@@ -36,7 +35,7 @@ final class AccessibilityStringsTests: XCTestCase {
         let requiredLabels = [
             CheckoutComponentsStrings.a11yCardNumberLabel,
             CheckoutComponentsStrings.a11yExpiryLabel,
-            CheckoutComponentsStrings.a11yCVCLabel
+            CheckoutComponentsStrings.a11yCVCLabel,
         ]
 
         // Then: Labels should indicate required status for UX clarity
@@ -57,7 +56,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11yCardNumberErrorEmpty,
             CheckoutComponentsStrings.a11yExpiryErrorInvalid,
             CheckoutComponentsStrings.a11yCVCErrorInvalid,
-            CheckoutComponentsStrings.a11yGenericError
+            CheckoutComponentsStrings.a11yGenericError,
         ]
 
         // Then: All error messages should be non-empty
@@ -75,7 +74,7 @@ final class AccessibilityStringsTests: XCTestCase {
         // Then: Hint should mention double-tap gesture for VoiceOver UX
         XCTAssertTrue(
             submitHint.lowercased().contains("double-tap") ||
-            submitHint.lowercased().contains("double tap"),
+                submitHint.lowercased().contains("double tap"),
             "Submit hint should mention double-tap gesture"
         )
     }
@@ -87,7 +86,7 @@ final class AccessibilityStringsTests: XCTestCase {
         // Then: Loading message should indicate wait state for UX clarity
         XCTAssertTrue(
             submitLoading.lowercased().contains("wait") ||
-            submitLoading.lowercased().contains("processing"),
+                submitLoading.lowercased().contains("processing"),
             "Loading message should indicate wait"
         )
     }
@@ -100,8 +99,8 @@ final class AccessibilityStringsTests: XCTestCase {
         XCTAssertFalse(submitDisabled.isEmpty, "Disabled message should not be empty")
         XCTAssertTrue(
             submitDisabled.lowercased().contains("disabled") ||
-            submitDisabled.lowercased().contains("complete") ||
-            submitDisabled.lowercased().contains("required"),
+                submitDisabled.lowercased().contains("complete") ||
+                submitDisabled.lowercased().contains("required"),
             "Disabled message should explain why button cannot be used"
         )
     }
@@ -113,7 +112,7 @@ final class AccessibilityStringsTests: XCTestCase {
         let testCases = [
             (cardType: "Visa", expiry: "12/25"),
             (cardType: "Mastercard", expiry: "06/26"),
-            (cardType: "Amex", expiry: "03/24")
+            (cardType: "Amex", expiry: "03/24"),
         ]
 
         // When: Generating saved card labels
@@ -172,7 +171,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11ySavedCardMasked,
             CheckoutComponentsStrings.a11yActionEdit,
             CheckoutComponentsStrings.a11yActionDelete,
-            CheckoutComponentsStrings.a11yActionSetDefault
+            CheckoutComponentsStrings.a11yActionSetDefault,
         ]
 
         // Then: All strings should be non-empty
@@ -192,7 +191,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11yClose,
             CheckoutComponentsStrings.a11yCancel,
             CheckoutComponentsStrings.a11yBack,
-            CheckoutComponentsStrings.a11yDismiss
+            CheckoutComponentsStrings.a11yDismiss,
         ]
 
         // Then: All common strings should be non-empty
@@ -218,7 +217,7 @@ final class AccessibilityStringsTests: XCTestCase {
             CheckoutComponentsStrings.a11yScreenSuccess,
             CheckoutComponentsStrings.a11yScreenError,
             CheckoutComponentsStrings.a11yScreenCountrySelection,
-            CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
+            CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods,
         ]
 
         // Then: All screen announcements should be non-empty

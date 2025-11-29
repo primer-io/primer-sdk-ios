@@ -9,7 +9,6 @@ import Foundation
 /// Default implementation of CheckoutComponents analytics interactor.
 /// Provides fire-and-forget event tracking using detached tasks for non-blocking behavior.
 actor DefaultAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
-
     // MARK: - Dependencies
 
     private let eventService: CheckoutComponentsAnalyticsServiceProtocol

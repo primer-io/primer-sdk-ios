@@ -8,7 +8,6 @@ import Foundation
 
 /// Protocol for components that can apply accessibility configuration
 protocol AccessibilityConfigurable {
-
     /// Apply accessibility metadata to this component
     /// - Parameter config: Configuration containing identifier, label, hint, traits
     func applyAccessibility(_ config: AccessibilityConfiguration)

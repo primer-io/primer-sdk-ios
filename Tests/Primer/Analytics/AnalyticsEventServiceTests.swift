@@ -8,7 +8,6 @@
 import XCTest
 
 final class AnalyticsEventServiceTests: XCTestCase {
-
     private var service: TestableAnalyticsEventService!
     private var mockNetworkClient: MockAnalyticsNetworkClient!
 
@@ -94,7 +93,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         XCTAssertGreaterThanOrEqual(call.payload.timestamp, beforeTimestamp)
         XCTAssertLessThan(call.payload.timestamp, initTimestamp,
-                         "Buffered event timestamp should be preserved from original time")
+                          "Buffered event timestamp should be preserved from original time")
     }
 
     // MARK: - Event Sending Tests
@@ -184,7 +183,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
             .paymentSuccess,
             .paymentFailure,
             .paymentReattempted,
-            .paymentFlowExited
+            .paymentFlowExited,
         ]
 
         // When - send all event types
@@ -243,7 +242,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // When - send multiple events concurrently
         await withTaskGroup(of: Void.self) { group in
-            for index in 0..<10 {
+            for index in 0 ..< 10 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
@@ -255,7 +254,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         }
 
         // Then - all 10 events should be sent
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             let call = try await mockNetworkClient.nextCall()
             XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
         }
@@ -271,7 +270,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
                 await self.service.initialize(config: config)
             }
 
-            for index in 0..<5 {
+            for index in 0 ..< 5 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
@@ -283,7 +282,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
         }
 
         // Then - all 5 events should be sent (after initialization completes)
-        for _ in 0..<5 {
+        for _ in 0 ..< 5 {
             let call = try await mockNetworkClient.nextCall()
             XCTAssertEqual(call.payload.eventName, "PAYMENT_SUCCESS")
         }
@@ -323,15 +322,15 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // Verify timestamps are preserved (not the current time after initialization)
         XCTAssertEqual(call1.payload.timestamp, event1Timestamp, accuracy: 1,
-                      "First event should preserve original timestamp")
+                       "First event should preserve original timestamp")
         XCTAssertEqual(call2.payload.timestamp, event2Timestamp, accuracy: 1,
-                      "Second event should preserve original timestamp")
+                       "Second event should preserve original timestamp")
 
         // Verify they're older than init time
         XCTAssertLessThan(call1.payload.timestamp, initTimestamp,
-                         "Buffered event should have old timestamp")
+                          "Buffered event should have old timestamp")
         XCTAssertLessThan(call2.payload.timestamp, initTimestamp,
-                         "Buffered event should have old timestamp")
+                          "Buffered event should have old timestamp")
     }
 
     func testImmediateEvents_UseFreshTimestamp() async throws {
@@ -351,9 +350,9 @@ final class AnalyticsEventServiceTests: XCTestCase {
         let call = try await mockNetworkClient.nextCall()
 
         XCTAssertGreaterThanOrEqual(call.payload.timestamp, beforeTimestamp,
-                                   "Timestamp should be at or after the call")
+                                    "Timestamp should be at or after the call")
         XCTAssertLessThanOrEqual(call.payload.timestamp, afterTimestamp,
-                                "Timestamp should be at or before completion")
+                                 "Timestamp should be at or before completion")
     }
 
     func testMixedBufferedAndImmediateEvents_PreserveCorrectTimestamps() async throws {
@@ -386,15 +385,15 @@ final class AnalyticsEventServiceTests: XCTestCase {
 
         // Buffered events should have old timestamps (preserved from when they were created)
         XCTAssertEqual(call1.payload.timestamp, bufferedTimestamp1, accuracy: 1,
-                      "First buffered event should have original timestamp")
+                       "First buffered event should have original timestamp")
         XCTAssertEqual(call2.payload.timestamp, bufferedTimestamp2, accuracy: 1,
-                      "Second buffered event should have original timestamp")
+                       "Second buffered event should have original timestamp")
 
         // Immediate events should have recent timestamps (from when they were sent)
         XCTAssertEqual(call3.payload.timestamp, immediateTimestamp1, accuracy: 1,
-                      "First immediate event should have fresh timestamp")
+                       "First immediate event should have fresh timestamp")
         XCTAssertEqual(call4.payload.timestamp, immediateTimestamp2, accuracy: 1,
-                      "Second immediate event should have fresh timestamp")
+                       "Second immediate event should have fresh timestamp")
     }
 
     // MARK: - Error Handling Tests
@@ -461,7 +460,7 @@ final class AnalyticsEventServiceTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func makeTestConfig() -> AnalyticsSessionConfig {
-        return AnalyticsSessionConfig(
+        AnalyticsSessionConfig(
             environment: .dev,
             checkoutSessionId: "cs_test_123",
             clientSessionId: "client_test_456",
@@ -483,7 +482,6 @@ extension AnalyticsEnvironmentProvider: EnvironmentProviding {}
 
 /// Testable version of AnalyticsEventService that uses a mock network client
 actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol {
-
     private let payloadBuilder: AnalyticsPayloadBuilder
     private let networkClient: MockAnalyticsNetworkClient
     private let eventBuffer: AnalyticsEventBuffer
@@ -518,7 +516,7 @@ actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol 
     }
 
     func initialize(config: AnalyticsSessionConfig) async {
-        self.sessionConfig = config
+        sessionConfig = config
 
         let bufferedEvents = await eventBuffer.flush()
 
@@ -561,7 +559,6 @@ actor TestableAnalyticsEventService: CheckoutComponentsAnalyticsServiceProtocol 
 
 /// Mock network client that records all send() calls
 actor MockAnalyticsNetworkClient {
-
     struct Call: Sendable {
         let payload: AnalyticsPayload
         let endpoint: URL
@@ -593,7 +590,7 @@ actor MockAnalyticsNetworkClient {
     }
 
     func hasCall() async -> Bool {
-        return !calls.isEmpty
+        !calls.isEmpty
     }
 
     func setShouldFail(_ shouldFail: Bool) {

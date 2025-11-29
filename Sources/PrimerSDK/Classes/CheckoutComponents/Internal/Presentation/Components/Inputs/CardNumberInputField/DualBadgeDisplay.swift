@@ -43,25 +43,25 @@ struct DualBadgeDisplay: View {
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    VStack(spacing: 16) {
-        DualBadgeDisplay(networks: [.visa, .eftpos])
-        DualBadgeDisplay(networks: [.masterCard, .eftpos])
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        VStack(spacing: 16) {
+            DualBadgeDisplay(networks: [.visa, .eftpos])
+            DualBadgeDisplay(networks: [.masterCard, .eftpos])
+        }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    VStack(spacing: 16) {
-        DualBadgeDisplay(networks: [.visa, .eftpos])
-        DualBadgeDisplay(networks: [.masterCard, .eftpos])
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        VStack(spacing: 16) {
+            DualBadgeDisplay(networks: [.visa, .eftpos])
+            DualBadgeDisplay(networks: [.masterCard, .eftpos])
+        }
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .preferredColorScheme(.dark)
     }
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .preferredColorScheme(.dark)
-}
 #endif

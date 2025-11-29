@@ -56,47 +56,47 @@ struct CardNetworkBadge: View, LogReporter {
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    VStack(spacing: 16) {
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .visa)
-            CardNetworkBadge(network: .masterCard)
-            CardNetworkBadge(network: .amex)
-            CardNetworkBadge(network: .discover)
-        }
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        VStack(spacing: 16) {
+            HStack(spacing: 8) {
+                CardNetworkBadge(network: .visa)
+                CardNetworkBadge(network: .masterCard)
+                CardNetworkBadge(network: .amex)
+                CardNetworkBadge(network: .discover)
+            }
 
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .cartesBancaires)
-            CardNetworkBadge(network: .diners)
-            CardNetworkBadge(network: .jcb)
-            CardNetworkBadge(network: .unknown)
+            HStack(spacing: 8) {
+                CardNetworkBadge(network: .cartesBancaires)
+                CardNetworkBadge(network: .diners)
+                CardNetworkBadge(network: .jcb)
+                CardNetworkBadge(network: .unknown)
+            }
         }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    VStack(spacing: 16) {
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .visa)
-            CardNetworkBadge(network: .masterCard)
-            CardNetworkBadge(network: .amex)
-            CardNetworkBadge(network: .discover)
-        }
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        VStack(spacing: 16) {
+            HStack(spacing: 8) {
+                CardNetworkBadge(network: .visa)
+                CardNetworkBadge(network: .masterCard)
+                CardNetworkBadge(network: .amex)
+                CardNetworkBadge(network: .discover)
+            }
 
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .cartesBancaires)
-            CardNetworkBadge(network: .diners)
-            CardNetworkBadge(network: .jcb)
-            CardNetworkBadge(network: .unknown)
+            HStack(spacing: 8) {
+                CardNetworkBadge(network: .cartesBancaires)
+                CardNetworkBadge(network: .diners)
+                CardNetworkBadge(network: .jcb)
+                CardNetworkBadge(network: .unknown)
+            }
         }
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .preferredColorScheme(.dark)
     }
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .preferredColorScheme(.dark)
-}
 #endif

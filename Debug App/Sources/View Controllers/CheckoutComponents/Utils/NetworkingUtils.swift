@@ -11,7 +11,6 @@ import PrimerSDK
 /// Provides modern async/await interface with consistent error handling
 @available(iOS 15.0, *)
 enum NetworkingUtils {
-
     // MARK: - Error Types
 
     enum NetworkingError: LocalizedError {
@@ -40,7 +39,7 @@ enum NetworkingUtils {
         body: ClientSessionRequestBody,
         apiVersion: PrimerApiVersion
     ) async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             Networking.requestClientSession(
                 requestBody: body,
                 apiVersion: apiVersion

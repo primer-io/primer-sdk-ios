@@ -194,7 +194,9 @@ struct CountryInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-// Note: Previews are disabled for CountryInputField because it requires DefaultCardFormScope
-// which has complex initialization dependencies. Use the Debug App to test this component.
+
+    // MARK: - Preview
+
+    // Note: Previews are disabled for CountryInputField because it requires DefaultCardFormScope
+    // which has complex initialization dependencies. Use the Debug App to test this component.
 #endif

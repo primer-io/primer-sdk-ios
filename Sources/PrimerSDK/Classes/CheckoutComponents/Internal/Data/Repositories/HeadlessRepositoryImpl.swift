@@ -6,13 +6,12 @@
 
 import Foundation
 #if canImport(Primer3DS)
-import Primer3DS
+    import Primer3DS
 #endif
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
 private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate, LogReporter {
-
     private let completion: (Result<PaymentResult, Error>) -> Void
     private var hasCompleted = false
     private weak var repository: HeadlessRepositoryImpl?
@@ -46,7 +45,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         completion(.success(result))
     }
 
-    func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData _: PrimerCheckoutData?) {
         guard !hasCompleted else {
             return
         }
@@ -56,7 +55,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     }
 
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(
-        _ data: PrimerCheckoutPaymentMethodData,
+        _: PrimerCheckoutPaymentMethodData,
         decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
     ) {
         decisionHandler(.continuePaymentCreation())
@@ -76,7 +75,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     }
 
     func primerHeadlessUniversalCheckoutDidResumeWith(
-        _ resumeToken: String,
+        _: String,
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
         decisionHandler(.complete())
@@ -94,9 +93,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
     // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
-                              errors: [Error]?) {
+                              errors: [Error]?)
+    {
         // Notify validation completion handler - continuation is resumed in submitPaymentWithValidation
         if let validationCompletion {
             self.validationCompletion = nil
@@ -104,17 +104,15 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState state: PrimerValidationState) {
-    }
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata _: PrimerPaymentMethodMetadata,
+                              forState _: PrimerValidationState) {}
 }
 
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
 @available(iOS 15.0, *)
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
-
     // Reference to headless SDK will be injected or accessed here
     // For now, using placeholders to show the implementation pattern
 
@@ -160,8 +158,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             }
 
             settings = try await container.resolve(PrimerSettings.self)
-        } catch {
-        }
+        } catch {}
     }
 
     @available(iOS 15.0, *)
@@ -181,8 +178,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             }
 
             configurationService = try await container.resolve(ConfigurationService.self)
-        } catch {
-        }
+        } catch {}
     }
 
     @available(iOS 15.0, *)
@@ -224,7 +220,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     /// Extract network-specific surcharges from client session configuration
     private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
-
         // Only card payment methods have network-specific surcharges
         guard paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue else {
             return nil
@@ -265,15 +260,16 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             // Handle nested surcharge structure: surcharge.amount
             if let surchargeData = networkData["surcharge"] as? [String: Any],
                let surchargeAmount = surchargeData["amount"] as? Int,
-               surchargeAmount > 0 {
+               surchargeAmount > 0
+            {
                 networkSurcharges[networkType] = surchargeAmount
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
-                    surcharge > 0 {
+                    surcharge > 0
+            {
                 networkSurcharges[networkType] = surcharge
-            } else {
-            }
+            } else {}
         }
 
         return networkSurcharges.isEmpty ? nil : networkSurcharges
@@ -287,15 +283,16 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             // Handle nested surcharge structure: surcharge.amount
             if let surchargeData = networkData["surcharge"] as? [String: Any],
                let surchargeAmount = surchargeData["amount"] as? Int,
-               surchargeAmount > 0 {
+               surchargeAmount > 0
+            {
                 networkSurcharges[networkType] = surchargeAmount
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
-                    surcharge > 0 {
+                    surcharge > 0
+            {
                 networkSurcharges[networkType] = surcharge
-            } else {
-            }
+            } else {}
         }
 
         return networkSurcharges.isEmpty ? nil : networkSurcharges
@@ -517,18 +514,17 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         continuation.resume(throwing: error)
     }
 
-    func setBillingAddress(_ billingAddress: BillingAddress) async throws {
-    }
+    func setBillingAddress(_: BillingAddress) async throws {}
 
     /// Get network detection stream for real-time updates
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
-        self.networkDetectionStream
+        networkDetectionStream
     }
 
     /// Update card number in RawDataManager to trigger network detection
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-        rawDataManager?.configure { [weak self] _, error in
+        rawDataManager?.configure { [weak self] _, _ in
         }
 
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
@@ -565,7 +561,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Update client session with payment method selection (matches Drop-in's dispatchActions)
     /// This is CRITICAL for surcharge functionality - backend needs network context for correct calculation
     private func updateClientSessionBeforePayment(selectedNetwork: CardNetwork?, completion: @escaping (Error?) -> Void) {
-
         // Determine card network (following Drop-in logic exactly)
         var network = selectedNetwork?.rawValue.uppercased()
         if [nil, "UNKNOWN"].contains(network) {
@@ -575,8 +570,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let params: [String: Any] = [
             "paymentMethodType": "PAYMENT_CARD",
             "binData": [
-                "network": network ?? "OTHER"
-            ]
+                "network": network ?? "OTHER",
+            ],
         ]
 
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
@@ -698,7 +693,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
         for child in Mirror(reflecting: info).children {
             if let nestedInfo = child.value as? PrimerCheckoutAdditionalInfo,
-               let nestedUrl = extractRedirectURL(from: nestedInfo) {
+               let nestedUrl = extractRedirectURL(from: nestedInfo)
+            {
                 return nestedUrl
             }
 
@@ -744,9 +740,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     private var threeDSProvider: String? {
         #if canImport(Primer3DS)
-        return Primer3DS.threeDsSdkProvider
+            return Primer3DS.threeDsSdkProvider
         #else
-        return nil
+            return nil
         #endif
     }
 
@@ -774,31 +770,35 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
 @available(iOS 15.0, *)
 extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Error]?) {
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid _: Bool,
+                              errors: [Error]?)
+    {
         let errorsDescription = errors?.map(\.localizedDescription).joined(separator: ", ")
         // RawDataManager validation state updated
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              metadataDidChange metadata: [String: Any]?) {
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange _: [String: Any]?)
+    {
         // RawDataManager metadata changed
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState cardState: PrimerValidationState) {
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchMetadataForState cardState: PrimerValidationState)
+    {
         guard cardState is PrimerCardNumberEntryState else {
             return
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    func primerRawDataManager(_: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState cardState: PrimerValidationState) {
+                              forState cardState: PrimerValidationState)
+    {
         guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
-              cardState is PrimerCardNumberEntryState else {
+              cardState is PrimerCardNumberEntryState
+        else {
             return
         }
 
@@ -806,7 +806,8 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
         var primerNetworks: [PrimerCardNetwork]
         if metadataModel.source == .remote,
            let selectable = metadataModel.selectableCardNetworks?.items,
-           !selectable.isEmpty {
+           !selectable.isEmpty
+        {
             primerNetworks = selectable
         } else if let preferred = metadataModel.detectedCardNetworks.preferred {
             primerNetworks = [preferred]

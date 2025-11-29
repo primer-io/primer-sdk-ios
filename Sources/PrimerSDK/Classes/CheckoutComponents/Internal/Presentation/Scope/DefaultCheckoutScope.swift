@@ -15,8 +15,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     enum NavigationState: Equatable {
         case loading
         case paymentMethodSelection
-        case paymentMethod(String)  // Dynamic payment method with type identifier
-        case selectCountry  // Country selection screen
+        case paymentMethod(String) // Dynamic payment method with type identifier
+        case selectCountry // Country selection screen
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
         case dismissed
@@ -52,7 +52,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     @Published var navigationState = NavigationState.loading
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerCheckoutState> {
+    var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await value in $internalState.values {
@@ -69,17 +69,17 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - UI Customization Properties
 
-    public var container: ((_ content: @escaping () -> AnyView) -> any View)?
-    public var splashScreen: (() -> any View)?
-    public var loadingScreen: (() -> any View)?
-    public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
-    public var errorScreen: ((_ message: String) -> any View)?
-    public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
+    var container: ((_ content: @escaping () -> AnyView) -> any View)?
+    var splashScreen: (() -> any View)?
+    var loadingScreen: (() -> any View)?
+    var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
+    var errorScreen: ((_ message: String) -> any View)?
+    var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
 
     // MARK: - Child Scopes
 
     private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
-    public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
+    var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         if let existing = _paymentMethodSelection {
             return existing
         }
@@ -159,7 +159,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     // MARK: - Payment Settings
 
     /// Payment handling mode from settings
-    public var paymentHandling: PrimerPaymentHandling {
+    var paymentHandling: PrimerPaymentHandling {
         settings.paymentHandling
     }
 
@@ -168,7 +168,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Initialization
 
-    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
+    init(clientToken: String, settings: PrimerSettings, diContainer _: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
         self.clientToken = clientToken
         self.settings = settings
         self.navigator = navigator
@@ -241,7 +241,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 updateState(.ready)
 
                 if availablePaymentMethods.count == 1,
-                   let singlePaymentMethod = availablePaymentMethods.first {
+                   let singlePaymentMethod = availablePaymentMethods.first
+                {
                     updateNavigationState(.paymentMethod(singlePaymentMethod.type))
                 } else {
                     updateNavigationState(.paymentMethodSelection)
@@ -295,7 +296,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     private func extractFailureMetadata(from error: PrimerError) -> AnalyticsEventMetadata {
         if case let .paymentFailed(paymentMethodType, paymentId, _, _, _) = error,
-           let paymentMethod = paymentMethodType {
+           let paymentMethod = paymentMethodType
+        {
             return .payment(PaymentEvent(
                 paymentMethod: paymentMethod,
                 paymentId: paymentId
@@ -397,7 +399,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
                 // Only update if the state has actually changed to avoid loops
                 if case let .failure(currentError) = navigationState,
-                   case let .failure(newError) = newNavigationState {
+                   case let .failure(newError) = newNavigationState
+                {
                     // For error states, compare messages to avoid redundant updates
                     if currentError.localizedDescription != newError.localizedDescription {
                         updateNavigationState(newNavigationState, syncToNavigator: false)
@@ -426,7 +429,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Public Methods
 
-    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
         for paymentMethodType: String
     ) -> T? {
         if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
@@ -456,7 +459,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
     }
 
-    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
         if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType }) as? T {
             return cachedScope
         }
@@ -485,7 +488,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
     }
 
-    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? {
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? {
         getPaymentMethodScope(for: methodType.rawValue)
     }
 
@@ -496,7 +499,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         type.rawValue
     }
 
-    public func onDismiss() {
+    func onDismiss() {
         // Ensure state updates happen on main thread for SwiftUI observation
         Task { @MainActor in
             updateState(.dismissed)
@@ -519,8 +522,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             guard let container = DIContainer.currentSync else {
                 updateNavigationState(.failure(PrimerError.invalidArchitecture(
                     description: "Dependency injection container not available",
-                    recoverSuggestion: "Ensure DI container is properly initialized",
-                    )))
+                    recoverSuggestion: "Ensure DI container is properly initialized"
+                )))
                 return
             }
 

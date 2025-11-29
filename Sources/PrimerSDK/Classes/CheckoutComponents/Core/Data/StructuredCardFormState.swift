@@ -113,7 +113,6 @@ public struct PrimerCountry: Equatable, Identifiable {
 /// Structured card form state
 @available(iOS 15.0, *)
 public struct StructuredCardFormState: Equatable {
-
     // MARK: - Core Configuration
 
     /// Dynamic field configuration

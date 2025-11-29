@@ -10,7 +10,6 @@ import SwiftUI
 /// Provides self-contained card payment functionality with scope creation.
 @available(iOS 15.0, *)
 struct CardPaymentMethod: PaymentMethodProtocol {
-
     /// The scope type this payment method creates
     typealias ScopeType = DefaultCardFormScope
 
@@ -27,7 +26,6 @@ struct CardPaymentMethod: PaymentMethodProtocol {
         checkoutScope: PrimerCheckoutScope,
         diContainer: any ContainerProtocol
     ) throws -> DefaultCardFormScope {
-
         // Check if checkoutScope is DefaultCheckoutScope to access internal methods
         guard let defaultCheckoutScope = checkoutScope as? DefaultCheckoutScope else {
             throw PrimerError.invalidArchitecture(
@@ -106,7 +104,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
     /// Provides custom UI for this payment method using ViewBuilder.
     /// - Parameter content: A ViewBuilder closure that uses the card form scope as a parameter
     @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (DefaultCardFormScope) -> V) -> AnyView {
+    func content<V: View>(@ViewBuilder _: @escaping (DefaultCardFormScope) -> V) -> AnyView {
         // This method would be called with a custom ViewBuilder implementation
         // For now, return a placeholder as the actual implementation would require
         // instantiating the scope and passing it to the content closure
@@ -127,7 +125,6 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 
 @available(iOS 15.0, *)
 extension CardPaymentMethod {
-
     /// Registers the card payment method with the global registry
     /// This should be called during SDK initialization
     @MainActor

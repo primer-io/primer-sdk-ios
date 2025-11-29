@@ -62,7 +62,6 @@ public protocol ValidationService {
  * - **Hit Rate**: Expected 70-85% for typical user typing patterns
  */
 final class ValidationResultCache {
-
     /// Shared cache instance for all validation operations
     static let shared = ValidationResultCache()
 
@@ -71,8 +70,8 @@ final class ValidationResultCache {
 
     private init() {
         // Configure cache for optimal validation performance
-        cache.countLimit = 200  // Support high-frequency validation calls
-        cache.totalCostLimit = 8000  // ~8KB memory limit
+        cache.countLimit = 200 // Support high-frequency validation calls
+        cache.totalCostLimit = 8000 // ~8KB memory limit
     }
 
     /// Wrapper for cached validation results with timestamp
@@ -82,7 +81,7 @@ final class ValidationResultCache {
 
         init(result: ValidationResult) {
             self.result = result
-            self.timestamp = Date()
+            timestamp = Date()
         }
 
         /// Check if cache entry is still valid (30 seconds expiration)
@@ -93,7 +92,7 @@ final class ValidationResultCache {
 
     /// Generates cache key for validation input
     private func cacheKey(for input: String, type: String, context: String = "") -> String {
-        return "\(type)_\(input)_\(context)".hash.description
+        "\(type)_\(input)_\(context)".hash.description
     }
 
     /// Retrieves cached validation result or performs validation
@@ -133,13 +132,13 @@ public class DefaultValidationService: ValidationService {
 }
 
 // MARK: - DefaultValidationService Public Methods Extension
-extension DefaultValidationService {
 
+public extension DefaultValidationService {
     // MARK: - Public Methods
 
-    public func validateCardNumber(_ number: String) -> ValidationResult {
+    func validateCardNumber(_ number: String) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for card number validation
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: number,
             type: "cardNumber"
         ) {
@@ -148,7 +147,7 @@ extension DefaultValidationService {
         }
     }
 
-    public func validateExpiry(month: String, year: String) -> ValidationResult {
+    func validateExpiry(month: String, year: String) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for expiry validation
         let expiryString = "\(month)/\(year)"
         return ValidationResultCache.shared.cachedValidation(
@@ -161,9 +160,9 @@ extension DefaultValidationService {
         }
     }
 
-    public func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
+    func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for CVV validation with card network context
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: cvv,
             type: "cvv",
             context: cardNetwork.rawValue
@@ -173,9 +172,9 @@ extension DefaultValidationService {
         }
     }
 
-    public func validateCardholderName(_ name: String) -> ValidationResult {
+    func validateCardholderName(_ name: String) -> ValidationResult {
         // INTERNAL OPTIMIZATION: Use caching for cardholder name validation
-        return ValidationResultCache.shared.cachedValidation(
+        ValidationResultCache.shared.cachedValidation(
             input: name,
             type: "cardholderName"
         ) {
@@ -185,7 +184,7 @@ extension DefaultValidationService {
     }
 
     // swiftlint:disable all
-    public func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
         switch type {
         case .cardNumber:
             guard let value = value else {
@@ -276,28 +275,30 @@ extension DefaultValidationService {
         case .unknown:
             // Unknown type always fails validation
             return .invalid(code: "invalid-unknown-field", message: "Unknown field type")
+
         case .email:
             let rule = rulesFactory.createEmailValidationRule()
             return rule.validate(value)
         }
     }
+
     // swiftlint:enable all
 
-    public func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
-        return rule.validate(input)
+    func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
+        rule.validate(input)
     }
 
     // MARK: - Structured State Support Implementation
 
     /// Implementation of validateFormData for structured state
     @available(iOS 15.0, *)
-    public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        return validateFields(configuration.allFields, formData: formData)
+    func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
+        validateFields(configuration.allFields, formData: formData)
     }
 
     /// Implementation of validateFields for partial validation
     @available(iOS 15.0, *)
-    public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
+    func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
         var fieldErrors: [FieldError] = []
 
         for fieldType in fieldTypes {
@@ -312,7 +313,7 @@ extension DefaultValidationService {
 
     /// Implementation of validateFieldWithStructuredResult
     @available(iOS 15.0, *)
-    public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
+    func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
         let result = validateField(type: type, value: value)
 
         // Convert ValidationResult to FieldError if invalid

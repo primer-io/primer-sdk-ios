@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Demonstrates runtime customization with conditional component overrides
 @available(iOS 15.0, *)
@@ -13,12 +13,12 @@ struct RuntimeCustomizationDemo: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
-    
+
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
-    
+
     var body: some View {
         VStack {
             if isDismissed {
@@ -38,24 +38,24 @@ struct RuntimeCustomizationDemo: View {
             await createSession()
         }
     }
-    
+
     // MARK: - State Views
-    
+
     private var dismissedStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.green)
-            
+
             Text("Demo Completed")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Runtime customization demo has been dismissed")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             Button("Reset Demo") {
                 isDismissed = false
                 Task { await createSession() }
@@ -65,7 +65,7 @@ struct RuntimeCustomizationDemo: View {
         .frame(height: 300)
         .padding()
     }
-    
+
     private var loadingStateView: some View {
         VStack(spacing: 12) {
             ProgressView()
@@ -76,7 +76,7 @@ struct RuntimeCustomizationDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func errorStateView(_ errorMessage: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -95,19 +95,19 @@ struct RuntimeCustomizationDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func checkoutView(clientToken: String) -> some View {
         VStack {
             Text("🎨 Smart Runtime Customization")
                 .font(.headline)
                 .padding()
-            
+
             VStack(spacing: 8) {
                 Text("Watch components transform as you type!")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
-                
+
                 Text("• Card brand detection with dynamic styling\n• Real-time validation feedback\n• Context-aware help text\n• Adaptive submit button")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -127,8 +127,9 @@ struct RuntimeCustomizationDemo: View {
             )
         }
     }
-    
+
     // MARK: - Scope Customization
+
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         checkoutScope.container = { content in
             AnyView(
@@ -138,7 +139,7 @@ struct RuntimeCustomizationDemo: View {
                 }
             )
         }
-        
+
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with conditional customization demo
@@ -147,9 +148,9 @@ struct RuntimeCustomizationDemo: View {
             }
         }
     }
-    
+
     // MARK: - Session Creation
-    
+
     /// Creates a session for this demo
     private func createSession() async {
         isLoading = true
@@ -160,24 +161,24 @@ struct RuntimeCustomizationDemo: View {
 
         // Request client token using the session configuration
         do {
-            self.clientToken = try await NetworkingUtils.requestClientSession(
+            clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: self.apiVersion
+                apiVersion: apiVersion
             )
-            self.isLoading = false
+            isLoading = false
         } catch {
             self.error = error.localizedDescription
-            self.isLoading = false
+            isLoading = false
         }
     }
-    
+
     /// Creates session body using the main controller's configuration
     private func createSessionBody() -> ClientSessionRequestBody {
         // Use the configured session from MerchantSessionAndSettingsViewController
         guard let configuredSession = clientSession else {
             fatalError("No session configuration provided - RuntimeCustomizationDemo requires configured session from main controller")
         }
-        
+
         return configuredSession
     }
 }
@@ -186,13 +187,13 @@ struct RuntimeCustomizationDemo: View {
 @available(iOS 15.0, *)
 private struct ConditionalCardFormView: View {
     let cardFormScope: DefaultCardFormScope
-    
+
     @State private var cardState: StructuredCardFormState?
     @State private var detectedCardType: String = "Unknown"
     @State private var showSecurityBadge = false
     @State private var isAmex = false
     @State private var stateTask: Task<Void, Never>?
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -204,20 +205,20 @@ private struct ConditionalCardFormView: View {
                                 Circle()
                                     .fill(cardTypeColor.opacity(0.2))
                                     .frame(width: 50, height: 50)
-                                
+
                                 Image(systemName: cardTypeIcon)
                                     .font(.title2)
                                     .foregroundColor(cardTypeColor)
                             }
                             .scaleEffect(showSecurityBadge ? 1.1 : 1.0)
                             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showSecurityBadge)
-                            
+
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("✨ \(detectedCardType) Detected")
                                     .font(.headline)
                                     .fontWeight(.bold)
                                     .foregroundColor(cardTypeColor)
-                                
+
                                 if showSecurityBadge {
                                     HStack(spacing: 4) {
                                         Image(systemName: "checkmark.shield.fill")
@@ -228,9 +229,9 @@ private struct ConditionalCardFormView: View {
                                     .transition(.scale.combined(with: .opacity))
                                 }
                             }
-                            
+
                             Spacer()
-                            
+
                             if isAmex {
                                 VStack(spacing: 2) {
                                     Text("4-DIGIT")
@@ -284,7 +285,7 @@ private struct ConditionalCardFormView: View {
                         )
                     }
                 }
-                
+
                 // Card form fields with enhanced conditional styling
                 VStack(spacing: 16) {
                     // Card number with animated dynamic styling
@@ -294,21 +295,21 @@ private struct ConditionalCardFormView: View {
                                 RoundedRectangle(cornerRadius: 6)
                                     .fill(cardTypeColor.opacity(0.2))
                                     .frame(width: 32, height: 24)
-                                
+
                                 Image(systemName: cardTypeIcon)
                                     .font(.caption)
                                     .foregroundColor(cardTypeColor)
                             }
                             .animation(.spring(response: 0.3), value: cardTypeColor)
-                            
+
                             Text("💳 Card Number")
                                 .font(.caption)
                                 .fontWeight(.medium)
                                 .foregroundColor(detectedCardType != "Unknown" ? cardTypeColor : .secondary)
                                 .animation(.easeInOut(duration: 0.2), value: cardTypeColor)
-                            
+
                             Spacer()
-                            
+
                             if detectedCardType != "Unknown" {
                                 Text(detectedCardType.uppercased())
                                     .font(.caption2)
@@ -321,7 +322,7 @@ private struct ConditionalCardFormView: View {
                                     .transition(.scale.combined(with: .opacity))
                             }
                         }
-                        
+
                         // Enhanced card number field with dramatic color changes
                         cardFormScope.PrimerCardNumberField(
                             label: nil,
@@ -339,7 +340,7 @@ private struct ConditionalCardFormView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(
                                     LinearGradient(
-                                        colors: detectedCardType != "Unknown" 
+                                        colors: detectedCardType != "Unknown"
                                             ? [cardTypeColor.opacity(0.6), cardTypeColor.opacity(0.2)]
                                             : [Color.clear, Color.clear],
                                         startPoint: .topLeading,
@@ -350,7 +351,7 @@ private struct ConditionalCardFormView: View {
                         )
                         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: cardTypeColor)
                     }
-                    
+
                     HStack(spacing: 16) {
                         // Enhanced expiry date field
                         VStack(alignment: .leading, spacing: 8) {
@@ -363,7 +364,7 @@ private struct ConditionalCardFormView: View {
                                     .fontWeight(.medium)
                                     .foregroundColor(.secondary)
                             }
-                            
+
                             cardFormScope.PrimerExpiryDateField(
                                 label: nil,
                                 styling: PrimerFieldStyling(
@@ -377,21 +378,21 @@ private struct ConditionalCardFormView: View {
                                 )
                             )
                         }
-                        
-                        // Enhanced CVV field with dynamic Amex styling 
+
+                        // Enhanced CVV field with dynamic Amex styling
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 4) {
                                 Image(systemName: isAmex ? "shield.lefthalf.filled" : "lock.shield")
                                     .font(.caption2)
                                     .foregroundColor(isAmex ? cardTypeColor : .secondary)
                                     .animation(.spring(response: 0.3), value: isAmex)
-                                
+
                                 Text(isAmex ? "🔐 CVV (4 digits)" : "🔐 CVV")
                                     .font(.caption)
                                     .fontWeight(.medium)
                                     .foregroundColor(isAmex ? cardTypeColor : .secondary)
                                     .animation(.easeInOut(duration: 0.2), value: isAmex)
-                                
+
                                 if isAmex {
                                     Text("FRONT")
                                         .font(.caption2)
@@ -404,7 +405,7 @@ private struct ConditionalCardFormView: View {
                                         .transition(.scale.combined(with: .opacity))
                                 }
                             }
-                            
+
                             cardFormScope.PrimerCvvField(
                                 label: nil,
                                 styling: PrimerFieldStyling(
@@ -427,7 +428,7 @@ private struct ConditionalCardFormView: View {
                             )
                         }
                     }
-                    
+
                     // Enhanced cardholder name with real-time validation feedback
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 6) {
@@ -435,15 +436,15 @@ private struct ConditionalCardFormView: View {
                                 .font(.caption2)
                                 .foregroundColor(cardholderValidationColor != .clear ? cardholderValidationColor : .secondary)
                                 .animation(.spring(response: 0.3), value: cardholderValidationColor)
-                            
+
                             Text("👤 Cardholder Name")
                                 .font(.caption)
                                 .fontWeight(.medium)
                                 .foregroundColor(cardholderValidationColor != .clear ? cardholderValidationColor : .secondary)
                                 .animation(.easeInOut(duration: 0.2), value: cardholderValidationColor)
-                            
+
                             Spacer()
-                            
+
                             if cardholderValidationColor == .green {
                                 Text("VALID")
                                     .font(.caption2)
@@ -466,7 +467,7 @@ private struct ConditionalCardFormView: View {
                                     .transition(.scale.combined(with: .opacity))
                             }
                         }
-                        
+
                         cardFormScope.PrimerCardholderNameField(
                             label: nil,
                             styling: PrimerFieldStyling(
@@ -481,8 +482,8 @@ private struct ConditionalCardFormView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(
-                                    cardholderValidationColor != .clear 
-                                        ? cardholderValidationColor.opacity(0.3) 
+                                    cardholderValidationColor != .clear
+                                        ? cardholderValidationColor.opacity(0.3)
                                         : Color.clear,
                                     lineWidth: cardholderValidationColor != .clear ? 1 : 0
                                 )
@@ -492,7 +493,7 @@ private struct ConditionalCardFormView: View {
                 }
                 .padding()
                 .animation(.spring(), value: detectedCardType)
-                
+
                 // Enhanced dynamic help text with card-specific information
                 VStack(spacing: 12) {
                     if detectedCardType != "Unknown" {
@@ -503,13 +504,13 @@ private struct ConditionalCardFormView: View {
                                     .foregroundColor(cardTypeColor)
                                     .scaleEffect(showSecurityBadge ? 1.2 : 1.0)
                                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showSecurityBadge)
-                                
+
                                 Text("\(detectedCardType) Features Activated")
                                     .font(.caption)
                                     .fontWeight(.semibold)
                                     .foregroundColor(cardTypeColor)
                             }
-                            
+
                             VStack(alignment: .leading, spacing: 4) {
                                 if isAmex {
                                     Label("CVV is 4 digits on the front of your card", systemImage: "creditcard.trianglebadge.exclamationmark")
@@ -580,7 +581,7 @@ private struct ConditionalCardFormView: View {
                         )
                     }
                 }
-                
+
                 // Enhanced submit button with dynamic styling and card-specific branding
                 if let state = cardState {
                     VStack(spacing: 8) {
@@ -599,7 +600,7 @@ private struct ConditionalCardFormView: View {
                                         Circle()
                                             .fill(Color.white.opacity(0.3))
                                             .frame(width: 28, height: 28)
-                                        
+
                                         if state.isValid {
                                             Image(systemName: detectedCardType != "Unknown" ? cardTypeIcon : "checkmark.shield.fill")
                                                 .font(.system(size: 14, weight: .bold))
@@ -610,12 +611,12 @@ private struct ConditionalCardFormView: View {
                                                 .foregroundColor(.white.opacity(0.8))
                                         }
                                     }
-                                    
+
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(state.isValid ? "Complete Payment" : "Complete Form")
                                             .font(.system(size: 17, weight: .semibold))
-                                        
-                                        if state.isValid && detectedCardType != "Unknown" {
+
+                                        if state.isValid, detectedCardType != "Unknown" {
                                             Text("Pay with \(detectedCardType)")
                                                 .font(.caption)
                                                 .opacity(0.9)
@@ -626,10 +627,10 @@ private struct ConditionalCardFormView: View {
                                         }
                                     }
                                 }
-                                
+
                                 Spacer()
-                                
-                                if state.isValid && detectedCardType != "Unknown" {
+
+                                if state.isValid, detectedCardType != "Unknown" {
                                     Text("SECURE")
                                         .font(.caption2)
                                         .fontWeight(.bold)
@@ -645,7 +646,7 @@ private struct ConditionalCardFormView: View {
                             .padding(.vertical, 18)
                             .background(
                                 LinearGradient(
-                                    colors: state.isValid 
+                                    colors: state.isValid
                                         ? [submitButtonBackground(isValid: true), submitButtonBackground(isValid: true).opacity(0.8)]
                                         : [Color.gray.opacity(0.4), Color.gray.opacity(0.3)],
                                     startPoint: .topLeading,
@@ -677,7 +678,7 @@ private struct ConditionalCardFormView: View {
                             .animation(.spring(response: 0.3), value: detectedCardType)
                         }
                         .disabled(!state.isValid || state.isLoading)
-                        
+
                         // Dynamic submit button status indicator
                         if !state.isValid {
                             HStack(spacing: 4) {
@@ -703,7 +704,7 @@ private struct ConditionalCardFormView: View {
             stateTask?.cancel()
         }
     }
-    
+
     private func startObservingState() {
         stateTask?.cancel()
         stateTask = Task {
@@ -717,7 +718,7 @@ private struct ConditionalCardFormView: View {
             }
         }
     }
-    
+
     private var cardTypeIcon: String {
         switch detectedCardType {
         case "Visa":
@@ -730,7 +731,7 @@ private struct ConditionalCardFormView: View {
             return "creditcard"
         }
     }
-    
+
     private var cardTypeColor: Color {
         switch detectedCardType {
         case "Visa":
@@ -786,52 +787,53 @@ private struct ConditionalCardFormView: View {
         guard let state = cardState else {
             return Color.clear
         }
-        
+
         let nameValue = state.data[.cardholderName]
-        
+
         if nameValue.isEmpty {
             return Color.clear
         }
-        
+
         return nameValue.count >= 2 ? Color.green : Color.orange
     }
-    
+
     private var cardholderValidationIcon: String {
         guard let state = cardState else {
             return "person"
         }
-        
+
         let nameValue = state.data[.cardholderName]
-        
+
         if nameValue.isEmpty {
             return "person"
         }
-        
+
         return nameValue.count >= 2 ? "person.fill.checkmark" : "person.fill.xmark"
     }
-    
+
     private func submitButtonBackground(isValid: Bool) -> Color {
         if isValid {
             return detectedCardType != "Unknown" ? cardTypeColor : .green
         }
         return .gray.opacity(0.3)
     }
-    
+
     private func updateCardType(from state: StructuredCardFormState) {
         // Detect card type from card number
         let cardNumber = state.data[.cardNumber]
-        
+
         if cardNumber.starts(with: "4"), cardNumber.count >= 1 {
             detectedCardType = "Visa"
             showSecurityBadge = true
             isAmex = false
-        } else if (cardNumber.starts(with: "51") || cardNumber.starts(with: "52") ||
-                   cardNumber.starts(with: "53") || cardNumber.starts(with: "54") ||
-                   cardNumber.starts(with: "55")), cardNumber.count >= 2 {
+        } else if cardNumber.starts(with: "51") || cardNumber.starts(with: "52") ||
+            cardNumber.starts(with: "53") || cardNumber.starts(with: "54") ||
+            cardNumber.starts(with: "55"), cardNumber.count >= 2
+        {
             detectedCardType = "Mastercard"
             showSecurityBadge = true
             isAmex = false
-        } else if (cardNumber.starts(with: "34") || cardNumber.starts(with: "37")), cardNumber.count >= 2 {
+        } else if cardNumber.starts(with: "34") || cardNumber.starts(with: "37"), cardNumber.count >= 2 {
             detectedCardType = "Amex"
             showSecurityBadge = true
             isAmex = true
@@ -841,5 +843,4 @@ private struct ConditionalCardFormView: View {
             isAmex = false
         }
     }
-    
 }

@@ -9,7 +9,6 @@ import Foundation
 /// Responsible for buffering analytics events before the service is fully initialized.
 /// Once initialization completes, buffered events are flushed in order.
 actor AnalyticsEventBuffer: LogReporter {
-
     // MARK: - Types
 
     typealias BufferedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?, timestamp: Int)

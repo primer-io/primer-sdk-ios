@@ -4,12 +4,11 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
 import Foundation
+@testable import PrimerSDK
 import XCTest
 
 final class AnalyticsSessionConfigProviderTests: XCTestCase {
-
     private let tokenWithIds = AnalyticsTestTokens.withIds
     private let tokenWithoutIds = AnalyticsTestTokens.withoutIds
 
@@ -60,7 +59,6 @@ final class AnalyticsSessionConfigProviderTests: XCTestCase {
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
-
     private let tokenWithIds = AnalyticsTestTokens.withIds
 
     override func tearDown() {
@@ -94,7 +92,6 @@ final class CheckoutSDKInitializerAnalyticsProviderTests: XCTestCase {
 }
 
 private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtocol, AnalyticsSessionConfigProviding {
-
     static var apiClient: PrimerAPIClientProtocol?
     static var clientToken: JWTToken?
     static var decodedJWTToken: DecodedJWTToken?
@@ -106,17 +103,17 @@ private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtoco
     var capturedConfigParameters: (checkoutSessionId: String, clientToken: String, sdkVersion: String)?
 
     func setupSession(
-        forClientToken clientToken: String,
-        requestDisplayMetadata: Bool,
-        requestClientTokenValidation: Bool,
-        requestVaultedPaymentMethods: Bool
+        forClientToken _: String,
+        requestDisplayMetadata _: Bool,
+        requestClientTokenValidation _: Bool,
+        requestVaultedPaymentMethods _: Bool
     ) async throws {
         setupSessionCallCount += 1
     }
 
-    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {}
+    func updateSession(withActions _: ClientSessionUpdateRequest) async throws {}
 
-    func storeRequiredActionClientToken(_ newClientToken: String) async throws {}
+    func storeRequiredActionClientToken(_: String) async throws {}
 
     func makeAnalyticsSessionConfig(
         checkoutSessionId: String,
@@ -129,20 +126,18 @@ private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtoco
 }
 
 private enum AnalyticsTestTokens {
-
     static let withIds = JWTTestTokenFactory.makeJWT(payload: [
         "env": "SANDBOX",
         "clientSessionId": "token-session-id",
-        "primerAccountId": "token-account-id"
+        "primerAccountId": "token-account-id",
     ])
 
     static let withoutIds = JWTTestTokenFactory.makeJWT(payload: [
-        "env": "PRODUCTION"
+        "env": "PRODUCTION",
     ])
 }
 
 private enum JWTTestTokenFactory {
-
     static func makeJWT(
         header: [String: Any] = ["alg": "HS256", "typ": "JWT"],
         payload: [String: Any]
@@ -155,14 +150,15 @@ private enum JWTTestTokenFactory {
 
     private static func encode(json: [String: Any]) -> String {
         guard JSONSerialization.isValidJSONObject(json),
-              let data = try? JSONSerialization.data(withJSONObject: json, options: [.sortedKeys]) else {
+              let data = try? JSONSerialization.data(withJSONObject: json, options: [.sortedKeys])
+        else {
             preconditionFailure("Failed to serialize JWT segment for tests.")
         }
         return base64URLEncode(data)
     }
 
     private static func base64URLEncode(_ data: Data) -> String {
-        return data.base64EncodedString()
+        data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")

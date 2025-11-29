@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import SwiftUI
+import UIKit
 
 // MARK: - Environment Key for Bridge Controller Access
 
@@ -27,7 +27,6 @@ extension EnvironmentValues {
 /// This allows CheckoutComponents to work seamlessly with PrimerRootViewController and result screens
 @available(iOS 15.0, *)
 final class PrimerSwiftUIBridgeViewController: PrimerViewController {
-
     // MARK: - Constants
 
     private enum SheetSizing {
@@ -51,10 +50,10 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
     /// Initialize with SwiftUI content
     /// - Parameter swiftUIView: The SwiftUI view to embed
     init<Content: View>(swiftUIView: Content) {
-        self.hostingController = UIHostingController(rootView: AnyView(swiftUIView))
+        hostingController = UIHostingController(rootView: AnyView(swiftUIView))
         super.init()
 
-        self.hostingController.rootView = AnyView(
+        hostingController.rootView = AnyView(
             swiftUIView.environment(\.bridgeController, self)
         )
 
@@ -101,7 +100,7 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         // Complete the child view controller setup
@@ -201,7 +200,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
 @available(iOS 15.0, *)
 extension PrimerSwiftUIBridgeViewController {
-
     /// Override to provide proper sizing information to the traditional UI system
     override var preferredContentSize: CGSize {
         get {
@@ -234,7 +232,6 @@ extension PrimerSwiftUIBridgeViewController {
 
 @available(iOS 15.0, *)
 extension PrimerSwiftUIBridgeViewController {
-
     /// Factory method to create bridge controller for CheckoutComponents
     static func createForCheckoutComponents(
         clientToken: String,
@@ -245,7 +242,6 @@ extension PrimerSwiftUIBridgeViewController {
         customContent: ((PrimerCheckoutScope) -> AnyView)? = nil,
         onCompletion: (() -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
-
         let logger = PrimerLogging.shared.logger
         logger.info(message: "🌉 [SwiftUIBridge] Creating bridge for CheckoutComponents")
 

@@ -39,8 +39,8 @@ struct EmailInputField: View, LogReporter {
         self.placeholder = placeholder
         self.scope = scope
         self.styling = styling
-        self.onEmailChange = nil
-        self.onValidationChange = nil
+        onEmailChange = nil
+        onValidationChange = nil
     }
 
     init(
@@ -52,7 +52,7 @@ struct EmailInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onEmailChange = onEmailChange
         self.onValidationChange = onValidationChange
@@ -113,30 +113,32 @@ struct EmailInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    EmailInputField(
-        label: "Email Address",
-        placeholder: "Enter your email",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    EmailInputField(
-        label: "Email Address",
-        placeholder: "Enter your email",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        EmailInputField(
+            label: "Email Address",
+            placeholder: "Enter your email",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        EmailInputField(
+            label: "Email Address",
+            placeholder: "Enter your email",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif
