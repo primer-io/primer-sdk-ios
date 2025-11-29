@@ -7,24 +7,28 @@
 import SwiftUI
 
 // MARK: - Checkout Navigation Coordinator
+
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutCoordinator: ObservableObject, LogReporter {
-
     // MARK: - Published Properties
+
     @Published var navigationStack: [CheckoutRoute] = []
 
     // MARK: - Computed Properties
+
     var currentRoute: CheckoutRoute {
         navigationStack.last ?? .splash
     }
 
     // MARK: - Initialization
+
     init() {
         logEvent("navigation_coordinator_initialized")
     }
 
     // MARK: - Navigation Methods
+
     func navigate(to route: CheckoutRoute) {
         // Performance optimization: avoid redundant navigation to same route
         if currentRoute == route {
@@ -75,6 +79,7 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     }
 
     // MARK: - Private Methods
+
     private func logNavigation(from previousRoute: CheckoutRoute, to route: CheckoutRoute) {
         // Enhanced analytics logging
         var parameters = route.analyticsParameters

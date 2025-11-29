@@ -34,7 +34,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public struct PrimerCheckout: View {
-
     /// The client token for initializing the checkout session.
     private let clientToken: String
 
@@ -69,29 +68,29 @@ public struct PrimerCheckout: View {
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = primerSettings
+        settings = primerSettings
         self.scope = scope
-        self.customContent = nil
+        customContent = nil
         self.onCompletion = onCompletion
-        self._navigator = StateObject(wrappedValue: CheckoutNavigator())
-        self.presentationContext = .fromPaymentSelection
+        _navigator = StateObject(wrappedValue: CheckoutNavigator())
+        presentationContext = .fromPaymentSelection
     }
 
     /// Internal initializer with presentation context
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
-        diContainer: DIContainer,
+        diContainer _: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = primerSettings
-        self.scope = nil
-        self.customContent = nil
+        settings = primerSettings
+        scope = nil
+        customContent = nil
         self.onCompletion = onCompletion
-        self._navigator = StateObject(wrappedValue: navigator)
+        _navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
     }
 
@@ -99,18 +98,18 @@ public struct PrimerCheckout: View {
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
-        diContainer: DIContainer,
+        diContainer _: DIContainer,
         navigator: CheckoutNavigator,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
         presentationContext: PresentationContext,
         onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
-        self.settings = primerSettings
-        self.scope = nil
+        settings = primerSettings
+        scope = nil
         self.customContent = customContent
         self.onCompletion = onCompletion
-        self._navigator = StateObject(wrappedValue: navigator)
+        _navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
     }
 
@@ -174,7 +173,7 @@ struct InternalCheckout: View {
         self.presentationContext = presentationContext
         self.onCompletion = onCompletion
 
-        self.sdkInitializer = CheckoutSDKInitializer(
+        sdkInitializer = CheckoutSDKInitializer(
             clientToken: clientToken,
             primerSettings: settings,
             diContainer: diContainer,
@@ -245,9 +244,9 @@ private extension View {
         case .system:
             self
         case .light:
-            self.preferredColorScheme(.light)
+            preferredColorScheme(.light)
         case .dark:
-            self.preferredColorScheme(.dark)
+            preferredColorScheme(.dark)
         }
     }
 }

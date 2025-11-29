@@ -192,29 +192,29 @@ struct CardNumberInputField: View, LogReporter {
 }
 
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    CardNumberInputField(
-        label: "Card Number",
-        placeholder: "1234 5678 9012 3456",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        CardNumberInputField(
+            label: "Card Number",
+            placeholder: "1234 5678 9012 3456",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    CardNumberInputField(
-        label: "Card Number",
-        placeholder: "1234 5678 9012 3456",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        CardNumberInputField(
+            label: "Card Number",
+            placeholder: "1234 5678 9012 3456",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

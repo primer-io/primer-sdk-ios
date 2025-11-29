@@ -7,8 +7,7 @@
 import Foundation
 
 /// Error message resolution service that converts ValidationError objects to localized, formatted error messages.
-final class ErrorMessageResolver {
-
+enum ErrorMessageResolver {
     /// Resolve error message based on validation error
     /// @param error The validation error to resolve
     /// @return Localized error message string, or nil if error cannot be resolved
@@ -16,7 +15,8 @@ final class ErrorMessageResolver {
         // Resolution priority:
         // 1. Try formatted error with field name placeholder
         if let formatKey = error.errorFormatKey,
-           let fieldNameKey = error.fieldNameKey {
+           let fieldNameKey = error.fieldNameKey
+        {
             let fieldName = getLocalizedFieldName(fieldNameKey)
             let formatString = getLocalizedString(formatKey)
             return String(format: formatString, fieldName)
@@ -232,7 +232,6 @@ final class ErrorMessageResolver {
 // MARK: - Convenience Extensions
 
 extension ErrorMessageResolver {
-
     /// Create a validation error for required field validation
     static func createRequiredFieldError(for inputElementType: ValidationError.InputElementType) -> ValidationError {
         let errorMessageKey = requiredErrorMessageKey(for: inputElementType)

@@ -22,7 +22,7 @@ public struct ValidationResult {
 
     /// Creates a failed validation result with the given error details
     public static func invalid(code: String, message: String) -> ValidationResult {
-        return ValidationResult(isValid: false, errorCode: code, errorMessage: message)
+        ValidationResult(isValid: false, errorCode: code, errorMessage: message)
     }
 
     /// Creates a failed validation result using ValidationError with automatic error message resolution

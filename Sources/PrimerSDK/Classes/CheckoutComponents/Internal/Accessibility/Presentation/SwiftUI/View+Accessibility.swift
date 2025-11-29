@@ -8,7 +8,6 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 extension View {
-
     /// Applies comprehensive accessibility configuration to a SwiftUI view
     /// - Parameter config: AccessibilityConfiguration containing all accessibility metadata
     /// - Returns: Modified view with accessibility properties applied
@@ -24,8 +23,7 @@ extension View {
     ///     ))
     /// ```
     func accessibility(config: AccessibilityConfiguration) -> some View {
-        self
-            .accessibilityElement(children: .ignore)
+        accessibilityElement(children: .ignore)
             .accessibilityIdentifier(config.identifier)
             .accessibilityLabel(config.label)
             .modifier(ConditionalAccessibilityHint(hint: config.hint))

@@ -14,7 +14,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
+
     let scope: any PrimerCardFormScope
     let placeholder: String
     let styling: PrimerFieldStyling?
@@ -37,7 +37,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != formatCardNumber(cardNumber, for: cardNetwork) {
             textField.text = formatCardNumber(cardNumber, for: cardNetwork)
         }
@@ -54,6 +54,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             isFocused: $isFocused
         )
     }
+
     private func formatCardNumber(_ number: String, for network: CardNetwork) -> String {
         let gaps = network.validation?.gaps ?? [4, 8, 12]
         var formatted = ""
@@ -91,11 +92,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         ) {
             self.scope = scope
             self.validationService = validationService
-            self._cardNumber = cardNumber
-            self._cardNetwork = cardNetwork
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _cardNumber = cardNumber
+            _cardNetwork = cardNetwork
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
         }
 
         @objc func doneButtonTapped() {
@@ -106,14 +107,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.scope.clearFieldError(.cardNumber)
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
                 self.validateCardNumberFully(self.cardNumber)
@@ -227,7 +228,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         private func calculateUnformattedPosition(upToIndex index: Int, in formattedText: String) -> Int {
             var unformattedPos = 0
-            for i in 0..<index where i < formattedText.count {
+            for i in 0 ..< index where i < formattedText.count {
                 let charIndex = formattedText.index(formattedText.startIndex, offsetBy: i)
                 if formattedText[charIndex].isNumber {
                     unformattedPos += 1
@@ -282,7 +283,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        private func getUnformattedRange(formattedRange: NSRange, formattedText: String, unformattedText: String) -> NSRange {
+        private func getUnformattedRange(formattedRange: NSRange, formattedText: String, unformattedText _: String) -> NSRange {
             var digitCount = 0
             for (index, char) in formattedText.enumerated() {
                 if index >= formattedRange.location {
@@ -296,7 +297,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             var unformattedLength = 0
             if formattedRange.length > 0 {
                 let rangeEnd = min(formattedRange.location + formattedRange.length, formattedText.count)
-                for index in formattedRange.location..<rangeEnd where index < formattedText.count {
+                for index in formattedRange.location ..< rangeEnd where index < formattedText.count {
                     let charIndex = formattedText.index(formattedText.startIndex, offsetBy: index)
                     if formattedText[charIndex].isNumber {
                         unformattedLength += 1
@@ -313,7 +314,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
                 let startIndex = currentText.index(currentText.startIndex, offsetBy: unformattedRange.location)
                 let endIndex = currentText.index(startIndex, offsetBy: min(unformattedRange.length, currentText.count - unformattedRange.location))
-                return currentText.replacingCharacters(in: startIndex..<endIndex, with: "")
+                return currentText.replacingCharacters(in: startIndex ..< endIndex, with: "")
             }
             if unformattedRange.location >= currentText.count, !currentText.isEmpty {
                 return String(currentText.dropLast())
@@ -353,7 +354,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        private func detectNetworksForCardNumber(_ cardNumber: String) {
+        private func detectNetworksForCardNumber(_: String) {
             logger.debug(message: "Detecting card networks")
         }
 
@@ -419,6 +420,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: false)
             }
         }
+
         deinit {
             validationTimer?.invalidate()
             networkDetectionTimer?.invalidate()
@@ -432,6 +434,7 @@ private extension String {
         result.remove(at: index)
         return result
     }
+
     func inserting(contentsOf newElements: String, at index: Index) -> String {
         var result = self
         result.insert(contentsOf: newElements, at: index)

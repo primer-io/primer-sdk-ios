@@ -8,7 +8,6 @@
 import XCTest
 
 final class AnalyticsEnvironmentProviderTests: XCTestCase {
-
     private var provider: AnalyticsEnvironmentProvider!
 
     override func setUp() {
@@ -202,7 +201,7 @@ final class AnalyticsEnvironmentProviderTests: XCTestCase {
 
         // When - access provider from multiple tasks concurrently
         await withTaskGroup(of: Void.self) { group in
-            for _ in 0..<20 {
+            for _ in 0 ..< 20 {
                 group.addTask {
                     for environment in environments {
                         _ = self.provider.getEndpointURL(for: environment)

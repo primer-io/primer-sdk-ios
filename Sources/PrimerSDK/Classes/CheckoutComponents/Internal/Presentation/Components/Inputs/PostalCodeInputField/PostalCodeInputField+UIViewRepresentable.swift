@@ -48,7 +48,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != postalCode {
             textField.text = postalCode
         }
@@ -85,10 +85,10 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             scope: any PrimerCardFormScope
         ) {
             self.validationService = validationService
-            self._postalCode = postalCode
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _postalCode = postalCode
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.countryCode = countryCode
             self.scope = scope
         }
@@ -101,7 +101,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -110,7 +110,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -122,7 +122,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = postalCode
 
             guard let textRange = Range(range, in: currentText) else { return false }

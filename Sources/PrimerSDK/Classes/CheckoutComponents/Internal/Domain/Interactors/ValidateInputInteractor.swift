@@ -23,7 +23,6 @@ protocol ValidateInputInteractor {
 
 /// Default implementation using the validation service.
 final class ValidateInputInteractorImpl: ValidateInputInteractor, LogReporter {
-
     private let validationService: ValidationService
 
     init(validationService: ValidationService) {

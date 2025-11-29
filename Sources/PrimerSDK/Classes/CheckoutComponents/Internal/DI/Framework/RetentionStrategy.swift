@@ -22,9 +22,10 @@ protocol RetentionStrategy: Sendable {
 
 /// Concrete strategies
 struct TransientStrategy: RetentionStrategy {
-    func instance(for key: TypeKey,
+    func instance(for _: TypeKey,
                   registration: Container.FactoryRegistration,
-                  in container: Container) async throws -> Any {
+                  in container: Container) async throws -> Any
+    {
         let any = try await registration.buildAsync(container)
         return any
     }
@@ -33,7 +34,8 @@ struct TransientStrategy: RetentionStrategy {
 struct SingletonStrategy: RetentionStrategy {
     func instance(for key: TypeKey,
                   registration: Container.FactoryRegistration,
-                  in container: Container) async throws -> Any {
+                  in container: Container) async throws -> Any
+    {
         if let stored = await container.instances[key] {
             return stored
         }
@@ -46,7 +48,8 @@ struct SingletonStrategy: RetentionStrategy {
 struct WeakStrategy: RetentionStrategy {
     func instance(for key: TypeKey,
                   registration: Container.FactoryRegistration,
-                  in container: Container) async throws -> Any {
+                  in container: Container) async throws -> Any
+    {
         if let box = await container.weakBoxes[key], let obj = box.instance {
             return obj
         }

@@ -46,51 +46,53 @@ struct InlineCardNetworkButton: View {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Selected Button") {
-    HStack(spacing: 0) {
-        InlineCardNetworkButton(
-            network: .visa,
-            isSelected: true,
-            tokens: MockDesignTokens.light,
-            onTap: {}
-        )
-    }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 
-@available(iOS 15.0, *)
-#Preview("Unselected Button") {
-    HStack(spacing: 0) {
-        InlineCardNetworkButton(
-            network: .masterCard,
-            isSelected: false,
-            tokens: MockDesignTokens.light,
-            onTap: {}
-        )
-    }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-}
+    // MARK: - Preview
 
-@available(iOS 15.0, *)
-#Preview("All Button States") {
-    VStack(spacing: 20) {
+    @available(iOS 15.0, *)
+    #Preview("Selected Button") {
         HStack(spacing: 0) {
-            InlineCardNetworkButton(network: .visa, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
-            InlineCardNetworkButton(network: .masterCard, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
-            InlineCardNetworkButton(network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+            InlineCardNetworkButton(
+                network: .visa,
+                isSelected: true,
+                tokens: MockDesignTokens.light,
+                onTap: {}
+            )
         }
-
-        HStack(spacing: 0) {
-            InlineCardNetworkButton(network: .visa, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
-            InlineCardNetworkButton(network: .masterCard, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
-            InlineCardNetworkButton(network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
-        }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-}
+
+    @available(iOS 15.0, *)
+    #Preview("Unselected Button") {
+        HStack(spacing: 0) {
+            InlineCardNetworkButton(
+                network: .masterCard,
+                isSelected: false,
+                tokens: MockDesignTokens.light,
+                onTap: {}
+            )
+        }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("All Button States") {
+        VStack(spacing: 20) {
+            HStack(spacing: 0) {
+                InlineCardNetworkButton(network: .visa, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
+                InlineCardNetworkButton(network: .masterCard, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+                InlineCardNetworkButton(network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+            }
+
+            HStack(spacing: 0) {
+                InlineCardNetworkButton(network: .visa, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+                InlineCardNetworkButton(network: .masterCard, isSelected: true, tokens: MockDesignTokens.light, onTap: {})
+                InlineCardNetworkButton(network: .amex, isSelected: false, tokens: MockDesignTokens.light, onTap: {})
+            }
+        }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+    }
 #endif

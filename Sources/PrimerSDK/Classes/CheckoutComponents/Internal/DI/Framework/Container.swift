@@ -10,7 +10,7 @@ import Foundation
 
 final class WeakBox<T: AnyObject> {
     weak var instance: T?
-    init(_ inst: T) { self.instance = inst }
+    init(_ inst: T) { instance = inst }
 }
 
 /// Thread-safe container for storing values across async boundaries
@@ -46,7 +46,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
         init(policy: ContainerRetainPolicy, buildSync: @escaping (ContainerProtocol) throws -> Any) {
             self.policy = policy
-            self.buildAsync = { container in
+            buildAsync = { container in
                 try buildSync(container)
             }
         }
@@ -70,17 +70,17 @@ public actor Container: ContainerProtocol, LogReporter {
         }
 
         public func asSingleton() -> Self {
-            self.policy = .singleton
+            policy = .singleton
             return self
         }
 
         public func asWeak() -> Self {
-            self.policy = .weak
+            policy = .weak
             return self
         }
 
         public func asTransient() -> Self {
-            self.policy = .transient
+            policy = .transient
             return self
         }
 
@@ -133,7 +133,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     /// Register a dependency with the container using the fluent API
     public nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
-        return ContainerRegistrationBuilderImpl(container: self, type: type)
+        ContainerRegistrationBuilderImpl(container: self, type: type)
     }
 
     /// Internal registration method with validation
@@ -178,7 +178,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     /// Check if a dependency is registered
     private func isRegistered(_ key: TypeKey) -> Bool {
-        return factories[key] != nil
+        factories[key] != nil
     }
 
     /// Unregister a dependency from the container
@@ -269,7 +269,7 @@ public actor Container: ContainerProtocol, LogReporter {
             throw ContainerError.factoryFailed(
                 TypeKey(type, name: name),
                 underlyingError: NSError(domain: "DIContainer", code: -1, userInfo: [
-                    NSLocalizedDescriptionKey: "Synchronous resolution timed out"
+                    NSLocalizedDescriptionKey: "Synchronous resolution timed out",
                 ])
             )
         }
@@ -284,7 +284,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     /// Resolve multiple dependencies in parallel
     public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
-        return try await withThrowingTaskGroup(of: (Int, T).self) { group in
+        try await withThrowingTaskGroup(of: (Int, T).self) { group in
             for (index, request) in requests.enumerated() {
                 group.addTask {
                     let result = try await self.resolve(request.type, name: request.name)
@@ -299,7 +299,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
             // Sort by original order
             results.sort { $0.0 < $1.0 }
-            return results.map { $0.1 }
+            return results.map(\.1)
         }
     }
 
@@ -313,7 +313,7 @@ public actor Container: ContainerProtocol, LogReporter {
     // MARK: - Resolve All
 
     /// Resolve all dependencies conforming to a specific protocol
-    public func resolveAll<T>(_ type: T.Type) async -> [T] {
+    public func resolveAll<T>(_: T.Type) async -> [T] {
         var result: [T] = []
 
         // 1) Strong instances
@@ -334,14 +334,16 @@ public actor Container: ContainerProtocol, LogReporter {
         for (key, registration) in factories where registration.policy != .transient {
             // Skip if already in strong or weak storage
             guard !instances.keys.contains(key),
-                  !weakBoxes.keys.contains(key) else {
+                  !weakBoxes.keys.contains(key)
+            else {
                 continue
             }
 
             // Build it and cast if possible
             if let any = try? await strategy(for: registration.policy)
                 .instance(for: key, registration: registration, in: self),
-               let cast = any as? T {
+                let cast = any as? T
+            {
                 result.append(cast)
             }
         }
@@ -378,7 +380,7 @@ public actor Container: ContainerProtocol, LogReporter {
     private func cleanupWeakReferences() {
         let initialCount = weakBoxes.count
         weakBoxes = weakBoxes.compactMapValues { box in
-            return box.instance != nil ? box : nil
+            box.instance != nil ? box : nil
         }
         let cleanedCount = initialCount - weakBoxes.count
         // Weak references cleaned
@@ -410,7 +412,7 @@ public actor Container: ContainerProtocol, LogReporter {
             totalRegistrations: factories.count,
             singletonInstances: instances.count,
             weakReferences: weakBoxes.count,
-            activeWeakReferences: weakBoxes.values.compactMap { $0.instance }.count,
+            activeWeakReferences: weakBoxes.values.compactMap(\.instance).count,
             registeredTypes: Array(factories.keys)
         )
     }

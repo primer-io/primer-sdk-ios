@@ -54,7 +54,7 @@ class FirstNameRule: ValidationRule {
     private let nameRule = NameRule(inputElementType: .firstName)
 
     func validate(_ value: String?) -> ValidationResult {
-        return nameRule.validate(value)
+        nameRule.validate(value)
     }
 }
 
@@ -64,7 +64,7 @@ class LastNameRule: ValidationRule {
     private let nameRule = NameRule(inputElementType: .lastName)
 
     func validate(_ value: String?) -> ValidationResult {
-        return nameRule.validate(value)
+        nameRule.validate(value)
     }
 }
 
@@ -123,11 +123,11 @@ class AddressFieldRule: ValidationRule {
     private let addressRule: AddressRule
 
     init(inputType: ValidationError.InputElementType, isRequired: Bool = true) {
-        self.addressRule = AddressRule(inputElementType: inputType, isRequired: isRequired)
+        addressRule = AddressRule(inputElementType: inputType, isRequired: isRequired)
     }
 
     func validate(_ value: String?) -> ValidationResult {
-        return addressRule.validate(value)
+        addressRule.validate(value)
     }
 }
 
@@ -252,7 +252,7 @@ class BillingPostalCodeRule: ValidationRule {
     private let postalCodeRule = PostalCodeRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return postalCodeRule.validate(value)
+        postalCodeRule.validate(value)
     }
 }
 
@@ -292,7 +292,7 @@ class BillingCountryCodeRule: ValidationRule {
     private let countryCodeRule = CountryCodeRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return countryCodeRule.validate(value)
+        countryCodeRule.validate(value)
     }
 }
 
@@ -339,7 +339,7 @@ class EmailValidationRule: ValidationRule {
     private let emailRule = EmailRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return emailRule.validate(value)
+        emailRule.validate(value)
     }
 }
 
@@ -360,7 +360,7 @@ class PhoneNumberRule: ValidationRule {
         }
 
         // Check if all digits after cleaning
-        if !cleanedValue.allSatisfy({ $0.isNumber }) {
+        if !cleanedValue.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
             return .invalid(error: error)
         }
@@ -389,7 +389,7 @@ class PhoneNumberValidationRule: ValidationRule {
     private let phoneNumberRule = PhoneNumberRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return phoneNumberRule.validate(value)
+        phoneNumberRule.validate(value)
     }
 }
 
@@ -410,7 +410,7 @@ class OTPCodeRule: ValidationRule {
         }
 
         // Check if all digits
-        if !value.allSatisfy({ $0.isNumber }) {
+        if !value.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .otpCode)
             return .invalid(error: error)
         }

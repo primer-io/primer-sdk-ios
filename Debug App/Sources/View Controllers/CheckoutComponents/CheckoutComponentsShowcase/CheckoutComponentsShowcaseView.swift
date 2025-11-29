@@ -10,8 +10,8 @@
 //
 //  Created on 26.6.25.
 //
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Comprehensive showcase demonstrating CheckoutComponents customization capabilities
 @available(iOS 15.0, *)
@@ -19,10 +19,10 @@ struct CheckoutComponentsShowcaseView: View {
     private let settings: PrimerSettings
     private let apiVersion: PrimerApiVersion
     private let clientSession: ClientSessionRequestBody?
-    
+
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var selectedSection: ShowcaseCategory = .architecture
-    
+
     var body: some View {
         makeNavigationView()
             .overlay(alignment: .topTrailing) {
@@ -32,7 +32,7 @@ struct CheckoutComponentsShowcaseView: View {
                 .padding()
             }
     }
-    
+
     private func makeNavigationView() -> some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -43,13 +43,13 @@ struct CheckoutComponentsShowcaseView: View {
             .navigationBarHidden(true)
         }
     }
-    
+
     private func makeHeader() -> some View {
         VStack(spacing: 12) {
             Text("CheckoutComponents Showcase")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Explore the full power and flexibility of CheckoutComponents")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -58,7 +58,7 @@ struct CheckoutComponentsShowcaseView: View {
         .padding()
         .background(Color.gray.opacity(0.05))
     }
-    
+
     private func makeSectionPicker() -> some View {
         Picker("Section", selection: $selectedSection) {
             ForEach(ShowcaseCategory.allCases, id: \.self) { section in
@@ -68,7 +68,7 @@ struct CheckoutComponentsShowcaseView: View {
         .pickerStyle(.segmented)
         .padding()
     }
-    
+
     private func makeContent() -> some View {
         ScrollView {
             switch selectedSection {
@@ -86,6 +86,7 @@ struct CheckoutComponentsShowcaseView: View {
 }
 
 // MARK: - Architecture Demo
+
 @available(iOS 15.0, *)
 private extension CheckoutComponentsShowcaseView {
     func makeArchitectureDemo() -> some View {
@@ -98,7 +99,7 @@ private extension CheckoutComponentsShowcaseView {
                 description: "Single input field with Previous/Next controls",
                 content: makeSingleInputDemo
             )
-            
+
             ShowcaseDemo(
                 title: "Mixed Components",
                 description: "Combining default and custom styled fields",
@@ -106,25 +107,26 @@ private extension CheckoutComponentsShowcaseView {
             )
         }
     }
-    
+
     func makeSingleInputDemo() -> some View {
         SingleInputFieldDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
-    
+
     func makeMixedComponentsDemo() -> some View {
         MixedComponentsDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
 }
 
 // MARK: - Styling Demo
+
 @available(iOS 15.0, *)
 private extension CheckoutComponentsShowcaseView {
     func makeStylingDemo() -> some View {
@@ -139,17 +141,18 @@ private extension CheckoutComponentsShowcaseView {
             )
         }
     }
-    
+
     func makeSingleFieldCustomisationDemo() -> some View {
         SingleFieldCustomisationDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
 }
 
 // MARK: - Layouts Demo
+
 @available(iOS 15.0, *)
 private extension CheckoutComponentsShowcaseView {
     func makeLayoutsDemo() -> some View {
@@ -162,7 +165,7 @@ private extension CheckoutComponentsShowcaseView {
                 description: "Switch between vertical, horizontal, grid, and compact layouts",
                 content: makeCustomCardFormLayoutDemo
             )
-            
+
             ShowcaseDemo(
                 title: "Custom Payment Selection Screen",
                 description: "Complete UI customization with gradient backgrounds and animations",
@@ -170,25 +173,26 @@ private extension CheckoutComponentsShowcaseView {
             )
         }
     }
-    
+
     func makeCustomCardFormLayoutDemo() -> some View {
         CustomCardFormLayoutDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
-    
+
     func makeCustomScreenPaymentSelectionDemo() -> some View {
         CustomScreenPaymentSelectionDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
 }
 
 // MARK: - Interactive Demo
+
 @available(iOS 15.0, *)
 private extension CheckoutComponentsShowcaseView {
     func makeInteractiveDemo() -> some View {
@@ -201,7 +205,7 @@ private extension CheckoutComponentsShowcaseView {
                 description: "Change component properties dynamically at runtime",
                 content: makePropertyReassignmentDemo
             )
-            
+
             ShowcaseDemo(
                 title: "Conditional Customization",
                 description: "Components adapt based on card type and validation state",
@@ -209,19 +213,19 @@ private extension CheckoutComponentsShowcaseView {
             )
         }
     }
-    
+
     func makePropertyReassignmentDemo() -> some View {
         PropertyReassignmentDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }
-    
+
     func makeRuntimeCustomizationDemo() -> some View {
         RuntimeCustomizationDemo(
             settings: settings,
-            apiVersion: self.apiVersion,
+            apiVersion: apiVersion,
             clientSession: clientSession
         )
     }

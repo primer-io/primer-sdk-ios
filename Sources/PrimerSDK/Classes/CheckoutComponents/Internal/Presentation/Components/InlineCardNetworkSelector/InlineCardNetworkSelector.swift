@@ -91,80 +91,80 @@ struct InlineCardNetworkSelector: View {
 
 #if DEBUG
 
-// MARK: - Preview
+    // MARK: - Preview
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 2 Networks") {
-    VStack(spacing: 20) {
-        Text("Co-badged Card Networks")
-            .font(.headline)
+    @available(iOS 15.0, *)
+    #Preview("Light Mode - 2 Networks") {
+        VStack(spacing: 20) {
+            Text("Co-badged Card Networks")
+                .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .cartesBancaires],
-            selectedNetwork: .constant(.visa),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+            InlineCardNetworkSelector(
+                availableNetworks: [.visa, .cartesBancaires],
+                selectedNetwork: .constant(.visa),
+                onNetworkSelected: { network in
+                    print("Selected: \(network.displayName)")
+                }
+            )
+            .padding()
+        }
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode - 2 Networks") {
-    VStack(spacing: 20) {
-        Text("Co-badged Card Networks")
-            .font(.headline)
-            .foregroundColor(.white)
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode - 2 Networks") {
+        VStack(spacing: 20) {
+            Text("Co-badged Card Networks")
+                .font(.headline)
+                .foregroundColor(.white)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .cartesBancaires],
-            selectedNetwork: .constant(.cartesBancaires),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+            InlineCardNetworkSelector(
+                availableNetworks: [.visa, .cartesBancaires],
+                selectedNetwork: .constant(.cartesBancaires),
+                onNetworkSelected: { network in
+                    print("Selected: \(network.displayName)")
+                }
+            )
+            .padding()
+        }
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .preferredColorScheme(.dark)
     }
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .preferredColorScheme(.dark)
-}
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 3 Networks") {
-    VStack(spacing: 20) {
-        Text("Multiple Networks")
-            .font(.headline)
+    @available(iOS 15.0, *)
+    #Preview("Light Mode - 3 Networks") {
+        VStack(spacing: 20) {
+            Text("Multiple Networks")
+                .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .masterCard, .cartesBancaires],
-            selectedNetwork: .constant(.masterCard),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+            InlineCardNetworkSelector(
+                availableNetworks: [.visa, .masterCard, .cartesBancaires],
+                selectedNetwork: .constant(.masterCard),
+                onNetworkSelected: { network in
+                    print("Selected: \(network.displayName)")
+                }
+            )
+            .padding()
+        }
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 5 Networks") {
-    VStack(spacing: 20) {
-        Text("Five Networks")
-            .font(.headline)
+    @available(iOS 15.0, *)
+    #Preview("Light Mode - 5 Networks") {
+        VStack(spacing: 20) {
+            Text("Five Networks")
+                .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .masterCard, .cartesBancaires, .amex, .discover],
-            selectedNetwork: .constant(.cartesBancaires),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+            InlineCardNetworkSelector(
+                availableNetworks: [.visa, .masterCard, .cartesBancaires, .amex, .discover],
+                selectedNetwork: .constant(.cartesBancaires),
+                onNetworkSelected: { network in
+                    print("Selected: \(network.displayName)")
+                }
+            )
+            .padding()
+        }
+        .environment(\.designTokens, MockDesignTokens.light)
     }
-    .environment(\.designTokens, MockDesignTokens.light)
-}
 #endif

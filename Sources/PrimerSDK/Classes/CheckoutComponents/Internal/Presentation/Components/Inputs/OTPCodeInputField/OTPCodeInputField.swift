@@ -38,11 +38,11 @@ struct OTPCodeInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.expectedLength = 6
+        expectedLength = 6
         self.scope = scope
         self.styling = styling
-        self.onOTPCodeChange = nil
-        self.onValidationChange = nil
+        onOTPCodeChange = nil
+        onValidationChange = nil
     }
 
     init(
@@ -56,7 +56,7 @@ struct OTPCodeInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.expectedLength = expectedLength
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onOTPCodeChange = onOTPCodeChange
         self.onValidationChange = onValidationChange
@@ -137,30 +137,32 @@ struct OTPCodeInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    OTPCodeInputField(
-        label: "Enter OTP Code",
-        placeholder: "000000",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    OTPCodeInputField(
-        label: "Enter OTP Code",
-        placeholder: "000000",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        OTPCodeInputField(
+            label: "Enter OTP Code",
+            placeholder: "000000",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        OTPCodeInputField(
+            label: "Enter OTP Code",
+            placeholder: "000000",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

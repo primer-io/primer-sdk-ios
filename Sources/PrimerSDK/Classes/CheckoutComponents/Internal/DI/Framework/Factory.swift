@@ -26,7 +26,7 @@ public protocol SynchronousFactory<Product, Params>: Factory {
 public extension SynchronousFactory {
     func create(with params: Params) async throws -> Product {
         // For sync factories, just call the sync method
-        return try createSync(with: params)
+        try createSync(with: params)
     }
 }
 
@@ -87,7 +87,7 @@ public extension ContainerProtocol {
         let policyBuilder = switch policy {
         case .singleton: namedBuilder.asSingleton()
         case .transient: namedBuilder.asTransient()
-        case .weak:      namedBuilder.asWeak()
+        case .weak: namedBuilder.asWeak()
         }
 
         _ = try await policyBuilder.with { _ in factory }
@@ -103,7 +103,7 @@ public extension ContainerProtocol {
     /// - Returns: Self for method chaining
     @discardableResult
     func registerFactory<F: Factory>(
-        _ factoryType: F.Type,
+        _: F.Type,
         policy: ContainerRetainPolicy = .singleton,
         name: String? = nil,
         factory: @escaping (ContainerProtocol) async throws -> F
@@ -114,7 +114,7 @@ public extension ContainerProtocol {
         let policyBuilder = switch policy {
         case .singleton: namedBuilder.asSingleton()
         case .transient: namedBuilder.asTransient()
-        case .weak:      namedBuilder.asWeak()
+        case .weak: namedBuilder.asWeak()
         }
 
         _ = try await policyBuilder.with(factory)

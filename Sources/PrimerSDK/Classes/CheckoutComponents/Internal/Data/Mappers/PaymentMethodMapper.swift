@@ -19,7 +19,6 @@ protocol PaymentMethodMapper {
 /// Default implementation of PaymentMethodMapper.
 @available(iOS 15.0, *)
 final class PaymentMethodMapperImpl: PaymentMethodMapper {
-
     private let configurationService: ConfigurationService
 
     init(configurationService: ConfigurationService) {
@@ -48,7 +47,6 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
     /// Format surcharge for display
     private func formatSurcharge(_ surcharge: Int?, hasUnknownSurcharge: Bool) -> String? {
-
         // Priority: unknown surcharge > actual surcharge > no fee
         if hasUnknownSurcharge {
             return CheckoutComponentsStrings.additionalFeeMayApply
@@ -56,7 +54,8 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
         guard let surcharge = surcharge,
               surcharge > 0,
-              let currency = configurationService.currency else {
+              let currency = configurationService.currency
+        else {
             return CheckoutComponentsStrings.noAdditionalFee
         }
 

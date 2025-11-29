@@ -8,7 +8,6 @@
 import XCTest
 
 final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
-
     // MARK: - Task Priority Tests
 
     func testTrackEventPropagatesTaskPriority() async throws {
@@ -81,7 +80,7 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
             .paymentSuccess,
             .paymentFailure,
             .paymentReattempted,
-            .paymentFlowExited
+            .paymentFlowExited,
         ]
 
         // When/Then - all event types should be trackable
@@ -101,7 +100,7 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
 
         // When - track multiple events concurrently
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<10 {
+            for i in 0 ..< 10 {
                 group.addTask {
                     let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(
                         paymentMethod: "PAYMENT_CARD",
@@ -113,7 +112,7 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
         }
 
         // Then - all events should be tracked
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             let call = try await service.nextCall()
             XCTAssertEqual(call.eventType, .paymentSuccess)
         }
@@ -176,7 +175,6 @@ final class CheckoutComponentsAnalyticsInteractorTests: XCTestCase {
 // MARK: - Test Doubles
 
 private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
-
     struct Call: Sendable {
         let priority: TaskPriority
         let isCancelled: Bool
@@ -191,7 +189,7 @@ private actor SpyAnalyticsService: CheckoutComponentsAnalyticsServiceProtocol {
         self.delayNanoseconds = delayNanoseconds
     }
 
-    func initialize(config: AnalyticsSessionConfig) async {}
+    func initialize(config _: AnalyticsSessionConfig) async {}
 
     func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
         calls.append(Call(

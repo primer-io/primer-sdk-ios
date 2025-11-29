@@ -39,7 +39,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         return textField
     }
 
-    func updateUIView(_ textField: UITextField, context: Context) {
+    func updateUIView(_ textField: UITextField, context _: Context) {
         if textField.text != addressLine {
             textField.text = addressLine
         }
@@ -85,10 +85,10 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             onValidationChange: ((Bool) -> Void)?
         ) {
             self.validationService = validationService
-            self._addressLine = addressLine
-            self._isValid = isValid
-            self._errorMessage = errorMessage
-            self._isFocused = isFocused
+            _addressLine = addressLine
+            _isValid = isValid
+            _errorMessage = errorMessage
+            _isFocused = isFocused
             self.isRequired = isRequired
             self.inputType = inputType
             self.scope = scope
@@ -104,7 +104,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidBeginEditing(_ textField: UITextField) {
+        func textFieldDidBeginEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = true
                 self.errorMessage = nil
@@ -113,7 +113,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textFieldDidEndEditing(_ textField: UITextField) {
+        func textFieldDidEndEditing(_: UITextField) {
             DispatchQueue.main.async {
                 self.isFocused = false
             }
@@ -125,7 +125,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
             return true
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             let currentText = addressLine
 
             guard let textRange = Range(range, in: currentText) else { return false }

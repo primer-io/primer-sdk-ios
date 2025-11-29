@@ -10,7 +10,6 @@ import SwiftUI
 /// including fonts, colors, borders, and layout properties.
 @available(iOS 15.0, *)
 public struct PrimerFieldStyling {
-
     // MARK: - Typography
 
     public let font: Font?

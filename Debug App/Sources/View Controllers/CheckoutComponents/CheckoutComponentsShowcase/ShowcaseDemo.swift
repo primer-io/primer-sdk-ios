@@ -12,25 +12,25 @@ struct ShowcaseDemo<Content: View>: View {
     private let title: String
     private let description: String
     private let content: Content
-    
+
     init(title: String, description: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.description = description
         self.content = content()
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.medium)
-                
+
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             content
                 .frame(maxWidth: .infinity)
                 .padding()

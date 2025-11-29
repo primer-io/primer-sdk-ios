@@ -112,30 +112,32 @@ struct PostalCodeInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    PostalCodeInputField(
-        label: "Postal Code",
-        placeholder: "Enter postal code",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    PostalCodeInputField(
-        label: "Postal Code",
-        placeholder: "Enter postal code",
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        PostalCodeInputField(
+            label: "Postal Code",
+            placeholder: "Enter postal code",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        PostalCodeInputField(
+            label: "Postal Code",
+            placeholder: "Enter postal code",
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

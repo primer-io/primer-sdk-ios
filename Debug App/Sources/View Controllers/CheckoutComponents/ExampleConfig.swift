@@ -15,7 +15,7 @@ struct ExampleConfig: Identifiable {
     let description: String
     let paymentMethods: [String]
     let customization: CheckoutCustomization?
-    
+
     enum CheckoutCustomization {
         case colorful
         case stepByStep
@@ -35,7 +35,7 @@ let stylingExamples: [ExampleConfig] = [
         description: "Customize only cardholder name field",
         paymentMethods: ["PAYMENT_CARD"],
         customization: .colorful
-    )
+    ),
 ]
 
 // MARK: - Default Examples
@@ -46,7 +46,7 @@ let defaultExamples: [ExampleConfig] = [
         description: "Basic CheckoutComponents with surcharge display - shows all features",
         paymentMethods: ["PAYMENT_CARD", "APPLE_PAY"],
         customization: nil
-    )
+    ),
 ]
 
 // MARK: - Architecture Examples
@@ -63,7 +63,7 @@ let architectureExamples: [ExampleConfig] = [
         description: "Combining default and custom styled fields",
         paymentMethods: ["PAYMENT_CARD"],
         customization: .mixedComponents
-    )
+    ),
 ]
 
 // MARK: - Layout Examples
@@ -80,7 +80,7 @@ let layoutExamples: [ExampleConfig] = [
         description: "Complete UI customization with gradient backgrounds and animations",
         paymentMethods: ["PAYMENT_CARD", "PAYPAL", "APPLE_PAY"],
         customization: .customPaymentSelection
-    )
+    ),
 ]
 
 // MARK: - Interactive Examples
@@ -97,7 +97,7 @@ let interactiveExamples: [ExampleConfig] = [
         description: "Components adapt based on card type and validation state",
         paymentMethods: ["PAYMENT_CARD"],
         customization: .runtimeCustomization
-    )
+    ),
 ]
 
 // MARK: - All Examples by Category
@@ -108,7 +108,7 @@ enum ExampleCategory: String, CaseIterable {
     case architecture = "Architecture Patterns"
     case layouts = "Layout Variations"
     case interactive = "Interactive Features"
-    
+
     var examples: [ExampleConfig] {
         switch self {
         case .default:
@@ -123,7 +123,7 @@ enum ExampleCategory: String, CaseIterable {
             return interactiveExamples
         }
     }
-    
+
     var description: String {
         switch self {
         case .default:

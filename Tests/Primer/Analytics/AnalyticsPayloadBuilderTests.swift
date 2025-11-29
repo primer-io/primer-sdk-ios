@@ -8,7 +8,6 @@
 import XCTest
 
 final class AnalyticsPayloadBuilderTests: XCTestCase {
-
     private var builder: AnalyticsPayloadBuilder!
 
     override func setUp() {
@@ -215,7 +214,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         let variantSegment = uuidComponents[3]
         let variantChar = variantSegment.first!
         XCTAssertTrue(["8", "9", "A", "B", "a", "b"].contains(variantChar),
-                     "UUID variant should be 8, 9, A, or B, got \(variantChar)")
+                      "UUID variant should be 8, 9, A, or B, got \(variantChar)")
 
         // Verify basic UUID structure
         XCTAssertEqual(uuidComponents[0].count, 8, "First segment should be 8 hex characters")
@@ -258,7 +257,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
         // Given
         let eventType = AnalyticsEventType.sdkInitStart
         let config = makeTestConfig()
-        let customTimestamp = 1609459200 // 2021-01-01 00:00:00 UTC
+        let customTimestamp = 1_609_459_200 // 2021-01-01 00:00:00 UTC
 
         // When
         let payload = builder.buildPayload(
@@ -318,7 +317,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func makeTestConfig() -> AnalyticsSessionConfig {
-        return AnalyticsSessionConfig(
+        AnalyticsSessionConfig(
             environment: .dev,
             checkoutSessionId: "cs_test_123",
             clientSessionId: "client_test_456",

@@ -8,7 +8,6 @@ import Foundation
 
 /// Validation rule for card numbers.
 class CardNumberRule: ValidationRule {
-
     private let allowedCardNetworks: Set<CardNetwork>
 
     init(allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks) {
@@ -63,7 +62,8 @@ class CardNumberRule: ValidationRule {
             // Check if card length matches the detected network's valid lengths
             if detectedNetwork != .unknown,
                let validation = detectedNetwork.validation,
-               !validation.lengths.contains(cleanedNumber.count) {
+               !validation.lengths.contains(cleanedNumber.count)
+            {
                 let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
                 return .invalid(error: error)
             }
@@ -83,7 +83,7 @@ class CardNumberRule: ValidationRule {
                 switch (odd, digit) {
                 case (true, 9):
                     sum += 9
-                case (true, 0...8):
+                case (true, 0 ... 8):
                     sum += (digit * 2) % 9
                 default:
                     sum += digit
@@ -98,7 +98,6 @@ class CardNumberRule: ValidationRule {
 
 /// Validation rule for CVV/CVC codes.
 class CVVRule: ValidationRule {
-
     private let cardNetwork: CardNetwork?
 
     init(cardNetwork: CardNetwork? = nil) {
@@ -131,7 +130,6 @@ class CVVRule: ValidationRule {
 
 /// Validation rule for cardholder names.
 class CardholderNameRule: ValidationRule {
-
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 

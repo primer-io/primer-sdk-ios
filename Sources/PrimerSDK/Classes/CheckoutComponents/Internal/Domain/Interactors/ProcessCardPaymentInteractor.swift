@@ -40,7 +40,6 @@ protocol ProcessCardPaymentInteractor {
 
 /// Default implementation using RawDataManager internally.
 final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
-
     private let repository: HeadlessRepository
 
     init(repository: HeadlessRepository) {

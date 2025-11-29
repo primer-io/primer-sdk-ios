@@ -8,7 +8,6 @@ import SwiftUI
 
 /// Container for all accessibility metadata associated with a UI component
 struct AccessibilityConfiguration {
-
     let identifier: String
     let label: String
     let hint: String?
