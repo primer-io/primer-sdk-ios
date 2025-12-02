@@ -42,6 +42,10 @@ struct CountryInputField: View, LogReporter {
         scope.structuredState.selectedCountry
     }
 
+    private var fieldFont: Font {
+        styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
+    }
+
     // MARK: - Initialization
 
     init(
@@ -88,12 +92,12 @@ struct CountryInputField: View, LogReporter {
                         // Flag emoji
                         if let countryFlag, !countryName.isEmpty {
                             Text(countryFlag)
-                                .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                                .font(fieldFont)
                         }
 
                         // Country name or placeholder
                         Text(countryName.isEmpty ? placeholder : countryName)
-                            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                            .font(fieldFont)
                             .foregroundColor(countryTextColor)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer(minLength: 0)

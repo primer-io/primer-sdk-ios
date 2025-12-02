@@ -27,13 +27,17 @@ struct CountrySelectionButton: View {
         return styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens)
     }
 
+    private var fieldFont: Font {
+        styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
+    }
+
     // MARK: - Body
 
     var body: some View {
         Button(action: handleNavigation) {
             HStack(spacing: 0) {
                 Text(countryName.isEmpty ? placeholder : countryName)
-                    .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                    .font(fieldFont)
                     .foregroundColor(countryTextColor)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

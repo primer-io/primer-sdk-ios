@@ -470,9 +470,6 @@
                         location = "group:Components"
                         name = "Components">
                         <FileRef
-                           location = "group:CardNetworkSelector.swift">
-                        </FileRef>
-                        <FileRef
                            location = "group:CheckoutScopeObserver.swift">
                         </FileRef>
                         <FileRef
