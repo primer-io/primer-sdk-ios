@@ -104,6 +104,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case applePayDeviceNotSupported(diagnosticsId: String = .uuid)
     case applePayConfigurationError(merchantIdentifier: String?, diagnosticsId: String = .uuid)
     case applePayPresentationFailed(reason: String?, diagnosticsId: String = .uuid)
+    case failedToLoadDesignTokens(fileName: String, diagnosticsId: String = .uuid)
     case unknown(message: String? = nil, diagnosticsId: String = .uuid)
 
     public var errorId: String {
@@ -144,6 +145,7 @@ public enum PrimerError: PrimerErrorProtocol {
         case .applePayDeviceNotSupported: "apple-pay-device-not-supported"
         case .applePayConfigurationError: "apple-pay-configuration-error"
         case .applePayPresentationFailed: "apple-pay-presentation-failed"
+        case .failedToLoadDesignTokens: "failed-to-load-design-tokens"
         case .unknown: "unknown"
         }
     }
@@ -179,6 +181,7 @@ public enum PrimerError: PrimerErrorProtocol {
              let .applePayDeviceNotSupported(id),
              let .applePayConfigurationError(_, id),
              let .applePayPresentationFailed(_, id),
+             let .failedToLoadDesignTokens(_, id),
              let .unsupportedIntent(_, id),
              let .unsupportedPaymentMethod(_, _, id),
              let .unsupportedPaymentMethodForManager(_, _, id),
@@ -277,13 +280,15 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Apple Pay configuration error: merchant identifier '\(merchantIdentifier ?? "nil")' may be invalid"
         case let .applePayPresentationFailed(reason, _):
             return "Apple Pay presentation failed: \(reason ?? "unknown reason")"
+        case let .failedToLoadDesignTokens(fileName, _):
+            return "Failed to load design tokens from file: \(fileName).json"
         case let .unknown(reason, _):
             return "Something went wrong\(reason ?? "")"
         }
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
     public var errorUserInfo: [String: Any] {
@@ -393,13 +398,15 @@ public enum PrimerError: PrimerErrorProtocol {
             """
         case .applePayPresentationFailed:
             return "Unable to display Apple Pay sheet. This may be due to system restrictions or temporary issues. Try again later."
+        case .failedToLoadDesignTokens:
+            return "Check if the design tokens JSON file exists in the bundle and is properly formatted."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(diagnosticsId)"
         }
     }
 
     var exposedError: Error {
-        return self
+        self
     }
 
     var analyticsContext: [String: Any] {

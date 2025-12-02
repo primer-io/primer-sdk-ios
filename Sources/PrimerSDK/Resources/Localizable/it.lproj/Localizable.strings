@@ -149,6 +149,9 @@
 /* Cardholder name */
 "primer-card-form-name" = "Nome titolare";
 
+/* Billing address section title - Card Form */
+"primer-card-form-billing-address" = "Billing address";
+
 /* Pay - Card Form (Checkout submit button text) */
 "primer-card-form-pay" = "Paga";
 

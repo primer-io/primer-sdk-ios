@@ -280,8 +280,17 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     .filter({ $0["type"] as? String == self.rawValue.uppercased() })
                     .first
             else { continue }
-            guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
-            return surcharge
+
+            // Handle nested surcharge structure: surcharge.amount
+            if let surchargeData = tmpNetwork["surcharge"] as? [String: Any],
+               let surchargeAmount = surchargeData["amount"] as? Int {
+                return surchargeAmount
+            }
+
+            // Fallback: handle direct surcharge integer format
+            if let surcharge = tmpNetwork["surcharge"] as? Int {
+                return surcharge
+            }
         }
 
         return nil
