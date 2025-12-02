@@ -1,3 +1,14 @@
+## 2.43.0 (2025-12-02)
+
+### Feat
+
+- Disable selection for EFTPOS co-badges (#1406)
+
+### Fix
+
+- Clear cardNetwork state when card number is deleted (#1409)
+- Resolve card validation infinite loops and network picker issues (#1408)
+
 ## 2.42.3 (2025-11-18)
 
 ### Fix
