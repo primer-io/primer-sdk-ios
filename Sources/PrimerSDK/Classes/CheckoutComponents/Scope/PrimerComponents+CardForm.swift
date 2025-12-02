@@ -35,6 +35,15 @@ extension PrimerComponents {
         /// Full form screen override
         public let screen: Component?
 
+        /// Custom error view for displaying inline form validation errors
+        public let errorView: ErrorComponent?
+
+        /// Default styling configuration for all form fields.
+        /// Keys are field identifiers: "cardNumber", "expiryDate", "cvv", "cardholderName",
+        /// "postalCode", "countryCode", "city", "state", "addressLine1", "addressLine2",
+        /// "firstName", "lastName", "phoneNumber", "email"
+        public let defaultFieldStyling: [String: PrimerFieldStyling]?
+
         /// Creates a new card form configuration.
         /// - Parameters:
         ///   - title: Custom title. Default: nil (uses SDK default)
@@ -44,6 +53,8 @@ extension PrimerComponents {
         ///   - submitButton: Submit button config. Default: SubmitButton()
         ///   - navigation: Navigation callbacks. Default: Navigation()
         ///   - screen: Full screen override. Default: nil (uses SDK default)
+        ///   - errorView: Custom error view. Default: nil (uses SDK default)
+        ///   - defaultFieldStyling: Default styling for fields. Default: nil (uses SDK default)
         public init(
             title: String? = nil,
             cardDetails: CardDetails = CardDetails(),
@@ -51,7 +62,9 @@ extension PrimerComponents {
             selectCountry: SelectCountry = SelectCountry(),
             submitButton: SubmitButton = SubmitButton(),
             navigation: Navigation = Navigation(),
-            screen: Component? = nil
+            screen: Component? = nil,
+            errorView: ErrorComponent? = nil,
+            defaultFieldStyling: [String: PrimerFieldStyling]? = nil
         ) {
             self.title = title
             self.cardDetails = cardDetails
@@ -60,6 +73,8 @@ extension PrimerComponents {
             self.submitButton = submitButton
             self.navigation = navigation
             self.screen = screen
+            self.errorView = errorView
+            self.defaultFieldStyling = defaultFieldStyling
         }
 
         // MARK: - Card Details
@@ -84,6 +99,12 @@ extension PrimerComponents {
             /// Custom card network selector
             public let cardNetwork: Component?
 
+            /// Custom retail outlet field (region-specific, e.g., convenience store payments)
+            public let retailOutlet: Component?
+
+            /// Custom OTP code field (for OTP verification flows)
+            public let otpCode: Component?
+
             /// Creates a new card details configuration.
             /// - Parameters:
             ///   - content: Custom section layout. Default: nil (uses SDK default)
@@ -92,13 +113,17 @@ extension PrimerComponents {
             ///   - cvv: Custom CVV field. Default: nil (uses SDK default)
             ///   - cardholderName: Custom cardholder name field. Default: nil (uses SDK default)
             ///   - cardNetwork: Custom network selector. Default: nil (uses SDK default)
+            ///   - retailOutlet: Custom retail outlet field. Default: nil (uses SDK default)
+            ///   - otpCode: Custom OTP code field. Default: nil (uses SDK default)
             public init(
                 content: Component? = nil,
                 cardNumber: Component? = nil,
                 expiryDate: Component? = nil,
                 cvv: Component? = nil,
                 cardholderName: Component? = nil,
-                cardNetwork: Component? = nil
+                cardNetwork: Component? = nil,
+                retailOutlet: Component? = nil,
+                otpCode: Component? = nil
             ) {
                 self.content = content
                 self.cardNumber = cardNumber
@@ -106,6 +131,8 @@ extension PrimerComponents {
                 self.cvv = cvv
                 self.cardholderName = cardholderName
                 self.cardNetwork = cardNetwork
+                self.retailOutlet = retailOutlet
+                self.otpCode = otpCode
             }
         }
 
@@ -140,6 +167,12 @@ extension PrimerComponents {
             /// Custom state field
             public let state: Component?
 
+            /// Custom phone number field
+            public let phoneNumber: Component?
+
+            /// Custom email field
+            public let email: Component?
+
             /// Creates a new billing address configuration.
             /// - Parameters:
             ///   - content: Custom section layout. Default: nil (uses SDK default)
@@ -151,6 +184,8 @@ extension PrimerComponents {
             ///   - postalCode: Custom postal code field. Default: nil (uses SDK default)
             ///   - city: Custom city field. Default: nil (uses SDK default)
             ///   - state: Custom state field. Default: nil (uses SDK default)
+            ///   - phoneNumber: Custom phone number field. Default: nil (uses SDK default)
+            ///   - email: Custom email field. Default: nil (uses SDK default)
             public init(
                 content: Component? = nil,
                 countryCode: Component? = nil,
@@ -160,7 +195,9 @@ extension PrimerComponents {
                 addressLine2: Component? = nil,
                 postalCode: Component? = nil,
                 city: Component? = nil,
-                state: Component? = nil
+                state: Component? = nil,
+                phoneNumber: Component? = nil,
+                email: Component? = nil
             ) {
                 self.content = content
                 self.countryCode = countryCode
@@ -171,6 +208,8 @@ extension PrimerComponents {
                 self.postalCode = postalCode
                 self.city = city
                 self.state = state
+                self.phoneNumber = phoneNumber
+                self.email = email
             }
         }
 

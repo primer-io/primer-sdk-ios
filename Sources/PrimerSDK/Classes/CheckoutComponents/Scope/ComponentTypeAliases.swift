@@ -27,3 +27,7 @@ public typealias PaymentMethodItemComponent = (CheckoutPaymentMethod) -> any Vie
 /// Country item customization receiving country data
 @available(iOS 15.0, *)
 public typealias CountryItemComponent = (PrimerCountry) -> any View
+
+/// Category header component receiving category name
+@available(iOS 15.0, *)
+public typealias CategoryHeaderComponent = (String) -> any View

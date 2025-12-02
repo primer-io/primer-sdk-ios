@@ -23,6 +23,12 @@ extension PrimerComponents {
         /// Custom payment method item renderer
         public let paymentMethodItem: PaymentMethodItemComponent?
 
+        /// Custom category header renderer for grouping payment methods
+        public let categoryHeader: CategoryHeaderComponent?
+
+        /// Custom empty state view when no payment methods are available
+        public let emptyStateView: Component?
+
         /// Navigation callback overrides
         public let navigation: Navigation
 
@@ -31,16 +37,22 @@ extension PrimerComponents {
         ///   - title: Custom title. Default: nil (uses SDK default)
         ///   - screen: Full screen override. Default: nil (uses SDK default)
         ///   - paymentMethodItem: Custom item renderer. Default: nil (uses SDK default)
+        ///   - categoryHeader: Custom category header renderer. Default: nil (uses SDK default)
+        ///   - emptyStateView: Custom empty state view. Default: nil (uses SDK default)
         ///   - navigation: Navigation callbacks. Default: Navigation()
         public init(
             title: String? = nil,
             screen: Component? = nil,
             paymentMethodItem: PaymentMethodItemComponent? = nil,
+            categoryHeader: CategoryHeaderComponent? = nil,
+            emptyStateView: Component? = nil,
             navigation: Navigation = Navigation()
         ) {
             self.title = title
             self.screen = screen
             self.paymentMethodItem = paymentMethodItem
+            self.categoryHeader = categoryHeader
+            self.emptyStateView = emptyStateView
             self.navigation = navigation
         }
 
