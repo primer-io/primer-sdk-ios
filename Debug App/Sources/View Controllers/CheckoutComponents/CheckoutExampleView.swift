@@ -96,15 +96,12 @@ struct CheckoutExampleView: View {
         isLoading = true
         error = nil
 
-        // Always use the configured client session from MerchantSessionAndSettingsViewController
-        // This preserves the exact configuration from the main UI including currency, billing address, surcharge, etc.
         guard let configuredClientSession else {
             self.error = "No session configuration provided - please configure session in main settings"
             self.isLoading = false
             return
         }
 
-        // Request client token using the new utility
         do {
             self.clientToken = try await NetworkingUtils.requestClientSession(
                 body: configuredClientSession,
@@ -175,11 +172,24 @@ private struct CheckoutContentView: View {
     fileprivate let onCompletion: () -> Void
 
     var body: some View {
+        if example.isCustom {
+            // Custom checkout with PrimerComponents
+            PrimerCheckout(
+                clientToken: clientToken,
+                primerSettings: settings,
+                components: createCustomComponents(),
+                onCompletion: onCompletion
+            )
+        } else {
+            // Default checkout
+            defaultCheckoutView
+        }
+    }
+
+    private var defaultCheckoutView: some View {
         VStack(spacing: 0) {
-            // Example info header
             ExampleInfoHeader(example: example)
 
-            // Simple, clean integration - PrimerCheckout handles everything automatically!
             VStack {
                 Text("Pure SwiftUI PrimerCheckout")
                     .font(.headline)
@@ -190,7 +200,6 @@ private struct CheckoutContentView: View {
                     .foregroundColor(.secondary)
                     .padding(.bottom)
 
-                // This is all the merchant needs to do - PrimerCheckout handles SDK initialization automatically!
                 PrimerCheckout(
                     clientToken: clientToken,
                     primerSettings: settings,
@@ -200,44 +209,55 @@ private struct CheckoutContentView: View {
         }
     }
 
-    // MARK: - Example Info Header
-
-    @available(iOS 15.0, *)
-    private struct ExampleInfoHeader: View {
-        fileprivate let example: ExampleConfig
-        @State private var isExpanded = false
-
-        var body: some View {
-            VStack(spacing: 0) {
-                Button(action: { isExpanded.toggle() }) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(example.description)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-
-                            Text("Payment Methods: \(example.paymentMethods.joined(separator: ", "))")
-                                .font(.caption)
-                                .foregroundColor(.blue)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(Color(.systemGroupedBackground))
+    private func createCustomComponents() -> PrimerComponents {
+        PrimerComponents(
+            paymentMethodSelection: .init(
+                screen: { scope in
+                    // CustomPaymentSelectionScreen gets checkoutScope from environment
+                    AnyView(CustomPaymentSelectionScreen(scope: scope))
                 }
-                .buttonStyle(.plain)
-            }
-            .overlay(
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(Color(.separator)),
-                alignment: .bottom
             )
+        )
+    }
+}
+
+// MARK: - Example Info Header
+
+@available(iOS 15.0, *)
+private struct ExampleInfoHeader: View {
+    fileprivate let example: ExampleConfig
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button(action: { isExpanded.toggle() }) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(example.description)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+
+                        Text("Payment Methods: \(example.paymentMethods.joined(separator: ", "))")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemGroupedBackground))
+            }
+            .buttonStyle(.plain)
         }
+        .overlay(
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(.separator)),
+            alignment: .bottom
+        )
     }
 }

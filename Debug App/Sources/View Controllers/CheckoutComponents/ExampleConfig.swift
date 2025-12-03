@@ -14,34 +14,22 @@ struct ExampleConfig: Identifiable {
     let name: String
     let description: String
     let paymentMethods: [String]
+    let isCustom: Bool
 }
 
-// MARK: - Default Examples
+// MARK: - All Examples
 
-let defaultExamples: [ExampleConfig] = [
+let allExamples: [ExampleConfig] = [
     ExampleConfig(
-        name: "Default CheckoutComponents",
-        description: "Basic CheckoutComponents with surcharge display - shows all features",
-        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY"]
+        name: "Default Checkout",
+        description: "Standard CheckoutComponents with SDK-provided UI",
+        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY"],
+        isCustom: false
+    ),
+    ExampleConfig(
+        name: "Custom Payment Selection",
+        description: "Fully custom payment screen with merchant-controlled layout, product details, and payment method display",
+        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY", "PAYPAL"],
+        isCustom: true
     )
 ]
-
-// MARK: - Example Category
-
-enum ExampleCategory: String, CaseIterable {
-    case `default` = "Default Example"
-
-    var examples: [ExampleConfig] {
-        switch self {
-        case .default:
-            return defaultExamples
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .default:
-            return "Basic CheckoutComponents without customization"
-        }
-    }
-}
