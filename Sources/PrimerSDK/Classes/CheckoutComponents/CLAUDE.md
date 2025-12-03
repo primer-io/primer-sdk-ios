@@ -104,28 +104,40 @@ for await state in scope.state {
 
 ## Customization Approaches
 
-### 1. Field-Level Customization
-Replace individual input fields while keeping defaults:
+### 1. Field-Level Customization via InputFieldConfig
+Customize individual fields with partial or full replacement:
 ```swift
-cardScope.cardNumberField = { label, styling in
-    AnyView(CustomCardNumberField(...))
-}
+let cardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        cardNumber: InputFieldConfig(
+            label: "Card Number",
+            placeholder: "0000 0000 0000 0000",
+            styling: PrimerFieldStyling(borderColor: .blue)
+        ),
+        cvv: InputFieldConfig(
+            component: { MyCustomCVVField() }
+        )
+    )
+)
 ```
 
 ### 2. Section-Level Customization
-Customize entire sections (card input, billing address):
+Replace entire sections using the `content` closure:
 ```swift
-cardScope.billingAddressSection = { modifier in
-    CustomBillingSection(scope: cardScope, modifier: modifier)
-}
+let cardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        content: { MyCustomCardDetailsSection() }
+    )
+)
 ```
 
-### 3. SDK Components with Custom Styling
-Use ViewBuilder methods with custom styling:
+### 3. Full Screen Customization
+Replace the entire card form screen:
 ```swift
-cardScope.PrimerCardNumberField(
-    label: "Card Number",
-    styling: PrimerFieldStyling(...)
+let cardForm = PrimerComponents.CardForm(
+    screen: { scope in
+        MyCustomCardFormScreen(scope: scope)
+    }
 )
 ```
 

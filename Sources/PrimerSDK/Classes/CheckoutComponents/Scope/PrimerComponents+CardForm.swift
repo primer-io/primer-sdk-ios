@@ -6,6 +6,61 @@
 
 import SwiftUI
 
+// MARK: - Input Field Configuration
+
+/// Configuration for customizing a text input field.
+/// Supports partial customization (label, placeholder, styling) or full component replacement.
+///
+/// ## Usage Examples
+///
+/// ### Partial Customization
+/// ```swift
+/// InputFieldConfig(
+///     label: "Card Number",
+///     placeholder: "0000 0000 0000 0000",
+///     styling: PrimerFieldStyling(borderColor: .blue)
+/// )
+/// ```
+///
+/// ### Full Component Replacement
+/// ```swift
+/// InputFieldConfig(component: { MyCustomCardNumberField() })
+/// ```
+@available(iOS 15.0, *)
+public struct InputFieldConfig {
+
+    /// Custom label text. When nil, uses SDK default label.
+    public let label: String?
+
+    /// Custom placeholder text. When nil, uses SDK default placeholder.
+    public let placeholder: String?
+
+    /// Custom styling configuration. When nil, uses SDK default styling.
+    public let styling: PrimerFieldStyling?
+
+    /// Full component replacement. When provided, label/placeholder/styling are ignored
+    /// and the custom component is rendered instead.
+    public let component: Component?
+
+    /// Creates a new input field configuration.
+    /// - Parameters:
+    ///   - label: Custom label text. Default: nil (uses SDK default)
+    ///   - placeholder: Custom placeholder text. Default: nil (uses SDK default)
+    ///   - styling: Custom styling. Default: nil (uses SDK default)
+    ///   - component: Full component replacement. Default: nil (uses SDK default field)
+    public init(
+        label: String? = nil,
+        placeholder: String? = nil,
+        styling: PrimerFieldStyling? = nil,
+        component: Component? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.styling = styling
+        self.component = component
+    }
+}
+
 // MARK: - PrimerComponents.CardForm
 
 @available(iOS 15.0, *)
@@ -39,12 +94,6 @@ extension PrimerComponents {
         /// Custom error view for displaying inline form validation errors
         public let errorView: ErrorComponent?
 
-        /// Default styling configuration for all form fields.
-        /// Keys are field identifiers: "cardNumber", "expiryDate", "cvv", "cardholderName",
-        /// "postalCode", "countryCode", "city", "state", "addressLine1", "addressLine2",
-        /// "firstName", "lastName", "phoneNumber", "email"
-        public let defaultFieldStyling: [String: PrimerFieldStyling]?
-
         /// Creates a new card form configuration.
         /// - Parameters:
         ///   - title: Custom title. Default: nil (uses SDK default)
@@ -55,7 +104,6 @@ extension PrimerComponents {
         ///   - navigation: Navigation callbacks. Default: Navigation()
         ///   - screen: Full screen override with scope access. Default: nil (uses SDK default)
         ///   - errorView: Custom error view. Default: nil (uses SDK default)
-        ///   - defaultFieldStyling: Default styling for fields. Default: nil (uses SDK default)
         public init(
             title: String? = nil,
             cardDetails: CardDetails = CardDetails(),
@@ -64,8 +112,7 @@ extension PrimerComponents {
             submitButton: SubmitButton = SubmitButton(),
             navigation: Navigation = Navigation(),
             screen: CardFormScreenComponent? = nil,
-            errorView: ErrorComponent? = nil,
-            defaultFieldStyling: [String: PrimerFieldStyling]? = nil
+            errorView: ErrorComponent? = nil
         ) {
             self.title = title
             self.cardDetails = cardDetails
@@ -75,56 +122,31 @@ extension PrimerComponents {
             self.navigation = navigation
             self.screen = screen
             self.errorView = errorView
-            self.defaultFieldStyling = defaultFieldStyling
         }
 
         // MARK: - Card Details
 
         /// Card details section configuration
         public struct CardDetails {
-            /// Custom section content layout
+            /// Replaces entire card details section when provided
             public let content: Component?
-
-            /// Custom card number field
-            public let cardNumber: Component?
-
-            /// Custom expiry date field
-            public let expiryDate: Component?
-
-            /// Custom CVV field
-            public let cvv: Component?
-
-            /// Custom cardholder name field
-            public let cardholderName: Component?
-
-            /// Custom card network selector
+            public let cardNumber: InputFieldConfig?
+            public let expiryDate: InputFieldConfig?
+            public let cvv: InputFieldConfig?
+            public let cardholderName: InputFieldConfig?
             public let cardNetwork: Component?
+            public let retailOutlet: InputFieldConfig?
+            public let otpCode: InputFieldConfig?
 
-            /// Custom retail outlet field (region-specific, e.g., convenience store payments)
-            public let retailOutlet: Component?
-
-            /// Custom OTP code field (for OTP verification flows)
-            public let otpCode: Component?
-
-            /// Creates a new card details configuration.
-            /// - Parameters:
-            ///   - content: Custom section layout. Default: nil (uses SDK default)
-            ///   - cardNumber: Custom card number field. Default: nil (uses SDK default)
-            ///   - expiryDate: Custom expiry date field. Default: nil (uses SDK default)
-            ///   - cvv: Custom CVV field. Default: nil (uses SDK default)
-            ///   - cardholderName: Custom cardholder name field. Default: nil (uses SDK default)
-            ///   - cardNetwork: Custom network selector. Default: nil (uses SDK default)
-            ///   - retailOutlet: Custom retail outlet field. Default: nil (uses SDK default)
-            ///   - otpCode: Custom OTP code field. Default: nil (uses SDK default)
             public init(
                 content: Component? = nil,
-                cardNumber: Component? = nil,
-                expiryDate: Component? = nil,
-                cvv: Component? = nil,
-                cardholderName: Component? = nil,
+                cardNumber: InputFieldConfig? = nil,
+                expiryDate: InputFieldConfig? = nil,
+                cvv: InputFieldConfig? = nil,
+                cardholderName: InputFieldConfig? = nil,
                 cardNetwork: Component? = nil,
-                retailOutlet: Component? = nil,
-                otpCode: Component? = nil
+                retailOutlet: InputFieldConfig? = nil,
+                otpCode: InputFieldConfig? = nil
             ) {
                 self.content = content
                 self.cardNumber = cardNumber
@@ -141,64 +163,31 @@ extension PrimerComponents {
 
         /// Billing address section configuration
         public struct BillingAddress {
-            /// Custom section content layout
+            /// Replaces entire billing address section when provided
             public let content: Component?
+            public let countryCode: InputFieldConfig?
+            public let firstName: InputFieldConfig?
+            public let lastName: InputFieldConfig?
+            public let addressLine1: InputFieldConfig?
+            public let addressLine2: InputFieldConfig?
+            public let postalCode: InputFieldConfig?
+            public let city: InputFieldConfig?
+            public let state: InputFieldConfig?
+            public let phoneNumber: InputFieldConfig?
+            public let email: InputFieldConfig?
 
-            /// Custom country code field
-            public let countryCode: Component?
-
-            /// Custom first name field
-            public let firstName: Component?
-
-            /// Custom last name field
-            public let lastName: Component?
-
-            /// Custom address line 1 field
-            public let addressLine1: Component?
-
-            /// Custom address line 2 field
-            public let addressLine2: Component?
-
-            /// Custom postal code field
-            public let postalCode: Component?
-
-            /// Custom city field
-            public let city: Component?
-
-            /// Custom state field
-            public let state: Component?
-
-            /// Custom phone number field
-            public let phoneNumber: Component?
-
-            /// Custom email field
-            public let email: Component?
-
-            /// Creates a new billing address configuration.
-            /// - Parameters:
-            ///   - content: Custom section layout. Default: nil (uses SDK default)
-            ///   - countryCode: Custom country code field. Default: nil (uses SDK default)
-            ///   - firstName: Custom first name field. Default: nil (uses SDK default)
-            ///   - lastName: Custom last name field. Default: nil (uses SDK default)
-            ///   - addressLine1: Custom address line 1 field. Default: nil (uses SDK default)
-            ///   - addressLine2: Custom address line 2 field. Default: nil (uses SDK default)
-            ///   - postalCode: Custom postal code field. Default: nil (uses SDK default)
-            ///   - city: Custom city field. Default: nil (uses SDK default)
-            ///   - state: Custom state field. Default: nil (uses SDK default)
-            ///   - phoneNumber: Custom phone number field. Default: nil (uses SDK default)
-            ///   - email: Custom email field. Default: nil (uses SDK default)
             public init(
                 content: Component? = nil,
-                countryCode: Component? = nil,
-                firstName: Component? = nil,
-                lastName: Component? = nil,
-                addressLine1: Component? = nil,
-                addressLine2: Component? = nil,
-                postalCode: Component? = nil,
-                city: Component? = nil,
-                state: Component? = nil,
-                phoneNumber: Component? = nil,
-                email: Component? = nil
+                countryCode: InputFieldConfig? = nil,
+                firstName: InputFieldConfig? = nil,
+                lastName: InputFieldConfig? = nil,
+                addressLine1: InputFieldConfig? = nil,
+                addressLine2: InputFieldConfig? = nil,
+                postalCode: InputFieldConfig? = nil,
+                city: InputFieldConfig? = nil,
+                state: InputFieldConfig? = nil,
+                phoneNumber: InputFieldConfig? = nil,
+                email: InputFieldConfig? = nil
             ) {
                 self.content = content
                 self.countryCode = countryCode

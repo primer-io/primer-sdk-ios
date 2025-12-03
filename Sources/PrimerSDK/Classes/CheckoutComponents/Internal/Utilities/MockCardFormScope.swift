@@ -48,27 +48,6 @@ public class MockCardFormScope: PrimerCardFormScope {
     public var screen: ((any PrimerCardFormScope) -> any View)? = nil
     public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)? = nil
     public var errorView: ((String) -> any View)? = nil
-    public var cardNumberField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var expiryDateField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cvvField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cardholderNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var postalCodeField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var countryField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cityField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var stateField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var addressLine1Field: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var addressLine2Field: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var phoneNumberField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var firstNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var lastNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var emailField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var retailOutletField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var otpCodeField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var submitButton: ((String) -> any View)? = nil
-    public var cardInputSection: (() -> any View)? = nil
-    public var billingAddressSection: (() -> any View)? = nil
-    public var submitButtonSection: (() -> any View)? = nil
-    public var defaultFieldStyling: [String: PrimerFieldStyling]? = nil
 
     public var selectCountry: PrimerSelectCountryScope {
         fatalError("Not implemented for preview")

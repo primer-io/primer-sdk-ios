@@ -68,41 +68,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - UI Customization Properties
 
-    // MARK: - Screen Customization
-
     public var screen: ((_ scope: any PrimerCardFormScope) -> any View)?
     public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
     public var errorView: ((_ error: String) -> any View)?
-
-    // MARK: - Field-Level Customization Properties
-
-    public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var submitButton: ((_ text: String) -> any View)?
-
-    // MARK: - Section-Level Customization Properties
-
-    public var cardInputSection: (() -> any View)?
-    public var billingAddressSection: (() -> any View)?
-    public var submitButtonSection: (() -> any View)?
-
-    // MARK: - Default Styling Properties
-
-    public var defaultFieldStyling: [String: PrimerFieldStyling]?
 
     // MARK: - Private Properties
 
@@ -832,7 +800,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
             scope: self,
             selectedNetwork: structuredState.selectedNetwork?.network,
-            styling: styling ?? defaultFieldStyling?["cardNumber"]
+            styling: styling
         ).asAny()
     }
 
@@ -841,7 +809,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.expiryDateAlternativePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["expiryDate"]
+            styling: styling
         ).asAny()
     }
 
@@ -851,7 +819,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
             scope: self,
             cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
-            styling: styling ?? defaultFieldStyling?["cvv"]
+            styling: styling
         ).asAny()
     }
 
@@ -860,7 +828,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["cardholderName"]
+            styling: styling
         ).asAny()
     }
 
@@ -869,7 +837,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             scope: self,
             label: label,
             placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-            styling: styling ?? defaultFieldStyling?["country"],
+            styling: styling,
             onValidationChange: nil,
             onOpenCountrySelector: nil
         ).asAny()
@@ -880,7 +848,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["postalCode"]
+            styling: styling
         ).asAny()
     }
 
@@ -889,7 +857,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.cityPlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["city"]
+            styling: styling
         ).asAny()
     }
 
@@ -898,7 +866,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.statePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["state"]
+            styling: styling
         ).asAny()
     }
 
@@ -909,7 +877,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             isRequired: true,
             inputType: .addressLine1,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["addressLine1"]
+            styling: styling
         ).asAny()
     }
 
@@ -920,7 +888,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             isRequired: false,
             inputType: .addressLine2,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["addressLine2"]
+            styling: styling
         ).asAny()
     }
 
@@ -930,7 +898,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
             inputType: .firstName,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["firstName"]
+            styling: styling
         ).asAny()
     }
 
@@ -940,7 +908,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
             inputType: .lastName,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["lastName"]
+            styling: styling
         ).asAny()
     }
 
@@ -949,7 +917,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.emailPlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["email"]
+            styling: styling
         ).asAny()
     }
 
@@ -959,7 +927,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
             inputType: .phoneNumber,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["phoneNumber"]
+            styling: styling
         ).asAny()
     }
 
@@ -969,7 +937,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.retailOutletPlaceholder,
             inputType: .retailer,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["retailOutlet"]
+            styling: styling
         ).asAny()
     }
 
@@ -978,7 +946,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.otpCodePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["otpCode"]
+            styling: styling
         ).asAny()
     }
 }

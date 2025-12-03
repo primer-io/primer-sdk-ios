@@ -142,48 +142,42 @@ Each scope provides:
 
 ### Customizing Individual Components
 
-Replace specific UI components while keeping default behavior:
+Use `InputFieldConfig` to customize individual fields with partial or full replacement:
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
-    from: viewController,
-    customContent: { checkoutScope in
-        // Default UI with customizations
-        VStack {
-            // Access payment method scopes dynamically
-            if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
-                // Customize individual fields
-                cardScope.cardNumberField = { label, styling in
-                    AnyView(CustomCardNumberField(
-                        label: label,
-                        styling: styling,
-                        onChange: cardScope.updateCardNumber
-                    ))
-                }
-                
-                // Or use SDK components with custom styling
-                cardScope.PrimerCardNumberField(
-                    label: "Card Number",
-                    styling: PrimerFieldStyling(
-                        backgroundColor: .gray.opacity(0.1),
-                        cornerRadius: 12
-                    )
-                )
-            }
-        }
-    }
+// Create customized card form configuration
+let customCardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        // Partial customization - change label/placeholder/styling
+        cardNumber: InputFieldConfig(
+            label: "Card Number",
+            placeholder: "0000 0000 0000 0000",
+            styling: PrimerFieldStyling(
+                backgroundColor: .gray.opacity(0.1),
+                cornerRadius: 12
+            )
+        ),
+        // Full component replacement
+        cvv: InputFieldConfig(
+            component: { MyCustomCVVField() }
+        )
+    )
 )
+
+// Register with PrimerComponents
+let components = PrimerComponents()
+components.register(customCardForm)
 ```
 
-### Using SDK Components with Custom Styling
+### Using InputFieldConfig
 
-The ViewBuilder pattern allows you to use SDK components with custom styling:
+`InputFieldConfig` supports partial customization (label, placeholder, styling) or full component replacement:
 
 ```swift
-// Inside your custom content
-cardScope.PrimerCardNumberField(
+// Partial customization - SDK renders default field with custom properties
+InputFieldConfig(
     label: "Card Number",
+    placeholder: "Enter your card number",
     styling: PrimerFieldStyling(
         font: .system(size: 16),
         textColor: .primary,
@@ -197,13 +191,11 @@ cardScope.PrimerCardNumberField(
         fieldHeight: 56
     )
 )
-.overlay(alignment: .trailing) {
-    // Add custom overlays
-    cardScope.state.detectedCardNetwork.map { network in
-        Image(network.logo)
-            .padding(.trailing, 16)
-    }
-}
+
+// Full component replacement
+InputFieldConfig(
+    component: { MyCustomCardNumberField() }
+)
 ```
 
 ### Complete Custom UI
@@ -296,87 +288,71 @@ CheckoutComponents provides three approaches for customization:
 #### 1. Field-Level Customization (Replace Individual Fields)
 
 ```swift
-if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
-    // Replace card number field with custom implementation
-    cardScope.cardNumberField = { label, styling in
-        AnyView(CustomCardNumberInput(
-            label: label,
-            styling: styling,
-            onChange: cardScope.updateCardNumber,
-            validation: cardScope.state.cardNumber
-        ))
-    }
-    
-    // Replace expiry date field
-    cardScope.expiryDateField = { label, styling in
-        AnyView(CustomExpiryInput(
-            label: label,
-            styling: styling,
-            onChange: cardScope.updateExpiryDate,
-            validation: cardScope.state.expiryDate
-        ))
-    }
-}
+// Field-level customization via InputFieldConfig
+let cardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        // Partial customization - SDK renders default field with custom properties
+        cardNumber: InputFieldConfig(
+            label: "Card Number",
+            placeholder: "0000 0000 0000 0000",
+            styling: customStyling
+        ),
+        expiryDate: InputFieldConfig(
+            label: "Expiry",
+            styling: customStyling
+        ),
+        cvv: InputFieldConfig(
+            label: "CVV",
+            styling: customStyling
+        ),
+        // Full component replacement
+        cardholderName: InputFieldConfig(
+            component: { CustomCardholderNameField() }
+        )
+    )
+)
 ```
 
 #### 2. Section-Level Customization (Group Multiple Fields)
 
 ```swift
-// Customize entire card input section
-cardScope.cardInputSection = { modifier in
-    CustomCardSection(
-        scope: cardScope,
-        modifier: modifier
+// Replace entire card details section
+let cardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        content: { CustomCardSection(scope: cardScope) }
+    ),
+    billingAddress: .init(
+        content: { CustomBillingSection(scope: cardScope) }
     )
-}
-
-// Customize billing address section
-cardScope.billingAddressSection = { modifier in
-    CustomBillingSection(
-        scope: cardScope,
-        modifier: modifier,
-        fields: cardScope.state.configuration.billingAddressFields
-    )
-}
+)
 ```
 
-#### 3. SDK Components with Custom Styling
+#### 3. Full Screen Customization
 
 ```swift
-// Use SDK components with ViewBuilder pattern
-VStack(spacing: 16) {
-    cardScope.PrimerCardNumberField(
-        label: "Card Number",
-        styling: customStyling
-    )
-    
-    HStack(spacing: 12) {
-        cardScope.PrimerExpiryDateField(
-            label: "Expiry",
-            styling: customStyling
-        )
-        
-        cardScope.PrimerCvvField(
-            label: "CVV",
-            styling: customStyling
-        )
+// Replace entire card form screen
+let cardForm = PrimerComponents.CardForm(
+    screen: { scope in
+        VStack(spacing: 16) {
+            // Access scope for state and actions
+            scope.PrimerCardNumberField(label: "Card Number", styling: nil)
+
+            HStack(spacing: 12) {
+                scope.PrimerExpiryDateField(label: "Expiry", styling: nil)
+                scope.PrimerCvvField(label: "CVV", styling: nil)
+            }
+
+            Button("Submit") {
+                scope.onSubmit()
+            }
+        }
     }
-    
-    // Conditional fields based on configuration
-    if cardScope.state.configuration.isCardholderNameRequired {
-        cardScope.PrimerCardholderNameField(
-            label: "Name on Card",
-            styling: customStyling
-        )
-    }
-}
+)
 ```
 
-All customizable fields include:
-- Card fields: cardNumberField, expiryDateField, cvvField, cardholderNameField
-- Billing fields: firstNameField, lastNameField, emailField, phoneNumberField
-- Address fields: addressLine1Field, addressLine2Field, cityField, stateField, postalCodeField, countryField
-- UI elements: cardNetworkSelector, countrySelector, submitButton, cardInputSection, billingAddressSection
+All customizable fields via InputFieldConfig:
+- Card fields: cardNumber, expiryDate, cvv, cardholderName, cardNetwork, retailOutlet, otpCode
+- Billing fields: firstName, lastName, email, phoneNumber, addressLine1, addressLine2, city, state, postalCode, countryCode
 
 ## State Observation
 
@@ -458,30 +434,34 @@ CheckoutComponents automatically detects and handles co-badged cards with networ
 Task {
     for await state in cardScope.state {
         // Multiple networks detected
-        if state.detectedCardNetworks.count > 1 {
-            print("Co-badged card detected: \(state.detectedCardNetworks)")
-            
-            // Network-specific surcharges
-            for network in state.detectedCardNetworks {
-                if let surcharge = state.getNetworkSurcharge(for: network) {
-                    print("\(network): +\(surcharge.amount) \(surcharge.currency)")
-                }
+        if state.availableNetworks.count > 1 {
+            print("Co-badged card detected: \(state.availableNetworks)")
+
+            // Get surcharge for selected network
+            if let surcharge = state.surchargeAmount {
+                print("Surcharge: \(surcharge)")
             }
         }
     }
 }
 
 // Programmatically select network
-cardScope.selectCardNetwork(.mastercard)
+cardScope.updateSelectedCardNetwork("mastercard")
 
-// Customize network selector UI
-cardScope.cardNetworkSelector = { networks, selected, onSelect in
-    AnyView(CustomNetworkPicker(
-        networks: networks,
-        selected: selected,
-        onSelect: onSelect
-    ))
+// Customize network selector via scope closure
+cardScope.cobadgedCardsView = { availableNetworks, selectNetwork in
+    CustomNetworkPicker(
+        networks: availableNetworks,
+        onSelect: selectNetwork
+    )
 }
+
+// Or customize via PrimerComponents configuration
+let cardForm = PrimerComponents.CardForm(
+    cardDetails: .init(
+        cardNetwork: { MyCustomNetworkSelector() }
+    )
+)
 ```
 
 ## Billing Address
@@ -490,49 +470,28 @@ Billing address fields are dynamically configured based on API response:
 
 ```swift
 // Check which fields are required
-let config = cardScope.state.configuration
-print("Required billing fields: \(config.billingAddressFields)")
+let formConfig = cardScope.getFormConfiguration()
+print("Required billing fields: \(formConfig.billingFields)")
 
 // Fields can include: firstName, lastName, email, phoneNumber,
 // addressLine1, addressLine2, city, state, postalCode, countryCode
 
-// Customize billing address section
-cardScope.billingAddressSection = { modifier in
-    VStack(alignment: .leading, spacing: 12) {
-        Text("Billing Address")
-            .font(.headline)
-        
-        // Only show required fields
-        ForEach(config.billingAddressFields, id: \.self) { field in
-            switch field {
-            case .email:
-                cardScope.PrimerEmailField(
-                    label: "Email",
-                    styling: customStyling
-                )
-            case .countryCode:
-                cardScope.PrimerCountryField(
-                    label: "Country",
-                    styling: customStyling
-                )
-            // ... handle other fields
-            default:
-                EmptyView()
-            }
-        }
-    }
-    .primerModifier(modifier)
-}
+// Customize billing address fields via InputFieldConfig
+let cardForm = PrimerComponents.CardForm(
+    billingAddress: .init(
+        firstName: InputFieldConfig(label: "First Name", styling: customStyling),
+        lastName: InputFieldConfig(label: "Last Name", styling: customStyling),
+        email: InputFieldConfig(label: "Email", styling: customStyling),
+        countryCode: InputFieldConfig(label: "Country", styling: customStyling)
+    )
+)
 
-// Country selection with search
-cardScope.countrySelector = { countries, selected, onSelect in
-    AnyView(CustomCountryPicker(
-        countries: countries,
-        selected: selected,
-        onSelect: onSelect,
-        searchEnabled: true
-    ))
-}
+// Or replace entire billing address section
+let cardFormWithCustomSection = PrimerComponents.CardForm(
+    billingAddress: .init(
+        content: { CustomBillingAddressSection() }
+    )
+)
 ```
 
 ## Payment Method Selection
@@ -544,37 +503,33 @@ Customize the payment method selection screen:
 if let selectionScope = checkoutScope.paymentMethodSelection {
     // Replace entire selection screen
     selectionScope.screen = { scope in
-        AnyView(CustomPaymentMethodGrid(
+        CustomPaymentMethodGrid(
             methods: scope.state.paymentMethods,
             onSelect: scope.onPaymentMethodSelected
-        ))
+        )
     }
-    
+
     // Or customize individual components
     selectionScope.paymentMethodItem = { method in
-        AnyView(CustomPaymentMethodCell(
+        CustomPaymentMethodCell(
             method: method,
             showSurcharge: method.surcharge != nil
-        ))
+        )
     }
-    
+
     // Custom category headers
     selectionScope.categoryHeader = { category in
-        AnyView(
-            Text(category.displayName)
-                .font(.headline)
-                .padding(.vertical, 8)
-        )
+        Text(category.displayName)
+            .font(.headline)
+            .padding(.vertical, 8)
     }
-    
+
     // Empty state when no methods available
     selectionScope.emptyStateView = {
-        AnyView(
-            VStack {
-                Image(systemName: "creditcard.slash")
-                Text("No payment methods available")
-            }
-        )
+        VStack {
+            Image(systemName: "creditcard.slash")
+            Text("No payment methods available")
+        }
     }
 }
 
