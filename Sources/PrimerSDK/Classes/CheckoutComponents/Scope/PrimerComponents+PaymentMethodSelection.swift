@@ -17,8 +17,9 @@ extension PrimerComponents {
         /// Custom title for the screen
         public let title: String?
 
-        /// Full screen override component
-        public let screen: Component?
+        /// Full screen override component.
+        /// The closure receives the scope for full access to payment methods and navigation actions.
+        public let screen: PaymentMethodSelectionScreenComponent?
 
         /// Custom payment method item renderer
         public let paymentMethodItem: PaymentMethodItemComponent?
@@ -35,14 +36,14 @@ extension PrimerComponents {
         /// Creates a new payment method selection configuration.
         /// - Parameters:
         ///   - title: Custom title. Default: nil (uses SDK default)
-        ///   - screen: Full screen override. Default: nil (uses SDK default)
+        ///   - screen: Full screen override with scope access. Default: nil (uses SDK default)
         ///   - paymentMethodItem: Custom item renderer. Default: nil (uses SDK default)
         ///   - categoryHeader: Custom category header renderer. Default: nil (uses SDK default)
         ///   - emptyStateView: Custom empty state view. Default: nil (uses SDK default)
         ///   - navigation: Navigation callbacks. Default: Navigation()
         public init(
             title: String? = nil,
-            screen: Component? = nil,
+            screen: PaymentMethodSelectionScreenComponent? = nil,
             paymentMethodItem: PaymentMethodItemComponent? = nil,
             categoryHeader: CategoryHeaderComponent? = nil,
             emptyStateView: Component? = nil,

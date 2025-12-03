@@ -38,7 +38,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
 
     // MARK: - UI Customization Properties
 
-    public var screen: (() -> AnyView)?
+    public var screen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
     public var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)?
     public var categoryHeader: ((_ category: String) -> AnyView)?

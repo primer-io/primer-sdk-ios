@@ -119,9 +119,9 @@ struct CardFormScreen: View, LogReporter {
     private var dynamicFieldsSection: some View {
         // First check components configuration
         if let customScreen = cardFormConfig.screen {
-            AnyView(customScreen())
+            AnyView(customScreen(scope))
         }
-        // Then check legacy scope configuration
+        // Then check scope configuration
         else if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {

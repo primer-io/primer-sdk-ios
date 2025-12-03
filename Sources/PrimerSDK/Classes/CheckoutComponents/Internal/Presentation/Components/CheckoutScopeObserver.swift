@@ -204,11 +204,11 @@ struct CheckoutScopeObserver: View, LogReporter {
         case .paymentMethodSelection:
             // First check if components has a custom screen
             if let customScreen = components.paymentMethodSelection.screen {
-                return AnyView(customScreen())
+                return AnyView(customScreen(scope.paymentMethodSelection))
             }
-            // Then check if the payment method selection scope itself has a custom screen (legacy)
+            // Then check if the payment method selection scope itself has a custom screen
             else if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
-                return AnyView(customPaymentMethodSelectionScreen())
+                return AnyView(customPaymentMethodSelectionScreen(scope.paymentMethodSelection))
             }
             // Then check if the checkout scope has a custom payment selection screen (legacy)
             else if let customPaymentSelection = scope.paymentMethodSelectionScreen {

@@ -33,9 +33,9 @@ import SwiftUI
 /// ## Conformance
 /// Types conforming to this protocol must provide:
 /// - A static `paymentMethodType` identifier matching `PrimerPaymentMethodType.rawValue`
-/// - An optional `screen` component for full screen customization
 ///
-/// Each payment method handles its own navigation structure independently.
+/// Each payment method configuration defines its own scope-aware `screen` property
+/// with the appropriate scope type for full customization access.
 @available(iOS 15.0, *)
 public protocol PaymentMethodConfiguration {
 
@@ -44,10 +44,4 @@ public protocol PaymentMethodConfiguration {
     ///
     /// Example: `"PAYMENT_CARD"`, `"PAYPAL"`, `"APPLE_PAY"`
     static var paymentMethodType: String { get }
-
-    /// Full screen override for this payment method.
-    /// When provided, replaces the entire default screen with a custom implementation.
-    ///
-    /// Returns `nil` to use the SDK's default screen.
-    var screen: Component? { get }
 }

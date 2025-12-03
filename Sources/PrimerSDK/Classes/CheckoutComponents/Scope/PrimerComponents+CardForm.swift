@@ -32,8 +32,9 @@ extension PrimerComponents {
         /// Navigation callback overrides
         public let navigation: Navigation
 
-        /// Full form screen override
-        public let screen: Component?
+        /// Full form screen override.
+        /// The closure receives the scope for full access to form state, validation, and submit actions.
+        public let screen: CardFormScreenComponent?
 
         /// Custom error view for displaying inline form validation errors
         public let errorView: ErrorComponent?
@@ -52,7 +53,7 @@ extension PrimerComponents {
         ///   - selectCountry: Country picker config. Default: SelectCountry()
         ///   - submitButton: Submit button config. Default: SubmitButton()
         ///   - navigation: Navigation callbacks. Default: Navigation()
-        ///   - screen: Full screen override. Default: nil (uses SDK default)
+        ///   - screen: Full screen override with scope access. Default: nil (uses SDK default)
         ///   - errorView: Custom error view. Default: nil (uses SDK default)
         ///   - defaultFieldStyling: Default styling for fields. Default: nil (uses SDK default)
         public init(
@@ -62,7 +63,7 @@ extension PrimerComponents {
             selectCountry: SelectCountry = SelectCountry(),
             submitButton: SubmitButton = SubmitButton(),
             navigation: Navigation = Navigation(),
-            screen: Component? = nil,
+            screen: CardFormScreenComponent? = nil,
             errorView: ErrorComponent? = nil,
             defaultFieldStyling: [String: PrimerFieldStyling]? = nil
         ) {
@@ -343,7 +344,4 @@ extension PrimerComponents.CardForm: PaymentMethodConfiguration {
     public static var paymentMethodType: String {
         PrimerPaymentMethodType.paymentCard.rawValue
     }
-
-    // Note: `screen: Component?` property already exists in CardForm,
-    // satisfying the protocol requirement.
 }

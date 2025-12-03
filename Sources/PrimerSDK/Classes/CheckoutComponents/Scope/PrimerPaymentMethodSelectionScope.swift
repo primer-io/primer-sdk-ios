@@ -31,7 +31,8 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// The entire payment method selection screen.
     /// Default implementation provides standard payment method grid/list.
-    var screen: (() -> AnyView)? { get set }
+    /// The closure receives the scope for full access to payment methods and navigation actions.
+    var screen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)? { get set }
 
     /// Individual payment method item component.
     /// Default implementation shows payment method with selection state.
@@ -86,7 +87,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
     }
 
     public static func == (lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState) -> Bool {
-        return lhs.paymentMethods == rhs.paymentMethods &&
+        lhs.paymentMethods == rhs.paymentMethods &&
             lhs.isLoading == rhs.isLoading &&
             lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
             lhs.searchQuery == rhs.searchQuery &&

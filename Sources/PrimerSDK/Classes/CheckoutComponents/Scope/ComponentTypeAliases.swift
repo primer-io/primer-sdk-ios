@@ -31,3 +31,19 @@ public typealias CountryItemComponent = (PrimerCountry) -> any View
 /// Category header component receiving category name
 @available(iOS 15.0, *)
 public typealias CategoryHeaderComponent = (String) -> any View
+
+// MARK: - Scope-Aware Screen Components
+
+/// Screen component receiving PaymentMethodSelectionScope for full customization.
+/// Enables merchants to build completely custom payment selection screens with access to
+/// payment methods list and navigation actions.
+@available(iOS 15.0, *)
+public typealias PaymentMethodSelectionScreenComponent =
+    (PrimerPaymentMethodSelectionScope) -> any View
+
+/// Screen component receiving CardFormScope for full customization.
+/// Enables merchants to build completely custom card forms with access to
+/// form state, validation, and submit actions.
+@available(iOS 15.0, *)
+public typealias CardFormScreenComponent =
+    (any PrimerCardFormScope) -> any View
