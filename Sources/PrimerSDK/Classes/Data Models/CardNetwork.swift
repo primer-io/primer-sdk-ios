@@ -281,6 +281,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                     .first
             else { continue }
             guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
+            guard surcharge > 0 else { continue }
             return surcharge
         }
 
