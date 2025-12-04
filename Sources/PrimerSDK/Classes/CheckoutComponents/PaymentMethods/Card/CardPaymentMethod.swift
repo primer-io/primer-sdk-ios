@@ -104,7 +104,7 @@ struct CardPaymentMethod: PaymentMethodProtocol {
     /// Provides custom UI for this payment method using ViewBuilder.
     /// - Parameter content: A ViewBuilder closure that uses the card form scope as a parameter
     @MainActor
-    func content<V: View>(@ViewBuilder _: @escaping (DefaultCardFormScope) -> V) -> AnyView {
+    func content<V: View>(@ViewBuilder content _: @escaping (DefaultCardFormScope) -> V) -> AnyView {
         // This method would be called with a custom ViewBuilder implementation
         // For now, return a placeholder as the actual implementation would require
         // instantiating the scope and passing it to the content closure
