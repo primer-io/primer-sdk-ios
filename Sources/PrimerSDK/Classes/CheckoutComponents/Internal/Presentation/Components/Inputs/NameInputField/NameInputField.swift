@@ -42,8 +42,8 @@ struct NameInputField: View, LogReporter {
         self.inputType = inputType
         self.scope = scope
         self.styling = styling
-        self.onNameChange = nil
-        self.onValidationChange = nil
+        onNameChange = nil
+        onValidationChange = nil
     }
 
     init(
@@ -57,7 +57,7 @@ struct NameInputField: View, LogReporter {
         self.label = label
         self.placeholder = placeholder
         self.inputType = inputType
-        self.scope = nil
+        scope = nil
         self.styling = styling
         self.onNameChange = onNameChange
         self.onValidationChange = onValidationChange
@@ -117,32 +117,34 @@ struct NameInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    NameInputField(
-        label: "First Name",
-        placeholder: "Jane",
-        inputType: .firstName,
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    NameInputField(
-        label: "First Name",
-        placeholder: "Jane",
-        inputType: .firstName,
-        scope: MockCardFormScope()
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        NameInputField(
+            label: "First Name",
+            placeholder: "Jane",
+            inputType: .firstName,
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        NameInputField(
+            label: "First Name",
+            placeholder: "Jane",
+            inputType: .firstName,
+            scope: MockCardFormScope()
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

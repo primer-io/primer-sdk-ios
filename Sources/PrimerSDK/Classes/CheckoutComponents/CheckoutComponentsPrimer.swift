@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
 import SwiftUI
+import UIKit
 
 /// Delegate protocol for CheckoutComponents result handling
 @available(iOS 15.0, *)
@@ -42,16 +42,13 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 @available(iOS 15.0, *)
 public extension CheckoutComponentsDelegate {
     /// Override if you need 3DS challenge presentation callbacks
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
-    }
+    func checkoutComponentsWillPresent3DSChallenge(_: PrimerPaymentMethodTokenData) {}
 
     /// Override if you need 3DS challenge dismissal callbacks
-    func checkoutComponentsDidDismiss3DSChallenge() {
-    }
+    func checkoutComponentsDidDismiss3DSChallenge() {}
 
     /// Override if you need 3DS challenge completion callbacks
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
-    }
+    func checkoutComponentsDidComplete3DSChallenge(success _: Bool, resumeToken _: String?, error _: Error?) {}
 }
 
 /// UIKit entry point for CheckoutComponents SDK
@@ -61,7 +58,6 @@ public extension CheckoutComponentsDelegate {
 /// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
 @objc public final class CheckoutComponentsPrimer: NSObject {
-
     // MARK: - Singleton
 
     /// Shared instance of CheckoutComponentsPrimer
@@ -394,7 +390,7 @@ public extension CheckoutComponentsDelegate {
         }
     }
 
-    private func dismiss(animated: Bool, completion: (() -> Void)?) {
+    private func dismiss(animated _: Bool, completion: (() -> Void)?) {
         guard activeCheckoutController != nil else {
             logger.debug(message: "No active checkout to dismiss")
             completion?()
@@ -411,19 +407,17 @@ public extension CheckoutComponentsDelegate {
 
         completion?()
     }
-
 }
 
 // MARK: - Convenience Methods
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsPrimer {
-
+public extension CheckoutComponentsPrimer {
     /// Present checkout with automatic view controller detection
     /// - Parameters:
     ///   - clientToken: The client token for the session
     ///   - completion: Optional completion handler
-    @objc public static func presentCheckout(
+    @objc static func presentCheckout(
         clientToken: String,
         completion: (() -> Void)? = nil
     ) {
@@ -440,7 +434,7 @@ extension CheckoutComponentsPrimer {
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - completion: Optional completion handler
     /// - Note: This method is not @objc compatible due to PrimerSettings parameter. For Objective-C, use the method that takes a UIViewController.
-    public static func presentCheckout(
+    static func presentCheckout(
         clientToken: String,
         primerSettings: PrimerSettings,
         completion: (() -> Void)? = nil
@@ -463,29 +457,28 @@ extension CheckoutComponentsPrimer {
             completion: completion
         )
     }
-
 }
 
 // MARK: - Integration Helpers
 
 @available(iOS 15.0, *)
 extension CheckoutComponentsPrimer {
-
     /// Check if CheckoutComponents is available on this iOS version
     @objc public static var isAvailable: Bool {
-        return true // Since we're already in an @available(iOS 15.0, *) context
+        true // Since we're already in an @available(iOS 15.0, *) context
     }
 
     /// Check if checkout is currently being presented
     @objc public static var isPresenting: Bool {
-        return shared.isPresentingCheckout || shared.activeCheckoutController != nil
+        shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
 
     private func findPresentingViewController() -> UIViewController? {
         guard let windowScene = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first(where: { $0.activationState == .foregroundActive }),
-              let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+            let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+        else {
             return nil
         }
 
@@ -498,11 +491,13 @@ extension CheckoutComponentsPrimer {
         }
 
         if let navigation = viewController as? UINavigationController,
-           let top = navigation.topViewController {
+           let top = navigation.topViewController
+        {
             return findTopViewController(from: top)
         }
         if let tab = viewController as? UITabBarController,
-           let selected = tab.selectedViewController {
+           let selected = tab.selectedViewController
+        {
             return findTopViewController(from: selected)
         }
 
@@ -513,10 +508,9 @@ extension CheckoutComponentsPrimer {
 // MARK: - Delegate Integration
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsPrimer {
-
+public extension CheckoutComponentsPrimer {
     /// Set the Primer delegate (uses the shared Primer.delegate)
-    @objc public static var delegate: PrimerDelegate? {
+    @objc static var delegate: PrimerDelegate? {
         get { Primer.shared.delegate }
         set { Primer.shared.delegate = newValue }
     }

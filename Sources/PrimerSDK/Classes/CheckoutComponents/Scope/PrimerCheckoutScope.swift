@@ -10,7 +10,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCheckoutScope: AnyObject {
-
     /// The current state of the checkout flow as an async stream.
     var state: AsyncStream<PrimerCheckoutState> { get }
 
@@ -76,6 +75,7 @@ public protocol PrimerCheckoutScope: AnyObject {
     func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T?
 
     // MARK: - Payment Method Screen Customization
+
     // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
     // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
 

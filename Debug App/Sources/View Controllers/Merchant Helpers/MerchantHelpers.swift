@@ -27,7 +27,7 @@ struct MerchantMockDataManager {
     }
 
     static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
-        return ClientSessionRequestBody(
+        ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios-order-\(String.randomString(length: 8))",
             currencyCode: CurrencyLoader().getCurrency("EUR")?.code,
@@ -63,7 +63,7 @@ struct MerchantMockDataManager {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "fancy-shoes-\(String.randomString(length: 4))",
                         description: "Fancy Shoes",
-                        amount: 600,
+                        amount: 1000,
                         quantity: 1,
                         discountAmount: nil,
                         taxAmount: nil)
@@ -73,7 +73,7 @@ struct MerchantMockDataManager {
     }
 
     static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
-        return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
+        sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
     }
 
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(

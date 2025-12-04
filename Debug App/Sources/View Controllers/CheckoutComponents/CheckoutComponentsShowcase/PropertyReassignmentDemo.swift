@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Demonstrates runtime property reassignment and dynamic customization
 @available(iOS 15.0, *)
@@ -13,12 +13,12 @@ struct PropertyReassignmentDemo: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
-    
+
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
-    
+
     var body: some View {
         VStack {
             if isDismissed {
@@ -38,24 +38,24 @@ struct PropertyReassignmentDemo: View {
             await createSession()
         }
     }
-    
+
     // MARK: - State Views
-    
+
     private var dismissedStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.green)
-            
+
             Text("Demo Completed")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Property reassignment demo has been dismissed")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             Button("Reset Demo") {
                 isDismissed = false
                 Task { await createSession() }
@@ -65,7 +65,7 @@ struct PropertyReassignmentDemo: View {
         .frame(height: 300)
         .padding()
     }
-    
+
     private var loadingStateView: some View {
         VStack(spacing: 12) {
             ProgressView()
@@ -76,7 +76,7 @@ struct PropertyReassignmentDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func errorStateView(_ errorMessage: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -95,13 +95,13 @@ struct PropertyReassignmentDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func checkoutView(clientToken: String) -> some View {
         VStack {
             Text("Runtime Property Reassignment")
                 .font(.headline)
                 .padding()
-            
+
             Text("Dynamically change component properties based on user actions")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -119,8 +119,9 @@ struct PropertyReassignmentDemo: View {
             )
         }
     }
-    
+
     // MARK: - Scope Customization
+
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         checkoutScope.container = { content in
             AnyView(
@@ -130,7 +131,7 @@ struct PropertyReassignmentDemo: View {
                 }
             )
         }
-        
+
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with property reassignment demo
@@ -139,9 +140,9 @@ struct PropertyReassignmentDemo: View {
             }
         }
     }
-    
+
     // MARK: - Session Creation
-    
+
     /// Creates a session for this demo
     private func createSession() async {
         isLoading = true
@@ -152,24 +153,24 @@ struct PropertyReassignmentDemo: View {
 
         // Request client token using the session configuration
         do {
-            self.clientToken = try await NetworkingUtils.requestClientSession(
+            clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: self.apiVersion
+                apiVersion: apiVersion
             )
-            self.isLoading = false
+            isLoading = false
         } catch {
             self.error = error.localizedDescription
-            self.isLoading = false
+            isLoading = false
         }
     }
-    
+
     /// Creates session body using the main controller's configuration
     private func createSessionBody() -> ClientSessionRequestBody {
         // Use the configured session from MerchantSessionAndSettingsViewController
         guard let configuredSession = clientSession else {
             fatalError("No session configuration provided - PropertyReassignmentDemo requires configured session from main controller")
         }
-        
+
         return configuredSession
     }
 }
@@ -178,20 +179,20 @@ struct PropertyReassignmentDemo: View {
 @available(iOS 15.0, *)
 private struct DynamicPropertiesCardFormView: View {
     let cardFormScope: DefaultCardFormScope
-    
+
     @State private var cardState: StructuredCardFormState?
     @State private var isDarkMode = false
     @State private var showLabels = true
     @State private var fieldStyle: FieldStyle = .rounded
     @State private var fieldSpacing: CGFloat = 16
     @State private var stateTask: Task<Void, Never>?
-    
+
     enum FieldStyle: String, CaseIterable {
         case rounded = "Rounded"
         case plain = "Plain"
         case bordered = "Bordered"
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -200,11 +201,11 @@ private struct DynamicPropertiesCardFormView: View {
                     Text("Runtime Controls")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     Toggle("Dark Mode", isOn: $isDarkMode)
-                    
+
                     Toggle("Show Labels", isOn: $showLabels)
-                    
+
                     HStack {
                         Text("Field Style:")
                         Spacer()
@@ -215,17 +216,17 @@ private struct DynamicPropertiesCardFormView: View {
                         }
                         .pickerStyle(.menu)
                     }
-                    
+
                     VStack(alignment: .leading) {
                         Text("Field Spacing: \(Int(fieldSpacing))pt")
                             .font(.caption)
-                        Slider(value: $fieldSpacing, in: 8...32, step: 4)
+                        Slider(value: $fieldSpacing, in: 8 ... 32, step: 4)
                     }
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(12)
-                
+
                 // Card form with dynamic properties using ViewBuilder methods
                 VStack(spacing: fieldSpacing) {
                     fieldWrapper(label: "Card Number") {
@@ -238,7 +239,7 @@ private struct DynamicPropertiesCardFormView: View {
                         )
                         .frame(height: 50)
                     }
-                    
+
                     HStack(spacing: fieldSpacing) {
                         fieldWrapper(label: "Expiry") {
                             // Use ViewBuilder method with dynamic styling
@@ -250,7 +251,7 @@ private struct DynamicPropertiesCardFormView: View {
                             )
                             .frame(height: 50)
                         }
-                        
+
                         fieldWrapper(label: "CVV") {
                             // Use ViewBuilder method with dynamic styling
                             AnyView(
@@ -262,7 +263,7 @@ private struct DynamicPropertiesCardFormView: View {
                             .frame(height: 50)
                         }
                     }
-                    
+
                     fieldWrapper(label: "Cardholder Name") {
                         // Use ViewBuilder method with dynamic styling
                         AnyView(
@@ -278,7 +279,7 @@ private struct DynamicPropertiesCardFormView: View {
                 .background(isDarkMode ? Color.black : Color.white)
                 .cornerRadius(16)
                 .shadow(radius: isDarkMode ? 0 : 4)
-                
+
                 // Submit button
                 if let state = cardState {
                     Button(action: {
@@ -305,7 +306,7 @@ private struct DynamicPropertiesCardFormView: View {
             stateTask?.cancel()
         }
     }
-    
+
     private func startObservingState() {
         stateTask?.cancel()
         stateTask = Task {
@@ -318,7 +319,7 @@ private struct DynamicPropertiesCardFormView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func fieldWrapper<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
         if showLabels {
@@ -332,7 +333,7 @@ private struct DynamicPropertiesCardFormView: View {
             content()
         }
     }
-    
+
     /// Creates dynamic field styling based on current UI state
     private func dynamicFieldStyling() -> PrimerFieldStyling {
         switch fieldStyle {
@@ -366,5 +367,4 @@ private struct DynamicPropertiesCardFormView: View {
             )
         }
     }
-    
 }

@@ -7,11 +7,13 @@
 import Foundation
 
 // MARK: – Registrar: registration APIs
+
 public protocol Registrar: Sendable {
     func register<T>(_ type: T.Type) -> any RegistrationBuilder<T>
     @discardableResult
     func unregister<T>(_ type: T.Type, name: String?) async -> Self
 }
+
 public extension Registrar {
     /// Convenience: no-name unregister
     @discardableResult
@@ -21,6 +23,7 @@ public extension Registrar {
 }
 
 // MARK: – Resolver: resolution APIs (named with prefix DI due to conflict naming with PromisKit)
+
 public protocol DIResolver: Sendable {
     /// Async resolution - throw if missing or failed
     func resolve<T>(_ type: T.Type, name: String?) async throws -> T
@@ -45,6 +48,7 @@ public extension DIResolver {
 }
 
 // MARK: – LifecycleManager: container lifecycle
+
 public protocol LifecycleManager: Sendable {
     /// Reset all except these
     func reset<T>(ignoreDependencies: [T.Type]) async

@@ -24,9 +24,9 @@ public struct ValidationError: Equatable, Hashable, Codable {
 
     let inputElementType: InputElementType // ?? Is this needed
     let errorId: String
-    let fieldNameKey: String?       // Localization key for field name
-    let errorMessageKey: String?    // Localization key for error message
-    let errorFormatKey: String?     // Localization key for formatted error
+    let fieldNameKey: String? // Localization key for field name
+    let errorMessageKey: String? // Localization key for error message
+    let errorFormatKey: String? // Localization key for formatted error
 
     /// Input element types matching PrimerInputElementType
     public enum InputElementType: String, Codable, CaseIterable {
@@ -71,11 +71,11 @@ public struct ValidationError: Equatable, Hashable, Codable {
     public init(code: String, message: String) {
         self.code = code
         self.message = message
-        self.inputElementType = .unknown
-        self.errorId = code
-        self.fieldNameKey = nil
-        self.errorMessageKey = nil
-        self.errorFormatKey = nil
+        inputElementType = .unknown
+        errorId = code
+        fieldNameKey = nil
+        errorMessageKey = nil
+        errorFormatKey = nil
     }
 }
 

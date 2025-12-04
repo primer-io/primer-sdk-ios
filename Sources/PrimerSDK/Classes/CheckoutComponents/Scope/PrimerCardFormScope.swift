@@ -19,7 +19,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == StructuredCardFormState {
-
     /// The current state of the card form as an async stream.
     var state: AsyncStream<StructuredCardFormState> { get }
 
@@ -381,24 +380,22 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
 
     /// Gets the current form configuration (which fields are displayed)
     func getFormConfiguration() -> CardFormConfiguration
-
 }
 
 // MARK: - Default Implementation for Payment Method Lifecycle
 
 @available(iOS 15.0, *)
-extension PrimerCardFormScope {
-
+public extension PrimerCardFormScope {
     /// Card form is ready on presentation
-    public func start() {
+    func start() {
         // Override if initialization logic needed
     }
 
-    public func submit() {
+    func submit() {
         onSubmit()
     }
 
-    public func cancel() {
+    func cancel() {
         onCancel()
     }
 }
@@ -406,10 +403,9 @@ extension PrimerCardFormScope {
 // MARK: - Structured State Default Implementations
 
 @available(iOS 15.0, *)
-extension PrimerCardFormScope {
-
+public extension PrimerCardFormScope {
     /// Update field using type-safe enum
-    public func updateField(_ fieldType: PrimerInputElementType, value: String) {
+    func updateField(_ fieldType: PrimerInputElementType, value: String) {
         switch fieldType {
         case .cardNumber:
             updateCardNumber(value)
@@ -449,25 +445,23 @@ extension PrimerCardFormScope {
     }
 
     /// Get field value from state - override with actual implementation
-    public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
+    func getFieldValue(_: PrimerInputElementType) -> String {
         ""
     }
 
     /// Set field error - override to support structured errors
-    public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
-    }
+    func setFieldError(_: PrimerInputElementType, message _: String, errorCode _: String? = nil) {}
 
     /// Clear field error - override to support structured errors
-    public func clearFieldError(_ fieldType: PrimerInputElementType) {
-    }
+    func clearFieldError(_: PrimerInputElementType) {}
 
     /// Get field error - override to support structured errors
-    public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
+    func getFieldError(_: PrimerInputElementType) -> String? {
         nil
     }
 
     /// Get form configuration - override with actual configuration
-    public func getFormConfiguration() -> CardFormConfiguration {
+    func getFormConfiguration() -> CardFormConfiguration {
         CardFormConfiguration.default
     }
 }
@@ -476,7 +470,6 @@ extension PrimerCardFormScope {
 
 @available(iOS 15.0, *)
 extension PrimerCardFormScope {
-
     /// Safely updates validation state if the scope is a DefaultCardFormScope.
     /// This helper method eliminates the need for repeated conditional casting throughout input field coordinators.
     /// - Parameters:

@@ -100,32 +100,34 @@ struct CVVInputField: View, LogReporter {
 }
 
 #if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    CVVInputField(
-        label: "CVV",
-        placeholder: "123",
-        scope: MockCardFormScope(),
-        cardNetwork: .visa
-    )
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    CVVInputField(
-        label: "CVV",
-        placeholder: "123",
-        scope: MockCardFormScope(),
-        cardNetwork: .visa
-    )
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
+    // MARK: - Preview
+
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        CVVInputField(
+            label: "CVV",
+            placeholder: "123",
+            scope: MockCardFormScope(),
+            cardNetwork: .visa
+        )
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
+    }
+
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        CVVInputField(
+            label: "CVV",
+            placeholder: "123",
+            scope: MockCardFormScope(),
+            cardNetwork: .visa
+        )
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
+    }
 #endif

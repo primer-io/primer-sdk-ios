@@ -9,7 +9,6 @@ import Foundation
 /// Bridge to connect CheckoutComponents to the existing SDK payment methods
 @available(iOS 15.0, *)
 class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogReporter {
-
     private let configurationService: ConfigurationService
 
     init(configurationService: ConfigurationService) {
@@ -116,15 +115,16 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             // Handle nested surcharge structure: surcharge.amount
             if let surchargeData = networkData["surcharge"] as? [String: Any],
                let surchargeAmount = surchargeData["amount"] as? Int,
-               surchargeAmount > 0 {
+               surchargeAmount > 0
+            {
                 networkSurcharges[networkType] = surchargeAmount
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
-                    surcharge > 0 {
+                    surcharge > 0
+            {
                 networkSurcharges[networkType] = surcharge
-            } else {
-            }
+            } else {}
         }
 
         return networkSurcharges.isEmpty ? nil : networkSurcharges
@@ -138,15 +138,16 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
             // Handle nested surcharge structure: surcharge.amount
             if let surchargeData = networkData["surcharge"] as? [String: Any],
                let surchargeAmount = surchargeData["amount"] as? Int,
-               surchargeAmount > 0 {
+               surchargeAmount > 0
+            {
                 networkSurcharges[networkType] = surchargeAmount
             }
             // Fallback: handle direct surcharge integer format
             else if let surcharge = networkData["surcharge"] as? Int,
-                    surcharge > 0 {
+                    surcharge > 0
+            {
                 networkSurcharges[networkType] = surcharge
-            } else {
-            }
+            } else {}
         }
 
         return networkSurcharges.isEmpty ? nil : networkSurcharges

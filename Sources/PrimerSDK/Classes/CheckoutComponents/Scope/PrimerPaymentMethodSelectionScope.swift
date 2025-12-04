@@ -10,7 +10,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerPaymentMethodSelectionScope: AnyObject {
-
     /// The current state of the payment method selection as an async stream.
     var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
 
@@ -46,7 +45,6 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
     var emptyStateView: (() -> AnyView)? { get set }
 
     // MARK: - State Definition
-
 }
 
 /// Represents the current state of available payment methods and loading status.
@@ -86,7 +84,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
     }
 
     public static func == (lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState) -> Bool {
-        return lhs.paymentMethods == rhs.paymentMethods &&
+        lhs.paymentMethods == rhs.paymentMethods &&
             lhs.isLoading == rhs.isLoading &&
             lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
             lhs.searchQuery == rhs.searchQuery &&

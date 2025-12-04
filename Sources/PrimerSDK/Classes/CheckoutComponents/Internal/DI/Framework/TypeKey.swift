@@ -17,14 +17,14 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
 
     /// Initialize with type and optional name
     public init(_ type: Any.Type, name: String? = nil) {
-        self.typeId = ObjectIdentifier(type)
-        self.typeName = String(reflecting: type)
+        typeId = ObjectIdentifier(type)
+        typeName = String(reflecting: type)
         self.name = name
     }
 
     /// Convenience method to check if this key represents a specific type
     public func represents<T>(_ type: T.Type) -> Bool {
-        return typeId == ObjectIdentifier(type)
+        typeId == ObjectIdentifier(type)
     }
 
     /// Hash implementation
@@ -35,7 +35,7 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
 
     /// Equality implementation
     public static func == (lhs: TypeKey, rhs: TypeKey) -> Bool {
-        return lhs.typeId == rhs.typeId && lhs.name == rhs.name
+        lhs.typeId == rhs.typeId && lhs.name == rhs.name
     }
 
     /// Human-readable description
@@ -64,13 +64,13 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.typeName = try container.decode(String.self, forKey: .typeName)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        typeName = try container.decode(String.self, forKey: .typeName)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
 
         // Since we can't reconstruct the actual type from just its name,
         // we create a placeholder ObjectIdentifier. This means deserialized
         // TypeKeys can be used for display/logging but not for actual type checking.
-        self.typeId = ObjectIdentifier(NSObject.self)
+        typeId = ObjectIdentifier(NSObject.self)
     }
 
     public func encode(to encoder: Encoder) throws {

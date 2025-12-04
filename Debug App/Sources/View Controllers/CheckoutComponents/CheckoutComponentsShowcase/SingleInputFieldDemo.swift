@@ -4,8 +4,8 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import PrimerSDK
+import SwiftUI
 
 /// Demonstrates single input field at a time with step-by-step navigation
 @available(iOS 15.0, *)
@@ -13,12 +13,12 @@ struct SingleInputFieldDemo: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
-    
+
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var isDismissed = false
-    
+
     var body: some View {
         VStack {
             if isDismissed {
@@ -38,24 +38,24 @@ struct SingleInputFieldDemo: View {
             await createSession()
         }
     }
-    
+
     // MARK: - State Views
-    
+
     private var dismissedStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.green)
-            
+
             Text("Demo Completed")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Step-by-step navigation demo has been dismissed")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            
+
             Button("Reset Demo") {
                 isDismissed = false
                 Task { await createSession() }
@@ -65,7 +65,7 @@ struct SingleInputFieldDemo: View {
         .frame(height: 300)
         .padding()
     }
-    
+
     private var loadingStateView: some View {
         VStack(spacing: 12) {
             ProgressView()
@@ -76,7 +76,7 @@ struct SingleInputFieldDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func errorStateView(_ errorMessage: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -95,13 +95,13 @@ struct SingleInputFieldDemo: View {
         }
         .frame(height: 200)
     }
-    
+
     private func checkoutView(clientToken: String) -> some View {
         VStack {
             Text("Step-by-Step Navigation")
                 .font(.headline)
                 .padding()
-            
+
             Text("Shows one input field at a time with Previous/Next navigation controls")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -119,8 +119,9 @@ struct SingleInputFieldDemo: View {
             )
         }
     }
-    
+
     // MARK: - Scope Customization
+
     private func customizeScope(_ checkoutScope: PrimerCheckoutScope) {
         checkoutScope.container = { content in
             AnyView(
@@ -130,7 +131,7 @@ struct SingleInputFieldDemo: View {
                 }
             )
         }
-        
+
         // Get the card form scope
         if let cardFormScope: DefaultCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) {
             // Override the card form screen with step-by-step navigation
@@ -139,9 +140,9 @@ struct SingleInputFieldDemo: View {
             }
         }
     }
-    
+
     // MARK: - Session Creation
-    
+
     /// Creates a session for this demo
     private func createSession() async {
         isLoading = true
@@ -152,24 +153,24 @@ struct SingleInputFieldDemo: View {
 
         // Request client token using the session configuration
         do {
-            self.clientToken = try await NetworkingUtils.requestClientSession(
+            clientToken = try await NetworkingUtils.requestClientSession(
                 body: sessionBody,
-                apiVersion: self.apiVersion
+                apiVersion: apiVersion
             )
-            self.isLoading = false
+            isLoading = false
         } catch {
             self.error = error.localizedDescription
-            self.isLoading = false
+            isLoading = false
         }
     }
-    
+
     /// Creates session body using the main controller's configuration
     private func createSessionBody() -> ClientSessionRequestBody {
         // Use the configured session from MerchantSessionAndSettingsViewController
         guard let configuredSession = clientSession else {
             fatalError("No session configuration provided - SingleInputFieldDemo requires configured session from main controller")
         }
-        
+
         return configuredSession
     }
 }
@@ -178,43 +179,43 @@ struct SingleInputFieldDemo: View {
 @available(iOS 15.0, *)
 private struct SingleInputFieldCardFormView: View {
     let cardFormScope: DefaultCardFormScope
-    
+
     @State private var currentFieldIndex = 0
     @State private var cardState: StructuredCardFormState?
     @State private var stateTask: Task<Void, Never>?
-    
+
     // Create all fields once to preserve state
     @State private var allFields: [AnyView] = []
     @State private var fieldsInitialized = false
-    
+
     var body: some View {
         VStack(spacing: 0) {
             if let state = cardState {
                 // Progress indicator
                 VStack(spacing: 16) {
                     HStack(spacing: 12) {
-                        ForEach(0..<totalFieldCount, id: \.self) { index in
+                        ForEach(0 ..< totalFieldCount, id: \.self) { index in
                             Circle()
                                 .fill(index == currentFieldIndex ? Color.blue : Color.gray.opacity(0.3))
                                 .frame(width: 8, height: 8)
                         }
                     }
-                    
+
                     Text("Step \(currentFieldIndex + 1) of \(totalFieldCount)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 .padding()
-                
+
                 // Current field container
                 VStack(spacing: 24) {
                     // Display only the current field using persistent SDK components
                     VStack(alignment: .leading, spacing: 12) {
                         currentFieldTitle
-                        
+
                         // Show only the current field, but keep all fields in memory to preserve state
                         ZStack {
-                            ForEach(0..<allFields.count, id: \.self) { index in
+                            ForEach(0 ..< allFields.count, id: \.self) { index in
                                 allFields[index]
                                     .opacity(index == currentFieldIndex ? 1.0 : 0.0)
                             }
@@ -227,7 +228,7 @@ private struct SingleInputFieldCardFormView: View {
                     .background(Color(.systemBackground))
                     .cornerRadius(12)
                     .shadow(radius: 2)
-                    
+
                     // Navigation controls
                     HStack(spacing: 20) {
                         Button {
@@ -243,9 +244,9 @@ private struct SingleInputFieldCardFormView: View {
                                 .clipShape(Circle())
                         }
                         .disabled(currentFieldIndex == 0)
-                        
+
                         Spacer()
-                        
+
                         if currentFieldIndex < totalFieldCount - 1 {
                             Button {
                                 currentFieldIndex += 1
@@ -278,7 +279,7 @@ private struct SingleInputFieldCardFormView: View {
                     }
                 }
                 .padding(.horizontal, 24)
-                
+
                 Spacer()
             } else {
                 ProgressView()
@@ -292,10 +293,10 @@ private struct SingleInputFieldCardFormView: View {
             stateTask?.cancel()
         }
     }
-    
+
     private func initializeFields() {
         guard !fieldsInitialized else { return }
-        
+
         allFields = [
             // Card number field with step-specific styling
             cardFormScope.PrimerCardNumberField(
@@ -309,7 +310,7 @@ private struct SingleInputFieldCardFormView: View {
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
-            
+
             // Expiry date field with step-specific styling
             cardFormScope.PrimerExpiryDateField(
                 label: nil,
@@ -321,7 +322,7 @@ private struct SingleInputFieldCardFormView: View {
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
-            
+
             // CVV field with step-specific styling
             cardFormScope.PrimerCvvField(
                 label: nil,
@@ -334,7 +335,7 @@ private struct SingleInputFieldCardFormView: View {
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
             ),
-            
+
             // Cardholder name field with step-specific styling
             cardFormScope.PrimerCardholderNameField(
                 label: nil,
@@ -345,12 +346,12 @@ private struct SingleInputFieldCardFormView: View {
                     borderWidth: 2,
                     padding: EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
                 )
-            )
+            ),
         ]
-        
+
         fieldsInitialized = true
     }
-    
+
     private func startObservingState() {
         stateTask?.cancel()
         stateTask = Task {
@@ -363,12 +364,12 @@ private struct SingleInputFieldCardFormView: View {
             }
         }
     }
-    
+
     private var totalFieldCount: Int {
         // Basic fields: card number, expiry, cvv, cardholder
         4
     }
-    
+
     @ViewBuilder
     private var currentFieldTitle: some View {
         switch currentFieldIndex {
@@ -392,5 +393,4 @@ private struct SingleInputFieldCardFormView: View {
             EmptyView()
         }
     }
-
 }

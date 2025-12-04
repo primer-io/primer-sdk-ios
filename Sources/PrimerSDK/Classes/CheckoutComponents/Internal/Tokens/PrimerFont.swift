@@ -19,7 +19,6 @@ import SwiftUI
 /// the Inter variable font with proper weight variation. Falls back to system fonts.
 @available(iOS 15.0, *)
 struct PrimerFont {
-
     // MARK: - Base Font Function
 
     /// Creates a UIFont with design token parameters and automatic Dynamic Type scaling.
@@ -37,7 +36,7 @@ struct PrimerFont {
         family: String?,
         weight: CGFloat?,
         size: CGFloat?,
-        isItalic: Bool = false
+        isItalic _: Bool = false
     ) -> UIFont {
         let fontFamily = family ?? "Inter"
         let fontSize = size ?? 14
@@ -125,8 +124,8 @@ struct PrimerFont {
     }
 
     /// Large icon font (48pt, weight 400) - for large icon displays
-    static func uiFontLargeIcon(tokens: DesignTokens?) -> UIFont {
-        return uiFont(family: "Inter", weight: 400, size: 48)
+    static func uiFontLargeIcon(tokens _: DesignTokens?) -> UIFont {
+        uiFont(family: "Inter", weight: 400, size: 48)
     }
 
     /// Extra large icon font (56pt, weight 400) - for extra large icon displays
@@ -136,80 +135,81 @@ struct PrimerFont {
     }
 
     /// Small badge font (10pt, weight 500) - for compact badge text
-    static func uiFontSmallBadge(tokens: DesignTokens?) -> UIFont {
-        return uiFont(family: "Inter", weight: 500, size: 10)
+    static func uiFontSmallBadge(tokens _: DesignTokens?) -> UIFont {
+        uiFont(family: "Inter", weight: 500, size: 10)
     }
 
     // MARK: - SwiftUI Typography Helpers
+
     //
     // All SwiftUI font helpers automatically scale with iOS Dynamic Type settings.
     // Scaling is applied in uiFont() to ensure consistent accessibility support.
 
     /// Title extra large (24pt, weight 500) - for major section titles
     static func titleXLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontTitleXLarge(tokens: tokens))
+        Font(uiFontTitleXLarge(tokens: tokens))
     }
 
     /// Title large (16pt, weight 500) - for subsection titles
     static func titleLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontTitleLarge(tokens: tokens))
+        Font(uiFontTitleLarge(tokens: tokens))
     }
 
     /// Body large (16pt, weight 400) - for large body text
     static func bodyLarge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodyLarge(tokens: tokens))
+        Font(uiFontBodyLarge(tokens: tokens))
     }
 
     /// Body medium (14pt, weight 400) - for standard body text
     static func bodyMedium(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodyMedium(tokens: tokens))
+        Font(uiFontBodyMedium(tokens: tokens))
     }
 
     /// Body small (12pt, weight 400) - for small body text and captions
     static func bodySmall(tokens: DesignTokens?) -> Font {
-        return Font(uiFontBodySmall(tokens: tokens))
+        Font(uiFontBodySmall(tokens: tokens))
     }
 
     /// Large icon font (48pt, weight 400) - for large icon displays
     static func largeIcon(tokens: DesignTokens?) -> Font {
-        return Font(uiFontLargeIcon(tokens: tokens))
+        Font(uiFontLargeIcon(tokens: tokens))
     }
 
     /// Extra large icon font (56pt, weight 400) - for extra large icon displays
     static func extraLargeIcon(tokens: DesignTokens?) -> Font {
-        return Font(uiFontExtraLargeIcon(tokens: tokens))
+        Font(uiFontExtraLargeIcon(tokens: tokens))
     }
 
     /// Small badge font (10pt, weight 500) - for compact badge text
     static func smallBadge(tokens: DesignTokens?) -> Font {
-        return Font(uiFontSmallBadge(tokens: tokens))
+        Font(uiFontSmallBadge(tokens: tokens))
     }
 
     // MARK: - Semantic Font Helpers
 
     /// Standard body text - maps to `bodyMedium` (14pt)
     static func body(tokens: DesignTokens?) -> Font {
-        return bodyMedium(tokens: tokens)
+        bodyMedium(tokens: tokens)
     }
 
     /// Secondary or supporting text - maps to `bodySmall` (12pt)
     static func caption(tokens: DesignTokens?) -> Font {
-        return bodySmall(tokens: tokens)
+        bodySmall(tokens: tokens)
     }
 
     /// Emphasized text - maps to `titleLarge` (16pt, medium weight)
     static func headline(tokens: DesignTokens?) -> Font {
-        return titleLarge(tokens: tokens)
+        titleLarge(tokens: tokens)
     }
 
     /// Section titles - maps to `titleXLarge` (24pt)
     static func title2(tokens: DesignTokens?) -> Font {
-        return titleXLarge(tokens: tokens)
+        titleXLarge(tokens: tokens)
     }
 
     /// Supporting or secondary text - maps to `bodyMedium` (14pt)
     static func subheadline(tokens: DesignTokens?) -> Font {
-        return bodyMedium(tokens: tokens)
+        bodyMedium(tokens: tokens)
     }
 
     // MARK: - Private Helpers
@@ -230,8 +230,8 @@ struct PrimerFont {
         let descriptor = UIFontDescriptor(fontAttributes: [
             .name: "InterVariable",
             kCTFontVariationAttribute as UIFontDescriptor.AttributeName: [
-                2003265652: weight  // 'wght' variation axis
-            ]
+                2_003_265_652: weight, // 'wght' variation axis
+            ],
         ])
 
         let font = UIFont(descriptor: descriptor, size: size)
@@ -255,7 +255,7 @@ struct PrimerFont {
         case 300: return .light
         case 400: return .regular
         case 500: return .medium
-        case 550: return .medium  // Design tokens use 550
+        case 550: return .medium // Design tokens use 550
         case 600: return .semibold
         case 700: return .bold
         case 800: return .heavy

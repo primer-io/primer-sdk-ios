@@ -20,10 +20,10 @@ struct InternalPaymentMethod: Equatable {
     let requiredInputElements: [PrimerInputElementType]
     let metadata: [String: Any]?
     // Surcharge support
-    let surcharge: Int?                    // Raw amount in minor currency units
-    let hasUnknownSurcharge: Bool          // "Fee may apply" flag
-    let networkSurcharges: [String: Int]?  // Card network-specific surcharges
-    let backgroundColor: UIColor?          // Dynamic background color from server
+    let surcharge: Int? // Raw amount in minor currency units
+    let hasUnknownSurcharge: Bool // "Fee may apply" flag
+    let networkSurcharges: [String: Int]? // Card network-specific surcharges
+    let backgroundColor: UIColor? // Dynamic background color from server
 
     init(
         id: String,

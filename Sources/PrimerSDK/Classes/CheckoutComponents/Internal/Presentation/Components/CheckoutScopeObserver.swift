@@ -28,7 +28,8 @@ struct CheckoutScopeObserver: View, LogReporter {
     init(scope: DefaultCheckoutScope,
          customContent: ((PrimerCheckoutScope) -> AnyView)?,
          scopeCustomization: ((PrimerCheckoutScope) -> Void)?,
-         onCompletion: (() -> Void)?) {
+         onCompletion: (() -> Void)?)
+    {
         self.scope = scope
         self.customContent = customContent
         self.scopeCustomization = scopeCustomization
@@ -52,6 +53,7 @@ struct CheckoutScopeObserver: View, LogReporter {
         VStack(spacing: 0) {
             ZStack {
                 // MARK: - Navigation Content
+
                 // Simple fade transition between screens
                 // TODO: Future improvements could include:
                 // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
@@ -160,7 +162,8 @@ struct CheckoutScopeObserver: View, LogReporter {
         // Fallback: try to infer from available payment methods
         if !scope.availablePaymentMethods.isEmpty {
             if scope.availablePaymentMethods.count == 1,
-               let singleMethod = scope.availablePaymentMethods.first {
+               let singleMethod = scope.availablePaymentMethods.first
+            {
                 return .paymentMethod(singleMethod.type)
             } else {
                 return .paymentMethodSelection

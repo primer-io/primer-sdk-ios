@@ -16,8 +16,8 @@ final class DesignTokensManager: ObservableObject {
     func fetchTokens(for colorScheme: ColorScheme) async throws {
         // Load and merge tokens
         let baseDict = try loadJSON(named: "base")
-        let mergedDict = colorScheme == .dark
-            ? DesignTokensProcessor.mergeDictionaries(baseDict, with: try loadJSON(named: "dark"))
+        let mergedDict = try colorScheme == .dark
+            ? DesignTokensProcessor.mergeDictionaries(baseDict, with: loadJSON(named: "dark"))
             : baseDict
 
         // Process tokens through transformation pipeline
@@ -41,7 +41,8 @@ final class DesignTokensManager: ObservableObject {
     private func loadJSON(named fileName: String) throws -> [String: Any] {
         guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+              let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
             throw PrimerError.failedToLoadDesignTokens(fileName: fileName)
         }
         return dictionary
@@ -53,7 +54,8 @@ final class DesignTokensManager: ObservableObject {
         var merged = base
         for (key, overrideValue) in override {
             if let baseDict = base[key] as? [String: Any],
-               let overrideDict = overrideValue as? [String: Any] {
+               let overrideDict = overrideValue as? [String: Any]
+            {
                 merged[key] = mergeDictionaries(baseDict, with: overrideDict)
             } else {
                 merged[key] = overrideValue
@@ -65,7 +67,7 @@ final class DesignTokensManager: ObservableObject {
     // MARK: - Token Reference Resolution
 
     private func resolveReferences(in dict: [String: Any]) -> [String: Any] {
-        (0..<10).reduce(dict) { current, _ in
+        (0 ..< 10).reduce(dict) { current, _ in
             var hasUnresolved = false
             let resolved = resolvePass(current, root: current, hasUnresolved: &hasUnresolved)
             return hasUnresolved ? resolved : current
@@ -144,10 +146,10 @@ final class DesignTokensManager: ObservableObject {
         var alpha: CGFloat
 
         if sanitized.count == 8 { // RRGGBBAA
-            red = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
-            green = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
-            blue = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
-            alpha = CGFloat(rgb & 0x000000FF) / 255.0
+            red = CGFloat((rgb & 0xFF00_0000) >> 24) / 255.0
+            green = CGFloat((rgb & 0x00FF_0000) >> 16) / 255.0
+            blue = CGFloat((rgb & 0x0000_FF00) >> 8) / 255.0
+            alpha = CGFloat(rgb & 0x0000_00FF) / 255.0
         } else if sanitized.count == 6 { // RRGGBB
             red = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
             green = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
@@ -192,7 +194,7 @@ final class DesignTokensManager: ObservableObject {
     }
 
     private func resolveFlattenedReferences(in flatDict: [String: Any], source: [String: Any]) -> [String: Any] {
-        (0..<10).reduce(flatDict) { current, _ in
+        (0 ..< 10).reduce(flatDict) { current, _ in
             var hasUnresolved = false
             let resolved = current.reduce(into: [String: Any]()) { result, pair in
                 let (key, value) = pair
@@ -230,7 +232,8 @@ final class DesignTokensManager: ObservableObject {
             // Otherwise, replace reference in string
             if let resolved = flatDict[flatKey] ?? resolveReference(reference, in: source),
                var stringResult = result as? String,
-               let fullRange = Range(match.range, in: stringResult) {
+               let fullRange = Range(match.range, in: stringResult)
+            {
                 stringResult.replaceSubrange(fullRange, with: "\(resolved)")
                 result = stringResult
             } else {
@@ -257,7 +260,7 @@ final class DesignTokensManager: ObservableObject {
     private func evaluateExpression(_ expression: String) -> Double? {
         let trimmed = expression.trimmingCharacters(in: .whitespacesAndNewlines)
         let operators: [(Character, (Double, Double) -> Double)] = [
-            ("*", (*)), ("/", (/)), ("+", (+)), ("-", (-))
+            ("*", (*)), ("/", (/)), ("+", (+)), ("-", (-)),
         ]
 
         for (op, operation) in operators {

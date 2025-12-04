@@ -10,7 +10,6 @@ import SwiftUI
 @MainActor
 @available(iOS 15.0, *)
 public protocol PrimerSelectCountryScope: AnyObject {
-
     /// The current state of the country selection as an async stream.
     var state: AsyncStream<PrimerSelectCountryState> { get }
 
@@ -40,7 +39,6 @@ public protocol PrimerSelectCountryScope: AnyObject {
     /// Individual country row/item component.
     @available(iOS 15.0, *)
     var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? { get set }
-
 }
 
 // MARK: - State Definition

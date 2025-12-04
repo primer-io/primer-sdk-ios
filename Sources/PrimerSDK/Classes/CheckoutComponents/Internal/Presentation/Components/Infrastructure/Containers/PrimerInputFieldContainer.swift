@@ -35,10 +35,10 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
     ) {
         self.label = label
         self.styling = styling
-        self._text = text
-        self._isValid = isValid
-        self._errorMessage = errorMessage
-        self._isFocused = isFocused
+        _text = text
+        _isValid = isValid
+        _errorMessage = errorMessage
+        _isFocused = isFocused
         self.textFieldBuilder = textFieldBuilder
         self.rightComponent = rightComponent
     }
@@ -62,6 +62,7 @@ struct PrimerInputFieldContainer<Content: View, RightContent: View>: View {
 }
 
 // MARK: - Convenience Initializer
+
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer where RightContent == Never {
     init(
@@ -75,87 +76,88 @@ extension PrimerInputFieldContainer where RightContent == Never {
     ) {
         self.label = label
         self.styling = styling
-        self._text = text
-        self._isValid = isValid
-        self._errorMessage = errorMessage
-        self._isFocused = isFocused
+        _text = text
+        _isValid = isValid
+        _errorMessage = errorMessage
+        _isFocused = isFocused
         self.textFieldBuilder = textFieldBuilder
-        self.rightComponent = nil
+        rightComponent = nil
     }
 }
 
 // MARK: - Preview
+
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
-    VStack(spacing: 16) {
-        PreviewContainer(
-            label: "Field Label",
-            text: "Sample text",
-            errorMessage: nil
-        )
-        .background(Color.gray.opacity(0.1))
+    @available(iOS 15.0, *)
+    #Preview("Light Mode") {
+        VStack(spacing: 16) {
+            PreviewContainer(
+                label: "Field Label",
+                text: "Sample text",
+                errorMessage: nil
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainer(
-            label: nil,
-            text: "",
-            errorMessage: nil
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainer(
+                label: nil,
+                text: "",
+                errorMessage: nil
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainer(
-            label: "Field with Error",
-            text: "Invalid input",
-            errorMessage: "Please enter a valid value"
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainer(
+                label: "Field with Error",
+                text: "Invalid input",
+                errorMessage: "Please enter a valid value"
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainerWithRightComponent(
-            label: "Field with Right Component",
-            text: "With custom icon"
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainerWithRightComponent(
+                label: "Field with Right Component",
+                text: "With custom icon"
+            )
+            .background(Color.gray.opacity(0.1))
+        }
+        .padding()
+        .environment(\.designTokens, MockDesignTokens.light)
+        .environment(\.diContainer, MockDIContainer())
     }
-    .padding()
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-}
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
-    VStack(spacing: 16) {
-        PreviewContainer(
-            label: "Field Label",
-            text: "Sample text",
-            errorMessage: nil
-        )
-        .background(Color.gray.opacity(0.1))
+    @available(iOS 15.0, *)
+    #Preview("Dark Mode") {
+        VStack(spacing: 16) {
+            PreviewContainer(
+                label: "Field Label",
+                text: "Sample text",
+                errorMessage: nil
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainer(
-            label: nil,
-            text: "",
-            errorMessage: nil
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainer(
+                label: nil,
+                text: "",
+                errorMessage: nil
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainer(
-            label: "Field with Error",
-            text: "Invalid input",
-            errorMessage: "Please enter a valid value"
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainer(
+                label: "Field with Error",
+                text: "Invalid input",
+                errorMessage: "Please enter a valid value"
+            )
+            .background(Color.gray.opacity(0.1))
 
-        PreviewContainerWithRightComponent(
-            label: "Field with Right Component",
-            text: "With custom icon"
-        )
-        .background(Color.gray.opacity(0.1))
+            PreviewContainerWithRightComponent(
+                label: "Field with Right Component",
+                text: "With custom icon"
+            )
+            .background(Color.gray.opacity(0.1))
+        }
+        .padding()
+        .background(Color.black)
+        .environment(\.designTokens, MockDesignTokens.dark)
+        .environment(\.diContainer, MockDIContainer())
+        .preferredColorScheme(.dark)
     }
-    .padding()
-    .background(Color.black)
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-}
 
 #endif
