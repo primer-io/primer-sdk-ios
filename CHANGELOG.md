@@ -2,8 +2,6 @@
 
 ### Fix
 
-- Align surcharge validation with Android SDK (#1420)
-- Update macOS runner to macos-latest for Appetize workflow (#1419)
 - Filter special tags in post-release changelog generation (#1418)
 
 ## 2.43.0 (2025-12-02)
@@ -69,7 +67,7 @@
 
 ### Refactor
 
-- Remove _async from method signatures (#1348)
+- Remove \_async from method signatures (#1348)
 - Remove main_actor and throws from method signatures (#1346)
 - Remove 'Async' suffix from test class names (#1345)
 - Remove PromiseKit (#1344)
@@ -246,7 +244,7 @@
 ### Feat
 
 - **Klarna**: auto continue when single payment option (#1176)
-- Implement Co-badged Cards on Drop-in  (#1050)
+- Implement Co-badged Cards on Drop-in (#1050)
 
 ### Fix
 
@@ -281,7 +279,7 @@
 ### Fix
 
 - Klarna Popup Dismissal Triggering authorizationFailed (#1147)
-- Fix RawDataManager Callback Triggering  (#1145)
+- Fix RawDataManager Callback Triggering (#1145)
 
 ## 2.36.0 (2025-03-24)
 
@@ -376,7 +374,7 @@
 - Expose VaultedPaymentMethod initialiser (#1032)
 - Prevent dismissal of Drop-in card form while a payment is active (#1031)
 - Discover card network image not showing (#1025)
-- Move the cursor to the end of the text after pasting the card number  (#1027)
+- Move the cursor to the end of the text after pasting the card number (#1027)
 
 ## 2.31.2 (2024-10-16)
 
