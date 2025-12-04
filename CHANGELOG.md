@@ -2,7 +2,7 @@
 
 ### Fix
 
-- Filter special tags in post-release changelog generation (#1418)
+- Align surcharge validation with Android SDK (#1420)
 
 ## 2.43.0 (2025-12-02)
 
