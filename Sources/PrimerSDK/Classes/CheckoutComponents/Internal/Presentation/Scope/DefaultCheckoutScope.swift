@@ -102,6 +102,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     // MARK: - Services
 
     private let navigator: CheckoutNavigator
+    private var configurationService: ConfigurationService?
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
@@ -199,6 +200,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             }
 
             let configService = try await container.resolve(ConfigurationService.self)
+            configurationService = configService
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge(configurationService: configService)
 
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -238,7 +240,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
-                updateState(.ready)
+                // Get amount and currency from configuration
+                let totalAmount = configurationService?.amount ?? 0
+                let currencyCode = configurationService?.currency?.code ?? ""
+                updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
                 if availablePaymentMethods.count == 1,
                    let singlePaymentMethod = availablePaymentMethods.first {
@@ -559,6 +564,9 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
         updateState(.success(result))
 
+        // Invoke custom success callback if configured
+        navigator.handleSuccess()
+
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
             amount: result.amount?.description ?? "N/A"
@@ -568,6 +576,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     func handlePaymentError(_ error: PrimerError) {
         updateState(.failure(error))
+        // Note: Error callback is invoked via navigateToError in updateNavigationState
         updateNavigationState(.failure(error))
     }
 
@@ -577,5 +586,38 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         Task { @MainActor in
             updateState(.dismissed)
         }
+    }
+
+    // MARK: - Configuration
+
+    /// Configures the checkout scope with PrimerComponents.
+    /// Maps immutable component configuration to internal scope properties.
+    /// - Parameter components: The immutable component configuration
+    func configure(with components: PrimerComponents) {
+        // Configure checkout screens
+        if let splash = components.checkout.splash {
+            splashScreen = { AnyView(splash()) }
+        }
+
+        if let success = components.checkout.success {
+            successScreen = { _ in AnyView(success()) }
+        }
+
+        if let errorContent = components.checkout.error.content {
+            errorScreen = { message in AnyView(errorContent(message)) }
+        }
+
+        // Configure container
+        if let customContainer = components.container {
+            container = { content in
+                AnyView(customContainer(content))
+            }
+        }
+
+        // Configure navigator with navigation callbacks
+        navigator.configure(with: components)
+
+        // Note: Payment method selection and card form configuration
+        // is handled by accessing components directly from scopes
     }
 }

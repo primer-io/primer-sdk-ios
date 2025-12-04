@@ -125,7 +125,7 @@ enum CheckoutRoute: Hashable, Identifiable {
 /// Contains minimal information needed for routing; full payment details
 /// are available through the SDK's PaymentResult type.
 @available(iOS 15.0, *)
-struct CheckoutPaymentResult {
-    let paymentId: String
-    let amount: String
+public struct CheckoutPaymentResult {
+    public let paymentId: String
+    public let amount: String
 }

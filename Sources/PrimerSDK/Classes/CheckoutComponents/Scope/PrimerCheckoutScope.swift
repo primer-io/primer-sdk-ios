@@ -20,13 +20,9 @@ public protocol PrimerCheckoutScope: AnyObject {
     /// Default implementation provides standard checkout container.
     var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
 
-    /// Splash screen shown during initialization.
+    /// Splash screen shown during initialization and loading.
     /// Default implementation shows Primer branding.
     var splashScreen: (() -> any View)? { get set }
-
-    /// Loading screen shown during async operations.
-    /// Default implementation shows activity indicator.
-    var loadingScreen: (() -> any View)? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
@@ -99,8 +95,11 @@ public enum PrimerCheckoutState: Equatable {
     /// Initial state while loading configuration and payment methods.
     case initializing
 
-    /// Ready state with payment methods loaded.
-    case ready
+    /// Ready state with payment methods loaded, including payment amount information.
+    /// - Parameters:
+    ///   - totalAmount: The total payment amount in minor units (e.g., cents)
+    ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR")
+    case ready(totalAmount: Int, currencyCode: String)
 
     /// Payment completed successfully.
     case success(PaymentResult)
@@ -114,9 +113,10 @@ public enum PrimerCheckoutState: Equatable {
     public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
         switch (lhs, rhs) {
         case (.initializing, .initializing),
-             (.ready, .ready),
              (.dismissed, .dismissed):
             return true
+        case let (.ready(lhsAmount, lhsCurrency), .ready(rhsAmount, rhsCurrency)):
+            return lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
         case let (.success(lhsResult), .success(rhsResult)):
             return lhsResult.paymentId == rhsResult.paymentId
         case let (.failure(lhsError), .failure(rhsError)):

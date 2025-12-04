@@ -28,6 +28,10 @@ struct OTPCodeInputField: View, LogReporter {
     @State private var isFocused: Bool = false
     @Environment(\.designTokens) private var tokens
 
+    private var fieldFont: Font {
+        styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
+    }
+
     // MARK: - Initialization
 
     init(
@@ -77,10 +81,10 @@ struct OTPCodeInputField: View, LogReporter {
                 "",
                 text: $otpCode,
                 prompt: Text(placeholder)
-                    .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                    .font(fieldFont)
                     .foregroundColor(styling?.placeholderColor ?? CheckoutColors.textPlaceholder(tokens: tokens))
             )
-            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+            .font(fieldFont)
             .foregroundColor(styling?.textColor ?? CheckoutColors.textPrimary(tokens: tokens))
             .keyboardType(.numberPad)
             .textContentType(.oneTimeCode)

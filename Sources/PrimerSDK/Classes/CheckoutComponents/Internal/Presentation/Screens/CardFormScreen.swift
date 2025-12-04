@@ -4,6 +4,14 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// swiftlint:disable file_length
+// TODO: Refactor CardFormScreen to reduce file length (currently 814 lines, max 800)
+//
+//  CardFormScreen.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
 import SwiftUI
 
 /// Default card form screen for CheckoutComponents with dynamic field rendering
@@ -16,6 +24,12 @@ struct CardFormScreen: View, LogReporter {
     @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var cardFormState: StructuredCardFormState = .init()
+    @State private var components: PrimerComponents = PrimerComponents()
+
+    /// CardForm configuration with fallback to defaults
+    private var cardFormConfig: PrimerComponents.CardForm {
+        components.configuration(for: PrimerComponents.CardForm.self) ?? PrimerComponents.CardForm()
+    }
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
     @State private var formConfiguration: CardFormConfiguration = .default
@@ -34,6 +48,7 @@ struct CardFormScreen: View, LogReporter {
         }
         .navigationBarHidden(true)
         .background(CheckoutColors.background(tokens: tokens))
+        .environment(\.primerCardFormScope, scope)
     }
 
     @MainActor
@@ -84,13 +99,15 @@ struct CardFormScreen: View, LogReporter {
             submitButtonSection
         }
         .onAppear {
+            resolveComponents()
             resolveConfigurationService()
             observeState()
         }
     }
 
     private var titleSection: some View {
-        Text(CheckoutComponentsStrings.cardPaymentTitle)
+        let title = cardFormConfig.title ?? CheckoutComponentsStrings.cardPaymentTitle
+        return Text(title)
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -100,7 +117,12 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var dynamicFieldsSection: some View {
-        if let customScreen = scope.screen {
+        // First check components configuration
+        if let customScreen = cardFormConfig.screen {
+            AnyView(customScreen(scope))
+        }
+        // Then check scope configuration
+        else if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
             VStack(spacing: 0) {
@@ -113,8 +135,9 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var cardFieldsSection: some View {
-        if let customSection = (scope as? DefaultCardFormScope)?.cardInputSection {
-            AnyView(customSection())
+        // Check components configuration for full section replacement
+        if let customContent = cardFormConfig.cardDetails.content {
+            AnyView(customContent())
         } else {
             VStack(spacing: 0) {
                 ForEach(0 ..< formConfiguration.cardFields.count, id: \.self) { index in
@@ -151,11 +174,10 @@ struct CardFormScreen: View, LogReporter {
     @ViewBuilder
     @MainActor
     private var billingAddressSection: some View {
-        if !formConfiguration.billingFields.isEmpty,
-           let defaultScope = scope as? DefaultCardFormScope
-        {
-            if let customSection = defaultScope.billingAddressSection {
-                AnyView(customSection())
+        if !formConfiguration.billingFields.isEmpty {
+            // Check components configuration for full section replacement
+            if let customContent = cardFormConfig.billingAddress.content {
+                AnyView(customContent())
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
                     Text(CheckoutComponentsStrings.billingAddressTitle)
@@ -192,32 +214,28 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var submitButtonSection: some View {
-        if let customSection = (scope as? DefaultCardFormScope)?.submitButtonSection {
-            AnyView(customSection())
-        } else {
-            Group {
-                if let customButton = (scope as? DefaultCardFormScope)?.submitButton {
-                    AnyView(customButton(submitButtonText))
-                        .onTapGesture {
-                            if cardFormState.isValid, !cardFormState.isLoading {
-                                submitAction()
-                            }
-                        }
-                } else {
-                    Button(action: submitAction) {
-                        submitButtonContent
+        // Check components configuration for full button replacement
+        if let customContent = cardFormConfig.submitButton.content {
+            AnyView(customContent())
+                .onTapGesture {
+                    if cardFormState.isValid, !cardFormState.isLoading {
+                        submitAction()
                     }
-                    .disabled(!cardFormState.isValid || cardFormState.isLoading)
                 }
+        } else {
+            Button(action: submitAction) {
+                submitButtonContent
             }
+            .disabled(!cardFormState.isValid || cardFormState.isLoading)
         }
     }
 
     private var submitButtonContent: some View {
         let isEnabled = cardFormState.isValid && !cardFormState.isLoading
+        let showLoadingIndicator = cardFormConfig.submitButton.showLoadingIndicator
 
         return HStack {
-            if cardFormState.isLoading {
+            if cardFormState.isLoading, showLoadingIndicator {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
                     .scaleEffect(PrimerScale.small)
@@ -270,6 +288,11 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonText: String {
+        // First check components configuration
+        if let customText = cardFormConfig.submitButton.text {
+            return customText
+        }
+
         if scope.cardFormUIOptions?.payButtonAddNewCard == true {
             return CheckoutComponentsStrings.addCardButton
         }
@@ -305,6 +328,17 @@ struct CardFormScreen: View, LogReporter {
     private func submitAction() {
         Task {
             await (scope as? DefaultCardFormScope)?.submit()
+        }
+    }
+
+    private func resolveComponents() {
+        guard let container else {
+            return logger.error(message: "DIContainer not available for CardFormScreen")
+        }
+        do {
+            components = try container.resolveSync(PrimerComponents.self)
+        } catch {
+            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -362,211 +396,228 @@ struct CardFormScreen: View, LogReporter {
     @ViewBuilder
     private func renderField(_ fieldType: PrimerInputElementType) -> some View {
         let fieldLabel: String? = fieldType.displayName
-        let defaultStyling = (scope as? DefaultCardFormScope)?.defaultFieldStyling?[String(fieldType.rawValue)]
 
         switch fieldType {
         case .cardNumber:
-            if let customField = (scope as? DefaultCardFormScope)?.cardNumberField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.cardNumber
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .cardNumber)
             } else {
                 CardNumberInputField(
-                    label: fieldLabel ?? "Card Number",
-                    placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "Card Number",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.cardNumberPlaceholder,
                     scope: scope,
                     selectedNetwork: getSelectedCardNetwork(),
                     availableNetworks: cardFormState.availableNetworks.map(\.network),
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .cardNumber)
                 .onSubmit { moveToNextField(from: .cardNumber) }
             }
 
         case .expiryDate:
-            if let customField = (scope as? DefaultCardFormScope)?.expiryDateField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.expiryDate
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .expiryDate)
             } else {
                 ExpiryDateInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.expiryDatePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.expiryDatePlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .expiryDate)
                 .onSubmit { moveToNextField(from: .expiryDate) }
             }
 
         case .cvv:
-            if let customField = (scope as? DefaultCardFormScope)?.cvvField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.cvv
+            let defaultPlaceholder = getCardNetworkForCvv() == .amex
+                ? CheckoutComponentsStrings.cvvAmexPlaceholder
+                : CheckoutComponentsStrings.cvvStandardPlaceholder
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .cvv)
             } else {
                 CVVInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? defaultPlaceholder,
                     scope: scope,
                     cardNetwork: getCardNetworkForCvv(),
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .cvv)
                 .onSubmit { moveToNextField(from: .cvv) }
             }
 
         case .cardholderName:
-            if let customField = (scope as? DefaultCardFormScope)?.cardholderNameField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.cardholderName
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .cardholderName)
             } else {
                 CardholderNameInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.fullNamePlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .cardholderName)
                 .onSubmit { moveToNextField(from: .cardholderName) }
             }
 
         case .postalCode:
-            if let customField = (scope as? DefaultCardFormScope)?.postalCodeField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.postalCode
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .postalCode)
             } else {
                 PostalCodeInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.postalCodePlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .postalCode)
                 .onSubmit { moveToNextField(from: .postalCode) }
             }
 
         case .countryCode:
-            if let customField = (scope as? DefaultCardFormScope)?.countryField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.countryCode
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .countryCode)
             } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
                 CountryInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.selectCountryPlaceholder,
                     scope: defaultCardFormScope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .countryCode)
                 .onSubmit { moveToNextField(from: .countryCode) }
             }
 
         case .city:
-            if let customField = (scope as? DefaultCardFormScope)?.cityField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.city
+            if let customComponent = config?.component {
+                AnyView(customComponent())
                     .focused($focusedField, equals: .city)
             } else {
                 CityInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.cityPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.cityPlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
                 .focused($focusedField, equals: .city)
                 .onSubmit { moveToNextField(from: .city) }
             }
 
         case .state:
-            if let customField = (scope as? DefaultCardFormScope)?.stateField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.state
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 StateInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.statePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.statePlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .addressLine1:
-            if let customField = (scope as? DefaultCardFormScope)?.addressLine1Field {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.addressLine1
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 AddressLineInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.addressLine1Placeholder,
                     isRequired: true,
                     inputType: .addressLine1,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .addressLine2:
-            if let customField = (scope as? DefaultCardFormScope)?.addressLine2Field {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.addressLine2
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 AddressLineInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.addressLine2Placeholder,
                     isRequired: false,
                     inputType: .addressLine2,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .phoneNumber:
-            if let customField = (scope as? DefaultCardFormScope)?.phoneNumberField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.phoneNumber
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.phoneNumberPlaceholder,
                     inputType: .phoneNumber,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .firstName:
-            if let customField = (scope as? DefaultCardFormScope)?.firstNameField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.firstName
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.firstNamePlaceholder,
                     inputType: .firstName,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .lastName:
-            if let customField = (scope as? DefaultCardFormScope)?.lastNameField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.lastName
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.lastNamePlaceholder,
                     inputType: .lastName,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .email:
-            if let customField = (scope as? DefaultCardFormScope)?.emailField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.billingAddress.email
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 EmailInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.emailPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.emailPlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
         case .retailer:
-            if let customField = (scope as? DefaultCardFormScope)?.retailOutletField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.retailOutlet
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 Text(CheckoutComponentsStrings.retailOutletNotImplemented)
                     .font(PrimerFont.caption(tokens: tokens))
@@ -575,14 +626,15 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .otp:
-            if let customField = (scope as? DefaultCardFormScope)?.otpCodeField {
-                AnyView(customField(fieldLabel, defaultStyling))
+            let config = cardFormConfig.cardDetails.otpCode
+            if let customComponent = config?.component {
+                AnyView(customComponent())
             } else {
                 OTPCodeInputField(
-                    label: fieldLabel ?? "",
-                    placeholder: CheckoutComponentsStrings.otpCodeNumericPlaceholder,
+                    label: config?.label ?? fieldLabel ?? "",
+                    placeholder: config?.placeholder ?? CheckoutComponentsStrings.otpCodeNumericPlaceholder,
                     scope: scope,
-                    styling: defaultStyling
+                    styling: config?.styling
                 )
             }
 
@@ -845,3 +897,4 @@ struct CardFormScreen: View, LogReporter {
     .environment(\.diContainer, MockDIContainer())
 }
 #endif
+// swiftlint:enable file_length

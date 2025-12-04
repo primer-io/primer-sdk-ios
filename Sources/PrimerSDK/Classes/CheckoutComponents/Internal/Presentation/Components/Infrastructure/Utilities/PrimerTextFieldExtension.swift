@@ -118,9 +118,15 @@ extension UITextField {
         isSecureTextEntry = configuration.isSecureTextEntry
 
         // Text styling with design tokens
-        // Note: We ignore styling.font because SwiftUI Font cannot be properly converted to UIFont
-        // Custom fonts would be lost in the conversion. Always use PrimerFont.uiFontBodyLarge instead.
-        font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+        if let fontName = styling?.fontName {
+            font = PrimerFont.uiFont(
+                family: fontName,
+                weight: styling?.fontWeight,
+                size: styling?.fontSize
+            )
+        } else {
+            font = PrimerFont.uiFontBodyLarge(tokens: tokens)
+        }
         textColor = styling?.textColor.map(UIColor.init) ?? UIColor(CheckoutColors.textPrimary(tokens: tokens))
 
         // Placeholder styling with design tokens

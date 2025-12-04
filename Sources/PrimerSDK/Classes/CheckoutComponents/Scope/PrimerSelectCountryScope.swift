@@ -60,15 +60,21 @@ public struct PrimerSelectCountryState: Equatable {
     /// Indicates if countries are being loaded.
     public var isLoading: Bool = false
 
+    /// The currently selected country (nil if none selected yet).
+    /// This is set when the user selects a country and can be observed by providers.
+    public var selectedCountry: PrimerCountry?
+
     public init(
         countries: [PrimerCountry] = [],
         filteredCountries: [PrimerCountry] = [],
         searchQuery: String = "",
-        isLoading: Bool = false
+        isLoading: Bool = false,
+        selectedCountry: PrimerCountry? = nil
     ) {
         self.countries = countries
         self.filteredCountries = filteredCountries
         self.searchQuery = searchQuery
         self.isLoading = isLoading
+        self.selectedCountry = selectedCountry
     }
 }

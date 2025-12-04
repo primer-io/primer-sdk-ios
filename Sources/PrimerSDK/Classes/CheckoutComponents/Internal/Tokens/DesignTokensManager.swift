@@ -7,8 +7,116 @@
 import Foundation
 import SwiftUI
 
+@available(iOS 15.0, *)
 final class DesignTokensManager: ObservableObject {
     @Published var tokens: DesignTokens?
+
+    /// Merchant-provided theme overrides
+    private var themeOverrides: PrimerCheckoutTheme?
+
+    // MARK: - Theme Override API
+
+    /// Applies merchant theme overrides that will be merged with internal tokens.
+    /// - Parameter theme: The merchant-provided theme with optional overrides
+    func applyTheme(_ theme: PrimerCheckoutTheme) {
+        self.themeOverrides = theme
+    }
+
+    /// Returns a color value, checking merchant overrides first, then internal tokens.
+    /// - Parameter keyPath: Key path to the internal token color property
+    /// - Parameter overrideKeyPath: Key path to the merchant override color property
+    /// - Returns: The color from merchant override if set, otherwise from internal tokens
+    func color(
+        _ keyPath: KeyPath<DesignTokens, [CGFloat]>,
+        override overrideKeyPath: KeyPath<ColorOverrides, Color?>? = nil
+    ) -> Color {
+        // Check merchant override first
+        if let overrideKeyPath,
+           let colorOverrides = themeOverrides?.colors,
+           let overrideColor = colorOverrides[keyPath: overrideKeyPath] {
+            return overrideColor
+        }
+
+        // Fall back to internal tokens
+        guard let tokens else { return .clear }
+        let rgba = tokens[keyPath: keyPath]
+        return Color(red: rgba[0], green: rgba[1], blue: rgba[2], opacity: rgba[3])
+    }
+
+    /// Returns a CGFloat value, checking merchant overrides first, then internal tokens.
+    func radius(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<RadiusOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let radiusOverrides = themeOverrides?.radius,
+           let overrideValue = radiusOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    func spacing(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<SpacingOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let spacingOverrides = themeOverrides?.spacing,
+           let overrideValue = spacingOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    func size(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<SizeOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let sizeOverrides = themeOverrides?.sizes,
+           let overrideValue = sizeOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    /// Returns a border width value, checking merchant overrides first, then internal tokens.
+    func borderWidth(
+        _ keyPath: KeyPath<DesignTokens, CGFloat>,
+        override overrideKeyPath: KeyPath<BorderWidthOverrides, CGFloat?>? = nil
+    ) -> CGFloat {
+        if let overrideKeyPath,
+           let borderWidthOverrides = themeOverrides?.borderWidth,
+           let overrideValue = borderWidthOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 1
+    }
+
+    /// Returns a typography style, checking merchant overrides first.
+    /// - Parameter overrideKeyPath: Key path to the merchant override typography property
+    /// - Returns: The typography style from merchant override if set, otherwise nil
+    func typography(override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?) -> TypographyOverrides.TypographyStyle? {
+        guard let overrideKeyPath,
+              let typographyOverrides = themeOverrides?.typography else {
+            return nil
+        }
+        return typographyOverrides[keyPath: overrideKeyPath]
+    }
+
+    /// Creates a Font using typography overrides or defaults.
+    /// - Parameters:
+    ///   - overrideKeyPath: Key path to the merchant override typography property
+    ///   - defaultSize: Default font size if no override is set
+    ///   - defaultWeight: Default font weight if no override is set
+    /// - Returns: A configured Font
+    func font(
+        override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?,
+        defaultSize: CGFloat,
+        defaultWeight: Font.Weight = .regular
+    ) -> Font {
+        let style = typography(override: overrideKeyPath)
+        let size = style?.size ?? defaultSize
+        let weight = style?.weight ?? defaultWeight
+
+        if let fontName = style?.font {
+            return Font.custom(fontName, size: size).weight(weight)
+        }
+        return Font.system(size: size, weight: weight)
+    }
+
+    // MARK: - Token Loading
 
     /// Loads and merges the design token JSON files based on the current color scheme.
     /// - Parameter colorScheme: The current color scheme (.light or .dark).
