@@ -1,3 +1,11 @@
+## 2.43.1 (2025-12-04)
+
+### Fix
+
+- Align surcharge validation with Android SDK (#1420)
+- Update macOS runner to macos-latest for Appetize workflow (#1419)
+- Filter special tags in post-release changelog generation (#1418)
+
 ## 2.43.0 (2025-12-02)
 
 ### Feat
