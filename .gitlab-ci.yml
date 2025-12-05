@@ -8,6 +8,9 @@ workflow:
 build-and-release:
   stage: build
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
+  before_script:
+    - apt-get update -y
+    - apt-get install -y rsync
   script:
     - bundle install
     - pod trunk push --allow-root
