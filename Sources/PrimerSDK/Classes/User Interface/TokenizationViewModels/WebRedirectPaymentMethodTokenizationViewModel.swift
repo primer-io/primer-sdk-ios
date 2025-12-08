@@ -258,10 +258,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         })
         awaitUserInputTask = task
 
-        if isCancelled {
-            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
-        }
-
         return try await task.wait()
     }
 
