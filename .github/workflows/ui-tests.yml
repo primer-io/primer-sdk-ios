@@ -30,7 +30,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
@@ -67,7 +67,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
 
@@ -150,7 +150,7 @@ jobs:
           - "E2E"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
@@ -175,7 +175,7 @@ jobs:
     if: ${{ inputs.testType != '' }}
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
