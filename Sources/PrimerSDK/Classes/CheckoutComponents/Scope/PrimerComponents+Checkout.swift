@@ -14,26 +14,16 @@ extension PrimerComponents {
     /// Configuration for checkout flow screens and navigation.
     public struct Checkout {
 
-        /// Custom splash screen component shown during SDK initialization.
         public let splash: Component?
-
-        /// Custom loading screen component shown during loading operations (after initialization).
-        /// If not provided, falls back to splash screen, then SDK default.
         public let loading: Component?
-
-        /// Custom success screen component
         public let success: Component?
-
-        /// Error screen configuration
         public let error: Error
-
-        /// Navigation callback overrides
         public let navigation: Navigation
 
-        /// Creates a new checkout configuration.
+        /// Creates a checkout configuration.
         /// - Parameters:
         ///   - splash: Custom splash screen shown during SDK initialization. Default: nil (uses SDK default)
-        ///   - loading: Custom loading screen shown during loading operations. Default: nil (falls back to splash, then SDK default)
+        ///   - loading: Custom loading screen shown during loading operations.
         ///   - success: Custom success screen. Default: nil (uses SDK default)
         ///   - error: Error screen configuration. Default: Error()
         ///   - navigation: Navigation callbacks. Default: Navigation()
@@ -53,46 +43,25 @@ extension PrimerComponents {
 
         // MARK: - Nested Types
 
-        /// Error screen configuration
         public struct Error {
-            /// Custom error title (nil uses default)
             public let title: String?
-
-            /// Custom error content component
             public let content: ErrorComponent?
 
-            /// Creates a new error configuration.
-            /// - Parameters:
-            ///   - title: Custom title. Default: nil (uses SDK default)
-            ///   - content: Custom error content. Default: nil (uses SDK default)
             public init(title: String? = nil, content: ErrorComponent? = nil) {
                 self.title = title
                 self.content = content
             }
         }
 
-        /// Navigation callback overrides for checkout flow
         public struct Navigation {
-            /// Called when user cancels checkout
             public let onCancel: (() -> Void)?
-
-            /// Called when user navigates back
             public let onBack: (() -> Void)?
-
-            /// Called when user retries after error
             public let onRetry: (() -> Void)?
-
-            /// Called when user selects "other payment methods"
             public let onOtherPaymentMethods: (() -> Void)?
-
-            /// Called when payment succeeds
             public let onSuccess: (() -> Void)?
-
-            /// Called when payment fails
-            /// - Parameter errorMessage: The error message describing what went wrong
             public let onError: ((_ errorMessage: String) -> Void)?
 
-            /// Creates a new navigation configuration.
+            /// Creates a navigation configuration.
             /// - Parameters:
             ///   - onCancel: Cancel callback. Default: nil (uses SDK default)
             ///   - onBack: Back callback. Default: nil (uses SDK default)

@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Service responsible for SDK initialization for CheckoutComponents
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutSDKInitializer {
@@ -53,7 +52,6 @@ final class CheckoutSDKInitializer {
 
     // MARK: - Public Methods
 
-    /// Initialize the SDK and create the checkout scope
     func initialize() async throws -> InitializationResult {
         setupSDKIntegration()
 
@@ -94,7 +92,6 @@ final class CheckoutSDKInitializer {
         return InitializationResult(checkoutScope: checkoutScope)
     }
 
-    /// Clean up resources when checkout session ends
     func cleanup() {
         Task {
             await DIContainer.clearContainer()

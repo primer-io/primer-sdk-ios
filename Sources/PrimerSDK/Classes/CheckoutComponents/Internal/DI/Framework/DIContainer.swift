@@ -9,7 +9,6 @@ import Foundation
 /// Provides global access to the current DI container with context management
 @available(iOS 15.0, *)
 public final class DIContainer: LogReporter {
-    /// Singleton instance
     public static let shared = DIContainer()
 
     /// Isolated actor for thread-safe container operations
@@ -22,7 +21,7 @@ public final class DIContainer: LogReporter {
         }
 
         func getContainer() -> (any ContainerProtocol)? {
-            return container
+            container
         }
 
         func setContainer(_ newContainer: (any ContainerProtocol)?) {
@@ -30,7 +29,7 @@ public final class DIContainer: LogReporter {
         }
 
         func getScopedContainer(for scopeId: String) -> (any ContainerProtocol)? {
-            return scopedContainers[scopeId]
+            scopedContainers[scopeId]
         }
 
         func setScopedContainer(_ container: (any ContainerProtocol), for scopeId: String) {
@@ -42,13 +41,11 @@ public final class DIContainer: LogReporter {
         }
     }
 
-    /// Thread-safe storage for containers
     private let storage: ContainerStorage
 
-    /// Access to the current container (async)
     public static var current: (any ContainerProtocol)? {
         get async {
-            return await shared.storage.getContainer()
+            await shared.storage.getContainer()
         }
     }
 
@@ -66,7 +63,6 @@ public final class DIContainer: LogReporter {
     @MainActor
     private var cachedContainer: (any ContainerProtocol)?
 
-    /// Private initializer for singleton
     private init() {
         let container = Container()
         self.storage = ContainerStorage(container: container)
@@ -77,12 +73,10 @@ public final class DIContainer: LogReporter {
         }
     }
 
-    /// Create a new container instance
     public static func createContainer() -> any ContainerProtocol {
-        return Container()
+        Container()
     }
 
-    /// Set the global container instance
     public static func setContainer(_ container: any ContainerProtocol) async {
         await shared.storage.setContainer(container)
 
@@ -91,14 +85,12 @@ public final class DIContainer: LogReporter {
         }
     }
 
-    /// Clear the global container instance to free resources
     @MainActor
     public static func clearContainer() async {
         await shared.storage.setContainer(nil)
         shared.cachedContainer = nil
     }
 
-    /// Set up a container with the application's dependencies
     public static func setupMainContainer() async {
         let container = Container()
         await registerDependencies(in: container)
@@ -142,53 +134,44 @@ public final class DIContainer: LogReporter {
         }
     }
 
-    /// Add a scoped container
     public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) async {
         await shared.storage.setScopedContainer(container, for: scopeId)
     }
 
-    /// Get a scoped container
     public static func scopedContainer(for scopeId: String) async -> (any ContainerProtocol)? {
-        return await shared.storage.getScopedContainer(for: scopeId)
+        await shared.storage.getScopedContainer(for: scopeId)
     }
 
-    /// Remove a scoped container
     public static func removeScopedContainer(for scopeId: String) async {
         await shared.storage.removeScopedContainer(for: scopeId)
     }
 
-    /// Register the application's dependencies in the provided container
     private static func registerDependencies(in container: Container) async {
         Task {
             _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
-                return container
+                container
             }
         }
     }
 
-    /// Create a container with mock dependencies for testing
     public static func createMockContainer() async -> any ContainerProtocol {
         let container = Container()
         await registerMockDependencies(in: container)
         return container
     }
 
-    /// Register mock dependencies for testing
     private static func registerMockDependencies(in container: Container) async {
         await registerMockRepositories(container)
         await registerMockUseCases(container)
         await registerMockServices(container)
     }
 
-    /// Register mock repositories
     private static func registerMockRepositories(_ container: Container) async {
     }
 
-    /// Register mock use cases
     private static func registerMockUseCases(_ container: Container) async {
     }
 
-    /// Register mock services
     private static func registerMockServices(_ container: Container) async {
     }
 }

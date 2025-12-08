@@ -41,31 +41,16 @@ import SwiftUI
 @MainActor
 public struct PrimerCheckout: View {
 
-    /// The client token for initializing the checkout session.
     private let clientToken: String
-
-    /// Configuration settings for the checkout experience.
     private let settings: PrimerSettings
-
-    /// Theme configuration for design tokens.
     private let theme: PrimerCheckoutTheme
-
-    /// Immutable configuration for UI component customization.
     private let components: PrimerComponents
-
-    /// Optional custom content builder for complete UI replacement
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-
-    /// Optional completion callback for dismissal handling
     private let onCompletion: (() -> Void)?
-
-    /// Navigator for coordinating navigation
     @StateObject private var navigator: CheckoutNavigator
-
-    /// Presentation context determining navigation behavior
     private let presentationContext: PresentationContext
 
-    /// Creates a new PrimerCheckout view with the new immutable configuration API.
+    /// Creates a PrimerCheckout view.
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
     ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
@@ -89,7 +74,6 @@ public struct PrimerCheckout: View {
         self.presentationContext = .fromPaymentSelection
     }
 
-    /// Internal initializer with presentation context
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
@@ -110,7 +94,6 @@ public struct PrimerCheckout: View {
         self.presentationContext = presentationContext
     }
 
-    /// Internal initializer with custom content and presentation context
     init(
         clientToken: String,
         primerSettings: PrimerSettings,
@@ -315,7 +298,6 @@ struct InternalCheckout: View {
 
 @available(iOS 15.0, *)
 private extension View {
-    /// Applies appearance mode to the view
     @ViewBuilder
     func applyAppearanceMode(_ mode: PrimerAppearanceMode) -> some View {
         switch mode {

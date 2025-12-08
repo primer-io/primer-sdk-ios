@@ -70,7 +70,6 @@ struct PaymentMethodPlaceholder: View {
         .background(CheckoutColors.background(tokens: tokens))
     }
 
-    /// Navigation bar with back button
     private var navigationBar: some View {
         HStack {
             // Try to navigate back if we have access to the navigator, otherwise just show cancel

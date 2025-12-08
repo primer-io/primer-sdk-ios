@@ -136,13 +136,11 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the field from external state changes using the property
     @MainActor
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountryFromScope)
     }
 
-    /// Updates the field from external state changes using the provided country
     @MainActor
     private func updateFromExternalState(with country: PrimerCountry?) {
         // Update directly from the PrimerCountry object from the scope
@@ -154,7 +152,6 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the selected country
     @MainActor
     func updateCountry(name: String, code: String) {
         countryName = name
@@ -163,13 +160,11 @@ struct CountryInputField: View, LogReporter {
         validateCountry()
     }
 
-    /// Clears field error
     @MainActor
     private func clearFieldError() {
         scope.clearFieldError(.countryCode)
     }
 
-    /// Sets field error
     @MainActor
     private func setFieldError(message: String, errorCode: String?) {
         scope.setFieldError(.countryCode, message: message, errorCode: errorCode)

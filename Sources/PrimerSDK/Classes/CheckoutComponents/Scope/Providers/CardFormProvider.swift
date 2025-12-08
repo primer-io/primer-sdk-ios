@@ -32,26 +32,17 @@ import SwiftUI
 /// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct CardFormProvider<Content: View>: View, LogReporter {
-    /// Callback when payment succeeds
     private let onSuccess: ((CheckoutPaymentResult) -> Void)?
-
-    /// Callback when payment fails
     private let onError: ((String) -> Void)?
-
-    /// Callback when user cancels
     private let onCancel: (() -> Void)?
-
-    /// Callback when country selection is requested
     private let onCountrySelectionRequested: (() -> Void)?
-
-    /// Content builder that receives the card form scope
     private let content: (any PrimerCardFormScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
     @Environment(\.diContainer) private var container
     @State private var components: PrimerComponents = PrimerComponents()
 
-    /// Creates a CardFormProvider with navigation callbacks.
+    /// Creates a CardFormProvider.
     /// - Parameters:
     ///   - onSuccess: Called when payment succeeds with the result
     ///   - onError: Called when payment fails with error message

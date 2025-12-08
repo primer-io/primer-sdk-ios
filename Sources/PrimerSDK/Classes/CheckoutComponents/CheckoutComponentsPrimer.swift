@@ -64,7 +64,6 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Singleton
 
-    /// Shared instance of CheckoutComponentsPrimer
     @objc public static let shared = CheckoutComponentsPrimer()
 
     // MARK: - Properties
@@ -76,10 +75,8 @@ public extension CheckoutComponentsDelegate {
     /// Flag to prevent multiple simultaneous presentations
     private var isPresentingCheckout = false
 
-    /// Logger for debugging
     private let logger = PrimerLogging.shared.logger
 
-    /// Delegate for handling checkout results
     public weak var delegate: CheckoutComponentsDelegate?
 
     /// Store the latest payment result for delegate callbacks
@@ -269,7 +266,6 @@ public extension CheckoutComponentsDelegate {
         dismissDirectly()
     }
 
-    /// Internal method for handling payment success
     func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
@@ -285,7 +281,6 @@ public extension CheckoutComponentsDelegate {
         }
     }
 
-    /// Internal method for handling payment failure
     func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
 
@@ -299,7 +294,6 @@ public extension CheckoutComponentsDelegate {
         }
     }
 
-    /// Internal method for handling checkout dismissal
     func handleCheckoutDismiss() {
         delegate?.checkoutComponentsDidDismiss()
     }
@@ -413,8 +407,6 @@ public extension CheckoutComponentsDelegate {
 
     // MARK: - Direct Dismissal
 
-    /// Internal method for dismissing checkout directly
-    /// - Parameter completion: Optional completion handler called after dismissal animation completes
     func dismissDirectly(completion: (() -> Void)? = nil) {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
@@ -504,12 +496,10 @@ extension CheckoutComponentsPrimer {
 @available(iOS 15.0, *)
 extension CheckoutComponentsPrimer {
 
-    /// Check if CheckoutComponents is available on this iOS version
     @objc public static var isAvailable: Bool {
         true // Since we're already in an @available(iOS 15.0, *) context
     }
 
-    /// Check if checkout is currently being presented
     @objc public static var isPresenting: Bool {
         shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }

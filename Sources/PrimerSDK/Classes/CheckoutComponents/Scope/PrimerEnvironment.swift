@@ -8,25 +8,21 @@ import SwiftUI
 
 // MARK: - Scope Environment Keys
 
-/// Environment key to provide PrimerCheckoutScope to custom views
 @available(iOS 15.0, *)
 private struct PrimerCheckoutScopeKey: EnvironmentKey {
     static let defaultValue: PrimerCheckoutScope? = nil
 }
 
-/// Environment key to provide PrimerCardFormScope to custom views
 @available(iOS 15.0, *)
 private struct PrimerCardFormScopeKey: EnvironmentKey {
     static let defaultValue: PrimerCardFormScope? = nil
 }
 
-/// Environment key to provide PrimerPaymentMethodSelectionScope to custom views
 @available(iOS 15.0, *)
 private struct PrimerPaymentMethodSelectionScopeKey: EnvironmentKey {
     static let defaultValue: PrimerPaymentMethodSelectionScope? = nil
 }
 
-/// Environment key to provide PrimerSelectCountryScope to custom views
 @available(iOS 15.0, *)
 private struct PrimerSelectCountryScopeKey: EnvironmentKey {
     static let defaultValue: PrimerSelectCountryScope? = nil

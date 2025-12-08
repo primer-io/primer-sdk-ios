@@ -16,24 +16,20 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     // MARK: - Customizable Screens
 
-    /// Container view that wraps all checkout content.
     /// Default implementation provides standard checkout container.
     var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
 
-    /// Splash screen shown during initialization and loading.
     /// Default implementation shows Primer branding.
     var splashScreen: (() -> any View)? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
 
-    /// Error screen shown when an error occurs.
     /// Default implementation shows error icon and message.
     var errorScreen: ((_ message: String) -> any View)? { get set }
 
     // MARK: - Nested Scopes
 
-    /// Scope for payment method selection screen.
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope { get }
 
     // MARK: - Dynamic Payment Method Scope Access
@@ -101,13 +97,11 @@ public enum PrimerCheckoutState: Equatable {
     ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR")
     case ready(totalAmount: Int, currencyCode: String)
 
-    /// Payment completed successfully.
     case success(PaymentResult)
 
     /// Checkout has been dismissed by user or merchant.
     case dismissed
 
-    /// An error occurred during checkout.
     case failure(PrimerError)
 
     public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {

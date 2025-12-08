@@ -31,26 +31,21 @@ private struct FieldValidationStates: Equatable {
     var phoneNumber: Bool = false
 }
 
-/// Default implementation of PrimerCardFormScope
 @available(iOS 15.0, *)
 @MainActor
 public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
-    /// The presentation context determining navigation behavior
     public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
-    /// Card form UI options from settings
     public var cardFormUIOptions: PrimerCardFormUIOptions? {
         checkoutScope?.cardFormUIOptions
     }
 
-    /// Available dismissal mechanisms from settings
     public var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    /// State stream for external observation
     public var state: AsyncStream<StructuredCardFormState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -81,19 +76,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private let configurationService: ConfigurationService
 
-    /// Track if billing address has been sent to avoid duplicate requests
+    // Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
-
-    /// Store the current card data
     private var currentCardData: PrimerCardData?
-
-    /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
-
-    /// Structured state for form data
     @Published var structuredState = StructuredCardFormState()
-
-    /// Form configuration determining which fields are displayed
     private var formConfiguration: CardFormConfiguration = .default
 
     /// Builds billing address fields array based on API configuration
@@ -137,7 +124,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         return fields
     }
 
-    /// Computed property to get the selected country from the country code
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
         let countryCode = structuredState.data[.countryCode]
         guard !countryCode.isEmpty else {
@@ -225,7 +211,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Update Methods
 
-    /// Generic field update method for internal use
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
         structuredState.data[fieldType] = value
 
@@ -276,7 +261,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    /// Trigger network detection for the given card number
     private func triggerNetworkDetection(for cardNumber: String) async {
         guard let interactor = cardNetworkDetectionInteractor else {
             return
@@ -603,8 +587,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Field-Level Validation State Communication
 
-    /// Updates the form validation state based on field-level validation results.
-    /// This method replaces the duplicate validation logic with direct validation states from the UI components.
+    /// Replaces the duplicate validation logic with direct validation states from UI components.
     public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
         let hasValidCardNumber = cardNumber && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty
         let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
@@ -630,85 +613,71 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Individual Field Validation Methods
 
-    /// Updates validation state for card number field specifically
     public func updateCardNumberValidationState(_ isValid: Bool) {
         fieldValidationStates.cardNumber = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for CVV field specifically
     public func updateCvvValidationState(_ isValid: Bool) {
         fieldValidationStates.cvv = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for expiry date field specifically
     public func updateExpiryValidationState(_ isValid: Bool) {
         fieldValidationStates.expiry = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for cardholder name field specifically
     public func updateCardholderNameValidationState(_ isValid: Bool) {
         fieldValidationStates.cardholderName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for postal code field specifically
     public func updatePostalCodeValidationState(_ isValid: Bool) {
         fieldValidationStates.postalCode = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for city field specifically
     public func updateCityValidationState(_ isValid: Bool) {
         fieldValidationStates.city = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for state field specifically
     public func updateStateValidationState(_ isValid: Bool) {
         fieldValidationStates.state = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for address line 1 field specifically
     public func updateAddressLine1ValidationState(_ isValid: Bool) {
         fieldValidationStates.addressLine1 = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for address line 2 field specifically
     public func updateAddressLine2ValidationState(_ isValid: Bool) {
         fieldValidationStates.addressLine2 = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for first name field specifically
     public func updateFirstNameValidationState(_ isValid: Bool) {
         fieldValidationStates.firstName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for last name field specifically
     public func updateLastNameValidationState(_ isValid: Bool) {
         fieldValidationStates.lastName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for email field specifically
     public func updateEmailValidationState(_ isValid: Bool) {
         fieldValidationStates.email = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for phone number field specifically
     public func updatePhoneNumberValidationState(_ isValid: Bool) {
         fieldValidationStates.phoneNumber = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for country code field specifically
     public func updateCountryCodeValidationState(_ isValid: Bool) {
         fieldValidationStates.countryCode = isValid
         updateFieldValidationState()
@@ -716,12 +685,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Structured State Implementation
 
-    /// Implementation of getFieldValue using structured state
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
         structuredState.data[fieldType]
     }
 
-    /// Implementation of setFieldError using structured state
     public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
         structuredState.setError(message, for: fieldType, errorCode: errorCode)
 
@@ -730,23 +697,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    /// Implementation of clearFieldError using structured state
     public func clearFieldError(_ fieldType: PrimerInputElementType) {
         structuredState.clearError(for: fieldType)
     }
 
-    /// Implementation of getFieldError using structured state
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
         structuredState.errorMessage(for: fieldType)
     }
 
-    /// Implementation of getFormConfiguration
     public func getFormConfiguration() -> CardFormConfiguration {
         formConfiguration
     }
 
-    /// Returns billing address configuration for BillingAddressView
-    /// Converts the field list into a view-ready configuration
     func getBillingAddressConfiguration() -> BillingAddressConfiguration {
         let fields = formConfiguration.billingFields
         return BillingAddressConfiguration(
@@ -765,8 +727,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Accessibility Announcements
 
-    /// Announces field errors to VoiceOver users
-    /// Multi-field error handling - announces total count first, then first error
+    // Multi-field error handling - announces total count first, then first error
     private func announceFieldErrors() {
         guard let container = DIContainer.currentSync,
               let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self)

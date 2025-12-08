@@ -6,15 +6,11 @@
 
 import SwiftUI
 
-/// Card payment method implementation conforming to PaymentMethodProtocol.
-/// Provides self-contained card payment functionality with scope creation.
 @available(iOS 15.0, *)
 struct CardPaymentMethod: PaymentMethodProtocol {
 
-    /// The scope type this payment method creates
     typealias ScopeType = DefaultCardFormScope
 
-    /// The payment method type identifier for cards
     static let paymentMethodType: String = PrimerPaymentMethodType.paymentCard.rawValue
 
     /// Creates a card form scope for this payment method
@@ -135,8 +131,6 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 @available(iOS 15.0, *)
 extension CardPaymentMethod {
 
-    /// Registers the card payment method with the global registry
-    /// This should be called during SDK initialization
     @MainActor
     static func register() {
         PaymentMethodRegistry.shared.register(CardPaymentMethod.self)

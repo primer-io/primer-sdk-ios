@@ -10,22 +10,15 @@ import SwiftUI
 @available(iOS 15.0, *)
 final class DesignTokensManager: ObservableObject {
     @Published var tokens: DesignTokens?
-
-    /// Merchant-provided theme overrides
     private var themeOverrides: PrimerCheckoutTheme?
 
     // MARK: - Theme Override API
 
-    /// Applies merchant theme overrides that will be merged with internal tokens.
-    /// - Parameter theme: The merchant-provided theme with optional overrides
     func applyTheme(_ theme: PrimerCheckoutTheme) {
         self.themeOverrides = theme
     }
 
-    /// Returns a color value, checking merchant overrides first, then internal tokens.
-    /// - Parameter keyPath: Key path to the internal token color property
-    /// - Parameter overrideKeyPath: Key path to the merchant override color property
-    /// - Returns: The color from merchant override if set, otherwise from internal tokens
+    // Merchant overrides take precedence over internal tokens
     func color(
         _ keyPath: KeyPath<DesignTokens, [CGFloat]>,
         override overrideKeyPath: KeyPath<ColorOverrides, Color?>? = nil
@@ -43,7 +36,6 @@ final class DesignTokensManager: ObservableObject {
         return Color(red: rgba[0], green: rgba[1], blue: rgba[2], opacity: rgba[3])
     }
 
-    /// Returns a CGFloat value, checking merchant overrides first, then internal tokens.
     func radius(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<RadiusOverrides, CGFloat?>? = nil) -> CGFloat {
         if let overrideKeyPath,
            let radiusOverrides = themeOverrides?.radius,
@@ -118,9 +110,6 @@ final class DesignTokensManager: ObservableObject {
 
     // MARK: - Token Loading
 
-    /// Loads and merges the design token JSON files based on the current color scheme.
-    /// - Parameter colorScheme: The current color scheme (.light or .dark).
-    /// - Throws: An error if loading or decoding the JSON fails.
     func fetchTokens(for colorScheme: ColorScheme) async throws {
         // Load and merge tokens
         let baseDict = try loadJSON(named: "base")

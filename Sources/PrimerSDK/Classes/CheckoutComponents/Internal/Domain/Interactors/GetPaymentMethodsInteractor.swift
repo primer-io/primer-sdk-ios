@@ -6,13 +6,10 @@
 
 import Foundation
 
-/// Protocol for retrieving available payment methods.
 protocol GetPaymentMethodsInteractor {
-    /// Fetches available payment methods for the current session.
     func execute() async throws -> [InternalPaymentMethod]
 }
 
-/// Default implementation of GetPaymentMethodsInteractor.
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
     private let repository: HeadlessRepository

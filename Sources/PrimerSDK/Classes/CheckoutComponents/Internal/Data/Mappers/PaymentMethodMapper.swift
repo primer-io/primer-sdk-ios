@@ -7,16 +7,11 @@
 import Foundation
 import UIKit
 
-/// Protocol for mapping between internal and public payment method representations.
 protocol PaymentMethodMapper {
-    /// Maps an internal payment method to the public representation.
     func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod
-
-    /// Maps multiple internal payment methods to public representations.
     func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [CheckoutPaymentMethod]
 }
 
-/// Default implementation of PaymentMethodMapper.
 @available(iOS 15.0, *)
 final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
@@ -46,7 +41,6 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
         internalMethods.map { mapToPublic($0) }
     }
 
-    /// Format surcharge for display
     private func formatSurcharge(_ surcharge: Int?, hasUnknownSurcharge: Bool) -> String? {
 
         // Priority: unknown surcharge > actual surcharge > no fee

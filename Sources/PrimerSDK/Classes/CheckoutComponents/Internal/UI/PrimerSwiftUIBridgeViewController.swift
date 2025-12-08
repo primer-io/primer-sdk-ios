@@ -48,8 +48,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     // MARK: - Initialization
 
-    /// Initialize with SwiftUI content
-    /// - Parameter swiftUIView: The SwiftUI view to embed
     init<Content: View>(swiftUIView: Content) {
         self.hostingController = UIHostingController(rootView: AnyView(swiftUIView))
         super.init()
@@ -235,7 +233,6 @@ extension PrimerSwiftUIBridgeViewController {
 @available(iOS 15.0, *)
 extension PrimerSwiftUIBridgeViewController {
 
-    /// Factory method to create bridge controller for CheckoutComponents
     static func createForCheckoutComponents(
         clientToken: String,
         settings primerSettings: PrimerSettings,

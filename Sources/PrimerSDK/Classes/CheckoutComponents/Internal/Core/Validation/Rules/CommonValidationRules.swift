@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Validation rule for name fields (first name, last name) with proper localization
 class NameRule: ValidationRule {
     typealias Input = String
 
@@ -48,27 +47,24 @@ class NameRule: ValidationRule {
     }
 }
 
-/// Validation rule for first names - convenience wrapper
 class FirstNameRule: ValidationRule {
     typealias Input = String?
     private let nameRule = NameRule(inputElementType: .firstName)
 
     func validate(_ value: String?) -> ValidationResult {
-        return nameRule.validate(value)
+        nameRule.validate(value)
     }
 }
 
-/// Validation rule for last names - convenience wrapper
 class LastNameRule: ValidationRule {
     typealias Input = String?
     private let nameRule = NameRule(inputElementType: .lastName)
 
     func validate(_ value: String?) -> ValidationResult {
-        return nameRule.validate(value)
+        nameRule.validate(value)
     }
 }
 
-/// Validation rule for address lines with proper localization
 class AddressRule: ValidationRule {
     typealias Input = String
     private let inputElementType: ValidationError.InputElementType
@@ -117,7 +113,6 @@ class AddressRule: ValidationRule {
     }
 }
 
-/// Generic validation rule for address fields - convenience wrapper
 class AddressFieldRule: ValidationRule {
     typealias Input = String?
     private let addressRule: AddressRule
@@ -127,11 +122,10 @@ class AddressFieldRule: ValidationRule {
     }
 
     func validate(_ value: String?) -> ValidationResult {
-        return addressRule.validate(value)
+        addressRule.validate(value)
     }
 }
 
-/// Validation rule for city names with proper localization
 class CityRule: ValidationRule {
     typealias Input = String
 
@@ -159,7 +153,6 @@ class CityRule: ValidationRule {
     }
 }
 
-/// Validation rule for state/province with proper localization
 class StateRule: ValidationRule {
     typealias Input = String
 
@@ -181,7 +174,6 @@ class StateRule: ValidationRule {
     }
 }
 
-/// Validation rule for postal codes with proper localization
 class PostalCodeRule: ValidationRule {
     typealias Input = String
 
@@ -246,17 +238,15 @@ class PostalCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for postal codes - convenience wrapper
 class BillingPostalCodeRule: ValidationRule {
     typealias Input = String?
     private let postalCodeRule = PostalCodeRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return postalCodeRule.validate(value)
+        postalCodeRule.validate(value)
     }
 }
 
-/// Validation rule for country codes with proper localization
 class CountryCodeRule: ValidationRule {
     typealias Input = String
 
@@ -286,17 +276,15 @@ class CountryCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for country codes - convenience wrapper
 class BillingCountryCodeRule: ValidationRule {
     typealias Input = String?
     private let countryCodeRule = CountryCodeRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return countryCodeRule.validate(value)
+        countryCodeRule.validate(value)
     }
 }
 
-/// Validation rule for email addresses
 class EmailRule: ValidationRule {
     typealias Input = String
 
@@ -333,17 +321,15 @@ class EmailRule: ValidationRule {
     }
 }
 
-/// Validation rule for email addresses - convenience wrapper
 class EmailValidationRule: ValidationRule {
     typealias Input = String?
     private let emailRule = EmailRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return emailRule.validate(value)
+        emailRule.validate(value)
     }
 }
 
-/// Validation rule for phone numbers
 class PhoneNumberRule: ValidationRule {
     typealias Input = String
 
@@ -360,7 +346,7 @@ class PhoneNumberRule: ValidationRule {
         }
 
         // Check if all digits after cleaning
-        if !cleanedValue.allSatisfy({ $0.isNumber }) {
+        if !cleanedValue.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
             return .invalid(error: error)
         }
@@ -383,17 +369,15 @@ class PhoneNumberRule: ValidationRule {
     }
 }
 
-/// Validation rule for phone numbers - convenience wrapper
 class PhoneNumberValidationRule: ValidationRule {
     typealias Input = String?
     private let phoneNumberRule = PhoneNumberRule()
 
     func validate(_ value: String?) -> ValidationResult {
-        return phoneNumberRule.validate(value)
+        phoneNumberRule.validate(value)
     }
 }
 
-/// Validation rule for OTP codes
 class OTPCodeRule: ValidationRule {
     typealias Input = String
 
@@ -410,7 +394,7 @@ class OTPCodeRule: ValidationRule {
         }
 
         // Check if all digits
-        if !value.allSatisfy({ $0.isNumber }) {
+        if !value.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .otpCode)
             return .invalid(error: error)
         }
