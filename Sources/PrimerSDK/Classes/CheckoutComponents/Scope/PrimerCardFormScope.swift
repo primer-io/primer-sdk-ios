@@ -293,6 +293,15 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     /// Gets the current form configuration (which fields are displayed)
     func getFormConfiguration() -> CardFormConfiguration
 
+    // MARK: - Default Card Form View
+
+    /// Returns the default card input form view with all card fields (card number, expiry, CVV, cardholder name).
+    /// This can be embedded in custom layouts while retaining the SDK's default field arrangement.
+    /// The view does not include navigation buttons or submit button - only the input fields.
+    /// - Parameter styling: Optional styling to apply to all fields. If nil, default styling is used.
+    /// - Returns: A view containing the default card form fields.
+    func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView
+
 }
 
 // MARK: - Default Implementation for Payment Method Lifecycle

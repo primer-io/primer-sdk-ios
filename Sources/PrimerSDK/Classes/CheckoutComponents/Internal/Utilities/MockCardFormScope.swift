@@ -307,6 +307,10 @@ public class MockCardFormScope: PrimerCardFormScope {
         AnyView(EmptyView())
     }
 
+    public func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
+        AnyView(EmptyView())
+    }
+
     // MARK: - Form Configuration
 
     public func getFormConfiguration() -> CardFormConfiguration {

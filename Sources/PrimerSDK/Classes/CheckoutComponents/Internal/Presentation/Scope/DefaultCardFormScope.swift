@@ -949,6 +949,16 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             styling: styling
         ).asAny()
     }
+
+    // MARK: - Default Card Form View
+
+    /// Returns a complete card form view with all card and billing address fields.
+    /// This provides an embeddable card form for custom payment selection screens.
+    /// - Parameter styling: Optional styling configuration for fields. Default: nil (uses SDK default styling)
+    /// - Returns: A view containing all card form fields based on current configuration.
+    public func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
+        CardFormFieldsView(scope: self, styling: styling).asAny()
+    }
 }
 
 private extension View {

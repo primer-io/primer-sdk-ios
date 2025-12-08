@@ -67,7 +67,7 @@ public extension EnvironmentValues {
     ///     }
     /// }
     /// ```
-    var primerCardFormScope: PrimerCardFormScope? {
+    var primerCardFormScope: (any PrimerCardFormScope)? {
         get { self[PrimerCardFormScopeKey.self] }
         set { self[PrimerCardFormScopeKey.self] = newValue }
     }
