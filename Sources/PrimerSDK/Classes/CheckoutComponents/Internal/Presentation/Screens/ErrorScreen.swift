@@ -10,7 +10,7 @@ import SwiftUI
 struct ErrorScreen: View {
     let error: PrimerError
     let onRetry: (() -> Void)?
-    let onOtherPaymentMethods: (() -> Void)?
+    let onChooseOtherPaymentMethods: (() -> Void)?
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
@@ -20,12 +20,12 @@ struct ErrorScreen: View {
     init(
         error: PrimerError,
         onRetry: (() -> Void)? = nil,
-        onOtherPaymentMethods: (() -> Void)? = nil,
+        onChooseOtherPaymentMethods: (() -> Void)? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
         self.error = error
         self.onRetry = onRetry
-        self.onOtherPaymentMethods = onOtherPaymentMethods
+        self.onChooseOtherPaymentMethods = onChooseOtherPaymentMethods
         self.onDismiss = onDismiss
     }
 
@@ -50,36 +50,8 @@ struct ErrorScreen: View {
             Spacer()
 
             VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-                Button {
-                    cancelTimer()
-                    onRetry?()
-                } label: {
-                    Text(CheckoutComponentsStrings.retryButton)
-                        .font(PrimerFont.bodyMedium(tokens: tokens))
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-                        .background(CheckoutColors.blue(tokens: tokens))
-                        .cornerRadius(PrimerRadius.medium(tokens: tokens))
-                }
-
-                Button {
-                    cancelTimer()
-                    onOtherPaymentMethods?()
-                } label: {
-                    Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
-                        .font(PrimerFont.bodyMedium(tokens: tokens))
-                        .fontWeight(.semibold)
-                        .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-                        .background(Color.clear)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-                                .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
-                        )
-                }
+                makeRetryButton()
+                makeOtherPaymentButton()
             }
             .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
             .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))
@@ -91,6 +63,43 @@ struct ErrorScreen: View {
         }
         .onDisappear {
             cancelTimer()
+        }
+    }
+
+    @ViewBuilder
+    private func makeRetryButton() -> some View {
+        Button {
+            cancelTimer()
+            onRetry?()
+        } label: {
+            Text(CheckoutComponentsStrings.retryButton)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
+                .background(CheckoutColors.blue(tokens: tokens))
+                .cornerRadius(PrimerRadius.medium(tokens: tokens))
+        }
+    }
+
+    @ViewBuilder
+    private func makeOtherPaymentButton() -> some View {
+        Button {
+            cancelTimer()
+            onChooseOtherPaymentMethods?()
+        } label: {
+            Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .fontWeight(.semibold)
+                .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+                )
         }
     }
 

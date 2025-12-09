@@ -11,7 +11,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class CheckoutNavigator: ObservableObject, LogReporter {
-
     // MARK: - Private Properties
 
     private let coordinator: CheckoutCoordinator
@@ -131,13 +130,9 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
             callback()
             return
         }
-        
+
         // Default behavior: navigate back to the last payment method, or payment selection if none
-        if let lastPaymentMethod = coordinator.lastPaymentMethodRoute {
-            coordinator.navigate(to: lastPaymentMethod)
-        } else {
-            coordinator.navigate(to: .paymentMethodSelection)
-        }
+        coordinator.navigate(to: coordinator.lastPaymentMethodRoute ?? .paymentMethodSelection)
     }
 
     func handleOtherPaymentMethods() {

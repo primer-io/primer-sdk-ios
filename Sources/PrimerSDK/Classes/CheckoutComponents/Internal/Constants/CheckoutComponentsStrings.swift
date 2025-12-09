@@ -65,7 +65,7 @@ enum CheckoutComponentsStrings {
 
     static let chooseOtherPaymentMethod = NSLocalizedString(
         "choose_other_payment_method",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "Choose other payment method",
         comment: "Button text to select a different payment method after error"
     )

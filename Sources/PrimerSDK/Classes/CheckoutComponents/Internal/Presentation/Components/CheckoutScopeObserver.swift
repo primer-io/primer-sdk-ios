@@ -283,7 +283,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                             logger.info(message: "Error screen retry tapped")
                             scope.checkoutNavigator.handleRetry()
                         },
-                        onOtherPaymentMethods: {
+                        onChooseOtherPaymentMethods: {
                             logger.info(message: "Error screen choose other payment method tapped")
                             scope.checkoutNavigator.handleOtherPaymentMethods()
                         },
