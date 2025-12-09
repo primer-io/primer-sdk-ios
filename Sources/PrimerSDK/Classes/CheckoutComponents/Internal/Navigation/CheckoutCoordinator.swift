@@ -14,6 +14,9 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     // MARK: - Published Properties
     @Published var navigationStack: [CheckoutRoute] = []
 
+    // MARK: - Private Properties
+    private(set) var lastPaymentMethodRoute: CheckoutRoute?
+
     // MARK: - Computed Properties
     var currentRoute: CheckoutRoute {
         navigationStack.last ?? .splash
@@ -33,6 +36,11 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
         }
 
         let previousRoute = currentRoute
+
+        // Track last payment method for retry functionality
+        if case .paymentMethod = previousRoute {
+            lastPaymentMethodRoute = previousRoute
+        }
 
         // Use route's navigation behavior for consistent, optimized navigation
         switch route.navigationBehavior {

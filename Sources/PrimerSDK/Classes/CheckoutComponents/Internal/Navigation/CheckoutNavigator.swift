@@ -131,8 +131,13 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
             callback()
             return
         }
-        // Default behavior: navigate back to payment method selection
-        coordinator.navigate(to: .paymentMethodSelection)
+        
+        // Default behavior: navigate back to the last payment method, or payment selection if none
+        if let lastPaymentMethod = coordinator.lastPaymentMethodRoute {
+            coordinator.navigate(to: lastPaymentMethod)
+        } else {
+            coordinator.navigate(to: .paymentMethodSelection)
+        }
     }
 
     func handleOtherPaymentMethods() {

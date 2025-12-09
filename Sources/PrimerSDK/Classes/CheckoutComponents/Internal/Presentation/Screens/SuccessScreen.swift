@@ -14,6 +14,7 @@ struct SuccessScreen: View {
     @Environment(\.designTokens) private var tokens
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var dismissTimer: Timer?
+    @State private var iconScale: CGFloat = 0.3
 
     init(result: CheckoutPaymentResult, onDismiss: (() -> Void)? = nil) {
         self.result = result
@@ -29,6 +30,7 @@ struct SuccessScreen: View {
                 Image(systemName: "checkmark.circle.fill")
                     .font(PrimerFont.extraLargeIcon(tokens: tokens))
                     .foregroundColor(CheckoutColors.green(tokens: tokens))
+                    .scaleEffect(iconScale)
 
                 VStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                     // Primary success message
@@ -47,6 +49,11 @@ struct SuccessScreen: View {
             .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
         }
         .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                withAnimation(AnimationConstants.successSpringAnimation) {
+                    iconScale = 1.0
+                }
+            }
             startAutoDismissTimer()
         }
         .onDisappear {
