@@ -277,10 +277,21 @@ struct CheckoutScopeObserver: View, LogReporter {
                 if let customError = scope.errorScreen {
                     return AnyView(customError(error.localizedDescription))
                 } else {
-                    return AnyView(ErrorScreen(error: error) {
-                        logger.info(message: "Error screen auto-dismiss, calling completion callback")
-                        onCompletion?()
-                    })
+                    return AnyView(ErrorScreen(
+                        error: error,
+                        onRetry: {
+                            logger.info(message: "Error screen retry tapped")
+                            scope.checkoutNavigator.handleRetry()
+                        },
+                        onChooseOtherPaymentMethods: {
+                            logger.info(message: "Error screen choose other payment method tapped")
+                            scope.checkoutNavigator.handleOtherPaymentMethods()
+                        },
+                        onDismiss: {
+                            logger.info(message: "Error screen auto-dismiss, calling completion callback")
+                            onCompletion?()
+                        }
+                    ))
                 }
             } else {
                 // Skip error screen, immediately call completion (UI Options integration)

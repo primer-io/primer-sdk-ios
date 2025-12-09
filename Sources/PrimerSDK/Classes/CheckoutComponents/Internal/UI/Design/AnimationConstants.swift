@@ -23,6 +23,7 @@ struct AnimationConstants {
     static let focusAnimation: Animation = .easeInOut(duration: focusDuration)
     static let errorAnimation: Animation = .easeInOut(duration: errorDuration)
     static let errorSpringAnimation: Animation = .spring(response: 0.3, dampingFraction: 0.7)
+    static let successSpringAnimation: Animation = .spring(response: 0.5, dampingFraction: 0.6)
 
     // MARK: - Slide Offsets
 

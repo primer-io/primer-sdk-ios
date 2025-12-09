@@ -63,6 +63,13 @@ enum CheckoutComponentsStrings {
         comment: "Retry button text"
     )
 
+    static let chooseOtherPaymentMethod = NSLocalizedString(
+        "choose_other_payment_method",
+        bundle: .primerResources,
+        value: "Choose other payment method",
+        comment: "Button text to select a different payment method after error"
+    )
+
     static let backButton = NSLocalizedString(
         "back_button_label",
         bundle: Bundle.primerResources,

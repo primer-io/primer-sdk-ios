@@ -9,42 +9,52 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct ErrorScreen: View {
     let error: PrimerError
+    let onRetry: (() -> Void)?
+    let onChooseOtherPaymentMethods: (() -> Void)?
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var dismissTimer: Timer?
 
-    init(error: PrimerError, onDismiss: (() -> Void)? = nil) {
+    init(
+        error: PrimerError,
+        onRetry: (() -> Void)? = nil,
+        onChooseOtherPaymentMethods: (() -> Void)? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
         self.error = error
+        self.onRetry = onRetry
+        self.onChooseOtherPaymentMethods = onChooseOtherPaymentMethods
         self.onDismiss = onDismiss
     }
 
     var body: some View {
-        VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
-            // Error icon
+        VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
+            Spacer()
+
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(PrimerFont.largeIcon(tokens: tokens))
                 .foregroundColor(CheckoutColors.borderError(tokens: tokens))
 
-            // Error title
-            Text(CheckoutComponentsStrings.somethingWentWrong)
+            Text(CheckoutComponentsStrings.paymentFailed)
                 .font(PrimerFont.titleLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 
-            // Error message
             Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
                 .font(PrimerFont.bodyMedium(tokens: tokens))
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, PrimerSpacing.xxlarge(tokens: tokens))
 
-            // Auto-dismiss message
-            Text(CheckoutComponentsStrings.autoDismissMessage)
-                .font(PrimerFont.bodySmall(tokens: tokens))
-                .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                .multilineTextAlignment(.center)
-                .padding(.top, PrimerSpacing.large(tokens: tokens))
+            Spacer()
+
+            VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+                makeRetryButton()
+                makeOtherPaymentButton()
+            }
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+            .padding(.bottom, PrimerSpacing.xxlarge(tokens: tokens))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(CheckoutColors.background(tokens: tokens))
@@ -52,8 +62,44 @@ struct ErrorScreen: View {
             startAutoDismissTimer()
         }
         .onDisappear {
-            dismissTimer?.invalidate()
-            dismissTimer = nil
+            cancelTimer()
+        }
+    }
+
+    @ViewBuilder
+    private func makeRetryButton() -> some View {
+        Button {
+            cancelTimer()
+            onRetry?()
+        } label: {
+            Text(CheckoutComponentsStrings.retryButton)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
+                .background(CheckoutColors.blue(tokens: tokens))
+                .cornerRadius(PrimerRadius.medium(tokens: tokens))
+        }
+    }
+
+    @ViewBuilder
+    private func makeOtherPaymentButton() -> some View {
+        Button {
+            cancelTimer()
+            onChooseOtherPaymentMethods?()
+        } label: {
+            Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
+                .font(PrimerFont.bodyMedium(tokens: tokens))
+                .fontWeight(.semibold)
+                .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
+                )
         }
     }
 
@@ -62,5 +108,10 @@ struct ErrorScreen: View {
         dismissTimer = Timer.scheduledTimer(withTimeInterval: AnimationConstants.autoDismissDelay, repeats: false) { _ in
             onDismiss?()
         }
+    }
+
+    private func cancelTimer() {
+        dismissTimer?.invalidate()
+        dismissTimer = nil
     }
 }
