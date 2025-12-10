@@ -11,11 +11,11 @@ typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> V
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 // swiftlint:disable type_name
-internal protocol PaymentMethodTokenizationViewModelProtocol: PaymentMethodTokenizationModelProtocol, PaymentMethodTokenizationViewProtocol {
+protocol PaymentMethodTokenizationViewModelProtocol: PaymentMethodTokenizationModelProtocol, PaymentMethodTokenizationViewProtocol {
     func submitButtonTapped()
 }
 
-internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     // swiftlint:enable type_name
 
     var tableView: UITableView { get set }
@@ -135,10 +135,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         }
         startTokenizationFlowTask = task
 
-        if isCancelled {
-            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
-        }
-
         return try await task.wait()
     }
 
@@ -171,7 +167,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     func cancel() {
         self.didCancel?()
-        isCancelled = true
         Task {
             await startTokenizationFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
             await startPaymentFlowTask?.cancel(with: handled(primerError: .cancelled(paymentMethodType: config.type)))
