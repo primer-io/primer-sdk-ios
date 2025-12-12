@@ -54,18 +54,4 @@ struct DefaultNavigationHandlers {
             navigator?.navigateToPaymentMethod(methodId)
         }
     }
-
-    // MARK: - Country Selection Defaults
-
-    static func defaultCountrySelected() -> (String, String) -> Void {
-        { _, _ in
-            // Handled by form's internal state
-        }
-    }
-
-    static func defaultShowCountrySelection(navigator: CheckoutNavigator) -> () -> Void {
-        { [weak navigator] in
-            navigator?.navigateToCountrySelection()
-        }
-    }
 }

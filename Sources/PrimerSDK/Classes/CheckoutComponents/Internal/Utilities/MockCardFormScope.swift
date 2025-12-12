@@ -163,10 +163,6 @@ public class MockCardFormScope: PrimerCardFormScope {
         log("onDismiss() called")
     }
 
-    public func navigateToCountrySelection() {
-        log("navigateToCountrySelection() called")
-    }
-
     // MARK: - Update Methods
 
     public func updateCardNumber(_ cardNumber: String) {

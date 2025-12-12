@@ -15,7 +15,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         case loading
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
-        case selectCountry  // Country selection screen
         case processing  // Payment processing in progress
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
@@ -26,8 +25,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             case (.loading, .loading):
                 return true
             case (.paymentMethodSelection, .paymentMethodSelection):
-                return true
-            case (.selectCountry, .selectCountry):
                 return true
             case (.processing, .processing):
                 return true
@@ -316,8 +313,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 navigator.navigateToPaymentSelection()
             case let .paymentMethod(paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
-            case .selectCountry:
-                navigator.navigateToCountrySelection()
             case .processing:
                 navigator.navigateToProcessing()
             case .success:
@@ -352,8 +347,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     .capitalized
                 message = CheckoutComponentsStrings.a11yScreenPaymentMethod(displayName)
             }
-        case .selectCountry:
-            message = CheckoutComponentsStrings.a11yScreenCountrySelection
         case .processing:
             message = CheckoutComponentsStrings.a11yScreenProcessingPayment
         case .success:
@@ -386,8 +379,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     newNavigationState = .paymentMethodSelection
                 case let .paymentMethod(paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
-                case .selectCountry:
-                    newNavigationState = .selectCountry
                 case .processing:
                     newNavigationState = .processing
                 case let .failure(primerError):
@@ -414,7 +405,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch (lhs, rhs) {
         case (.loading, .loading),
              (.paymentMethodSelection, .paymentMethodSelection),
-             (.selectCountry, .selectCountry),
              (.processing, .processing):
             return true
         case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):

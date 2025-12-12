@@ -28,10 +28,6 @@ struct CheckoutScopeObserver: View, LogReporter {
     // Design tokens state
     @StateObject private var designTokensManager = DesignTokensManager()
 
-    // Country selection modal state
-    @State private var showingCountrySelection = false
-    @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
-
     init(scope: DefaultCheckoutScope,
          theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
          onCompletion: ((PrimerCheckoutState) -> Void)?) {
@@ -65,21 +61,6 @@ struct CheckoutScopeObserver: View, LogReporter {
             // - Add interactive gesture-based navigation
             getCurrentView()
                 .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
-                .sheet(isPresented: $showingCountrySelection) {
-                // Present country selection as a modal sheet
-                let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
-                let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
-                SelectCountryScreen(
-                    scope: countryScope,
-                    onDismiss: {
-                        showingCountrySelection = false
-                        // Restore previous navigation state after dismissal
-                        if let previousNavigationState {
-                            scope.updateNavigationState(previousNavigationState, syncToNavigator: false)
-                        }
-                    }
-                )
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .environmentObject(scope)
@@ -97,74 +78,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                 await loadDesignTokens(for: newColorScheme)
             }
         }
-        .onChange(of: scope.navigationState) { newNavigationState in
-            // Handle modal presentation for country selection
-            if case .selectCountry = newNavigationState {
-                // Store the previous state if it's not already country selection
-                let isAlreadyCountrySelection: Bool
-                if let prev = previousNavigationState {
-                    if case .selectCountry = prev {
-                        isAlreadyCountrySelection = true
-                    } else {
-                        isAlreadyCountrySelection = false
-                    }
-                } else {
-                    isAlreadyCountrySelection = false
-                }
-
-                if !isAlreadyCountrySelection {
-                    previousNavigationState = findPreviousNonCountryState()
-                }
-                showingCountrySelection = true
-            } else {
-                // Update previous state for tracking (don't track selectCountry)
-                if case .selectCountry = newNavigationState {
-                    // Don't track selectCountry as previous state
-                } else {
-                    previousNavigationState = newNavigationState
-                }
-            }
-        }
-        .onChange(of: showingCountrySelection) { isShowing in
-            if !isShowing {
-                // When modal is dismissed, reset the navigation state in the navigator
-                if let previousNavigationState {
-                    switch previousNavigationState {
-                    case let .paymentMethod(paymentMethodType):
-                        scope.checkoutNavigator.navigateToPaymentMethod(paymentMethodType, context: scope.presentationContext)
-                    case .paymentMethodSelection:
-                        scope.checkoutNavigator.navigateToPaymentSelection()
-                    default:
-                        break
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Helper Methods
-
-    private func findPreviousNonCountryState() -> DefaultCheckoutScope.NavigationState? {
-        // Check if we have a stored previous state that's not selectCountry
-        if let prev = previousNavigationState {
-            if case .selectCountry = prev {
-                // Previous state is selectCountry, skip it
-            } else {
-                return prev
-            }
-        }
-
-        // Fallback: try to infer from available payment methods
-        if !scope.availablePaymentMethods.isEmpty {
-            if scope.availablePaymentMethods.count == 1,
-               let singleMethod = scope.availablePaymentMethods.first {
-                return .paymentMethod(singleMethod.type)
-            } else {
-                return .paymentMethodSelection
-            }
-        }
-
-        return .loading
     }
 
     // MARK: - View Builder
@@ -205,29 +118,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                 paymentMethodType: paymentMethodType,
                 checkoutScope: scope
             ))
-
-        case .selectCountry:
-            // Country selection is now handled via modal sheet, return the previous view
-            if let previousNavigationState {
-                switch previousNavigationState {
-                case let .paymentMethod(paymentMethodType):
-                    return AnyView(PaymentMethodScreen(
-                        paymentMethodType: paymentMethodType,
-                        checkoutScope: scope
-                    ))
-                case .paymentMethodSelection:
-                    return AnyView(PaymentMethodSelectionScreen(
-                        scope: scope.paymentMethodSelection
-                    ))
-                case .loading:
-                    return AnyView(SplashScreen())
-                default:
-                    return AnyView(SplashScreen())
-                }
-            } else {
-                // Fallback to loading if we can't determine the previous state
-                return AnyView(SplashScreen())
-            }
 
         case .processing:
             // Show loading screen during payment processing

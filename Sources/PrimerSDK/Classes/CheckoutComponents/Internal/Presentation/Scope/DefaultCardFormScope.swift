@@ -435,14 +435,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         checkoutScope?.onDismiss()
     }
 
-    public func navigateToCountrySelection() {
-        guard let navigator = checkoutScope?.checkoutNavigator else {
-            return
-        }
-
-        navigator.navigateToCountrySelection()
-    }
-
     // MARK: - Nested Scope
 
     private var _selectCountry: DefaultSelectCountryScope?

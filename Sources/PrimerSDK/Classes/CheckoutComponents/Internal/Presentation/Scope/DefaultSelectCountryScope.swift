@@ -50,52 +50,16 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
         loadAvailableCountries()
     }
 
-    // MARK: - Navigation Methods
+    // MARK: - Selection Methods
 
     public func onCountrySelected(countryCode: String, countryName: String) {
-        if let cardFormScope {
-            cardFormScope.updateCountryCode(countryCode)
-        }
-
-        if let checkoutScope {
-            if !checkoutScope.availablePaymentMethods.isEmpty {
-                if checkoutScope.availablePaymentMethods.count == 1,
-                   let singleMethod = checkoutScope.availablePaymentMethods.first {
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
-                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
-                } else {
-                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
-                    // TODO: If other payment methods need country selection in the future, store the
-                    // originating payment method type instead of hardcoding to cards
-                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
-                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
-                }
-            } else {
-                checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
-            }
-        }
+        // Update the card form with the selected country code
+        // Navigation is handled by the local sheet in CountryInputField
+        cardFormScope?.updateCountryCode(countryCode)
     }
 
     public func onCancel() {
-        if let checkoutScope {
-            if !checkoutScope.availablePaymentMethods.isEmpty {
-                if checkoutScope.availablePaymentMethods.count == 1,
-                   let singleMethod = checkoutScope.availablePaymentMethods.first {
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(singleMethod.type)
-                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
-                } else {
-                    // NOTE: Country selection is currently card-specific (see cardFormScope property)
-                    // TODO: If other payment methods need country selection in the future, store the
-                    // originating payment method type instead of hardcoding to cards
-                    let cardMethodType = PrimerPaymentMethodType.paymentCard.rawValue
-                    let previousState = DefaultCheckoutScope.NavigationState.paymentMethod(cardMethodType)
-                    checkoutScope.updateNavigationState(previousState, syncToNavigator: false)
-                }
-            } else {
-                checkoutScope.updateNavigationState(.paymentMethodSelection, syncToNavigator: false)
-            }
-        }
+        // No-op: Navigation is handled by the local sheet dismissal in CountryInputField
     }
 
     public func onSearch(query: String) {

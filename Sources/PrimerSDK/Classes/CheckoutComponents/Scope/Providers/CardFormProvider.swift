@@ -32,7 +32,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
     private let onSuccess: ((CheckoutPaymentResult) -> Void)?
     private let onError: ((String) -> Void)?
     private let onCancel: (() -> Void)?
-    private let onCountrySelectionRequested: (() -> Void)?
     private let content: (any PrimerCardFormScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
@@ -42,19 +41,16 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
     ///   - onSuccess: Called when payment succeeds with the result
     ///   - onError: Called when payment fails with error message
     ///   - onCancel: Called when user cancels the form
-    ///   - onCountrySelectionRequested: Called when user taps country field
     ///   - content: ViewBuilder that receives the card form scope
     public init(
         onSuccess: ((CheckoutPaymentResult) -> Void)? = nil,
         onError: ((String) -> Void)? = nil,
         onCancel: (() -> Void)? = nil,
-        onCountrySelectionRequested: (() -> Void)? = nil,
         @ViewBuilder content: @escaping (any PrimerCardFormScope) -> Content
     ) {
         self.onSuccess = onSuccess
         self.onError = onError
         self.onCancel = onCancel
-        self.onCountrySelectionRequested = onCountrySelectionRequested
         self.content = content
     }
 
@@ -66,9 +62,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
                 .environment(\.primerCardFormScope, cardFormScope)
                 .task {
                     await observeCheckoutState()
-                }
-                .task {
-                    await observeNavigationEvents(checkoutScope: checkoutScope)
                 }
         } else {
             // Fallback when scope is not available
@@ -86,23 +79,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
 
         for await state in checkoutScope.state {
             await handleStateChange(state)
-        }
-    }
-
-    /// Observes navigation events for country selection requests.
-    /// Only triggers `onCountrySelectionRequested` if a direct callback is provided.
-    private func observeNavigationEvents(checkoutScope: PrimerCheckoutScope) async {
-        guard let onCountrySelectionRequested else { return }
-
-        // Access the navigator through the internal checkout scope
-        guard let internalScope = checkoutScope as? DefaultCheckoutScope else { return }
-
-        for await route in internalScope.checkoutNavigator.navigationEvents {
-            if case .selectCountry = route {
-                await MainActor.run {
-                    onCountrySelectionRequested()
-                }
-            }
         }
     }
 

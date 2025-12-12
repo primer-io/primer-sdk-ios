@@ -208,6 +208,8 @@ private struct CountryItemView: View {
                 }
             }
             .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }

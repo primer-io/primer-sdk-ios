@@ -28,7 +28,6 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     func onSubmit()
     func onBack()
     func onCancel()
-    func navigateToCountrySelection()
 
     // MARK: - Update Methods
 

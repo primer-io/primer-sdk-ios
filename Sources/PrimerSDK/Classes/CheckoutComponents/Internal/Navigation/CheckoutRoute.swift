@@ -37,7 +37,6 @@ enum CheckoutRoute: Hashable, Identifiable {
     case splash
     case loading
     case paymentMethodSelection
-    case selectCountry
     case processing  // Payment processing in progress
     case success(CheckoutPaymentResult)
     case failure(PrimerError)
@@ -48,7 +47,6 @@ enum CheckoutRoute: Hashable, Identifiable {
         case .splash: return "splash"
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
-        case .selectCountry: return "select-country"
         case .processing: return "processing"
         case let .paymentMethod(type, context):
             return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
@@ -76,7 +74,7 @@ enum CheckoutRoute: Hashable, Identifiable {
             return .replace // Replace splash with loading
         case .paymentMethodSelection:
             return .reset  // Always reset to payment methods as root
-        case .selectCountry, .paymentMethod:
+        case .paymentMethod:
             return .push   // Standard forward navigation
         case .processing:
             return .replace // Replace current screen with processing overlay

@@ -59,11 +59,6 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .paymentMethod(paymentMethodType, context))
     }
 
-    /// Navigate to country selection
-    func navigateToCountrySelection() {
-        coordinator.navigate(to: .selectCountry)
-    }
-
     /// Navigate to processing screen (payment in progress)
     func navigateToProcessing() {
         coordinator.navigate(to: .processing)

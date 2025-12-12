@@ -26,7 +26,7 @@ struct CountryInputField: View, LogReporter {
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @State private var isNavigating: Bool = false
+    @State private var showCountryPicker: Bool = false
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Computed Properties
@@ -72,21 +72,10 @@ struct CountryInputField: View, LogReporter {
             isFocused: $isFocused,
             textFieldBuilder: {
                 Button(action: {
-                    guard !isNavigating else {
-                        return
-                    }
-
-                    isNavigating = true
-
                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                     impactFeedback.impactOccurred()
 
-                    scope.navigateToCountrySelection()
-
-                    // Reset after shorter timeout - 1 second should be enough
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.isNavigating = false
-                    }
+                    showCountryPicker = true
                 }) {
                     HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                         // Flag emoji
@@ -106,7 +95,6 @@ struct CountryInputField: View, LogReporter {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(PlainButtonStyle())
-                .disabled(isNavigating)
             },
             rightComponent: {
                 Image(systemName: "chevron.down")
@@ -114,12 +102,19 @@ struct CountryInputField: View, LogReporter {
             }
         )
         .onAppear {
-            isNavigating = false
             setupValidationService()
             updateFromExternalState()
         }
         .onChange(of: selectedCountryFromScope) { newCountry in
             updateFromExternalState(with: newCountry)
+        }
+        .sheet(isPresented: $showCountryPicker) {
+            SelectCountryScreen(
+                scope: scope.selectCountry,
+                onDismiss: {
+                    showCountryPicker = false
+                }
+            )
         }
     }
 
