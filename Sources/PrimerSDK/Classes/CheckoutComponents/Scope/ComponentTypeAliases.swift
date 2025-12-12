@@ -24,9 +24,9 @@ public typealias ErrorComponent = (String) -> any View
 @available(iOS 15.0, *)
 public typealias PaymentMethodItemComponent = (CheckoutPaymentMethod) -> any View
 
-/// Country item customization receiving country data
+/// Country item customization receiving country data and selection callback
 @available(iOS 15.0, *)
-public typealias CountryItemComponent = (PrimerCountry) -> any View
+public typealias CountryItemComponent = (PrimerCountry, @escaping () -> Void) -> any View
 
 /// Category header component receiving category name
 @available(iOS 15.0, *)

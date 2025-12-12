@@ -69,12 +69,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - UI Customization Properties
 
-    public var container: ((_ content: @escaping () -> AnyView) -> any View)?
-    public var splashScreen: (() -> any View)?
-    public var loading: (() -> any View)?
+    public var container: ContainerComponent?
+    public var splashScreen: Component?
+    public var loading: Component?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
-    public var errorScreen: ((_ message: String) -> any View)?
-    public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
+    public var errorScreen: ErrorComponent?
+    public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
     // MARK: - Child Scopes
 

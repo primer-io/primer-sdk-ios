@@ -17,21 +17,21 @@ public protocol PrimerCheckoutScope: AnyObject {
     // MARK: - Customizable Screens
 
     /// Default implementation provides standard checkout container.
-    var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
+    var container: ContainerComponent? { get set }
 
     /// Custom splash screen shown during SDK initialization.
     /// Default implementation shows Primer branding.
-    var splashScreen: (() -> any View)? { get set }
+    var splashScreen: Component? { get set }
 
     /// Custom loading screen shown during payment processing.
     /// Default implementation shows a centered loading indicator with "Loading" text.
-    var loading: (() -> any View)? { get set }
+    var loading: Component? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
 
     /// Default implementation shows error icon and message.
-    var errorScreen: ((_ message: String) -> any View)? { get set }
+    var errorScreen: ErrorComponent? { get set }
 
     // MARK: - Nested Scopes
 

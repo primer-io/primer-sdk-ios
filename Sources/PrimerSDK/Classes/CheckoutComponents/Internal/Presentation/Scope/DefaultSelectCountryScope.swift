@@ -34,7 +34,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
 
     public var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)?
     public var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)?
-    public var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)?
+    public var countryItem: CountryItemComponent?
 
     // MARK: - Private Properties
 

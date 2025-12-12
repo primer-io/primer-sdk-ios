@@ -58,9 +58,9 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     // MARK: - Screen-Level Customization
 
     var title: String? { get set }
-    var screen: ((_ scope: any PrimerCardFormScope) -> any View)? { get set }
+    var screen: CardFormScreenComponent? { get set }
     var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)? { get set }
-    var errorView: ((_ error: String) -> any View)? { get set }
+    var errorView: ErrorComponent? { get set }
 
     // MARK: - Submit Button Customization
 

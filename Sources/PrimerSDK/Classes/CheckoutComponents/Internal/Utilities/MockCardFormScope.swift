@@ -47,9 +47,9 @@ public class MockCardFormScope: PrimerCardFormScope {
     // MARK: - Screen-Level Customization
 
     public var title: String?
-    public var screen: ((any PrimerCardFormScope) -> any View)?
+    public var screen: CardFormScreenComponent?
     public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
-    public var errorView: ((String) -> any View)?
+    public var errorView: ErrorComponent?
 
     // MARK: - Submit Button Customization
 

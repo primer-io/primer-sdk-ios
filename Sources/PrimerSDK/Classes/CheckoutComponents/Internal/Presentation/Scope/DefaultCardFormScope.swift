@@ -64,9 +64,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     // MARK: - UI Customization Properties
 
     public var title: String?
-    public var screen: ((_ scope: any PrimerCardFormScope) -> any View)?
+    public var screen: CardFormScreenComponent?
     public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-    public var errorView: ((_ error: String) -> any View)?
+    public var errorView: ErrorComponent?
 
     // MARK: - Submit Button Customization
 

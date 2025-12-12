@@ -29,18 +29,18 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// Default implementation provides standard payment method grid/list.
     /// The closure receives the scope for full access to payment methods and navigation actions.
-    var screen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)? { get set }
+    var screen: PaymentMethodSelectionScreenComponent? { get set }
 
     /// Default implementation shows payment method with selection state.
-    var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)? { get set }
+    var paymentMethodItem: PaymentMethodItemComponent? { get set }
 
     /// Category header component for grouping payment methods.
     /// Default implementation shows category name in uppercase.
-    var categoryHeader: ((_ category: String) -> AnyView)? { get set }
+    var categoryHeader: CategoryHeaderComponent? { get set }
 
     /// Empty state view when no payment methods are available.
     /// Default implementation shows icon and message.
-    var emptyStateView: (() -> AnyView)? { get set }
+    var emptyStateView: Component? { get set }
 
     // MARK: - State Definition
 

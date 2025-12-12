@@ -34,7 +34,7 @@ public protocol PrimerSelectCountryScope: AnyObject {
     var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? { get set }
 
     @available(iOS 15.0, *)
-    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? { get set }
+    var countryItem: CountryItemComponent? { get set }
 
 }
 
