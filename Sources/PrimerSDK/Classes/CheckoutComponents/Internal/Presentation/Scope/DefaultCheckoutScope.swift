@@ -422,6 +422,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         for paymentMethodType: String
     ) -> T? {
         if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
+            currentPaymentMethodScope = cachedScope
             return cachedScope
         }
 
@@ -438,6 +439,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             if let scope {
                 paymentMethodScopeCache[paymentMethodType] = scope
+                currentPaymentMethodScope = scope
                 return scope
             } else {
                 return nil
@@ -450,6 +452,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
         if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType }) as? T {
+            currentPaymentMethodScope = cachedScope
             return cachedScope
         }
 
@@ -467,6 +470,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             if let scope {
                 let scopeTypeName = String(describing: type(of: scope))
                 paymentMethodScopeCache[scopeTypeName] = scope
+                currentPaymentMethodScope = scope
                 return scope
             } else {
                 return nil

@@ -105,7 +105,7 @@ public struct PrimerCheckout: View {
 /// Internal checkout implementation that coordinates SDK initialization and UI presentation.
 @available(iOS 15.0, *)
 @MainActor
-struct InternalCheckout: View {
+struct InternalCheckout: View, LogReporter {
     private let clientToken: String
     private let settings: PrimerSettings
     private let theme: PrimerCheckoutTheme
@@ -117,6 +117,10 @@ struct InternalCheckout: View {
 
     @State private var checkoutScope: DefaultCheckoutScope?
     @State private var initializationState: InitializationState = .idle
+    @Environment(\.colorScheme) private var colorScheme
+
+    // Design tokens state for early theme application (splash screen)
+    @StateObject private var designTokensManager = DesignTokensManager()
 
     private let sdkInitializer: CheckoutSDKInitializer
 
@@ -178,12 +182,50 @@ struct InternalCheckout: View {
                 errorContent(error: error)
             }
         }
+        .background(backgroundColor)
+        .environment(\.designTokens, designTokensManager.tokens)
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
         .task {
+            await setupDesignTokens()
             await initializeSDK()
+        }
+        .onChange(of: colorScheme) { newColorScheme in
+            Task {
+                await loadDesignTokens(for: newColorScheme)
+            }
         }
         .onDisappear {
             sdkInitializer.cleanup()
+        }
+    }
+
+    // MARK: - Design Token Management
+
+    /// Background color that uses theme override first, then loaded tokens, then system default.
+    /// This ensures the background color is correct from the first render.
+    private var backgroundColor: Color {
+        // Priority 1: Theme override (available immediately)
+        if let themeBackground = theme.colors?.primerColorBackground {
+            return themeBackground
+        }
+        // Priority 2: Loaded design tokens (available after async load)
+        if let tokens = designTokensManager.tokens {
+            return CheckoutColors.background(tokens: tokens)
+        }
+        // Priority 3: System default based on color scheme
+        return colorScheme == .dark ? Color(white: 0.11) : .white
+    }
+
+    private func setupDesignTokens() async {
+        designTokensManager.applyTheme(theme)
+        await loadDesignTokens(for: colorScheme)
+    }
+
+    private func loadDesignTokens(for colorScheme: ColorScheme) async {
+        do {
+            try await designTokensManager.fetchTokens(for: colorScheme)
+        } catch {
+            logger.error(message: "[InternalCheckout] Failed to load design tokens: \(error)")
         }
     }
 
