@@ -163,10 +163,6 @@ struct CheckoutScopeObserver: View, LogReporter {
                         onChooseOtherPaymentMethods: {
                             logger.info(message: "Error screen choose other payment method tapped")
                             scope.checkoutNavigator.handleOtherPaymentMethods()
-                        },
-                        onDismiss: {
-                            logger.info(message: "Error screen auto-dismiss, calling completion callback")
-                            onCompletion?(scope.currentState)
                         }
                     ))
                 }

@@ -70,7 +70,6 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
         logger.debug(message: "🧭 [CheckoutCoordinator] Dismissed")
     }
 
-    /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentFailure(_ error: PrimerError) {
         navigate(to: .failure(error))
     }

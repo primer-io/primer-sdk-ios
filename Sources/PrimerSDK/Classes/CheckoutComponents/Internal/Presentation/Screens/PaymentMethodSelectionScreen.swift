@@ -138,7 +138,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @ViewBuilder
     private var emptyStateView: some View {
         if let customEmptyState = scope.emptyStateView {
-            customEmptyState()
+            AnyView(customEmptyState())
         } else {
             VStack(spacing: 16) {
                 Image(systemName: "creditcard.and.123")
@@ -246,7 +246,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
             // Group header with surcharge info (only show if group name is not empty)
             if !group.group.isEmpty {
                 if let customCategoryHeader = scope.categoryHeader {
-                    customCategoryHeader(group.group)
+                    AnyView(customCategoryHeader(group.group))
                 } else {
                     HStack {
                         Text(group.group)

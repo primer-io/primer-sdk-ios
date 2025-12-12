@@ -11,22 +11,18 @@ struct ErrorScreen: View {
     let error: PrimerError
     let onRetry: (() -> Void)?
     let onChooseOtherPaymentMethods: (() -> Void)?
-    let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
-    @State private var dismissTimer: Timer?
 
     init(
         error: PrimerError,
         onRetry: (() -> Void)? = nil,
-        onChooseOtherPaymentMethods: (() -> Void)? = nil,
-        onDismiss: (() -> Void)? = nil
+        onChooseOtherPaymentMethods: (() -> Void)? = nil
     ) {
         self.error = error
         self.onRetry = onRetry
         self.onChooseOtherPaymentMethods = onChooseOtherPaymentMethods
-        self.onDismiss = onDismiss
     }
 
     var body: some View {
@@ -58,18 +54,11 @@ struct ErrorScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(CheckoutColors.background(tokens: tokens))
-        .onAppear {
-            startAutoDismissTimer()
-        }
-        .onDisappear {
-            cancelTimer()
-        }
     }
 
     @ViewBuilder
     private func makeRetryButton() -> some View {
         Button {
-            cancelTimer()
             onRetry?()
         } label: {
             Text(CheckoutComponentsStrings.retryButton)
@@ -86,7 +75,6 @@ struct ErrorScreen: View {
     @ViewBuilder
     private func makeOtherPaymentButton() -> some View {
         Button {
-            cancelTimer()
             onChooseOtherPaymentMethods?()
         } label: {
             Text(CheckoutComponentsStrings.chooseOtherPaymentMethod)
@@ -101,17 +89,5 @@ struct ErrorScreen: View {
                         .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: 1)
                 )
         }
-    }
-
-    private func startAutoDismissTimer() {
-        dismissTimer?.invalidate()
-        dismissTimer = Timer.scheduledTimer(withTimeInterval: AnimationConstants.autoDismissDelay, repeats: false) { _ in
-            onDismiss?()
-        }
-    }
-
-    private func cancelTimer() {
-        dismissTimer?.invalidate()
-        dismissTimer = nil
     }
 }

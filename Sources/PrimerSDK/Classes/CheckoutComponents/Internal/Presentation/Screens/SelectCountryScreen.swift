@@ -128,18 +128,16 @@ struct SelectCountryScreen: View, LogReporter {
             ForEach(countryState.filteredCountries, id: \.code) { country in
                 Group {
                     if let customCountryItem = scope.countryItem {
-                        customCountryItem(country) {
+                        AnyView(customCountryItem(country) {
                             selectCountry(country)
-                        }
+                        })
                     } else {
-                        AnyView(
-                            CountryItemView(
-                                country: country,
-                                isSelected: false, // No selection state in current scope
-                                onTap: {
-                                    selectCountry(country)
-                                }
-                            )
+                        CountryItemView(
+                            country: country,
+                            isSelected: false, // No selection state in current scope
+                            onTap: {
+                                selectCountry(country)
+                            }
                         )
                     }
                 }
