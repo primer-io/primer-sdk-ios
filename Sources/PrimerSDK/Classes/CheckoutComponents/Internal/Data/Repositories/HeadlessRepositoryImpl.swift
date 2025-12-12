@@ -110,27 +110,18 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     }
 }
 
-/// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
-/// This wraps the existing headless SDK with async/await patterns.
 @available(iOS 15.0, *)
 final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
-
-    // Reference to headless SDK will be injected or accessed here
-    // For now, using placeholders to show the implementation pattern
 
     private var paymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - Settings Integration
 
-    /// PrimerSettings for accessing SDK configurations (iOS 15.0+ only)
     private var settings: PrimerSettings?
-
-    /// ConfigurationService for accessing API configuration
     private var configurationService: ConfigurationService?
 
     // MARK: - Co-Badged Cards Support
 
-    /// RawDataManager for co-badged cards detection (follows traditional SDK pattern)
     private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
         let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
             paymentMethodType: "PAYMENT_CARD",
@@ -140,13 +131,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return manager
     }()
 
-    /// Current card data for RawDataManager
     private var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
-
-    /// Stream for network detection events
     private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
-
-    /// Last detected networks to avoid duplicate notifications
+    // Last detected networks to avoid duplicate notifications
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
@@ -222,7 +209,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return paymentMethods
     }
 
-    /// Extract network-specific surcharges from client session configuration
     private func extractNetworkSurcharges(for paymentMethodType: String) -> [String: Int]? {
 
         // Only card payment methods have network-specific surcharges
@@ -253,7 +239,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    /// Extract surcharges from networks array (traditional format)
     private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
@@ -279,7 +264,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    /// Extract surcharges from networks dictionary
     private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
@@ -301,7 +285,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    /// Get required input elements for a payment method type
     private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -520,12 +503,10 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     func setBillingAddress(_ billingAddress: BillingAddress) async throws {
     }
 
-    /// Get network detection stream for real-time updates
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
         self.networkDetectionStream
     }
 
-    /// Update card number in RawDataManager to trigger network detection
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
         rawDataManager?.configure { [weak self] _, error in
@@ -544,7 +525,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.rawData = rawCardData
     }
 
-    /// Handle user selection of a specific card network (for co-badged cards)
     func selectCardNetwork(_ cardNetwork: CardNetwork) async {
         rawCardData.cardNetwork = cardNetwork
         rawDataManager?.rawData = rawCardData
@@ -596,8 +576,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     // MARK: - Payment Method Options Integration
 
-    /// Validates payment method options from PrimerSettings before processing payments
-    /// This ensures CheckoutComponents respects URL scheme, Apple Pay, and 3DS configurations
     private func validatePaymentMethodOptions() async throws {
         if #available(iOS 15.0, *) {
             await ensureSettings()

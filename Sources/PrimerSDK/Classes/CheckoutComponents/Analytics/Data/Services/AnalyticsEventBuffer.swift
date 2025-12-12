@@ -38,12 +38,10 @@ actor AnalyticsEventBuffer: LogReporter {
         return bufferedEvents
     }
 
-    /// Check if there are any buffered events
     var hasBufferedEvents: Bool {
         !pendingEvents.isEmpty
     }
 
-    /// Get the number of buffered events
     var count: Int {
         pendingEvents.count
     }

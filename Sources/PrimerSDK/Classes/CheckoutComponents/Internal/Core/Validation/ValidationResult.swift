@@ -6,9 +6,7 @@
 
 import Foundation
 
-/// Represents the result of a validation operation.
 public struct ValidationResult {
-    /// Whether the validation passed
     public let isValid: Bool
 
     /// Error code if validation failed (nil if valid)
@@ -17,12 +15,10 @@ public struct ValidationResult {
     /// Human-readable error message if validation failed (nil if valid)
     public let errorMessage: String?
 
-    /// Creates a successful validation result
     public static let valid = ValidationResult(isValid: true, errorCode: nil, errorMessage: nil)
 
-    /// Creates a failed validation result with the given error details
     public static func invalid(code: String, message: String) -> ValidationResult {
-        return ValidationResult(isValid: false, errorCode: code, errorMessage: message)
+        ValidationResult(isValid: false, errorCode: code, errorMessage: message)
     }
 
     /// Creates a failed validation result using ValidationError with automatic error message resolution

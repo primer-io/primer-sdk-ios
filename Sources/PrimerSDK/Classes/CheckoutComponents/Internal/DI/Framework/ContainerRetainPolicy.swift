@@ -12,7 +12,6 @@ public enum ContainerRetainPolicy: String, Equatable, Sendable, Codable {
     case singleton    // strong cache
     case weak         // weak cache
 
-    /// Factory method to produce the correct RetentionStrategy
     func makeStrategy() -> RetentionStrategy {
         switch self {
         case .transient:

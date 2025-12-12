@@ -8,7 +8,7 @@ import SwiftUI
 
 /// Default country selection screen for CheckoutComponents
 @available(iOS 15.0, *)
-struct SelectCountryScreen: View {
+struct SelectCountryScreen: View, LogReporter {
     let scope: PrimerSelectCountryScope
     let onDismiss: (() -> Void)?
 
@@ -20,6 +20,7 @@ struct SelectCountryScreen: View {
         NavigationView {
             mainContent
         }
+        .environment(\.primerSelectCountryScope, scope)
         .onAppear {
             observeState()
         }
@@ -83,12 +84,29 @@ struct SelectCountryScreen: View {
 
     private var countryListSection: some View {
         Group {
-            if countryState.filteredCountries.isEmpty {
+            if countryState.isLoading {
+                loadingView
+            } else if countryState.filteredCountries.isEmpty {
                 emptyStateView
             } else {
                 countryListView
             }
         }
+    }
+
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
+                .scaleEffect(PrimerScale.small)
+                .accessibility(config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                    label: CheckoutComponentsStrings.a11yLoading
+                ))
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder
@@ -110,18 +128,16 @@ struct SelectCountryScreen: View {
             ForEach(countryState.filteredCountries, id: \.code) { country in
                 Group {
                     if let customCountryItem = scope.countryItem {
-                        customCountryItem(country) {
+                        AnyView(customCountryItem(country) {
                             selectCountry(country)
-                        }
+                        })
                     } else {
-                        AnyView(
-                            CountryItemView(
-                                country: country,
-                                isSelected: false, // No selection state in current scope
-                                onTap: {
-                                    selectCountry(country)
-                                }
-                            )
+                        CountryItemView(
+                            country: country,
+                            isSelected: false, // No selection state in current scope
+                            onTap: {
+                                selectCountry(country)
+                            }
                         )
                     }
                 }
@@ -190,6 +206,8 @@ private struct CountryItemView: View {
                 }
             }
             .padding(.vertical, PrimerSpacing.small(tokens: tokens))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }

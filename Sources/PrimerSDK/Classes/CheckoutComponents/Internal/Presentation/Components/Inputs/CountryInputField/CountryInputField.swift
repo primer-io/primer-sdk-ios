@@ -26,7 +26,7 @@ struct CountryInputField: View, LogReporter {
     @State private var isValid: Bool = false
     @State private var errorMessage: String?
     @State private var isFocused: Bool = false
-    @State private var isNavigating: Bool = false
+    @State private var showCountryPicker: Bool = false
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Computed Properties
@@ -40,6 +40,10 @@ struct CountryInputField: View, LogReporter {
 
     private var selectedCountryFromScope: PrimerCountry? {
         scope.structuredState.selectedCountry
+    }
+
+    private var fieldFont: Font {
+        styling?.resolvedFont(tokens: tokens) ?? PrimerFont.bodyLarge(tokens: tokens)
     }
 
     // MARK: - Initialization
@@ -68,32 +72,21 @@ struct CountryInputField: View, LogReporter {
             isFocused: $isFocused,
             textFieldBuilder: {
                 Button(action: {
-                    guard !isNavigating else {
-                        return
-                    }
-
-                    isNavigating = true
-
                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                     impactFeedback.impactOccurred()
 
-                    scope.navigateToCountrySelection()
-
-                    // Reset after shorter timeout - 1 second should be enough
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.isNavigating = false
-                    }
+                    showCountryPicker = true
                 }) {
                     HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
                         // Flag emoji
                         if let countryFlag, !countryName.isEmpty {
                             Text(countryFlag)
-                                .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                                .font(fieldFont)
                         }
 
                         // Country name or placeholder
                         Text(countryName.isEmpty ? placeholder : countryName)
-                            .font(styling?.font ?? PrimerFont.bodyLarge(tokens: tokens))
+                            .font(fieldFont)
                             .foregroundColor(countryTextColor)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer(minLength: 0)
@@ -102,7 +95,6 @@ struct CountryInputField: View, LogReporter {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(PlainButtonStyle())
-                .disabled(isNavigating)
             },
             rightComponent: {
                 Image(systemName: "chevron.down")
@@ -110,12 +102,19 @@ struct CountryInputField: View, LogReporter {
             }
         )
         .onAppear {
-            isNavigating = false
             setupValidationService()
             updateFromExternalState()
         }
         .onChange(of: selectedCountryFromScope) { newCountry in
             updateFromExternalState(with: newCountry)
+        }
+        .sheet(isPresented: $showCountryPicker) {
+            SelectCountryScreen(
+                scope: scope.selectCountry,
+                onDismiss: {
+                    showCountryPicker = false
+                }
+            )
         }
     }
 
@@ -132,13 +131,11 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the field from external state changes using the property
     @MainActor
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountryFromScope)
     }
 
-    /// Updates the field from external state changes using the provided country
     @MainActor
     private func updateFromExternalState(with country: PrimerCountry?) {
         // Update directly from the PrimerCountry object from the scope
@@ -150,7 +147,6 @@ struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the selected country
     @MainActor
     func updateCountry(name: String, code: String) {
         countryName = name
@@ -159,13 +155,11 @@ struct CountryInputField: View, LogReporter {
         validateCountry()
     }
 
-    /// Clears field error
     @MainActor
     private func clearFieldError() {
         scope.clearFieldError(.countryCode)
     }
 
-    /// Sets field error
     @MainActor
     private func setFieldError(message: String, errorCode: String?) {
         scope.setFieldError(.countryCode, message: message, errorCode: errorCode)

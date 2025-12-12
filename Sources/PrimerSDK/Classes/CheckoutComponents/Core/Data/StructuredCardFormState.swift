@@ -17,10 +17,8 @@ public struct CardFormConfiguration: Equatable {
     /// List of billing address fields (when billing address collection is enabled)
     public let billingFields: [PrimerInputElementType]
 
-    /// Determines if billing address collection is required
     public let requiresBillingAddress: Bool
 
-    /// Default card form configuration
     public static let `default` = CardFormConfiguration(
         cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
         billingFields: [],
@@ -45,7 +43,6 @@ public struct CardFormConfiguration: Equatable {
 
 // MARK: - Field Error
 
-/// Represents a validation error for a specific field
 @available(iOS 15.0, *)
 public struct FieldError: Equatable, Identifiable {
     public let id = UUID()
@@ -77,13 +74,11 @@ public struct FormData: Equatable {
         self.data = data
     }
 
-    /// Get value for a specific field type
     public subscript(fieldType: PrimerInputElementType) -> String {
         get { data[fieldType] ?? "" }
         set { data[fieldType] = newValue }
     }
 
-    /// Get all data as dictionary
     public var dictionary: [PrimerInputElementType: String] {
         data
     }
@@ -91,7 +86,6 @@ public struct FormData: Equatable {
 
 // MARK: - Country Information
 
-/// Country information
 @available(iOS 15.0, *)
 public struct PrimerCountry: Equatable, Identifiable {
     public let id = UUID()
@@ -110,7 +104,6 @@ public struct PrimerCountry: Equatable, Identifiable {
 
 // MARK: - Structured State
 
-/// Structured card form state
 @available(iOS 15.0, *)
 public struct StructuredCardFormState: Equatable {
 
@@ -127,15 +120,12 @@ public struct StructuredCardFormState: Equatable {
 
     // MARK: - Loading and Validation States
 
-    /// Indicates if form is being submitted
     public var isLoading: Bool
 
-    /// Overall form validation state
     public var isValid: Bool
 
     // MARK: - Selection States
 
-    /// Currently selected country for billing address
     public var selectedCountry: PrimerCountry?
 
     /// Currently selected card network (for co-badged cards)
@@ -185,25 +175,19 @@ public struct StructuredCardFormState: Equatable {
         configuration.allFields
     }
 
-    /// Check if specific field has an error
     public func hasError(for fieldType: PrimerInputElementType) -> Bool {
         fieldErrors.contains { $0.fieldType == fieldType }
     }
 
-    /// Get error message for specific field
     public func errorMessage(for fieldType: PrimerInputElementType) -> String? {
         fieldErrors.first { $0.fieldType == fieldType }?.message
     }
 
-    /// Add or update error for specific field
     public mutating func setError(_ message: String, for fieldType: PrimerInputElementType, errorCode: String? = nil) {
-        // Remove existing error for this field
         fieldErrors.removeAll { $0.fieldType == fieldType }
-        // Add new error
         fieldErrors.append(FieldError(fieldType: fieldType, message: message, errorCode: errorCode))
     }
 
-    /// Clear error for specific field
     public mutating func clearError(for fieldType: PrimerInputElementType) {
         fieldErrors.removeAll { $0.fieldType == fieldType }
     }

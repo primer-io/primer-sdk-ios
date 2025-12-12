@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Configuration for which billing address fields to show
 @available(iOS 15.0, *)
 struct BillingAddressConfiguration {
     let showFirstName: Bool
@@ -21,25 +20,18 @@ struct BillingAddressConfiguration {
     let showCountry: Bool
 }
 
-/// A composite SwiftUI view containing billing address fields with dynamic layout
 @available(iOS 15.0, *)
 struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
-    /// The card form scope for handling updates
     let cardFormScope: DefaultCardFormScope
-
-    /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
-
-    /// Optional styling configuration for customizing field appearance
     let styling: PrimerFieldStyling?
 
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    /// Creates a new BillingAddressView with comprehensive customization support
     init(
         cardFormScope: DefaultCardFormScope,
         configuration: BillingAddressConfiguration,
@@ -54,97 +46,57 @@ struct BillingAddressView: View, LogReporter {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Name fields (horizontal layout) - Using closure properties
+            // Name fields (horizontal layout)
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
                     if configuration.showFirstName {
-                        if let customField = cardFormScope.firstNameField {
-                            AnyView(customField(CheckoutComponentsStrings.firstNameLabel, styling))
-                        } else {
-                            defaultFirstNameField()
-                        }
+                        defaultFirstNameField()
                     }
 
                     if configuration.showLastName {
-                        if let customField = cardFormScope.lastNameField {
-                            AnyView(customField(CheckoutComponentsStrings.lastNameLabel, styling))
-                        } else {
-                            defaultLastNameField()
-                        }
+                        defaultLastNameField()
                     }
                 }
             }
 
             // Country - Show first to match Drop-in layout
             if configuration.showCountry {
-                if let customField = cardFormScope.countryField {
-                    AnyView(customField(CheckoutComponentsStrings.countryLabel, styling))
-                } else {
-                    defaultCountryField()
-                }
+                defaultCountryField()
             }
 
             // Address Line 1
             if configuration.showAddressLine1 {
-                if let customField = cardFormScope.addressLine1Field {
-                    AnyView(customField(CheckoutComponentsStrings.addressLine1Label, styling))
-                } else {
-                    defaultAddressLine1Field()
-                }
+                defaultAddressLine1Field()
             }
 
             // Postal Code - Show before state to match Drop-in layout
             if configuration.showPostalCode {
-                if let customField = cardFormScope.postalCodeField {
-                    AnyView(customField(CheckoutComponentsStrings.postalCodeLabel, styling))
-                } else {
-                    defaultPostalCodeField()
-                }
+                defaultPostalCodeField()
             }
 
             // State/Region - Show after postal code to match Drop-in layout
             if configuration.showState {
-                if let customField = cardFormScope.stateField {
-                    AnyView(customField(CheckoutComponentsStrings.stateLabel, styling))
-                } else {
-                    defaultStateField()
-                }
+                defaultStateField()
             }
 
             // Address Line 2 (Optional)
             if configuration.showAddressLine2 {
-                if let customField = cardFormScope.addressLine2Field {
-                    AnyView(customField(CheckoutComponentsStrings.addressLine2Label, styling))
-                } else {
-                    defaultAddressLine2Field()
-                }
+                defaultAddressLine2Field()
             }
 
             // City - After address fields
             if configuration.showCity {
-                if let customField = cardFormScope.cityField {
-                    AnyView(customField(CheckoutComponentsStrings.cityLabel, styling))
-                } else {
-                    defaultCityField()
-                }
+                defaultCityField()
             }
 
             // Email - Near the end
             if configuration.showEmail {
-                if let customField = cardFormScope.emailField {
-                    AnyView(customField(CheckoutComponentsStrings.emailLabel, styling))
-                } else {
-                    defaultEmailField()
-                }
+                defaultEmailField()
             }
 
             // Phone Number - Last field
             if configuration.showPhoneNumber {
-                if let customField = cardFormScope.phoneNumberField {
-                    AnyView(customField(CheckoutComponentsStrings.phoneNumberLabel, styling))
-                } else {
-                    defaultPhoneNumberField()
-                }
+                defaultPhoneNumberField()
             }
         }
     }

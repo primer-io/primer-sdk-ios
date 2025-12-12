@@ -14,6 +14,9 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     // MARK: - Published Properties
     @Published var navigationStack: [CheckoutRoute] = []
 
+    // MARK: - Private Properties
+    private(set) var lastPaymentMethodRoute: CheckoutRoute?
+
     // MARK: - Computed Properties
     var currentRoute: CheckoutRoute {
         navigationStack.last ?? .splash
@@ -21,18 +24,23 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
 
     // MARK: - Initialization
     init() {
-        logEvent("navigation_coordinator_initialized")
+        logger.debug(message: "🧭 [CheckoutCoordinator] Initialized")
     }
 
     // MARK: - Navigation Methods
     func navigate(to route: CheckoutRoute) {
         // Performance optimization: avoid redundant navigation to same route
         if currentRoute == route {
-            logEvent("navigation_redundant_attempt", parameters: route.analyticsParameters)
+            logger.debug(message: "🧭 [CheckoutCoordinator] Redundant navigation to \(route)")
             return
         }
 
         let previousRoute = currentRoute
+
+        // Track last payment method for retry functionality
+        if case .paymentMethod = previousRoute {
+            lastPaymentMethodRoute = previousRoute
+        }
 
         // Use route's navigation behavior for consistent, optimized navigation
         switch route.navigationBehavior {
@@ -48,8 +56,7 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
             }
         }
 
-        // Enhanced logging with analytics
-        logNavigation(from: previousRoute, to: route)
+        logger.debug(message: "🧭 [CheckoutCoordinator] \(previousRoute) → \(route)")
     }
 
     func goBack() {
@@ -58,38 +65,12 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     }
 
     func dismiss() {
-        // Clear navigation stack and trigger dismissal
+        // Clear navigation stack - actual dismissal is handled via onCompletion callback flow
         navigationStack = []
-        logEvent("navigation_dismissed")
-
-        // Trigger actual dismissal through CheckoutComponentsPrimer
-        Task { @MainActor in
-            CheckoutComponentsPrimer.shared.dismissCheckout()
-        }
+        logger.debug(message: "🧭 [CheckoutCoordinator] Dismissed")
     }
 
-    /// Helper method for handling payment failure.
-    /// Wraps navigate() for semantic clarity and potential future hooks.
     func handlePaymentFailure(_ error: PrimerError) {
         navigate(to: .failure(error))
-    }
-
-    // MARK: - Private Methods
-    private func logNavigation(from previousRoute: CheckoutRoute, to route: CheckoutRoute) {
-        // Enhanced analytics logging
-        var parameters = route.analyticsParameters
-        parameters["previous_route_id"] = previousRoute.id
-        parameters["previous_route_name"] = previousRoute.routeName
-        parameters["navigation_behavior"] = String(describing: route.navigationBehavior)
-
-        logEvent("navigation_transition", parameters: parameters)
-
-        // Performance optimization: avoid string interpolation unless debug logging is enabled
-        logger.debug(message: "🧭 [CheckoutCoordinator] " + previousRoute.routeName + " → " + route.routeName)
-    }
-
-    private func logEvent(_ eventName: String, parameters: [String: Any] = [:]) {
-        // This would integrate with your analytics service
-        logger.debug(message: "📊 [Analytics] \(eventName): \(parameters)")
     }
 }

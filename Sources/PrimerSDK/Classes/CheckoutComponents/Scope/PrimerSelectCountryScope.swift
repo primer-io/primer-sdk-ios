@@ -22,7 +22,6 @@ public protocol PrimerSelectCountryScope: AnyObject {
     ///   - countryName: The localized country name.
     func onCountrySelected(countryCode: String, countryName: String)
 
-    /// Cancels country selection and returns to the previous screen.
     func onCancel()
 
     /// Updates the search query to filter countries.
@@ -31,44 +30,35 @@ public protocol PrimerSelectCountryScope: AnyObject {
 
     // MARK: - Customizable UI Components
 
-    /// The entire country selection screen.
     var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
-
-    /// Search bar component for filtering countries.
     var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? { get set }
 
-    /// Individual country row/item component.
     @available(iOS 15.0, *)
-    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? { get set }
+    var countryItem: CountryItemComponent? { get set }
 
 }
 
 // MARK: - State Definition
 
-/// Represents the current state of countries and search functionality.
 @available(iOS 15.0, *)
 public struct PrimerSelectCountryState: Equatable {
-    /// Complete list of all available countries.
     public var countries: [PrimerCountry] = []
-
-    /// Filtered list based on current search query.
     public var filteredCountries: [PrimerCountry] = []
-
-    /// Current search query text.
     public var searchQuery: String = ""
-
-    /// Indicates if countries are being loaded.
     public var isLoading: Bool = false
+    public var selectedCountry: PrimerCountry?
 
     public init(
         countries: [PrimerCountry] = [],
         filteredCountries: [PrimerCountry] = [],
         searchQuery: String = "",
-        isLoading: Bool = false
+        isLoading: Bool = false,
+        selectedCountry: PrimerCountry? = nil
     ) {
         self.countries = countries
         self.filteredCountries = filteredCountries
         self.searchQuery = searchQuery
         self.isLoading = isLoading
+        self.selectedCountry = selectedCountry
     }
 }

@@ -11,7 +11,6 @@ public protocol Factory<Product, Params>: Sendable {
     associatedtype Product
     associatedtype Params = Void
 
-    /// Create a product - can be sync or async based on implementation
     func create(with params: Params) async throws -> Product
 }
 
@@ -22,22 +21,19 @@ public protocol SynchronousFactory<Product, Params>: Factory {
     func createSync(with params: Params) throws -> Product
 }
 
-/// Default implementation for synchronous factories
 public extension SynchronousFactory {
     func create(with params: Params) async throws -> Product {
         // For sync factories, just call the sync method
-        return try createSync(with: params)
+        try createSync(with: params)
     }
 }
 
-/// Extension for parameterless factories
 public extension Factory where Params == Void {
     func create() async throws -> Product {
         try await create(with: ())
     }
 }
 
-/// Extension for parameterless synchronous factories
 public extension SynchronousFactory where Params == Void {
     func createSync() throws -> Product {
         try createSync(with: ())

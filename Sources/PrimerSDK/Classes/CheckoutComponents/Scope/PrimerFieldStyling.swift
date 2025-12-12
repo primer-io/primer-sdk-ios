@@ -13,8 +13,12 @@ public struct PrimerFieldStyling {
 
     // MARK: - Typography
 
-    public let font: Font?
-    public let labelFont: Font?
+    public let fontName: String?
+    public let fontSize: CGFloat?
+    public let fontWeight: CGFloat?
+    public let labelFontName: String?
+    public let labelFontSize: CGFloat?
+    public let labelFontWeight: CGFloat?
 
     // MARK: - Colors
 
@@ -36,8 +40,12 @@ public struct PrimerFieldStyling {
     // MARK: - Initialization
 
     public init(
-        font: Font? = nil,
-        labelFont: Font? = nil,
+        fontName: String? = nil,
+        fontSize: CGFloat? = nil,
+        fontWeight: CGFloat? = nil,
+        labelFontName: String? = nil,
+        labelFontSize: CGFloat? = nil,
+        labelFontWeight: CGFloat? = nil,
         textColor: Color? = nil,
         labelColor: Color? = nil,
         backgroundColor: Color? = nil,
@@ -50,8 +58,12 @@ public struct PrimerFieldStyling {
         padding: EdgeInsets? = nil,
         fieldHeight: CGFloat? = nil
     ) {
-        self.font = font
-        self.labelFont = labelFont
+        self.fontName = fontName
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.labelFontName = labelFontName
+        self.labelFontSize = labelFontSize
+        self.labelFontWeight = labelFontWeight
         self.textColor = textColor
         self.labelColor = labelColor
         self.backgroundColor = backgroundColor
@@ -63,5 +75,23 @@ public struct PrimerFieldStyling {
         self.borderWidth = borderWidth
         self.padding = padding
         self.fieldHeight = fieldHeight
+    }
+
+    // MARK: - Internal Helpers
+
+    func resolvedFont(tokens: DesignTokens?) -> Font {
+        if let fontName = fontName {
+            let uiFont = PrimerFont.uiFont(family: fontName, weight: fontWeight, size: fontSize)
+            return Font(uiFont)
+        }
+        return PrimerFont.bodyLarge(tokens: tokens)
+    }
+
+    func resolvedLabelFont(tokens: DesignTokens?) -> Font {
+        if let fontName = labelFontName {
+            let uiFont = PrimerFont.uiFont(family: fontName, weight: labelFontWeight, size: labelFontSize)
+            return Font(uiFont)
+        }
+        return PrimerFont.bodySmall(tokens: tokens)
     }
 }

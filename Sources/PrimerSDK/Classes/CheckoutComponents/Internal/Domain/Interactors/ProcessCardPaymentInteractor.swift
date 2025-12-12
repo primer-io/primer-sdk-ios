@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Card payment data for processing.
 struct CardPaymentData {
     let cardNumber: String
     let cvv: String
@@ -17,7 +16,6 @@ struct CardPaymentData {
     let billingAddress: BillingAddress?
 }
 
-/// Billing address data.
 struct BillingAddress {
     let firstName: String?
     let lastName: String?
@@ -30,15 +28,10 @@ struct BillingAddress {
     let phoneNumber: String?
 }
 
-/// Protocol for processing card payments.
 protocol ProcessCardPaymentInteractor {
-    /// Processes a card payment with the provided data.
-    /// - Parameter cardData: The card payment data to process.
-    /// - Returns: The payment result.
     func execute(cardData: CardPaymentData) async throws -> PaymentResult
 }
 
-/// Default implementation using RawDataManager internally.
 final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
 
     private let repository: HeadlessRepository

@@ -6,12 +6,8 @@
 
 import Foundation
 
-/// Error message resolution service that converts ValidationError objects to localized, formatted error messages.
 final class ErrorMessageResolver {
 
-    /// Resolve error message based on validation error
-    /// @param error The validation error to resolve
-    /// @return Localized error message string, or nil if error cannot be resolved
     static func resolveErrorMessage(for error: ValidationError) -> String? {
         // Resolution priority:
         // 1. Try formatted error with field name placeholder
@@ -31,7 +27,6 @@ final class ErrorMessageResolver {
         return error.errorId
     }
 
-    /// Get localized string for error format/message keys
     private static func getLocalizedString(_ key: String) -> String {
         // Check for form validation errors first
         if let formError = getFormValidationError(for: key) {
@@ -57,7 +52,6 @@ final class ErrorMessageResolver {
         return CheckoutComponentsStrings.unexpectedError
     }
 
-    /// Get form validation error messages
     private static func getFormValidationError(for key: String) -> String? {
         switch key {
         case "form_error_card_type_not_supported":
@@ -71,7 +65,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get required field error messages
     private static func getRequiredFieldError(for key: String) -> String? {
         switch key {
         case "checkout_components_first_name_required":
@@ -101,7 +94,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get invalid field error messages
     private static func getInvalidFieldError(for key: String) -> String? {
         switch key {
         // Card field validation errors
@@ -141,7 +133,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get result screen messages
     private static func getResultScreenMessage(for key: String) -> String? {
         switch key {
         case "payment_successful":
@@ -153,7 +144,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get localized field name for error message formatting
     private static func getLocalizedFieldName(_ key: String) -> String {
         // Check for personal information field names first
         if let personalFieldName = getPersonalFieldName(for: key) {
@@ -174,7 +164,6 @@ final class ErrorMessageResolver {
         return "Field"
     }
 
-    /// Get personal information field names
     private static func getPersonalFieldName(for key: String) -> String? {
         switch key {
         case "first_name_field":
@@ -190,7 +179,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get address field names
     private static func getAddressFieldName(for key: String) -> String? {
         switch key {
         case "country_field":
@@ -210,7 +198,6 @@ final class ErrorMessageResolver {
         }
     }
 
-    /// Get card field names
     private static func getCardFieldName(for key: String) -> String? {
         switch key {
         case "card_number_field":
@@ -233,7 +220,6 @@ final class ErrorMessageResolver {
 
 extension ErrorMessageResolver {
 
-    /// Create a validation error for required field validation
     static func createRequiredFieldError(for inputElementType: ValidationError.InputElementType) -> ValidationError {
         let errorMessageKey = requiredErrorMessageKey(for: inputElementType)
         let errorId = "\(inputElementType.rawValue.lowercased())_required"
@@ -249,7 +235,6 @@ extension ErrorMessageResolver {
         )
     }
 
-    /// Create a validation error for invalid field validation
     static func createInvalidFieldError(for inputElementType: ValidationError.InputElementType) -> ValidationError {
         let errorMessageKey = invalidErrorMessageKey(for: inputElementType)
         let errorId = "\(inputElementType.rawValue.lowercased())_invalid"
@@ -265,7 +250,6 @@ extension ErrorMessageResolver {
         )
     }
 
-    /// Get specific required error message key for input element type
     private static func requiredErrorMessageKey(for inputElementType: ValidationError.InputElementType) -> String {
         switch inputElementType {
         case .firstName:
@@ -295,7 +279,6 @@ extension ErrorMessageResolver {
         }
     }
 
-    /// Get specific invalid error message key for input element type
     private static func invalidErrorMessageKey(for inputElementType: ValidationError.InputElementType) -> String {
         switch inputElementType {
         // Card field validation error keys
