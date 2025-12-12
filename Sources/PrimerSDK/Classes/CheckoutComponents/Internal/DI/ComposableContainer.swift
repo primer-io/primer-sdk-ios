@@ -14,17 +14,14 @@ final class ComposableContainer: LogReporter {
     private let container: Container
     private let settings: PrimerSettings
     private let theme: PrimerCheckoutTheme
-    private let components: PrimerComponents
 
     init(
         settings: PrimerSettings,
-        theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-        components: PrimerComponents = PrimerComponents()
+        theme: PrimerCheckoutTheme = PrimerCheckoutTheme()
     ) {
         self.container = Container()
         self.settings = settings
         self.theme = theme
-        self.components = components
     }
 
     func configure() async {
@@ -61,10 +58,6 @@ private extension ComposableContainer {
         _ = try? await container.register(PrimerCheckoutTheme.self)
             .asSingleton()
             .with { _ in self.theme }
-
-        _ = try? await container.register(PrimerComponents.self)
-            .asSingleton()
-            .with { _ in self.components }
 
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()

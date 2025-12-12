@@ -25,11 +25,8 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Callbacks are invoked in this priority order:
-/// 1. Direct callback parameters passed to this provider
-/// 2. Callbacks configured in `PrimerComponents` (via environment)
-///
-/// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
+/// Callbacks are invoked when provided. If no callbacks are provided, navigation events
+/// are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct CardFormProvider<Content: View>: View, LogReporter {
     private let onSuccess: ((CheckoutPaymentResult) -> Void)?
@@ -39,8 +36,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
     private let content: (any PrimerCardFormScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
-    @Environment(\.diContainer) private var container
-    @State private var components: PrimerComponents = PrimerComponents()
 
     /// Creates a CardFormProvider.
     /// - Parameters:
@@ -69,9 +64,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
         {
             content(cardFormScope)
                 .environment(\.primerCardFormScope, cardFormScope)
-                .onAppear {
-                    resolveComponents()
-                }
                 .task {
                     await observeCheckoutState()
                 }
@@ -82,17 +74,6 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
             // Fallback when scope is not available
             Text("Card form scope not available")
                 .foregroundColor(.secondary)
-        }
-    }
-
-    private func resolveComponents() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for CardFormProvider")
-        }
-        do {
-            components = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -126,35 +107,21 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
     }
 
     /// Handles checkout state changes by invoking the appropriate callback.
-    /// Direct callbacks take precedence over PrimerComponents configuration.
     @MainActor
     private func handleStateChange(_ state: PrimerCheckoutState) {
         switch state {
         case let .success(result):
-            // Direct callback takes precedence, then PrimerComponents fallback
             if let onSuccess {
                 // Convert PaymentResult to CheckoutPaymentResult
                 let amountString = result.amount.map { String($0) } ?? ""
                 onSuccess(CheckoutPaymentResult(paymentId: result.paymentId, amount: amountString))
-            } else {
-                components.checkout.navigation.onSuccess?()
             }
 
         case let .failure(error):
-            // Direct callback takes precedence, then PrimerComponents fallback
-            if let onError {
-                onError(error.localizedDescription)
-            } else {
-                components.checkout.navigation.onError?(error.localizedDescription)
-            }
+            onError?(error.localizedDescription)
 
         case .dismissed:
-            // Direct callback takes precedence, then PrimerComponents fallback
-            if let onCancel {
-                onCancel()
-            } else {
-                components.checkout.navigation.onCancel?()
-            }
+            onCancel?()
 
         case .initializing, .ready:
             // No action needed for these states

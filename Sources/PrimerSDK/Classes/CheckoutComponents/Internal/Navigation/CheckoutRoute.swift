@@ -38,6 +38,7 @@ enum CheckoutRoute: Hashable, Identifiable {
     case loading
     case paymentMethodSelection
     case selectCountry
+    case processing  // Payment processing in progress
     case success(CheckoutPaymentResult)
     case failure(PrimerError)
     case paymentMethod(String, PresentationContext) // Payment method type with presentation context
@@ -48,6 +49,7 @@ enum CheckoutRoute: Hashable, Identifiable {
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
         case .selectCountry: return "select-country"
+        case .processing: return "processing"
         case let .paymentMethod(type, context):
             return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
         case .success: return "success"
@@ -66,19 +68,6 @@ enum CheckoutRoute: Hashable, Identifiable {
 
     // MARK: - Route Properties
 
-    var routeName: String {
-        switch self {
-        case .splash: return "Splash Screen"
-        case .loading: return "Loading Screen"
-        case .paymentMethodSelection: return "Payment Method Selection"
-        case .selectCountry: return "Select Country"
-        case let .paymentMethod(type, context):
-            return "Payment Method: \(type) (\(context == .direct ? "Direct" : "From Selection"))"
-        case .success: return "Payment Success"
-        case .failure: return "Payment Error"
-        }
-    }
-
     var navigationBehavior: NavigationBehavior {
         switch self {
         case .splash:
@@ -89,29 +78,11 @@ enum CheckoutRoute: Hashable, Identifiable {
             return .reset  // Always reset to payment methods as root
         case .selectCountry, .paymentMethod:
             return .push   // Standard forward navigation
+        case .processing:
+            return .replace // Replace current screen with processing overlay
         case .success, .failure:
             return .replace // Replace current screen with result
         }
-    }
-
-    var analyticsParameters: [String: Any] {
-        var params = ["route_id": id, "route_name": routeName]
-
-        switch self {
-        case let .paymentMethod(type, context):
-            params["payment_method_type"] = type
-            params["presentation_context"] = context == .direct ? "direct" : "from_selection"
-        case let .success(result):
-            params["payment_id"] = result.paymentId
-            params["amount"] = result.amount
-        case let .failure(error):
-            params["error_code"] = error.errorId
-            params["error_message"] = error.errorDescription
-        default:
-            break
-        }
-
-        return params
     }
 }
 

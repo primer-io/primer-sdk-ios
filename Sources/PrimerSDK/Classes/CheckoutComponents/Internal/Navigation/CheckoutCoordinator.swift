@@ -31,7 +31,7 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     func navigate(to route: CheckoutRoute) {
         // Performance optimization: avoid redundant navigation to same route
         if currentRoute == route {
-            logger.debug(message: "🧭 [CheckoutCoordinator] Redundant navigation to \(route.routeName)")
+            logger.debug(message: "🧭 [CheckoutCoordinator] Redundant navigation to \(route)")
             return
         }
 
@@ -56,7 +56,7 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
             }
         }
 
-        logger.debug(message: "🧭 [CheckoutCoordinator] \(previousRoute.routeName) → \(route.routeName)")
+        logger.debug(message: "🧭 [CheckoutCoordinator] \(previousRoute) → \(route)")
     }
 
     func goBack() {
@@ -65,14 +65,9 @@ final class CheckoutCoordinator: ObservableObject, LogReporter {
     }
 
     func dismiss() {
-        // Clear navigation stack and trigger dismissal
+        // Clear navigation stack - actual dismissal is handled via onCompletion callback flow
         navigationStack = []
         logger.debug(message: "🧭 [CheckoutCoordinator] Dismissed")
-
-        // Trigger actual dismissal through CheckoutComponentsPrimer
-        Task { @MainActor in
-            CheckoutComponentsPrimer.shared.dismissCheckout()
-        }
     }
 
     /// Wraps navigate() for semantic clarity and potential future hooks.

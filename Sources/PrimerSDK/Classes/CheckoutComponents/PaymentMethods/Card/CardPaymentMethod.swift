@@ -82,9 +82,8 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 
     /// Creates the view for card payments by retrieving the card form scope and rendering the appropriate UI.
     /// This method handles custom screens in priority order:
-    /// 1. CardForm configuration from `PrimerComponents.configuration(for: CardForm.self)?.screen`
-    /// 2. cardFormScope.screen (legacy scope-based customization)
-    /// 3. Default CardFormScreen
+    /// 1. cardFormScope.screen (scope-based customization)
+    /// 2. Default CardFormScreen
     /// - Parameter checkoutScope: The parent checkout scope that manages this payment method
     /// - Returns: The card form view, or nil if the scope cannot be retrieved
     @MainActor

@@ -15,13 +15,11 @@ struct DefaultNavigationHandlers {
 
     static func defaultSuccess(navigator: CheckoutNavigator) -> () -> Void {
         { [weak navigator] in
-            // Handled by SDK internally, triggers dismissal via CheckoutComponentsPrimer
         }
     }
 
     static func defaultError(navigator: CheckoutNavigator) -> (String) -> Void {
         { [weak navigator] _ in
-            // Handled by CheckoutNavigator.navigateToError
         }
     }
 

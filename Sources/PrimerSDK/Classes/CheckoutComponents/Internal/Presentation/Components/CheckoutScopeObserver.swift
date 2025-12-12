@@ -20,10 +20,8 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct CheckoutScopeObserver: View, LogReporter {
     @ObservedObject private var scope: DefaultCheckoutScope
-    private let components: PrimerComponents
     private let theme: PrimerCheckoutTheme
-    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    private let onCompletion: (() -> Void)?
+    private let onCompletion: ((PrimerCheckoutState) -> Void)?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.bridgeController) private var bridgeController
 
@@ -35,14 +33,10 @@ struct CheckoutScopeObserver: View, LogReporter {
     @State private var previousNavigationState: DefaultCheckoutScope.NavigationState?
 
     init(scope: DefaultCheckoutScope,
-         components: PrimerComponents = PrimerComponents(),
          theme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-         customContent: ((PrimerCheckoutScope) -> AnyView)?,
-         onCompletion: (() -> Void)?) {
+         onCompletion: ((PrimerCheckoutState) -> Void)?) {
         self.scope = scope
-        self.components = components
         self.theme = theme
-        self.customContent = customContent
         self.onCompletion = onCompletion
     }
 
@@ -62,23 +56,16 @@ struct CheckoutScopeObserver: View, LogReporter {
 
     private var contentView: some View {
         VStack(spacing: 0) {
-            ZStack {
-                // MARK: - Navigation Content
-                // Simple fade transition between screens
-                // TODO: Future improvements could include:
-                // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
-                // - Add directional transitions (slide left/right) based on navigation direction
-                // - Implement custom per-route transitions (e.g., scale for success screen)
-                // - Add interactive gesture-based navigation
-                getCurrentView()
-                    .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
-
-                // Custom content overlay if provided
-                if let customContent {
-                    customContent(scope)
-                }
-            }
-            .sheet(isPresented: $showingCountrySelection) {
+            // MARK: - Navigation Content
+            // Simple fade transition between screens
+            // TODO: Future improvements could include:
+            // - Respect UIAccessibility.isReduceMotionEnabled for users with motion sensitivity
+            // - Add directional transitions (slide left/right) based on navigation direction
+            // - Implement custom per-route transitions (e.g., scale for success screen)
+            // - Add interactive gesture-based navigation
+            getCurrentView()
+                .animation(.easeInOut(duration: 0.3), value: scope.navigationState)
+                .sheet(isPresented: $showingCountrySelection) {
                 // Present country selection as a modal sheet
                 let cardFormScope = scope.getPaymentMethodScope(DefaultCardFormScope.self)
                 let countryScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: scope)
@@ -100,9 +87,6 @@ struct CheckoutScopeObserver: View, LogReporter {
         .environment(\.designTokens, designTokensManager.tokens)
         .environment(\.primerCheckoutScope, scope)
         .onAppear {
-            // Configure scope with PrimerComponents (only after SDK is initialized)
-            scope.configure(with: components)
-
             Task {
                 await setupDesignTokens()
             }
@@ -202,12 +186,8 @@ struct CheckoutScopeObserver: View, LogReporter {
             }
 
         case .paymentMethodSelection:
-            // First check if components has a custom screen
-            if let customScreen = components.paymentMethodSelection.screen {
-                return AnyView(customScreen(scope.paymentMethodSelection))
-            }
-            // Then check if the payment method selection scope itself has a custom screen
-            else if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
+            // Check if the payment method selection scope has a custom screen
+            if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
                 return AnyView(customPaymentMethodSelectionScreen(scope.paymentMethodSelection))
             }
             // Then check if the checkout scope has a custom payment selection screen (legacy)
@@ -215,8 +195,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                 return AnyView(customPaymentSelection(scope.paymentMethodSelection))
             } else {
                 return AnyView(PaymentMethodSelectionScreen(
-                    scope: scope.paymentMethodSelection,
-                    components: components
+                    scope: scope.paymentMethodSelection
                 ))
             }
 
@@ -250,6 +229,14 @@ struct CheckoutScopeObserver: View, LogReporter {
                 return AnyView(SplashScreen())
             }
 
+        case .processing:
+            // Show loading screen during payment processing
+            if let customLoading = scope.loading {
+                return AnyView(customLoading())
+            } else {
+                return AnyView(DefaultLoadingScreen())
+            }
+
         case let .success(result):
             // Check if success screen is enabled in settings (UI Options integration)
             if scope.isSuccessScreenEnabled {
@@ -258,7 +245,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                 } else {
                     return AnyView(SuccessScreen(result: result) {
                         logger.info(message: "Success screen auto-dismiss, calling completion callback")
-                        onCompletion?()
+                        onCompletion?(scope.currentState)
                     })
                 }
             } else {
@@ -266,7 +253,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                 logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
                 return AnyView(EmptyView().onAppear {
                     DispatchQueue.main.async {
-                        onCompletion?()
+                        onCompletion?(scope.currentState)
                     }
                 })
             }
@@ -281,7 +268,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                         error: error,
                         onRetry: {
                             logger.info(message: "Error screen retry tapped")
-                            scope.checkoutNavigator.handleRetry()
+                            scope.retryPayment()
                         },
                         onChooseOtherPaymentMethods: {
                             logger.info(message: "Error screen choose other payment method tapped")
@@ -289,7 +276,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                         },
                         onDismiss: {
                             logger.info(message: "Error screen auto-dismiss, calling completion callback")
-                            onCompletion?()
+                            onCompletion?(scope.currentState)
                         }
                     ))
                 }
@@ -298,7 +285,7 @@ struct CheckoutScopeObserver: View, LogReporter {
                 logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
                 return AnyView(EmptyView().onAppear {
                     DispatchQueue.main.async {
-                        onCompletion?()
+                        onCompletion?(scope.currentState)
                     }
                 })
             }
@@ -313,7 +300,7 @@ struct CheckoutScopeObserver: View, LogReporter {
             .onAppear {
                 logger.info(message: "Checkout dismissed, calling completion callback")
                 DispatchQueue.main.async {
-                    onCompletion?()
+                    onCompletion?(.dismissed)
                 }
             })
         }

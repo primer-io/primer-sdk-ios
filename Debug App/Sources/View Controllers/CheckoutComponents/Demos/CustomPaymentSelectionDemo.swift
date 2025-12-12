@@ -36,6 +36,26 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
     @State private var isLoading = true
     @State private var error: String?
 
+    // MARK: - Theme
+
+    /// Custom theme using demo color palette for SDK components
+    private var demoTheme: PrimerCheckoutTheme {
+        PrimerCheckoutTheme(
+            colors: ColorOverrides(
+                primerColorBrand: DemoColors.primary,
+                primerColorGray000: DemoColors.cardBackground,
+                primerColorGray100: DemoColors.primaryBackground,
+                primerColorGray200: DemoColors.border,
+                primerColorGreen500: DemoColors.success,
+                primerColorBackground: DemoColors.background,
+                primerColorTextPrimary: DemoColors.textPrimary,
+                primerColorTextSecondary: DemoColors.textSecondary,
+                primerColorBorderOutlinedDefault: DemoColors.border,
+                primerColorBorderOutlinedFocus: DemoColors.primary
+            )
+        )
+    }
+
     // MARK: - Init
 
     init(configuration: DemoConfiguration) {
@@ -64,25 +84,26 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
             PrimerCheckout(
                 clientToken: clientToken,
                 primerSettings: configuration.settings,
-                components: createComponents(),
-                onCompletion: { dismiss() }
+                primerTheme: demoTheme,
+                scope: { checkoutScope in
+                    // Override the payment method selection screen with custom content
+                    // Pass checkoutScope as a parameter to access card form and checkout state
+                    checkoutScope.paymentMethodSelection.screen = { selectionScope in
+                        AnyView(CustomPaymentSelectionContent(
+                            scope: selectionScope,
+                            checkoutScope: checkoutScope,
+                            onDismiss: { dismiss() }
+                        ))
+                    }
+
+                    // Custom loading screen during payment processing (matches Android's checkout.loading)
+                    checkoutScope.loading = {
+                        AnyView(CustomProcessingOverlay())
+                    }
+                },
+                onCompletion: { _ in dismiss() }
             )
         }
-    }
-
-    // MARK: - Components Configuration
-
-    private func createComponents() -> PrimerComponents {
-        PrimerComponents(
-            paymentMethodSelection: .init(
-                screen: { scope in
-                    CustomPaymentSelectionContent(
-                        scope: scope,
-                        onDismiss: { dismiss() }
-                    )
-                }
-            )
-        )
     }
 
     // MARK: - Session Creation
@@ -166,7 +187,7 @@ private enum DemoColors {
 
 // MARK: - Custom Payment Selection Content
 
-/// AIR-style payment selection screen demonstrating the new PrimerComponents API.
+/// AIR-style payment selection screen demonstrating the scope-based customization API.
 /// Features:
 /// - Custom warm cream/beige background
 /// - Product info section with package details
@@ -179,10 +200,8 @@ private enum DemoColors {
 @available(iOS 15.0, *)
 private struct CustomPaymentSelectionContent: View {
     let scope: PrimerPaymentMethodSelectionScope
+    let checkoutScope: PrimerCheckoutScope
     let onDismiss: () -> Void
-
-    // Access checkout scope via environment to get card form scope
-    @SwiftUI.Environment(\.primerCheckoutScope) private var checkoutScope
 
     @State private var selectionState = PrimerPaymentMethodSelectionState()
     @State private var cardState: StructuredCardFormState?
@@ -195,7 +214,7 @@ private struct CustomPaymentSelectionContent: View {
 
     /// Card form scope for inline card form
     private var cardFormScope: DefaultCardFormScope? {
-        checkoutScope?.getPaymentMethodScope(DefaultCardFormScope.self)
+        checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
     }
 
     /// Computed property to check if loading overlay should be shown
@@ -788,7 +807,6 @@ private struct CustomPaymentSelectionContent: View {
     }
 
     private func observeCheckoutState() {
-        guard let checkoutScope = checkoutScope else { return }
         Task {
             for await state in checkoutScope.state {
                 await MainActor.run {
@@ -860,6 +878,41 @@ private struct PromoCodeModal: View {
         }
         .onAppear {
             isTextFieldFocused = true
+        }
+    }
+}
+
+// MARK: - Custom Processing Overlay
+
+/// Custom processing screen shown during payment processing
+/// Uses the demo's orange color theme for consistency
+@available(iOS 15.0, *)
+private struct CustomProcessingOverlay: View {
+    var body: some View {
+        ZStack {
+            // Warm cream background matching the demo theme
+            DemoColors.background
+                .ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                // Animated loading indicator
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: DemoColors.primary))
+                    .scaleEffect(2.0)
+
+                VStack(spacing: 8) {
+                    Text("Processing your payment")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(DemoColors.textPrimary)
+
+                    Text("Please wait while we securely process your transaction...")
+                        .font(.subheadline)
+                        .foregroundColor(DemoColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 32)
+            }
         }
     }
 }

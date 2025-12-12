@@ -16,7 +16,6 @@ private struct PaymentMethodGroup {
 @available(iOS 15.0, *)
 struct PaymentMethodSelectionScreen: View, LogReporter {
     let scope: PrimerPaymentMethodSelectionScope
-    private let componentsOverride: PrimerComponents?
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
@@ -24,15 +23,9 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
     @State private var configurationService: ConfigurationService?
-    @State private var resolvedComponents: PrimerComponents = PrimerComponents()
 
-    private var components: PrimerComponents {
-        componentsOverride ?? resolvedComponents
-    }
-
-    init(scope: PrimerPaymentMethodSelectionScope, components: PrimerComponents? = nil) {
+    init(scope: PrimerPaymentMethodSelectionScope) {
         self.scope = scope
-        self.componentsOverride = components
     }
 
     var body: some View {
@@ -47,7 +40,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
             contentContainer
         }
         .onAppear {
-            resolveComponents()
             resolveConfigurationService()
             observeState()
         }
@@ -99,8 +91,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
 
     @MainActor
     private var titleSection: some View {
-        let title = components.paymentMethodSelection.title ?? CheckoutComponentsStrings.choosePaymentMethod
-        return Text(title)
+        Text(CheckoutComponentsStrings.choosePaymentMethod)
             .font(PrimerFont.titleLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,17 +120,18 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var loadingView: some View {
-        if let customLoading = components.checkout.loading {
-            AnyView(customLoading())
-        } else {
-            VStack {
-                Spacer()
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, minHeight: 200)
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
+                .scaleEffect(PrimerScale.large)
+                .accessibility(config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                    label: CheckoutComponentsStrings.a11yLoading
+                ))
+            Spacer()
         }
+        .frame(maxWidth: .infinity, minHeight: 200)
     }
 
     @MainActor
@@ -299,15 +291,8 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
-        // First check components configuration
-        if let customPaymentMethodItem = components.paymentMethodSelection.paymentMethodItem {
-            AnyView(customPaymentMethodItem(method))
-                .onTapGesture {
-                    scope.onPaymentMethodSelected(paymentMethod: method)
-                }
-        }
-        // Then check legacy scope configuration
-        else if let customPaymentMethodItem = scope.paymentMethodItem {
+        // Check scope configuration for custom payment method item
+        if let customPaymentMethodItem = scope.paymentMethodItem {
             AnyView(customPaymentMethodItem(method))
                 .onTapGesture {
                     scope.onPaymentMethodSelected(paymentMethod: method)
@@ -337,18 +322,6 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
                     label: error,
                     traits: [.isStaticText]
                 ))
-        }
-    }
-
-    private func resolveComponents() {
-        guard componentsOverride == nil else { return }
-        guard let container else {
-            return logger.error(message: "DIContainer not available for PaymentMethodSelectionScreen")
-        }
-        do {
-            resolvedComponents = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 

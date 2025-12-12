@@ -40,8 +40,8 @@ Configuration in `Debug App/.swiftlint.yml`:
    - Location: `Sources/PrimerSDK/Classes/CheckoutComponents/`
    - SwiftUI-based modular components with exact Android API parity
    - Scope-based architecture with full UI customization
-   - SwiftUI Entry: `PrimerCheckout(clientToken: clientToken, primerSettings: primerSettings, diContainer: diContainer, navigator: navigator,customContent: customContent, presentationContext: presentationContext, onCompletion: onCompletion)`
-   - UIKit Entry: `CheckoutComponentsPrimer.presentCheckout(with:from:customContent:)` - This is a simple UIKit-ready wrapper around SwiftUI
+   - SwiftUI Entry: `PrimerCheckout(clientToken: clientToken, primerSettings: primerSettings, primerTheme: primerTheme, scope: scopeClosure, onCompletion: onCompletion)`
+   - UIKit Entry: `CheckoutComponentsPrimer.presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)` - UIKit-ready wrapper around SwiftUI
    - Key scopes: `PrimerCheckoutScope`, `PrimerCardFormScope`, `PrimerPaymentMethodSelectionScope`
    - Features: AsyncStream state observation, co-badged cards, dynamic billing address, built-in 3DS
 

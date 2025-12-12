@@ -22,11 +22,8 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Callbacks are invoked in this priority order:
-/// 1. Direct callback parameters passed to this provider
-/// 2. Callbacks configured in `PrimerComponents` (via environment)
-///
-/// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
+/// Callbacks are invoked when provided. If no callbacks are provided, navigation events
+/// are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct SelectCountryProvider<Content: View>: View, LogReporter {
     private let onCountrySelected: ((String, String) -> Void)?
@@ -34,8 +31,6 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
     private let content: (any PrimerSelectCountryScope) -> Content
 
     @Environment(\.primerSelectCountryScope) private var countryScope
-    @Environment(\.diContainer) private var container
-    @State private var components: PrimerComponents = PrimerComponents()
     @State private var lastSelectedCountryCode: String?
 
     /// Creates a SelectCountryProvider.
@@ -57,9 +52,6 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
         if let countryScope {
             content(countryScope)
                 .environment(\.primerSelectCountryScope, countryScope)
-                .onAppear {
-                    resolveComponents()
-                }
                 .task {
                     await observeCountrySelection()
                 }
@@ -67,17 +59,6 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
             // Fallback when scope is not available
             Text("Country selection scope not available")
                 .foregroundColor(.secondary)
-        }
-    }
-
-    private func resolveComponents() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for SelectCountryProvider")
-        }
-        do {
-            components = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -94,21 +75,13 @@ public struct SelectCountryProvider<Content: View>: View, LogReporter {
     }
 
     /// Handles country selection state changes by invoking the appropriate callback.
-    /// Direct callbacks take precedence over PrimerComponents configuration.
     @MainActor
     private func handleStateChange(_ state: PrimerSelectCountryState) {
         // Check if a NEW country was selected (different from last seen)
         if let selectedCountry = state.selectedCountry,
            selectedCountry.code != lastSelectedCountryCode {
             lastSelectedCountryCode = selectedCountry.code
-
-            // Direct callback takes precedence, then PrimerComponents fallback
-            let cardFormConfig = components.configuration(for: PrimerComponents.CardForm.self)
-            if let onCountrySelected {
-                onCountrySelected(selectedCountry.code, selectedCountry.name)
-            } else {
-                cardFormConfig?.selectCountry.navigation.onCountrySelected?(selectedCountry.code, selectedCountry.name)
-            }
+            onCountrySelected?(selectedCountry.code, selectedCountry.name)
         }
     }
 }

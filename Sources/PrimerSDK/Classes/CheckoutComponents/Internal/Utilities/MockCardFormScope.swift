@@ -44,10 +44,42 @@ public class MockCardFormScope: PrimerCardFormScope {
         }
     }
 
-    // View customization properties
-    public var screen: ((any PrimerCardFormScope) -> any View)? = nil
-    public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)? = nil
-    public var errorView: ((String) -> any View)? = nil
+    // MARK: - Screen-Level Customization
+
+    public var title: String?
+    public var screen: ((any PrimerCardFormScope) -> any View)?
+    public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
+    public var errorView: ((String) -> any View)?
+
+    // MARK: - Submit Button Customization
+
+    public var submitButtonText: String?
+    public var showSubmitLoadingIndicator: Bool = true
+
+    // MARK: - Field-Level Customization via InputFieldConfig
+
+    public var cardNumberConfig: InputFieldConfig?
+    public var expiryDateConfig: InputFieldConfig?
+    public var cvvConfig: InputFieldConfig?
+    public var cardholderNameConfig: InputFieldConfig?
+    public var postalCodeConfig: InputFieldConfig?
+    public var countryConfig: InputFieldConfig?
+    public var cityConfig: InputFieldConfig?
+    public var stateConfig: InputFieldConfig?
+    public var addressLine1Config: InputFieldConfig?
+    public var addressLine2Config: InputFieldConfig?
+    public var phoneNumberConfig: InputFieldConfig?
+    public var firstNameConfig: InputFieldConfig?
+    public var lastNameConfig: InputFieldConfig?
+    public var emailConfig: InputFieldConfig?
+    public var retailOutletConfig: InputFieldConfig?
+    public var otpCodeConfig: InputFieldConfig?
+
+    // MARK: - Section-Level Customization
+
+    public var cardInputSection: Component?
+    public var billingAddressSection: Component?
+    public var submitButtonSection: Component?
 
     public var selectCountry: PrimerSelectCountryScope {
         fatalError("Not implemented for preview")

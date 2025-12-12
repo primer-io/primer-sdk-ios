@@ -19,8 +19,13 @@ public protocol PrimerCheckoutScope: AnyObject {
     /// Default implementation provides standard checkout container.
     var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
 
+    /// Custom splash screen shown during SDK initialization.
     /// Default implementation shows Primer branding.
     var splashScreen: (() -> any View)? { get set }
+
+    /// Custom loading screen shown during payment processing.
+    /// Default implementation shows a centered loading indicator with "Loading" text.
+    var loading: (() -> any View)? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
@@ -75,7 +80,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     /// Payment handling mode (auto vs manual).
     /// - `.auto`: Payments are automatically processed after tokenization (default)
-    /// - `.manual`: Payments require explicit confirmation via `CheckoutComponentsPrimer.resumePayment()`
+    /// - `.manual`: Payments require explicit confirmation from your backend
     var paymentHandling: PrimerPaymentHandling { get }
 
     // MARK: - Navigation

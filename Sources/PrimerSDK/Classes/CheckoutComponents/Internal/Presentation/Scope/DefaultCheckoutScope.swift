@@ -16,6 +16,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
         case selectCountry  // Country selection screen
+        case processing  // Payment processing in progress
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
         case dismissed
@@ -27,6 +28,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             case (.paymentMethodSelection, .paymentMethodSelection):
                 return true
             case (.selectCountry, .selectCountry):
+                return true
+            case (.processing, .processing):
                 return true
             case (.dismissed, .dismissed):
                 return true
@@ -47,6 +50,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     @Published private var internalState = PrimerCheckoutState.initializing
     @Published var navigationState = NavigationState.loading
 
+    /// Provides direct access to the current checkout state for completion callbacks
+    var currentState: PrimerCheckoutState {
+        internalState
+    }
+
     public var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -66,7 +74,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     public var container: ((_ content: @escaping () -> AnyView) -> any View)?
     public var splashScreen: (() -> any View)?
-    public var loadingScreen: (() -> any View)?
+    public var loading: (() -> any View)?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
     public var errorScreen: ((_ message: String) -> any View)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
@@ -310,6 +318,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
             case .selectCountry:
                 navigator.navigateToCountrySelection()
+            case .processing:
+                navigator.navigateToProcessing()
             case .success:
                 // Success handling is now done via the view's switch statement, not the navigator
                 break
@@ -344,6 +354,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             }
         case .selectCountry:
             message = CheckoutComponentsStrings.a11yScreenCountrySelection
+        case .processing:
+            message = CheckoutComponentsStrings.a11yScreenProcessingPayment
         case .success:
             message = CheckoutComponentsStrings.a11yScreenSuccess
             selectedPaymentMethodName = nil
@@ -376,6 +388,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     newNavigationState = .paymentMethod(paymentMethodType)
                 case .selectCountry:
                     newNavigationState = .selectCountry
+                case .processing:
+                    newNavigationState = .processing
                 case let .failure(primerError):
                     newNavigationState = .failure(primerError)
                 default:
@@ -400,7 +414,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch (lhs, rhs) {
         case (.loading, .loading),
              (.paymentMethodSelection, .paymentMethodSelection),
-             (.selectCountry, .selectCountry):
+             (.selectCountry, .selectCountry),
+             (.processing, .processing):
             return true
         case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
             return lhsType == rhsType
@@ -541,11 +556,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     func handlePaymentSuccess(_ result: PaymentResult) {
-        CheckoutComponentsPrimer.shared.storePaymentResult(result)
-
         updateState(.success(result))
 
-        // Invoke custom success callback if configured
         navigator.handleSuccess()
 
         let checkoutResult = CheckoutPaymentResult(
@@ -561,6 +573,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         updateNavigationState(.failure(error))
     }
 
+    func startProcessing() {
+        updateNavigationState(.processing)
+    }
+
     func handleAutoDismiss() {
         // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
         Task { @MainActor in
@@ -568,33 +584,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
     }
 
-    // MARK: - Configuration
-
-    func configure(with components: PrimerComponents) {
-        // Configure checkout screens
-        if let splash = components.checkout.splash {
-            splashScreen = { AnyView(splash()) }
-        }
-
-        if let success = components.checkout.success {
-            successScreen = { _ in AnyView(success()) }
-        }
-
-        if let errorContent = components.checkout.error.content {
-            errorScreen = { message in AnyView(errorContent(message)) }
-        }
-
-        // Configure container
-        if let customContainer = components.container {
-            container = { content in
-                AnyView(customContainer(content))
-            }
-        }
-
-        // Configure navigator with navigation callbacks
-        navigator.configure(with: components)
-
-        // Note: Payment method selection and card form configuration
-        // is handled by accessing components directly from scopes
+    func retryPayment() {
+        currentPaymentMethodScope?.submit()
     }
+
 }

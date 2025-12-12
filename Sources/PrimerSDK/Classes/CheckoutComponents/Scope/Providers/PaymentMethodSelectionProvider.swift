@@ -23,11 +23,8 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Callbacks are invoked in this priority order:
-/// 1. Direct callback parameters passed to this provider
-/// 2. Callbacks configured in `PrimerComponents` (via environment)
-///
-/// If no callbacks are provided, navigation events are handled by the SDK's default behavior.
+/// Callbacks are invoked when provided. If no callbacks are provided, navigation events
+/// are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     private let onPaymentMethodSelected: ((String) -> Void)?
@@ -35,8 +32,6 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     private let content: (any PrimerPaymentMethodSelectionScope) -> Content
 
     @Environment(\.primerCheckoutScope) private var checkoutScope
-    @Environment(\.diContainer) private var container
-    @State private var components: PrimerComponents = PrimerComponents()
     @State private var lastSelectedPaymentMethodType: String?
 
     /// Creates a PaymentMethodSelectionProvider.
@@ -59,9 +54,6 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
             let selectionScope = checkoutScope.paymentMethodSelection
             content(selectionScope)
                 .environment(\.primerPaymentMethodSelectionScope, selectionScope)
-                .onAppear {
-                    resolveComponents()
-                }
                 .task {
                     await observePaymentMethodSelection(selectionScope: selectionScope)
                 }
@@ -72,17 +64,6 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
             // Fallback when scope is not available
             Text("Payment selection scope not available")
                 .foregroundColor(.secondary)
-        }
-    }
-
-    private func resolveComponents() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for PaymentMethodSelectionProvider")
-        }
-        do {
-            components = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -106,20 +87,13 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     }
 
     /// Handles payment method selection state changes.
-    /// Direct callbacks take precedence over PrimerComponents configuration.
     @MainActor
     private func handleSelectionStateChange(_ state: PrimerPaymentMethodSelectionState) {
         // Check if a NEW payment method was selected (different from last seen)
         if let selectedMethod = state.selectedPaymentMethod,
            selectedMethod.type != lastSelectedPaymentMethodType {
             lastSelectedPaymentMethodType = selectedMethod.type
-
-            // Direct callback takes precedence, then PrimerComponents fallback
-            if let onPaymentMethodSelected {
-                onPaymentMethodSelected(selectedMethod.type)
-            } else {
-                components.paymentMethodSelection.navigation.onPaymentMethodSelected?(selectedMethod.type)
-            }
+            onPaymentMethodSelected?(selectedMethod.type)
         }
     }
 
@@ -127,12 +101,7 @@ public struct PaymentMethodSelectionProvider<Content: View>: View, LogReporter {
     @MainActor
     private func handleCheckoutStateChange(_ state: PrimerCheckoutState) {
         if case .dismissed = state {
-            // Direct callback takes precedence, then PrimerComponents fallback
-            if let onCancel {
-                onCancel()
-            } else {
-                components.checkout.navigation.onCancel?()
-            }
+            onCancel?()
         }
     }
 }

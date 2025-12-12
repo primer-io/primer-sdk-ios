@@ -24,12 +24,6 @@ struct CardFormScreen: View, LogReporter {
     @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var cardFormState: StructuredCardFormState = .init()
-    @State private var components: PrimerComponents = PrimerComponents()
-
-    /// CardForm configuration with fallback to defaults
-    private var cardFormConfig: PrimerComponents.CardForm {
-        components.configuration(for: PrimerComponents.CardForm.self) ?? PrimerComponents.CardForm()
-    }
     @State private var selectedCardNetwork: CardNetwork = .unknown
     @State private var refreshTrigger = UUID()
     @State private var formConfiguration: CardFormConfiguration = .default
@@ -99,14 +93,13 @@ struct CardFormScreen: View, LogReporter {
             submitButtonSection
         }
         .onAppear {
-            resolveComponents()
             resolveConfigurationService()
             observeState()
         }
     }
 
     private var titleSection: some View {
-        let title = cardFormConfig.title ?? CheckoutComponentsStrings.cardPaymentTitle
+        let title = scope.title ?? CheckoutComponentsStrings.cardPaymentTitle
         return Text(title)
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
@@ -117,12 +110,8 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var dynamicFieldsSection: some View {
-        // First check components configuration
-        if let customScreen = cardFormConfig.screen {
-            AnyView(customScreen(scope))
-        }
-        // Then check scope configuration
-        else if let customScreen = scope.screen {
+        // Check scope configuration for custom screen
+        if let customScreen = scope.screen {
             AnyView(customScreen(scope))
         } else {
             VStack(spacing: 0) {
@@ -135,8 +124,8 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var cardFieldsSection: some View {
-        // Check components configuration for full section replacement
-        if let customContent = cardFormConfig.cardDetails.content {
+        // Check scope configuration for full section replacement
+        if let customContent = scope.cardInputSection {
             AnyView(customContent())
         } else {
             VStack(spacing: 0) {
@@ -175,8 +164,8 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     private var billingAddressSection: some View {
         if !formConfiguration.billingFields.isEmpty {
-            // Check components configuration for full section replacement
-            if let customContent = cardFormConfig.billingAddress.content {
+            // Check scope configuration for full section replacement
+            if let customContent = scope.billingAddressSection {
                 AnyView(customContent())
             } else {
                 VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
@@ -214,8 +203,8 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private var submitButtonSection: some View {
-        // Check components configuration for full button replacement
-        if let customContent = cardFormConfig.submitButton.content {
+        // Check scope configuration for full button replacement
+        if let customContent = scope.submitButtonSection {
             AnyView(customContent())
                 .onTapGesture {
                     if cardFormState.isValid, !cardFormState.isLoading {
@@ -232,10 +221,9 @@ struct CardFormScreen: View, LogReporter {
 
     private var submitButtonContent: some View {
         let isEnabled = cardFormState.isValid && !cardFormState.isLoading
-        let showLoadingIndicator = cardFormConfig.submitButton.showLoadingIndicator
 
         return HStack {
-            if cardFormState.isLoading, showLoadingIndicator {
+            if cardFormState.isLoading, scope.showSubmitLoadingIndicator {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.white(tokens: tokens)))
                     .scaleEffect(PrimerScale.small)
@@ -288,8 +276,8 @@ struct CardFormScreen: View, LogReporter {
     }
 
     private var submitButtonText: String {
-        // First check components configuration
-        if let customText = cardFormConfig.submitButton.text {
+        // First check scope configuration
+        if let customText = scope.submitButtonText {
             return customText
         }
 
@@ -328,17 +316,6 @@ struct CardFormScreen: View, LogReporter {
     private func submitAction() {
         Task {
             await (scope as? DefaultCardFormScope)?.submit()
-        }
-    }
-
-    private func resolveComponents() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for CardFormScreen")
-        }
-        do {
-            components = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -399,7 +376,7 @@ struct CardFormScreen: View, LogReporter {
 
         switch fieldType {
         case .cardNumber:
-            let config = cardFormConfig.cardDetails.cardNumber
+            let config = scope.cardNumberConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .cardNumber)
@@ -417,7 +394,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .expiryDate:
-            let config = cardFormConfig.cardDetails.expiryDate
+            let config = scope.expiryDateConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .expiryDate)
@@ -433,7 +410,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .cvv:
-            let config = cardFormConfig.cardDetails.cvv
+            let config = scope.cvvConfig
             let defaultPlaceholder = getCardNetworkForCvv() == .amex
                 ? CheckoutComponentsStrings.cvvAmexPlaceholder
                 : CheckoutComponentsStrings.cvvStandardPlaceholder
@@ -453,7 +430,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .cardholderName:
-            let config = cardFormConfig.cardDetails.cardholderName
+            let config = scope.cardholderNameConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .cardholderName)
@@ -469,7 +446,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .postalCode:
-            let config = cardFormConfig.billingAddress.postalCode
+            let config = scope.postalCodeConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .postalCode)
@@ -485,7 +462,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .countryCode:
-            let config = cardFormConfig.billingAddress.countryCode
+            let config = scope.countryConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .countryCode)
@@ -501,7 +478,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .city:
-            let config = cardFormConfig.billingAddress.city
+            let config = scope.cityConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
                     .focused($focusedField, equals: .city)
@@ -517,7 +494,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .state:
-            let config = cardFormConfig.billingAddress.state
+            let config = scope.stateConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -530,7 +507,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .addressLine1:
-            let config = cardFormConfig.billingAddress.addressLine1
+            let config = scope.addressLine1Config
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -545,7 +522,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .addressLine2:
-            let config = cardFormConfig.billingAddress.addressLine2
+            let config = scope.addressLine2Config
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -560,7 +537,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .phoneNumber:
-            let config = cardFormConfig.billingAddress.phoneNumber
+            let config = scope.phoneNumberConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -574,7 +551,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .firstName:
-            let config = cardFormConfig.billingAddress.firstName
+            let config = scope.firstNameConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -588,7 +565,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .lastName:
-            let config = cardFormConfig.billingAddress.lastName
+            let config = scope.lastNameConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -602,7 +579,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .email:
-            let config = cardFormConfig.billingAddress.email
+            let config = scope.emailConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -615,7 +592,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .retailer:
-            let config = cardFormConfig.cardDetails.retailOutlet
+            let config = scope.retailOutletConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {
@@ -626,7 +603,7 @@ struct CardFormScreen: View, LogReporter {
             }
 
         case .otp:
-            let config = cardFormConfig.cardDetails.otpCode
+            let config = scope.otpCodeConfig
             if let customComponent = config?.component {
                 AnyView(customComponent())
             } else {

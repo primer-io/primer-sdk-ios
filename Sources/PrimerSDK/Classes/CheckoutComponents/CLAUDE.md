@@ -65,8 +65,8 @@ Dynamic payment method registration system:
 
 ### UIKit Integration
 **CheckoutComponentsPrimer** (CheckoutComponentsPrimer.swift:64): Main UIKit entry point
-- `presentCheckout(with:from:completion:)`: Present default UI
-- `presentCheckout(with:from:customContent:completion:)`: Present with custom SwiftUI content
+- `presentCheckout(clientToken:from:completion:)`: Present default UI
+- `presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)`: Present with scope-based customization
 - Acts as bridge between UIKit and SwiftUI implementation
 
 ### SwiftUI Integration
@@ -105,40 +105,54 @@ for await state in scope.state {
 ## Customization Approaches
 
 ### 1. Field-Level Customization via InputFieldConfig
-Customize individual fields with partial or full replacement:
+Customize individual fields with partial or full replacement via scope properties:
 ```swift
-let cardForm = PrimerComponents.CardForm(
-    cardDetails: .init(
-        cardNumber: InputFieldConfig(
-            label: "Card Number",
-            placeholder: "0000 0000 0000 0000",
-            styling: PrimerFieldStyling(borderColor: .blue)
-        ),
-        cvv: InputFieldConfig(
-            component: { MyCustomCVVField() }
-        )
+// Access card form scope and customize fields
+if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+    cardFormScope.cardNumberConfig = InputFieldConfig(
+        label: "Card Number",
+        placeholder: "0000 0000 0000 0000",
+        styling: PrimerFieldStyling(borderColor: .blue)
     )
-)
+    cardFormScope.cvvConfig = InputFieldConfig(
+        component: { MyCustomCVVField() }
+    )
+}
 ```
 
 ### 2. Section-Level Customization
-Replace entire sections using the `content` closure:
+Replace entire sections using scope section properties:
 ```swift
-let cardForm = PrimerComponents.CardForm(
-    cardDetails: .init(
-        content: { MyCustomCardDetailsSection() }
-    )
-)
+cardFormScope.cardInputSection = { scope in
+    AnyView(MyCustomCardDetailsSection(scope: scope))
+}
 ```
 
 ### 3. Full Screen Customization
 Replace the entire card form screen:
 ```swift
-let cardForm = PrimerComponents.CardForm(
-    screen: { scope in
-        MyCustomCardFormScreen(scope: scope)
-    }
-)
+cardFormScope.screen = { scope in
+    AnyView(MyCustomCardFormScreen(scope: scope))
+}
+```
+
+### 4. Checkout-Level Screen Customization
+Customize checkout-level screens via scope properties:
+```swift
+// Custom splash screen (SDK initialization)
+checkoutScope.splashScreen = {
+    AnyView(MyCustomSplashScreen())
+}
+
+// Custom loading screen (payment processing) - matches Android's checkout.loading
+checkoutScope.loading = {
+    AnyView(MyCustomLoadingScreen())
+}
+
+// Custom error screen
+checkoutScope.errorScreen = { message in
+    AnyView(MyCustomErrorScreen(message: message))
+}
 ```
 
 ## Validation System

@@ -88,7 +88,7 @@ struct DefaultCheckoutDemo: View, CheckoutComponentsDemo {
                 PrimerCheckout(
                     clientToken: clientToken,
                     primerSettings: configuration.settings,
-                    onCompletion: { dismiss() }
+                    onCompletion: { _ in dismiss() }
                 )
             }
         }

@@ -53,21 +53,11 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
     // MARK: - Navigation Methods
 
     public func onCountrySelected(countryCode: String, countryName: String) {
-        // Update state with selected country for provider observation
-        let selectedCountry = internalState.countries.first { $0.code == countryCode }
-            ?? PrimerCountry(code: countryCode, name: countryName, flag: nil, dialCode: nil)
-        internalState.selectedCountry = selectedCountry
-
-        // Update card form with selected country
         if let cardFormScope {
             cardFormScope.updateCountryCode(countryCode)
         }
 
-        // Notify navigator of country selection (for custom callback invocation)
         if let checkoutScope {
-            checkoutScope.checkoutNavigator.handleCountrySelected(code: countryCode, name: countryName)
-
-            // Navigate back to the appropriate screen
             if !checkoutScope.availablePaymentMethods.isEmpty {
                 if checkoutScope.availablePaymentMethods.count == 1,
                    let singleMethod = checkoutScope.availablePaymentMethods.first {

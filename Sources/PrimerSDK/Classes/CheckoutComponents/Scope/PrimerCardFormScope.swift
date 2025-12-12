@@ -4,42 +4,23 @@
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-//
-//  PrimerCardFormScope.swift
-//  PrimerSDK
-//
-//  Created by Boris on 23.6.25.
-//
 // swiftlint:disable identifier_name
 
 import SwiftUI
 
-/// Scope interface for card form interactions, state management, and UI customization.
-/// Inherits from PrimerPaymentMethodScope for unified payment method architecture.
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == StructuredCardFormState {
 
-    /// The current state of the card form as an async stream.
     var state: AsyncStream<StructuredCardFormState> { get }
-
     var presentationContext: PresentationContext { get }
-
-    /// Controls pay button text (e.g., "Pay $10.00" vs "Add New Card")
     var cardFormUIOptions: PrimerCardFormUIOptions? { get }
-
-    /// Controls how users can dismiss the checkout modal.
     var dismissalMechanism: [DismissalMechanism] { get }
 
-    // MARK: - Payment Method Lifecycle (PrimerPaymentMethodScope)
+    // MARK: - Payment Method Lifecycle
 
-    /// Default implementation can be empty for card form since it's initialized on presentation.
     func start()
-
-    /// Maps to onSubmit() for consistent API naming.
     func submit()
-
-    /// Maps to onCancel() for consistent API naming.
     func cancel()
 
     // MARK: - Navigation Methods
@@ -63,13 +44,11 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     func updatePhoneNumber(_ phoneNumber: String)
     func updateFirstName(_ firstName: String)
     func updateLastName(_ lastName: String)
-    /// Region-specific field.
     func updateRetailOutlet(_ retailOutlet: String)
     func updateOtpCode(_ otpCode: String)
     func updateEmail(_ email: String)
     func updateExpiryMonth(_ month: String)
     func updateExpiryYear(_ year: String)
-    /// For co-badged cards with multiple networks.
     func updateSelectedCardNetwork(_ network: String)
     func updateCountryCode(_ countryCode: String)
 
@@ -79,31 +58,42 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
 
     // MARK: - Screen-Level Customization
 
-    /// When set, overrides the default card form layout completely.
-    /// The closure receives the scope for full access to form state, validation, and submit actions.
+    var title: String? { get set }
     var screen: ((_ scope: any PrimerCardFormScope) -> any View)? { get set }
-
-    /// Co-badged cards selection view for dual-network cards.
-    /// Shown when a card supports multiple networks (e.g., Visa/Mastercard).
     var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)? { get set }
-
-    /// Default implementation shows error text in red.
     var errorView: ((_ error: String) -> any View)? { get set }
 
-    // MARK: - Future Features (Vaulting Support)
+    // MARK: - Submit Button Customization
 
-    // The following features are placeholders for future vaulting functionality.
-    // They are commented out to indicate planned support but are not yet implemented.
+    var submitButtonText: String? { get set }
+    var showSubmitLoadingIndicator: Bool { get set }
 
-    // Future features for card vaulting:
-    // @ViewBuilder func PrimerSaveCardToggle(isOn: Binding<Bool>) -> any View
-    // var savedCardsSelector: (@ViewBuilder (_ savedCards: [SavedCard], _ onSelect: @escaping (SavedCard) -> Void) -> any View)? { get set }
-    // func updateSaveCard(_ save: Bool)
-    // func selectSavedCard(_ cardId: String)
+    // MARK: - Field-Level Customization via InputFieldConfig
+
+    var cardNumberConfig: InputFieldConfig? { get set }
+    var expiryDateConfig: InputFieldConfig? { get set }
+    var cvvConfig: InputFieldConfig? { get set }
+    var cardholderNameConfig: InputFieldConfig? { get set }
+    var postalCodeConfig: InputFieldConfig? { get set }
+    var countryConfig: InputFieldConfig? { get set }
+    var cityConfig: InputFieldConfig? { get set }
+    var stateConfig: InputFieldConfig? { get set }
+    var addressLine1Config: InputFieldConfig? { get set }
+    var addressLine2Config: InputFieldConfig? { get set }
+    var phoneNumberConfig: InputFieldConfig? { get set }
+    var firstNameConfig: InputFieldConfig? { get set }
+    var lastNameConfig: InputFieldConfig? { get set }
+    var emailConfig: InputFieldConfig? { get set }
+    var retailOutletConfig: InputFieldConfig? { get set }
+    var otpCodeConfig: InputFieldConfig? { get set }
+
+    // MARK: - Section-Level Customization
+
+    var cardInputSection: Component? { get set }
+    var billingAddressSection: Component? { get set }
+    var submitButtonSection: Component? { get set }
 
     // MARK: - ViewBuilder Methods for SDK Components
-    // These methods return SDK input field components customizable with SwiftUI modifiers.
-    // Parameters: label (optional, uses default if nil), styling (optional PrimerFieldStyling).
 
     func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView
     func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView
@@ -124,7 +114,6 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
 
     // MARK: - Validation State Communication
 
-    /// Allows UI components to communicate their validation state to the scope.
     func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
 
     // MARK: - Structured State Support
@@ -133,17 +122,11 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Str
     func getFieldValue(_ fieldType: PrimerInputElementType) -> String
     func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String?)
     func clearFieldError(_ fieldType: PrimerInputElementType)
-
     func getFieldError(_ fieldType: PrimerInputElementType) -> String?
     func getFormConfiguration() -> CardFormConfiguration
 
     // MARK: - Default Card Form View
 
-    /// Returns the default card input form view with all card fields (card number, expiry, CVV, cardholder name).
-    /// This can be embedded in custom layouts while retaining the SDK's default field arrangement.
-    /// The view does not include navigation buttons or submit button - only the input fields.
-    /// - Parameter styling: Optional styling to apply to all fields. If nil, default styling is used.
-    /// - Returns: A view containing the default card form fields.
     func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView
 
 }
@@ -234,11 +217,6 @@ extension PrimerCardFormScope {
 @available(iOS 15.0, *)
 extension PrimerCardFormScope {
 
-    /// Safely updates validation state if the scope is a DefaultCardFormScope.
-    /// This helper method eliminates the need for repeated conditional casting throughout input field coordinators.
-    /// - Parameters:
-    ///   - field: The input element type to update
-    ///   - isValid: The validation state to set
     func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
         guard let defaultScope = self as? DefaultCardFormScope else { return }
 

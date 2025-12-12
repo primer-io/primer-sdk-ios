@@ -13,27 +13,22 @@ import SwiftUI
 /// PrimerCheckout(clientToken: "your_client_token")
 /// ```
 ///
-/// With component customization:
+/// With scope-based customization:
 /// ```swift
 /// PrimerCheckout(
 ///     clientToken: "your_client_token",
 ///     primerSettings: PrimerSettings(),
 ///     primerTheme: PrimerCheckoutTheme(),
-///     components: PrimerComponents(
-///         checkout: .init(
-///             splash: { AnyView(CustomSplash()) },
-///             navigation: .init(
-///                 onSuccess: { { print("Success!") } }
-///             )
-///         ),
-///         paymentMethodConfigurations: [
-///             PrimerComponents.CardForm(
-///                 cardDetails: .init(
-///                     cardNumber: { AnyView(CustomCardNumberField()) }
-///                 )
-///             )
-///         ]
-///     ),
+///     scope: { checkoutScope in
+///         // Customize checkout screens
+///         checkoutScope.splashScreen = { CustomSplash() }
+///
+///         // Customize card form fields via InputFieldConfig
+///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) as? DefaultCardFormScope {
+///             cardFormScope.cardNumberConfig = InputFieldConfig(placeholder: "Enter card number")
+///             cardFormScope.cvvConfig = InputFieldConfig(styling: PrimerFieldStyling(borderColor: .blue))
+///         }
+///     },
 ///     onCompletion: { print("Checkout completed") }
 /// )
 /// ```
@@ -44,9 +39,8 @@ public struct PrimerCheckout: View {
     private let clientToken: String
     private let settings: PrimerSettings
     private let theme: PrimerCheckoutTheme
-    private let components: PrimerComponents
-    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    private let onCompletion: (() -> Void)?
+    private let scope: ((PrimerCheckoutScope) -> Void)?
+    private let onCompletion: ((PrimerCheckoutState) -> Void)?
     @StateObject private var navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
 
@@ -55,20 +49,19 @@ public struct PrimerCheckout: View {
     ///   - clientToken: The client token obtained from your backend.
     ///   - primerSettings: Configuration settings including payment options and UI preferences. Default: `PrimerSettings()`
     ///   - primerTheme: Theme configuration for design tokens. Default: `PrimerCheckoutTheme()`
-    ///   - components: Immutable UI component configuration. Default: `PrimerComponents()`
-    ///   - onCompletion: Optional completion callback called when checkout completes or dismisses.
+    ///   - scope: Optional closure to configure the checkout scope with custom UI components.
+    ///   - onCompletion: Optional completion callback called when checkout completes with the final state (success, failure, or dismissed).
     public init(
         clientToken: String,
         primerSettings: PrimerSettings = PrimerSettings(),
         primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-        components: PrimerComponents = PrimerComponents(),
-        onCompletion: (() -> Void)? = nil
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
+        onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = primerSettings
         self.theme = primerTheme
-        self.components = components
-        self.customContent = nil
+        self.scope = scope
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: CheckoutNavigator())
         self.presentationContext = .fromPaymentSelection
@@ -78,62 +71,32 @@ public struct PrimerCheckout: View {
         clientToken: String,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        components: PrimerComponents,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
-        onCompletion: (() -> Void)? = nil
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
+        onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = primerSettings
         self.theme = primerTheme
-        self.components = components
-        self.customContent = nil
-        self.onCompletion = onCompletion
-        self._navigator = StateObject(wrappedValue: navigator)
-        self.presentationContext = presentationContext
-    }
-
-    init(
-        clientToken: String,
-        primerSettings: PrimerSettings,
-        primerTheme: PrimerCheckoutTheme,
-        components: PrimerComponents,
-        diContainer: DIContainer,
-        navigator: CheckoutNavigator,
-        customContent: ((PrimerCheckoutScope) -> AnyView)?,
-        presentationContext: PresentationContext,
-        onCompletion: (() -> Void)? = nil
-    ) {
-        self.clientToken = clientToken
-        self.settings = primerSettings
-        self.theme = primerTheme
-        self.components = components
-        self.customContent = customContent
+        self.scope = scope
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
     }
 
     public var body: some View {
-        let checkoutContent = InternalCheckout(
+        InternalCheckout(
             clientToken: clientToken,
             settings: settings,
             theme: theme,
-            components: components,
             diContainer: DIContainer.shared,
             navigator: navigator,
-            customContent: customContent,
+            scope: scope,
             presentationContext: presentationContext,
             onCompletion: onCompletion
         )
-
-        // Apply custom container if provided, otherwise pass through unchanged
-        if let container = components.container {
-            AnyView(container { AnyView(checkoutContent) })
-        } else {
-            AnyView(checkoutContent)
-        }
     }
 }
 
@@ -146,12 +109,11 @@ struct InternalCheckout: View {
     private let clientToken: String
     private let settings: PrimerSettings
     private let theme: PrimerCheckoutTheme
-    private let components: PrimerComponents
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
-    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    private let scope: ((PrimerCheckoutScope) -> Void)?
     private let presentationContext: PresentationContext
-    private let onCompletion: (() -> Void)?
+    private let onCompletion: ((PrimerCheckoutState) -> Void)?
 
     @State private var checkoutScope: DefaultCheckoutScope?
     @State private var initializationState: InitializationState = .idle
@@ -170,20 +132,18 @@ struct InternalCheckout: View {
         clientToken: String,
         settings: PrimerSettings,
         theme: PrimerCheckoutTheme,
-        components: PrimerComponents,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        customContent: ((PrimerCheckoutScope) -> AnyView)?,
+        scope: ((PrimerCheckoutScope) -> Void)?,
         presentationContext: PresentationContext,
-        onCompletion: (() -> Void)?
+        onCompletion: ((PrimerCheckoutState) -> Void)?
     ) {
         self.clientToken = clientToken
         self.settings = settings
         self.theme = theme
-        self.components = components
         self.diContainer = diContainer
         self.navigator = navigator
-        self.customContent = customContent
+        self.scope = scope
         self.presentationContext = presentationContext
         self.onCompletion = onCompletion
 
@@ -191,7 +151,6 @@ struct InternalCheckout: View {
             clientToken: clientToken,
             primerSettings: settings,
             primerTheme: theme,
-            primerComponents: components,
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext
@@ -209,9 +168,7 @@ struct InternalCheckout: View {
                 if let checkoutScope {
                     CheckoutScopeObserver(
                         scope: checkoutScope,
-                        components: components,
                         theme: theme,
-                        customContent: customContent,
                         onCompletion: onCompletion
                     )
                 } else {
@@ -234,7 +191,7 @@ struct InternalCheckout: View {
 
     @ViewBuilder
     private var splashContent: some View {
-        if let customSplash = components.checkout.splash {
+        if let customSplash = checkoutScope?.splashScreen {
             AnyView(customSplash())
         } else {
             SplashScreen()
@@ -243,22 +200,16 @@ struct InternalCheckout: View {
 
     @ViewBuilder
     private var loadingContent: some View {
-        if let customLoading = components.checkout.loading {
+        if let customLoading = checkoutScope?.loading {
             AnyView(customLoading())
         } else {
-            VStack {
-                Spacer()
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            DefaultLoadingScreen()
         }
     }
 
     @ViewBuilder
     private func errorContent(error: PrimerError) -> some View {
-        if let customError = components.checkout.error.content {
+        if let customError = checkoutScope?.errorScreen {
             AnyView(customError(error.localizedDescription))
         } else {
             SDKInitializationErrorView(error: error) {
@@ -286,6 +237,12 @@ struct InternalCheckout: View {
         do {
             let result = try await sdkInitializer.initialize()
             checkoutScope = result.checkoutScope
+
+            // Apply scope configuration if provided
+            if let scope {
+                scope(checkoutScope!)
+            }
+
             initializationState = .initialized
         } catch {
             let primerError = error as? PrimerError ?? PrimerError.underlyingErrors(errors: [error])

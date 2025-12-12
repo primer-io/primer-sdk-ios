@@ -13,10 +13,8 @@ struct SelectCountryScreen: View, LogReporter {
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
-    @Environment(\.diContainer) private var container
     @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var countryState: PrimerSelectCountryState = .init()
-    @State private var resolvedComponents: PrimerComponents = PrimerComponents()
 
     var body: some View {
         NavigationView {
@@ -24,19 +22,7 @@ struct SelectCountryScreen: View, LogReporter {
         }
         .environment(\.primerSelectCountryScope, scope)
         .onAppear {
-            resolveComponents()
             observeState()
-        }
-    }
-
-    private func resolveComponents() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for SelectCountryScreen")
-        }
-        do {
-            resolvedComponents = try container.resolveSync(PrimerComponents.self)
-        } catch {
-            logger.error(message: "Failed to resolve PrimerComponents: \(error)")
         }
     }
 
@@ -108,19 +94,19 @@ struct SelectCountryScreen: View, LogReporter {
         }
     }
 
-    @ViewBuilder
     private var loadingView: some View {
-        if let customLoading = resolvedComponents.checkout.loading {
-            AnyView(customLoading())
-        } else {
-            VStack {
-                Spacer()
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
+                .scaleEffect(PrimerScale.small)
+                .accessibility(config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                    label: CheckoutComponentsStrings.a11yLoading
+                ))
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder

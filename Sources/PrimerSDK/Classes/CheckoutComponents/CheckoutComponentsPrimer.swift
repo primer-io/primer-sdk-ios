@@ -79,9 +79,6 @@ public extension CheckoutComponentsDelegate {
 
     public weak var delegate: CheckoutComponentsDelegate?
 
-    /// Store the latest payment result for delegate callbacks
-    private var lastPaymentResult: PaymentResult?
-
     // MARK: - Private Init
 
     override private init() {
@@ -126,7 +123,6 @@ public extension CheckoutComponentsDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: PrimerCheckoutTheme(),
-            components: PrimerComponents(),
             completion: completion
         )
     }
@@ -137,14 +133,14 @@ public extension CheckoutComponentsDelegate {
     ///   - viewController: The view controller to present from
     ///   - primerSettings: Configuration settings to apply for this checkout session
     ///   - primerTheme: Theme configuration for design tokens
-    ///   - components: Immutable UI component configuration
+    ///   - scope: Optional closure to configure the checkout scope with custom UI components
     ///   - completion: Optional completion handler
     public static func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        components: PrimerComponents,
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
         completion: (() -> Void)? = nil
     ) {
         shared.presentCheckout(
@@ -152,51 +148,7 @@ public extension CheckoutComponentsDelegate {
             from: viewController,
             primerSettings: primerSettings,
             primerTheme: primerTheme,
-            components: components,
-            completion: completion
-        )
-    }
-
-    /// Present the CheckoutComponents UI with custom content
-    /// - Parameters:
-    ///   - clientToken: The client token for the session
-    ///   - viewController: The view controller to present from
-    ///   - customContent: Custom SwiftUI content builder
-    ///   - completion: Optional completion handler
-    public static func presentCheckout<Content: View>(
-        clientToken: String,
-        from viewController: UIViewController,
-        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
-        completion: (() -> Void)? = nil
-    ) {
-        presentCheckout(
-            clientToken: clientToken,
-            from: viewController,
-            primerSettings: PrimerSettings.current,
-            customContent: customContent,
-            completion: completion
-        )
-    }
-
-    /// Present the CheckoutComponents UI with custom content
-    /// - Parameters:
-    ///   - clientToken: The client token for the session
-    ///   - viewController: The view controller to present from
-    ///   - primerSettings: Configuration settings to apply for this checkout session
-    ///   - customContent: Custom SwiftUI content builder
-    ///   - completion: Optional completion handler
-    public static func presentCheckout<Content: View>(
-        clientToken: String,
-        from viewController: UIViewController,
-        primerSettings: PrimerSettings,
-        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
-        completion: (() -> Void)? = nil
-    ) {
-        shared.presentCheckout(
-            clientToken: clientToken,
-            from: viewController,
-            primerSettings: primerSettings,
-            customContent: customContent,
+            scope: scope,
             completion: completion
         )
     }
@@ -269,14 +221,12 @@ public extension CheckoutComponentsDelegate {
     func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
 
-        lastPaymentResult = result
-
         // Dismiss CheckoutComponents first, then call delegate after dismissal completes
         dismissDirectly { [weak self] in
-            if let delegate = self?.delegate, let paymentResult = self?.lastPaymentResult {
-                delegate.checkoutComponentsDidCompleteWithSuccess(paymentResult)
+            if let delegate = self?.delegate {
+                delegate.checkoutComponentsDidCompleteWithSuccess(result)
             } else {
-                self?.logger.error(message: "No delegate set or payment result missing")
+                self?.logger.error(message: "No delegate set for payment success")
             }
         }
     }
@@ -298,17 +248,12 @@ public extension CheckoutComponentsDelegate {
         delegate?.checkoutComponentsDidDismiss()
     }
 
-    /// Internal method for storing payment result (called by DefaultCheckoutScope)
-    func storePaymentResult(_ result: PaymentResult) {
-        lastPaymentResult = result
-    }
-
     private func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
         primerSettings: PrimerSettings,
         primerTheme: PrimerCheckoutTheme,
-        components: PrimerComponents,
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
         completion: (() -> Void)?
     ) {
         guard !isPresentingCheckout else {
@@ -325,69 +270,17 @@ public extension CheckoutComponentsDelegate {
                 clientToken: clientToken,
                 settings: primerSettings,
                 theme: primerTheme,
-                components: components,
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
-                onCompletion: { [weak self] in
-                    if let paymentResult = self?.lastPaymentResult {
+                scope: scope,
+                onCompletion: { [weak self] state in
+                    switch state {
+                    case let .success(paymentResult):
                         self?.handlePaymentSuccess(paymentResult)
-                    } else {
-                        // No payment result means user dismissed or cancelled
-                        self?.dismissDirectly()
-                        self?.handleCheckoutDismiss()
-                    }
-                }
-            )
-
-            activeCheckoutController = bridgeController
-
-            configureSheetPresentation(for: bridgeController, settings: primerSettings)
-
-            viewController.present(bridgeController, animated: true) { [weak self] in
-                self?.isPresentingCheckout = false
-                completion?()
-            }
-        }
-    }
-
-    private func presentCheckout<Content: View>(
-        clientToken: String,
-        from viewController: UIViewController,
-        primerSettings: PrimerSettings,
-        primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
-        components: PrimerComponents = PrimerComponents(),
-        @ViewBuilder customContent: @escaping (any PrimerCheckoutScope) -> Content,
-        completion: (() -> Void)?
-    ) {
-        guard !isPresentingCheckout else {
-            logger.debug(message: "Already presenting checkout")
-            completion?()
-            return
-        }
-
-        isPresentingCheckout = true
-
-        Task { @MainActor in
-            // SDK initialization is now handled automatically by PrimerCheckout
-            let customContentWrapper: (any PrimerCheckoutScope) -> AnyView = { scope in
-                AnyView(customContent(scope))
-            }
-
-            let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
-                clientToken: clientToken,
-                settings: primerSettings,
-                theme: primerTheme,
-                components: components,
-                diContainer: DIContainer.shared,
-                navigator: CheckoutNavigator(),
-                presentationContext: .direct,
-                customContent: customContentWrapper,
-                onCompletion: { [weak self] in
-                    if let paymentResult = self?.lastPaymentResult {
-                        self?.handlePaymentSuccess(paymentResult)
-                    } else {
-                        // No payment result means user dismissed or cancelled
+                    case let .failure(error):
+                        self?.handlePaymentFailure(error)
+                    default:
                         self?.dismissDirectly()
                         self?.handleCheckoutDismiss()
                     }
