@@ -177,6 +177,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     @MainActor
     private func registerPaymentMethods() {
         CardPaymentMethod.register()
+        PayPalPaymentMethod.register()
     }
 
     // MARK: - Setup

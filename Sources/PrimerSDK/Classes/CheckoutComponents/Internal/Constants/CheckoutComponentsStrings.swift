@@ -731,6 +731,29 @@ enum CheckoutComponentsStrings {
         comment: "Message for retail outlet feature not yet available"
     )
 
+    // MARK: - PayPal Strings
+
+    static let payPalTitle = NSLocalizedString(
+        "checkout-components-paypal-title",
+        bundle: Bundle.primerResources,
+        value: "PayPal",
+        comment: "PayPal payment screen title"
+    )
+
+    static let payPalContinueButton = NSLocalizedString(
+        "checkout-components-paypal-continue-button",
+        bundle: Bundle.primerResources,
+        value: "Continue with PayPal",
+        comment: "PayPal continue button text"
+    )
+
+    static let payPalRedirectDescription = NSLocalizedString(
+        "checkout-components-paypal-redirect-description",
+        bundle: Bundle.primerResources,
+        value: "You will be redirected to PayPal to complete your payment securely.",
+        comment: "PayPal redirect description text"
+    )
+
     // MARK: - ⚠️ ACCESSIBILITY STRINGS (PHASE 3 - TO BE EXPORTED) ⚠️
 
     // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
@@ -915,6 +938,15 @@ enum CheckoutComponentsStrings {
         )
         return String(format: format, cardType, expiry)
     }
+
+    // MARK: PayPal Accessibility
+
+    static let a11yPayPalLogo = NSLocalizedString(
+        "accessibility.paypal.logo",
+        bundle: Bundle.primerResources,
+        value: "PayPal",
+        comment: "VoiceOver label for PayPal logo"
+    )
 
     // MARK: Custom Actions for VoiceOver Rotor
 
