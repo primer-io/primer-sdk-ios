@@ -97,10 +97,36 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         try await initializePrimer3DSSdk()
         let sdkAuthResult = try await create3DsAuthData(paymentMethodTokenData: paymentMethodTokenData)
         initProtocolVersion = ThreeDS.ProtocolVersion(rawValue: sdkAuthResult.maxSupportedThreeDsProtocolVersion)
-        let authorizationResult = try await initialize3DSAuthorization(
-            sdkAuthResult: sdkAuthResult,
-            paymentMethodTokenData: paymentMethodTokenData
-        )
+
+        // Show EMVCo-required processing screen before authentication request
+        let progressDialog = await MainActor.run { primer3DS.getProgressDialog() }
+        await MainActor.run { progressDialog?.show() }
+        let progressStartTime = Date()
+
+        let authorizationResult: (serverAuthData: ThreeDS.ServerAuthData, resumeToken: String, threeDsAppRequestorUrl: URL?)
+        do {
+            authorizationResult = try await initialize3DSAuthorization(
+                sdkAuthResult: sdkAuthResult,
+                paymentMethodTokenData: paymentMethodTokenData
+            )
+        } catch {
+            // Ensure minimum display time even on error before dismissing
+            let elapsedTime = Date().timeIntervalSince(progressStartTime)
+            let minimumDisplayTime: TimeInterval = 2.0
+            if elapsedTime < minimumDisplayTime {
+                try? await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
+            }
+            await MainActor.run { progressDialog?.dismiss() }
+            throw error
+        }
+
+        // EMVCo requires processing screen to be shown for minimum 2 seconds
+        let elapsedTime = Date().timeIntervalSince(progressStartTime)
+        let minimumDisplayTime: TimeInterval = 2.0
+        if elapsedTime < minimumDisplayTime {
+            try await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
+        }
+
         resumePaymentToken = authorizationResult.resumeToken
         _ = try await perform3DSChallenge(
             threeDSAuthData: authorizationResult.serverAuthData,
@@ -122,10 +148,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         if case InternalError.noNeedToPerform3ds = error {
             guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
             return resumePaymentToken
-        } else if case InternalError.failedToPerform3dsAndShouldBreak(let primerErr) = error {
+        } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
             ErrorHandler.handle(error: primerErr)
             throw primerErr
-        } else if case InternalError.failedToPerform3dsButShouldContinue(let primer3DSErrorContainer) = error {
+        } else if case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error {
             ErrorHandler.handle(error: primer3DSErrorContainer)
             continueInfo = primer3DSErrorContainer.continueInfo
         } else {
@@ -229,7 +255,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest
             ) { result in
                 switch result {
-                case .success(let beginAuthResponse):
+                case let .success(beginAuthResponse):
                     switch beginAuthResponse.authentication.responseCode {
                     case .authSuccess,
                          .authFailed,
@@ -252,7 +278,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                         continuation.resume(returning: (serverAuthData, beginAuthResponse.resumeToken, threeDsAppRequestorUrl))
                     }
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -333,11 +359,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                                paymentMethodTokenData: paymentMethodTokenData,
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
-            case .failure(let underlyingErr):
+            case let .failure(underlyingErr):
                 let primerErr = underlyingErr.normalizedForSDK
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)))
 
-            case .success(let res):
+            case let .success(res):
                 completion(.success(res))
             }
         }
@@ -460,7 +486,7 @@ private extension ThreeDSService {
     }
 
     private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
-        return Primer3DSErrorContainer.primer3DSSdkError(
+        Primer3DSErrorContainer.primer3DSSdkError(
             paymentMethodType: self.paymentMethodType,
             initProtocolVersion: self.initProtocolVersion?.rawValue,
             errorInfo: Primer3DSErrorInfo(primer3DSError)
