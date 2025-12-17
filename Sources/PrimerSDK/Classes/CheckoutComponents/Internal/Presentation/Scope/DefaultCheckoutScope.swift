@@ -552,8 +552,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     func handlePaymentSuccess(_ result: PaymentResult) {
         updateState(.success(result))
 
-        navigator.handleSuccess()
-
         let checkoutResult = CheckoutPaymentResult(
             paymentId: result.paymentId,
             amount: result.amount?.description ?? "N/A"

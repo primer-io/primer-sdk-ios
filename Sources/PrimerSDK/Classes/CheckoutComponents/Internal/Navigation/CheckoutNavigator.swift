@@ -64,9 +64,6 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .processing)
     }
 
-    func handleSuccess() {
-    }
-
     func navigateToError(_ error: PrimerError) {
         coordinator.handlePaymentFailure(error)
     }
