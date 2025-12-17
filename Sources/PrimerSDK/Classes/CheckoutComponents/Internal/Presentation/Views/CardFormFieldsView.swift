@@ -350,12 +350,11 @@ struct CardFormFieldsView: View {
                               let firstNetwork = state.availableNetworks.first
                     {
                         selectedCardNetwork = firstNetwork.network
-                    } else if state.availableNetworks.count > 1 {
-                        if let firstNetwork = state.availableNetworks.first,
-                           selectedCardNetwork == .unknown
-                        {
-                            selectedCardNetwork = firstNetwork.network
-                        }
+                    } else if state.availableNetworks.count > 1,
+                              let firstNetwork = state.availableNetworks.first,
+                              selectedCardNetwork == .unknown
+                    {
+                        selectedCardNetwork = firstNetwork.network
                     }
                 }
             }
