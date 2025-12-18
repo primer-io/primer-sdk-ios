@@ -149,10 +149,6 @@ extension PaymentMethodTokenizationViewModel {
         }
         startPaymentFlowTask = task
 
-        if isCancelled {
-            await task.cancel(with: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
-        }
-
         return try await task.wait()
     }
 
@@ -191,7 +187,7 @@ extension PaymentMethodTokenizationViewModel {
             case .succeed:
                 return nil
 
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule = PrimerAPIConfigurationModule()
 
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -202,7 +198,7 @@ extension PaymentMethodTokenizationViewModel {
 
                 return decodedJWTToken
 
-            case .fail(let message):
+            case let .fail(message):
                 let merchantErr: Error
                 if let message {
                     merchantErr = PrimerError.merchantError(message: message)
@@ -213,7 +209,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
 
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -273,7 +269,7 @@ extension PaymentMethodTokenizationViewModel {
 
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .fail(let message):
+            case let .fail(message):
                 let merchantErr: Error
                 if let message {
                     merchantErr = PrimerError.merchantError(message: message)
@@ -351,7 +347,7 @@ extension PaymentMethodTokenizationViewModel {
         decisionHandlerHasBeenCalled = true
 
         switch paymentCreationDecision.type {
-        case .abort(let errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
+        case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
         case .continue: return
         }
     }
@@ -388,7 +384,7 @@ extension PaymentMethodTokenizationViewModel {
 extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
-        case .paymentFailed(_, let paymentId, let orderId, _, _):
+        case let .paymentFailed(_, paymentId, orderId, _, _):
             return PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
                                                    orderId: orderId,

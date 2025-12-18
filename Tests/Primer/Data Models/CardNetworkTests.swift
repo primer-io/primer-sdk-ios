@@ -40,4 +40,45 @@ final class CardNetworkTests: XCTestCase {
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
         XCTAssertEqual(CardNetworks.allowedCardNetworks, [])
     }
+
+    // MARK: - Surcharge Tests
+
+    func testSurchargeReturnsValueForPositiveSurcharge() {
+        SDKSessionHelper.setUp(paymentMethodOptions: [[
+            "type": PrimerPaymentMethodType.paymentCard.rawValue,
+            "networks": [
+                ["type": "VISA", "surcharge": 100]
+            ]
+        ]])
+
+        XCTAssertEqual(CardNetwork.visa.surcharge, 100)
+    }
+
+    func testSurchargeReturnsNilForZeroSurcharge() {
+        SDKSessionHelper.setUp(paymentMethodOptions: [[
+            "type": PrimerPaymentMethodType.paymentCard.rawValue,
+            "networks": [
+                ["type": "VISA", "surcharge": 0]
+            ]
+        ]])
+
+        XCTAssertNil(CardNetwork.visa.surcharge)
+    }
+
+    func testSurchargeReturnsNilForNegativeSurcharge() {
+        SDKSessionHelper.setUp(paymentMethodOptions: [[
+            "type": PrimerPaymentMethodType.paymentCard.rawValue,
+            "networks": [
+                ["type": "VISA", "surcharge": -50]
+            ]
+        ]])
+
+        XCTAssertNil(CardNetwork.visa.surcharge)
+    }
+
+    func testSurchargeReturnsNilWhenNotConfigured() {
+        SDKSessionHelper.setUp(paymentMethodOptions: nil)
+
+        XCTAssertNil(CardNetwork.visa.surcharge)
+    }
 }

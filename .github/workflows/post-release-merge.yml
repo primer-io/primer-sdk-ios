@@ -19,7 +19,9 @@ jobs:
         run: pip install --user -U Commitizen
       - name: Record previous version
         run: |
-          echo "FROM_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+          # Get the latest tag that matches standard semver format (X.Y.Z), excluding special tags like -3ds-klarna
+          PREV_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          echo "FROM_VERSION=$PREV_TAG" >> $GITHUB_ENV
       - name: Record release version
         run: |
           echo "RELEASE_VERSION=$(cz version --project)" >> $GITHUB_ENV
@@ -37,7 +39,7 @@ jobs:
           bodyFile: "release.md"
   build-and-upload-to-appetize:
     if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
