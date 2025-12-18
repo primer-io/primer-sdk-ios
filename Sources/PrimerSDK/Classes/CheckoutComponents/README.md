@@ -51,14 +51,17 @@ CheckoutComponentsPrimer.presentCheckout(
     // Optional completion
 }
 
-// Present with custom UI
+// Present with custom UI via scope configuration
 CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
+    clientToken: clientToken,
     from: viewController,
     primerSettings: settings,
-    customContent: { scope in
-        // Your custom SwiftUI content using the scope
-        CustomCheckoutView(scope: scope)
+    primerTheme: PrimerCheckoutTheme(),
+    scope: { checkoutScope in
+        // Customize screens using scope properties
+        checkoutScope.paymentMethodSelection.screen = { selectionScope in
+            AnyView(CustomPaymentSelectionView(scope: selectionScope))
+        }
     }
 )
 
@@ -92,7 +95,7 @@ CheckoutComponents supports separate theme configuration:
 
 ```swift
 // Create a custom theme
-let customTheme = PrimerTheme()
+let customTheme = PrimerCheckoutTheme()
 customTheme.colorScheme.primaryColor = .purple
 customTheme.cornerRadius = 12
 
@@ -142,48 +145,36 @@ Each scope provides:
 
 ### Customizing Individual Components
 
-Replace specific UI components while keeping default behavior:
+Use `InputFieldConfig` to customize individual fields with partial or full replacement via scope properties:
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
-    from: viewController,
-    customContent: { checkoutScope in
-        // Default UI with customizations
-        VStack {
-            // Access payment method scopes dynamically
-            if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
-                // Customize individual fields
-                cardScope.cardNumberField = { label, styling in
-                    AnyView(CustomCardNumberField(
-                        label: label,
-                        styling: styling,
-                        onChange: cardScope.updateCardNumber
-                    ))
-                }
-                
-                // Or use SDK components with custom styling
-                cardScope.PrimerCardNumberField(
-                    label: "Card Number",
-                    styling: PrimerFieldStyling(
-                        backgroundColor: .gray.opacity(0.1),
-                        cornerRadius: 12
-                    )
-                )
-            }
-        }
-    }
-)
+// Access card form scope and customize fields
+if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+    // Partial customization - change label/placeholder/styling
+    cardFormScope.cardNumberConfig = InputFieldConfig(
+        label: "Card Number",
+        placeholder: "0000 0000 0000 0000",
+        styling: PrimerFieldStyling(
+            backgroundColor: .gray.opacity(0.1),
+            cornerRadius: 12
+        )
+    )
+    // Full component replacement
+    cardFormScope.cvvConfig = InputFieldConfig(
+        component: { MyCustomCVVField() }
+    )
+}
 ```
 
-### Using SDK Components with Custom Styling
+### Using InputFieldConfig
 
-The ViewBuilder pattern allows you to use SDK components with custom styling:
+`InputFieldConfig` supports partial customization (label, placeholder, styling) or full component replacement:
 
 ```swift
-// Inside your custom content
-cardScope.PrimerCardNumberField(
+// Partial customization - SDK renders default field with custom properties
+InputFieldConfig(
     label: "Card Number",
+    placeholder: "Enter your card number",
     styling: PrimerFieldStyling(
         font: .system(size: 16),
         textColor: .primary,
@@ -197,55 +188,43 @@ cardScope.PrimerCardNumberField(
         fieldHeight: 56
     )
 )
-.overlay(alignment: .trailing) {
-    // Add custom overlays
-    cardScope.state.detectedCardNetwork.map { network in
-        Image(network.logo)
-            .padding(.trailing, 16)
-    }
-}
+
+// Full component replacement
+InputFieldConfig(
+    component: { MyCustomCardNumberField() }
+)
 ```
 
 ### Complete Custom UI
 
-Replace the entire checkout UI while using the scope for logic:
+Replace screens using scope-based `.screen` properties:
 
 ```swift
 CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
+    clientToken: clientToken,
     from: viewController,
-    customContent: { scope in
-        VStack {
-            // Custom header with navigation
-            HStack {
-                Button("Cancel") {
-                    scope.onCancel()
-                }
-                Spacer()
-                Text("Checkout")
-                Spacer()
-            }
-            
-            // Use scope state for content
-            switch scope.state {
-            case .initializing:
-                ProgressView("Loading payment methods...")
-            
-            case .ready:
-                // Show payment method selection
-                if let selectionScope = scope.paymentMethodSelection {
-                    CustomPaymentMethodGrid(scope: selectionScope)
-                }
-                
-            case .error(let error):
-                CustomErrorView(error: error) {
-                    scope.retry()
-                }
-                
-            case .dismissed:
-                EmptyView()
+    primerSettings: settings,
+    primerTheme: PrimerCheckoutTheme(),
+    scope: { checkoutScope in
+        // Replace the payment method selection screen
+        checkoutScope.paymentMethodSelection.screen = { selectionScope in
+            AnyView(CustomPaymentSelectionScreen(
+                scope: selectionScope,
+                checkoutScope: checkoutScope
+            ))
+        }
+
+        // Replace the card form screen
+        if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+            cardFormScope.screen = { scope in
+                AnyView(CustomCardFormScreen(scope: scope))
             }
         }
+
+        // Replace lifecycle screens
+        checkoutScope.splashScreen = { AnyView(CustomSplashScreen()) }
+        checkoutScope.successScreen = { result in AnyView(CustomSuccessScreen(result: result)) }
+        checkoutScope.errorScreen = { error in AnyView(CustomErrorScreen(error: error)) }
     }
 )
 ```
@@ -296,87 +275,67 @@ CheckoutComponents provides three approaches for customization:
 #### 1. Field-Level Customization (Replace Individual Fields)
 
 ```swift
-if let cardScope = checkoutScope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
-    // Replace card number field with custom implementation
-    cardScope.cardNumberField = { label, styling in
-        AnyView(CustomCardNumberInput(
-            label: label,
-            styling: styling,
-            onChange: cardScope.updateCardNumber,
-            validation: cardScope.state.cardNumber
-        ))
-    }
-    
-    // Replace expiry date field
-    cardScope.expiryDateField = { label, styling in
-        AnyView(CustomExpiryInput(
-            label: label,
-            styling: styling,
-            onChange: cardScope.updateExpiryDate,
-            validation: cardScope.state.expiryDate
-        ))
-    }
+// Access card form scope and customize via InputFieldConfig
+if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+    // Partial customization - SDK renders default field with custom properties
+    cardFormScope.cardNumberConfig = InputFieldConfig(
+        label: "Card Number",
+        placeholder: "0000 0000 0000 0000",
+        styling: customStyling
+    )
+    cardFormScope.expiryDateConfig = InputFieldConfig(
+        label: "Expiry",
+        styling: customStyling
+    )
+    cardFormScope.cvvConfig = InputFieldConfig(
+        label: "CVV",
+        styling: customStyling
+    )
+    // Full component replacement
+    cardFormScope.cardholderNameConfig = InputFieldConfig(
+        component: { CustomCardholderNameField() }
+    )
 }
 ```
 
 #### 2. Section-Level Customization (Group Multiple Fields)
 
 ```swift
-// Customize entire card input section
-cardScope.cardInputSection = { modifier in
-    CustomCardSection(
-        scope: cardScope,
-        modifier: modifier
-    )
+// Replace entire card details or billing address sections
+cardFormScope.cardInputSection = { scope in
+    AnyView(CustomCardSection(scope: scope))
 }
-
-// Customize billing address section
-cardScope.billingAddressSection = { modifier in
-    CustomBillingSection(
-        scope: cardScope,
-        modifier: modifier,
-        fields: cardScope.state.configuration.billingAddressFields
-    )
+cardFormScope.billingAddressSection = { scope in
+    AnyView(CustomBillingSection(scope: scope))
 }
 ```
 
-#### 3. SDK Components with Custom Styling
+#### 3. Full Screen Customization
 
 ```swift
-// Use SDK components with ViewBuilder pattern
-VStack(spacing: 16) {
-    cardScope.PrimerCardNumberField(
-        label: "Card Number",
-        styling: customStyling
+// Replace entire card form screen
+cardFormScope.screen = { scope in
+    AnyView(
+        VStack(spacing: 16) {
+            // Access scope for state and actions
+            scope.PrimerCardNumberField(label: "Card Number", styling: nil)
+
+            HStack(spacing: 12) {
+                scope.PrimerExpiryDateField(label: "Expiry", styling: nil)
+                scope.PrimerCvvField(label: "CVV", styling: nil)
+            }
+
+            Button("Submit") {
+                scope.onSubmit()
+            }
+        }
     )
-    
-    HStack(spacing: 12) {
-        cardScope.PrimerExpiryDateField(
-            label: "Expiry",
-            styling: customStyling
-        )
-        
-        cardScope.PrimerCvvField(
-            label: "CVV",
-            styling: customStyling
-        )
-    }
-    
-    // Conditional fields based on configuration
-    if cardScope.state.configuration.isCardholderNameRequired {
-        cardScope.PrimerCardholderNameField(
-            label: "Name on Card",
-            styling: customStyling
-        )
-    }
 }
 ```
 
-All customizable fields include:
-- Card fields: cardNumberField, expiryDateField, cvvField, cardholderNameField
-- Billing fields: firstNameField, lastNameField, emailField, phoneNumberField
-- Address fields: addressLine1Field, addressLine2Field, cityField, stateField, postalCodeField, countryField
-- UI elements: cardNetworkSelector, countrySelector, submitButton, cardInputSection, billingAddressSection
+All customizable fields via InputFieldConfig:
+- Card fields: cardNumber, expiryDate, cvv, cardholderName, cardNetwork, retailOutlet, otpCode
+- Billing fields: firstName, lastName, email, phoneNumber, addressLine1, addressLine2, city, state, postalCode, countryCode
 
 ## State Observation
 
@@ -458,30 +417,32 @@ CheckoutComponents automatically detects and handles co-badged cards with networ
 Task {
     for await state in cardScope.state {
         // Multiple networks detected
-        if state.detectedCardNetworks.count > 1 {
-            print("Co-badged card detected: \(state.detectedCardNetworks)")
-            
-            // Network-specific surcharges
-            for network in state.detectedCardNetworks {
-                if let surcharge = state.getNetworkSurcharge(for: network) {
-                    print("\(network): +\(surcharge.amount) \(surcharge.currency)")
-                }
+        if state.availableNetworks.count > 1 {
+            print("Co-badged card detected: \(state.availableNetworks)")
+
+            // Get surcharge for selected network
+            if let surcharge = state.surchargeAmount {
+                print("Surcharge: \(surcharge)")
             }
         }
     }
 }
 
 // Programmatically select network
-cardScope.selectCardNetwork(.mastercard)
+cardScope.updateSelectedCardNetwork("mastercard")
 
-// Customize network selector UI
-cardScope.cardNetworkSelector = { networks, selected, onSelect in
-    AnyView(CustomNetworkPicker(
-        networks: networks,
-        selected: selected,
-        onSelect: onSelect
-    ))
+// Customize network selector via scope closure
+cardScope.cobadgedCardsView = { availableNetworks, selectNetwork in
+    CustomNetworkPicker(
+        networks: availableNetworks,
+        onSelect: selectNetwork
+    )
 }
+
+// Or customize via InputFieldConfig on the scope
+cardScope.cardNetworkConfig = InputFieldConfig(
+    component: { MyCustomNetworkSelector() }
+)
 ```
 
 ## Billing Address
@@ -490,48 +451,21 @@ Billing address fields are dynamically configured based on API response:
 
 ```swift
 // Check which fields are required
-let config = cardScope.state.configuration
-print("Required billing fields: \(config.billingAddressFields)")
+let formConfig = cardScope.getFormConfiguration()
+print("Required billing fields: \(formConfig.billingFields)")
 
 // Fields can include: firstName, lastName, email, phoneNumber,
 // addressLine1, addressLine2, city, state, postalCode, countryCode
 
-// Customize billing address section
-cardScope.billingAddressSection = { modifier in
-    VStack(alignment: .leading, spacing: 12) {
-        Text("Billing Address")
-            .font(.headline)
-        
-        // Only show required fields
-        ForEach(config.billingAddressFields, id: \.self) { field in
-            switch field {
-            case .email:
-                cardScope.PrimerEmailField(
-                    label: "Email",
-                    styling: customStyling
-                )
-            case .countryCode:
-                cardScope.PrimerCountryField(
-                    label: "Country",
-                    styling: customStyling
-                )
-            // ... handle other fields
-            default:
-                EmptyView()
-            }
-        }
-    }
-    .primerModifier(modifier)
-}
+// Customize billing address fields via InputFieldConfig on scope
+cardFormScope.firstNameConfig = InputFieldConfig(label: "First Name", styling: customStyling)
+cardFormScope.lastNameConfig = InputFieldConfig(label: "Last Name", styling: customStyling)
+cardFormScope.emailConfig = InputFieldConfig(label: "Email", styling: customStyling)
+cardFormScope.countryCodeConfig = InputFieldConfig(label: "Country", styling: customStyling)
 
-// Country selection with search
-cardScope.countrySelector = { countries, selected, onSelect in
-    AnyView(CustomCountryPicker(
-        countries: countries,
-        selected: selected,
-        onSelect: onSelect,
-        searchEnabled: true
-    ))
+// Or replace entire billing address section
+cardFormScope.billingAddressSection = { scope in
+    AnyView(CustomBillingAddressSection(scope: scope))
 }
 ```
 
@@ -544,37 +478,33 @@ Customize the payment method selection screen:
 if let selectionScope = checkoutScope.paymentMethodSelection {
     // Replace entire selection screen
     selectionScope.screen = { scope in
-        AnyView(CustomPaymentMethodGrid(
+        CustomPaymentMethodGrid(
             methods: scope.state.paymentMethods,
             onSelect: scope.onPaymentMethodSelected
-        ))
+        )
     }
-    
+
     // Or customize individual components
     selectionScope.paymentMethodItem = { method in
-        AnyView(CustomPaymentMethodCell(
+        CustomPaymentMethodCell(
             method: method,
             showSurcharge: method.surcharge != nil
-        ))
+        )
     }
-    
+
     // Custom category headers
     selectionScope.categoryHeader = { category in
-        AnyView(
-            Text(category.displayName)
-                .font(.headline)
-                .padding(.vertical, 8)
-        )
+        Text(category.displayName)
+            .font(.headline)
+            .padding(.vertical, 8)
     }
-    
+
     // Empty state when no methods available
     selectionScope.emptyStateView = {
-        AnyView(
-            VStack {
-                Image(systemName: "creditcard.slash")
-                Text("No payment methods available")
-            }
-        )
+        VStack {
+            Image(systemName: "creditcard.slash")
+            Text("No payment methods available")
+        }
     }
 }
 
@@ -795,39 +725,37 @@ CheckoutComponentsPrimer.presentCheckout(
 
 ```swift
 CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
+    clientToken: clientToken,
     from: viewController,
-    customContent: { scope in
-        if let cardScope = scope.getPaymentMethodScope(for: .paymentCard) as? PrimerCardFormScope {
-            VStack(spacing: 20) {
-                // Custom header
-                CustomHeaderView()
-                
-                // Mix SDK and custom components
-                cardScope.PrimerCardNumberField(
-                    label: "Card Number",
-                    styling: customStyling
-                )
-                
-                HStack {
-                    cardScope.PrimerExpiryDateField(styling: customStyling)
-                    cardScope.PrimerCvvField(styling: customStyling)
-                }
-                
-                // Custom billing section
-                if !cardScope.state.configuration.billingAddressFields.isEmpty {
-                    CustomBillingAddressView(scope: cardScope)
-                }
-                
-                // Submit button with loading state
-                Button(action: cardScope.submit) {
-                    if cardScope.state.isSubmitting {
-                        ProgressView()
-                    } else {
-                        Text("Pay \(cardScope.state.amount.formatted)")
+    primerSettings: settings,
+    primerTheme: PrimerCheckoutTheme(),
+    scope: { checkoutScope in
+        // Replace the card form screen with a custom implementation
+        if let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
+            cardFormScope.screen = { scope in
+                AnyView(VStack(spacing: 20) {
+                    // Custom header
+                    CustomHeaderView()
+
+                    // Mix SDK and custom components
+                    scope.PrimerCardNumberField(
+                        label: "Card Number",
+                        styling: customStyling
+                    )
+
+                    HStack {
+                        scope.PrimerExpiryDateField(styling: customStyling)
+                        scope.PrimerCvvField(styling: customStyling)
                     }
-                }
-                .disabled(!cardScope.state.isSubmitEnabled)
+
+                    // Custom billing section
+                    CustomBillingAddressView(scope: scope)
+
+                    // Submit button
+                    Button(action: { scope.onSubmit() }) {
+                        Text("Pay")
+                    }
+                })
             }
         }
     }
@@ -837,43 +765,49 @@ CheckoutComponentsPrimer.presentCheckout(
 ### Complete Custom Checkout
 
 ```swift
-struct CustomCheckoutView: View {
-    let scope: PrimerCheckoutScope
-    
+// Custom payment selection view that receives scope as parameter
+struct CustomPaymentSelectionView: View {
+    let scope: PrimerPaymentMethodSelectionScope
+    let checkoutScope: PrimerCheckoutScope
+
+    @State private var state = PrimerPaymentMethodSelectionState()
+
     var body: some View {
         NavigationView {
-            switch scope.state {
-            case .initializing:
-                LoadingView()
-                
-            case .ready:
-                if let selectionScope = scope.paymentMethodSelection {
+            VStack {
+                if state.isLoading {
+                    ProgressView()
+                } else {
                     PaymentMethodGrid(
-                        methods: selectionScope.state.paymentMethods,
+                        methods: state.paymentMethods,
                         onSelect: { method in
-                            selectionScope.onPaymentMethodSelected(method)
+                            scope.onPaymentMethodSelected(paymentMethod: method)
                         }
                     )
                 }
-                
-            case .error(let error):
-                ErrorView(error: error) {
-                    scope.retry()
-                }
-                
-            case .dismissed:
-                EmptyView()
+            }
+        }
+        .task {
+            for await newState in scope.state {
+                state = newState
             }
         }
     }
 }
 
-// Present with custom view
+// Present with scope-based customization
 CheckoutComponentsPrimer.presentCheckout(
-    with: clientToken,
+    clientToken: clientToken,
     from: viewController,
-    customContent: { scope in
-        CustomCheckoutView(scope: scope)
+    primerSettings: settings,
+    primerTheme: PrimerCheckoutTheme(),
+    scope: { checkoutScope in
+        checkoutScope.paymentMethodSelection.screen = { selectionScope in
+            AnyView(CustomPaymentSelectionView(
+                scope: selectionScope,
+                checkoutScope: checkoutScope
+            ))
+        }
     }
 )
 ```

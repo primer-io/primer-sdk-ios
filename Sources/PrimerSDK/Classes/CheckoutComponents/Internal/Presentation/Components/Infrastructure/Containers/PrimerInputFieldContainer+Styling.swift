@@ -42,12 +42,13 @@ extension PrimerInputFieldContainer {
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
     var errorMessageFont: Font { PrimerFont.bodySmall(tokens: tokens) }
-    var labelFont: Font { styling?.labelFont ?? PrimerFont.bodySmall(tokens: tokens) }
+    var labelFont: Font { styling?.resolvedLabelFont(tokens: tokens) ?? PrimerFont.bodySmall(tokens: tokens) }
 }
 
 // MARK: - Spacing & Frame
 @available(iOS 15.0, *)
 extension PrimerInputFieldContainer {
+    var fieldCornerRadius: CGFloat { styling?.cornerRadius ?? PrimerRadius.small(tokens: tokens) }
     var textFieldContainerBackgroundLineWidth: CGFloat { styling?.borderWidth ?? PrimerBorderWidth.standard }
     var errorMessageHeight: CGFloat { hasError ? PrimerComponentHeight.errorMessage : 0 }
     var errorMessageTopPadding: CGFloat { hasError ? PrimerSpacing.xsmall(tokens: tokens) : 0 }

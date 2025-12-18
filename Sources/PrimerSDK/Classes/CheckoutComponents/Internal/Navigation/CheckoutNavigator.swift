@@ -59,15 +59,18 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .paymentMethod(paymentMethodType, context))
     }
 
-    /// Navigate to country selection
-    func navigateToCountrySelection() {
-        coordinator.navigate(to: .selectCountry)
+    /// Navigate to processing screen (payment in progress)
+    func navigateToProcessing() {
+        coordinator.navigate(to: .processing)
     }
 
-    /// Navigate to error screen with PrimerError (handled by CheckoutComponentsPrimer delegate)
     func navigateToError(_ error: PrimerError) {
         coordinator.handlePaymentFailure(error)
-        // Error handling is now managed by CheckoutComponentsPrimer delegate
+    }
+
+    /// Navigate to payment selection to choose a different payment method
+    func handleOtherPaymentMethods() {
+        coordinator.navigate(to: .paymentMethodSelection)
     }
 
     /// Navigate back

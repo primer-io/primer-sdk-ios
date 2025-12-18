@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Default implementation of PrimerCheckoutScope
 @available(iOS 15.0, *)
 @MainActor
 final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
@@ -16,7 +15,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         case loading
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
-        case selectCountry  // Country selection screen
+        case processing  // Payment processing in progress
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
         case dismissed
@@ -27,7 +26,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 return true
             case (.paymentMethodSelection, .paymentMethodSelection):
                 return true
-            case (.selectCountry, .selectCountry):
+            case (.processing, .processing):
                 return true
             case (.dismissed, .dismissed):
                 return true
@@ -45,13 +44,14 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Properties
 
-    /// The current checkout state
     @Published private var internalState = PrimerCheckoutState.initializing
-
-    /// The current navigation state
     @Published var navigationState = NavigationState.loading
 
-    /// State stream for external observation
+    /// Provides direct access to the current checkout state for completion callbacks
+    var currentState: PrimerCheckoutState {
+        internalState
+    }
+
     public var state: AsyncStream<PrimerCheckoutState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -69,12 +69,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - UI Customization Properties
 
-    public var container: ((_ content: @escaping () -> AnyView) -> any View)?
-    public var splashScreen: (() -> any View)?
-    public var loadingScreen: (() -> any View)?
+    public var container: ContainerComponent?
+    public var splashScreen: Component?
+    public var loading: Component?
     public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
-    public var errorScreen: ((_ message: String) -> any View)?
-    public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
+    public var errorScreen: ErrorComponent?
+    public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
     // MARK: - Child Scopes
 
@@ -93,25 +93,22 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Dynamic Payment Method Scope
 
-    /// The currently active payment method scope (dynamically created)
     private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
-
-    /// Cache of created payment method scopes by type
     private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
 
     // MARK: - Services
 
     private let navigator: CheckoutNavigator
+    private var configurationService: ConfigurationService?
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
 
-    /// Stores the API-provided display name of the currently selected payment method for accessibility announcements
+    // Stores the API-provided display name for accessibility announcements
     private var selectedPaymentMethodName: String?
 
     // MARK: - Internal Access
 
-    /// Provides access to the navigator for child scopes
     var checkoutNavigator: CheckoutNavigator {
         navigator
     }
@@ -122,48 +119,41 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private let settings: PrimerSettings
     var availablePaymentMethods: [InternalPaymentMethod] = []
 
-    // MARK: - UI Settings Access (for settings-based screen control)
+    // MARK: - UI Settings Access
 
-    /// Whether the initialization loading screen should be shown
     var isInitScreenEnabled: Bool {
         settings.uiOptions.isInitScreenEnabled
     }
 
-    /// Whether the success screen should be shown after successful payment
     var isSuccessScreenEnabled: Bool {
         settings.uiOptions.isSuccessScreenEnabled
     }
 
-    /// Whether the error screen should be shown after failed payment
     var isErrorScreenEnabled: Bool {
         settings.uiOptions.isErrorScreenEnabled
     }
 
-    /// Exposes card form UI options for child scopes
     var cardFormUIOptions: PrimerCardFormUIOptions? {
         settings.uiOptions.cardFormUIOptions
     }
 
-    /// Available dismissal mechanisms (gestures, close button)
     var dismissalMechanism: [DismissalMechanism] {
         settings.uiOptions.dismissalMechanism
     }
 
-    // MARK: - Debug Settings Access (critical for 3DS security)
+    // MARK: - Debug Settings Access
 
-    /// Whether 3DS sanity checks are enabled (CRITICAL for security in production)
+    // 3DS sanity checks - CRITICAL for security in production
     var is3DSSanityCheckEnabled: Bool {
         settings.debugOptions.is3DSSanityCheckEnabled
     }
 
     // MARK: - Payment Settings
 
-    /// Payment handling mode from settings
     public var paymentHandling: PrimerPaymentHandling {
         settings.paymentHandling
     }
 
-    /// The presentation context for navigation behavior
     let presentationContext: PresentationContext
 
     // MARK: - Initialization
@@ -184,10 +174,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         observeNavigationEvents()
     }
 
-    /// Registers all available payment method implementations with the registry
     @MainActor
     private func registerPaymentMethods() {
         CardPaymentMethod.register()
+        PayPalPaymentMethod.register()
     }
 
     // MARK: - Setup
@@ -199,6 +189,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             }
 
             let configService = try await container.resolve(ConfigurationService.self)
+            configurationService = configService
             paymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge(configurationService: configService)
 
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
@@ -238,7 +229,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
-                updateState(.ready)
+                // Get amount and currency from configuration
+                let totalAmount = configurationService?.amount ?? 0
+                let currencyCode = configurationService?.currency?.code ?? ""
+                updateState(.ready(totalAmount: totalAmount, currencyCode: currencyCode))
 
                 if availablePaymentMethods.count == 1,
                    let singlePaymentMethod = availablePaymentMethods.first {
@@ -320,8 +314,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 navigator.navigateToPaymentSelection()
             case let .paymentMethod(paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
-            case .selectCountry:
-                navigator.navigateToCountrySelection()
+            case .processing:
+                navigator.navigateToProcessing()
             case .success:
                 // Success handling is now done via the view's switch statement, not the navigator
                 break
@@ -334,7 +328,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         }
     }
 
-    /// Announces screen changes to VoiceOver users
     private func announceScreenChange(for state: NavigationState) {
         guard let service = accessibilityAnnouncementService else { return }
 
@@ -355,8 +348,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     .capitalized
                 message = CheckoutComponentsStrings.a11yScreenPaymentMethod(displayName)
             }
-        case .selectCountry:
-            message = CheckoutComponentsStrings.a11yScreenCountrySelection
+        case .processing:
+            message = CheckoutComponentsStrings.a11yScreenProcessingPayment
         case .success:
             message = CheckoutComponentsStrings.a11yScreenSuccess
             selectedPaymentMethodName = nil
@@ -387,8 +380,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     newNavigationState = .paymentMethodSelection
                 case let .paymentMethod(paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
-                case .selectCountry:
-                    newNavigationState = .selectCountry
+                case .processing:
+                    newNavigationState = .processing
                 case let .failure(primerError):
                     newNavigationState = .failure(primerError)
                 default:
@@ -413,7 +406,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch (lhs, rhs) {
         case (.loading, .loading),
              (.paymentMethodSelection, .paymentMethodSelection),
-             (.selectCountry, .selectCountry):
+             (.processing, .processing):
             return true
         case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
             return lhsType == rhsType
@@ -430,6 +423,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         for paymentMethodType: String
     ) -> T? {
         if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
+            currentPaymentMethodScope = cachedScope
             return cachedScope
         }
 
@@ -446,6 +440,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             if let scope {
                 paymentMethodScopeCache[paymentMethodType] = scope
+                currentPaymentMethodScope = scope
                 return scope
             } else {
                 return nil
@@ -458,6 +453,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
         if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType }) as? T {
+            currentPaymentMethodScope = cachedScope
             return cachedScope
         }
 
@@ -475,6 +471,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             if let scope {
                 let scopeTypeName = String(describing: type(of: scope))
                 paymentMethodScopeCache[scopeTypeName] = scope
+                currentPaymentMethodScope = scope
                 return scope
             } else {
                 return nil
@@ -491,7 +488,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Payment Method Screen Management
 
-    /// Type mapping from payment method enum to string identifier
     private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
         type.rawValue
     }
@@ -555,8 +551,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     func handlePaymentSuccess(_ result: PaymentResult) {
-        CheckoutComponentsPrimer.shared.storePaymentResult(result)
-
         updateState(.success(result))
 
         let checkoutResult = CheckoutPaymentResult(
@@ -568,14 +562,23 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     func handlePaymentError(_ error: PrimerError) {
         updateState(.failure(error))
+        // Note: Error callback is invoked via navigateToError in updateNavigationState
         updateNavigationState(.failure(error))
     }
 
-    /// Handle auto-dismiss from success or error screens
+    func startProcessing() {
+        updateNavigationState(.processing)
+    }
+
     func handleAutoDismiss() {
         // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
         Task { @MainActor in
             updateState(.dismissed)
         }
     }
+
+    func retryPayment() {
+        currentPaymentMethodScope?.submit()
+    }
+
 }

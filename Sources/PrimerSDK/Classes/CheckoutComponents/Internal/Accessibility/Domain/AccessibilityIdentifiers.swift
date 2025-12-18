@@ -59,4 +59,10 @@ enum AccessibilityIdentifiers {
         static let messageContainer = "checkout_components_error_message_container"
         static let dismissButton = "checkout_components_error_dismiss_button"
     }
+
+    enum PayPal {
+        static let container = "checkout_components_paypal_container"
+        static let logo = "checkout_components_paypal_logo"
+        static let submitButton = "checkout_components_paypal_submit_button"
+    }
 }

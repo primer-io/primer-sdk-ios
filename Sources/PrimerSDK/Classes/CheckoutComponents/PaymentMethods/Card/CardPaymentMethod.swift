@@ -6,15 +6,11 @@
 
 import SwiftUI
 
-/// Card payment method implementation conforming to PaymentMethodProtocol.
-/// Provides self-contained card payment functionality with scope creation.
 @available(iOS 15.0, *)
 struct CardPaymentMethod: PaymentMethodProtocol {
 
-    /// The scope type this payment method creates
     typealias ScopeType = DefaultCardFormScope
 
-    /// The payment method type identifier for cards
     static let paymentMethodType: String = PrimerPaymentMethodType.paymentCard.rawValue
 
     /// Creates a card form scope for this payment method
@@ -85,7 +81,9 @@ struct CardPaymentMethod: PaymentMethodProtocol {
     }
 
     /// Creates the view for card payments by retrieving the card form scope and rendering the appropriate UI.
-    /// This method handles both custom screens (if provided via cardFormScope.screen) and the default CardFormScreen.
+    /// This method handles custom screens in priority order:
+    /// 1. cardFormScope.screen (scope-based customization)
+    /// 2. Default CardFormScreen
     /// - Parameter checkoutScope: The parent checkout scope that manages this payment method
     /// - Returns: The card form view, or nil if the scope cannot be retrieved
     @MainActor
@@ -95,10 +93,14 @@ struct CardPaymentMethod: PaymentMethodProtocol {
             return nil
         }
 
-        // Check if custom screen is provided, otherwise use default
+        // The custom screen is rendered via CardFormScreen which checks
+        // cardFormConfig.screen and applies field customizations
+        // Check if legacy scope-based custom screen is provided
         if let customScreen = cardFormScope.screen {
             return AnyView(customScreen(cardFormScope))
         } else {
+            // CardFormScreen internally handles CardForm configuration
+            // and individual field customizations
             return AnyView(CardFormScreen(scope: cardFormScope))
         }
     }
@@ -128,8 +130,6 @@ struct CardPaymentMethod: PaymentMethodProtocol {
 @available(iOS 15.0, *)
 extension CardPaymentMethod {
 
-    /// Registers the card payment method with the global registry
-    /// This should be called during SDK initialization
     @MainActor
     static func register() {
         PaymentMethodRegistry.shared.register(CardPaymentMethod.self)

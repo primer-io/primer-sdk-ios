@@ -6,17 +6,11 @@
 
 import Foundation
 
-/// Protocol defining a validation rule that can be applied to input data
 public protocol ValidationRule {
     associatedtype Input
-
-    /// Validates the input against this rule
-    /// - Parameter input: The value to validate
-    /// - Returns: A ValidationResult indicating success or failure
     func validate(_ input: Input) -> ValidationResult
 }
 
-/// Rule that ensures a field is not empty
 public struct RequiredFieldRule: ValidationRule {
     private let fieldName: String
     private let errorCode: String

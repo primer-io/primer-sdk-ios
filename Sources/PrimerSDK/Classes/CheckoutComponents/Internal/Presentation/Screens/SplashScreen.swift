@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-/// Default splash screen for CheckoutComponents
 @available(iOS 15.0, *)
 struct SplashScreen: View {
     @Environment(\.designTokens) private var tokens

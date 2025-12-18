@@ -31,26 +31,21 @@ private struct FieldValidationStates: Equatable {
     var phoneNumber: Bool = false
 }
 
-/// Default implementation of PrimerCardFormScope
 @available(iOS 15.0, *)
 @MainActor
 public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, LogReporter {
     // MARK: - Properties
 
-    /// The presentation context determining navigation behavior
     public private(set) var presentationContext: PresentationContext = .fromPaymentSelection
 
-    /// Card form UI options from settings
     public var cardFormUIOptions: PrimerCardFormUIOptions? {
         checkoutScope?.cardFormUIOptions
     }
 
-    /// Available dismissal mechanisms from settings
     public var dismissalMechanism: [DismissalMechanism] {
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    /// State stream for external observation
     public var state: AsyncStream<StructuredCardFormState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
@@ -68,41 +63,40 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - UI Customization Properties
 
-    // MARK: - Screen Customization
-
-    public var screen: ((_ scope: any PrimerCardFormScope) -> any View)?
+    public var title: String?
+    public var screen: CardFormScreenComponent?
     public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-    public var errorView: ((_ error: String) -> any View)?
+    public var errorView: ErrorComponent?
 
-    // MARK: - Field-Level Customization Properties
+    // MARK: - Submit Button Customization
 
-    public var cardNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var expiryDateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cvvField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cardholderNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var postalCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var countryField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var cityField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var stateField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var addressLine1Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var addressLine2Field: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var phoneNumberField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var firstNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var lastNameField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var emailField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var retailOutletField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var otpCodeField: ((_ label: String?, _ styling: PrimerFieldStyling?) -> any View)?
-    public var submitButton: ((_ text: String) -> any View)?
+    public var submitButtonText: String?
+    public var showSubmitLoadingIndicator: Bool = true
 
-    // MARK: - Section-Level Customization Properties
+    // MARK: - Field-Level Customization via InputFieldConfig
 
-    public var cardInputSection: (() -> any View)?
-    public var billingAddressSection: (() -> any View)?
-    public var submitButtonSection: (() -> any View)?
+    public var cardNumberConfig: InputFieldConfig?
+    public var expiryDateConfig: InputFieldConfig?
+    public var cvvConfig: InputFieldConfig?
+    public var cardholderNameConfig: InputFieldConfig?
+    public var postalCodeConfig: InputFieldConfig?
+    public var countryConfig: InputFieldConfig?
+    public var cityConfig: InputFieldConfig?
+    public var stateConfig: InputFieldConfig?
+    public var addressLine1Config: InputFieldConfig?
+    public var addressLine2Config: InputFieldConfig?
+    public var phoneNumberConfig: InputFieldConfig?
+    public var firstNameConfig: InputFieldConfig?
+    public var lastNameConfig: InputFieldConfig?
+    public var emailConfig: InputFieldConfig?
+    public var retailOutletConfig: InputFieldConfig?
+    public var otpCodeConfig: InputFieldConfig?
 
-    // MARK: - Default Styling Properties
+    // MARK: - Section-Level Customization
 
-    public var defaultFieldStyling: [String: PrimerFieldStyling]?
+    public var cardInputSection: Component?
+    public var billingAddressSection: Component?
+    public var submitButtonSection: Component?
 
     // MARK: - Private Properties
 
@@ -113,19 +107,11 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private let configurationService: ConfigurationService
 
-    /// Track if billing address has been sent to avoid duplicate requests
+    // Track if billing address has been sent to avoid duplicate requests
     private var billingAddressSent = false
-
-    /// Store the current card data
     private var currentCardData: PrimerCardData?
-
-    /// Field validation states for proper scope integration
     private var fieldValidationStates = FieldValidationStates()
-
-    /// Structured state for form data
     @Published var structuredState = StructuredCardFormState()
-
-    /// Form configuration determining which fields are displayed
     private var formConfiguration: CardFormConfiguration = .default
 
     /// Builds billing address fields array based on API configuration
@@ -169,7 +155,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         return fields
     }
 
-    /// Computed property to get the selected country from the country code
     private var selectedCountryFromCode: CountryCode.PhoneNumberCountryCode? {
         let countryCode = structuredState.data[.countryCode]
         guard !countryCode.isEmpty else {
@@ -257,7 +242,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Update Methods
 
-    /// Generic field update method for internal use
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
         structuredState.data[fieldType] = value
 
@@ -308,7 +292,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    /// Trigger network detection for the given card number
     private func triggerNetworkDetection(for cardNumber: String) async {
         guard let interactor = cardNetworkDetectionInteractor else {
             return
@@ -452,14 +435,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         checkoutScope?.onDismiss()
     }
 
-    public func navigateToCountrySelection() {
-        guard let navigator = checkoutScope?.checkoutNavigator else {
-            return
-        }
-
-        navigator.navigateToCountrySelection()
-    }
-
     // MARK: - Nested Scope
 
     private var _selectCountry: DefaultSelectCountryScope?
@@ -524,6 +499,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     func submit() async {
         structuredState.isLoading = true
+
+        // Navigate to processing screen
+        checkoutScope?.startProcessing()
 
         await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
@@ -635,8 +613,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Field-Level Validation State Communication
 
-    /// Updates the form validation state based on field-level validation results.
-    /// This method replaces the duplicate validation logic with direct validation states from the UI components.
+    /// Replaces the duplicate validation logic with direct validation states from UI components.
     public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
         let hasValidCardNumber = cardNumber && !structuredState.data[.cardNumber].replacingOccurrences(of: " ", with: "").isEmpty
         let hasValidCvv = cvv && !structuredState.data[.cvv].isEmpty
@@ -662,85 +639,71 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Individual Field Validation Methods
 
-    /// Updates validation state for card number field specifically
     public func updateCardNumberValidationState(_ isValid: Bool) {
         fieldValidationStates.cardNumber = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for CVV field specifically
     public func updateCvvValidationState(_ isValid: Bool) {
         fieldValidationStates.cvv = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for expiry date field specifically
     public func updateExpiryValidationState(_ isValid: Bool) {
         fieldValidationStates.expiry = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for cardholder name field specifically
     public func updateCardholderNameValidationState(_ isValid: Bool) {
         fieldValidationStates.cardholderName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for postal code field specifically
     public func updatePostalCodeValidationState(_ isValid: Bool) {
         fieldValidationStates.postalCode = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for city field specifically
     public func updateCityValidationState(_ isValid: Bool) {
         fieldValidationStates.city = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for state field specifically
     public func updateStateValidationState(_ isValid: Bool) {
         fieldValidationStates.state = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for address line 1 field specifically
     public func updateAddressLine1ValidationState(_ isValid: Bool) {
         fieldValidationStates.addressLine1 = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for address line 2 field specifically
     public func updateAddressLine2ValidationState(_ isValid: Bool) {
         fieldValidationStates.addressLine2 = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for first name field specifically
     public func updateFirstNameValidationState(_ isValid: Bool) {
         fieldValidationStates.firstName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for last name field specifically
     public func updateLastNameValidationState(_ isValid: Bool) {
         fieldValidationStates.lastName = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for email field specifically
     public func updateEmailValidationState(_ isValid: Bool) {
         fieldValidationStates.email = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for phone number field specifically
     public func updatePhoneNumberValidationState(_ isValid: Bool) {
         fieldValidationStates.phoneNumber = isValid
         updateFieldValidationState()
     }
 
-    /// Updates validation state for country code field specifically
     public func updateCountryCodeValidationState(_ isValid: Bool) {
         fieldValidationStates.countryCode = isValid
         updateFieldValidationState()
@@ -748,12 +711,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Structured State Implementation
 
-    /// Implementation of getFieldValue using structured state
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
         structuredState.data[fieldType]
     }
 
-    /// Implementation of setFieldError using structured state
     public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String? = nil) {
         structuredState.setError(message, for: fieldType, errorCode: errorCode)
 
@@ -762,23 +723,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
         }
     }
 
-    /// Implementation of clearFieldError using structured state
     public func clearFieldError(_ fieldType: PrimerInputElementType) {
         structuredState.clearError(for: fieldType)
     }
 
-    /// Implementation of getFieldError using structured state
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
         structuredState.errorMessage(for: fieldType)
     }
 
-    /// Implementation of getFormConfiguration
     public func getFormConfiguration() -> CardFormConfiguration {
         formConfiguration
     }
 
-    /// Returns billing address configuration for BillingAddressView
-    /// Converts the field list into a view-ready configuration
     func getBillingAddressConfiguration() -> BillingAddressConfiguration {
         let fields = formConfiguration.billingFields
         return BillingAddressConfiguration(
@@ -797,8 +753,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     // MARK: - Accessibility Announcements
 
-    /// Announces field errors to VoiceOver users
-    /// Multi-field error handling - announces total count first, then first error
+    // Multi-field error handling - announces total count first, then first error
     private func announceFieldErrors() {
         guard let container = DIContainer.currentSync,
               let announcementService = try? container.resolveSync(AccessibilityAnnouncementService.self)
@@ -832,7 +787,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
             scope: self,
             selectedNetwork: structuredState.selectedNetwork?.network,
-            styling: styling ?? defaultFieldStyling?["cardNumber"]
+            styling: styling
         ).asAny()
     }
 
@@ -841,7 +796,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.expiryDateAlternativePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["expiryDate"]
+            styling: styling
         ).asAny()
     }
 
@@ -851,7 +806,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
             scope: self,
             cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
-            styling: styling ?? defaultFieldStyling?["cvv"]
+            styling: styling
         ).asAny()
     }
 
@@ -860,7 +815,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["cardholderName"]
+            styling: styling
         ).asAny()
     }
 
@@ -869,7 +824,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             scope: self,
             label: label,
             placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-            styling: styling ?? defaultFieldStyling?["country"],
+            styling: styling,
             onValidationChange: nil,
             onOpenCountrySelector: nil
         ).asAny()
@@ -880,7 +835,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["postalCode"]
+            styling: styling
         ).asAny()
     }
 
@@ -889,7 +844,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.cityPlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["city"]
+            styling: styling
         ).asAny()
     }
 
@@ -898,7 +853,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.statePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["state"]
+            styling: styling
         ).asAny()
     }
 
@@ -909,7 +864,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             isRequired: true,
             inputType: .addressLine1,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["addressLine1"]
+            styling: styling
         ).asAny()
     }
 
@@ -920,7 +875,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             isRequired: false,
             inputType: .addressLine2,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["addressLine2"]
+            styling: styling
         ).asAny()
     }
 
@@ -930,7 +885,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
             inputType: .firstName,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["firstName"]
+            styling: styling
         ).asAny()
     }
 
@@ -940,7 +895,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
             inputType: .lastName,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["lastName"]
+            styling: styling
         ).asAny()
     }
 
@@ -949,7 +904,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.emailPlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["email"]
+            styling: styling
         ).asAny()
     }
 
@@ -959,7 +914,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
             inputType: .phoneNumber,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["phoneNumber"]
+            styling: styling
         ).asAny()
     }
 
@@ -969,7 +924,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             placeholder: CheckoutComponentsStrings.retailOutletPlaceholder,
             inputType: .retailer,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["retailOutlet"]
+            styling: styling
         ).asAny()
     }
 
@@ -978,8 +933,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             label: label,
             placeholder: CheckoutComponentsStrings.otpCodePlaceholder,
             scope: self,
-            styling: styling ?? defaultFieldStyling?["otpCode"]
+            styling: styling
         ).asAny()
+    }
+
+    // MARK: - Default Card Form View
+
+    /// Returns a complete card form view with all card and billing address fields.
+    /// This provides an embeddable card form for custom payment selection screens.
+    /// - Parameter styling: Optional styling configuration for fields. Default: nil (uses SDK default styling)
+    /// - Returns: A view containing all card form fields based on current configuration.
+    public func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
+        CardFormFieldsView(scope: self, styling: styling).asAny()
     }
 }
 

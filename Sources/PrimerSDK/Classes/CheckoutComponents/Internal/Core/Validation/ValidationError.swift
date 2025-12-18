@@ -6,19 +6,7 @@
 
 import Foundation
 
-/**
- * A data class representing a validation error encountered during the payment method data validation process.
- *
- * @property code A unique identifier for the error.
- * @property message A descriptive message explaining the error.
- * @property inputElementType The input element type that failed validation.
- * @property errorId Error identifier string.
- * @property fieldNameKey Localization key for field name.
- * @property errorMessageKey Localization key for error message.
- * @property errorFormatKey Localization key for formatted error with placeholder.
- */
 public struct ValidationError: Equatable, Hashable, Codable {
-    // Core error properties
     let code: String
     let message: String
 
@@ -67,7 +55,6 @@ public struct ValidationError: Equatable, Hashable, Codable {
         self.message = message
     }
 
-    /// Simplified initializer
     public init(code: String, message: String) {
         self.code = code
         self.message = message

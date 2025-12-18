@@ -14,7 +14,7 @@ private struct PaymentMethodGroup {
 
 /// Default payment method selection screen for CheckoutComponents
 @available(iOS 15.0, *)
-struct PaymentMethodSelectionScreen: View {
+struct PaymentMethodSelectionScreen: View, LogReporter {
     let scope: PrimerPaymentMethodSelectionScope
 
     @Environment(\.designTokens) private var tokens
@@ -24,8 +24,13 @@ struct PaymentMethodSelectionScreen: View {
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
     @State private var configurationService: ConfigurationService?
 
+    init(scope: PrimerPaymentMethodSelectionScope) {
+        self.scope = scope
+    }
+
     var body: some View {
         mainContent
+            .environment(\.primerPaymentMethodSelectionScope, scope)
     }
 
     @MainActor
@@ -98,7 +103,9 @@ struct PaymentMethodSelectionScreen: View {
     private var paymentMethodsList: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if selectionState.paymentMethods.isEmpty {
+                if selectionState.isLoading {
+                    loadingView
+                } else if selectionState.paymentMethods.isEmpty {
                     emptyStateView
                 } else {
                     paymentMethodsContent
@@ -112,9 +119,26 @@ struct PaymentMethodSelectionScreen: View {
 
     @MainActor
     @ViewBuilder
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
+                .scaleEffect(PrimerScale.large)
+                .accessibility(config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.Common.loadingIndicator,
+                    label: CheckoutComponentsStrings.a11yLoading
+                ))
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, minHeight: 200)
+    }
+
+    @MainActor
+    @ViewBuilder
     private var emptyStateView: some View {
         if let customEmptyState = scope.emptyStateView {
-            customEmptyState()
+            AnyView(customEmptyState())
         } else {
             VStack(spacing: 16) {
                 Image(systemName: "creditcard.and.123")
@@ -222,7 +246,7 @@ struct PaymentMethodSelectionScreen: View {
             // Group header with surcharge info (only show if group name is not empty)
             if !group.group.isEmpty {
                 if let customCategoryHeader = scope.categoryHeader {
-                    customCategoryHeader(group.group)
+                    AnyView(customCategoryHeader(group.group))
                 } else {
                     HStack {
                         Text(group.group)
@@ -267,8 +291,9 @@ struct PaymentMethodSelectionScreen: View {
     @MainActor
     @ViewBuilder
     private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
+        // Check scope configuration for custom payment method item
         if let customPaymentMethodItem = scope.paymentMethodItem {
-            customPaymentMethodItem(method)
+            AnyView(customPaymentMethodItem(method))
                 .onTapGesture {
                     scope.onPaymentMethodSelected(paymentMethod: method)
                 }
@@ -302,12 +327,12 @@ struct PaymentMethodSelectionScreen: View {
 
     private func resolveConfigurationService() {
         guard let container else {
-            return
+            return logger.error(message: "DIContainer not available for PaymentMethodSelectionScreen")
         }
         do {
             configurationService = try container.resolveSync(ConfigurationService.self)
         } catch {
-            // Failed to resolve ConfigurationService, will use defaults
+            logger.error(message: "Failed to resolve ConfigurationService: \(error)")
         }
     }
 

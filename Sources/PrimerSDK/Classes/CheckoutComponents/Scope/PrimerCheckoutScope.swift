@@ -16,28 +16,25 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     // MARK: - Customizable Screens
 
-    /// Container view that wraps all checkout content.
     /// Default implementation provides standard checkout container.
-    var container: ((_ content: @escaping () -> AnyView) -> any View)? { get set }
+    var container: ContainerComponent? { get set }
 
-    /// Splash screen shown during initialization.
+    /// Custom splash screen shown during SDK initialization.
     /// Default implementation shows Primer branding.
-    var splashScreen: (() -> any View)? { get set }
+    var splashScreen: Component? { get set }
 
-    /// Loading screen shown during async operations.
-    /// Default implementation shows activity indicator.
-    var loadingScreen: (() -> any View)? { get set }
+    /// Custom loading screen shown during payment processing.
+    /// Default implementation shows a centered loading indicator with "Loading" text.
+    var loading: Component? { get set }
 
     // Note: Success screen removed - CheckoutComponents dismisses immediately on success
     // The delegate handles presenting the result screen via PrimerResultViewController
 
-    /// Error screen shown when an error occurs.
     /// Default implementation shows error icon and message.
-    var errorScreen: ((_ message: String) -> any View)? { get set }
+    var errorScreen: ErrorComponent? { get set }
 
     // MARK: - Nested Scopes
 
-    /// Scope for payment method selection screen.
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope { get }
 
     // MARK: - Dynamic Payment Method Scope Access
@@ -83,7 +80,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     /// Payment handling mode (auto vs manual).
     /// - `.auto`: Payments are automatically processed after tokenization (default)
-    /// - `.manual`: Payments require explicit confirmation via `CheckoutComponentsPrimer.resumePayment()`
+    /// - `.manual`: Payments require explicit confirmation from your backend
     var paymentHandling: PrimerPaymentHandling { get }
 
     // MARK: - Navigation
@@ -99,24 +96,26 @@ public enum PrimerCheckoutState: Equatable {
     /// Initial state while loading configuration and payment methods.
     case initializing
 
-    /// Ready state with payment methods loaded.
-    case ready
+    /// Ready state with payment methods loaded, including payment amount information.
+    /// - Parameters:
+    ///   - totalAmount: The total payment amount in minor units (e.g., cents)
+    ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR")
+    case ready(totalAmount: Int, currencyCode: String)
 
-    /// Payment completed successfully.
     case success(PaymentResult)
 
     /// Checkout has been dismissed by user or merchant.
     case dismissed
 
-    /// An error occurred during checkout.
     case failure(PrimerError)
 
     public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
         switch (lhs, rhs) {
         case (.initializing, .initializing),
-             (.ready, .ready),
              (.dismissed, .dismissed):
             return true
+        case let (.ready(lhsAmount, lhsCurrency), .ready(rhsAmount, rhsCurrency)):
+            return lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
         case let (.success(lhsResult), .success(rhsResult)):
             return lhsResult.paymentId == rhsResult.paymentId
         case let (.failure(lhsError), .failure(rhsError)):

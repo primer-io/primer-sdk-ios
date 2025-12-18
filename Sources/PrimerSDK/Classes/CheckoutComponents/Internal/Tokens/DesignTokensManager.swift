@@ -7,12 +7,109 @@
 import Foundation
 import SwiftUI
 
+@available(iOS 15.0, *)
 final class DesignTokensManager: ObservableObject {
     @Published var tokens: DesignTokens?
+    private var themeOverrides: PrimerCheckoutTheme?
 
-    /// Loads and merges the design token JSON files based on the current color scheme.
-    /// - Parameter colorScheme: The current color scheme (.light or .dark).
-    /// - Throws: An error if loading or decoding the JSON fails.
+    // MARK: - Theme Override API
+
+    func applyTheme(_ theme: PrimerCheckoutTheme) {
+        self.themeOverrides = theme
+    }
+
+    // Merchant overrides take precedence over internal tokens
+    func color(
+        _ keyPath: KeyPath<DesignTokens, [CGFloat]>,
+        override overrideKeyPath: KeyPath<ColorOverrides, Color?>? = nil
+    ) -> Color {
+        // Check merchant override first
+        if let overrideKeyPath,
+           let colorOverrides = themeOverrides?.colors,
+           let overrideColor = colorOverrides[keyPath: overrideKeyPath] {
+            return overrideColor
+        }
+
+        // Fall back to internal tokens
+        guard let tokens else { return .clear }
+        let rgba = tokens[keyPath: keyPath]
+        return Color(red: rgba[0], green: rgba[1], blue: rgba[2], opacity: rgba[3])
+    }
+
+    func radius(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<RadiusOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let radiusOverrides = themeOverrides?.radius,
+           let overrideValue = radiusOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    func spacing(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<SpacingOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let spacingOverrides = themeOverrides?.spacing,
+           let overrideValue = spacingOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    func size(_ keyPath: KeyPath<DesignTokens, CGFloat>, override overrideKeyPath: KeyPath<SizeOverrides, CGFloat?>? = nil) -> CGFloat {
+        if let overrideKeyPath,
+           let sizeOverrides = themeOverrides?.sizes,
+           let overrideValue = sizeOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 0
+    }
+
+    /// Returns a border width value, checking merchant overrides first, then internal tokens.
+    func borderWidth(
+        _ keyPath: KeyPath<DesignTokens, CGFloat>,
+        override overrideKeyPath: KeyPath<BorderWidthOverrides, CGFloat?>? = nil
+    ) -> CGFloat {
+        if let overrideKeyPath,
+           let borderWidthOverrides = themeOverrides?.borderWidth,
+           let overrideValue = borderWidthOverrides[keyPath: overrideKeyPath] {
+            return overrideValue
+        }
+        return tokens?[keyPath: keyPath] ?? 1
+    }
+
+    /// Returns a typography style, checking merchant overrides first.
+    /// - Parameter overrideKeyPath: Key path to the merchant override typography property
+    /// - Returns: The typography style from merchant override if set, otherwise nil
+    func typography(override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?) -> TypographyOverrides.TypographyStyle? {
+        guard let overrideKeyPath,
+              let typographyOverrides = themeOverrides?.typography else {
+            return nil
+        }
+        return typographyOverrides[keyPath: overrideKeyPath]
+    }
+
+    /// Creates a Font using typography overrides or defaults.
+    /// - Parameters:
+    ///   - overrideKeyPath: Key path to the merchant override typography property
+    ///   - defaultSize: Default font size if no override is set
+    ///   - defaultWeight: Default font weight if no override is set
+    /// - Returns: A configured Font
+    func font(
+        override overrideKeyPath: KeyPath<TypographyOverrides, TypographyOverrides.TypographyStyle?>?,
+        defaultSize: CGFloat,
+        defaultWeight: Font.Weight = .regular
+    ) -> Font {
+        let style = typography(override: overrideKeyPath)
+        let size = style?.size ?? defaultSize
+        let weight = style?.weight ?? defaultWeight
+
+        if let fontName = style?.font {
+            return Font.custom(fontName, size: size).weight(weight)
+        }
+        return Font.system(size: size, weight: weight)
+    }
+
+    // MARK: - Token Loading
+
     func fetchTokens(for colorScheme: ColorScheme) async throws {
         // Load and merge tokens
         let baseDict = try loadJSON(named: "base")
@@ -27,13 +124,142 @@ final class DesignTokensManager: ObservableObject {
         flatDict = DesignTokensProcessor.resolveFlattenedReferences(in: flatDict, source: processedDict)
         flatDict = DesignTokensProcessor.evaluateMath(in: flatDict)
 
-        // Decode and publish
+        // Decode tokens from JSON
         let data = try JSONSerialization.data(withJSONObject: flatDict)
-        let tokens = try JSONDecoder().decode(DesignTokens.self, from: data)
+        let loadedTokens = try JSONDecoder().decode(DesignTokens.self, from: data)
+
+        // Apply merchant theme overrides on top of loaded tokens
+        let finalTokens = applyThemeOverrides(to: loadedTokens)
 
         await MainActor.run {
-            self.tokens = tokens
+            self.tokens = finalTokens
         }
+    }
+
+    // MARK: - Apply Theme Overrides
+
+    /// Applies merchant theme overrides to the loaded design tokens.
+    /// This ensures that CheckoutColors and other direct token accessors respect theme customizations.
+    private func applyThemeOverrides(to tokens: DesignTokens) -> DesignTokens {
+        guard let theme = themeOverrides else { return tokens }
+
+        if let colors = theme.colors {
+            applyColorOverrides(to: tokens, from: colors)
+        }
+        if let radius = theme.radius {
+            applyRadiusOverrides(to: tokens, from: radius)
+        }
+        if let spacing = theme.spacing {
+            applySpacingOverrides(to: tokens, from: spacing)
+        }
+        if let sizes = theme.sizes {
+            applySizeOverrides(to: tokens, from: sizes)
+        }
+
+        return tokens
+    }
+
+    private func applyColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        applyBrandAndGrayColorOverrides(to: tokens, from: colors)
+        applySemanticColorOverrides(to: tokens, from: colors)
+        applyTextColorOverrides(to: tokens, from: colors)
+        applyBorderColorOverrides(to: tokens, from: colors)
+        applyIconAndOtherColorOverrides(to: tokens, from: colors)
+    }
+
+    private func applyBrandAndGrayColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorBrand { tokens.primerColorBrand = value }
+        if let value = colors.primerColorGray000 { tokens.primerColorGray000 = value }
+        if let value = colors.primerColorGray100 { tokens.primerColorGray100 = value }
+        if let value = colors.primerColorGray200 { tokens.primerColorGray200 = value }
+        if let value = colors.primerColorGray300 { tokens.primerColorGray300 = value }
+        if let value = colors.primerColorGray400 { tokens.primerColorGray400 = value }
+        if let value = colors.primerColorGray500 { tokens.primerColorGray500 = value }
+        if let value = colors.primerColorGray600 { tokens.primerColorGray600 = value }
+        if let value = colors.primerColorGray700 { tokens.primerColorGray700 = value }
+        if let value = colors.primerColorGray900 { tokens.primerColorGray900 = value }
+    }
+
+    private func applySemanticColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorGreen500 { tokens.primerColorGreen500 = value }
+        if let value = colors.primerColorRed100 { tokens.primerColorRed100 = value }
+        if let value = colors.primerColorRed500 { tokens.primerColorRed500 = value }
+        if let value = colors.primerColorRed900 { tokens.primerColorRed900 = value }
+        if let value = colors.primerColorBlue500 { tokens.primerColorBlue500 = value }
+        if let value = colors.primerColorBlue900 { tokens.primerColorBlue900 = value }
+        if let value = colors.primerColorBackground { tokens.primerColorBackground = value }
+    }
+
+    private func applyTextColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorTextPrimary { tokens.primerColorTextPrimary = value }
+        if let value = colors.primerColorTextSecondary { tokens.primerColorTextSecondary = value }
+        if let value = colors.primerColorTextPlaceholder { tokens.primerColorTextPlaceholder = value }
+        if let value = colors.primerColorTextDisabled { tokens.primerColorTextDisabled = value }
+        if let value = colors.primerColorTextNegative { tokens.primerColorTextNegative = value }
+        if let value = colors.primerColorTextLink { tokens.primerColorTextLink = value }
+    }
+
+    private func applyBorderColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        applyOutlinedBorderColorOverrides(to: tokens, from: colors)
+        applyTransparentBorderColorOverrides(to: tokens, from: colors)
+    }
+
+    private func applyOutlinedBorderColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorBorderOutlinedDefault { tokens.primerColorBorderOutlinedDefault = value }
+        if let value = colors.primerColorBorderOutlinedHover { tokens.primerColorBorderOutlinedHover = value }
+        if let value = colors.primerColorBorderOutlinedActive { tokens.primerColorBorderOutlinedActive = value }
+        if let value = colors.primerColorBorderOutlinedFocus { tokens.primerColorBorderOutlinedFocus = value }
+        if let value = colors.primerColorBorderOutlinedDisabled { tokens.primerColorBorderOutlinedDisabled = value }
+        if let value = colors.primerColorBorderOutlinedError { tokens.primerColorBorderOutlinedError = value }
+        if let value = colors.primerColorBorderOutlinedSelected { tokens.primerColorBorderOutlinedSelected = value }
+        if let value = colors.primerColorBorderOutlinedLoading { tokens.primerColorBorderOutlinedLoading = value }
+    }
+
+    private func applyTransparentBorderColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorBorderTransparentDefault { tokens.primerColorBorderTransparentDefault = value }
+        if let value = colors.primerColorBorderTransparentHover { tokens.primerColorBorderTransparentHover = value }
+        if let value = colors.primerColorBorderTransparentActive { tokens.primerColorBorderTransparentActive = value }
+        if let value = colors.primerColorBorderTransparentFocus { tokens.primerColorBorderTransparentFocus = value }
+        if let value = colors.primerColorBorderTransparentDisabled { tokens.primerColorBorderTransparentDisabled = value }
+        if let value = colors.primerColorBorderTransparentSelected { tokens.primerColorBorderTransparentSelected = value }
+    }
+
+    private func applyIconAndOtherColorOverrides(to tokens: DesignTokens, from colors: ColorOverrides) {
+        if let value = colors.primerColorIconPrimary { tokens.primerColorIconPrimary = value }
+        if let value = colors.primerColorIconDisabled { tokens.primerColorIconDisabled = value }
+        if let value = colors.primerColorIconNegative { tokens.primerColorIconNegative = value }
+        if let value = colors.primerColorIconPositive { tokens.primerColorIconPositive = value }
+        if let value = colors.primerColorFocus { tokens.primerColorFocus = value }
+        if let value = colors.primerColorLoader { tokens.primerColorLoader = value }
+    }
+
+    private func applyRadiusOverrides(to tokens: DesignTokens, from radius: RadiusOverrides) {
+        if let value = radius.primerRadiusXsmall { tokens.primerRadiusXsmall = value }
+        if let value = radius.primerRadiusSmall { tokens.primerRadiusSmall = value }
+        if let value = radius.primerRadiusMedium { tokens.primerRadiusMedium = value }
+        if let value = radius.primerRadiusLarge { tokens.primerRadiusLarge = value }
+        if let value = radius.primerRadiusBase { tokens.primerRadiusBase = value }
+    }
+
+    private func applySpacingOverrides(to tokens: DesignTokens, from spacing: SpacingOverrides) {
+        if let value = spacing.primerSpaceXxsmall { tokens.primerSpaceXxsmall = value }
+        if let value = spacing.primerSpaceXsmall { tokens.primerSpaceXsmall = value }
+        if let value = spacing.primerSpaceSmall { tokens.primerSpaceSmall = value }
+        if let value = spacing.primerSpaceMedium { tokens.primerSpaceMedium = value }
+        if let value = spacing.primerSpaceLarge { tokens.primerSpaceLarge = value }
+        if let value = spacing.primerSpaceXlarge { tokens.primerSpaceXlarge = value }
+        if let value = spacing.primerSpaceXxlarge { tokens.primerSpaceXxlarge = value }
+        if let value = spacing.primerSpaceBase { tokens.primerSpaceBase = value }
+    }
+
+    private func applySizeOverrides(to tokens: DesignTokens, from sizes: SizeOverrides) {
+        if let value = sizes.primerSizeSmall { tokens.primerSizeSmall = value }
+        if let value = sizes.primerSizeMedium { tokens.primerSizeMedium = value }
+        if let value = sizes.primerSizeLarge { tokens.primerSizeLarge = value }
+        if let value = sizes.primerSizeXlarge { tokens.primerSizeXlarge = value }
+        if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
+        if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
+        if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
     }
 
     // MARK: - JSON Loading

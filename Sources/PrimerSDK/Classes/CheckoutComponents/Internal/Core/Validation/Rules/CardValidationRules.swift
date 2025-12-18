@@ -6,7 +6,6 @@
 
 import Foundation
 
-/// Validation rule for card numbers.
 class CardNumberRule: ValidationRule {
 
     private let allowedCardNetworks: Set<CardNetwork>
@@ -18,36 +17,30 @@ class CardNumberRule: ValidationRule {
     func validate(_ value: String) -> ValidationResult {
         let cleanedNumber = value.replacingOccurrences(of: " ", with: "")
 
-        // Check if empty - use error structure with automatic message resolution
         if cleanedNumber.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Check if all digits - use error structure with automatic message resolution
         if !cleanedNumber.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Check length (13-19 digits) - use error structure with automatic message resolution
         if cleanedNumber.count < 13 || cleanedNumber.count > 19 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Luhn algorithm validation - use error structure with automatic message resolution
         if !isValidLuhn(cleanedNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
             return .invalid(error: error)
         }
 
-        // Check if card network is allowed - matches Drop-in/Headless behavior
-        // Only validate network if we have a reasonably complete card number
+        // Only validate network for complete card numbers (13+ digits)
         if cleanedNumber.count >= 13 {
             let detectedNetwork = CardNetwork(cardNumber: cleanedNumber)
             if !allowedCardNetworks.contains(detectedNetwork) {
-                // Use the specific "Unsupported card type" error from CheckoutComponentsStrings
                 let error = ValidationError(
                     inputElementType: .cardNumber,
                     errorId: "unsupported_card_type",
@@ -60,7 +53,6 @@ class CardNumberRule: ValidationRule {
                 return .invalid(error: error)
             }
 
-            // Check if card length matches the detected network's valid lengths
             if detectedNetwork != .unknown,
                let validation = detectedNetwork.validation,
                !validation.lengths.contains(cleanedNumber.count) {
@@ -96,7 +88,6 @@ class CardNumberRule: ValidationRule {
     }
 }
 
-/// Validation rule for CVV/CVC codes.
 class CVVRule: ValidationRule {
 
     private let cardNetwork: CardNetwork?
@@ -106,19 +97,16 @@ class CVVRule: ValidationRule {
     }
 
     func validate(_ value: String) -> ValidationResult {
-        // Check if empty - use error structure with automatic message resolution
         if value.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
             return .invalid(error: error)
         }
 
-        // Check if all digits - use error structure with automatic message resolution
         if !value.allSatisfy(\.isNumber) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
             return .invalid(error: error)
         }
 
-        // Check length based on card network - use error structure with automatic message resolution
         let expectedLength = cardNetwork?.rawValue == "AMEX" ? 4 : 3
         if value.count != expectedLength {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
@@ -129,21 +117,17 @@ class CVVRule: ValidationRule {
     }
 }
 
-/// Validation rule for cardholder names.
 class CardholderNameRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Check if empty - use error structure with automatic message resolution
         if trimmedValue.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .cardholderName)
             return .invalid(error: error)
         }
 
-        // Check minimum length - use error structure with specific length message
         if trimmedValue.count < 2 {
-            // Use the specific cardholder name length error
             let error = ValidationError(
                 inputElementType: .cardholderName,
                 errorId: "cardholder_name_length",
@@ -156,7 +140,6 @@ class CardholderNameRule: ValidationRule {
             return .invalid(error: error)
         }
 
-        // Check for valid characters - use error structure with automatic message resolution
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-'"))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .cardholderName)

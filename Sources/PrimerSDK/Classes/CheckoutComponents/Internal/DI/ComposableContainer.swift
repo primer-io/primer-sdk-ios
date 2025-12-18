@@ -13,13 +13,17 @@ final class ComposableContainer: LogReporter {
 
     private let container: Container
     private let settings: PrimerSettings
+    private let theme: PrimerCheckoutTheme
 
-    init(settings: PrimerSettings) {
+    init(
+        settings: PrimerSettings,
+        theme: PrimerCheckoutTheme = PrimerCheckoutTheme()
+    ) {
         self.container = Container()
         self.settings = settings
+        self.theme = theme
     }
 
-    /// Configure and register all dependencies for CheckoutComponents.
     func configure() async {
         await registerInfrastructure()
 
@@ -36,7 +40,6 @@ final class ComposableContainer: LogReporter {
         #endif
     }
 
-    /// Get the configured container.
     var diContainer: Container {
         container
     }
@@ -47,15 +50,14 @@ final class ComposableContainer: LogReporter {
 @available(iOS 15.0, *)
 private extension ComposableContainer {
 
-    /// Register infrastructure components.
     func registerInfrastructure() async {
         _ = try? await container.register(PrimerSettings.self)
             .asSingleton()
             .with { _ in self.settings }
 
-        _ = try? await container.register(PrimerThemeProtocol.self)
+        _ = try? await container.register(PrimerCheckoutTheme.self)
             .asSingleton()
-            .with { _ in self.settings.uiOptions.theme }
+            .with { _ in self.theme }
 
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()
@@ -86,7 +88,6 @@ private extension ComposableContainer {
             .with { _ in DefaultConfigurationService() }
     }
 
-    /// Register validation framework.
     func registerValidation() async {
         _ = try? await container.register(RulesFactory.self)
             .asSingleton()
@@ -100,7 +101,6 @@ private extension ComposableContainer {
             }
     }
 
-    /// Register domain layer (interactors, models).
     func registerDomain() async {
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
             .asTransient()
@@ -133,9 +133,16 @@ private extension ComposableContainer {
                     repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
+
+        _ = try? await container.register(ProcessPayPalPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ProcessPayPalPaymentInteractorImpl(
+                    repository: try await resolver.resolve(PayPalRepository.self)
+                )
+            }
     }
 
-    /// Register data layer (repositories, mappers).
     func registerData() async {
         // HeadlessRepository uses transient scope to ensure each checkout session gets a fresh instance.
         // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
@@ -150,10 +157,15 @@ private extension ComposableContainer {
                 let configService = try await container.resolve(ConfigurationService.self)
                 return PaymentMethodMapperImpl(configurationService: configService)
             }
+
+        _ = try? await container.register(PayPalRepository.self)
+            .asTransient()
+            .with { _ in
+                PayPalRepositoryImpl()
+            }
     }
 
     #if DEBUG
-    /// Perform health check on the container.
     func performHealthCheck() async {
         let diagnostics = await container.getDiagnostics()
         logger.debug(message: "Container diagnostics - Total registrations: \(diagnostics.totalRegistrations), Singletons: \(diagnostics.singletonInstances), Weak refs: \(diagnostics.weakReferences)/\(diagnostics.activeWeakReferences)")

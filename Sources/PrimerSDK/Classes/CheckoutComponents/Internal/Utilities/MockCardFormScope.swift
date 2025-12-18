@@ -44,31 +44,42 @@ public class MockCardFormScope: PrimerCardFormScope {
         }
     }
 
-    // View customization properties
-    public var screen: ((any PrimerCardFormScope) -> any View)? = nil
-    public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)? = nil
-    public var errorView: ((String) -> any View)? = nil
-    public var cardNumberField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var expiryDateField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cvvField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cardholderNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var postalCodeField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var countryField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var cityField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var stateField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var addressLine1Field: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var addressLine2Field: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var phoneNumberField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var firstNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var lastNameField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var emailField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var retailOutletField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var otpCodeField: ((String?, PrimerFieldStyling?) -> any View)? = nil
-    public var submitButton: ((String) -> any View)? = nil
-    public var cardInputSection: (() -> any View)? = nil
-    public var billingAddressSection: (() -> any View)? = nil
-    public var submitButtonSection: (() -> any View)? = nil
-    public var defaultFieldStyling: [String: PrimerFieldStyling]? = nil
+    // MARK: - Screen-Level Customization
+
+    public var title: String?
+    public var screen: CardFormScreenComponent?
+    public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
+    public var errorView: ErrorComponent?
+
+    // MARK: - Submit Button Customization
+
+    public var submitButtonText: String?
+    public var showSubmitLoadingIndicator: Bool = true
+
+    // MARK: - Field-Level Customization via InputFieldConfig
+
+    public var cardNumberConfig: InputFieldConfig?
+    public var expiryDateConfig: InputFieldConfig?
+    public var cvvConfig: InputFieldConfig?
+    public var cardholderNameConfig: InputFieldConfig?
+    public var postalCodeConfig: InputFieldConfig?
+    public var countryConfig: InputFieldConfig?
+    public var cityConfig: InputFieldConfig?
+    public var stateConfig: InputFieldConfig?
+    public var addressLine1Config: InputFieldConfig?
+    public var addressLine2Config: InputFieldConfig?
+    public var phoneNumberConfig: InputFieldConfig?
+    public var firstNameConfig: InputFieldConfig?
+    public var lastNameConfig: InputFieldConfig?
+    public var emailConfig: InputFieldConfig?
+    public var retailOutletConfig: InputFieldConfig?
+    public var otpCodeConfig: InputFieldConfig?
+
+    // MARK: - Section-Level Customization
+
+    public var cardInputSection: Component?
+    public var billingAddressSection: Component?
+    public var submitButtonSection: Component?
 
     public var selectCountry: PrimerSelectCountryScope {
         fatalError("Not implemented for preview")
@@ -150,10 +161,6 @@ public class MockCardFormScope: PrimerCardFormScope {
 
     public func onDismiss() {
         log("onDismiss() called")
-    }
-
-    public func navigateToCountrySelection() {
-        log("navigateToCountrySelection() called")
     }
 
     // MARK: - Update Methods
@@ -325,6 +332,10 @@ public class MockCardFormScope: PrimerCardFormScope {
     }
 
     public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
+        AnyView(EmptyView())
+    }
+
+    public func DefaultCardFormView(styling _: PrimerFieldStyling?) -> AnyView {
         AnyView(EmptyView())
     }
 

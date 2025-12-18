@@ -32,9 +32,7 @@ final class ThreadSafeContainer<T>: @unchecked Sendable {
     }
 }
 
-/// Main implementation of the dependency injection container
 public actor Container: ContainerProtocol, LogReporter {
-    /// Internal factory structure
     struct FactoryRegistration {
         let policy: ContainerRetainPolicy
         let buildAsync: (ContainerProtocol) async throws -> Any
@@ -52,7 +50,6 @@ public actor Container: ContainerProtocol, LogReporter {
         }
     }
 
-    /// Implementation of the registration builder
     public class ContainerRegistrationBuilderImpl<T>: RegistrationBuilder {
         private let container: Container
         private let type: T.Type
@@ -105,38 +102,27 @@ public actor Container: ContainerProtocol, LogReporter {
 
     // MARK: - Properties
 
-    /// Map of registered factory methods using TypeKey
     private var factories: [TypeKey: FactoryRegistration] = [:]
-
-    /// Map of strongly-held instances using TypeKey
     var instances: [TypeKey: Any] = [:]
-
-    /// Map of weakly-held instances
     var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
-
-    /// Set used to detect circular dependencies - using Set for O(1) lookup
+    /// O(1) circular dependency detection
     private var resolutionStack: Set<TypeKey> = []
-    /// Order tracking for better error messages
     private var resolutionOrder: [TypeKey] = []
 
-    /// Actor-isolated setter for strong instances
     func setInstance(_ instance: Any, forKey key: TypeKey) {
         instances[key] = instance
     }
 
-    /// Actor-isolated setter for weak boxes
     func setWeakBox(_ box: WeakBox<AnyObject>, forKey key: TypeKey) {
         weakBoxes[key] = box
     }
 
     // MARK: - Registration
 
-    /// Register a dependency with the container using the fluent API
     public nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
-        return ContainerRegistrationBuilderImpl(container: self, type: type)
+        ContainerRegistrationBuilderImpl(container: self, type: type)
     }
 
-    /// Internal registration method with validation
     private func registerInternal<T>(
         type: T.Type,
         name: String?,
@@ -159,10 +145,8 @@ public actor Container: ContainerProtocol, LogReporter {
             try await factory(container)
         }
 
-        // Registered dependency
     }
 
-    /// Register only if not already registered
     public nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async -> ContainerRegistrationBuilderImpl<T>? {
         let key = TypeKey(type, name: name)
         let isRegistered = await isRegistered(key)
@@ -176,19 +160,16 @@ public actor Container: ContainerProtocol, LogReporter {
         return name != nil ? builder.named(name!) : builder
     }
 
-    /// Check if a dependency is registered
     private func isRegistered(_ key: TypeKey) -> Bool {
-        return factories[key] != nil
+        factories[key] != nil
     }
 
-    /// Unregister a dependency from the container
     @discardableResult
     public func unregister<T>(_ type: T.Type, name: String? = nil) async -> Self {
         await unregisterInternal(type, name: name)
         return self
     }
 
-    /// Internal unregistration method
     private func unregisterInternal<T>(_ type: T.Type, name: String?) {
         let key = TypeKey(type, name: name)
 
@@ -196,13 +177,10 @@ public actor Container: ContainerProtocol, LogReporter {
         factories.removeValue(forKey: key)
         instances.removeValue(forKey: key)
         weakBoxes.removeValue(forKey: key)
-
-        // Unregistered dependency
     }
 
     // MARK: - Resolution
 
-    /// Resolve a dependency with an optional name
     public func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
         let startTime = CFAbsoluteTimeGetCurrent()
         let key = TypeKey(type, name: name)
@@ -284,7 +262,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     /// Resolve multiple dependencies in parallel
     public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
-        return try await withThrowingTaskGroup(of: (Int, T).self) { group in
+        try await withThrowingTaskGroup(of: (Int, T).self) { group in
             for (index, request) in requests.enumerated() {
                 group.addTask {
                     let result = try await self.resolve(request.type, name: request.name)
@@ -299,20 +277,18 @@ public actor Container: ContainerProtocol, LogReporter {
 
             // Sort by original order
             results.sort { $0.0 < $1.0 }
-            return results.map { $0.1 }
+            return results.map(\.1)
         }
     }
 
     // MARK: - Strategy Pattern
 
-    /// Map each policy to its RetentionStrategy
     private func strategy(for policy: ContainerRetainPolicy) -> RetentionStrategy {
         policy.makeStrategy()
     }
 
     // MARK: - Resolve All
 
-    /// Resolve all dependencies conforming to a specific protocol
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
         var result: [T] = []
 
@@ -374,25 +350,21 @@ public actor Container: ContainerProtocol, LogReporter {
 
     // MARK: - Memory Management
 
-    /// Cleanup weak references that are nil
     private func cleanupWeakReferences() {
         let initialCount = weakBoxes.count
         weakBoxes = weakBoxes.compactMapValues { box in
-            return box.instance != nil ? box : nil
+            box.instance != nil ? box : nil
         }
         let cleanedCount = initialCount - weakBoxes.count
-        // Weak references cleaned
     }
 
-    /// Periodic cleanup - call this during low-memory warnings
+    /// Call during low-memory warnings
     public func performMaintenanceCleanup() {
         cleanupWeakReferences()
-        // Maintenance cleanup performed
     }
 
     // MARK: - Factory Registration
 
-    /// Register a factory for creating instances with parameters
     public nonisolated func registerFactory<F: Factory>(_ factory: F) async throws -> Self {
         _ = try await register(F.self)
             .asSingleton()
@@ -410,7 +382,7 @@ public actor Container: ContainerProtocol, LogReporter {
             totalRegistrations: factories.count,
             singletonInstances: instances.count,
             weakReferences: weakBoxes.count,
-            activeWeakReferences: weakBoxes.values.compactMap { $0.instance }.count,
+            activeWeakReferences: weakBoxes.values.compactMap(\.instance).count,
             registeredTypes: Array(factories.keys)
         )
     }

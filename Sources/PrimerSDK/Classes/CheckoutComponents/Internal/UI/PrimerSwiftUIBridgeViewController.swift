@@ -48,8 +48,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
     // MARK: - Initialization
 
-    /// Initialize with SwiftUI content
-    /// - Parameter swiftUIView: The SwiftUI view to embed
     init<Content: View>(swiftUIView: Content) {
         self.hostingController = UIHostingController(rootView: AnyView(swiftUIView))
         super.init()
@@ -235,45 +233,31 @@ extension PrimerSwiftUIBridgeViewController {
 @available(iOS 15.0, *)
 extension PrimerSwiftUIBridgeViewController {
 
-    /// Factory method to create bridge controller for CheckoutComponents
     static func createForCheckoutComponents(
         clientToken: String,
         settings primerSettings: PrimerSettings,
+        theme primerTheme: PrimerCheckoutTheme = PrimerCheckoutTheme(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
-        customContent: ((PrimerCheckoutScope) -> AnyView)? = nil,
-        onCompletion: (() -> Void)? = nil
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
+        onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
 
         let logger = PrimerLogging.shared.logger
         logger.info(message: "🌉 [SwiftUIBridge] Creating bridge for CheckoutComponents")
 
         // Create the SwiftUI checkout view
-        let checkoutView: PrimerCheckout
-
-        if let customContent {
-            // Use the custom content initializer with presentation context
-            checkoutView = PrimerCheckout(
-                clientToken: clientToken,
-                primerSettings: primerSettings,
-                diContainer: diContainer,
-                navigator: navigator,
-                customContent: customContent,
-                presentationContext: presentationContext,
-                onCompletion: onCompletion
-            )
-        } else {
-            // Use the standard initializer with presentation context
-            checkoutView = PrimerCheckout(
-                clientToken: clientToken,
-                primerSettings: primerSettings,
-                diContainer: diContainer,
-                navigator: navigator,
-                presentationContext: presentationContext,
-                onCompletion: onCompletion
-            )
-        }
+        let checkoutView = PrimerCheckout(
+            clientToken: clientToken,
+            primerSettings: primerSettings,
+            primerTheme: primerTheme,
+            diContainer: diContainer,
+            navigator: navigator,
+            presentationContext: presentationContext,
+            scope: scope,
+            onCompletion: onCompletion
+        )
 
         // Create bridge controller
         let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)

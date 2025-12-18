@@ -63,6 +63,13 @@ enum CheckoutComponentsStrings {
         comment: "Retry button text"
     )
 
+    static let chooseOtherPaymentMethod = NSLocalizedString(
+        "choose_other_payment_method",
+        bundle: .primerResources,
+        value: "Choose other payment method",
+        comment: "Button text to select a different payment method after error"
+    )
+
     static let backButton = NSLocalizedString(
         "back_button_label",
         bundle: Bundle.primerResources,
@@ -631,6 +638,29 @@ enum CheckoutComponentsStrings {
         comment: "Secondary loading message indicating quick loading time"
     )
 
+    /// Simple "Loading" text shown in the default loading screen during payment processing.
+    /// Matches Android SDK naming convention.
+    static let loading = NSLocalizedString(
+        "checkout-components-loading",
+        bundle: Bundle.primerResources,
+        value: "Loading",
+        comment: "Simple loading text shown during payment processing"
+    )
+
+    static let processingPayment = NSLocalizedString(
+        "checkout-components-processing-payment",
+        bundle: Bundle.primerResources,
+        value: "Processing your payment",
+        comment: "Main message shown while payment is being processed"
+    )
+
+    static let processingPleaseWait = NSLocalizedString(
+        "checkout-components-processing-please-wait",
+        bundle: Bundle.primerResources,
+        value: "Please wait...",
+        comment: "Secondary message shown while payment is being processed"
+    )
+
     static let dismissingMessage = NSLocalizedString(
         "checkout-components-dismissing",
         bundle: Bundle.primerResources,
@@ -699,6 +729,29 @@ enum CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Retail outlet selection not yet implemented",
         comment: "Message for retail outlet feature not yet available"
+    )
+
+    // MARK: - PayPal Strings
+
+    static let payPalTitle = NSLocalizedString(
+        "checkout-components-paypal-title",
+        bundle: Bundle.primerResources,
+        value: "PayPal",
+        comment: "PayPal payment screen title"
+    )
+
+    static let payPalContinueButton = NSLocalizedString(
+        "checkout-components-paypal-continue-button",
+        bundle: Bundle.primerResources,
+        value: "Continue with PayPal",
+        comment: "PayPal continue button text"
+    )
+
+    static let payPalRedirectDescription = NSLocalizedString(
+        "checkout-components-paypal-redirect-description",
+        bundle: Bundle.primerResources,
+        value: "You will be redirected to PayPal to complete your payment securely.",
+        comment: "PayPal redirect description text"
     )
 
     // MARK: - ⚠️ ACCESSIBILITY STRINGS (PHASE 3 - TO BE EXPORTED) ⚠️
@@ -886,6 +939,15 @@ enum CheckoutComponentsStrings {
         return String(format: format, cardType, expiry)
     }
 
+    // MARK: PayPal Accessibility
+
+    static let a11yPayPalLogo = NSLocalizedString(
+        "accessibility.paypal.logo",
+        bundle: Bundle.primerResources,
+        value: "PayPal",
+        comment: "VoiceOver label for PayPal logo"
+    )
+
     // MARK: Custom Actions for VoiceOver Rotor
 
     static let a11yActionEdit = NSLocalizedString(
@@ -930,6 +992,13 @@ enum CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Loading, please wait",
         comment: "VoiceOver loading announcement"
+    )
+
+    static let a11yProcessingPayment = NSLocalizedString(
+        "accessibility.common.processingPayment",
+        bundle: Bundle.primerResources,
+        value: "Processing payment, please wait",
+        comment: "VoiceOver announcement during payment processing"
     )
 
     static let a11yClose = NSLocalizedString(
@@ -991,6 +1060,13 @@ enum CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Select country",
         comment: "VoiceOver screen change announcement for country selection"
+    )
+
+    static let a11yScreenProcessingPayment = NSLocalizedString(
+        "accessibility.screen.processingPayment",
+        bundle: Bundle.primerResources,
+        value: "Processing payment",
+        comment: "VoiceOver screen change announcement for payment processing"
     )
 
     static let a11yScreenLoadingPaymentMethods = NSLocalizedString(

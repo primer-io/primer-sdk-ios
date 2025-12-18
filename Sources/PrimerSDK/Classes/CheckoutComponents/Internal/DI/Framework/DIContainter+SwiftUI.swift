@@ -6,10 +6,9 @@
 
 import SwiftUI
 
-/// SwiftUI extensions for the Primer Dependency Injection container
 @available(iOS 15.0, *)
 extension DIContainer {
-    /// Environment key for accessing the DI container in SwiftUI views
+
     struct DIContainerEnvironmentKey: EnvironmentKey {
         static let defaultValue: (any ContainerProtocol)? = nil
     }
@@ -40,7 +39,6 @@ extension DIContainer {
         return StateObject(wrappedValue: instance)
     }
 
-    /// Helper for resolving dependencies in SwiftUI views
     @MainActor
     static func resolve<T>(_ type: T.Type, from environment: EnvironmentValues, name: String? = nil) throws -> T {
         guard let container = environment.diContainer else {
@@ -49,7 +47,6 @@ extension DIContainer {
         return try container.resolveSync(type, name: name)
     }
 
-    /// StateObject creation with DI fallback using environment
     @MainActor
     static func stateObject<T: ObservableObject>(
         _ type: T.Type = T.self,
@@ -72,7 +69,6 @@ extension DIContainer {
     }
 }
 
-/// Environment values extension for DI container access
 @available(iOS 15.0, *)
 extension EnvironmentValues {
     var diContainer: (any ContainerProtocol)? {

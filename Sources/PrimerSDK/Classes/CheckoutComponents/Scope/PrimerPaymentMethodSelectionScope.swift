@@ -14,7 +14,6 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
     /// The current state of the payment method selection as an async stream.
     var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
 
-    /// Available dismissal mechanisms (gestures, close button) from settings.
     /// Controls how users can dismiss the checkout modal.
     var dismissalMechanism: [DismissalMechanism] { get }
 
@@ -24,26 +23,24 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
     /// - Parameter paymentMethod: The selected payment method.
     func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
 
-    /// Cancels payment method selection and dismisses the screen.
     func onCancel()
 
     // MARK: - Customizable UI Components
 
-    /// The entire payment method selection screen.
     /// Default implementation provides standard payment method grid/list.
-    var screen: (() -> AnyView)? { get set }
+    /// The closure receives the scope for full access to payment methods and navigation actions.
+    var screen: PaymentMethodSelectionScreenComponent? { get set }
 
-    /// Individual payment method item component.
     /// Default implementation shows payment method with selection state.
-    var paymentMethodItem: ((_ paymentMethod: CheckoutPaymentMethod) -> AnyView)? { get set }
+    var paymentMethodItem: PaymentMethodItemComponent? { get set }
 
     /// Category header component for grouping payment methods.
     /// Default implementation shows category name in uppercase.
-    var categoryHeader: ((_ category: String) -> AnyView)? { get set }
+    var categoryHeader: CategoryHeaderComponent? { get set }
 
     /// Empty state view when no payment methods are available.
     /// Default implementation shows icon and message.
-    var emptyStateView: (() -> AnyView)? { get set }
+    var emptyStateView: Component? { get set }
 
     // MARK: - State Definition
 
@@ -51,22 +48,11 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
 /// Represents the current state of available payment methods and loading status.
 public struct PrimerPaymentMethodSelectionState: Equatable {
-    /// List of available payment methods.
     public var paymentMethods: [CheckoutPaymentMethod] = []
-
-    /// Indicates if payment methods are being loaded.
     public var isLoading: Bool = false
-
-    /// The currently selected payment method.
     public var selectedPaymentMethod: CheckoutPaymentMethod?
-
-    /// Current search query for filtering payment methods.
     public var searchQuery: String = ""
-
-    /// Filtered payment methods based on search query.
     public var filteredPaymentMethods: [CheckoutPaymentMethod] = []
-
-    /// Error message if any operation fails.
     public var error: String?
 
     public init(
@@ -86,7 +72,7 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
     }
 
     public static func == (lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState) -> Bool {
-        return lhs.paymentMethods == rhs.paymentMethods &&
+        lhs.paymentMethods == rhs.paymentMethods &&
             lhs.isLoading == rhs.isLoading &&
             lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
             lhs.searchQuery == rhs.searchQuery &&
@@ -97,34 +83,15 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
 
 // MARK: - Payment Method Model
 
-/// Represents a payment method available for selection.
-/// This is the public model exposed through the scope interface.
 public struct CheckoutPaymentMethod: Equatable, Identifiable {
-    /// Unique identifier for the payment method.
     public let id: String
-
-    /// Payment method type (e.g., "PAYMENT_CARD", "PAYPAL", etc.).
     public let type: String
-
-    /// Display name for the payment method.
     public let name: String
-
-    /// Optional icon image for the payment method.
     public let icon: UIImage?
-
-    /// Additional metadata about the payment method.
     public let metadata: [String: Any]?
-
-    /// Raw surcharge amount in minor currency units (e.g., 500 for $5.00).
     public let surcharge: Int?
-
-    /// Indicates if surcharge amount is unknown ("Fee may apply").
     public let hasUnknownSurcharge: Bool
-
-    /// Pre-formatted surcharge display string (e.g., "+$5.00", "No additional fee").
     public let formattedSurcharge: String?
-
-    /// Dynamic background color from server configuration.
     public let backgroundColor: UIColor?
 
     public init(

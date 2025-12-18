@@ -38,14 +38,14 @@ extension PrimerInputFieldContainer {
     }
 
     func makeTextFieldContainerBackground() -> some View {
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        RoundedRectangle(cornerRadius: fieldCornerRadius)
             .strokeBorder(borderColor, lineWidth: textFieldContainerBackgroundLineWidth)
             .background(makeTextFieldContainerBackgroundBackground())
             .animation(AnimationConstants.focusAnimation, value: isFocused)
     }
 
     func makeTextFieldContainerBackgroundBackground() -> some View {
-        RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        RoundedRectangle(cornerRadius: fieldCornerRadius)
             .fill(styling?.backgroundColor ?? CheckoutColors.background(tokens: tokens))
     }
 
