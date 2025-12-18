@@ -37,6 +37,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
+    private var originalPrimerWindowLevel: UIWindow.Level?
     #endif
 
     private var paymentMethodType: String?
@@ -87,7 +88,63 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         threeDSSDKWindow?.isHidden = true
         threeDSSDKWindow = nil
+        // Restore primerWindow level if we changed it
+        if let originalLevel = originalPrimerWindowLevel {
+            PrimerUIManager.primerWindow?.windowLevel = originalLevel
+            originalPrimerWindowLevel = nil
+        }
         primer3DS?.cleanup()
+    }
+
+    /// Shows the EMVCo-required 3DS processing screen.
+    ///
+    /// The processing screen must be displayed for a minimum of 2 seconds during authentication
+    /// per EMVCo 3DS specifications.
+    ///
+    /// ## Window Layering Behavior
+    ///
+    /// **Drop-In mode**: Primer controls `primerWindow` (the bottom sheet), so it temporarily lowers
+    /// its window level below `.normal` before showing Netcetera's progress dialog. This guarantees
+    /// the processing screen appears on top of the checkout UI.
+    ///
+    /// **Headless mode**: Primer doesn't own the merchant's window hierarchy, so it cannot manipulate
+    /// window levels. The processing screen visibility depends on the merchant's current UI state.
+    ///
+    /// - Important: Headless merchants should ensure no custom windows, overlays, or modal
+    ///   presentations are active when 3DS authentication begins, otherwise the processing
+    ///   screen may appear behind their UI.
+    @MainActor
+    private func showProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
+        guard let progressDialog = progressDialog else { return }
+
+        // Drop-In mode: Primer owns primerWindow, so proper z-ordering is guaranteed
+        // by lowering the window level before Netcetera creates its progress dialog window.
+        if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+           let primerWindow = PrimerUIManager.primerWindow {
+
+            originalPrimerWindowLevel = primerWindow.windowLevel
+            primerWindow.windowLevel = UIWindow.Level(rawValue: UIWindow.Level.normal.rawValue - 1)
+
+            progressDialog.show()
+        } else {
+            // Headless mode: Primer doesn't control the merchant's window hierarchy.
+            // Netcetera's progress dialog will appear at its default window level.
+            // If the merchant has windows at or above this level, the dialog may be obscured.
+            progressDialog.show()
+        }
+    }
+
+    @MainActor
+    private func dismissProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
+        // Dismiss the progress dialog
+        progressDialog?.dismiss()
+
+        // For Drop-In mode, restore primerWindow's level
+        if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+           let originalLevel = originalPrimerWindowLevel {
+            PrimerUIManager.primerWindow?.windowLevel = originalLevel
+            originalPrimerWindowLevel = nil
+        }
     }
 
     private func executeAuthentication(paymentMethodTokenData: PrimerPaymentMethodTokenData, sdkDismissed: (() -> Void)?) async throws -> String {
@@ -100,7 +157,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         // Show EMVCo-required processing screen before authentication request
         let progressDialog = await MainActor.run { primer3DS.getProgressDialog() }
-        await MainActor.run { progressDialog?.show() }
+        await MainActor.run { showProgressDialog(progressDialog) }
         let progressStartTime = Date()
 
         let authorizationResult: (serverAuthData: ThreeDS.ServerAuthData, resumeToken: String, threeDsAppRequestorUrl: URL?)
@@ -116,7 +173,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             if elapsedTime < minimumDisplayTime {
                 try? await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
             }
-            await MainActor.run { progressDialog?.dismiss() }
+            await MainActor.run { dismissProgressDialog(progressDialog) }
             throw error
         }
 
@@ -126,6 +183,9 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         if elapsedTime < minimumDisplayTime {
             try await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
         }
+
+        // Dismiss progress dialog before showing challenge
+        await MainActor.run { dismissProgressDialog(progressDialog) }
 
         resumePaymentToken = authorizationResult.resumeToken
         _ = try await perform3DSChallenge(
