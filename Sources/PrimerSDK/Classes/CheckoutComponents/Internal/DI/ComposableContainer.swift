@@ -133,6 +133,14 @@ private extension ComposableContainer {
                     repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
+
+        _ = try? await container.register(ProcessPayPalPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ProcessPayPalPaymentInteractorImpl(
+                    repository: try await resolver.resolve(PayPalRepository.self)
+                )
+            }
     }
 
     func registerData() async {
@@ -148,6 +156,12 @@ private extension ComposableContainer {
             .with { container in
                 let configService = try await container.resolve(ConfigurationService.self)
                 return PaymentMethodMapperImpl(configurationService: configService)
+            }
+
+        _ = try? await container.register(PayPalRepository.self)
+            .asTransient()
+            .with { _ in
+                PayPalRepositoryImpl()
             }
     }
 
