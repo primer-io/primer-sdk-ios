@@ -105,7 +105,7 @@ extension PrimerHeadlessUniversalCheckout {
             Task {
                 do {
                     try await vaultService.fetchVaultedPaymentMethods()
-                    self.vaultedPaymentMethods = AppState.current.paymentMethods.compactMap { $0.vaultedPaymentMethod }
+                    self.vaultedPaymentMethods = AppState.current.paymentMethods.compactMap(\.vaultedPaymentMethod)
                     DispatchQueue.main.async {
                         completion(self.vaultedPaymentMethods, nil)
                     }
@@ -517,13 +517,19 @@ extension PrimerHeadlessUniversalCheckout {
         @MainActor
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                var didResume = false
+
                 let safariViewController = SFSafariViewController(url: redirectUrl)
                 safariViewController.delegate = self
                 self.webViewController = safariViewController
 
                 self.webViewCompletion = { _, err in
+                    guard !didResume else { return }
+                    didResume = true
                     if let err {
                         continuation.resume(throwing: err)
+                    } else {
+                        continuation.resume()
                     }
                 }
 
@@ -532,6 +538,8 @@ extension PrimerHeadlessUniversalCheckout {
                     // This ensures that the presentation completion is correctly handled in headless unit tests
                     guard !UIApplication.shared.windows.isEmpty else {
                         DispatchQueue.main.async {
+                            guard !didResume else { return }
+                            didResume = true
                             continuation.resume()
                         }
                         return
@@ -545,6 +553,8 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                     PrimerUIManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
+                        guard !didResume else { return }
+                        didResume = true
                         continuation.resume()
                     })
                 }
