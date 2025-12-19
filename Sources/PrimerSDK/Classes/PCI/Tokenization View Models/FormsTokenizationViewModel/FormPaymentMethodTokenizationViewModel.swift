@@ -23,7 +23,7 @@ class Input {
     var isValid: ((_ text: String) -> Bool?)?
     var descriptor: String?
     var text: String? {
-        return primerTextFieldView?.text
+        primerTextFieldView?.text
     }
     var primerTextFieldView: PrimerTextFieldView?
 }
@@ -138,7 +138,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         input1.keyboardType = .numberPad
         input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
         input1.isValid = { text in
-            return text.isNumeric && text.count >= 8
+            text.isNumeric && text.count >= 8
         }
         return input1
     }()
@@ -155,7 +155,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         input1.allowedCharacterSet = CharacterSet.decimalDigits
         input1.maxCharactersAllowed = 6
         input1.isValid = { text in
-            return text.isNumeric && text.count >= 6
+            text.isNumeric && text.count >= 6
         }
         return input1
     }()
@@ -175,7 +175,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     var phoneNumberCountryCodes = CountryCode.phoneNumberCountryCodes
     var countries = CountryCode.allCases
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
@@ -191,7 +191,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return tableView
     }()
 
-    internal lazy var searchableTextField: PrimerSearchTextField = {
+    lazy var searchableTextField: PrimerSearchTextField = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -210,13 +210,13 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return billingAddressModuleOptions != nil
     }
 
-    internal lazy var countrySelectorViewController: CountrySelectorViewController = {
+    lazy var countrySelectorViewController: CountrySelectorViewController = {
         CountrySelectorViewController(viewModel: self)
     }()
 
     // MARK: - Card number field
 
-    internal lazy var cardNumberField: PrimerCardNumberFieldView = {
+    lazy var cardNumberField: PrimerCardNumberFieldView = {
         PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
 
@@ -239,11 +239,11 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     // MARK: - Expiry date field
 
     private lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
+        PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
 
     private lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
+        PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
 
     // MARK: - CVV field
@@ -376,13 +376,13 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     // MARK: All billing address fields
 
-    internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+    var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
 
-    internal var billingAddressFields: [[BillingAddressField]] {
+    var billingAddressFields: [[BillingAddressField]] {
         guard isShowingBillingAddressFieldsRequired else { return [] }
         return [
             [countryField],
@@ -394,16 +394,16 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         ]
     }
 
-    internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
-        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+    var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map(\.fieldView)
     }
 
-    internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
+    var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
-        return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        return allVisibleBillingAddressFields.map { $0.map(\.containerFieldView) }
     }
 
-    internal var formView: PrimerFormView {
+    var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView, cvvContainerView],
@@ -678,6 +678,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
              PrimerPaymentMethodType.adyenMultibanco.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
+            self.userInputCompletion = nil
 
         default:
             fatalError("Must be overridden")
@@ -829,7 +830,7 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return countriesDataSource.count
+        countriesDataSource.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
