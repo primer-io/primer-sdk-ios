@@ -1,3 +1,10 @@
+## 2.43.2 (2025-12-19)
+
+### Fix
+
+- Prevent continuation misuse crash in awaitUserInput (#1441)
+- Remove redundant cancellation checks before task.wait() (#1431)
+
 ## 2.43.1 (2025-12-05)
 
 ### Fix
