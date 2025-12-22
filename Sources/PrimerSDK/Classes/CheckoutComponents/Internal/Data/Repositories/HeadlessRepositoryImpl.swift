@@ -11,7 +11,10 @@ import Primer3DS
 
 /// Payment completion handler that implements delegate callbacks for async payment processing
 @available(iOS 15.0, *)
-private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate, LogReporter {
+private class PaymentCompletionHandler: NSObject,
+                                        PrimerHeadlessUniversalCheckoutDelegate,
+                                        PrimerHeadlessUniversalCheckoutRawDataManagerDelegate,
+                                        LogReporter {
 
     private let completion: (Result<PaymentResult, Error>) -> Void
     private var hasCompleted = false
@@ -535,7 +538,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {
-        rawDataManager?.configure { [weak self] _, error in
+        rawDataManager?.configure { [weak self] _, _ in
         }
 
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")

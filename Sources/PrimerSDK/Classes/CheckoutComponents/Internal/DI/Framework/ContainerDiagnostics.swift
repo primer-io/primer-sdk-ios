@@ -90,7 +90,7 @@ public actor InstrumentedContainer: ContainerProtocol {
     }
 
     public nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
-        return container.register(type)
+        container.register(type)
     }
 
     @discardableResult
@@ -116,11 +116,11 @@ public actor InstrumentedContainer: ContainerProtocol {
     }
 
     public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
-        return try container.resolveSync(type, name: name)
+        try container.resolveSync(type, name: name)
     }
 
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
-        return await container.resolveAll(type)
+        await container.resolveAll(type)
     }
 
     public func reset<T>(ignoreDependencies: [T.Type]) async {
@@ -128,7 +128,7 @@ public actor InstrumentedContainer: ContainerProtocol {
     }
 
     public func getPerformanceMetrics() async -> ContainerPerformanceMetrics? {
-        return await metrics?.getMetrics()
+        await metrics?.getMetrics()
     }
 
     public func printPerformanceReport() async {
@@ -194,7 +194,7 @@ public actor DefaultContainerMetrics: ContainerMetrics {
     }
 
     public func getMetrics() -> ContainerPerformanceMetrics {
-        let totalResolutions = resolutionTimes.values.map { $0.count }.reduce(0, +)
+        let totalResolutions = resolutionTimes.values.map(\.count).reduce(0, +)
         let totalTime = resolutionTimes.values.flatMap { $0 }.reduce(0, +)
         let averageTime = totalResolutions > 0 ? totalTime / Double(totalResolutions) : 0
 
