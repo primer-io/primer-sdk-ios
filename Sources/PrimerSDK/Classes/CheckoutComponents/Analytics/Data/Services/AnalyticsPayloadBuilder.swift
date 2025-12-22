@@ -67,6 +67,6 @@ struct AnalyticsPayloadBuilder {
 
     /// Detect SDK type based on React Native bridge availability
     private func detectSDKType() -> String {
-        return NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
+        NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
     }
 }

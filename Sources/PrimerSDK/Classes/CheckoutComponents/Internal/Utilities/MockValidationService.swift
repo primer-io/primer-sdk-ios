@@ -73,15 +73,15 @@ public class MockValidationService: ValidationService {
     }
 
     public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        return []
+        []
     }
 
     public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
-        return []
+        []
     }
 
     public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
-        return nil
+        nil
     }
 }
 
