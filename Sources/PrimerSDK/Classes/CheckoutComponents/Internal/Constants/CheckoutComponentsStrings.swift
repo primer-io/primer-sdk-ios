@@ -222,6 +222,20 @@ enum CheckoutComponentsStrings {
         comment: "Postal code label"
     )
 
+    static let otpLabel = NSLocalizedString(
+        "primer_card_form_label_otp",
+        bundle: Bundle.primerResources,
+        value: "OTP Code",
+        comment: "OTP code field label"
+    )
+
+    static let retailLabel = NSLocalizedString(
+        "primer_card_form_label_retail",
+        bundle: Bundle.primerResources,
+        value: "Retail Outlet",
+        comment: "Retail outlet field label"
+    )
+
     // MARK: - Billing Address Placeholders
 
     static let firstNamePlaceholder = NSLocalizedString(
