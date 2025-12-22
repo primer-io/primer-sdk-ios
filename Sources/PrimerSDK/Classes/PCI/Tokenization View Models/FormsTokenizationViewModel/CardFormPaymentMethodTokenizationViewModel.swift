@@ -628,6 +628,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         Analytics.Service.fire(event: viewEvent)
 
         userInputCompletion?()
+        userInputCompletion = nil
     }
 
     override func cancel() {
