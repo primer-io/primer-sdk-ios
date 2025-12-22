@@ -2109,6 +2109,409 @@
             location = "group:Resources"
             name = "Resources">
             <Group
+               location = "group:Localizable"
+               name = "Localizable">
+               <Group
+                  location = "group:ar.lproj"
+                  name = "ar.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:az.lproj"
+                  name = "az.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:bg.lproj"
+                  name = "bg.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:bs.lproj"
+                  name = "bs.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ca.lproj"
+                  name = "ca.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:cs.lproj"
+                  name = "cs.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:da.lproj"
+                  name = "da.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:de.lproj"
+                  name = "de.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:el.lproj"
+                  name = "el.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:en.lproj"
+                  name = "en.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es.lproj"
+                  name = "es.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es-AR.lproj"
+                  name = "es-AR.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es-MX.lproj"
+                  name = "es-MX.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:et.lproj"
+                  name = "et.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fa.lproj"
+                  name = "fa.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fi-FI.lproj"
+                  name = "fi-FI.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fil.lproj"
+                  name = "fil.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fr.lproj"
+                  name = "fr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:he.lproj"
+                  name = "he.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hi.lproj"
+                  name = "hi.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hr.lproj"
+                  name = "hr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hu.lproj"
+                  name = "hu.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hy.lproj"
+                  name = "hy.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:id.lproj"
+                  name = "id.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:it.lproj"
+                  name = "it.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ja.lproj"
+                  name = "ja.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ka.lproj"
+                  name = "ka.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:kk.lproj"
+                  name = "kk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ko.lproj"
+                  name = "ko.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ku.lproj"
+                  name = "ku.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ky.lproj"
+                  name = "ky.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:lt-LT.lproj"
+                  name = "lt-LT.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:lv.lproj"
+                  name = "lv.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:mk.lproj"
+                  name = "mk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ms.lproj"
+                  name = "ms.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nb.lproj"
+                  name = "nb.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nl.lproj"
+                  name = "nl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nl-BE.lproj"
+                  name = "nl-BE.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pl.lproj"
+                  name = "pl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pt.lproj"
+                  name = "pt.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pt-BR.lproj"
+                  name = "pt-BR.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ro.lproj"
+                  name = "ro.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ru.lproj"
+                  name = "ru.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sk.lproj"
+                  name = "sk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sl.lproj"
+                  name = "sl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sq.lproj"
+                  name = "sq.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sr-RS.lproj"
+                  name = "sr-RS.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sv.lproj"
+                  name = "sv.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:th.lproj"
+                  name = "th.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:tr.lproj"
+                  name = "tr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:uk-UA.lproj"
+                  name = "uk-UA.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ur-PK.lproj"
+                  name = "ur-PK.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:uz.lproj"
+                  name = "uz.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:vi.lproj"
+                  name = "vi.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-CN.lproj"
+                  name = "zh-CN.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-HK.lproj"
+                  name = "zh-HK.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-TW.lproj"
+                  name = "zh-TW.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
                location = "group:JSONs"
                name = "JSONs">
                <Group
@@ -2363,213 +2766,6 @@
             <FileRef
                location = "group:Icons.xcassets">
             </FileRef>
-            <Group
-               location = "group:Localizable"
-               name = "Localizable">
-               <Group
-                  location = "group:cs.lproj"
-                  name = "cs.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:de.lproj"
-                  name = "de.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:lt-LT.lproj"
-                  name = "lt-LT.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:he.lproj"
-                  name = "he.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ar.lproj"
-                  name = "ar.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:el.lproj"
-                  name = "el.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-TW.lproj"
-                  name = "zh-TW.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:uk-UA.lproj"
-                  name = "uk-UA.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:en.lproj"
-                  name = "en.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-HK.lproj"
-                  name = "zh-HK.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:nb.lproj"
-                  name = "nb.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:es.lproj"
-                  name = "es.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sl.lproj"
-                  name = "sl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sr-RS.lproj"
-                  name = "sr-RS.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:da.lproj"
-                  name = "da.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:it.lproj"
-                  name = "it.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ms.lproj"
-                  name = "ms.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sv.lproj"
-                  name = "sv.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ko.lproj"
-                  name = "ko.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:fi-FI.lproj"
-                  name = "fi-FI.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:tr.lproj"
-                  name = "tr.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:pl.lproj"
-                  name = "pl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-CN.lproj"
-                  name = "zh-CN.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:fr.lproj"
-                  name = "fr.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:id.lproj"
-                  name = "id.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:nl.lproj"
-                  name = "nl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:th.lproj"
-                  name = "th.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:pt.lproj"
-                  name = "pt.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ca.lproj"
-                  name = "ca.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-            </Group>
          </Group>
       </Group>
    </Group>
