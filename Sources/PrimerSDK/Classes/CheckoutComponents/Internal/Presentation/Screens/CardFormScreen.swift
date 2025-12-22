@@ -129,16 +129,14 @@ struct CardFormScreen: View, LogReporter {
 
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
-                       formConfiguration.cardFields[index + 1] == .cvv
-                    {
+                       formConfiguration.cardFields[index + 1] == .cvv {
                         HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(.expiryDate)
                             renderField(.cvv)
                         }
                     } else if index > 0,
                               formConfiguration.cardFields[index - 1] == .expiryDate,
-                              fieldType == .cvv
-                    {
+                              fieldType == .cvv {
                         EmptyView()
                     } else {
                         renderField(fieldType)
@@ -174,16 +172,14 @@ struct CardFormScreen: View, LogReporter {
 
                             if fieldType == .firstName,
                                index + 1 < formConfiguration.billingFields.count,
-                               formConfiguration.billingFields[index + 1] == .lastName
-                            {
+                               formConfiguration.billingFields[index + 1] == .lastName {
                                 HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                                     renderField(.firstName)
                                     renderField(.lastName)
                                 }
                             } else if index > 0,
                                       formConfiguration.billingFields[index - 1] == .firstName,
-                                      fieldType == .lastName
-                            {
+                                      fieldType == .lastName {
                                 EmptyView()
                             } else {
                                 renderField(fieldType)
@@ -259,8 +255,7 @@ struct CardFormScreen: View, LogReporter {
 
         if let merchantAmount = merchantAmount,
            let surchargeRaw = cardFormState.surchargeAmountRaw,
-           cardFormState.selectedNetwork != nil
-        {
+           cardFormState.selectedNetwork != nil {
             let totalAmount = merchantAmount + surchargeRaw
             let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
             return "Pay with \(accessibilityAmount)"
@@ -291,8 +286,7 @@ struct CardFormScreen: View, LogReporter {
 
         if let merchantAmount = merchantAmount,
            let surchargeRaw = cardFormState.surchargeAmountRaw,
-           cardFormState.selectedNetwork != nil
-        {
+           cardFormState.selectedNetwork != nil {
             let totalAmount = merchantAmount + surchargeRaw
             let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
             return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
@@ -669,18 +663,14 @@ struct CardFormScreen: View, LogReporter {
     /// **Important**: Only call in response to explicit user actions (form submission, navigation request).
     /// DO NOT call automatically during typing as it creates an accessibility trap.
     private func moveFocusToFirstError() {
-        for field in formConfiguration.cardFields {
-            if cardFormState.hasError(for: field) {
-                focusedField = field
-                return
-            }
+        for field in formConfiguration.cardFields where cardFormState.hasError(for: field) {
+            focusedField = field
+            return
         }
 
-        for field in formConfiguration.billingFields {
-            if cardFormState.hasError(for: field) {
-                focusedField = field
-                return
-            }
+        for field in formConfiguration.billingFields where cardFormState.hasError(for: field) {
+            focusedField = field
+            return
         }
     }
 }
@@ -705,7 +695,7 @@ struct CardFormScreen: View, LogReporter {
                 .lastName,
                 .email,
                 .phoneNumber,
-                .otp,
+                .otp
             ]
         )
     ))
@@ -730,7 +720,7 @@ struct CardFormScreen: View, LogReporter {
                 .lastName,
                 .email,
                 .phoneNumber,
-                .otp,
+                .otp
             ]
         )
     ))

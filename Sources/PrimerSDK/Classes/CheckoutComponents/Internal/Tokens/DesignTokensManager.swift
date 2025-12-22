@@ -486,13 +486,13 @@ final class DesignTokensManager: ObservableObject {
             ("*", (*)), ("/", (/)), ("+", (+)), ("-", (-))
         ]
 
-        for (op, operation) in operators {
-            guard let index = trimmed.firstIndex(of: op) else { continue }
+        for (operatorChar, operation) in operators {
+            guard let index = trimmed.firstIndex(of: operatorChar) else { continue }
             let left = trimmed[..<index].trimmingCharacters(in: .whitespaces)
             let right = trimmed[trimmed.index(after: index)...].trimmingCharacters(in: .whitespaces)
 
             if let leftVal = Double(left), let rightVal = Double(right) {
-                return op == "/" && rightVal == 0 ? nil : operation(leftVal, rightVal)
+                return operatorChar == "/" && rightVal == 0 ? nil : operation(leftVal, rightVal)
             }
         }
 
