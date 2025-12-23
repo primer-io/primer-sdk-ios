@@ -578,7 +578,22 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
 
     func retryPayment() {
+        // Track payment reattempted event with payment method metadata if available
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let metadata = extractRetryMetadata()
+            await analyticsInteractor?.trackEvent(.paymentReattempted, metadata: metadata)
+        }
+
         currentPaymentMethodScope?.submit()
+    }
+
+    private func extractRetryMetadata() -> AnalyticsEventMetadata {
+        // Extract payment method info from the current failure state if available
+        if case let .failure(error) = navigationState {
+            return extractFailureMetadata(from: error)
+        }
+        return .general()
     }
 
 }
