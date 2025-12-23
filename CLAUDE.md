@@ -166,6 +166,8 @@ GitHub Actions workflows in `.github/workflows/`:
 ## Active Technologies
 - Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework (001-checkout-components-accessibility)
 - N/A (accessibility metadata stored in memory only) (001-checkout-components-accessibility)
+- Swift 6.0+ with strict concurrency checking + XCTest, CheckoutComponents DI framework, existing mock utilities (002-checkout-components-unit-tests)
+- N/A (tests are stateless) (002-checkout-components-unit-tests)
 
 ## Recent Changes
 - 001-checkout-components-accessibility: Added Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework
