@@ -362,12 +362,12 @@
 "accessibility_common_required" = "obbligatorio";
 "accessibility_common_selected" = "Selezionato";
 "accessibility_country_selection_clear" = "Cancella";
-"accessibility_country_selection_item" = "%@, paese";
+"accessibility_country_selection_item" = "%1$@, paese";
 "accessibility_country_selection_search" = "Cerca paesi";
 "accessibility_country_selection_search_icon" = "Cerca";
 "accessibility_error_generic" = "Si è verificato un errore. Riprova.";
 "accessibility_error_multiple_errors" = "%d errori trovati";
-"accessibility_payment_selection_card_full" = "Carta %@ che termina con %@, scade il %@";
+"accessibility_payment_selection_card_full" = "Carta %1$@ che termina con %2$@, scade il %3$@";
 "accessibility_payment_selection_card_masked" = "carta che termina con cifre nascoste";
 "accessibility_payment_selection_coming_soon" = "Metodo di pagamento in arrivo";
 "accessibility_payment_selection_pay_with_card" = "Paga con carta";
@@ -467,7 +467,7 @@
 "primer_common_back" = "Indietro";
 "primer_common_button_cancel" = "Annulla";
 "primer_common_button_pay" = "Paga";
-"primer_common_button_pay_amount" = "Paga %@";
+"primer_common_button_pay_amount" = "Paga %1$@";
 "primer_common_button_retry" = "Riprova";
 "primer_common_error_generic" = "Si è verificato un errore sconosciuto.";
 "primer_common_error_unexpected" = "Si è verificato un errore imprevisto.";
@@ -495,9 +495,9 @@
 "primer_vault_delete_button_cancel" = "Annulla";
 "primer_vault_delete_button_confirm" = "Elimina";
 "primer_vault_delete_message" = "Vuoi eliminare questo metodo di pagamento?";
-"primer_vault_format_card_details" = "%@ che termina con %@";
-"primer_vault_format_expires" = "Scade il %@/%@";
-"primer_vault_format_masked" = "•••• %@";
+"primer_vault_format_card_details" = "%1$@ che termina con %2$@";
+"primer_vault_format_expires" = "Scade il %1$@/%2$@";
+"primer_vault_format_masked" = "•••• %1$@";
 "primer_vault_manage_button_done" = "Fatto";
 "primer_vault_manage_button_edit" = "Modifica";
 "primer_vault_manage_title" = "Tutti i metodi di pagamento salvati";
