@@ -167,8 +167,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             try await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
         }
 
-        // Dismiss progress dialog before showing challenge
-        await MainActor.run { dismissProgressDialog(progressDialog) }
+        // Per Netcetera SDK recommendation: Do NOT dismiss progress dialog before doChallenge().
+        // The 3DS SDK reuses the same processing screen for the challenge flow and will
+        // hide it automatically once the challenge is finished. Dismissing it here causes
+        // a visible flicker as the SDK would call start() again internally.
 
         resumePaymentToken = authorizationResult.resumeToken
         _ = try await perform3DSChallenge(
