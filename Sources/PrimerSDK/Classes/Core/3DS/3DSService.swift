@@ -96,23 +96,6 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         primer3DS?.cleanup()
     }
 
-    /// Shows the EMVCo-required 3DS processing screen.
-    ///
-    /// The processing screen must be displayed for a minimum of 2 seconds during authentication
-    /// per EMVCo 3DS specifications.
-    ///
-    /// ## Window Layering Behavior
-    ///
-    /// **Drop-In mode**: Primer controls `primerWindow` (the bottom sheet), so it temporarily lowers
-    /// its window level below `.normal` before showing Netcetera's progress dialog. This guarantees
-    /// the processing screen appears on top of the checkout UI.
-    ///
-    /// **Headless mode**: Primer doesn't own the merchant's window hierarchy, so it cannot manipulate
-    /// window levels. The processing screen visibility depends on the merchant's current UI state.
-    ///
-    /// - Important: Headless merchants should ensure no custom windows, overlays, or modal
-    ///   presentations are active when 3DS authentication begins, otherwise the processing
-    ///   screen may appear behind their UI.
     @MainActor
     private func showProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
         guard let progressDialog = progressDialog else { return }
