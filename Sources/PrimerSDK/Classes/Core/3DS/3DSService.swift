@@ -37,6 +37,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
+    private var originalPrimerWindowLevel: UIWindow.Level?
     #endif
 
     private var paymentMethodType: String?
@@ -87,7 +88,46 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
         threeDSSDKWindow?.isHidden = true
         threeDSSDKWindow = nil
+        // Restore primerWindow level if we changed it
+        if let originalLevel = originalPrimerWindowLevel {
+            PrimerUIManager.primerWindow?.windowLevel = originalLevel
+            originalPrimerWindowLevel = nil
+        }
         primer3DS?.cleanup()
+    }
+
+    @MainActor
+    private func showProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
+        guard let progressDialog = progressDialog else { return }
+
+        // Drop-In mode: Primer owns primerWindow, so proper z-ordering is guaranteed
+        // by lowering the window level before Netcetera creates its progress dialog window.
+        if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+           let primerWindow = PrimerUIManager.primerWindow {
+
+            originalPrimerWindowLevel = primerWindow.windowLevel
+            primerWindow.windowLevel = UIWindow.Level(rawValue: UIWindow.Level.normal.rawValue - 1)
+
+            progressDialog.show()
+        } else {
+            // Headless mode: Primer doesn't control the merchant's window hierarchy.
+            // Netcetera's progress dialog will appear at its default window level.
+            // If the merchant has windows at or above this level, the dialog may be obscured.
+            progressDialog.show()
+        }
+    }
+
+    @MainActor
+    private func dismissProgressDialog(_ progressDialog: Primer3DSProgressDialogProtocol?) {
+        // Dismiss the progress dialog
+        progressDialog?.dismiss()
+
+        // For Drop-In mode, restore primerWindow's level
+        if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+           let originalLevel = originalPrimerWindowLevel {
+            PrimerUIManager.primerWindow?.windowLevel = originalLevel
+            originalPrimerWindowLevel = nil
+        }
     }
 
     private func executeAuthentication(paymentMethodTokenData: PrimerPaymentMethodTokenData, sdkDismissed: (() -> Void)?) async throws -> String {
@@ -97,10 +137,39 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         try await initializePrimer3DSSdk()
         let sdkAuthResult = try await create3DsAuthData(paymentMethodTokenData: paymentMethodTokenData)
         initProtocolVersion = ThreeDS.ProtocolVersion(rawValue: sdkAuthResult.maxSupportedThreeDsProtocolVersion)
-        let authorizationResult = try await initialize3DSAuthorization(
-            sdkAuthResult: sdkAuthResult,
-            paymentMethodTokenData: paymentMethodTokenData
-        )
+
+        // Show EMVCo-required processing screen before authentication request
+        let progressDialog = await MainActor.run { primer3DS.getProgressDialog() }
+        await MainActor.run { showProgressDialog(progressDialog) }
+        let progressStartTime = Date()
+
+        let authorizationResult: (serverAuthData: ThreeDS.ServerAuthData, resumeToken: String, threeDsAppRequestorUrl: URL?)
+        do {
+            authorizationResult = try await initialize3DSAuthorization(
+                sdkAuthResult: sdkAuthResult,
+                paymentMethodTokenData: paymentMethodTokenData
+            )
+        } catch {
+            // Ensure minimum display time even on error before dismissing
+            let elapsedTime = Date().timeIntervalSince(progressStartTime)
+            let minimumDisplayTime: TimeInterval = 2.0
+            if elapsedTime < minimumDisplayTime {
+                try? await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
+            }
+            await MainActor.run { dismissProgressDialog(progressDialog) }
+            throw error
+        }
+
+        // EMVCo requires processing screen to be shown for minimum 2 seconds
+        let elapsedTime = Date().timeIntervalSince(progressStartTime)
+        let minimumDisplayTime: TimeInterval = 2.0
+        if elapsedTime < minimumDisplayTime {
+            try await Task.sleep(nanoseconds: UInt64((minimumDisplayTime - elapsedTime) * 1_000_000_000))
+        }
+
+        // Dismiss progress dialog before showing challenge
+        await MainActor.run { dismissProgressDialog(progressDialog) }
+
         resumePaymentToken = authorizationResult.resumeToken
         _ = try await perform3DSChallenge(
             threeDSAuthData: authorizationResult.serverAuthData,
@@ -122,10 +191,10 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         if case InternalError.noNeedToPerform3ds = error {
             guard let resumePaymentToken else { throw handled(primerError: .invalidValue(key: "resumeToken")) }
             return resumePaymentToken
-        } else if case InternalError.failedToPerform3dsAndShouldBreak(let primerErr) = error {
+        } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
             ErrorHandler.handle(error: primerErr)
             throw primerErr
-        } else if case InternalError.failedToPerform3dsButShouldContinue(let primer3DSErrorContainer) = error {
+        } else if case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error {
             ErrorHandler.handle(error: primer3DSErrorContainer)
             continueInfo = primer3DSErrorContainer.continueInfo
         } else {
@@ -229,7 +298,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest
             ) { result in
                 switch result {
-                case .success(let beginAuthResponse):
+                case let .success(beginAuthResponse):
                     switch beginAuthResponse.authentication.responseCode {
                     case .authSuccess,
                          .authFailed,
@@ -252,7 +321,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                         continuation.resume(returning: (serverAuthData, beginAuthResponse.resumeToken, threeDsAppRequestorUrl))
                     }
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -333,11 +402,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                                paymentMethodTokenData: paymentMethodTokenData,
                                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
             switch result {
-            case .failure(let underlyingErr):
+            case let .failure(underlyingErr):
                 let primerErr = underlyingErr.normalizedForSDK
                 completion(.failure(InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)))
 
-            case .success(let res):
+            case let .success(res):
                 completion(.success(res))
             }
         }
@@ -460,7 +529,7 @@ private extension ThreeDSService {
     }
 
     private func createPrimer3DSError(from primer3DSError: Primer3DSError) -> Primer3DSErrorContainer {
-        return Primer3DSErrorContainer.primer3DSSdkError(
+        Primer3DSErrorContainer.primer3DSSdkError(
             paymentMethodType: self.paymentMethodType,
             initProtocolVersion: self.initProtocolVersion?.rawValue,
             errorInfo: Primer3DSErrorInfo(primer3DSError)

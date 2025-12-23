@@ -556,13 +556,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         safariViewController.delegate = self
         webViewController = safariViewController
 
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.webViewCompletion = { _, err in
-                if let err {
-                    continuation.resume(throwing: err)
-                }
-            }
-
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             DispatchQueue.main.async {
                 self.uiManager.primerRootViewController?.present(safariViewController, animated: true, completion: {
                     DispatchQueue.main.async {
@@ -576,8 +570,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     func configureAmountLabels(cardNetwork: CardNetwork?) {
         if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge,
            PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-           let currency = AppState.current.currency
-        {
+           let currency = AppState.current.currency {
             configureSurchargeLabel(surchargeAmount: surcharge, currency: currency)
         } else {
             hideSurchargeLabel()
@@ -881,10 +874,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
 extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_: SFSafariViewController) {
-        if let webViewCompletion = webViewCompletion {
-            // Cancelled
-            webViewCompletion(nil, handled(primerError: .cancelled(paymentMethodType: config.type)))
-        }
+        // User closed Safari - cancel the payment flow
+        // This triggers didCancel() which cancels the polling module
+        cancel()
 
         webViewCompletion = nil
     }
