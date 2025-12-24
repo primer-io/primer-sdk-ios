@@ -27,7 +27,7 @@ final class RetentionPolicyTests: XCTestCase {
 
     // MARK: - Singleton Retention
 
-    func test_singleton_returnsS ameInstanceOnMultipleCalls() async throws {
+    func test_singleton_returnsSameInstanceOnMultipleCalls() async throws {
         // Given
         container.register(MockService.self, policy: .singleton) {
             MockService()
