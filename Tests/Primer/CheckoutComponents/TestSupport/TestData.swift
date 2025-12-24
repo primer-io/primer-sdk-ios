@@ -188,33 +188,364 @@ enum TestData {
         static let tooShort = "123"
     }
 
+    // MARK: - API Responses
+
+    /// Mock API responses for repository testing
+    enum APIResponses {
+        /// Valid payment methods response with full configuration
+        static let validPaymentMethods = """
+        {
+            "paymentMethods": [
+                {
+                    "type": "PAYMENT_CARD",
+                    "name": "Card",
+                    "supportedCardNetworks": ["VISA", "MASTERCARD", "AMEX"]
+                }
+            ]
+        }
+        """
+
+        /// Empty payment methods array (edge case)
+        static let emptyPaymentMethods = """
+        {
+            "paymentMethods": []
+        }
+        """
+
+        /// Malformed JSON to test error handling
+        static let malformedJSON = "{invalid json}"
+
+        /// Valid merchant configuration response
+        static let merchantConfig = """
+        {
+            "merchantId": "test-merchant-123",
+            "settings": {
+                "theme": "light",
+                "enableAnalytics": true
+            }
+        }
+        """
+
+        /// Error response from API
+        static let errorResponse = """
+        {
+            "error": {
+                "code": "PAYMENT_DECLINED",
+                "message": "Insufficient funds"
+            }
+        }
+        """
+    }
+
+    // MARK: - Payment Results
+
+    /// Payment processing outcome fixtures
+    enum PaymentResults {
+        /// Successful payment completion
+        static let success = (
+            status: "success",
+            transactionId: "test-payment-123",
+            error: nil as Error?,
+            threeDSRequired: false,
+            surchargeAmount: nil as Int?
+        )
+
+        /// Payment requires 3DS challenge
+        static let threeDSRequired = (
+            status: "pending",
+            transactionId: "test-payment-456",
+            error: nil as Error?,
+            threeDSRequired: true,
+            surchargeAmount: nil as Int?
+        )
+
+        /// Payment declined by issuer
+        static let declined = (
+            status: "failure",
+            transactionId: nil as String?,
+            error: NSError(
+                domain: "PaymentError",
+                code: 402,
+                userInfo: [NSLocalizedDescriptionKey: "Payment declined: Insufficient funds"]
+            ) as Error,
+            threeDSRequired: false,
+            surchargeAmount: nil as Int?
+        )
+
+        /// Payment with network surcharge
+        static let withSurcharge = (
+            status: "success",
+            transactionId: "test-payment-789",
+            error: nil as Error?,
+            threeDSRequired: false,
+            surchargeAmount: 50 as Int? // 50 cents
+        )
+
+        /// Payment cancelled by user
+        static let cancelled = (
+            status: "cancelled",
+            transactionId: nil as String?,
+            error: NSError(
+                domain: "PaymentError",
+                code: -999,
+                userInfo: [NSLocalizedDescriptionKey: "Payment cancelled by user"]
+            ) as Error,
+            threeDSRequired: false,
+            surchargeAmount: nil as Int?
+        )
+    }
+
+    // MARK: - 3DS Flows
+
+    /// 3D Secure challenge scenario fixtures
+    enum ThreeDSFlows {
+        /// Challenge required - user must complete 3DS authentication
+        static let challengeRequired = (
+            transactionId: "test-tx-123",
+            acsTransactionId: "test-acs-456",
+            acsReferenceNumber: "test-ref-789",
+            acsSignedContent: "signed-content-challenge",
+            challengeRequired: true,
+            outcome: "success"
+        )
+
+        /// Frictionless flow - 3DS completed without user interaction
+        static let frictionless = (
+            transactionId: "test-tx-234",
+            acsTransactionId: "test-acs-567",
+            acsReferenceNumber: "test-ref-890",
+            acsSignedContent: nil as String?,
+            challengeRequired: false,
+            outcome: "success"
+        )
+
+        /// Failed 3DS authentication
+        static let failed = (
+            transactionId: "test-tx-345",
+            acsTransactionId: "test-acs-678",
+            acsReferenceNumber: "test-ref-901",
+            acsSignedContent: "signed-content-failed",
+            challengeRequired: true,
+            outcome: "failure"
+        )
+
+        /// User cancelled 3DS challenge
+        static let cancelled = (
+            transactionId: "test-tx-456",
+            acsTransactionId: "test-acs-789",
+            acsReferenceNumber: "test-ref-012",
+            acsSignedContent: "signed-content-cancelled",
+            challengeRequired: true,
+            outcome: "cancelled"
+        )
+
+        /// 3DS challenge timed out
+        static let timeout = (
+            transactionId: "test-tx-567",
+            acsTransactionId: "test-acs-890",
+            acsReferenceNumber: "test-ref-123",
+            acsSignedContent: "signed-content-timeout",
+            challengeRequired: true,
+            outcome: "timeout"
+        )
+    }
+
+    // MARK: - Network Responses
+
+    /// Mock network response fixtures for testing repository network layer
+    enum NetworkResponses {
+        /// Successful HTTP 200 response
+        static func success200(with data: Data? = nil) -> (Data?, HTTPURLResponse?, Error?) {
+            let json = data ?? APIResponses.validPaymentMethods.data(using: .utf8)
+            let response = HTTPURLResponse(
+                url: URL(string: "https://api.primer.io/test")!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )
+            return (json, response, nil)
+        }
+
+        /// Client error - 400 Bad Request
+        static let badRequest400 = (
+            data: nil as Data?,
+            response: HTTPURLResponse(
+                url: URL(string: "https://api.primer.io/test")!,
+                statusCode: 400,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            ),
+            error: nil as Error?
+        )
+
+        /// Client error - 401 Unauthorized
+        static let unauthorized401 = (
+            data: nil as Data?,
+            response: HTTPURLResponse(
+                url: URL(string: "https://api.primer.io/test")!,
+                statusCode: 401,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            ),
+            error: nil as Error?
+        )
+
+        /// Client error - 404 Not Found
+        static let notFound404 = (
+            data: nil as Data?,
+            response: HTTPURLResponse(
+                url: URL(string: "https://api.primer.io/test")!,
+                statusCode: 404,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            ),
+            error: nil as Error?
+        )
+
+        /// Server error - 500 Internal Server Error
+        static let serverError500 = (
+            data: nil as Data?,
+            response: HTTPURLResponse(
+                url: URL(string: "https://api.primer.io/test")!,
+                statusCode: 500,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            ),
+            error: nil as Error?
+        )
+
+        /// Network timeout error
+        static let timeout = (
+            data: nil as Data?,
+            response: nil as HTTPURLResponse?,
+            error: NSError(
+                domain: NSURLErrorDomain,
+                code: NSURLErrorTimedOut,
+                userInfo: [NSLocalizedDescriptionKey: "Request timed out"]
+            ) as Error
+        )
+
+        /// No connection error (offline)
+        static let noConnection = (
+            data: nil as Data?,
+            response: nil as HTTPURLResponse?,
+            error: NSError(
+                domain: NSURLErrorDomain,
+                code: NSURLErrorNotConnectedToInternet,
+                userInfo: [NSLocalizedDescriptionKey: "No internet connection"]
+            ) as Error
+        )
+    }
+
     // MARK: - Errors
 
     enum Errors {
+        // Network Errors
         static let networkError = NSError(
             domain: "TestError",
             code: -1,
             userInfo: [NSLocalizedDescriptionKey: "Network connection failed"]
         )
 
+        static let networkTimeout = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorTimedOut,
+            userInfo: [NSLocalizedDescriptionKey: "Request timed out"]
+        )
+
+        // Validation Errors
         static let validationError = NSError(
             domain: "ValidationError",
             code: 400,
             userInfo: [NSLocalizedDescriptionKey: "Validation failed"]
         )
 
-        static let serverError = NSError(
-            domain: "ServerError",
-            code: 500,
-            userInfo: [NSLocalizedDescriptionKey: "Internal server error"]
+        static let invalidCardNumber = NSError(
+            domain: "PrimerValidationError",
+            code: 1001,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Invalid card number",
+                "field": "cardNumber"
+            ]
         )
 
+        static let expiredCard = NSError(
+            domain: "PrimerValidationError",
+            code: 1002,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Card has expired",
+                "field": "expiryDate"
+            ]
+        )
+
+        static let invalidCVV = NSError(
+            domain: "PrimerValidationError",
+            code: 1003,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Invalid CVV",
+                "field": "cvv"
+            ]
+        )
+
+        // Payment Errors
         static let paymentDeclined = NSError(
             domain: "PaymentError",
             code: 402,
             userInfo: [NSLocalizedDescriptionKey: "Payment was declined"]
         )
 
+        static let insufficientFunds = NSError(
+            domain: "PaymentError",
+            code: 4001,
+            userInfo: [NSLocalizedDescriptionKey: "Payment declined: Insufficient funds"]
+        )
+
+        static let fraudCheck = NSError(
+            domain: "PaymentError",
+            code: 4002,
+            userInfo: [NSLocalizedDescriptionKey: "Payment declined: Fraud check failed"]
+        )
+
+        // Server Errors
+        static let serverError = NSError(
+            domain: "ServerError",
+            code: 500,
+            userInfo: [NSLocalizedDescriptionKey: "Internal server error"]
+        )
+
+        // Configuration Errors
+        static let invalidMerchantConfig = NSError(
+            domain: "ConfigurationError",
+            code: 5001,
+            userInfo: [NSLocalizedDescriptionKey: "Invalid merchant configuration"]
+        )
+
+        static let missingAPIKey = NSError(
+            domain: "ConfigurationError",
+            code: 5002,
+            userInfo: [NSLocalizedDescriptionKey: "Missing API key"]
+        )
+
+        // 3DS Errors
+        static let threeDSInitializationFailed = NSError(
+            domain: "Primer3DSError",
+            code: 6001,
+            userInfo: [NSLocalizedDescriptionKey: "3DS initialization failed"]
+        )
+
+        static let threeDSChallengeTimeout = NSError(
+            domain: "Primer3DSError",
+            code: 6002,
+            userInfo: [NSLocalizedDescriptionKey: "3DS challenge timed out"]
+        )
+
+        static let threeDSChallengeCancelled = NSError(
+            domain: "Primer3DSError",
+            code: 6003,
+            userInfo: [NSLocalizedDescriptionKey: "3DS challenge was cancelled"]
+        )
+
+        // Authentication Errors
         static let authenticationRequired = NSError(
             domain: "AuthError",
             code: 401,
