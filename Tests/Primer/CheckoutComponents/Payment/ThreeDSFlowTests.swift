@@ -377,10 +377,10 @@ private class Mock3DSSDKManager {
 
 @available(iOS 15.0, *)
 private class Mock3DSAPIClient {
-    var flowData: (requiresChallenge: Bool, authValue: String?)?
+    var flowData: (transactionId: String, acsTransactionId: String, acsReferenceNumber: String, acsSignedContent: String?, challengeRequired: Bool, outcome: String)?
     var requestCount = 0
 
-    func initiate3DS(transactionId: String) async throws -> (requiresChallenge: Bool, authValue: String?) {
+    func initiate3DS(transactionId: String) async throws -> (transactionId: String, acsTransactionId: String, acsReferenceNumber: String, acsSignedContent: String?, challengeRequired: Bool, outcome: String) {
         requestCount += 1
 
         guard let flowData = flowData else {
@@ -413,7 +413,7 @@ private class ThreeDSFlowManager {
         // Get flow data
         let flowData = try await apiClient.initiate3DS(transactionId: transactionId)
 
-        if flowData.requiresChallenge {
+        if flowData.challengeRequired {
             // Challenge flow
             onStateChange?(.preparingChallenge)
 
@@ -459,7 +459,7 @@ private class ThreeDSFlowManager {
         } else {
             // Frictionless flow
             onStateChange?(.completed)
-            return ThreeDSResult(status: .authenticated, authenticationValue: flowData.authValue)
+            return ThreeDSResult(status: .authenticated, authenticationValue: flowData.acsTransactionId)
         }
     }
 }

@@ -159,7 +159,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             _ = try await sut.tokenizeCard(cardData)
             XCTFail("Expected API error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .networkTimeout)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.networkTimeout.code)
         }
     }
 

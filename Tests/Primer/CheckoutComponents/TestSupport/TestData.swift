@@ -551,6 +551,13 @@ enum TestData {
             code: 401,
             userInfo: [NSLocalizedDescriptionKey: "Authentication required"]
         )
+
+        // Generic Errors
+        static let unknown = NSError(
+            domain: "UnknownError",
+            code: 9999,
+            userInfo: [NSLocalizedDescriptionKey: "An unknown error occurred"]
+        )
     }
 
     // MARK: - Card Networks

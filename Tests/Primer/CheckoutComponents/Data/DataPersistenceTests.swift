@@ -164,7 +164,7 @@ final class DataPersistenceTests: XCTestCase {
             for i in 0..<10 {
                 group.addTask {
                     let data = PaymentData(id: "\(i)", amount: i * 100, currency: "USD")
-                    try? self.sut.save(data, forKey: "payment-\(i)")
+                    try? await self.sut.save(data, forKey: "payment-\(i)")
                 }
             }
         }
@@ -186,7 +186,7 @@ final class DataPersistenceTests: XCTestCase {
         let results = await withTaskGroup(of: PaymentData?.self, returning: [PaymentData?].self) { group in
             for _ in 0..<10 {
                 group.addTask {
-                    try? self.sut.load(forKey: "payment")
+                    try? await self.sut.load(forKey: "payment")
                 }
             }
 

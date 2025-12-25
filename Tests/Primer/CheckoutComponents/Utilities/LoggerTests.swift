@@ -30,141 +30,153 @@ final class LoggerTests: XCTestCase {
 
     // MARK: - Log Levels
 
-    func test_debug_logsAtDebugLevel() {
+    func test_debug_logsAtDebugLevel() async throws {
         // When
-        sut.debug("Debug message")
+        await sut.debug("Debug message")
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 1)
-        XCTAssertTrue(mockOutput.messages.first?.contains("[DEBUG]") ?? false)
-        XCTAssertTrue(mockOutput.messages.first?.contains("Debug message") ?? false)
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertTrue(messages.first?.contains("[DEBUG]") ?? false)
+        XCTAssertTrue(messages.first?.contains("Debug message") ?? false)
     }
 
-    func test_info_logsAtInfoLevel() {
+    func test_info_logsAtInfoLevel() async throws {
         // When
-        sut.info("Info message")
+        await sut.info("Info message")
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 1)
-        XCTAssertTrue(mockOutput.messages.first?.contains("[INFO]") ?? false)
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertTrue(messages.first?.contains("[INFO]") ?? false)
     }
 
-    func test_warning_logsAtWarningLevel() {
+    func test_warning_logsAtWarningLevel() async throws {
         // When
-        sut.warning("Warning message")
+        await sut.warning("Warning message")
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 1)
-        XCTAssertTrue(mockOutput.messages.first?.contains("[WARNING]") ?? false)
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertTrue(messages.first?.contains("[WARNING]") ?? false)
     }
 
-    func test_error_logsAtErrorLevel() {
+    func test_error_logsAtErrorLevel() async throws {
         // When
-        sut.error("Error message")
+        await sut.error("Error message")
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 1)
-        XCTAssertTrue(mockOutput.messages.first?.contains("[ERROR]") ?? false)
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertTrue(messages.first?.contains("[ERROR]") ?? false)
     }
 
     // MARK: - Log Level Filtering
 
-    func test_setMinimumLevel_filtersLowerLevels() {
+    func test_setMinimumLevel_filtersLowerLevels() async throws {
         // Given
         sut.minimumLevel = .warning
 
         // When
-        sut.debug("Debug message")
-        sut.info("Info message")
-        sut.warning("Warning message")
-        sut.error("Error message")
+        await sut.debug("Debug message")
+        await sut.info("Info message")
+        await sut.warning("Warning message")
+        await sut.error("Error message")
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 2) // Only warning and error
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 2) // Only warning and error
     }
 
     // MARK: - Message Formatting
 
-    func test_log_includesTimestamp() {
+    func test_log_includesTimestamp() async throws {
         // When
-        sut.info("Test message")
+        await sut.info("Test message")
 
         // Then
-        let message = mockOutput.messages.first ?? ""
+        let messages = await mockOutput.messages
+        let message = messages.first ?? ""
         XCTAssertTrue(message.contains(":")) // Timestamp format
     }
 
-    func test_log_includesCategory() {
+    func test_log_includesCategory() async throws {
         // Given
         let logger = Logger(category: "Network", output: mockOutput)
 
         // When
-        logger.info("Test message")
+        await logger.info("Test message")
 
         // Then
-        let message = mockOutput.messages.first ?? ""
+        let messages = await mockOutput.messages
+        let message = messages.first ?? ""
         XCTAssertTrue(message.contains("[Network]"))
     }
 
     // MARK: - Context
 
-    func test_logWithContext_includesContext() {
+    func test_logWithContext_includesContext() async throws {
         // When
-        sut.info("Test message", context: ["userId": "123", "sessionId": "abc"])
+        await sut.info("Test message", context: ["userId": "123", "sessionId": "abc"])
 
         // Then
-        let message = mockOutput.messages.first ?? ""
+        let messages = await mockOutput.messages
+        let message = messages.first ?? ""
         XCTAssertTrue(message.contains("userId"))
         XCTAssertTrue(message.contains("123"))
     }
 
     // MARK: - Error Logging
 
-    func test_logError_includesErrorDescription() {
+    func test_logError_includesErrorDescription() async throws {
         // Given
         let error = NSError(domain: "TestError", code: 123, userInfo: [NSLocalizedDescriptionKey: "Test error"])
 
         // When
-        sut.error("Error occurred", error: error)
+        await sut.error("Error occurred", error: error)
 
         // Then
-        let message = mockOutput.messages.first ?? ""
+        let messages = await mockOutput.messages
+        let message = messages.first ?? ""
         XCTAssertTrue(message.contains("Test error"))
         XCTAssertTrue(message.contains("123"))
     }
 
     // MARK: - Performance
 
-    func test_logging_withDisabledOutput_doesNotSlowDown() {
+    func test_logging_withDisabledOutput_doesNotSlowDown() async throws {
         // Given
         sut.isEnabled = false
         let startTime = Date()
 
         // When
         for _ in 0..<1000 {
-            sut.info("Test message")
+            await sut.info("Test message")
         }
 
         // Then
         let duration = Date().timeIntervalSince(startTime)
         XCTAssertLessThan(duration, 0.1) // Should be very fast when disabled
-        XCTAssertTrue(mockOutput.messages.isEmpty)
+        let messages = await mockOutput.messages
+        XCTAssertTrue(messages.isEmpty)
     }
 
     // MARK: - Multiple Outputs
 
-    func test_logger_withMultipleOutputs_logsToAll() {
+    func test_logger_withMultipleOutputs_logsToAll() async throws {
         // Given
         let output1 = MockLogOutput()
         let output2 = MockLogOutput()
         let logger = Logger(outputs: [output1, output2])
 
         // When
-        logger.info("Test message")
+        await logger.info("Test message")
 
         // Then
-        XCTAssertEqual(output1.messages.count, 1)
-        XCTAssertEqual(output2.messages.count, 1)
+        let messages1 = await output1.messages
+        let messages2 = await output2.messages
+        XCTAssertEqual(messages1.count, 1)
+        XCTAssertEqual(messages2.count, 1)
     }
 
     // MARK: - Thread Safety
@@ -180,7 +192,8 @@ final class LoggerTests: XCTestCase {
         }
 
         // Then
-        XCTAssertEqual(mockOutput.messages.count, 100)
+        let messages = await mockOutput.messages
+        XCTAssertEqual(messages.count, 100)
     }
 }
 

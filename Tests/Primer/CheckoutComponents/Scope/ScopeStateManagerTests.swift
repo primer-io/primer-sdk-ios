@@ -79,7 +79,7 @@ final class ScopeStateManagerTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for i in 0..<100 {
                 group.addTask {
-                    self.sut.setState(CheckoutState(isLoading: i % 2 == 0, error: nil))
+                    await self.sut.setState(CheckoutState(isLoading: i % 2 == 0, error: nil))
                 }
             }
         }

@@ -105,7 +105,7 @@ final class PaymentProcessorTests: XCTestCase {
             _ = try await sut.processPayment(paymentData)
             XCTFail("Expected tokenization error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .invalidCardNumber)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.invalidCardNumber.code)
             XCTAssertEqual(mockAPIClient.processCallCount, 0) // Should not reach API
         }
     }
@@ -334,7 +334,7 @@ final class PaymentProcessorTests: XCTestCase {
             _ = try await sut.processPayment(paymentData)
             XCTFail("Expected network error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .networkTimeout)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.networkTimeout.code)
         }
     }
 
@@ -426,7 +426,7 @@ private class MockTokenizer {
 
 @available(iOS 15.0, *)
 private class MockPaymentAPIClient {
-    var response: (status: String, transactionId: String, surcharge: Int?, declineReason: String?, requires3DS: Bool)?
+    var response: (status: String, transactionId: String?, error: Error?, threeDSRequired: Bool, surchargeAmount: Int?)?
     var shouldFail = false
     var error: Error?
     var processCallCount = 0
@@ -451,9 +451,9 @@ private class MockPaymentAPIClient {
 
         return PaymentResult(
             status: response.status,
-            transactionId: response.transactionId,
-            surcharge: response.surcharge,
-            totalAmount: response.surcharge != nil ? amount + response.surcharge! : nil
+            transactionId: response.transactionId ?? "",
+            surcharge: response.surchargeAmount,
+            totalAmount: response.surchargeAmount != nil ? amount + response.surchargeAmount! : nil
         )
     }
 }
@@ -517,7 +517,7 @@ private class PaymentProcessor {
         )
 
         // Handle 3DS if required
-        if apiClient.response?.requires3DS == true {
+        if apiClient.response?.threeDSRequired == true {
             let threeDSResult = try await threeDSHandler.presentChallenge()
 
             switch threeDSResult {
@@ -537,8 +537,9 @@ private class PaymentProcessor {
         }
 
         // Check for declined
-        if result.status == "declined" {
-            throw PaymentError.declined(reason: apiClient.response?.declineReason ?? "unknown")
+        if result.status == "declined" || result.status == "failure" {
+            let declineReason = (apiClient.response?.error as? NSError)?.userInfo[NSLocalizedDescriptionKey] as? String
+            throw PaymentError.declined(reason: declineReason ?? "unknown")
         }
 
         // Complete

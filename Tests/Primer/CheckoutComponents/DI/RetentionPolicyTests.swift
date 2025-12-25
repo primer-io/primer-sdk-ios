@@ -99,8 +99,8 @@ final class RetentionPolicyTests: XCTestCase {
 
         // When
         weak var weakRef: MockService?
-        autoreleasepool {
-            let instance = try! await container.resolve(MockService.self)
+        do {
+            let instance = try await container.resolve(MockService.self)
             weakRef = instance
         }
 
@@ -149,8 +149,8 @@ final class RetentionPolicyTests: XCTestCase {
 
         // When
         weak var weakRef: MockService?
-        autoreleasepool {
-            let instance = try! await container.resolve(MockService.self)
+        do {
+            let instance = try await container.resolve(MockService.self)
             weakRef = instance
         }
 
@@ -165,8 +165,8 @@ final class RetentionPolicyTests: XCTestCase {
         }
 
         var instance1: MockService?
-        autoreleasepool {
-            instance1 = try! await container.resolve(MockService.self)
+        do {
+            instance1 = try await container.resolve(MockService.self)
         }
 
         // When - resolve again after deallocation

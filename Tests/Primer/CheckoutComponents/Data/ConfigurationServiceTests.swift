@@ -83,7 +83,7 @@ final class ConfigurationServiceTests: XCTestCase {
             _ = try await sut.loadConfiguration(clientToken: "")
             XCTFail("Expected error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .missingAPIKey)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.missingAPIKey.code)
         }
     }
 

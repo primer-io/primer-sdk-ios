@@ -143,7 +143,7 @@ final class AsyncResolutionTests: XCTestCase {
         var shouldFail = true
         container.register(AsyncService.self, policy: .singleton) {
             if shouldFail {
-                try await AsyncService.createWithError()
+                return try await AsyncService.createWithError()
             } else {
                 return await AsyncService.create()
             }
@@ -270,8 +270,8 @@ final class AsyncResolutionTests: XCTestCase {
 
         // When
         weak var weakRef: AsyncService?
-        autoreleasepool {
-            let instance = try! await container.resolve(AsyncService.self)
+        do {
+            let instance = try await container.resolve(AsyncService.self)
             weakRef = instance
             XCTAssertNotNil(weakRef)
         }
