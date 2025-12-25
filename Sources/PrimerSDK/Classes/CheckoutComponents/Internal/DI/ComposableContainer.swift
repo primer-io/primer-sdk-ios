@@ -141,6 +141,15 @@ private extension ComposableContainer {
                     repository: try await resolver.resolve(PayPalRepository.self)
                 )
             }
+
+        _ = try? await container.register(ProcessApplePayPaymentInteractor.self)
+            .asTransient()
+            .with { _ in
+                ProcessApplePayPaymentInteractorImpl(
+                    tokenizationService: TokenizationService(),
+                    createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+                )
+            }
     }
 
     func registerData() async {

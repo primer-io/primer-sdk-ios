@@ -14,6 +14,7 @@ public struct PaymentResult {
     public let errorMessage: String?
     public let metadata: [String: Any]?
     public let amount: Int?
+    public let currencyCode: String?
     public let paymentMethodType: String?
 
     public init(
@@ -24,6 +25,7 @@ public struct PaymentResult {
         errorMessage: String? = nil,
         metadata: [String: Any]? = nil,
         amount: Int? = nil,
+        currencyCode: String? = nil,
         paymentMethodType: String? = nil
     ) {
         self.paymentId = paymentId
@@ -33,6 +35,7 @@ public struct PaymentResult {
         self.errorMessage = errorMessage
         self.metadata = metadata
         self.amount = amount
+        self.currencyCode = currencyCode
         self.paymentMethodType = paymentMethodType
     }
 }
