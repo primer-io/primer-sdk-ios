@@ -9,19 +9,16 @@ import XCTest
 
 /// Tests for NetworkManager error handling to achieve 90% Data layer coverage.
 /// Covers timeout, connectivity, HTTP errors, and retry logic.
-///
-/// TODO: This test file has a duplicate MockURLSession class definition
-/// TODO: Tests use TestData.Errors in Equatable comparisons which doesn't work
 @available(iOS 15.0, *)
 @MainActor
 final class NetworkManagerErrorHandlingTests: XCTestCase {
-    /*
+
     private var sut: NetworkManager!
-    private var mockSession: MockURLSession!
+    private var mockSession: NetworkManagerMockURLSession!
 
     override func setUp() async throws {
         try await super.setUp()
-        mockSession = MockURLSession()
+        mockSession = NetworkManagerMockURLSession()
         sut = NetworkManager(session: mockSession)
     }
 
@@ -42,7 +39,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
             _ = try await sut.request(url: "https://api.example.com")
             XCTFail("Expected timeout error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .networkTimeout)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.networkTimeout.code)
         }
     }
 
@@ -63,14 +60,14 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
     func test_request_withNoConnection_throwsConnectionError() async throws {
         // Given
-        mockSession.error = TestData.Errors.noConnection
+        mockSession.error = TestData.Errors.networkError
 
         // When/Then
         do {
             _ = try await sut.request(url: "https://api.example.com")
             XCTFail("Expected connection error")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, .noConnection)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.networkError.code)
         }
     }
 
@@ -295,10 +292,10 @@ private enum NetworkError: Error, Equatable {
     case invalidResponse
 }
 
-// MARK: - Mock URLSession
+// MARK: - Mock URLSession (Network Manager Tests)
 
 @available(iOS 15.0, *)
-private class MockURLSession {
+private class NetworkManagerMockURLSession {
     var responseData: Data?
     var response: URLResponse?
     var error: Error?
@@ -338,9 +335,9 @@ private class MockURLSession {
 
 @available(iOS 15.0, *)
 private class NetworkManager {
-    private let session: MockURLSession
+    private let session: NetworkManagerMockURLSession
 
-    init(session: MockURLSession) {
+    init(session: NetworkManagerMockURLSession) {
         self.session = session
     }
 
@@ -402,5 +399,4 @@ private class NetworkManager {
 
         throw lastError ?? NetworkError.invalidResponse
     }
-    */
 }

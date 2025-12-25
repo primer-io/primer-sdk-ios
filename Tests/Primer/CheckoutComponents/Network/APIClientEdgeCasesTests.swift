@@ -9,12 +9,9 @@ import XCTest
 
 /// Tests for APIClient edge cases to achieve 90% Data layer coverage.
 /// Covers request building, header injection, authentication, and edge cases.
-///
-/// TODO: These tests have type ambiguity issues - need to specify return types for APIClient.get() calls
 @available(iOS 15.0, *)
 @MainActor
 final class APIClientEdgeCasesTests: XCTestCase {
-    /*
     private var sut: APIClient!
     private var mockNetworkManager: MockNetworkManager!
 
@@ -41,7 +38,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/payment-methods")
+        let _: EmptyResponse = try await sut.get(endpoint: "/payment-methods")
 
         // Then
         XCTAssertTrue(mockNetworkManager.lastRequestURL?.contains("api.primer.io/payment-methods") ?? false)
@@ -52,7 +49,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/payment-methods", queryParams: ["currency": "USD", "limit": "10"])
+        let _: EmptyResponse = try await sut.get(endpoint: "/payment-methods", queryParams: ["currency": "USD", "limit": "10"])
 
         // Then
         let url = mockNetworkManager.lastRequestURL ?? ""
@@ -65,7 +62,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "")
+        let _: EmptyResponse = try await sut.get(endpoint: "")
 
         // Then
         XCTAssertEqual(mockNetworkManager.lastRequestURL, "https://api.primer.io")
@@ -78,7 +75,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/config")
+        let _: EmptyResponse = try await sut.get(endpoint: "/config")
 
         // Then
         XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer test-api-key")
@@ -89,7 +86,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
+        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
 
         // Then
         XCTAssertEqual(mockNetworkManager.lastHeaders?["X-Custom"], "value")
@@ -100,7 +97,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
+        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
 
         // Then
         XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer test-api-key")
@@ -116,7 +113,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         let body = ["key": "value"]
 
         // When
-        _ = try await sut.post(endpoint: "/transactions", body: body)
+        let _: EmptyResponse = try await sut.post(endpoint: "/transactions", body: body)
 
         // Then
         XCTAssertNotNil(mockNetworkManager.lastRequestBody)
@@ -129,7 +126,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.post(endpoint: "/transactions", body: [:])
+        let _: EmptyResponse = try await sut.post(endpoint: "/transactions", body: [:])
 
         // Then
         XCTAssertNotNil(mockNetworkManager.lastRequestBody)
@@ -147,7 +144,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await invalidClient.get(endpoint: "/config")
+            let _: EmptyResponse = try await invalidClient.get(endpoint: "/config")
             XCTFail("Expected error")
         } catch APIClientError.invalidAPIKey {
             // Expected
@@ -164,7 +161,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await invalidClient.get(endpoint: "/config")
+            let _: EmptyResponse = try await invalidClient.get(endpoint: "/config")
             XCTFail("Expected error")
         } catch APIClientError.invalidURL {
             // Expected
@@ -205,9 +202,9 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseDelay = 0.1
 
         // When - identical concurrent requests
-        async let request1 = sut.get(endpoint: "/config")
-        async let request2 = sut.get(endpoint: "/config")
-        async let request3 = sut.get(endpoint: "/config")
+        async let request1: EmptyResponse = sut.get(endpoint: "/config")
+        async let request2: EmptyResponse = sut.get(endpoint: "/config")
+        async let request3: EmptyResponse = sut.get(endpoint: "/config")
 
         _ = try await (request1, request2, request3)
 
@@ -222,12 +219,16 @@ final class APIClientEdgeCasesTests: XCTestCase {
         mockNetworkManager.responseData = "{}".data(using: .utf8)
 
         // When
-        _ = try await sut.get(endpoint: "/config", timeout: 5.0)
+        let _: EmptyResponse = try await sut.get(endpoint: "/config", timeout: 5.0)
 
         // Then
         XCTAssertEqual(mockNetworkManager.lastTimeout, 5.0)
     }
 }
+
+// MARK: - EmptyResponse
+
+private struct EmptyResponse: Decodable {}
 
 // MARK: - Test Errors
 
@@ -374,5 +375,4 @@ private class APIClient {
 
         return try await task.value
     }
-    */
 }

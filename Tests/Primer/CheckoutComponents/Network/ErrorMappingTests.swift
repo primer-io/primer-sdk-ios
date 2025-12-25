@@ -10,12 +10,9 @@ import XCTest
 /// Tests for error mapping from API errors to domain errors.
 /// Covers transformation, categorization, and user-friendly messaging.
 ///
-/// TODO: These tests reference TestData.Errors.noConnection which doesn't exist
-/// TODO: Tests try to use TestData.Errors in switch statements but it's not an enum
 @available(iOS 15.0, *)
 @MainActor
 final class ErrorMappingTests: XCTestCase {
-    /*
     private var sut: ErrorMapper!
 
     override func setUp() async throws {
@@ -47,14 +44,14 @@ final class ErrorMappingTests: XCTestCase {
 
     func test_mapError_noConnection_returnsDomainError() {
         // Given
-        let networkError = TestData.Errors.noConnection
+        let networkError = TestData.Errors.networkError
 
         // When
         let domainError = sut.map(networkError)
 
         // Then
         if case let .networkUnavailable(message) = domainError {
-            XCTAssertTrue(message.contains("connection"))
+            XCTAssertTrue(message.contains("connection") || message.contains("network"))
         } else {
             XCTFail("Expected networkUnavailable error")
         }
@@ -334,17 +331,17 @@ private enum DomainError {
 private class ErrorMapper {
 
     func map(_ error: Error) -> DomainError {
-        switch error {
-        case TestData.Errors.networkTimeout:
+        let nsError = error as NSError
+        let timeoutError = TestData.Errors.networkTimeout as NSError
+        let networkError = TestData.Errors.networkError as NSError
+
+        if nsError.domain == timeoutError.domain, nsError.code == timeoutError.code {
             return .networkUnavailable(message: "Request timeout. Please check your connection and try again.")
-
-        case TestData.Errors.noConnection:
+        } else if nsError.domain == networkError.domain, nsError.code == networkError.code {
             return .networkUnavailable(message: "No internet connection. Please check your network settings.")
-
-        case let apiError as APIError:
+        } else if let apiError = error as? APIError {
             return mapAPIError(apiError)
-
-        default:
+        } else {
             return .unknown(message: error.localizedDescription)
         }
     }
@@ -426,5 +423,4 @@ private class ErrorMapper {
             return false
         }
     }
-    */
 }

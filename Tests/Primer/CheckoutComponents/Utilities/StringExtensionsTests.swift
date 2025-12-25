@@ -9,14 +9,9 @@ import XCTest
 
 /// Tests for String extension utilities to achieve 90% Scope & Utilities coverage.
 /// Covers string manipulation, validation, transformation, and sanitization.
-///
-/// TODO: Has type conversion errors in mock implementation
-/// - Lines 130, 131, 136: `cannot convert value of type 'String' to expected argument type 'Bool'`
-/// - Line 233: `cannot convert return expression of type 'Bool' to return type 'String'`
 @available(iOS 15.0, *)
 @MainActor
 final class StringExtensionsTests: XCTestCase {
-    /*
 
     // MARK: - Trimming
 
@@ -234,7 +229,7 @@ private extension String {
         !isEmpty && allSatisfy(\.isNumber)
     }
 
-    func containsIgnoringCase(_ substring: String) -> String {
+    func containsIgnoringCase(_ substring: String) -> Bool {
         lowercased().contains(substring.lowercased())
     }
 
@@ -250,5 +245,4 @@ private extension String {
         guard count > length else { return self }
         return prefix(length) + trailing
     }
-    */
 }

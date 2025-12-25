@@ -9,19 +9,17 @@ import XCTest
 
 /// Tests for PaymentMethodRepository to achieve 90% Data layer coverage.
 /// Covers repository pattern edge cases, caching, and error handling.
-///
-/// TODO: Duplicate MockNetworkService class definition
 @available(iOS 15.0, *)
 @MainActor
 final class PaymentMethodRepositoryTests: XCTestCase {
-    /*
+
     private var sut: PaymentMethodRepository!
-    private var mockNetworkService: MockNetworkService!
+    private var mockNetworkService: PaymentMethodRepositoryMockNetworkService!
     private var mockCache: MockCache!
 
     override func setUp() async throws {
         try await super.setUp()
-        mockNetworkService = MockNetworkService()
+        mockNetworkService = PaymentMethodRepositoryMockNetworkService()
         mockCache = MockCache()
         sut = PaymentMethodRepository(
             networkService: mockNetworkService,
@@ -111,7 +109,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
             _ = try await sut.fetchPaymentMethods()
             XCTFail("Expected error to be thrown")
         } catch {
-            XCTAssertEqual(error as? TestData.Errors, TestData.Errors.networkTimeout)
+            XCTAssertEqual((error as NSError).code, TestData.Errors.networkTimeout.code)
         }
     }
 
@@ -271,7 +269,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
     func test_fetchPaymentMethods_whenOffline_withCache_returnsStaleData() async throws {
         // Given
         mockNetworkService.shouldFail = true
-        mockNetworkService.error = TestData.Errors.noConnection
+        mockNetworkService.error = TestData.Errors.networkError
         mockCache.cachedData = TestData.APIResponses.validPaymentMethods.data(using: .utf8)
         mockCache.hasCachedData = true
         mockCache.isExpired = true // Stale cache
@@ -286,7 +284,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
     func test_fetchPaymentMethods_whenOffline_withoutCache_throwsError() async throws {
         // Given
         mockNetworkService.shouldFail = true
-        mockNetworkService.error = TestData.Errors.noConnection
+        mockNetworkService.error = TestData.Errors.networkError
         mockCache.hasCachedData = false
 
         // When/Then
@@ -326,10 +324,10 @@ final class PaymentMethodRepositoryTests: XCTestCase {
     }
 }
 
-// MARK: - Mock Services
+// MARK: - Mock Network Service (Payment Method Repository Tests)
 
 @available(iOS 15.0, *)
-private class MockNetworkService {
+private class PaymentMethodRepositoryMockNetworkService {
     var responseData: Data?
     var shouldFail = false
     var error: Error?
@@ -354,6 +352,8 @@ private class MockNetworkService {
         return data
     }
 }
+
+// MARK: - Mock Cache
 
 @available(iOS 15.0, *)
 private class MockCache {
@@ -387,11 +387,11 @@ private class MockCache {
 
 @available(iOS 15.0, *)
 private class PaymentMethodRepository {
-    private let networkService: MockNetworkService
+    private let networkService: PaymentMethodRepositoryMockNetworkService
     private let cache: MockCache
     private var inflightRequest: Task<[PaymentMethod], Error>?
 
-    init(networkService: MockNetworkService, cache: MockCache) {
+    init(networkService: PaymentMethodRepositoryMockNetworkService, cache: MockCache) {
         self.networkService = networkService
         self.cache = cache
     }
@@ -483,6 +483,4 @@ private struct PaymentMethod: Equatable {
     let type: String
     let name: String
     let isEnabled: Bool
-}
-    */
 }

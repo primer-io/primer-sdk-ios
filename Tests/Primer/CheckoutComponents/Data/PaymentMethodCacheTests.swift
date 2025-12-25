@@ -9,12 +9,9 @@ import XCTest
 
 /// Tests for PaymentMethodCache to achieve 90% Data layer coverage.
 /// Covers payment method-specific caching, filtering, and updates.
-///
-/// TODO: PaymentMethod type needs @available(iOS 15.0, *) in TestData static properties
 @available(iOS 15.0, *)
 @MainActor
 final class PaymentMethodCacheTests: XCTestCase {
-    /*
     private var sut: PaymentMethodCache!
     private var mockStorage: MockPaymentMethodStorage!
 
@@ -195,7 +192,7 @@ final class PaymentMethodCacheTests: XCTestCase {
         // When - concurrent reads
         let results = await withTaskGroup(of: [PaymentMethod].self, returning: [[PaymentMethod]].self) { group in
             for _ in 0..<10 {
-                group.addTask {
+                group.addTask { @MainActor in
                     self.sut.getCachedPaymentMethods()
                 }
             }
@@ -220,7 +217,7 @@ final class PaymentMethodCacheTests: XCTestCase {
         // When - concurrent updates
         await withTaskGroup(of: Void.self) { group in
             for i in 0..<5 {
-                group.addTask {
+                group.addTask { @MainActor in
                     var method = methods[0]
                     method.isEnabled = i % 2 == 0
                     self.sut.updatePaymentMethod(method)
@@ -298,9 +295,10 @@ final class PaymentMethodCacheTests: XCTestCase {
 
 // MARK: - Test Data Extension
 
+@available(iOS 15.0, *)
 extension TestData {
     enum PaymentMethods {
-        static let sampleMethods = [
+        fileprivate static let sampleMethods = [
             PaymentMethod(
                 id: "PAYMENT_CARD",
                 type: "PAYMENT_CARD",
@@ -324,7 +322,7 @@ extension TestData {
             )
         ]
 
-        static let mixedEnabledMethods = [
+        fileprivate static let mixedEnabledMethods = [
             PaymentMethod(
                 id: "ENABLED_1",
                 type: "PAYMENT_CARD",
@@ -353,7 +351,7 @@ extension TestData {
 // MARK: - Test Models
 
 @available(iOS 15.0, *)
-private struct PaymentMethod: Equatable {
+fileprivate struct PaymentMethod: Equatable {
     let id: String
     let type: String
     let name: String
@@ -457,5 +455,4 @@ private class PaymentMethodCache {
     func getCacheMetadata() -> (lastUpdated: Date?, count: Int) {
         (storage.lastUpdated, methods.count)
     }
-    */
 }
