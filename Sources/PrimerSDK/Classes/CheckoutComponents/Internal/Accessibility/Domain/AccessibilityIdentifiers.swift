@@ -35,6 +35,8 @@ enum AccessibilityIdentifiers {
 
     enum PaymentSelection {
         static let header = "checkout_components_payment_selection_header"
+        static let showAllButton = "checkout_components_payment_selection_show_all_button"
+        static let showOtherWaysButton = "checkout_components_payment_selection_show_other_ways_button"
 
         static func cardItem(_ lastFour: String) -> String {
             "checkout_components_payment_selection_card_\(lastFour)_item"
@@ -46,12 +48,30 @@ enum AccessibilityIdentifiers {
             }
             return "checkout_components_payment_selection_\(type)_item"
         }
+
+        static func vaultedPaymentMethodItem(_ id: String) -> String {
+            "checkout_components_vaulted_payment_method_\(id)_item"
+        }
+
+        static func deletePaymentMethodButton(_ id: String) -> String {
+            "checkout_components_vaulted_payment_method_\(id)_delete_button"
+        }
+    }
+
+    enum Vault {
+        static let cvvField = "checkout_components_vault_cvv_field"
+        static let cvvSecurityLabel = "checkout_components_vault_cvv_security_label"
+        static let payButton = "checkout_components_vault_pay_button"
     }
 
     enum Common {
         static let submitButton = "checkout_components_submit_button"
         static let closeButton = "checkout_components_close_button"
         static let backButton = "checkout_components_back_button"
+        static let editButton = "checkout_components_edit_button"
+        static let doneButton = "checkout_components_done_button"
+        static let deleteButton = "checkout_components_delete_button"
+        static let cancelButton = "checkout_components_cancel_button"
         static let loadingIndicator = "checkout_components_loading_indicator"
     }
 

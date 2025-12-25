@@ -81,6 +81,7 @@ public actor Container: ContainerProtocol, LogReporter {
             return self
         }
 
+        @discardableResult
         public func with(
             _ factory: @escaping (any ContainerProtocol) async throws -> T
         ) async throws -> Self {
@@ -90,6 +91,7 @@ public actor Container: ContainerProtocol, LogReporter {
             return self
         }
 
+        @discardableResult
         public func with(
             _ factory: @escaping (any ContainerProtocol) throws -> T
         ) async throws -> Self {
@@ -119,6 +121,7 @@ public actor Container: ContainerProtocol, LogReporter {
 
     // MARK: - Registration
 
+    @discardableResult
     public nonisolated func register<T>(_ type: T.Type) -> any RegistrationBuilder<T> {
         ContainerRegistrationBuilderImpl(container: self, type: type)
     }

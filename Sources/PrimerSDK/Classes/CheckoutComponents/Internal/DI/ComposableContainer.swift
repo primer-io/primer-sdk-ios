@@ -51,19 +51,19 @@ final class ComposableContainer: LogReporter {
 private extension ComposableContainer {
 
     func registerInfrastructure() async {
-        _ = try? await container.register(PrimerSettings.self)
+        try? await container.register(PrimerSettings.self)
             .asSingleton()
             .with { _ in self.settings }
 
-        _ = try? await container.register(PrimerCheckoutTheme.self)
+        try? await container.register(PrimerCheckoutTheme.self)
             .asSingleton()
             .with { _ in self.theme }
 
-        _ = try? await container.register(DesignTokensManager.self)
+        try? await container.register(DesignTokensManager.self)
             .asSingleton()
             .with { _ in DesignTokensManager() }
 
-        _ = try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
+        try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
             .asSingleton()
             .with { _ in
                 AnalyticsEventService.create(
@@ -71,7 +71,7 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
             .asSingleton()
             .with { resolver in
                 DefaultAnalyticsInteractor(
@@ -79,21 +79,21 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(AccessibilityAnnouncementService.self)
+        try? await container.register(AccessibilityAnnouncementService.self)
             .asSingleton()
             .with { _ in DefaultAccessibilityAnnouncementService() }
 
-        _ = try? await container.register(ConfigurationService.self)
+        try? await container.register(ConfigurationService.self)
             .asSingleton()
             .with { _ in DefaultConfigurationService() }
     }
 
     func registerValidation() async {
-        _ = try? await container.register(RulesFactory.self)
+        try? await container.register(RulesFactory.self)
             .asSingleton()
             .with { _ in DefaultRulesFactory() }
 
-        _ = try? await container.register(ValidationService.self)
+        try? await container.register(ValidationService.self)
             .asSingleton()
             .with { resolver in
                 let factory = try await resolver.resolve(RulesFactory.self)
@@ -102,7 +102,7 @@ private extension ComposableContainer {
     }
 
     func registerDomain() async {
-        _ = try? await container.register(GetPaymentMethodsInteractor.self)
+        try? await container.register(GetPaymentMethodsInteractor.self)
             .asTransient()
             .with { resolver in
                 GetPaymentMethodsInteractorImpl(
@@ -110,7 +110,7 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(ProcessCardPaymentInteractor.self)
+        try? await container.register(ProcessCardPaymentInteractor.self)
             .asTransient()
             .with { resolver in
                 ProcessCardPaymentInteractorImpl(
@@ -118,7 +118,7 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(ValidateInputInteractor.self)
+        try? await container.register(ValidateInputInteractor.self)
             .asTransient()
             .with { resolver in
                 ValidateInputInteractorImpl(
@@ -126,7 +126,7 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(CardNetworkDetectionInteractor.self)
+        try? await container.register(CardNetworkDetectionInteractor.self)
             .asTransient()
             .with { resolver in
                 CardNetworkDetectionInteractorImpl(
@@ -134,7 +134,7 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(ProcessPayPalPaymentInteractor.self)
+        try? await container.register(ProcessPayPalPaymentInteractor.self)
             .asTransient()
             .with { resolver in
                 ProcessPayPalPaymentInteractorImpl(
@@ -142,12 +142,20 @@ private extension ComposableContainer {
                 )
             }
 
-        _ = try? await container.register(ProcessApplePayPaymentInteractor.self)
+        try? await container.register(ProcessApplePayPaymentInteractor.self)
             .asTransient()
             .with { _ in
                 ProcessApplePayPaymentInteractorImpl(
                     tokenizationService: TokenizationService(),
                     createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+                )
+            }
+
+        try? await container.register(SubmitVaultedPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                SubmitVaultedPaymentInteractorImpl(
+                    repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
     }
@@ -156,18 +164,19 @@ private extension ComposableContainer {
         // HeadlessRepository uses transient scope to ensure each checkout session gets a fresh instance.
         // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
         // between checkout sessions when the user dismisses and re-presents the checkout UI.
-        _ = try? await container.register(HeadlessRepository.self)
+        // Note: VaultManager is lazily initialized within HeadlessRepositoryImpl for vault payments.
+        try? await container.register(HeadlessRepository.self)
             .asTransient()
             .with { _ in HeadlessRepositoryImpl() }
 
-        _ = try? await container.register(PaymentMethodMapper.self)
+        try? await container.register(PaymentMethodMapper.self)
             .asSingleton()
             .with { container in
                 let configService = try await container.resolve(ConfigurationService.self)
                 return PaymentMethodMapperImpl(configurationService: configService)
             }
 
-        _ = try? await container.register(PayPalRepository.self)
+        try? await container.register(PayPalRepository.self)
             .asTransient()
             .with { _ in
                 PayPalRepositoryImpl()

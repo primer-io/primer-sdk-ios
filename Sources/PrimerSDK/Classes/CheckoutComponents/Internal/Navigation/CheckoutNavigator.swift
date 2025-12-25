@@ -44,22 +44,26 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
 
     // MARK: - Navigation Methods
 
-    /// Navigate to loading screen
     func navigateToLoading() {
         coordinator.navigate(to: .loading)
     }
 
-    /// Navigate to payment selection screen
     func navigateToPaymentSelection() {
         coordinator.navigate(to: .paymentMethodSelection)
     }
 
-    /// Navigate to a generic payment method flow
+    func navigateToVaultedPaymentMethods() {
+        coordinator.navigate(to: .vaultedPaymentMethods)
+    }
+
+    func navigateToDeleteVaultedPaymentMethodConfirmation(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod) {
+        coordinator.navigate(to: .deleteVaultedPaymentMethodConfirmation(method))
+    }
+
     func navigateToPaymentMethod(_ paymentMethodType: String, context: PresentationContext = .fromPaymentSelection) {
         coordinator.navigate(to: .paymentMethod(paymentMethodType, context))
     }
 
-    /// Navigate to processing screen (payment in progress)
     func navigateToProcessing() {
         coordinator.navigate(to: .processing)
     }
@@ -68,17 +72,14 @@ final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.handlePaymentFailure(error)
     }
 
-    /// Navigate to payment selection to choose a different payment method
     func handleOtherPaymentMethods() {
         coordinator.navigate(to: .paymentMethodSelection)
     }
 
-    /// Navigate back
     func navigateBack() {
         coordinator.goBack()
     }
 
-    /// Dismiss the entire checkout flow
     func dismiss() {
         coordinator.dismiss()
     }

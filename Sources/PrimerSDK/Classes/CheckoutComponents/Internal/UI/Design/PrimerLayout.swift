@@ -93,7 +93,11 @@ struct PrimerComponentHeight {
     static let errorMessage: CGFloat = 16
     static let keyboardAccessory: CGFloat = 44
     static let paymentMethodCard: CGFloat = 44
+    static let vaultedPaymentMethodCard: CGFloat = 64
+    static let vaultedPaymentMethodCardContentRow: CGFloat = 40
     static let progressIndicator: CGFloat = 56
+    static let emptyStateMinHeight: CGFloat = 200
+    static let emptyStateTopPadding: CGFloat = 100
 }
 
 // MARK: - Primer Component Widths
@@ -108,6 +112,7 @@ struct PrimerComponentWidth {
 struct PrimerBorderWidth {
     static let thin: CGFloat = 0.5
     static let standard: CGFloat = 1
+    static let selected: CGFloat = 2
 }
 
 // MARK: - Primer Scale Factors
@@ -128,4 +133,10 @@ enum PrimerCardNetworkSelector {
     static let selectedBorderHeight: CGFloat = 28
     static let chevronSize: CGFloat = 20
     static let chevronFontSize: CGFloat = 10
+}
+
+// MARK: - Primer Animation Durations
+
+struct PrimerAnimationDuration {
+    static let focusDelay: Double = 0.3
 }
