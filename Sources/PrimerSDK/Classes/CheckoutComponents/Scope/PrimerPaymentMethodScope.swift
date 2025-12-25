@@ -227,4 +227,12 @@ class PaymentMethodRegistry: LogReporter {
         }
         return viewBuilder(checkoutScope)
     }
+
+    /// Resets the registry by clearing all registered payment methods.
+    /// This method is intended for testing purposes only.
+    func reset() {
+        creators.removeAll()
+        viewBuilders.removeAll()
+        typeToIdentifier.removeAll()
+    }
 }
