@@ -33,7 +33,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_withValidData_returnsToken() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"
@@ -51,7 +51,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_doesNotStoreCardNumber() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"
@@ -88,7 +88,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_withInvalidCVV_throwsError() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "12", // Too short
             expiryMonth: "12",
             expiryYear: "25"
@@ -106,7 +106,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_withExpiredCard_throwsError() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "01",
             expiryYear: "20" // Expired
@@ -146,7 +146,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_withAPIError_throwsError() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"
@@ -167,8 +167,8 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
 
     func test_tokenizeCard_concurrent_handlesMultipleRequests() async throws {
         // Given
-        let card1 = CardData(number: "4242424242424242", cvv: "123", expiryMonth: "12", expiryYear: "25")
-        let card2 = CardData(number: "5555555555554444", cvv: "456", expiryMonth: "06", expiryYear: "26")
+        let card1 = CardData(number: TestData.CardNumbers.validVisa, cvv: "123", expiryMonth: "12", expiryYear: "25")
+        let card2 = CardData(number: TestData.CardNumbers.validMastercard, cvv: "456", expiryMonth: "06", expiryYear: "26")
         mockAPIClient.token = "tok_test"
 
         // When
@@ -188,7 +188,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_doesNotCacheTokens() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"
@@ -212,7 +212,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_doesNotLogSensitiveData() async throws {
         // Given
         let cardData = CardData(
-            number: "4242424242424242",
+            number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"

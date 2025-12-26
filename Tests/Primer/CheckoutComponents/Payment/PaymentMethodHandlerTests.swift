@@ -25,7 +25,7 @@ final class PaymentMethodHandlerTests: XCTestCase {
     }
 
     func test_handle_cardPayment_succeeds() async throws {
-        let result = try await sut.handle(method: "PAYMENT_CARD", data: ["number": "4242424242424242"])
+        let result = try await sut.handle(method: "PAYMENT_CARD", data: ["number": TestData.CardNumbers.validVisa])
         XCTAssertNotNil(result)
     }
 

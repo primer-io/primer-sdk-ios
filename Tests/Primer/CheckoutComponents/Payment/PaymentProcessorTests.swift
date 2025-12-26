@@ -43,7 +43,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withValidCard_succeeds() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -65,7 +65,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_flowSequence_followsCorrectSteps() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -115,7 +115,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_requiring3DS_handles3DSChallenge() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -136,7 +136,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_3DSChallengeFailure_throwsError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -158,7 +158,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_3DSCancelled_throwsCancellationError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -182,7 +182,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_declined_throwsDeclinedError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -206,7 +206,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withInvalidAmount_throwsValidationError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: -100, // Invalid
@@ -225,7 +225,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withInvalidCurrency_throwsValidationError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -245,8 +245,8 @@ final class PaymentProcessorTests: XCTestCase {
 
     func test_processPayment_concurrent_handlesIndependently() async throws {
         // Given
-        let payment1 = PaymentData(cardNumber: "4242424242424242", cvv: "123", expiry: "12/25", amount: 1000, currency: "USD")
-        let payment2 = PaymentData(cardNumber: "4242424242424242", cvv: "456", expiry: "12/26", amount: 2000, currency: "EUR")
+        let payment1 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "123", expiry: "12/25", amount: 1000, currency: "USD")
+        let payment2 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "456", expiry: "12/26", amount: 2000, currency: "EUR")
 
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.success
@@ -268,7 +268,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withCancellation_throwsCancellationError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -298,7 +298,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withSurcharge_includesSurchargeInResult() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -320,7 +320,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withNetworkError_throwsError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,
@@ -344,7 +344,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_tracksState_throughoutFlow() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4242424242424242",
+            cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
             amount: 1000,

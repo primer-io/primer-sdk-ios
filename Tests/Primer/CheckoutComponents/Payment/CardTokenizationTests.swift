@@ -25,7 +25,7 @@ final class CardTokenizationTests: XCTestCase {
     }
 
     func test_tokenize_visa_succeeds() async throws {
-        let token = try await sut.tokenize(number: "4242424242424242", cvv: "123", expiry: "12/25")
+        let token = try await sut.tokenize(number: TestData.CardNumbers.validVisa, cvv: "123", expiry: "12/25")
         XCTAssertTrue(token.starts(with: "tok_"))
     }
 
