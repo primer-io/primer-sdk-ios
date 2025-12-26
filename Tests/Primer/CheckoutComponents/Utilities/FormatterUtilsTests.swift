@@ -145,7 +145,7 @@ private class FormatterUtils {
     private let numberFormatter: NumberFormatter
     private let percentFormatter: NumberFormatter
 
-    init(locale: Locale = .current) {
+    init(locale: Locale = Locale(identifier: "en_US")) {
         self.locale = locale
         self.numberFormatter = NumberFormatter()
         self.numberFormatter.locale = locale
@@ -156,7 +156,9 @@ private class FormatterUtils {
     }
 
     func formatNumber(_ number: Double, fractionDigits: Int = 2, useGrouping: Bool = false) -> String {
-        numberFormatter.minimumFractionDigits = fractionDigits
+        // For whole numbers (like 0), don't show decimal places
+        let isWholeNumber = number.truncatingRemainder(dividingBy: 1) == 0
+        numberFormatter.minimumFractionDigits = isWholeNumber ? 0 : fractionDigits
         numberFormatter.maximumFractionDigits = fractionDigits
         numberFormatter.usesGroupingSeparator = useGrouping
         return numberFormatter.string(from: NSNumber(value: number)) ?? "\(number)"

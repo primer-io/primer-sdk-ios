@@ -61,6 +61,10 @@ private class PaymentCancellationHandler {
     var didCleanup = false
 
     func processPayment() async throws {
+        defer {
+            cleanup()
+        }
+
         try await Task.sleep(nanoseconds: 1_000_000_000)
         try Task.checkCancellation()
     }

@@ -352,7 +352,7 @@ private class ErrorMapper {
             return .validation(errors: [message])
 
         case .unauthorized:
-            return .authentication(message: "Authentication failed. Please check your credentials.")
+            return .authentication(message: "Request unauthorized. Please check your credentials.")
 
         case .forbidden:
             return .authorization(message: "Access forbidden. You don't have permission to perform this action.")
@@ -383,7 +383,9 @@ private class ErrorMapper {
             return message
 
         case let .validation(errors):
-            return errors.first ?? "Validation failed"
+            let rawMessage = errors.first ?? "Validation failed"
+            // Strip technical error codes (e.g., "_12345")
+            return rawMessage.replacingOccurrences(of: "_\\d+", with: "", options: .regularExpression)
 
         case let .authentication(message):
             return message

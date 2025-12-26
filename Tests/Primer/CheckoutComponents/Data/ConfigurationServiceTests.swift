@@ -109,7 +109,7 @@ final class ConfigurationServiceTests: XCTestCase {
 
         // When/Then
         do {
-            try sut.validate(invalidConfig)
+            try await sut.validate(invalidConfig)
             XCTFail("Expected validation error")
         } catch ConfigurationError.missingRequiredField {
             // Expected
@@ -125,7 +125,7 @@ final class ConfigurationServiceTests: XCTestCase {
 
         // When/Then
         do {
-            try sut.validate(invalidConfig)
+            try await sut.validate(invalidConfig)
             XCTFail("Expected validation error")
         } catch ConfigurationError.invalidEnvironment {
             // Expected
@@ -148,7 +148,7 @@ final class ConfigurationServiceTests: XCTestCase {
         )
 
         // When
-        let merged = sut.merge(remote: remoteConfig, local: localConfig)
+        let merged = await sut.merge(remote: remoteConfig, local: localConfig)
 
         // Then
         XCTAssertEqual(merged.merchantId, "merchant-123") // From remote
@@ -170,7 +170,7 @@ final class ConfigurationServiceTests: XCTestCase {
         )
 
         // When
-        let merged = sut.merge(remote: remoteConfig, local: localConfig)
+        let merged = await sut.merge(remote: remoteConfig, local: localConfig)
 
         // Then
         XCTAssertEqual(merged.merchantId, "merchant-123")
@@ -424,12 +424,12 @@ private enum ConfigurationError: Error {
 // MARK: - Configuration Service
 
 @available(iOS 15.0, *)
-private class ConfigurationService {
+private actor ConfigurationService {
     private let apiClient: MockAPIClient
     private let userDefaults: MockUserDefaults
     private var inflightRequests: [String: Task<Configuration, Error>] = [:]
 
-    let defaultConfiguration = Configuration(
+    nonisolated let defaultConfiguration = Configuration(
         merchantId: "default",
         environment: "sandbox",
         analyticsEnabled: false,

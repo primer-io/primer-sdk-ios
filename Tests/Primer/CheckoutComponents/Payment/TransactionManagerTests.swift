@@ -157,6 +157,7 @@ private enum TransactionError: Error {
 // MARK: - Mock Storage
 
 @available(iOS 15.0, *)
+@MainActor
 private class MockTransactionStorage {
     var transactions: [Transaction] = []
 
@@ -178,6 +179,7 @@ private class MockTransactionStorage {
 // MARK: - Transaction Manager
 
 @available(iOS 15.0, *)
+@MainActor
 private class TransactionManager {
     private let storage: MockTransactionStorage
 

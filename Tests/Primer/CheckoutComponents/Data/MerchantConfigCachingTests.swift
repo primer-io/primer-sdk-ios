@@ -405,6 +405,7 @@ private struct MerchantConfig {
 // MARK: - Mock Storage
 
 @available(iOS 15.0, *)
+@MainActor
 private class MockCacheStorage {
     private var entries: [String: (config: MerchantConfig, timestamp: TimeInterval)] = [:]
 
@@ -444,6 +445,7 @@ private class MockCacheStorage {
 // MARK: - Mock Clock
 
 @available(iOS 15.0, *)
+@MainActor
 private class MockClock {
     private var currentTime: TimeInterval = 1000.0
 
@@ -459,6 +461,7 @@ private class MockClock {
 // MARK: - Merchant Config Cache
 
 @available(iOS 15.0, *)
+@MainActor
 private class MerchantConfigCache {
     private let storage: MockCacheStorage
     private let clock: MockClock

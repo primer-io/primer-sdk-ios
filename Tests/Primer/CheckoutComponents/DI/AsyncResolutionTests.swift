@@ -29,7 +29,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withAsyncFactory_completesSuccessfully() async throws {
         // Given
-        container.register(AsyncService.self) {
+        await container.register(AsyncService.self) {
             await AsyncService.create()
         }
 
@@ -45,7 +45,7 @@ final class AsyncResolutionTests: XCTestCase {
         // Given
         var initializationOrder: [Int] = []
 
-        container.register(AsyncService.self) {
+        await container.register(AsyncService.self) {
             initializationOrder.append(1)
             let service = await AsyncService.create()
             initializationOrder.append(2)
@@ -66,7 +66,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_concurrentAsyncCalls_withSingleton_returnsSameInstance() async throws {
         // Given
-        container.register(AsyncService.self, policy: .singleton) {
+        await container.register(AsyncService.self, policy: .singleton) {
             await AsyncService.create()
         }
 
@@ -94,7 +94,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_concurrentAsyncCalls_withTransient_returnsDifferentInstances() async throws {
         // Given
-        container.register(AsyncService.self, policy: .transient) {
+        await container.register(AsyncService.self, policy: .transient) {
             await AsyncService.create()
         }
 
@@ -125,7 +125,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_whenAsyncFactoryThrows_propagatesError() async throws {
         // Given
-        container.register(AsyncService.self) {
+        await container.register(AsyncService.self) {
             try await AsyncService.createWithError()
         }
 
@@ -141,7 +141,7 @@ final class AsyncResolutionTests: XCTestCase {
     func test_resolve_whenAsyncFactoryThrows_doesNotCacheSingleton() async throws {
         // Given
         var shouldFail = true
-        container.register(AsyncService.self, policy: .singleton) {
+        await container.register(AsyncService.self, policy: .singleton) {
             if shouldFail {
                 return try await AsyncService.createWithError()
             } else {
@@ -169,7 +169,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withMainActorFactory_executesOnMainActor() async throws {
         // Given
-        container.register(MainActorService.self) {
+        await container.register(MainActorService.self) {
             await MainActorService()
         }
 
@@ -184,7 +184,7 @@ final class AsyncResolutionTests: XCTestCase {
     func test_resolve_withMainActorConcurrentCalls_maintainsThreadSafety() async throws {
         // Given
         var accessCount = 0
-        container.register(MainActorService.self, policy: .transient) {
+        await container.register(MainActorService.self, policy: .transient) {
             accessCount += 1
             return await MainActorService()
         }
@@ -212,12 +212,12 @@ final class AsyncResolutionTests: XCTestCase {
         // Given
         var resolutionOrder: [String] = []
 
-        container.register(DatabaseService.self) {
+        await container.register(DatabaseService.self) {
             resolutionOrder.append("database")
             return await DatabaseService.create()
         }
 
-        container.register(NetworkService.self) {
+        await container.register(NetworkService.self) {
             resolutionOrder.append("network")
             let db = try! await self.container.resolve(DatabaseService.self)
             return await NetworkService.create(database: db)
@@ -232,20 +232,20 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withNestedAsyncDependencies_handlesComplexGraph() async throws {
         // Given
-        container.register(DatabaseService.self, policy: .singleton) {
+        await container.register(DatabaseService.self, policy: .singleton) {
             await DatabaseService.create()
         }
 
-        container.register(CacheService.self, policy: .singleton) {
+        await container.register(CacheService.self, policy: .singleton) {
             await CacheService.create()
         }
 
-        container.register(NetworkService.self) {
+        await container.register(NetworkService.self) {
             let db = try! await self.container.resolve(DatabaseService.self)
             return await NetworkService.create(database: db)
         }
 
-        container.register(RepositoryService.self) {
+        await container.register(RepositoryService.self) {
             let network = try! await self.container.resolve(NetworkService.self)
             let cache = try! await self.container.resolve(CacheService.self)
             return await RepositoryService.create(network: network, cache: cache)
@@ -264,7 +264,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withWeakPolicy_releasesAfterAsyncWork() async throws {
         // Given
-        container.register(AsyncService.self, policy: .weak) {
+        await container.register(AsyncService.self, policy: .weak) {
             await AsyncService.create()
         }
 
@@ -282,7 +282,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withWeakPolicy_retainsWhileAsyncTaskActive() async throws {
         // Given
-        container.register(AsyncService.self, policy: .weak) {
+        await container.register(AsyncService.self, policy: .weak) {
             await AsyncService.create()
         }
 
@@ -298,7 +298,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withSlowAsyncFactory_completesWithinReasonableTime() async throws {
         // Given
-        container.register(SlowService.self) {
+        await container.register(SlowService.self) {
             await SlowService.create(delay: 0.1)
         }
 
@@ -314,10 +314,10 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withMultipleSlowFactories_executesInParallel() async throws {
         // Given
-        container.register(SlowService.self, name: "A") {
+        await container.register(SlowService.self, name: "A") {
             await SlowService.create(delay: 0.1)
         }
-        container.register(SlowService.self, name: "B") {
+        await container.register(SlowService.self, name: "B") {
             await SlowService.create(delay: 0.1)
         }
 
@@ -338,7 +338,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withCancellation_throwsCancellationError() async throws {
         // Given
-        container.register(SlowService.self) {
+        await container.register(SlowService.self) {
             await SlowService.create(delay: 1.0)
         }
 
@@ -361,7 +361,7 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_withPartialCancellation_othersComplete() async throws {
         // Given
-        container.register(AsyncService.self, policy: .transient) {
+        await container.register(AsyncService.self, policy: .transient) {
             await AsyncService.create()
         }
 
@@ -391,11 +391,11 @@ final class AsyncResolutionTests: XCTestCase {
 
     func test_resolve_mixedSyncAsyncFactories_bothWorkCorrectly() async throws {
         // Given
-        container.register(SyncService.self) {
+        await container.register(SyncService.self) {
             SyncService()
         }
 
-        container.register(AsyncService.self) {
+        await container.register(AsyncService.self) {
             await AsyncService.create()
         }
 
@@ -519,7 +519,7 @@ private enum AsyncServiceError: Error {
 // MARK: - Mock DI Container
 
 @available(iOS 15.0, *)
-private class DIContainer {
+private actor DIContainer {
     enum RetentionPolicy {
         case singleton
         case transient
@@ -529,7 +529,7 @@ private class DIContainer {
     private var registrations: [String: (RetentionPolicy, () async throws -> Any)] = [:]
     private var singletons: [String: Any] = [:]
     private var weakInstances: [String: WeakBox] = [:]
-    private var singletonLocks: [String: Bool] = [:]
+    private var inflightSingletons: [String: Task<Any, Error>] = [:]
 
     func register<T>(_ type: T.Type, name: String = "", policy: RetentionPolicy = .transient, factory: @escaping () async throws -> T) {
         let key = "\(type)_\(name)"
@@ -547,27 +547,30 @@ private class DIContainer {
             // Check for cancellation
             try Task.checkCancellation()
 
+            // Check if singleton already exists
             if let existing = singletons[key] as? T {
                 return existing
             }
 
-            // Simple lock to prevent concurrent singleton creation
-            if singletonLocks[key] == true {
-                // Wait a bit and retry
-                try? await Task.sleep(nanoseconds: 1_000_000)
-                if let existing = singletons[key] as? T {
-                    return existing
-                }
+            // Check if another task is already creating this singleton
+            if let inflightTask = inflightSingletons[key] {
+                let instance = try await inflightTask.value as! T
+                return instance
             }
 
-            singletonLocks[key] = true
+            // Create singleton with task deduplication
+            let task = Task<Any, Error> {
+                try await factory()
+            }
+            inflightSingletons[key] = task
+
             do {
-                let instance = try await factory() as! T
+                let instance = try await task.value as! T
                 singletons[key] = instance
-                singletonLocks[key] = false
+                inflightSingletons.removeValue(forKey: key)
                 return instance
             } catch {
-                singletonLocks[key] = false
+                inflightSingletons.removeValue(forKey: key)
                 throw error
             }
 
@@ -590,7 +593,7 @@ private class DIContainer {
     func reset() async {
         singletons.removeAll()
         weakInstances.removeAll()
-        singletonLocks.removeAll()
+        inflightSingletons.removeAll()
     }
 
     private class WeakBox {

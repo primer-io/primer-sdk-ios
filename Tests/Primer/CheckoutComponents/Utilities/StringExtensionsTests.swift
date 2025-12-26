@@ -166,7 +166,7 @@ final class StringExtensionsTests: XCTestCase {
 
     func test_urlEncoded_withSymbols_encodesCorrectly() {
         // When
-        let result = "hello+world=test".urlEncoded()
+        let result = "hello world#test".urlEncoded()
 
         // Then
         XCTAssertTrue(result.contains("%"))

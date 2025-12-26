@@ -246,19 +246,19 @@ private class Logger {
         self.outputs = outputs
     }
 
-    func debug(_ message: String, context: [String: String] = [:]) {
-        log(message, level: .debug, context: context)
+    func debug(_ message: String, context: [String: String] = [:]) async {
+        await logAsync(message, level: .debug, context: context)
     }
 
     func info(_ message: String, context: [String: String] = [:]) async {
         await logAsync(message, level: .info, context: context)
     }
 
-    func warning(_ message: String, context: [String: String] = [:]) {
-        log(message, level: .warning, context: context)
+    func warning(_ message: String, context: [String: String] = [:]) async {
+        await logAsync(message, level: .warning, context: context)
     }
 
-    func error(_ message: String, error: Error? = nil, context: [String: String] = [:]) {
+    func error(_ message: String, error: Error? = nil, context: [String: String] = [:]) async {
         var fullMessage = message
         if let error = error {
             fullMessage += " - \(error.localizedDescription)"
@@ -266,7 +266,7 @@ private class Logger {
                 fullMessage += " (Code: \(nsError.code))"
             }
         }
-        log(fullMessage, level: .error, context: context)
+        await logAsync(fullMessage, level: .error, context: context)
     }
 
     private func log(_ message: String, level: LogLevel, context: [String: String]) {

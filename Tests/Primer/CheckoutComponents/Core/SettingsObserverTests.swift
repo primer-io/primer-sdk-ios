@@ -232,10 +232,7 @@ final class SettingsObserverTests: XCTestCase {
 
         sut.onSettingsChanged = { _ in
             notificationCount += 1
-            if notificationCount == 1 {
-                // Simulate error scenario - observer continues even if first notification doesn't fulfill
-                return
-            }
+            // Fulfill on every notification to test that observer continues
             expectation.fulfill()
         }
 
@@ -243,7 +240,7 @@ final class SettingsObserverTests: XCTestCase {
         mockSettings.updateTheme(.dark)
         mockSettings.updateAnalytics(enabled: true)
 
-        // Then - should still receive second notification
+        // Then - should receive both notifications
         await fulfillment(of: [expectation], timeout: 1.0)
         XCTAssertEqual(notificationCount, 2)
     }

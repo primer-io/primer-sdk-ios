@@ -362,6 +362,7 @@ fileprivate struct PaymentMethod: Equatable {
 // MARK: - Mock Storage
 
 @available(iOS 15.0, *)
+@MainActor
 private class MockPaymentMethodStorage {
     var storedMethods: [PaymentMethod] = []
     var didStore = false
@@ -388,6 +389,7 @@ private class MockPaymentMethodStorage {
 // MARK: - Payment Method Cache
 
 @available(iOS 15.0, *)
+@MainActor
 private class PaymentMethodCache {
     private let storage: MockPaymentMethodStorage
     private var methods: [PaymentMethod] = []

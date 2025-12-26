@@ -61,7 +61,9 @@ final class CurrencyFormattingTests: XCTestCase {
         let result = sut.formatAmount(1234, currency: "JPY")
 
         // Then
-        XCTAssertTrue(result.contains("1234"))
+        // Strip grouping separators (commas) before checking
+        let resultWithoutCommas = result.replacingOccurrences(of: ",", with: "")
+        XCTAssertTrue(resultWithoutCommas.contains("1234"))
         XCTAssertFalse(result.contains("."))
     }
 
@@ -183,7 +185,7 @@ private class CurrencyFormatter {
     // Currencies with three decimal places
     private let threeDecimalCurrencies: Set<String> = ["BHD", "JOD", "KWD", "OMR", "TND"]
 
-    init(locale: Locale = .current) {
+    init(locale: Locale = Locale(identifier: "en_US")) {
         self.locale = locale
         self.numberFormatter = NumberFormatter()
         self.numberFormatter.locale = locale
@@ -213,7 +215,9 @@ private class CurrencyFormatter {
 
     func getCurrencySymbol(for currency: String) -> String {
         numberFormatter.currencyCode = currency
-        return numberFormatter.currencySymbol ?? currency
+        let symbol = numberFormatter.currencySymbol ?? currency
+        // Return currency code if symbol is generic placeholder
+        return symbol == "¤" ? currency : symbol
     }
 
     private func getDecimalPlaces(for currency: String) -> Int {

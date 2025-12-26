@@ -197,8 +197,10 @@ enum TestData {
         {
             "paymentMethods": [
                 {
+                    "id": "PAYMENT_CARD",
                     "type": "PAYMENT_CARD",
                     "name": "Card",
+                    "isEnabled": true,
                     "supportedCardNetworks": ["VISA", "MASTERCARD", "AMEX"]
                 }
             ]

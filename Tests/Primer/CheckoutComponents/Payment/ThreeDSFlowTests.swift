@@ -417,27 +417,28 @@ private class ThreeDSFlowManager {
             // Challenge flow
             onStateChange?(.preparingChallenge)
 
-            // Create timeout task
-            let authTask = Task {
-                onStateChange?(.presentingChallenge)
-                let outcome = try await sdkManager.presentChallenge()
-                onStateChange?(.processingResult)
-                return outcome
-            }
-
-            let timeoutTask = Task {
-                try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                throw ThreeDSError.timeout
-            }
-
+            // Race auth task against timeout
             do {
-                let outcome = try await withTaskCancellationHandler {
-                    try await authTask.value
-                } onCancel: {
-                    sdkManager.cleanup()
-                }
+                let outcome = try await withThrowingTaskGroup(of: Mock3DSSDKManager.ChallengeOutcome.self) { group in
+                    // Add challenge task
+                    group.addTask { [self] in
+                        onStateChange?(.presentingChallenge)
+                        let outcome = try await sdkManager.presentChallenge()
+                        onStateChange?(.processingResult)
+                        return outcome
+                    }
 
-                timeoutTask.cancel()
+                    // Add timeout task
+                    group.addTask {
+                        try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+                        throw ThreeDSError.timeout
+                    }
+
+                    // Wait for first to complete
+                    let result = try await group.next()!
+                    group.cancelAll()
+                    return result
+                }
 
                 switch outcome {
                 case .success:
@@ -452,7 +453,6 @@ private class ThreeDSFlowManager {
                 sdkManager.cleanup()
                 throw CancellationError()
             } catch {
-                timeoutTask.cancel()
                 sdkManager.cleanup()
                 throw error
             }

@@ -30,24 +30,25 @@ final class DataPersistenceTests: XCTestCase {
 
     // MARK: - Basic Storage and Retrieval
 
-    func test_save_storesData() throws {
+    func test_save_storesData() async throws {
         // Given
         let data = PaymentData(id: "123", amount: 1000, currency: "USD")
 
         // When
-        try sut.save(data, forKey: "payment")
+        try await sut.save(data, forKey: "payment")
 
         // Then
-        XCTAssertTrue(mockStorage.hasData(forKey: "payment"))
+        let hasData = await mockStorage.hasData(forKey: "payment")
+        XCTAssertTrue(hasData)
     }
 
-    func test_load_retrievesSavedData() throws {
+    func test_load_retrievesSavedData() async throws {
         // Given
         let data = PaymentData(id: "123", amount: 1000, currency: "USD")
-        try sut.save(data, forKey: "payment")
+        try await sut.save(data, forKey: "payment")
 
         // When
-        let loaded: PaymentData? = try sut.load(forKey: "payment")
+        let loaded: PaymentData? = try await sut.load(forKey: "payment")
 
         // Then
         XCTAssertNotNil(loaded)
@@ -55,9 +56,9 @@ final class DataPersistenceTests: XCTestCase {
         XCTAssertEqual(loaded?.amount, 1000)
     }
 
-    func test_load_nonExistentKey_returnsNil() throws {
+    func test_load_nonExistentKey_returnsNil() async throws {
         // When
-        let loaded: PaymentData? = try sut.load(forKey: "nonexistent")
+        let loaded: PaymentData? = try await sut.load(forKey: "nonexistent")
 
         // Then
         XCTAssertNil(loaded)
@@ -65,40 +66,44 @@ final class DataPersistenceTests: XCTestCase {
 
     // MARK: - Data Deletion
 
-    func test_delete_removesData() throws {
+    func test_delete_removesData() async throws {
         // Given
         let data = PaymentData(id: "123", amount: 1000, currency: "USD")
-        try sut.save(data, forKey: "payment")
+        try await sut.save(data, forKey: "payment")
 
         // When
-        try sut.delete(forKey: "payment")
+        try await sut.delete(forKey: "payment")
 
         // Then
-        XCTAssertFalse(mockStorage.hasData(forKey: "payment"))
+        let hasData = await mockStorage.hasData(forKey: "payment")
+        XCTAssertFalse(hasData)
     }
 
-    func test_delete_nonExistentKey_doesNotThrow() throws {
+    func test_delete_nonExistentKey_doesNotThrow() async throws {
         // When/Then
-        XCTAssertNoThrow(try sut.delete(forKey: "nonexistent"))
+        await XCTAssertNoThrowAsync(try await sut.delete(forKey: "nonexistent"))
     }
 
-    func test_deleteAll_removesAllData() throws {
+    func test_deleteAll_removesAllData() async throws {
         // Given
-        try sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
-        try sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
+        try await sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
+        try await sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
 
         // When
-        try sut.deleteAll()
+        try await sut.deleteAll()
 
         // Then
-        XCTAssertFalse(mockStorage.hasData(forKey: "key1"))
-        XCTAssertFalse(mockStorage.hasData(forKey: "key2"))
-        XCTAssertTrue(mockStorage.isEmpty)
+        let hasKey1 = await mockStorage.hasData(forKey: "key1")
+        let hasKey2 = await mockStorage.hasData(forKey: "key2")
+        let isEmpty = await mockStorage.isEmpty
+        XCTAssertFalse(hasKey1)
+        XCTAssertFalse(hasKey2)
+        XCTAssertTrue(isEmpty)
     }
 
     // MARK: - Data Encoding and Decoding
 
-    func test_save_withComplexObject_encodesCorrectly() throws {
+    func test_save_withComplexObject_encodesCorrectly() async throws {
         // Given
         let complexData = ComplexData(
             id: "123",
@@ -107,8 +112,8 @@ final class DataPersistenceTests: XCTestCase {
         )
 
         // When
-        try sut.save(complexData, forKey: "complex")
-        let loaded: ComplexData? = try sut.load(forKey: "complex")
+        try await sut.save(complexData, forKey: "complex")
+        let loaded: ComplexData? = try await sut.load(forKey: "complex")
 
         // Then
         XCTAssertEqual(loaded?.id, "123")
@@ -117,42 +122,42 @@ final class DataPersistenceTests: XCTestCase {
         XCTAssertEqual(loaded?.metadata["key"], "value")
     }
 
-    func test_load_withCorruptedData_throwsError() throws {
+    func test_load_withCorruptedData_throwsError() async throws {
         // Given - corrupt data
-        mockStorage.setCorruptedData(forKey: "corrupt")
+        await mockStorage.setCorruptedData(forKey: "corrupt")
 
         // When/Then
-        XCTAssertThrowsError(try sut.load(forKey: "corrupt") as PaymentData?)
+        await XCTAssertThrowsErrorAsync(try await sut.load(forKey: "corrupt") as PaymentData?)
     }
 
     // MARK: - Data Migration
 
-    func test_migrate_upgradesDataFormat() throws {
+    func test_migrate_upgradesDataFormat() async throws {
         // Given - old format data
         let oldData = """
         {"version": 1, "paymentId": "123"}
         """.data(using: .utf8)!
-        mockStorage.setRawData(oldData, forKey: "legacy")
+        await mockStorage.setRawData(oldData, forKey: "legacy")
 
         // When
-        try sut.migrateIfNeeded(forKey: "legacy")
+        try await sut.migrateIfNeeded(forKey: "legacy")
 
         // Then
-        let migrated: MigratedData? = try sut.load(forKey: "legacy")
+        let migrated: MigratedData? = try await sut.load(forKey: "legacy")
         XCTAssertNotNil(migrated)
         XCTAssertEqual(migrated?.version, 2)
     }
 
-    func test_migrate_withCurrentVersion_doesNotModify() throws {
+    func test_migrate_withCurrentVersion_doesNotModify() async throws {
         // Given - current version data
         let currentData = MigratedData(version: 2, id: "123")
-        try sut.save(currentData, forKey: "current")
+        try await sut.save(currentData, forKey: "current")
 
         // When
-        try sut.migrateIfNeeded(forKey: "current")
+        try await sut.migrateIfNeeded(forKey: "current")
 
         // Then
-        let loaded: MigratedData? = try sut.load(forKey: "current")
+        let loaded: MigratedData? = try await sut.load(forKey: "current")
         XCTAssertEqual(loaded?.version, 2)
     }
 
@@ -171,7 +176,7 @@ final class DataPersistenceTests: XCTestCase {
 
         // Then - all saves should succeed
         for i in 0..<10 {
-            let loaded: PaymentData? = try sut.load(forKey: "payment-\(i)")
+            let loaded: PaymentData? = try await sut.load(forKey: "payment-\(i)")
             XCTAssertNotNil(loaded)
             XCTAssertEqual(loaded?.id, "\(i)")
         }
@@ -180,7 +185,7 @@ final class DataPersistenceTests: XCTestCase {
     func test_concurrentReads_returnConsistentData() async throws {
         // Given
         let data = PaymentData(id: "123", amount: 1000, currency: "USD")
-        try sut.save(data, forKey: "payment")
+        try await sut.save(data, forKey: "payment")
 
         // When - concurrent reads
         let results = await withTaskGroup(of: PaymentData?.self, returning: [PaymentData?].self) { group in
@@ -203,7 +208,7 @@ final class DataPersistenceTests: XCTestCase {
 
     // MARK: - Storage Size Limits
 
-    func test_save_withLargeData_handlesCorrectly() throws {
+    func test_save_withLargeData_handlesCorrectly() async throws {
         // Given - large data
         let largeArray = Array(repeating: "data", count: 10000)
         let largeData = ComplexData(
@@ -213,58 +218,58 @@ final class DataPersistenceTests: XCTestCase {
         )
 
         // When/Then
-        XCTAssertNoThrow(try sut.save(largeData, forKey: "large"))
+        await XCTAssertNoThrowAsync(try await sut.save(largeData, forKey: "large"))
     }
 
-    func test_save_withExceedingSizeLimit_throwsError() throws {
+    func test_save_withExceedingSizeLimit_throwsError() async throws {
         // Given - data exceeding size limit
         let tooLarge = String(repeating: "x", count: 10_000_000) // 10MB
         let data = PaymentData(id: tooLarge, amount: 100, currency: "USD")
 
         // When/Then
-        XCTAssertThrowsError(try sut.save(data, forKey: "toolarge"))
+        await XCTAssertThrowsErrorAsync(try await sut.save(data, forKey: "toolarge"))
     }
 
     // MARK: - Data Integrity
 
-    func test_save_preservesDataIntegrity() throws {
+    func test_save_preservesDataIntegrity() async throws {
         // Given
         let original = PaymentData(id: "123", amount: 1000, currency: "USD")
 
         // When
-        try sut.save(original, forKey: "payment")
-        let loaded: PaymentData? = try sut.load(forKey: "payment")
+        try await sut.save(original, forKey: "payment")
+        let loaded: PaymentData? = try await sut.load(forKey: "payment")
 
         // Then
         XCTAssertEqual(original, loaded)
     }
 
-    func test_multipleUpdates_preservesLatestData() throws {
+    func test_multipleUpdates_preservesLatestData() async throws {
         // Given
         let data1 = PaymentData(id: "v1", amount: 100, currency: "USD")
         let data2 = PaymentData(id: "v2", amount: 200, currency: "EUR")
         let data3 = PaymentData(id: "v3", amount: 300, currency: "GBP")
 
         // When
-        try sut.save(data1, forKey: "payment")
-        try sut.save(data2, forKey: "payment")
-        try sut.save(data3, forKey: "payment")
+        try await sut.save(data1, forKey: "payment")
+        try await sut.save(data2, forKey: "payment")
+        try await sut.save(data3, forKey: "payment")
 
         // Then
-        let loaded: PaymentData? = try sut.load(forKey: "payment")
+        let loaded: PaymentData? = try await sut.load(forKey: "payment")
         XCTAssertEqual(loaded?.id, "v3")
     }
 
     // MARK: - Key Enumeration
 
-    func test_allKeys_returnsAllStoredKeys() throws {
+    func test_allKeys_returnsAllStoredKeys() async throws {
         // Given
-        try sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
-        try sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
-        try sut.save(PaymentData(id: "3", amount: 300, currency: "GBP"), forKey: "key3")
+        try await sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
+        try await sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
+        try await sut.save(PaymentData(id: "3", amount: 300, currency: "GBP"), forKey: "key3")
 
         // When
-        let keys = sut.allKeys()
+        let keys = await sut.allKeys()
 
         // Then
         XCTAssertEqual(keys.count, 3)
@@ -280,13 +285,13 @@ final class DataPersistenceTests: XCTestCase {
         let data = PaymentData(id: "123", amount: 1000, currency: "USD")
 
         // When
-        try sut.save(data, forKey: "expiring", expiresIn: 0.1) // 100ms
+        try await sut.save(data, forKey: "expiring", expiresIn: 0.1) // 100ms
 
         // Wait for expiration
         try await Task.sleep(nanoseconds: 200_000_000) // 200ms
 
         // Then
-        let loaded: PaymentData? = try sut.load(forKey: "expiring")
+        let loaded: PaymentData? = try await sut.load(forKey: "expiring")
         XCTAssertNil(loaded)
     }
 }
@@ -322,7 +327,7 @@ private struct MigratedData: Codable {
 // MARK: - Mock Storage
 
 @available(iOS 15.0, *)
-private class MockKeyValueStorage {
+private actor MockKeyValueStorage {
     private var storage: [String: Data] = [:]
     private var expirations: [String: Date] = [:]
 
@@ -388,22 +393,22 @@ private class PersistenceManager {
         self.storage = storage
     }
 
-    func save<T: Encodable>(_ value: T, forKey key: String, expiresIn timeInterval: TimeInterval? = nil) throws {
+    func save<T: Encodable>(_ value: T, forKey key: String, expiresIn timeInterval: TimeInterval? = nil) async throws {
         let data = try encoder.encode(value)
 
         guard data.count <= maxDataSize else {
             throw PersistenceError.dataTooLarge
         }
 
-        storage.setData(data, forKey: key)
+        await storage.setData(data, forKey: key)
 
         if let expiresIn = timeInterval {
-            storage.setExpiration(Date().addingTimeInterval(expiresIn), forKey: key)
+            await storage.setExpiration(Date().addingTimeInterval(expiresIn), forKey: key)
         }
     }
 
-    func load<T: Decodable>(forKey key: String) throws -> T? {
-        guard let data = storage.getData(forKey: key) else {
+    func load<T: Decodable>(forKey key: String) async throws -> T? {
+        guard let data = await storage.getData(forKey: key) else {
             return nil
         }
 
@@ -414,20 +419,20 @@ private class PersistenceManager {
         }
     }
 
-    func delete(forKey key: String) throws {
-        storage.removeData(forKey: key)
+    func delete(forKey key: String) async throws {
+        await storage.removeData(forKey: key)
     }
 
-    func deleteAll() throws {
-        storage.removeAll()
+    func deleteAll() async throws {
+        await storage.removeAll()
     }
 
-    func allKeys() -> [String] {
-        storage.allKeys()
+    func allKeys() async -> [String] {
+        await storage.allKeys()
     }
 
-    func migrateIfNeeded(forKey key: String) throws {
-        guard let data = storage.getData(forKey: key) else {
+    func migrateIfNeeded(forKey key: String) async throws {
+        guard let data = await storage.getData(forKey: key) else {
             return
         }
 
@@ -438,7 +443,7 @@ private class PersistenceManager {
             // Migrate from version 1 to version 2
             let id = json["paymentId"] as? String ?? ""
             let migrated = MigratedData(version: 2, id: id)
-            try save(migrated, forKey: key)
+            try await save(migrated, forKey: key)
         }
     }
 }
@@ -446,4 +451,35 @@ private class PersistenceManager {
 private enum PersistenceError: Error {
     case dataTooLarge
     case decodingFailed
+}
+
+// MARK: - Async XCTest Helpers
+
+@available(iOS 15.0, *)
+private func XCTAssertNoThrowAsync<T>(
+    _ expression: @autoclosure () async throws -> T,
+    _ message: @autoclosure () -> String = "",
+    file: StaticString = #filePath,
+    line: UInt = #line
+) async {
+    do {
+        _ = try await expression()
+    } catch {
+        XCTFail("Expected no error, but threw: \(error). \(message())", file: file, line: line)
+    }
+}
+
+@available(iOS 15.0, *)
+private func XCTAssertThrowsErrorAsync<T>(
+    _ expression: @autoclosure () async throws -> T,
+    _ message: @autoclosure () -> String = "",
+    file: StaticString = #filePath,
+    line: UInt = #line
+) async {
+    do {
+        _ = try await expression()
+        XCTFail("Expected error to be thrown. \(message())", file: file, line: line)
+    } catch {
+        // Expected - error was thrown
+    }
 }

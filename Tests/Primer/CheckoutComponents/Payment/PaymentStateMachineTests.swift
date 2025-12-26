@@ -175,8 +175,9 @@ final class PaymentStateMachineTests: XCTestCase {
     // MARK: - Cancelled State
 
     func test_transition_toCancelled_fromProcessing_succeeds() throws {
-        // Given
+        // Given - Follow valid transition sequence
         try sut.transition(to: .validating)
+        try sut.transition(to: .tokenizing)
         try sut.transition(to: .processing)
 
         // When
@@ -187,11 +188,13 @@ final class PaymentStateMachineTests: XCTestCase {
     }
 
     func test_transition_fromCancelled_toAnyState_throws() throws {
-        // Given
+        // Given - Follow valid transition sequence to reach cancelled state
         try sut.transition(to: .validating)
+        try sut.transition(to: .tokenizing)
+        try sut.transition(to: .processing)
         try sut.transition(to: .cancelled)
 
-        // When/Then
+        // When/Then - Cannot transition from cancelled to any state
         XCTAssertThrowsError(try sut.transition(to: .processing))
     }
 }
