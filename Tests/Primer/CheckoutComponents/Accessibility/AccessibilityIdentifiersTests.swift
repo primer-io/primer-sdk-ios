@@ -51,7 +51,7 @@ final class AccessibilityIdentifiersTests: XCTestCase {
         let allIdentifiers = collectAllAccessibilityIdentifiers()
 
         // When: Filter empty identifiers
-        let emptyIdentifiers = allIdentifiers.filter { $0.isEmpty }
+        let emptyIdentifiers = allIdentifiers.filter(\.isEmpty)
 
         // Then: No identifier should be empty
         XCTAssertTrue(
