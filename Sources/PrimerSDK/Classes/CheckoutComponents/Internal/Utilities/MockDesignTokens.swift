@@ -19,7 +19,7 @@ struct MockDesignTokens {
     /// Light theme design tokens with default Primer values
     static let light: DesignTokens = {
         // Create instance with default values
-        return DesignTokens()
+        DesignTokens()
     }()
 
     /// Dark theme design tokens with default Primer dark mode values
