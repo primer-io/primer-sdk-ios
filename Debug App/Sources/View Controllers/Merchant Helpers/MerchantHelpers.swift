@@ -63,7 +63,7 @@ struct MerchantMockDataManager {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "fancy-shoes-\(String.randomString(length: 4))",
                         description: "Fancy Shoes",
-                        amount: 1000,
+                        amount: 600,
                         quantity: 1,
                         discountAmount: nil,
                         taxAmount: nil)
