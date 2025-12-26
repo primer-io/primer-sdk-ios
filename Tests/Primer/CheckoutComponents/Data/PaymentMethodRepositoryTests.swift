@@ -327,6 +327,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
 // MARK: - Mock Network Service (Payment Method Repository Tests)
 
 @available(iOS 15.0, *)
+@MainActor
 private class PaymentMethodRepositoryMockNetworkService {
     var responseData: Data?
     var shouldFail = false

@@ -246,6 +246,7 @@ private enum TokenizationError: Error {
 // MARK: - Mock API Client
 
 @available(iOS 15.0, *)
+@MainActor
 private class MockTokenizationAPIClient {
     var token: String?
     var shouldFail = false
