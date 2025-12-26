@@ -16,6 +16,9 @@ protocol ConfigurationService {
 
     /// Get the current amount from the client session (merchant amount or total order amount)
     var amount: Int? { get }
+
+    /// Returns true if CVV capture is required for vaulted cards (server-controlled flag)
+    var captureVaultedCardCvv: Bool { get }
 }
 
 @available(iOS 15.0, *)
@@ -41,5 +44,11 @@ final class DefaultConfigurationService: ConfigurationService {
     var amount: Int? {
         apiConfiguration?.clientSession?.order?.merchantAmount ??
         apiConfiguration?.clientSession?.order?.totalOrderAmount
+    }
+
+    var captureVaultedCardCvv: Bool {
+        let cardPaymentMethod = apiConfiguration?.paymentMethods?
+            .first { $0.type == PrimerPaymentMethodType.paymentCard.rawValue }
+        return (cardPaymentMethod?.options as? CardOptions)?.captureVaultedCardCvv == true
     }
 }

@@ -696,40 +696,282 @@ enum CheckoutComponentsStrings {
         comment: "Empty state message when no payment methods are available"
     )
 
+    // MARK: - Saved Payment Methods Section
+
+    static let savedPaymentMethods = NSLocalizedString(
+        "primer_vault_section_title",
+        bundle: .primerResources,
+        value: "Saved payment methods",
+        comment: "Section title for saved/vaulted payment methods"
+    )
+
+    static let showAll = NSLocalizedString(
+        "primer_vault_button_show_all",
+        bundle: .primerResources,
+        value: "Show all",
+        comment: "Button text to show all saved payment methods"
+    )
+
+    static let showOtherWaysToPay = NSLocalizedString(
+        "primer_vault_selected_button_other",
+        bundle: .primerResources,
+        value: "Show other ways to pay",
+        comment: "Button text to expand and show all available payment methods"
+    )
+
+    static let a11yShowOtherWaysToPay = NSLocalizedString(
+        "accessibility_payment_selection_show_other_ways_to_pay",
+        bundle: .primerResources,
+        value: "Show other ways to pay",
+        comment: "VoiceOver label for button to expand payment methods"
+    )
+
+    static let allSavedPaymentMethods = NSLocalizedString(
+        "primer_vault_manage_title",
+        bundle: .primerResources,
+        value: "All saved payment methods",
+        comment: "Title for the vaulted payment methods list screen"
+    )
+
+    static let editButton = NSLocalizedString(
+        "primer_vault_manage_button_edit",
+        bundle: .primerResources,
+        value: "Edit",
+        comment: "Edit button placeholder text"
+    )
+
+    static let doneButton = NSLocalizedString(
+        "primer_vault_manage_button_done",
+        bundle: .primerResources,
+        value: "Done",
+        comment: "Done button text for finishing edit mode"
+    )
+
+    static let deleteButton = NSLocalizedString(
+        "primer_vault_delete_button_confirm",
+        bundle: .primerResources,
+        value: "Delete",
+        comment: "Delete button text for confirming deletion"
+    )
+
+    static let deletePaymentMethodConfirmation = NSLocalizedString(
+        "primer_vault_delete_message",
+        bundle: .primerResources,
+        value: "Are you sure you want to delete this payment method?",
+        comment: "Confirmation message shown when deleting a saved payment method"
+    )
+
+    static let cardHolder = NSLocalizedString(
+        "primer_vault_default_cardholder",
+        bundle: .primerResources,
+        value: "Cardholder",
+        comment: "Default placeholder text when cardholder name is not available"
+    )
+
+    static func expiresDate(_ date: String) -> String {
+        let format = NSLocalizedString(
+            "primer_vault_format_expires",
+            bundle: .primerResources,
+            value: "Expires %@",
+            comment: "Expiry date text for saved card. Parameter is the date (e.g., '12/26')"
+        )
+        return String(format: format, date)
+    }
+
+    // MARK: - Vaulted Payment Method Brand Names
+
+    static let paypalBrandName = NSLocalizedString(
+        "primer_vault_default_paypal",
+        bundle: .primerResources,
+        value: "PayPal account",
+        comment: "PayPal brand name for vaulted payment methods"
+    )
+
+    static let klarnaBrandName = NSLocalizedString(
+        "primer_vault_default_klarna",
+        bundle: .primerResources,
+        value: "Klarna",
+        comment: "Klarna brand name for vaulted payment methods"
+    )
+
+    static let achSuffix = NSLocalizedString(
+        "primer_vault_default_bank",
+        bundle: .primerResources,
+        value: "Bank account",
+        comment: "Default text for vaulted bank account payment methods"
+    )
+
+    static let maskedCardNumber = NSLocalizedString(
+        "primer_vault_format_masked",
+        bundle: .primerResources,
+        value: "•••• %@",
+        comment: "Masked card number format. Parameter is the last 4 digits."
+    )
+
+    static func maskedCardNumberFormatted(_ last4: String) -> String {
+        let format = NSLocalizedString(
+            "primer_vault_format_masked",
+            bundle: .primerResources,
+            value: "•••• %@",
+            comment: "Masked card number format. Parameter is the last 4 digits."
+        )
+        return String(format: format, last4)
+    }
+
+    // MARK: - Vaulted Card CVV Recapture
+
+    static let cvvPlaceholderDigit = NSLocalizedString(
+        "primer_vault_cvv_placeholder_digit",
+        bundle: .primerResources,
+        value: "0",
+        comment: "Single digit used to build CVV placeholder (e.g., '000' for 3-digit CVV)"
+    )
+
+    static let cvvRecaptureInstruction = NSLocalizedString(
+        "primer_vault_cvv_hint",
+        bundle: .primerResources,
+        value: "Input the card CVV for a secure payment.",
+        comment: "Instruction text shown when CVV is required for vaulted card payment"
+    )
+
+    static let cvvInvalidError = NSLocalizedString(
+        "primer_vault_cvv_error_invalid",
+        bundle: .primerResources,
+        value: "Please enter a valid CVV.",
+        comment: "Error message when CVV is invalid"
+    )
+
+    static let a11yVaultCVVLabel = NSLocalizedString(
+        "accessibility_vault_cvv_label",
+        bundle: .primerResources,
+        value: "CVV input field",
+        comment: "VoiceOver label for CVV input field in vault payment flow"
+    )
+
+    static func a11yVaultCVVHint(length: Int) -> String {
+        let format = NSLocalizedString(
+            "accessibility_vault_cvv_hint",
+            bundle: .primerResources,
+            value: "Enter %d digit security code",
+            comment: "VoiceOver hint for CVV field with expected length. Parameter is the number of digits (3 or 4)"
+        )
+        return String(format: format, length)
+    }
+
     static let noCountriesFound = NSLocalizedString(
         "checkout-components-no-countries-found",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "No countries found",
         comment: "Message when country search returns no results"
     )
 
     static let autoDismissMessage = NSLocalizedString(
         "checkout-components-auto-dismiss",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "This screen will close automatically in 3 seconds",
         comment: "Auto-dismiss message on success and error screens"
     )
 
     static let redirectConfirmationMessage = NSLocalizedString(
         "checkout-components-redirect-confirmation",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "You'll be redirected to the order confirmation page soon.",
         comment: "Message shown on success screen about upcoming redirect"
     )
 
     static let implementationComingSoon = NSLocalizedString(
         "checkout-components-implementation-coming-soon",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "Implementation coming soon",
         comment: "Placeholder message for features under development"
     )
 
     static let retailOutletNotImplemented = NSLocalizedString(
         "checkout-components-retail-outlet-not-implemented",
-        bundle: Bundle.primerResources,
+        bundle: .primerResources,
         value: "Retail outlet selection not yet implemented",
         comment: "Message for retail outlet feature not yet available"
     )
+
+    // MARK: - Vaulted Payment Method Accessibility
+
+    static func a11yVaultedCard(network: String, last4: String, expiry: String, name: String?) -> String {
+        if let name {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_card_full",
+                bundle: .primerResources,
+                value: "%@ card ending in %@, expires %@, %@",
+                comment: "Full VoiceOver label for vaulted card with name. Parameters: network, last4, expiry, name"
+            )
+            return String(format: format, network, last4, expiry, name)
+        } else {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_card_no_name",
+                bundle: .primerResources,
+                value: "%@ card ending in %@, expires %@",
+                comment: "VoiceOver label for vaulted card without name. Parameters: network, last4, expiry"
+            )
+            return String(format: format, network, last4, expiry)
+        }
+    }
+
+    static func a11yVaultedPayPal(email: String?, name: String?) -> String {
+        if let email {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_paypal_email",
+                bundle: .primerResources,
+                value: "PayPal, %@",
+                comment: "VoiceOver label for vaulted PayPal with email"
+            )
+            return String(format: format, email)
+        } else {
+            return NSLocalizedString(
+                "accessibility_vaulted_paypal",
+                bundle: .primerResources,
+                value: "PayPal",
+                comment: "VoiceOver label for vaulted PayPal without email"
+            )
+        }
+    }
+
+    static func a11yVaultedKlarna(email: String?) -> String {
+        if let email {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_klarna_email",
+                bundle: .primerResources,
+                value: "Klarna, %@",
+                comment: "VoiceOver label for vaulted Klarna with email"
+            )
+            return String(format: format, email)
+        } else {
+            return NSLocalizedString(
+                "accessibility_vaulted_klarna",
+                bundle: .primerResources,
+                value: "Klarna",
+                comment: "VoiceOver label for vaulted Klarna without email"
+            )
+        }
+    }
+
+    static func a11yVaultedACH(bankName: String, last4: String?) -> String {
+        if let last4 {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_ach_full",
+                bundle: .primerResources,
+                value: "%@ bank account ending in %@",
+                comment: "VoiceOver label for vaulted ACH with last4. Parameters: bank name, last4"
+            )
+            return String(format: format, bankName, last4)
+        } else {
+            let format = NSLocalizedString(
+                "accessibility_vaulted_ach",
+                bundle: .primerResources,
+                value: "%@ bank account",
+                comment: "VoiceOver label for vaulted ACH without last4. Parameter: bank name"
+            )
+            return String(format: format, bankName)
+        }
+    }
 
     // MARK: - PayPal Strings
 
@@ -958,9 +1200,9 @@ enum CheckoutComponentsStrings {
     )
 
     static let a11yActionDelete = NSLocalizedString(
-        "accessibility.action.delete",
+        "accessibility_action_delete",
         bundle: Bundle.primerResources,
-        value: "Delete card",
+        value: "Delete payment method",
         comment: "VoiceOver custom action to delete saved card"
     )
 
@@ -1021,6 +1263,51 @@ enum CheckoutComponentsStrings {
         value: "Go back",
         comment: "VoiceOver label for back button"
     )
+
+    static let a11yEdit = NSLocalizedString(
+        "accessibility.common.edit",
+        bundle: .primerResources,
+        value: "Edit saved payment methods",
+        comment: "VoiceOver label for edit button"
+    )
+
+    static let a11yDone = NSLocalizedString(
+        "accessibility.common.done",
+        bundle: .primerResources,
+        value: "Done editing saved payment methods",
+        comment: "VoiceOver label for done button"
+    )
+
+    static let a11yDelete = NSLocalizedString(
+        "accessibility.common.delete",
+        bundle: .primerResources,
+        value: "Delete",
+        comment: "VoiceOver label for delete button"
+    )
+
+    static let a11yDeletePaymentMethod = NSLocalizedString(
+        "accessibility_vault_delete_payment_method",
+        bundle: .primerResources,
+        value: "Delete this payment method",
+        comment: "VoiceOver label for delete payment method button on card"
+    )
+
+    static let a11yShowAll = NSLocalizedString(
+        "accessibility_common_show_all",
+        bundle: .primerResources,
+        value: "Show all saved payment methods",
+        comment: "VoiceOver label for show all button"
+    )
+
+    static func a11yVaultedPaymentMethod(_ name: String) -> String {
+        let format = NSLocalizedString(
+            "accessibility_vaulted_payment_method",
+            bundle: .primerResources,
+            value: "Saved payment method: %@",
+            comment: "VoiceOver label for vaulted payment method card. Parameter is the payment method name."
+        )
+        return String(format: format, name)
+    }
 
     static let a11yDismiss = NSLocalizedString(
         "accessibility.common.dismiss",

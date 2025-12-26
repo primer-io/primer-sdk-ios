@@ -14,6 +14,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     enum NavigationState: Equatable {
         case loading
         case paymentMethodSelection
+        case vaultedPaymentMethods  // All vaulted payment methods list
+        case deleteVaultedPaymentMethodConfirmation(PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)  // Delete confirmation
         case paymentMethod(String)  // Dynamic payment method with type identifier
         case processing  // Payment processing in progress
         case success(CheckoutPaymentResult)
@@ -26,6 +28,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 return true
             case (.paymentMethodSelection, .paymentMethodSelection):
                 return true
+            case (.vaultedPaymentMethods, .vaultedPaymentMethods):
+                return true
+            case let (.deleteVaultedPaymentMethodConfirmation(lhsMethod), .deleteVaultedPaymentMethodConfirmation(rhsMethod)):
+                return lhsMethod.id == rhsMethod.id
             case (.processing, .processing):
                 return true
             case (.dismissed, .dismissed):
@@ -118,6 +124,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private let clientToken: String
     private let settings: PrimerSettings
     var availablePaymentMethods: [InternalPaymentMethod] = []
+
+    // MARK: - Vaulted Payment Methods
+
+    @Published private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
+    @Published private(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
 
     // MARK: - UI Settings Access
 
@@ -313,6 +324,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                 navigator.navigateToLoading()
             case .paymentMethodSelection:
                 navigator.navigateToPaymentSelection()
+            case .vaultedPaymentMethods:
+                navigator.navigateToVaultedPaymentMethods()
+            case let .deleteVaultedPaymentMethodConfirmation(method):
+                navigator.navigateToDeleteVaultedPaymentMethodConfirmation(method)
             case let .paymentMethod(paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
             case .processing:
@@ -338,6 +353,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             message = CheckoutComponentsStrings.a11yScreenLoadingPaymentMethods
         case .paymentMethodSelection:
             message = CheckoutComponentsStrings.choosePaymentMethod
+        case .vaultedPaymentMethods:
+            message = CheckoutComponentsStrings.allSavedPaymentMethods
+        case .deleteVaultedPaymentMethodConfirmation:
+            message = CheckoutComponentsStrings.deletePaymentMethodConfirmation
         case let .paymentMethod(type):
             if let name = selectedPaymentMethodName {
                 message = CheckoutComponentsStrings.a11yScreenPaymentMethod(name)
@@ -379,6 +398,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
                     newNavigationState = .loading
                 case .paymentMethodSelection:
                     newNavigationState = .paymentMethodSelection
+                case .vaultedPaymentMethods:
+                    newNavigationState = .vaultedPaymentMethods
+                case let .deleteVaultedPaymentMethodConfirmation(method):
+                    newNavigationState = .deleteVaultedPaymentMethodConfirmation(method)
                 case let .paymentMethod(paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
                 case .processing:
@@ -407,8 +430,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch (lhs, rhs) {
         case (.loading, .loading),
              (.paymentMethodSelection, .paymentMethodSelection),
+             (.vaultedPaymentMethods, .vaultedPaymentMethods),
              (.processing, .processing):
             return true
+        case let (.deleteVaultedPaymentMethodConfirmation(lhsMethod), .deleteVaultedPaymentMethodConfirmation(rhsMethod)):
+            return lhsMethod.id == rhsMethod.id
         case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
             return lhsType == rhsType
         case let (.failure(lhsError), .failure(rhsError)):
@@ -595,6 +621,31 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             return extractFailureMetadata(from: error)
         }
         return .general()
+    }
+
+    // MARK: - Vaulted Payment Methods Methods
+
+    func setVaultedPaymentMethods(_ methods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]) {
+        vaultedPaymentMethods = methods
+
+        // Clear selection if the selected method was deleted
+        if let selectedId = selectedVaultedPaymentMethod?.id,
+           !methods.contains(where: { $0.id == selectedId }) {
+            selectedVaultedPaymentMethod = nil
+        }
+
+        // Set first as default if none selected
+        if selectedVaultedPaymentMethod == nil, let first = methods.first {
+            selectedVaultedPaymentMethod = first
+        }
+    }
+
+    func setSelectedVaultedPaymentMethod(_ method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?) {
+        selectedVaultedPaymentMethod = method
+        // Notify payment method selection scope to sync from source of truth
+        if let selectionScope = _paymentMethodSelection as? DefaultPaymentMethodSelectionScope {
+            selectionScope.syncSelectedVaultedPaymentMethod()
+        }
     }
 
 }

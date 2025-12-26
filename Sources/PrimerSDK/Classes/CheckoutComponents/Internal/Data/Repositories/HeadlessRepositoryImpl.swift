@@ -17,9 +17,15 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     private var hasCompleted = false
     private weak var repository: HeadlessRepositoryImpl?
     private var validationCompletion: ((Bool, [Error]?) -> Void)?
+    private let paymentMethodType: String
 
-    init(repository: HeadlessRepositoryImpl, completion: @escaping (Result<PaymentResult, Error>) -> Void) {
+    init(
+        repository: HeadlessRepositoryImpl,
+        paymentMethodType: String = "PAYMENT_CARD",
+        completion: @escaping (Result<PaymentResult, Error>) -> Void
+    ) {
         self.repository = repository
+        self.paymentMethodType = paymentMethodType
         self.completion = completion
         super.init()
     }
@@ -39,9 +45,9 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         let result = PaymentResult(
             paymentId: data.payment?.id ?? UUID().uuidString,
             status: .success,
-            token: data.payment?.id, // Use payment ID as token for CheckoutComponents
-            amount: nil, // Amount not available in PrimerCheckoutDataPayment
-            paymentMethodType: "PAYMENT_CARD" // Default to card for CheckoutComponents
+            token: data.payment?.id,
+            amount: nil,
+            paymentMethodType: paymentMethodType
         )
         completion(.success(result))
     }
@@ -130,6 +136,26 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         )
         return manager
     }()
+
+    // MARK: - Vault Support
+
+    private lazy var vaultManager: PrimerHeadlessUniversalCheckout.VaultManager = {
+        let manager = PrimerHeadlessUniversalCheckout.VaultManager()
+        do {
+            try manager.configure()
+        } catch {
+            logger.error(message: "[Vault] VaultManager.configure() failed: \(error.localizedDescription)")
+        }
+        return manager
+    }()
+
+    /// Retains the completion handler during vault payment processing to prevent deallocation.
+    ///
+    /// CLEANUP NOTE: This handler is explicitly set to nil in the completion callback (see processVaultedPayment).
+    /// If payment is interrupted (e.g., app backgrounded/terminated), cleanup happens automatically because
+    /// HeadlessRepository uses transient DI scope - each checkout session creates a fresh instance,
+    /// and the old instance (with any retained handler) is deallocated when the session ends.
+    private var vaultPaymentCompletionHandler: PaymentCompletionHandler?
 
     private var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
     private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
@@ -538,6 +564,79 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             } catch {
                 // Log error but don't block the flow since this is a fire-and-forget operation
                 logger.error(message: "Failed to select payment method: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Vault Methods
+
+    func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
+        try await withCheckedThrowingContinuation { continuation in
+            vaultManager.fetchVaultedPaymentMethods { [weak self] vaultedPaymentMethods, error in
+                if let error {
+                    self?.logger.error(message: "[Vault] Fetch failed: \(error.localizedDescription)")
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: vaultedPaymentMethods ?? [])
+            }
+        }
+    }
+
+    func processVaultedPayment(
+        vaultedPaymentMethodId: String,
+        paymentMethodType: String,
+        additionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) async throws -> PaymentResult {
+
+        // ARCHITECTURE NOTE: This fetch is required even if vaulted methods were recently fetched.
+        //
+        // VaultManager internally validates payment IDs against its own `vaultedPaymentMethods` cache
+        // (not AppState or any shared state). Since HeadlessRepository uses transient scope in DI,
+        // each checkout session creates a fresh instance with an empty VaultManager cache.
+        //
+        // Without this fetch, VaultManager.startPaymentFlow() would fail validation because its
+        // internal cache is empty. This is the correct architectural pattern - it ensures each
+        // payment operation has fresh, validated data from the server.
+        _ = try await fetchVaultedPaymentMethods()
+
+        return try await withCheckedThrowingContinuation { continuation in
+            Task { @MainActor in
+                let completionHandler = PaymentCompletionHandler(
+                    repository: self,
+                    paymentMethodType: paymentMethodType
+                ) { [weak self] result in
+                    self?.vaultPaymentCompletionHandler = nil
+                    continuation.resume(with: result)
+                }
+
+                // Retain handler to prevent deallocation during async flow
+                self.vaultPaymentCompletionHandler = completionHandler
+                PrimerHeadlessUniversalCheckout.current.delegate = completionHandler
+
+                self.vaultManager.startPaymentFlow(
+                    vaultedPaymentMethodId: vaultedPaymentMethodId,
+                    vaultedPaymentMethodAdditionalData: additionalData
+                )
+            }
+        }
+    }
+
+    func deleteVaultedPaymentMethod(_ id: String) async throws {
+        // ARCHITECTURE NOTE: Same as processVaultedPayment - fetch required to populate VaultManager's
+        // internal cache before deletion. VaultManager validates the ID exists before allowing delete.
+        // See processVaultedPayment comment for full architectural explanation.
+        _ = try await fetchVaultedPaymentMethods()
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vaultManager.deleteVaultedPaymentMethod(id: id) { [weak self] error in
+                if let error {
+                    self?.logger.error(message: "[Vault] Delete failed: \(error.localizedDescription)")
+                    continuation.resume(throwing: error)
+                    return
+                }
+                self?.logger.info(message: "[Vault] Successfully deleted payment method: \(id)")
+                continuation.resume()
             }
         }
     }

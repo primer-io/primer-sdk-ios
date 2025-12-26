@@ -6,12 +6,6 @@
 
 import SwiftUI
 
-/// Data structure for grouping payment methods by surcharge status
-private struct PaymentMethodGroup {
-    let group: String
-    let methods: [CheckoutPaymentMethod]
-}
-
 /// Default payment method selection screen for CheckoutComponents
 @available(iOS 15.0, *)
 struct PaymentMethodSelectionScreen: View, LogReporter {
@@ -20,443 +14,118 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     @Environment(\.designTokens) private var tokens
     @Environment(\.bridgeController) private var bridgeController
     @Environment(\.diContainer) private var container
-    @Environment(\.sizeCategory) private var sizeCategory // Observes Dynamic Type changes
     @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
     @State private var configurationService: ConfigurationService?
 
-    init(scope: PrimerPaymentMethodSelectionScope) {
-        self.scope = scope
-    }
-
     var body: some View {
-        mainContent
-            .environment(\.primerPaymentMethodSelectionScope, scope)
-    }
-
-    @MainActor
-    private var mainContent: some View {
         VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
-            headerSection
-            contentContainer
+            makeHeader()
+            makeContent()
         }
+        .environment(\.primerPaymentMethodSelectionScope, scope)
         .onAppear {
             resolveConfigurationService()
             observeState()
         }
     }
 
-    @MainActor
-    private var headerSection: some View {
-        VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-            paymentAmountHeader
-            titleSection
+    // MARK: - Header
+
+    private func makeHeader() -> some View {
+        HStack {
+            if let formattedAmount {
+                Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
+                    .font(PrimerFont.titleXLarge(tokens: tokens))
+                    .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            }
+
+            Spacer()
+
+            if scope.dismissalMechanism.contains(.closeButton) {
+                Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
+                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+            }
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.top, PrimerSpacing.large(tokens: tokens))
     }
 
-    @MainActor
-    private var paymentAmountHeader: some View {
-        HStack {
-            let amount = configurationService?.amount ?? 9900 // Default to $99.00 if not available
-            let currency = configurationService?.currency ?? Currency(code: "USD", decimalDigits: 2)
-            let formattedAmount = amount.toCurrencyString(currency: currency)
+    // MARK: - Content
 
-            Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
-                .font(PrimerFont.titleXLarge(tokens: tokens))
+    private func makeContent() -> some View {
+        ScrollView {
+            VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
+                if let vaultedPaymentMethod = selectionState.selectedVaultedPaymentMethod {
+                    VaultSection(
+                        vaultedPaymentMethod: vaultedPaymentMethod,
+                        scope: scope,
+                        isLoading: selectionState.isVaultPaymentLoading,
+                        requiresCvvInput: selectionState.requiresCvvInput,
+                        cvvInput: $selectionState.cvvInput,
+                        isCvvValid: $selectionState.isCvvValid,
+                        cvvError: $selectionState.cvvError
+                    )
+                }
+
+                if shouldShowCollapsedView {
+                    makeShowOtherWaysToPayButton()
+                } else {
+                    PaymentMethodsSection(state: selectionState, scope: scope)
+                }
+            }
+            .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+            .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
+        }
+    }
+
+    private var shouldShowCollapsedView: Bool {
+        !selectionState.isPaymentMethodsExpanded
+    }
+
+    private func makeShowOtherWaysToPayButton() -> some View {
+        Button(action: { scope.showOtherWaysToPay() }) {
+            Text(CheckoutComponentsStrings.showOtherWaysToPay)
+                .font(PrimerFont.titleLarge(tokens: tokens))
                 .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-                .accessibilityAddTraits(.isStaticText)
-
-            Spacer()
-
-            // Show close button based on dismissalMechanism setting
-            if scope.dismissalMechanism.contains(.closeButton) {
-                Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
-                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                    .accessibility(config: AccessibilityConfiguration(
-                        identifier: AccessibilityIdentifiers.Common.closeButton,
-                        label: CheckoutComponentsStrings.a11yCancel,
-                        traits: [.isButton]
-                    ))
-            }
+                .frame(maxWidth: .infinity)
+                .padding(PrimerSpacing.medium(tokens: tokens))
+                .background(
+                    RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.standard)
+                )
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.PaymentSelection.showOtherWaysButton,
+            label: CheckoutComponentsStrings.a11yShowOtherWaysToPay,
+            traits: [.isButton]
+        ))
     }
 
-    @MainActor
-    private var contentContainer: some View {
-        VStack(spacing: 0) {
-            paymentMethodsList
+    // MARK: - Helpers
+
+    private var formattedAmount: String? {
+        guard let amount = configurationService?.amount,
+              let currency = configurationService?.currency else {
+            return nil
         }
-    }
-
-    @MainActor
-    private var titleSection: some View {
-        Text(CheckoutComponentsStrings.choosePaymentMethod)
-            .font(PrimerFont.titleLarge(tokens: tokens))
-            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, PrimerSpacing.small(tokens: tokens))
-            .accessibilityAddTraits(.isHeader)
-    }
-
-    @MainActor
-    private var paymentMethodsList: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                if selectionState.isLoading {
-                    loadingView
-                } else if selectionState.paymentMethods.isEmpty {
-                    emptyStateView
-                } else {
-                    paymentMethodsContent
-                }
-            }
-
-            errorSection
-        }
-        .background(CheckoutColors.background(tokens: tokens))
-    }
-
-    @MainActor
-    @ViewBuilder
-    private var loadingView: some View {
-        VStack {
-            Spacer()
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens)))
-                .scaleEffect(PrimerScale.large)
-                .accessibility(config: AccessibilityConfiguration(
-                    identifier: AccessibilityIdentifiers.Common.loadingIndicator,
-                    label: CheckoutComponentsStrings.a11yLoading
-                ))
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, minHeight: 200)
-    }
-
-    @MainActor
-    @ViewBuilder
-    private var emptyStateView: some View {
-        if let customEmptyState = scope.emptyStateView {
-            AnyView(customEmptyState())
-        } else {
-            VStack(spacing: 16) {
-                Image(systemName: "creditcard.and.123")
-                    .font(PrimerFont.largeIcon(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                    .accessibilityHidden(true)
-
-                Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
-                    .font(PrimerFont.body(tokens: tokens))
-                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-                    .accessibilityAddTraits(.isStaticText)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.top, 100)
-        }
-    }
-
-    @MainActor
-    private var paymentMethodsContent: some View {
-        LazyVStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-            ForEach(groupedPaymentMethods, id: \.group) { group in
-                paymentMethodGroup(group)
-            }
-        }
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
-    }
-
-    /// Groups payment methods by surcharge status for better UX
-    private var groupedPaymentMethods: [PaymentMethodGroup] {
-        var groups: [PaymentMethodGroup] = []
-        let methods = selectionState.paymentMethods
-
-        // Check if any meaningful surcharge-related configuration exists
-        let hasSurchargeConfiguration = methods.contains { method in
-            (method.surcharge != nil && method.surcharge! > 0) || method.hasUnknownSurcharge
-        }
-
-        // If no surcharge configuration exists, return all methods in a single group without labels
-        guard hasSurchargeConfiguration else {
-            return [PaymentMethodGroup(group: "", methods: methods)]
-        }
-
-        // Group 1: Methods with positive surcharges - create separate groups for each unique surcharge amount
-        let surchargeMethods = methods.filter { method in
-            if let surcharge = method.surcharge, surcharge > 0 {
-                return true
-            }
-            return false
-        }
-
-        // Group by unique surcharge amounts
-        let uniqueSurcharges = Set(surchargeMethods.compactMap(\.surcharge))
-        let sortedSurcharges = uniqueSurcharges.sorted()
-
-        for surcharge in sortedSurcharges {
-            let methodsWithThisSurcharge = surchargeMethods.filter { $0.surcharge == surcharge }
-            let currency = configurationService?.currency ?? Currency(code: "EUR", decimalDigits: 2)
-            let formattedSurcharge = "+\(surcharge.toCurrencyString(currency: currency))"
-
-            groups.append(PaymentMethodGroup(
-                group: formattedSurcharge,
-                methods: methodsWithThisSurcharge
-            ))
-        }
-
-        // Group 2: Methods with no additional fees
-        let noFeeMethods = methods.filter { method in
-            // Include methods with:
-            // - surcharge == 0 (explicit no fee)
-            // - surcharge == nil AND hasUnknownSurcharge == false (no fee configured)
-            if let surcharge = method.surcharge {
-                return surcharge == 0
-            } else {
-                return !method.hasUnknownSurcharge
-            }
-        }
-
-        if !noFeeMethods.isEmpty {
-            groups.append(PaymentMethodGroup(
-                group: CheckoutComponentsStrings.noAdditionalFee,
-                methods: noFeeMethods
-            ))
-        }
-
-        // Group 3: Methods with unknown surcharges
-        let unknownFeeMethods = methods.filter { method in
-            method.hasUnknownSurcharge
-        }
-
-        if !unknownFeeMethods.isEmpty {
-            groups.append(PaymentMethodGroup(
-                group: CheckoutComponentsStrings.additionalFeeMayApply,
-                methods: unknownFeeMethods
-            ))
-        }
-
-        return groups
-    }
-
-    @MainActor
-    @ViewBuilder
-    private func paymentMethodGroup(_ group: PaymentMethodGroup) -> some View {
-        VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-            // Group header with surcharge info (only show if group name is not empty)
-            if !group.group.isEmpty {
-                if let customCategoryHeader = scope.categoryHeader {
-                    AnyView(customCategoryHeader(group.group))
-                } else {
-                    HStack {
-                        Text(group.group)
-                            .font(PrimerFont.bodyMedium(tokens: tokens))
-                            .foregroundColor(dynamicGroupHeaderColor(for: group.group))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                    .padding(.horizontal, PrimerSpacing.small(tokens: tokens))
-                    .accessibilityAddTraits(.isHeader)
-                }
-            }
-
-            // Gray rounded container for payment methods group
-            VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-                ForEach(group.methods, id: \.id) { method in
-                    modernPaymentMethodCard(method)
-                        .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
-                }
-            }
-            .padding(PrimerSpacing.medium(tokens: tokens)) // Padding inside gray container
-            .background(
-                RoundedRectangle(cornerRadius: PrimerRadius.large(tokens: tokens))
-                    .fill(CheckoutColors.gray100(tokens: tokens))
-            )
-        }
-    }
-
-    /// Get appropriate color for group header using design tokens
-    private func dynamicGroupHeaderColor(for groupName: String) -> Color {
-        if groupName.hasPrefix("+") {
-            // Positive surcharge - use primary text color (black)
-            return CheckoutColors.textPrimary(tokens: tokens)
-        } else if groupName == CheckoutComponentsStrings.additionalFeeMayApply {
-            // Unknown surcharge - use secondary text color
-            return CheckoutColors.textSecondary(tokens: tokens)
-        } else {
-            // No additional fee - use muted color
-            return CheckoutColors.textSecondary(tokens: tokens)
-        }
-    }
-
-    @MainActor
-    @ViewBuilder
-    private func modernPaymentMethodCard(_ method: CheckoutPaymentMethod) -> some View {
-        // Check scope configuration for custom payment method item
-        if let customPaymentMethodItem = scope.paymentMethodItem {
-            AnyView(customPaymentMethodItem(method))
-                .onTapGesture {
-                    scope.onPaymentMethodSelected(paymentMethod: method)
-                }
-        } else {
-            ModernPaymentMethodCardView(
-                method: method,
-                onTap: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        scope.onPaymentMethodSelected(paymentMethod: method)
-                    }
-                }
-            )
-        }
-    }
-
-    @MainActor
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = selectionState.error {
-            Text(error)
-                .font(PrimerFont.caption(tokens: tokens))
-                .foregroundColor(CheckoutColors.borderError(tokens: tokens))
-                .padding(PrimerSpacing.large(tokens: tokens))
-                .accessibility(config: AccessibilityConfiguration(
-                    identifier: AccessibilityIdentifiers.Error.messageContainer,
-                    label: error,
-                    traits: [.isStaticText]
-                ))
-        }
+        return amount.toCurrencyString(currency: currency)
     }
 
     private func resolveConfigurationService() {
-        guard let container else {
-            return logger.error(message: "DIContainer not available for PaymentMethodSelectionScreen")
-        }
-        do {
-            configurationService = try container.resolveSync(ConfigurationService.self)
-        } catch {
-            logger.error(message: "Failed to resolve ConfigurationService: \(error)")
-        }
+        guard let container else { return }
+        configurationService = try? container.resolveSync(ConfigurationService.self)
     }
 
     private func observeState() {
         Task {
             for await state in await scope.state {
                 await MainActor.run {
-                    self.selectionState = state
-
+                    selectionState = state
                     if !state.paymentMethods.isEmpty {
                         bridgeController?.invalidateContentSize()
                     }
                 }
             }
         }
-    }
-}
-
-/// Modern payment method card view matching Image #2 design
-@available(iOS 15.0, *)
-private struct ModernPaymentMethodCardView: View {
-    let method: CheckoutPaymentMethod
-    let onTap: () -> Void
-
-    @Environment(\.designTokens) private var tokens
-
-    var body: some View {
-        Button(action: onTap) {
-            contentView
-        }
-        .buttonStyle(ModernCardButtonStyle())
-        .accessibility(config: accessibilityConfiguration)
-    }
-
-    /// Accessibility configuration for payment method card
-    private var accessibilityConfiguration: AccessibilityConfiguration {
-        // Use type-based identifier (id is always set to type for payment methods)
-        // For saved/vaulted cards, a separate identifier pattern with last 4 digits is used
-        AccessibilityConfiguration(
-            identifier: AccessibilityIdentifiers.PaymentSelection.paymentMethodItem(
-                method.type.lowercased(),
-                uniqueId: nil
-            ),
-            label: method.name,
-            traits: [.isButton]
-        )
-    }
-
-    private var contentView: some View {
-        HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-            paymentMethodLogo
-            methodNameAndSurcharge
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-        .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
-        .background(backgroundView)
-    }
-
-    @ViewBuilder
-    private var paymentMethodLogo: some View {
-        if let icon = method.icon {
-            Image(uiImage: icon)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: PrimerComponentWidth.paymentMethodIcon, height: PrimerSize.large(tokens: tokens))
-                .accessibilityHidden(true)
-        } else {
-            paymentMethodLogoPlaceholder
-        }
-    }
-
-    private var paymentMethodLogoPlaceholder: some View {
-        // Create logo based on payment method type using bundled assets (like DropIn UI)
-        let paymentMethodType = PrimerPaymentMethodType(rawValue: method.type)
-        let imageName = paymentMethodType?.defaultImageName ?? .genericCard
-        let fallbackImage = imageName.image
-
-        return Image(uiImage: fallbackImage ?? UIImage())
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: PrimerComponentWidth.paymentMethodIcon, height: PrimerSize.large(tokens: tokens))
-            .accessibilityHidden(true)
-    }
-
-    private var methodNameAndSurcharge: some View {
-        Text(method.name)
-            .font(PrimerFont.bodyLarge(tokens: tokens))
-            .foregroundColor(textColorForPaymentMethod)
-            .lineLimit(nil)
-            .multilineTextAlignment(.leading)
-    }
-
-    private var backgroundView: some View {
-        RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
-            .fill(backgroundColorForPaymentMethod)
-    }
-
-    /// Dynamic background color from server or fallback to design tokens
-    private var backgroundColorForPaymentMethod: Color {
-        // Priority: Server-provided dynamic color > Design tokens fallback
-        if let serverColor = method.backgroundColor {
-            return Color(serverColor)
-        }
-
-        // Fallback to design tokens for consistent styling
-        return CheckoutColors.background(tokens: tokens)
-    }
-
-    /// Dynamic text color using design tokens for consistent styling
-    private var textColorForPaymentMethod: Color {
-        // Use design tokens for consistent styling
-        CheckoutColors.textPrimary(tokens: tokens)
-    }
-}
-
-/// Modern button style with subtle press animation
-@available(iOS 15.0, *)
-private struct ModernCardButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .opacity(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }

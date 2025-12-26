@@ -39,18 +39,18 @@ struct CheckoutScopeObserver: View, LogReporter {
     var body: some View {
         Group {
             if bridgeController != nil {
-                contentView  // NO navigation wrapper - for UIKit bridge (prevents sizing issues)
+                makeContentView()  // NO navigation wrapper - for UIKit bridge (prevents sizing issues)
             } else {
                 // Pure SwiftUI - use BackportedNavigationStack for iOS 16+ NavigationStack
                 BackportedNavigationStack {
-                    contentView
+                    makeContentView()
                 }
             }
         }
         .background(CheckoutColors.background(tokens: designTokensManager.tokens))
     }
 
-    private var contentView: some View {
+    private func makeContentView() -> some View {
         VStack(spacing: 0) {
             // MARK: - Navigation Content
             // Simple fade transition between screens
@@ -111,6 +111,37 @@ struct CheckoutScopeObserver: View, LogReporter {
                     scope: scope.paymentMethodSelection
                 ))
             }
+
+        case .vaultedPaymentMethods:
+            return AnyView(VaultedPaymentMethodsListScreen(
+                vaultedPaymentMethods: scope.vaultedPaymentMethods,
+                selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
+                onSelect: { method in
+                    scope.setSelectedVaultedPaymentMethod(method)
+                    if let selectionScope = scope.paymentMethodSelection as? DefaultPaymentMethodSelectionScope {
+                        selectionScope.collapsePaymentMethods()
+                    }
+                    scope.checkoutNavigator.navigateBack()
+                },
+                onBack: {
+                    scope.checkoutNavigator.navigateBack()
+                },
+                onDeleteTapped: { method in
+                    scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
+                }
+            ))
+
+        case let .deleteVaultedPaymentMethodConfirmation(method):
+            guard let selectionScope = scope.paymentMethodSelection as? DefaultPaymentMethodSelectionScope else {
+                logger.error(message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
+                scope.checkoutNavigator.navigateBack()
+                return AnyView(EmptyView())
+            }
+            return AnyView(DeleteVaultedPaymentMethodConfirmationScreen(
+                vaultedPaymentMethod: method,
+                navigator: scope.checkoutNavigator,
+                scope: selectionScope
+            ))
 
         case let .paymentMethod(paymentMethodType):
             // Handle all payment method types using truly unified dynamic approach

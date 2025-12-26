@@ -37,16 +37,21 @@ enum CheckoutRoute: Hashable, Identifiable {
     case splash
     case loading
     case paymentMethodSelection
-    case processing  // Payment processing in progress
+    case vaultedPaymentMethods
+    case deleteVaultedPaymentMethodConfirmation(PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
+    case processing
     case success(CheckoutPaymentResult)
     case failure(PrimerError)
-    case paymentMethod(String, PresentationContext) // Payment method type with presentation context
+    case paymentMethod(String, PresentationContext)
 
     var id: String {
         switch self {
         case .splash: return "splash"
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
+        case .vaultedPaymentMethods: return "vaulted-payment-methods"
+        case let .deleteVaultedPaymentMethodConfirmation(method):
+            return "delete-vaulted-payment-method-confirmation-\(method.id)"
         case .processing: return "processing"
         case let .paymentMethod(type, context):
             return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
@@ -71,15 +76,19 @@ enum CheckoutRoute: Hashable, Identifiable {
         case .splash:
             return .reset
         case .loading:
-            return .replace // Replace splash with loading
+            return .replace
         case .paymentMethodSelection:
-            return .reset  // Always reset to payment methods as root
+            return .reset
+        case .vaultedPaymentMethods:
+            return .push
+        case .deleteVaultedPaymentMethodConfirmation:
+            return .push
         case .paymentMethod:
-            return .push   // Standard forward navigation
+            return .push
         case .processing:
-            return .replace // Replace current screen with processing overlay
+            return .replace
         case .success, .failure:
-            return .replace // Replace current screen with result
+            return .replace
         }
     }
 }
