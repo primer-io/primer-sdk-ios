@@ -15,7 +15,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.3.0")
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.3.1")
     ],
     targets: [
         .target(
