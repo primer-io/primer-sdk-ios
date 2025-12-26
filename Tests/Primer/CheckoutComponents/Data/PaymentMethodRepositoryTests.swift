@@ -387,6 +387,7 @@ private class MockCache {
 // MARK: - Mock Repository
 
 @available(iOS 15.0, *)
+@MainActor
 private class PaymentMethodRepository {
     private let networkService: PaymentMethodRepositoryMockNetworkService
     private let cache: MockCache
@@ -408,37 +409,45 @@ private class PaymentMethodRepository {
             return try parsePaymentMethods(from: cachedData, includeDisabled: includeDisabled)
         }
 
-        // Deduplicate concurrent requests
-        if let existing = inflightRequest {
-            return try await existing.value
-        }
+        // Deduplicate concurrent requests - check and set atomically
+        if inflightRequest == nil {
+            let task = Task<[PaymentMethod], Error> {
+                do {
+                    let data = try await networkService.fetchPaymentMethods()
+                    let methods = try parsePaymentMethods(from: data, includeDisabled: includeDisabled)
 
-        let task = Task<[PaymentMethod], Error> {
-            do {
-                let data = try await networkService.fetchPaymentMethods()
-                let methods = try parsePaymentMethods(from: data, includeDisabled: includeDisabled)
-
-                // Cache if we got valid data
-                if !methods.isEmpty {
-                    cache.store(data)
-                }
-
-                return methods
-            } catch {
-                // Fallback to cache if allowed
-                if fallbackToCache || allowStaleCache {
-                    if let cachedData = cache.cachedData {
-                        return try parsePaymentMethods(from: cachedData, includeDisabled: includeDisabled)
+                    // Cache if we got valid data
+                    if !methods.isEmpty {
+                        cache.store(data)
                     }
+
+                    return methods
+                } catch {
+                    // Fallback to cache if allowed
+                    if fallbackToCache || allowStaleCache {
+                        if let cachedData = cache.cachedData {
+                            return try parsePaymentMethods(from: cachedData, includeDisabled: includeDisabled)
+                        }
+                    }
+                    throw error
                 }
-                throw error
             }
+            inflightRequest = task
         }
 
-        inflightRequest = task
-        defer { inflightRequest = nil }
+        // All callers wait for the same request
+        guard let task = inflightRequest else {
+            fatalError("inflightRequest should be set at this point")
+        }
 
-        return try await task.value
+        do {
+            let result = try await task.value
+            inflightRequest = nil
+            return result
+        } catch {
+            inflightRequest = nil
+            throw error
+        }
     }
 
     func refreshPaymentMethods() async throws -> [PaymentMethod] {
