@@ -31,11 +31,11 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     var logo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.logo
+        paymentMethodTokenizationViewModel.config.logo
     }
 
     var invertedLogo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.invertedLogo
+        paymentMethodTokenizationViewModel.config.invertedLogo
     }
 
     var navigationBarLogo: UIImage? {
@@ -809,11 +809,11 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonImage: UIImage? {
-        return self.logo
+        self.logo
     }
 
     lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+        UIFont.systemFont(ofSize: 17.0, weight: .medium)
     }()
 
     var buttonCornerRadius: CGFloat? {
@@ -918,7 +918,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonTintColor: UIColor? {
-        return nil
+        nil
     }
 
     var paymentMethodButton: PrimerButton {
@@ -1059,13 +1059,22 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
         guard let squareLogo = self.icon else { return nil }
-        let imgView = UIImageView()
-        imgView.image = squareLogo
-        imgView.contentMode = .scaleAspectFit
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
-        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
-        return imgView
+
+        let createImageView: () -> UIImageView = {
+            let imgView = UIImageView()
+            imgView.image = squareLogo
+            imgView.contentMode = .scaleAspectFit
+            imgView.translatesAutoresizingMaskIntoConstraints = false
+            imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+            imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+            return imgView
+        }
+
+        if Thread.isMainThread {
+            return createImageView()
+        } else {
+            return DispatchQueue.main.sync { createImageView() }
+        }
     }
 
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {

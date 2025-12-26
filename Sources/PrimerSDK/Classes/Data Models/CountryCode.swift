@@ -341,7 +341,7 @@ extension CountryCode {
 
 extension CountryCode {
 
-    internal struct PhoneNumberCountryCode: Codable {
+    internal struct PhoneNumberCountryCode: Codable, Equatable {
         let name: String
         let dialCode: String
         let code: String

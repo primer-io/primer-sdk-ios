@@ -60,15 +60,17 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 
             self.session = webAuthSession
 
-            webAuthSession.presentationContextProvider = self
-            webAuthSession.start()
+            DispatchQueue.main.async {
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
+            }
         }
     }
 }
 
 extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+        UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
 
 }
@@ -83,6 +85,6 @@ extension UIApplication {
     }
 
     var keyWindow: UIWindow? {
-        return windows.last
+        windows.last
     }
 }
