@@ -202,7 +202,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
 
         // Then: Name and masked email should be present
         XCTAssertEqual(displayData.name, "John Appleseed")
-        XCTAssertEqual(displayData.brandName, "PayPal")
+        XCTAssertEqual(displayData.brandName, "PayPal account")
         XCTAssertNotNil(displayData.primaryValue)
         XCTAssertTrue(displayData.primaryValue?.contains("jo") ?? false)
         XCTAssertTrue(displayData.primaryValue?.contains("@gmail.com") ?? false)
@@ -261,7 +261,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         // Then: Name and primary value should be nil
         XCTAssertNil(displayData.name)
         XCTAssertNil(displayData.primaryValue)
-        XCTAssertEqual(displayData.brandName, "PayPal")
+        XCTAssertEqual(displayData.brandName, "PayPal account")
     }
 
     // MARK: - Klarna Display Data Tests
@@ -303,7 +303,7 @@ final class VaultedPaymentMethodDisplayDataTests: XCTestCase {
         // Then: All fields should be populated
         XCTAssertEqual(displayData.name, "Jane Smith")
         XCTAssertTrue(displayData.brandName.contains("Chase"))
-        XCTAssertTrue(displayData.brandName.contains("ACH"))
+        XCTAssertTrue(displayData.brandName.contains("Bank account"))
         XCTAssertEqual(displayData.primaryValue, "•••• 9876")
     }
 
