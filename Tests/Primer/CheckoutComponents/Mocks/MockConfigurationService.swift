@@ -18,6 +18,7 @@ final class MockConfigurationService: ConfigurationService {
     var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions?
     var currency: Currency?
     var amount: Int?
+    var captureVaultedCardCvv: Bool = false
 
     // MARK: - Initialization
 
@@ -26,13 +27,15 @@ final class MockConfigurationService: ConfigurationService {
         checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
         billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? = nil,
         currency: Currency? = nil,
-        amount: Int? = nil
+        amount: Int? = nil,
+        captureVaultedCardCvv: Bool = false
     ) {
         self.apiConfiguration = apiConfiguration
         self.checkoutModules = checkoutModules
         self.billingAddressOptions = billingAddressOptions
         self.currency = currency
         self.amount = amount
+        self.captureVaultedCardCvv = captureVaultedCardCvv
     }
 
     // MARK: - Test Helpers
@@ -43,6 +46,7 @@ final class MockConfigurationService: ConfigurationService {
         billingAddressOptions = nil
         currency = nil
         amount = nil
+        captureVaultedCardCvv = false
     }
 
     /// Creates a mock with default USD configuration

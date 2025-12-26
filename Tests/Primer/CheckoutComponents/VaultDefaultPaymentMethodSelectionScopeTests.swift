@@ -1,5 +1,5 @@
 //
-//  DefaultPaymentMethodSelectionScopeTests.swift
+//  VaultDefaultPaymentMethodSelectionScopeTests.swift
 //
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -17,7 +17,7 @@ import XCTest
 /// - Exact length: valid, no error
 /// - Partial input: not valid, no error (user still typing)
 @available(iOS 15.0, *)
-final class CvvValidationLogicTests: XCTestCase {
+final class VaultCvvValidationLogicTests: XCTestCase {
 
     // MARK: - CVV Validation Rules Tests
 
@@ -187,7 +187,7 @@ final class CvvValidationLogicTests: XCTestCase {
 // MARK: - Payment Method Selection State Tests
 
 @available(iOS 15.0, *)
-final class PaymentMethodSelectionStateTests: XCTestCase {
+final class VaultPaymentMethodSelectionStateTests: XCTestCase {
 
     func testInitialState_HasCorrectDefaults() {
         // Given/When
@@ -341,7 +341,7 @@ final class PaymentMethodSelectionStateTests: XCTestCase {
 // MARK: - Payment Method Search Logic Tests
 
 @available(iOS 15.0, *)
-final class PaymentMethodSearchLogicTests: XCTestCase {
+final class VaultPaymentMethodSearchLogicTests: XCTestCase {
 
     /// Simulates the search logic from DefaultPaymentMethodSelectionScope.searchPaymentMethods
     private func searchPaymentMethods(
@@ -466,7 +466,7 @@ final class PaymentMethodSearchLogicTests: XCTestCase {
 // MARK: - Checkout Payment Method Tests
 
 @available(iOS 15.0, *)
-final class CheckoutPaymentMethodTests: XCTestCase {
+final class VaultCheckoutPaymentMethodTests: XCTestCase {
 
     func testCheckoutPaymentMethod_Initialization() {
         // Given/When
@@ -557,7 +557,7 @@ final class CheckoutPaymentMethodTests: XCTestCase {
 // MARK: - CVV Expected Length Tests
 
 @available(iOS 15.0, *)
-final class CvvExpectedLengthTests: XCTestCase {
+final class VaultCvvExpectedLengthTests: XCTestCase {
 
     func testCvvLength_StandardCard_ExpectsThreeDigits() {
         // Given

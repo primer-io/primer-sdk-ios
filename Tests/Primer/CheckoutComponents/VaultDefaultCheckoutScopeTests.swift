@@ -1,5 +1,5 @@
 //
-//  DefaultCheckoutScopeTests.swift
+//  VaultDefaultCheckoutScopeTests.swift
 //
 //  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -13,7 +13,7 @@ import XCTest
 /// NavigationState uses custom equality logic to compare different states,
 /// including comparing specific properties for complex states like success/failure.
 @available(iOS 15.0, *)
-final class NavigationStateEqualityTests: XCTestCase {
+final class VaultNavigationStateEqualityTests: XCTestCase {
 
     // MARK: - Test Helpers
 
