@@ -330,9 +330,9 @@ xcodebuild test \
 | 2 | 2.1 Extract Interactor mocks | [x] Done | [x] | [x] | [x] |
 | 2 | 2.2 Extract API mocks | [x] Skipped | N/A | N/A | N/A |
 | 2 | 2.3 Extract 3DS mocks | [x] Skipped | N/A | N/A | N/A |
-| 3 | 3.1 Update Payment tests | [ ] Pending | [ ] | [ ] | [ ] |
-| 3 | 3.2 Update remaining files | [ ] Pending | [ ] | [ ] | [ ] |
-| 4 | 4.1 Shared helpers | [ ] Pending | [ ] | [ ] | [ ] |
+| 3 | 3.1 Update Payment tests | [x] Done | [x] | [x] | [x] |
+| 3 | 3.2 Update remaining files | [x] Done | [x] | [x] | [x] |
+| 4 | 4.1 Shared helpers | [x] Done | [x] | [x] | [x] |
 
 **Gate Rule:** Do NOT proceed to next step until Build ✓, Tests ✓, and Committed ✓
 
