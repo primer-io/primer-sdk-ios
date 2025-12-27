@@ -61,7 +61,7 @@ final class ValidationHelpersTests: XCTestCase {
     func test_validateCardNumber_withValidLuhn_returnsTrue() {
         // When/Then
         XCTAssertTrue(sut.isValidCardNumber("4111111111111111")) // Visa test card
-        XCTAssertTrue(sut.isValidCardNumber("5555555555554444")) // Mastercard test card
+        XCTAssertTrue(sut.isValidCardNumber(TestData.CardNumbers.validMastercard)) // Mastercard test card
     }
 
     func test_validateCardNumber_withInvalidLuhn_returnsFalse() {

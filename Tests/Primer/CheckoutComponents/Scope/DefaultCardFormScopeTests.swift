@@ -88,11 +88,11 @@ final class DefaultCardFormScopeTests: XCTestCase {
             )
 
             // Update card number
-            scope.updateCardNumber("4242424242424242")
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
 
             // Verify the field value was set
             let cardNumber = scope.getFieldValue(.cardNumber)
-            XCTAssertEqual(cardNumber, "4242424242424242")
+            XCTAssertEqual(cardNumber, TestData.CardNumbers.validVisa)
         }
     }
 
@@ -303,7 +303,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             )
 
             // Fill in valid card data
-            scope.updateCardNumber("4242424242424242")
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
             scope.updateCvv("123")
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
@@ -317,7 +317,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             )
 
             // Verify scope is in valid state for submission
-            XCTAssertEqual(scope.getFieldValue(.cardNumber), "4242424242424242")
+            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
             XCTAssertEqual(scope.getFieldValue(.cvv), "123")
             XCTAssertEqual(scope.getFieldValue(.expiryDate), "12/30")
             XCTAssertEqual(scope.getFieldValue(.cardholderName), "John Doe")
@@ -369,7 +369,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             )
 
             // Enter a card number that would trigger co-badged detection
-            scope.updateCardNumber("4242424242424242")
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
 
             // Wait for the async Task spawned by updateCardNumber to complete
             try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
@@ -599,7 +599,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertFalse(scope.structuredState.isValid)
 
             // Fill in all required fields
-            scope.updateCardNumber("4242424242424242")
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
             scope.updateCvv("123")
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
@@ -625,7 +625,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             // Fill in fields
-            scope.updateCardNumber("4242424242424242")
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
             scope.updateCvv("123")
             scope.updateExpiryDate("12/30")
             scope.updateCardholderName("John Doe")
