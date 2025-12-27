@@ -58,7 +58,7 @@ final class StringExtensionsTests: XCTestCase {
 
     func test_masked_withCardNumber_masksCorrectly() {
         // When
-        let result = "4111111111111111".masked(visibleCount: 4)
+        let result = TestData.CardNumbers.validVisaAlternate.masked(visibleCount: 4)
 
         // Then
         XCTAssertEqual(result, "************1111")

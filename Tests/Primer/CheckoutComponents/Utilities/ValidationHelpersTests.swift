@@ -60,13 +60,13 @@ final class ValidationHelpersTests: XCTestCase {
 
     func test_validateCardNumber_withValidLuhn_returnsTrue() {
         // When/Then
-        XCTAssertTrue(sut.isValidCardNumber("4111111111111111")) // Visa test card
+        XCTAssertTrue(sut.isValidCardNumber(TestData.CardNumbers.validVisaAlternate)) // Visa test card
         XCTAssertTrue(sut.isValidCardNumber(TestData.CardNumbers.validMastercard)) // Mastercard test card
     }
 
     func test_validateCardNumber_withInvalidLuhn_returnsFalse() {
         // When/Then
-        XCTAssertFalse(sut.isValidCardNumber("4111111111111112"))
+        XCTAssertFalse(sut.isValidCardNumber(TestData.CardNumbers.invalidLuhnVisa))
         XCTAssertFalse(sut.isValidCardNumber("1234567890123456"))
     }
 

@@ -126,7 +126,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
     func test_tokenizeCard_performsLuhnValidation() async throws {
         // Given
         let invalidLuhnCard = CardData(
-            number: "4242424242424241", // Fails Luhn check
+            number: TestData.CardNumbers.invalidLuhn, // Fails Luhn check
             cvv: "123",
             expiryMonth: "12",
             expiryYear: "25"

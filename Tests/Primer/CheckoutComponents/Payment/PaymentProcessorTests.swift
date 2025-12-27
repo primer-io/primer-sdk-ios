@@ -91,7 +91,7 @@ final class PaymentProcessorTests: XCTestCase {
     func test_processPayment_withTokenizationFailure_throwsError() async throws {
         // Given
         let paymentData = PaymentData(
-            cardNumber: "4000000000000002", // Invalid card
+            cardNumber: TestData.CardNumbers.declined, // Invalid card
             cvv: "123",
             expiry: "12/25",
             amount: 1000,

@@ -17,6 +17,7 @@ enum TestData {
     enum CardNumbers {
         // Valid card numbers (pass Luhn check)
         static let validVisa = "4242424242424242"
+        static let validVisaAlternate = "4111111111111111"
         static let validVisaDebit = "4000056655665556"
         static let validMastercard = "5555555555554444"
         static let validMastercardDebit = "5200828282828210"
@@ -27,11 +28,15 @@ enum TestData {
 
         // Invalid card numbers
         static let invalidLuhn = "4242424242424241"
+        static let invalidLuhnVisa = "4111111111111112"
         static let tooShort = "424242"
         static let tooLong = "42424242424242424242"
         static let empty = ""
         static let nonNumeric = "4242abcd42424242"
         static let withSpaces = "4242 4242 4242 4242"
+
+        // Declined/error cards
+        static let declined = "4000000000000002"
 
         // Co-badged card (Visa + Mastercard)
         static let coBadgedVisa = "4000002500001001"

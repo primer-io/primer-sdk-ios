@@ -73,7 +73,7 @@ final class FormatterUtilsTests: XCTestCase {
 
     func test_formatCardNumber_addsSeparators() {
         // When
-        let result = sut.formatCardNumber("4111111111111111")
+        let result = sut.formatCardNumber(TestData.CardNumbers.validVisaAlternate)
 
         // Then
         XCTAssertEqual(result, "4111 1111 1111 1111")
