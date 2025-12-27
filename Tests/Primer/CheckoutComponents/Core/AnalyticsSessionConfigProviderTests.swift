@@ -162,7 +162,7 @@ private enum JWTTestTokenFactory {
     }
 
     private static func base64URLEncode(_ data: Data) -> String {
-        return data.base64EncodedString()
+        data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
