@@ -33,7 +33,7 @@ final class StringExtensionTests: XCTestCase {
     }
 
     func testIsValidCardNumber() {
-        Constants.testCardNumbers.flatMap { $0.value }.forEach {
+        Constants.testCardNumbers.flatMap(\.value).forEach {
             XCTAssertTrue($0.isValidCardNumber)
         }
 
@@ -325,10 +325,10 @@ final class StringExtensionTests: XCTestCase {
 
     // MARK: Helpers
 
-    private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
+    private func almostOneYearAgoDateString(format: String = "MM/yyyy") -> String {
         let date = Date() - (60 * 60 * 24 * 364)
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/YYYY"
+        dateFormatter.dateFormat = format
         return dateFormatter.string(from: date)
     }
 }
