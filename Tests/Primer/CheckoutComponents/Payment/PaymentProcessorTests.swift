@@ -46,8 +46,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.success
@@ -68,8 +68,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.success
@@ -94,8 +94,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.declined, // Invalid card
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.shouldFail = true
         mockTokenizer.error = TestData.Errors.invalidCardNumber
@@ -118,8 +118,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.threeDSRequired
@@ -139,8 +139,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.threeDSRequired
@@ -161,8 +161,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.threeDSRequired
@@ -185,8 +185,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.declined
@@ -210,7 +210,7 @@ final class PaymentProcessorTests: XCTestCase {
             cvv: "123",
             expiry: "12/25",
             amount: -100, // Invalid
-            currency: "USD"
+            currency: TestData.Currencies.usd
         )
 
         // When/Then
@@ -228,7 +228,7 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
+            amount: TestData.Amounts.standard,
             currency: "INVALID"
         )
 
@@ -245,8 +245,8 @@ final class PaymentProcessorTests: XCTestCase {
 
     func test_processPayment_concurrent_handlesIndependently() async throws {
         // Given
-        let payment1 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "123", expiry: "12/25", amount: 1000, currency: "USD")
-        let payment2 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "456", expiry: "12/26", amount: 2000, currency: "EUR")
+        let payment1 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "123", expiry: "12/25", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
+        let payment2 = PaymentData(cardNumber: TestData.CardNumbers.validVisa, cvv: "456", expiry: "12/26", amount: TestData.Amounts.withSurcharge, currency: TestData.Currencies.eur)
 
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.success
@@ -271,8 +271,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.responseDelay = 1.0
@@ -301,8 +301,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.withSurcharge
@@ -323,8 +323,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.shouldFail = true
@@ -347,8 +347,8 @@ final class PaymentProcessorTests: XCTestCase {
             cardNumber: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiry: "12/25",
-            amount: 1000,
-            currency: "USD"
+            amount: TestData.Amounts.standard,
+            currency: TestData.Currencies.usd
         )
         mockTokenizer.token = "tok_test123"
         mockAPIClient.response = TestData.PaymentResults.success

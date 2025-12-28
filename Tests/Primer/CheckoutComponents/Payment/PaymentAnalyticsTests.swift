@@ -31,7 +31,7 @@ final class PaymentAnalyticsTests: XCTestCase {
 
     func test_trackPaymentStarted_sendsEvent() {
         // When
-        sut.trackPaymentStarted(amount: 1000, currency: "USD")
+        sut.trackPaymentStarted(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertEqual(mockAnalyticsClient.events.count, 1)
@@ -40,7 +40,7 @@ final class PaymentAnalyticsTests: XCTestCase {
 
     func test_trackPaymentCompleted_sendsEvent() {
         // When
-        sut.trackPaymentCompleted(transactionId: "tx-123", amount: 1000)
+        sut.trackPaymentCompleted(transactionId: "tx-123", amount: TestData.Amounts.standard)
 
         // Then
         XCTAssertEqual(mockAnalyticsClient.events.count, 1)
@@ -103,9 +103,9 @@ final class PaymentAnalyticsTests: XCTestCase {
 
     func test_trackMultipleEvents_batchesThem() {
         // When
-        sut.trackPaymentStarted(amount: 1000, currency: "USD")
+        sut.trackPaymentStarted(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
         sut.trackTokenizationStarted()
-        sut.trackPaymentCompleted(transactionId: "tx-123", amount: 1000)
+        sut.trackPaymentCompleted(transactionId: "tx-123", amount: TestData.Amounts.standard)
 
         // Then
         XCTAssertEqual(mockAnalyticsClient.events.count, 3)
@@ -115,7 +115,7 @@ final class PaymentAnalyticsTests: XCTestCase {
 
     func test_trackPayment_doesNotLogSensitiveData() {
         // When
-        sut.trackPaymentStarted(amount: 1000, currency: "USD")
+        sut.trackPaymentStarted(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // Then
         let event = mockAnalyticsClient.events.first

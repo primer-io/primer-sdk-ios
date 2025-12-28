@@ -200,7 +200,7 @@ final class ConfigurationValidationTests: XCTestCase {
             merchantId: "merchant-123",
             apiKey: "api-key-456",
             clientToken: "client-token-789",
-            amount: 1000
+            amount: TestData.Amounts.standard
         )
 
         // When
@@ -218,7 +218,7 @@ final class ConfigurationValidationTests: XCTestCase {
             merchantId: "merchant-123",
             apiKey: "api-key-456",
             clientToken: "client-token-789",
-            currency: "USD"
+            currency: TestData.Currencies.usd
         )
 
         // When

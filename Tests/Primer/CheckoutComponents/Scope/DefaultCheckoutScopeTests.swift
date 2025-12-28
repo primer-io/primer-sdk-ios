@@ -235,7 +235,7 @@ final class PaymentResultTests: XCTestCase {
             redirectUrl: "https://example.com/redirect",
             errorMessage: nil,
             metadata: metadata,
-            amount: 1000,
+            amount: TestData.Amounts.standard,
             paymentMethodType: "PAYMENT_CARD"
         )
 

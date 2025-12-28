@@ -27,17 +27,17 @@ final class PaymentValidationTests: XCTestCase {
     // MARK: - Amount Validation
 
     func test_validate_positiveAmount_passes() {
-        let result = sut.validate(amount: 1000, currency: "USD")
+        let result = sut.validate(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
         XCTAssertTrue(result.isValid)
     }
 
     func test_validate_zeroAmount_fails() {
-        let result = sut.validate(amount: 0, currency: "USD")
+        let result = sut.validate(amount: 0, currency: TestData.Currencies.usd)
         XCTAssertFalse(result.isValid)
     }
 
     func test_validate_negativeAmount_fails() {
-        let result = sut.validate(amount: -100, currency: "USD")
+        let result = sut.validate(amount: -100, currency: TestData.Currencies.usd)
         XCTAssertFalse(result.isValid)
     }
 
@@ -46,13 +46,13 @@ final class PaymentValidationTests: XCTestCase {
     func test_validate_validCurrency_passes() {
         let currencies = ["USD", "EUR", "GBP"]
         for currency in currencies {
-            let result = sut.validate(amount: 1000, currency: currency)
+            let result = sut.validate(amount: TestData.Amounts.standard, currency: currency)
             XCTAssertTrue(result.isValid)
         }
     }
 
     func test_validate_invalidCurrency_fails() {
-        let result = sut.validate(amount: 1000, currency: "INVALID")
+        let result = sut.validate(amount: TestData.Amounts.standard, currency: "INVALID")
         XCTAssertFalse(result.isValid)
     }
 }

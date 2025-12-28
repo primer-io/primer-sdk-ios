@@ -394,7 +394,7 @@ final class VaultPaymentResultTests: XCTestCase {
             paymentId: "pay_123",
             status: .success,
             token: "tok_abc",
-            amount: 1000,
+            amount: TestData.Amounts.standard,
             paymentMethodType: "PAYMENT_CARD"
         )
 

@@ -32,8 +32,8 @@ final class TransactionManagerTests: XCTestCase {
 
     func test_createTransaction_generatesUniqueId() async throws {
         // When
-        let tx1 = try await sut.createTransaction(amount: 1000, currency: "USD")
-        let tx2 = try await sut.createTransaction(amount: 2000, currency: "EUR")
+        let tx1 = try await sut.createTransaction(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
+        let tx2 = try await sut.createTransaction(amount: TestData.Amounts.withSurcharge, currency: TestData.Currencies.eur)
 
         // Then
         XCTAssertNotEqual(tx1.id, tx2.id)
@@ -41,7 +41,7 @@ final class TransactionManagerTests: XCTestCase {
 
     func test_createTransaction_persistsToStorage() async throws {
         // When
-        let tx = try await sut.createTransaction(amount: 1000, currency: "USD")
+        let tx = try await sut.createTransaction(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertTrue(mockStorage.transactions.contains { $0.id == tx.id })
@@ -51,7 +51,7 @@ final class TransactionManagerTests: XCTestCase {
 
     func test_getTransaction_returnsStoredTransaction() async throws {
         // Given
-        let created = try await sut.createTransaction(amount: 1000, currency: "USD")
+        let created = try await sut.createTransaction(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         let retrieved = try await sut.getTransaction(id: created.id)
@@ -73,7 +73,7 @@ final class TransactionManagerTests: XCTestCase {
 
     func test_updateStatus_updatesTransaction() async throws {
         // Given
-        let tx = try await sut.createTransaction(amount: 1000, currency: "USD")
+        let tx = try await sut.createTransaction(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         try await sut.updateStatus(transactionId: tx.id, status: .completed)
@@ -100,7 +100,7 @@ final class TransactionManagerTests: XCTestCase {
         let transactions = await withTaskGroup(of: Transaction.self, returning: [Transaction].self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    try! await self.sut.createTransaction(amount: i * 100, currency: "USD")
+                    try! await self.sut.createTransaction(amount: i * 100, currency: TestData.Currencies.usd)
                 }
             }
 
@@ -120,7 +120,7 @@ final class TransactionManagerTests: XCTestCase {
 
     func test_transactionLifecycle_tracksStateChanges() async throws {
         // Given
-        let tx = try await sut.createTransaction(amount: 1000, currency: "USD")
+        let tx = try await sut.createTransaction(amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         try await sut.updateStatus(transactionId: tx.id, status: .processing)

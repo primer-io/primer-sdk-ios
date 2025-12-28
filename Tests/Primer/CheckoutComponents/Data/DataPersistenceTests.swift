@@ -32,7 +32,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_save_storesData() async throws {
         // Given
-        let data = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let data = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         try await sut.save(data, forKey: "payment")
@@ -44,7 +44,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_load_retrievesSavedData() async throws {
         // Given
-        let data = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let data = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
         try await sut.save(data, forKey: "payment")
 
         // When
@@ -68,7 +68,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_delete_removesData() async throws {
         // Given
-        let data = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let data = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
         try await sut.save(data, forKey: "payment")
 
         // When
@@ -86,8 +86,8 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_deleteAll_removesAllData() async throws {
         // Given
-        try await sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
-        try await sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
+        try await sut.save(PaymentData(id: "1", amount: 100, currency: TestData.Currencies.usd), forKey: "key1")
+        try await sut.save(PaymentData(id: "2", amount: 200, currency: TestData.Currencies.eur), forKey: "key2")
 
         // When
         try await sut.deleteAll()
@@ -168,7 +168,7 @@ final class DataPersistenceTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    let data = PaymentData(id: "\(i)", amount: i * 100, currency: "USD")
+                    let data = PaymentData(id: "\(i)", amount: i * 100, currency: TestData.Currencies.usd)
                     try? await self.sut.save(data, forKey: "payment-\(i)")
                 }
             }
@@ -184,7 +184,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_concurrentReads_returnConsistentData() async throws {
         // Given
-        let data = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let data = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
         try await sut.save(data, forKey: "payment")
 
         // When - concurrent reads
@@ -224,7 +224,7 @@ final class DataPersistenceTests: XCTestCase {
     func test_save_withExceedingSizeLimit_throwsError() async throws {
         // Given - data exceeding size limit
         let tooLarge = String(repeating: "x", count: 10_000_000) // 10MB
-        let data = PaymentData(id: tooLarge, amount: 100, currency: "USD")
+        let data = PaymentData(id: tooLarge, amount: 100, currency: TestData.Currencies.usd)
 
         // When/Then
         await XCTAssertThrowsErrorAsync(try await sut.save(data, forKey: "toolarge"))
@@ -234,7 +234,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_save_preservesDataIntegrity() async throws {
         // Given
-        let original = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let original = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         try await sut.save(original, forKey: "payment")
@@ -246,9 +246,9 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_multipleUpdates_preservesLatestData() async throws {
         // Given
-        let data1 = PaymentData(id: "v1", amount: 100, currency: "USD")
-        let data2 = PaymentData(id: "v2", amount: 200, currency: "EUR")
-        let data3 = PaymentData(id: "v3", amount: 300, currency: "GBP")
+        let data1 = PaymentData(id: "v1", amount: 100, currency: TestData.Currencies.usd)
+        let data2 = PaymentData(id: "v2", amount: 200, currency: TestData.Currencies.eur)
+        let data3 = PaymentData(id: "v3", amount: 300, currency: TestData.Currencies.gbp)
 
         // When
         try await sut.save(data1, forKey: "payment")
@@ -264,9 +264,9 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_allKeys_returnsAllStoredKeys() async throws {
         // Given
-        try await sut.save(PaymentData(id: "1", amount: 100, currency: "USD"), forKey: "key1")
-        try await sut.save(PaymentData(id: "2", amount: 200, currency: "EUR"), forKey: "key2")
-        try await sut.save(PaymentData(id: "3", amount: 300, currency: "GBP"), forKey: "key3")
+        try await sut.save(PaymentData(id: "1", amount: 100, currency: TestData.Currencies.usd), forKey: "key1")
+        try await sut.save(PaymentData(id: "2", amount: 200, currency: TestData.Currencies.eur), forKey: "key2")
+        try await sut.save(PaymentData(id: "3", amount: 300, currency: TestData.Currencies.gbp), forKey: "key3")
 
         // When
         let keys = await sut.allKeys()
@@ -282,7 +282,7 @@ final class DataPersistenceTests: XCTestCase {
 
     func test_save_withExpiration_autoDeletesAfterExpiry() async throws {
         // Given
-        let data = PaymentData(id: "123", amount: 1000, currency: "USD")
+        let data = PaymentData(id: "123", amount: TestData.Amounts.standard, currency: TestData.Currencies.usd)
 
         // When
         try await sut.save(data, forKey: "expiring", expiresIn: 0.1) // 100ms

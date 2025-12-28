@@ -29,7 +29,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_formatAmount_withUSD_formatsCorrectly() {
         // When
-        let result = sut.formatAmount(1234, currency: "USD")
+        let result = sut.formatAmount(1234, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertTrue(result.contains("12.34"))
@@ -38,7 +38,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_formatAmount_withEUR_formatsCorrectly() {
         // When
-        let result = sut.formatAmount(5678, currency: "EUR")
+        let result = sut.formatAmount(5678, currency: TestData.Currencies.eur)
 
         // Then
         XCTAssertTrue(result.contains("56.78"))
@@ -47,7 +47,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_formatAmount_withGBP_formatsCorrectly() {
         // When
-        let result = sut.formatAmount(999, currency: "GBP")
+        let result = sut.formatAmount(999, currency: TestData.Currencies.gbp)
 
         // Then
         XCTAssertTrue(result.contains("9.99"))
@@ -81,7 +81,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_convertToMinorUnits_withUSD_convertsCorrectly() {
         // When
-        let result = sut.convertToMinorUnits(12.34, currency: "USD")
+        let result = sut.convertToMinorUnits(12.34, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertEqual(result, 1234)
@@ -89,7 +89,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_convertFromMinorUnits_withUSD_convertsCorrectly() {
         // When
-        let result = sut.convertFromMinorUnits(1234, currency: "USD")
+        let result = sut.convertFromMinorUnits(1234, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertEqual(result, 12.34)
@@ -110,7 +110,7 @@ final class CurrencyFormattingTests: XCTestCase {
         let formatter = CurrencyFormatter(locale: Locale(identifier: "en_US"))
 
         // When
-        let result = formatter.formatAmount(1234, currency: "USD")
+        let result = formatter.formatAmount(1234, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertTrue(result.contains("$"))
@@ -121,7 +121,7 @@ final class CurrencyFormattingTests: XCTestCase {
         let formatter = CurrencyFormatter(locale: Locale(identifier: "de_DE"))
 
         // When
-        let result = formatter.formatAmount(1234, currency: "EUR")
+        let result = formatter.formatAmount(1234, currency: TestData.Currencies.eur)
 
         // Then
         XCTAssertTrue(result.contains(",")) // Comma as decimal separator
@@ -131,7 +131,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_formatAmount_withZero_formatsZero() {
         // When
-        let result = sut.formatAmount(0, currency: "USD")
+        let result = sut.formatAmount(0, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertTrue(result.contains("0"))
@@ -139,7 +139,7 @@ final class CurrencyFormattingTests: XCTestCase {
 
     func test_formatAmount_withNegative_includesSign() {
         // When
-        let result = sut.formatAmount(-1234, currency: "USD")
+        let result = sut.formatAmount(-1234, currency: TestData.Currencies.usd)
 
         // Then
         XCTAssertTrue(result.contains("-"))

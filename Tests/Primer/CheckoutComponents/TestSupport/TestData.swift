@@ -193,6 +193,25 @@ enum TestData {
         static let tooShort = "123"
     }
 
+    // MARK: - Payment Amounts
+
+    enum Amounts {
+        static let standard = 1000          // $10.00
+        static let small = 100              // $1.00
+        static let large = 100000           // $1,000.00
+        static let withSurcharge = 2000     // $20.00
+        static let zero = 0
+    }
+
+    // MARK: - Currencies
+
+    enum Currencies {
+        static let usd = "USD"
+        static let eur = "EUR"
+        static let gbp = "GBP"
+        static let jpy = "JPY"
+    }
+
     // MARK: - API Responses
 
     /// Mock API responses for repository testing

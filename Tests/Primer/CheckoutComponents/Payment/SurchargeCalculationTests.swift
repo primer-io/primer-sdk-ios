@@ -25,17 +25,17 @@ final class SurchargeCalculationTests: XCTestCase {
     }
 
     func test_calculate_withPercentageFee_calculatesCorrectly() {
-        let surcharge = sut.calculate(amount: 1000, feePercentage: 2.5)
+        let surcharge = sut.calculate(amount: TestData.Amounts.standard, feePercentage: 2.5)
         XCTAssertEqual(surcharge, 25)
     }
 
     func test_calculate_withFixedFee_returnsFixedAmount() {
-        let surcharge = sut.calculate(amount: 1000, fixedFee: 50)
+        let surcharge = sut.calculate(amount: TestData.Amounts.standard, fixedFee: 50)
         XCTAssertEqual(surcharge, 50)
     }
 
     func test_calculate_withBothFees_combinesBoth() {
-        let surcharge = sut.calculate(amount: 1000, feePercentage: 2.0, fixedFee: 30)
+        let surcharge = sut.calculate(amount: TestData.Amounts.standard, feePercentage: 2.0, fixedFee: 30)
         XCTAssertEqual(surcharge, 50) // 20 + 30
     }
 
