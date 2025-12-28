@@ -226,42 +226,23 @@ final class StringExtensionTests: XCTestCase {
     }
 
     func testIsValidExpiryDateString() {
-//        XCTAssertThrowsError(try "".validateExpiryDateString())
-//        XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
-//        XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
-//        XCTAssertThrowsError(try "2022/2023".validateExpiryDateString())
+        XCTAssertThrowsError(try "".validateExpiryDateString())
+        XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
+        XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
+        XCTAssertThrowsError(try "2022/2023".validateExpiryDateString())
+        XCTAssertThrowsError(try almostOneYearAgoDateString().validateExpiryDateString())
+        XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
+        XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
+        XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
+        XCTAssertNoThrow(try "01/2030".validateExpiryDateString())
 
-        // DEBUG: Log values to understand CI failure
-        let now = Date()
-        let almostOneYearAgo = Date() - (60 * 60 * 24 * 364)
-        let dateString = almostOneYearAgoDateString()
-        let timezone = TimeZone.current.identifier
-        let offset = TimeZone.current.secondsFromGMT() / 3600
-
-        // This message will show in CI if the test fails
-        let debugInfo = """
-            Generated: '\(dateString)' | \
-            Now: \(now) | \
-            364 days ago: \(almostOneYearAgo) | \
-            TZ: \(timezone) (UTC\(offset >= 0 ? "+" : "")\(offset))
-            """
-
-        XCTAssertThrowsError(
-            try almostOneYearAgoDateString().validateExpiryDateString(),
-            debugInfo
-        )
-//        XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
-//        XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
-//        XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
-//        XCTAssertNoThrow(try "01/2030".validateExpiryDateString())
-//        
-//        // Test MM/YY format support
-//        XCTAssertNoThrow(try "01/28".validateExpiryDateString())
-//        XCTAssertNoThrow(try "02/28".validateExpiryDateString())
-//        XCTAssertNoThrow(try "12/28".validateExpiryDateString())
-//        XCTAssertNoThrow(try "01/30".validateExpiryDateString())
-//        XCTAssertThrowsError(try "01/22".validateExpiryDateString()) // Past date
-//        XCTAssertThrowsError(try "08/22".validateExpiryDateString()) // Past date
+        // Test MM/YY format support
+        XCTAssertNoThrow(try "01/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "02/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "12/28".validateExpiryDateString())
+        XCTAssertNoThrow(try "01/30".validateExpiryDateString())
+        XCTAssertThrowsError(try "01/22".validateExpiryDateString()) // Past date
+        XCTAssertThrowsError(try "08/22".validateExpiryDateString()) // Past date
     }
 
     func testBase64RFC4648Format() {
@@ -466,10 +447,10 @@ final class StringExtensionTests: XCTestCase {
 
     // MARK: Helpers
 
-    private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
+    private func almostOneYearAgoDateString(format: String = "MM/yyyy") -> String {
         let date = Date() - (60 * 60 * 24 * 364)
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/YYYY"
+        dateFormatter.dateFormat = format
         return dateFormatter.string(from: date)
     }
 }
