@@ -15,23 +15,6 @@ final class DefaultCardFormScopeTests: XCTestCase {
 
     // MARK: - Test Helpers
 
-    private func createMockCheckoutScope() async -> DefaultCheckoutScope {
-        let container = await createTestContainer()
-        return await DIContainer.withContainer(container) {
-            let navigator = CheckoutNavigator()
-            let settings = PrimerSettings(
-                paymentHandling: .manual,
-                paymentMethodOptions: PrimerPaymentMethodOptions()
-            )
-            return DefaultCheckoutScope(
-                clientToken: "test-token",
-                settings: settings,
-                diContainer: DIContainer.shared,
-                navigator: navigator
-            )
-        }
-    }
-
     private func createTestContainer() async -> Container {
         await ContainerTestHelpers.createTestContainer()
     }
@@ -60,7 +43,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setValidResult(for: .cardNumber)
 
@@ -82,7 +65,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setInvalidResult(for: .cardNumber, message: "Invalid card number")
 
@@ -110,7 +93,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
 
             let scope = createCardFormScope(
@@ -136,7 +119,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setInvalidResult(for: .expiryDate, message: "Card has expired")
 
@@ -162,7 +145,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setValidResult(for: .expiryDate)
 
@@ -189,7 +172,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setValidResult(for: .cardholderName)
 
@@ -210,7 +193,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
             mockValidator.setInvalidResult(for: .cardholderName, message: "Name is required")
 
@@ -237,7 +220,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockValidator = MockValidateInputInteractor()
 
             let scope = createCardFormScope(
@@ -268,7 +251,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockPaymentInteractor = MockProcessCardPaymentInteractor()
             let mockValidator = MockValidateInputInteractor()
 
@@ -310,7 +293,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockPaymentInteractor = MockProcessCardPaymentInteractor()
             let mockValidator = MockValidateInputInteractor()
 
@@ -342,7 +325,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockNetworkDetector = MockCardNetworkDetectionInteractor()
 
             let scope = createCardFormScope(
@@ -367,7 +350,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.cardNumberConfig)
@@ -378,7 +361,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.expiryDateConfig)
@@ -389,7 +372,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.cvvConfig)
@@ -400,7 +383,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.screen)
@@ -413,7 +396,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = DefaultCardFormScope(
                 checkoutScope: checkoutScope,
                 presentationContext: .fromPaymentSelection,
@@ -432,7 +415,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = DefaultCardFormScope(
                 checkoutScope: checkoutScope,
                 presentationContext: .direct,
@@ -453,7 +436,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updatePostalCode("12345")
@@ -467,7 +450,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateCity("New York")
@@ -481,7 +464,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateAddressLine1("123 Main St")
@@ -495,7 +478,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateFirstName("John")
@@ -509,7 +492,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateLastName("Doe")
@@ -523,7 +506,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updateEmail("john@example.com")
@@ -537,7 +520,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             scope.updatePhoneNumber("+1234567890")
@@ -553,7 +536,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             // Set an error first
@@ -574,7 +557,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             // Initially not valid
@@ -603,7 +586,7 @@ final class DefaultCardFormScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createCardFormScope(checkoutScope: checkoutScope)
 
             // Fill in fields

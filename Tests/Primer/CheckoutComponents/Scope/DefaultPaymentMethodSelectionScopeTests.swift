@@ -17,22 +17,6 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         await ContainerTestHelpers.createTestContainer()
     }
 
-    private func createMockCheckoutScope() async -> DefaultCheckoutScope {
-        let navigator = await MainActor.run {
-            CheckoutNavigator(coordinator: CheckoutCoordinator())
-        }
-        let settings = PrimerSettings(
-            paymentHandling: .manual,
-            paymentMethodOptions: PrimerPaymentMethodOptions()
-        )
-        return DefaultCheckoutScope(
-            clientToken: "test-token",
-            settings: settings,
-            diContainer: DIContainer.shared,
-            navigator: navigator
-        )
-    }
-
     private func createPaymentMethodSelectionScope(
         checkoutScope: DefaultCheckoutScope,
         analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
@@ -63,7 +47,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNotNil(scope)
@@ -76,7 +60,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.screen)
@@ -87,7 +71,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.container)
@@ -98,7 +82,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.paymentMethodItem)
@@ -109,7 +93,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.categoryHeader)
@@ -120,7 +104,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             XCTAssertNil(scope.emptyStateView)
@@ -133,7 +117,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Dismissal mechanism should come from checkout scope
@@ -147,7 +131,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             let paymentMethod = createTestPaymentMethod()
@@ -171,7 +155,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let mockAnalytics = MockAnalyticsInteractor()
             let scope = createPaymentMethodSelectionScope(
                 checkoutScope: checkoutScope,
@@ -196,7 +180,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Search with empty query
@@ -221,7 +205,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Search by name
@@ -245,7 +229,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Search by type
@@ -269,7 +253,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Search with lowercase
@@ -296,7 +280,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Get initial state immediately
@@ -315,7 +299,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             // Verify state is accessible as AsyncStream
@@ -335,7 +319,7 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
 
             scope.onCancel()

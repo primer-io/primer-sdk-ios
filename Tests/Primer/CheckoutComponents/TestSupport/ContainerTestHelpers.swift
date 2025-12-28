@@ -35,4 +35,21 @@ enum ContainerTestHelpers {
 
         return container
     }
+
+    /// Creates a mock DefaultCheckoutScope for testing.
+    /// Uses standard test settings with manual payment handling.
+    @MainActor
+    static func createMockCheckoutScope() async -> DefaultCheckoutScope {
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        return DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+    }
 }

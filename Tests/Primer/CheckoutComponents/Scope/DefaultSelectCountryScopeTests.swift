@@ -17,22 +17,6 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         await ContainerTestHelpers.createTestContainer()
     }
 
-    private func createMockCheckoutScope() async -> DefaultCheckoutScope {
-        let navigator = await MainActor.run {
-            CheckoutNavigator(coordinator: CheckoutCoordinator())
-        }
-        let settings = PrimerSettings(
-            paymentHandling: .manual,
-            paymentMethodOptions: PrimerPaymentMethodOptions()
-        )
-        return DefaultCheckoutScope(
-            clientToken: "test-token",
-            settings: settings,
-            diContainer: DIContainer.shared,
-            navigator: navigator
-        )
-    }
-
     private func createMockCardFormScope(checkoutScope: DefaultCheckoutScope) -> DefaultCardFormScope {
         DefaultCardFormScope(
             checkoutScope: checkoutScope,
@@ -61,7 +45,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -73,7 +57,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -99,7 +83,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -111,7 +95,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -123,7 +107,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -137,7 +121,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -156,7 +140,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -187,7 +171,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -212,7 +196,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -244,7 +228,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -269,7 +253,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -297,7 +281,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -325,7 +309,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -345,7 +329,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -367,7 +351,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let cardFormScope = createMockCardFormScope(checkoutScope: checkoutScope)
             let scope = createSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: checkoutScope)
 
@@ -384,7 +368,7 @@ final class DefaultSelectCountryScopeTests: XCTestCase {
         let container = await createTestContainer()
 
         await DIContainer.withContainer(container) {
-            let checkoutScope = await createMockCheckoutScope()
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
             let scope = createSelectCountryScope(cardFormScope: nil, checkoutScope: checkoutScope)
 
             // Country selection should not crash even with nil cardFormScope
