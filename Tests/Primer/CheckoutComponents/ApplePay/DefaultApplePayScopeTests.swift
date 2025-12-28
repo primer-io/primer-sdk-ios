@@ -385,6 +385,9 @@ final class DefaultApplePayScopeTests: XCTestCase {
             }
         }
 
+        // Wait for subscription to be established
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
         // Trigger a state update
         scope.buttonStyle = .white
 
