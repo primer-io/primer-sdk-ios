@@ -1,0 +1,348 @@
+# Phrase configuration for CheckoutComponents localization
+# Project ID: 4ef09e68b0f08039c865e202d878b3e9
+# Pull-only config - translations already pushed to Phrase
+
+  pull:
+    targets:
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/en.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: en
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ar.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Arabic
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/az.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Azerbaijani
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/bg.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Bulgarian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/bs.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Bosnian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ca.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Catalan
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/cs.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Czech
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/da.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Danish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/de.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: German
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/el.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Greek
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/es.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Spanish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/es-AR.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Spanish-Argentina
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/es-MX.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Mexican-Spanish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/et.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Estonian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fa.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Persian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fi-FI.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Finnish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fil.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Filipino
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fr.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: French
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/he.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Hebrew
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/hi.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Hindi
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/hr.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Croatian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/hu.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Hungarian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/hy.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Armenian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/id.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Indonesian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/it.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Italian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ja.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Japanese
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ka.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Georgian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/kk.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Kazakh
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ko.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Korean
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ku.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Kurdish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ky.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Kyrgyz
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/lt-LT.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Lithuanian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/lv.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Latvian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/mk.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Macedonian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ms.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Malay
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/nb.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Norwegian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/nl.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Dutch
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/nl-BE.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Dutch-Belgium
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/pl.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Polish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/pt.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Portuguese
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/pt-BR.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Brazilian-Portuguese
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ro.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Romanian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ru.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Russian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sk.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Slovak
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sl.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Slovenian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sq.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Albanian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sr-RS.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Serbian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sv.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Swedish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/th.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Thai
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/tr.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Turkish
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/uk-UA.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Ukrainian
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/ur-PK.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Urdu-Pakistan
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/uz.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Uzbek
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/vi.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Vietnamese
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/zh-CN.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Chinese
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/zh-HK.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Chinese-HongKong
+          tags: checkout-components
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/zh-TW.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          locale_id: Chinese-Taiwanese
+          tags: checkout-components
+          encoding: UTF-8
