@@ -376,50 +376,25 @@ final class DefaultApplePayScopeTests: XCTestCase {
         mockPresentationManager.isPresentable = true
         let scope = createScope()
 
-        // Debug: Log initial button style
-        print("[DEBUG] Initial scope.buttonStyle: \(scope.buttonStyle)")
-
         // When
         var receivedState: ApplePayFormState?
-        var allReceivedStates: [ApplePayFormState] = []
         let task = Task {
             for await state in scope.state {
-                print("[DEBUG] Received state with buttonStyle: \(state.buttonStyle)")
-                allReceivedStates.append(state)
                 receivedState = state
-                // Don't break on first state - wait for the updated state
-                if state.buttonStyle == .white {
-                    break
-                }
+                break
             }
         }
-
-        // Wait for subscription to be established
-        try? await Task.sleep(nanoseconds: 100_000_000)
-
-        // Debug: Log before setting
-        print("[DEBUG] About to set buttonStyle to .white")
 
         // Trigger a state update
         scope.buttonStyle = .white
 
-        // Debug: Log after setting
-        print("[DEBUG] Set buttonStyle to .white, scope.buttonStyle is now: \(scope.buttonStyle)")
-
         // Wait briefly for async stream
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        try? await Task.sleep(nanoseconds: 100_000_000)
         task.cancel()
 
-        // Debug: Log received states
-        print("[DEBUG] Total states received: \(allReceivedStates.count)")
-        for (index, state) in allReceivedStates.enumerated() {
-            print("[DEBUG] State[\(index)].buttonStyle: \(state.buttonStyle)")
-        }
-        print("[DEBUG] Final receivedState?.buttonStyle: \(String(describing: receivedState?.buttonStyle))")
-
         // Then
-        XCTAssertNotNil(receivedState, "receivedState should not be nil. Received \(allReceivedStates.count) states total.")
-        XCTAssertEqual(receivedState?.buttonStyle, .white, "Expected .white but got \(String(describing: receivedState?.buttonStyle))")
+        XCTAssertNotNil(receivedState)
+        XCTAssertEqual(receivedState?.buttonStyle, .white)
     }
 
     @MainActor
@@ -428,30 +403,22 @@ final class DefaultApplePayScopeTests: XCTestCase {
         mockPresentationManager.isPresentable = true
         let scope = createScope()
 
-        print("[DEBUG] test_state_emitsInitialState - scope created, isPresentable: \(mockPresentationManager.isPresentable)")
-
         // When
         var receivedStates: [ApplePayFormState] = []
         let task = Task {
-            print("[DEBUG] Task started, waiting for state...")
             for await state in scope.state {
-                print("[DEBUG] Received state: isAvailable=\(state.isAvailable), buttonStyle=\(state.buttonStyle)")
                 receivedStates.append(state)
                 if receivedStates.count >= 1 { break }
             }
-            print("[DEBUG] Task loop ended")
         }
 
         // Wait briefly for initial state emission
-        try? await Task.sleep(nanoseconds: 200_000_000)
-        print("[DEBUG] After wait, receivedStates.count: \(receivedStates.count)")
+        try? await Task.sleep(nanoseconds: 100_000_000)
         task.cancel()
 
         // Then - should have received initial state
-        XCTAssertFalse(receivedStates.isEmpty, "Expected to receive at least one state but got none")
-        if !receivedStates.isEmpty {
-            XCTAssertTrue(receivedStates[0].isAvailable, "Expected isAvailable to be true")
-        }
+        XCTAssertFalse(receivedStates.isEmpty)
+        XCTAssertTrue(receivedStates[0].isAvailable)
     }
 
     @MainActor
