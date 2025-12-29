@@ -116,7 +116,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
             // Only allow numbers
-            if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+            if !string.isEmpty, !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
 

@@ -51,16 +51,14 @@ struct CardFormFieldsView: View {
 
                 if fieldType == .expiryDate,
                    index + 1 < formConfiguration.cardFields.count,
-                   formConfiguration.cardFields[index + 1] == .cvv
-                {
+                   formConfiguration.cardFields[index + 1] == .cvv {
                     HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                         renderField(.expiryDate)
                         renderField(.cvv)
                     }
                 } else if index > 0,
                           formConfiguration.cardFields[index - 1] == .expiryDate,
-                          fieldType == .cvv
-                {
+                          fieldType == .cvv {
                     EmptyView()
                 } else {
                     renderField(fieldType)
@@ -93,16 +91,14 @@ struct CardFormFieldsView: View {
 
                         if fieldType == .firstName,
                            index + 1 < formConfiguration.billingFields.count,
-                           formConfiguration.billingFields[index + 1] == .lastName
-                        {
+                           formConfiguration.billingFields[index + 1] == .lastName {
                             HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                                 renderField(.firstName)
                                 renderField(.lastName)
                             }
                         } else if index > 0,
                                   formConfiguration.billingFields[index - 1] == .firstName,
-                                  fieldType == .lastName
-                        {
+                                  fieldType == .lastName {
                             EmptyView()
                         } else {
                             renderField(fieldType)
@@ -118,12 +114,10 @@ struct CardFormFieldsView: View {
     @MainActor
     @ViewBuilder
     private func renderField(_ fieldType: PrimerInputElementType) -> some View {
-        let fieldLabel: String? = fieldType.displayName
-
         switch fieldType {
         case .cardNumber:
             CardNumberInputField(
-                label: fieldLabel ?? "Card Number",
+                label: CheckoutComponentsStrings.cardNumberLabel,
                 placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
                 scope: scope,
                 selectedNetwork: getSelectedCardNetwork(),
@@ -135,7 +129,7 @@ struct CardFormFieldsView: View {
 
         case .expiryDate:
             ExpiryDateInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.expiryDateLabel,
                 placeholder: CheckoutComponentsStrings.expiryDatePlaceholder,
                 scope: scope,
                 styling: styling
@@ -145,7 +139,7 @@ struct CardFormFieldsView: View {
 
         case .cvv:
             CVVInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.cvvLabel,
                 placeholder: getCardNetworkForCvv() == .amex ? CheckoutComponentsStrings.cvvAmexPlaceholder : CheckoutComponentsStrings.cvvStandardPlaceholder,
                 scope: scope,
                 cardNetwork: getCardNetworkForCvv(),
@@ -156,7 +150,7 @@ struct CardFormFieldsView: View {
 
         case .cardholderName:
             CardholderNameInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.cardholderNameLabel,
                 placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
                 scope: scope,
                 styling: styling
@@ -166,7 +160,7 @@ struct CardFormFieldsView: View {
 
         case .postalCode:
             PostalCodeInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.postalCodeLabel,
                 placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
                 scope: scope,
                 styling: styling
@@ -177,7 +171,7 @@ struct CardFormFieldsView: View {
         case .countryCode:
             if let defaultCardFormScope = scope as? DefaultCardFormScope {
                 CountryInputField(
-                    label: fieldLabel ?? "",
+                    label: CheckoutComponentsStrings.countryLabel,
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
                     scope: defaultCardFormScope,
                     styling: styling
@@ -188,7 +182,7 @@ struct CardFormFieldsView: View {
 
         case .city:
             CityInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.cityLabel,
                 placeholder: CheckoutComponentsStrings.cityPlaceholder,
                 scope: scope,
                 styling: styling
@@ -198,7 +192,7 @@ struct CardFormFieldsView: View {
 
         case .state:
             StateInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.stateLabel,
                 placeholder: CheckoutComponentsStrings.statePlaceholder,
                 scope: scope,
                 styling: styling
@@ -206,7 +200,7 @@ struct CardFormFieldsView: View {
 
         case .addressLine1:
             AddressLineInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.addressLine1Label,
                 placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
                 isRequired: true,
                 inputType: .addressLine1,
@@ -216,7 +210,7 @@ struct CardFormFieldsView: View {
 
         case .addressLine2:
             AddressLineInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.addressLine2Label,
                 placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
                 isRequired: false,
                 inputType: .addressLine2,
@@ -226,7 +220,7 @@ struct CardFormFieldsView: View {
 
         case .phoneNumber:
             NameInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.phoneNumberLabel,
                 placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
                 inputType: .phoneNumber,
                 scope: scope,
@@ -235,7 +229,7 @@ struct CardFormFieldsView: View {
 
         case .firstName:
             NameInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.firstNameLabel,
                 placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
                 inputType: .firstName,
                 scope: scope,
@@ -244,7 +238,7 @@ struct CardFormFieldsView: View {
 
         case .lastName:
             NameInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.lastNameLabel,
                 placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
                 inputType: .lastName,
                 scope: scope,
@@ -253,7 +247,7 @@ struct CardFormFieldsView: View {
 
         case .email:
             EmailInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.emailLabel,
                 placeholder: CheckoutComponentsStrings.emailPlaceholder,
                 scope: scope,
                 styling: styling
@@ -267,7 +261,7 @@ struct CardFormFieldsView: View {
 
         case .otp:
             OTPCodeInputField(
-                label: fieldLabel ?? "",
+                label: CheckoutComponentsStrings.otpLabel,
                 placeholder: CheckoutComponentsStrings.otpCodeNumericPlaceholder,
                 scope: scope,
                 styling: styling
@@ -347,13 +341,11 @@ struct CardFormFieldsView: View {
                     if let selectedNetwork = state.selectedNetwork {
                         selectedCardNetwork = selectedNetwork.network
                     } else if state.availableNetworks.count == 1,
-                              let firstNetwork = state.availableNetworks.first
-                    {
+                              let firstNetwork = state.availableNetworks.first {
                         selectedCardNetwork = firstNetwork.network
                     } else if state.availableNetworks.count > 1,
                               let firstNetwork = state.availableNetworks.first,
-                              selectedCardNetwork == .unknown
-                    {
+                              selectedCardNetwork == .unknown {
                         selectedCardNetwork = firstNetwork.network
                     }
                 }

@@ -14,7 +14,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
     @Binding var isFocused: Bool
-    
+
     let scope: any PrimerCardFormScope
     let placeholder: String
     let styling: PrimerFieldStyling?
