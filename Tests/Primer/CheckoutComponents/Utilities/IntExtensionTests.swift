@@ -103,8 +103,8 @@ final class IntExtensionTests: XCTestCase {
         // When
         let result = amount.formattedCurrencyAmount(currency: usdCurrency)
 
-        // Then
-        XCTAssertEqual(result, Decimal(19.99))
+        // Then - Use Decimal(string:) to avoid floating point precision issues
+        XCTAssertEqual(result, Decimal(string: "19.99"))
     }
 
     func test_formattedCurrencyAmount_withZero_returnsZero() {
@@ -147,8 +147,8 @@ final class IntExtensionTests: XCTestCase {
         // When
         let result = amount.formattedCurrencyAmount(currency: usdCurrency)
 
-        // Then
-        XCTAssertEqual(result, Decimal(0.01))
+        // Then - Use Decimal(string:) to avoid floating point precision issues
+        XCTAssertEqual(result, Decimal(string: "0.01"))
     }
 
     // MARK: - toAccessibilityCurrencyString Tests
