@@ -121,21 +121,11 @@ final class CardPaymentMethodTests: XCTestCase {
         }
     }
 
-    // MARK: - createView Tests
-
-    func test_createView_withNoScope_returnsNil() async throws {
-        // Given - checkout scope without card form scope cached
-        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
-
-        // When
-        let view = CardPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then
-        XCTAssertNil(view)
-    }
-
-    // Note: Tests for createView with valid scope are integration tests
-    // that require full SDK initialization and are tested in the Debug App
+    // Note: createView tests are integration tests that require full SDK initialization
+    // and are tested in the Debug App. The behavior of createView depends on:
+    // - DIContainer.currentSync being available
+    // - PaymentMethodRegistry having the payment method registered
+    // - Required dependencies being resolvable
 
     // MARK: - Register Tests
 

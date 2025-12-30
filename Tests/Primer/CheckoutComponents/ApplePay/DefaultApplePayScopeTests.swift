@@ -378,21 +378,28 @@ final class DefaultApplePayScopeTests: XCTestCase {
 
         // When
         var receivedState: ApplePayFormState?
-        let task = Task {
+        let expectation = expectation(description: "Receive state with white button style")
+
+        let task = Task { @MainActor in
             for await state in scope.state {
                 receivedState = state
-                break
+                if state.buttonStyle == .white {
+                    expectation.fulfill()
+                    break
+                }
             }
         }
+
+        // Give the subscription time to establish
+        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
 
         // Trigger a state update
         scope.buttonStyle = .white
 
-        // Wait briefly for async stream
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        // Then
+        await fulfillment(of: [expectation], timeout: 2.0)
         task.cancel()
 
-        // Then
         XCTAssertNotNil(receivedState)
         XCTAssertEqual(receivedState?.buttonStyle, .white)
     }
