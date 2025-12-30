@@ -458,10 +458,28 @@ final class AnalyticsEventServiceTests: XCTestCase {
         XCTAssertTrue(call.endpoint.absoluteString.contains("analytics.staging.data.primer.io"))
     }
 
+    // MARK: - Factory Method Tests
+
+    func testCreate_ReturnsConfiguredService() async throws {
+        // Given
+        let environmentProvider = AnalyticsEnvironmentProvider()
+
+        // When
+        let service = AnalyticsEventService.create(environmentProvider: environmentProvider)
+
+        // Then - service should be usable (can initialize and accept events)
+        let config = makeTestConfig()
+        await service.initialize(config: config)
+
+        // Verify service is functional by checking it doesn't crash
+        await service.sendEvent(.sdkInitStart, metadata: nil)
+        // If we reach here without crash, factory method works correctly
+    }
+
     // MARK: - Helper Methods
 
     private func makeTestConfig() -> AnalyticsSessionConfig {
-        return AnalyticsSessionConfig(
+        AnalyticsSessionConfig(
             environment: .dev,
             checkoutSessionId: "cs_test_123",
             clientSessionId: "client_test_456",
@@ -593,7 +611,7 @@ actor MockAnalyticsNetworkClient {
     }
 
     func hasCall() async -> Bool {
-        return !calls.isEmpty
+        !calls.isEmpty
     }
 
     func setShouldFail(_ shouldFail: Bool) {
