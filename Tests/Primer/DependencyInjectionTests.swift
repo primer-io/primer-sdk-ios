@@ -384,7 +384,7 @@ final class DIFrameworkTests: XCTestCase {
     // MARK: - DIContainer.withContainer Context Restoration
 
     func testDIContainerWithContainerRestoresOriginal() async throws {
-        // Capture original before swap
+        // Capture original before swap (may be nil if no container was set)
         let original = await DIContainer.current
         let temp = Container()
 
@@ -399,7 +399,15 @@ final class DIFrameworkTests: XCTestCase {
 
         // After the block, make sure the original was restored
         let outside = await DIContainer.current
-        XCTAssertTrue(outside! as AnyObject === original! as AnyObject)
+
+        // Handle the case where original might be nil (no container was set initially)
+        if let originalContainer = original, let outsideContainer = outside {
+            XCTAssertTrue(outsideContainer as AnyObject === originalContainer as AnyObject)
+        } else {
+            // Both should be nil if original was nil
+            XCTAssertNil(original, "Original was not nil but outside is nil")
+            XCTAssertNil(outside, "Outside is not nil but original was nil")
+        }
     }
 
     // MARK: - Container Diagnostics & Health Checks

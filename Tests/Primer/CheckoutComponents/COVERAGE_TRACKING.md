@@ -1,7 +1,7 @@
 # CheckoutComponents Code Coverage Tracking
 
-**Overall Coverage on New Code:** 32.8%
-**Last Updated:** 2025-12-30
+**Overall Coverage on New Code:** 33.1%
+**Last Updated:** 2025-12-31
 **Branch:** 002-checkout-components-unit-tests
 
 ---
@@ -93,29 +93,19 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Lines | Priority | Notes |
 |------|-------|----------|-------|
-| CardFormProvider.swift | 48 | Medium | Provider pattern |
 | CheckoutColors.swift | 66 | Low | Design tokens |
-| CheckoutComponentsPrimer.swift | 236 | High | Main entry point |
 | DesignTokens.swift | 526 | Low | Static tokens |
-| DesignTokensDark.swift | 163 | Low | Static tokens |
 | DesignTokensKey.swift | 2 | Low | Simple key |
-| DesignTokensManager.swift | 411 | Medium | Token management |
-| DIContainer+SwiftUI.swift | 42 | Medium | SwiftUI integration |
 | HeadlessRepositoryImpl.swift | 718 | High | Core repository |
 | InputFieldConfig.swift | 6 | Low | Simple config |
 | MockCardFormScope.swift | 186 | N/A | Test utility |
 | MockDesignTokens.swift | 39 | N/A | Test utility |
 | MockDIContainer.swift | 29 | N/A | Test utility |
 | MockValidationService.swift | 49 | N/A | Test utility |
-| PaymentMethodSelectionProvider.swift | 47 | Medium | Provider pattern |
-| PrimerCardFormScope.swift | 96 | Medium | Scope protocol |
 | PrimerEnvironment.swift | 8 | Low | Environment config |
 | PrimerFieldStyling.swift | 33 | Low | Styling config |
-| PrimerFont.swift | 155 | Medium | Font handling |
 | PrimerLayout.swift | 51 | Low | Layout constants |
 | PrimerTheme+Images.swift | 26 | Low | Theme images |
-| SelectCountryProvider.swift | 33 | Medium | Provider pattern |
-| SwiftUI+DI.swift | 73 | Medium | SwiftUI DI utils |
 | WebAuthenticationService.swift | 3 | Low | Simple service |
 
 ---
@@ -130,7 +120,6 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | PrimerHeadlessUniversalCheckoutInputElement.swift | 32.4% | 96 | Needs Tests |
 | PrimerSettings.swift | 33.3% | 4 | Needs Tests |
 | UserInterfaceModule.swift | 38.5% | 8 | Needs Tests |
-| ConfigurationService.swift | 43.5% | 13 | Needs Tests |
 | View+Accessibility.swift | 44.0% | 14 | Needs Tests |
 
 ---
@@ -140,12 +129,9 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
 | CardPaymentMethod.swift | 57.3% | 38 | Tests Added |
-| PrimerPaymentMethodScope.swift | 58.4% | 32 | Needs Tests |
 | PrimerTheme.swift | 60.0% | 4 | Good |
-| ValidationResult.swift | 60.0% | 6 | Needs Tests |
 | AccessibilityIdentifiers.swift | 62.5% | 9 | Needs Tests |
-| InternalPaymentMethod.swift | 62.5% | 9 | Needs Tests |
-| CheckoutComponentsPaymentMethodsBridge.swift | 63.0% | 64 | Needs Tests |
+| CheckoutComponentsPaymentMethodsBridge.swift | 64.7% | 61 | Tests Added |
 | PayPalPaymentMethod.swift | 64.8% | 25 | Tests Added |
 | ContainerProtocol.swift | 66.7% | 3 | Good |
 | DIContainer.swift | 69.1% | 34 | Good |
@@ -173,6 +159,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | FontRegistration.swift | 82.6% | 8 | Good |
 | DesignTokensProcessor.swift | 82.8% | 35 | Tests Added |
 | ApplePayScreen.swift | 85.1% | 24 | Good |
+| PrimerPaymentMethodScope.swift | 85.7% | 11 | Tests Added |
 | PayPalRepositoryImpl.swift | 86.6% | 15 | Tests Added |
 | AnalyticsEventService.swift | 87.5% | 8 | Tests Added |
 | CheckoutSDKInitializer.swift | 87.9% | 12 | Good |
@@ -185,9 +172,9 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | CheckoutRoute.swift | 93.9% | 3 | Good |
 | Factory.swift | 93.9% | 3 | Tests Added |
 | PrimerAPIConfigurationModule.swift | 95.3% | 3 | Good |
+| AnalyticsEventMetadata.swift | 95.6% | 3 | Good |
 | IntExtension.swift | 96.3% | 1 | Good |
 | ProcessApplePayPaymentInteractor.swift | 96.3% | 4 | Good |
-| AnalyticsEventMetadata.swift | 97.1% | 2 | Good |
 | ApplePayRequestBuilder.swift | 97.9% | 3 | Good |
 | DefaultSelectCountryScope.swift | 98.7% | 1 | Good |
 | VaultedPaymentMethod+DisplayData.swift | 99.5% | 1 | Good |
@@ -206,6 +193,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | CardNetworkDetectionInteractor.swift | 0 |
 | CheckoutComponentsTheme.swift | 0 |
 | CheckoutCoordinator.swift | 0 |
+| ConfigurationService.swift | 0 |
 | ContainerError.swift | 0 |
 | ContainerRetainPolicy.swift | 0 |
 | DefaultAccessibilityAnnouncementService.swift | 0 |
@@ -213,6 +201,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | DefaultPayPalScope.swift | 0 |
 | ExpiryDateInput.swift | 0 |
 | GetPaymentMethodsInteractor.swift | 0 |
+| InternalPaymentMethod.swift | 0 |
 | PaymentMethodMapper.swift | 0 |
 | PaymentResult.swift | 0 |
 | PayPalState.swift | 0 |
@@ -231,6 +220,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | TypeKey.swift | 0 |
 | ValidateInputInteractor.swift | 0 |
 | ValidationError.swift | 0 |
+| ValidationResult.swift | 0 |
 | ValidationRule.swift | 0 |
 
 ---
@@ -251,26 +241,36 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | DefaultPayPalScopeTests.swift | 18 | DefaultPayPalScope.swift | 0% | 100% | Done |
 | CheckoutComponentsThemeTests.swift | 25 | CheckoutComponentsTheme.swift | 8.2% | 100% | Done |
 | PayPalRepositoryImplTests.swift | 20 | PayPalRepositoryImpl.swift | 0% | 86.6% | Done |
-| DefaultConfigurationServiceTests.swift | 17 | ConfigurationService.swift | 43.5% | TBD | Done |
-| ValidationResultTests.swift | 20 | ValidationResult.swift | 60% | TBD | Done |
-| InternalPaymentMethodTests.swift | 22 | InternalPaymentMethod.swift | 62.5% | TBD | Done |
-| PaymentMethodRegistryTests.swift | 17 | PrimerPaymentMethodScope.swift | 58.4% | TBD | Done |
-| CheckoutComponentsPaymentMethodsBridgeTests.swift | 18 | CheckoutComponentsPaymentMethodsBridge.swift | 63% | TBD | Done |
+| DefaultConfigurationServiceTests.swift | 18 | ConfigurationService.swift | 43.5% | 100% | Done |
+| ValidationResultTests.swift | 21 | ValidationResult.swift | 60% | 100% | Done |
+| InternalPaymentMethodTests.swift | 23 | InternalPaymentMethod.swift | 62.5% | 100% | Done |
+| PaymentMethodRegistryTests.swift | 17 | PrimerPaymentMethodScope.swift | 58.4% | 85.7% | Done |
+| CheckoutComponentsPaymentMethodsBridgeTests.swift | 17 | CheckoutComponentsPaymentMethodsBridge.swift | 63% | 64.7% | Done |
+| PrimerCardFormScopeTests.swift | 31 | PrimerCardFormScope.swift | 0% | TBD | Done |
+| DIContainerSwiftUITests.swift | 19 | DIContainer+SwiftUI.swift | 0% | TBD | Done |
+| SwiftUIDITests.swift | 19 | SwiftUI+DI.swift | 0% | TBD | Done |
+| CardFormProviderTests.swift | 14 | CardFormProvider.swift | 0% | TBD | Done |
+| PaymentMethodSelectionProviderTests.swift | 21 | PaymentMethodSelectionProvider.swift | 0% | TBD | Done |
+| SelectCountryProviderTests.swift | 19 | SelectCountryProvider.swift | 0% | TBD | Done |
+| PrimerSelectCountryStateTests.swift | 8 | SelectCountryProvider.swift | 0% | TBD | Done |
+| DesignTokensManagerTests.swift | 26 | DesignTokensManager.swift | 0% | TBD | Done |
+| PrimerFontTests.swift | 29 | PrimerFont.swift | 0% | TBD | Done |
+| DesignTokensDarkTests.swift | 22 | DesignTokensDark.swift | 0% | TBD | Done |
+| CheckoutComponentsPrimerTests.swift | 10 | CheckoutComponentsPrimer.swift | 0% | TBD | Done |
 
-**Total Tests:** 322 (all passing)
+**Total Tests:** 568 (all passing)
 
 ---
 
 ## Next Steps - Priority Order
 
 ### High Priority (0% coverage, testable)
-1. HeadlessRepositoryImpl.swift (718 lines)
-2. CheckoutComponentsPrimer.swift (236 lines)
+1. HeadlessRepositoryImpl.swift (718 lines) - Complex repository, needs mocking
+2. DesignTokens.swift (526 lines) - Large auto-generated file
 
 ### Medium Priority (Low coverage, partial tests exist)
 1. PrimerHeadlessUniversalCheckoutInputElement.swift (32.4%)
-2. ConfigurationService.swift (43.5%)
-3. View+Accessibility.swift (44.0%)
+2. View+Accessibility.swift (44.0%)
 
 ### Low Priority (Already good coverage)
 - Files at 80%+ coverage - minor improvements only
