@@ -1,6 +1,6 @@
 # CheckoutComponents Code Coverage Tracking
 
-**Overall Coverage on New Code:** 33.1%
+**Overall Coverage on New Code:** 36.0%
 **Last Updated:** 2025-12-31
 **Branch:** 002-checkout-components-unit-tests
 
@@ -94,7 +94,6 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | File | Lines | Priority | Notes |
 |------|-------|----------|-------|
 | CheckoutColors.swift | 66 | Low | Design tokens |
-| DesignTokens.swift | 526 | Low | Static tokens |
 | DesignTokensKey.swift | 2 | Low | Simple key |
 | HeadlessRepositoryImpl.swift | 718 | High | Core repository |
 | InputFieldConfig.swift | 6 | Low | Simple config |
@@ -114,6 +113,12 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
+| DesignTokens.swift | TBD | 526 | Tests Added |
+| DesignTokensManager.swift | 4.9% | 391 | Tests Added |
+| CheckoutComponentsPrimer.swift | 9.3% | 214 | Tests Added |
+| PaymentMethodSelectionProvider.swift | 10.6% | 42 | Tests Added |
+| CardFormProvider.swift | 12.5% | 42 | Tests Added |
+| SelectCountryProvider.swift | 15.2% | 28 | Tests Added |
 | DefaultCardFormScope.swift | 27.3% | 540 | Tests Exist |
 | ApplePayButtonView.swift | 29.3% | 41 | SwiftUI - Skip |
 | DefaultPaymentMethodSelectionScope.swift | 31.4% | 210 | Tests Exist |
@@ -128,7 +133,9 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
+| SwiftUI+DI.swift | 52.1% | 35 | Tests Added |
 | CardPaymentMethod.swift | 57.3% | 38 | Tests Added |
+| PrimerCardFormScope.swift | 58.3% | 40 | Tests Added |
 | PrimerTheme.swift | 60.0% | 4 | Good |
 | AccessibilityIdentifiers.swift | 62.5% | 9 | Needs Tests |
 | CheckoutComponentsPaymentMethodsBridge.swift | 64.7% | 61 | Tests Added |
@@ -152,6 +159,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
+| PrimerFont.swift | 80.6% | 30 | Tests Added |
 | AnalyticsNetworkClient.swift | 81.7% | 11 | Tests Added |
 | ValidationService.swift | 82.0% | 37 | Good |
 | ApplePayPaymentMethod.swift | 82.2% | 8 | Good |
@@ -199,6 +207,8 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | DefaultAccessibilityAnnouncementService.swift | 0 |
 | DefaultAnalyticsInteractor.swift | 0 |
 | DefaultPayPalScope.swift | 0 |
+| DesignTokensDark.swift | 0 |
+| DIContainer+SwiftUI.swift | 0 |
 | ExpiryDateInput.swift | 0 |
 | GetPaymentMethodsInteractor.swift | 0 |
 | InternalPaymentMethod.swift | 0 |
@@ -246,19 +256,20 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | InternalPaymentMethodTests.swift | 23 | InternalPaymentMethod.swift | 62.5% | 100% | Done |
 | PaymentMethodRegistryTests.swift | 17 | PrimerPaymentMethodScope.swift | 58.4% | 85.7% | Done |
 | CheckoutComponentsPaymentMethodsBridgeTests.swift | 17 | CheckoutComponentsPaymentMethodsBridge.swift | 63% | 64.7% | Done |
-| PrimerCardFormScopeTests.swift | 31 | PrimerCardFormScope.swift | 0% | TBD | Done |
-| DIContainerSwiftUITests.swift | 19 | DIContainer+SwiftUI.swift | 0% | TBD | Done |
-| SwiftUIDITests.swift | 19 | SwiftUI+DI.swift | 0% | TBD | Done |
-| CardFormProviderTests.swift | 14 | CardFormProvider.swift | 0% | TBD | Done |
-| PaymentMethodSelectionProviderTests.swift | 21 | PaymentMethodSelectionProvider.swift | 0% | TBD | Done |
-| SelectCountryProviderTests.swift | 19 | SelectCountryProvider.swift | 0% | TBD | Done |
-| PrimerSelectCountryStateTests.swift | 8 | SelectCountryProvider.swift | 0% | TBD | Done |
-| DesignTokensManagerTests.swift | 26 | DesignTokensManager.swift | 0% | TBD | Done |
-| PrimerFontTests.swift | 29 | PrimerFont.swift | 0% | TBD | Done |
-| DesignTokensDarkTests.swift | 22 | DesignTokensDark.swift | 0% | TBD | Done |
-| CheckoutComponentsPrimerTests.swift | 10 | CheckoutComponentsPrimer.swift | 0% | TBD | Done |
+| PrimerCardFormScopeTests.swift | 31 | PrimerCardFormScope.swift | 0% | 58.3% | Done |
+| DIContainerSwiftUITests.swift | 19 | DIContainer+SwiftUI.swift | 0% | 100% | Done |
+| SwiftUIDITests.swift | 19 | SwiftUI+DI.swift | 0% | 52.1% | Done |
+| CardFormProviderTests.swift | 14 | CardFormProvider.swift | 0% | 12.5% | Done |
+| PaymentMethodSelectionProviderTests.swift | 21 | PaymentMethodSelectionProvider.swift | 0% | 10.6% | Done |
+| SelectCountryProviderTests.swift | 19 | SelectCountryProvider.swift | 0% | 15.2% | Done |
+| PrimerSelectCountryStateTests.swift | 8 | SelectCountryProvider.swift | 0% | 15.2% | Done |
+| DesignTokensManagerTests.swift | 26 | DesignTokensManager.swift | 0% | 4.9% | Done |
+| PrimerFontTests.swift | 29 | PrimerFont.swift | 0% | 80.6% | Done |
+| DesignTokensDarkTests.swift | 22 | DesignTokensDark.swift | 0% | 100% | Done |
+| CheckoutComponentsPrimerTests.swift | 10 | CheckoutComponentsPrimer.swift | 0% | 9.3% | Done |
+| DesignTokensTests.swift | 34 | DesignTokens.swift | 0% | TBD | Done |
 
-**Total Tests:** 568 (all passing)
+**Total Tests:** 602 (all passing)
 
 ---
 
@@ -266,7 +277,6 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 ### High Priority (0% coverage, testable)
 1. HeadlessRepositoryImpl.swift (718 lines) - Complex repository, needs mocking
-2. DesignTokens.swift (526 lines) - Large auto-generated file
 
 ### Medium Priority (Low coverage, partial tests exist)
 1. PrimerHeadlessUniversalCheckoutInputElement.swift (32.4%)
