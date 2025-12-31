@@ -265,7 +265,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
+    func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for networkData in networksArray {
@@ -290,7 +290,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
+    func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for (networkType, networkData) in networksDict {
@@ -311,7 +311,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
+    func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return [.cardNumber, .cvv, .expiryDate, .cardholderName]
@@ -373,7 +373,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func createCardData(
+    func createCardData(
         cardNumber: String,
         cvv: String,
         expiryMonth: String,
@@ -787,7 +787,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func extractURL(from value: Any) -> String? {
+    func extractURL(from value: Any) -> String? {
         if let string = value as? String, isLikelyURL(string) {
             return string
         }
@@ -803,7 +803,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func isLikelyURL(_ string: String) -> Bool {
+    func isLikelyURL(_ string: String) -> Bool {
         ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
     }
 
