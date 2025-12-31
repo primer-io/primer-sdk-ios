@@ -163,6 +163,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
+    // MARK: - Dependency Injection for Testing
+
+    private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+
+    init(clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }) {
+        self.clientSessionActionsFactory = clientSessionActionsFactory
+    }
+
     @available(iOS 15.0, *)
     private func injectSettings() async {
         guard settings == nil else { return }
@@ -556,7 +564,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.rawData = rawCardData
 
         // Use Client Session Actions to select payment method based on network
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
         Task {
             do {
                 try await clientSessionActionsModule
@@ -661,7 +669,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
         // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
 
         Task {
             do {
