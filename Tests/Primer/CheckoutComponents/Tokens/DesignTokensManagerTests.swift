@@ -405,4 +405,238 @@ final class DesignTokensManagerTests: XCTestCase {
         let typography = sut.typography(override: \TypographyOverrides.titleXlarge)
         XCTAssertEqual(typography?.size, 28)
     }
+
+    // MARK: - Edge Cases
+
+    func test_applyTheme_withEmptyOverrides_doesNotCrash() {
+        // Given
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(),
+            radius: RadiusOverrides(),
+            spacing: SpacingOverrides(),
+            sizes: SizeOverrides(),
+            typography: TypographyOverrides(),
+            borderWidth: BorderWidthOverrides()
+        )
+
+        // When
+        sut.applyTheme(theme)
+
+        // Then
+        XCTAssertNotNil(sut)
+    }
+
+    // MARK: - Tokens Assignment Tests
+
+    func test_tokensCanBeSetDirectly() {
+        // Given
+        let tokens = DesignTokens()
+
+        // When
+        sut.tokens = tokens
+
+        // Then
+        XCTAssertNotNil(sut.tokens)
+    }
+
+    func test_tokensCanBeSetToNil() {
+        // Given
+        let tokens = DesignTokens()
+        sut.tokens = tokens
+
+        // When
+        sut.tokens = nil
+
+        // Then
+        XCTAssertNil(sut.tokens)
+    }
+
+    // MARK: - TypographyOverrides Tests
+
+    func test_typographyOverrides_allStylesAreOptional() {
+        // Given
+        let overrides = TypographyOverrides()
+
+        // Then
+        XCTAssertNil(overrides.titleXlarge)
+        XCTAssertNil(overrides.titleLarge)
+        XCTAssertNil(overrides.bodyLarge)
+        XCTAssertNil(overrides.bodyMedium)
+        XCTAssertNil(overrides.bodySmall)
+    }
+
+    func test_typographyOverrides_canSetAllStyles() {
+        // Given
+        let overrides = TypographyOverrides(
+            titleXlarge: .init(size: 28),
+            titleLarge: .init(size: 20),
+            bodyLarge: .init(size: 16),
+            bodyMedium: .init(size: 14),
+            bodySmall: .init(size: 12)
+        )
+
+        // Then
+        XCTAssertEqual(overrides.titleXlarge?.size, 28)
+        XCTAssertEqual(overrides.titleLarge?.size, 20)
+        XCTAssertEqual(overrides.bodyLarge?.size, 16)
+        XCTAssertEqual(overrides.bodyMedium?.size, 14)
+        XCTAssertEqual(overrides.bodySmall?.size, 12)
+    }
+
+    // MARK: - ColorOverrides Tests
+
+    func test_colorOverrides_allPropertiesAreOptional() {
+        // Given
+        let overrides = ColorOverrides()
+
+        // Then - just verify it can be created without setting any values
+        XCTAssertNil(overrides.primerColorBrand)
+        XCTAssertNil(overrides.primerColorBackground)
+        XCTAssertNil(overrides.primerColorTextPrimary)
+    }
+
+    func test_colorOverrides_canSetBrandColor() {
+        // Given
+        let overrides = ColorOverrides(primerColorBrand: .blue)
+
+        // Then
+        XCTAssertEqual(overrides.primerColorBrand, .blue)
+    }
+
+    func test_colorOverrides_canSetMultipleColors() {
+        // Given
+        let overrides = ColorOverrides(
+            primerColorBrand: .blue,
+            primerColorBackground: .white,
+            primerColorTextPrimary: .black
+        )
+
+        // Then
+        XCTAssertEqual(overrides.primerColorBrand, .blue)
+        XCTAssertEqual(overrides.primerColorBackground, .white)
+        XCTAssertEqual(overrides.primerColorTextPrimary, .black)
+    }
+
+    // MARK: - RadiusOverrides Tests
+
+    func test_radiusOverrides_allPropertiesAreOptional() {
+        // Given
+        let overrides = RadiusOverrides()
+
+        // Then
+        XCTAssertNil(overrides.primerRadiusMedium)
+        XCTAssertNil(overrides.primerRadiusSmall)
+        XCTAssertNil(overrides.primerRadiusLarge)
+    }
+
+    func test_radiusOverrides_canSetValues() {
+        // Given
+        let overrides = RadiusOverrides(
+            primerRadiusSmall: 4,
+            primerRadiusMedium: 8,
+            primerRadiusLarge: 12
+        )
+
+        // Then
+        XCTAssertEqual(overrides.primerRadiusSmall, 4)
+        XCTAssertEqual(overrides.primerRadiusMedium, 8)
+        XCTAssertEqual(overrides.primerRadiusLarge, 12)
+    }
+
+    // MARK: - SpacingOverrides Tests
+
+    func test_spacingOverrides_allPropertiesAreOptional() {
+        // Given
+        let overrides = SpacingOverrides()
+
+        // Then
+        XCTAssertNil(overrides.primerSpaceSmall)
+        XCTAssertNil(overrides.primerSpaceMedium)
+        XCTAssertNil(overrides.primerSpaceLarge)
+    }
+
+    func test_spacingOverrides_canSetValues() {
+        // Given
+        let overrides = SpacingOverrides(
+            primerSpaceSmall: 8,
+            primerSpaceMedium: 12,
+            primerSpaceLarge: 16
+        )
+
+        // Then
+        XCTAssertEqual(overrides.primerSpaceSmall, 8)
+        XCTAssertEqual(overrides.primerSpaceMedium, 12)
+        XCTAssertEqual(overrides.primerSpaceLarge, 16)
+    }
+
+    // MARK: - SizeOverrides Tests
+
+    func test_sizeOverrides_allPropertiesAreOptional() {
+        // Given
+        let overrides = SizeOverrides()
+
+        // Then
+        XCTAssertNil(overrides.primerSizeSmall)
+        XCTAssertNil(overrides.primerSizeMedium)
+        XCTAssertNil(overrides.primerSizeLarge)
+    }
+
+    func test_sizeOverrides_canSetValues() {
+        // Given
+        let overrides = SizeOverrides(
+            primerSizeSmall: 16,
+            primerSizeMedium: 24,
+            primerSizeLarge: 32
+        )
+
+        // Then
+        XCTAssertEqual(overrides.primerSizeSmall, 16)
+        XCTAssertEqual(overrides.primerSizeMedium, 24)
+        XCTAssertEqual(overrides.primerSizeLarge, 32)
+    }
+
+    // MARK: - BorderWidthOverrides Tests
+
+    func test_borderWidthOverrides_allPropertiesAreOptional() {
+        // Given
+        let overrides = BorderWidthOverrides()
+
+        // Then
+        XCTAssertNil(overrides.primerBorderWidthMedium)
+    }
+
+    func test_borderWidthOverrides_canSetValues() {
+        // Given
+        let overrides = BorderWidthOverrides(primerBorderWidthMedium: 2)
+
+        // Then
+        XCTAssertEqual(overrides.primerBorderWidthMedium, 2)
+    }
+
+    // MARK: - PrimerCheckoutTheme Tests
+
+    func test_primerCheckoutTheme_canBeCreatedEmpty() {
+        // Given/When
+        let theme = PrimerCheckoutTheme()
+
+        // Then
+        XCTAssertNil(theme.colors)
+        XCTAssertNil(theme.radius)
+        XCTAssertNil(theme.spacing)
+        XCTAssertNil(theme.sizes)
+        XCTAssertNil(theme.typography)
+        XCTAssertNil(theme.borderWidth)
+    }
+
+    func test_primerCheckoutTheme_canSetIndividualOverrides() {
+        // Given/When
+        let theme = PrimerCheckoutTheme(
+            colors: ColorOverrides(primerColorBrand: .red)
+        )
+
+        // Then
+        XCTAssertNotNil(theme.colors)
+        XCTAssertEqual(theme.colors?.primerColorBrand, .red)
+        XCTAssertNil(theme.radius)
+    }
 }
