@@ -2761,3 +2761,819 @@ final class CreateCardDataHelperTests: XCTestCase {
         XCTAssertEqual(cardData.cardNumber, "4242424242424242")
     }
 }
+
+// MARK: - URL Helper Tests
+
+@available(iOS 15.0, *)
+final class URLHelperTests: XCTestCase {
+
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        repository = HeadlessRepositoryImpl()
+    }
+
+    override func tearDown() {
+        repository = nil
+        super.tearDown()
+    }
+
+    // MARK: - isLikelyURL Tests
+
+    func testIsLikelyURL_WithHttpsUrl_ReturnsTrue() {
+        XCTAssertTrue(repository.isLikelyURL("https://example.com"))
+        XCTAssertTrue(repository.isLikelyURL("https://example.com/path"))
+        XCTAssertTrue(repository.isLikelyURL("https://subdomain.example.com"))
+    }
+
+    func testIsLikelyURL_WithHttpUrl_ReturnsTrue() {
+        XCTAssertTrue(repository.isLikelyURL("http://example.com"))
+        XCTAssertTrue(repository.isLikelyURL("http://localhost:8080"))
+    }
+
+    func testIsLikelyURL_WithMixedCaseProtocol_ReturnsTrue() {
+        XCTAssertTrue(repository.isLikelyURL("HTTPS://example.com"))
+        XCTAssertTrue(repository.isLikelyURL("HTTP://example.com"))
+        XCTAssertTrue(repository.isLikelyURL("Https://example.com"))
+    }
+
+    func testIsLikelyURL_WithNonHttpProtocol_ReturnsFalse() {
+        XCTAssertFalse(repository.isLikelyURL("ftp://example.com"))
+        XCTAssertFalse(repository.isLikelyURL("myapp://deeplink"))
+        XCTAssertFalse(repository.isLikelyURL("file:///path/to/file"))
+    }
+
+    func testIsLikelyURL_WithPlainString_ReturnsFalse() {
+        XCTAssertFalse(repository.isLikelyURL("example.com"))
+        XCTAssertFalse(repository.isLikelyURL("just some text"))
+        XCTAssertFalse(repository.isLikelyURL(""))
+    }
+
+    func testIsLikelyURL_WithPartialProtocol_ReturnsFalse() {
+        XCTAssertFalse(repository.isLikelyURL("htt://example.com"))
+        XCTAssertFalse(repository.isLikelyURL("httpexample.com"))
+    }
+
+    // MARK: - extractURL Tests
+
+    func testExtractURL_WithString_ReturnsUrl() {
+        let result = repository.extractURL(from: "https://example.com/redirect")
+        XCTAssertEqual(result, "https://example.com/redirect")
+    }
+
+    func testExtractURL_WithURL_ReturnsAbsoluteString() {
+        let url = URL(string: "https://example.com/path")!
+        let result = repository.extractURL(from: url)
+        XCTAssertEqual(result, "https://example.com/path")
+    }
+
+    func testExtractURL_WithNonUrlString_ReturnsNil() {
+        let result = repository.extractURL(from: "not a url")
+        XCTAssertNil(result)
+    }
+
+    func testExtractURL_WithNumber_ReturnsNil() {
+        let result = repository.extractURL(from: 12345)
+        XCTAssertNil(result)
+    }
+
+    func testExtractURL_WithEmptyString_ReturnsNil() {
+        let result = repository.extractURL(from: "")
+        XCTAssertNil(result)
+    }
+}
+
+// MARK: - Get Required Input Elements Tests
+
+@available(iOS 15.0, *)
+final class GetRequiredInputElementsTests: XCTestCase {
+
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        repository = HeadlessRepositoryImpl()
+    }
+
+    override func tearDown() {
+        repository = nil
+        super.tearDown()
+    }
+
+    func testGetRequiredInputElements_ForPaymentCard_ReturnsCardInputs() {
+        let result = repository.getRequiredInputElements(for: "PAYMENT_CARD")
+
+        XCTAssertEqual(result.count, 4)
+        XCTAssertTrue(result.contains(.cardNumber))
+        XCTAssertTrue(result.contains(.cvv))
+        XCTAssertTrue(result.contains(.expiryDate))
+        XCTAssertTrue(result.contains(.cardholderName))
+    }
+
+    func testGetRequiredInputElements_ForPayPal_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "PAYPAL")
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testGetRequiredInputElements_ForApplePay_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "APPLE_PAY")
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testGetRequiredInputElements_ForGooglePay_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "GOOGLE_PAY")
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testGetRequiredInputElements_ForKlarna_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "KLARNA")
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testGetRequiredInputElements_ForUnknownType_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "UNKNOWN_PAYMENT_METHOD")
+        XCTAssertTrue(result.isEmpty)
+    }
+
+    func testGetRequiredInputElements_ForEmptyType_ReturnsEmpty() {
+        let result = repository.getRequiredInputElements(for: "")
+        XCTAssertTrue(result.isEmpty)
+    }
+}
+
+// MARK: - Create Card Data Expiry Format Tests
+
+@available(iOS 15.0, *)
+final class CreateCardDataExpiryFormatTests: XCTestCase {
+
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        repository = HeadlessRepositoryImpl()
+    }
+
+    override func tearDown() {
+        repository = nil
+        super.tearDown()
+    }
+
+    func testCreateCardData_ExpiryFormat_StandardFormat() {
+        let cardData = repository.createCardData(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "12",
+            expiryYear: "27",
+            cardholderName: "Test",
+            selectedNetwork: nil
+        )
+
+        XCTAssertEqual(cardData.expiryDate, "12/27")
+    }
+
+    func testCreateCardData_ExpiryFormat_SingleDigitMonth() {
+        let cardData = repository.createCardData(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "1",
+            expiryYear: "28",
+            cardholderName: "Test",
+            selectedNetwork: nil
+        )
+
+        XCTAssertEqual(cardData.expiryDate, "1/28")
+    }
+
+    func testCreateCardData_ExpiryFormat_FourDigitYear() {
+        let cardData = repository.createCardData(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "06",
+            expiryYear: "2029",
+            cardholderName: "Test",
+            selectedNetwork: nil
+        )
+
+        XCTAssertEqual(cardData.expiryDate, "06/2029")
+    }
+
+    func testCreateCardData_EmptyCardholderName_SetsNil() {
+        let cardData = repository.createCardData(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "12",
+            expiryYear: "27",
+            cardholderName: "",
+            selectedNetwork: nil
+        )
+
+        XCTAssertNil(cardData.cardholderName)
+    }
+
+    func testCreateCardData_NonEmptyCardholderName_SetsValue() {
+        let cardData = repository.createCardData(
+            cardNumber: "4242424242424242",
+            cvv: "123",
+            expiryMonth: "12",
+            expiryYear: "27",
+            cardholderName: "John Doe",
+            selectedNetwork: nil
+        )
+
+        XCTAssertEqual(cardData.cardholderName, "John Doe")
+    }
+}
+
+// MARK: - Select Card Network Additional Tests
+
+@available(iOS 15.0, *)
+final class SelectCardNetworkAdditionalTests: XCTestCase {
+
+    private var mockClientSessionActions: MockClientSessionActionsModule!
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        mockClientSessionActions = MockClientSessionActionsModule()
+        repository = HeadlessRepositoryImpl(
+            clientSessionActionsFactory: { [weak self] in
+                self?.mockClientSessionActions ?? MockClientSessionActionsModule()
+            }
+        )
+    }
+
+    override func tearDown() {
+        mockClientSessionActions = nil
+        repository = nil
+        super.tearDown()
+    }
+
+    func testSelectCardNetwork_Diners_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.diners
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "DINERS_CLUB")
+    }
+
+    func testSelectCardNetwork_JCB_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.jcb
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "JCB")
+    }
+
+    func testSelectCardNetwork_Discover_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.discover
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "DISCOVER")
+    }
+
+    func testSelectCardNetwork_Maestro_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.maestro
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "MAESTRO")
+    }
+
+    func testSelectCardNetwork_Elo_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.elo
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "ELO")
+    }
+
+    func testSelectCardNetwork_Mir_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.mir
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "MIR")
+    }
+
+    func testSelectCardNetwork_UnionPay_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.unionpay
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "UNIONPAY")
+    }
+
+    func testSelectCardNetwork_Bancontact_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.bancontact
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "BANCONTACT")
+    }
+
+    func testSelectCardNetwork_CartesBancaires_CallsSelectPaymentMethodWithCorrectParams() async throws {
+        // Given
+        let network = CardNetwork.cartesBancaires
+
+        // When
+        await repository.selectCardNetwork(network)
+
+        // Wait for the Task to complete
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Then
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.count, 1)
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(mockClientSessionActions.selectPaymentMethodCalls.first?.network, "CARTES_BANCAIRES")
+    }
+}
+
+// MARK: - Extract Networks Dict Additional Edge Cases
+
+@available(iOS 15.0, *)
+final class ExtractNetworksDictAdditionalTests: XCTestCase {
+
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        repository = HeadlessRepositoryImpl()
+    }
+
+    override func tearDown() {
+        repository = nil
+        super.tearDown()
+    }
+
+    func testExtractFromNetworksDict_WithNegativeSurcharge_ExcludesEntry() {
+        // Given
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["amount": -100]],
+            "MASTERCARD": ["surcharge": ["amount": 50]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 50)
+        XCTAssertNil(result?["VISA"])
+    }
+
+    func testExtractFromNetworksDict_WithAllNegativeSurcharges_ReturnsNil() {
+        // Given
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["amount": -100]],
+            "MASTERCARD": ["surcharge": ["amount": -50]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertNil(result)
+    }
+
+    func testExtractFromNetworksDict_WithMixedFormats_HandlesBoth() {
+        // Given - Mix of nested and direct surcharge formats
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["amount": 100]],  // Nested format
+            "MASTERCARD": ["surcharge": 75]  // Direct integer format
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertEqual(result?.count, 2)
+        XCTAssertEqual(result?["VISA"], 100)
+        XCTAssertEqual(result?["MASTERCARD"], 75)
+    }
+
+    func testExtractFromNetworksDict_WithInvalidSurchargeType_SkipsEntry() {
+        // Given - Surcharge is a string instead of int/dict
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": "invalid"],
+            "MASTERCARD": ["surcharge": ["amount": 50]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 50)
+    }
+
+    func testExtractFromNetworksDict_WithMissingAmountKey_SkipsEntry() {
+        // Given - Surcharge dict exists but no "amount" key
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["otherKey": 100]],
+            "MASTERCARD": ["surcharge": ["amount": 75]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 75)
+    }
+
+    func testExtractFromNetworksDict_WithEmptyNestedDict_SkipsEntry() {
+        // Given
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": [:]],  // Empty surcharge dict
+            "MASTERCARD": ["surcharge": ["amount": 100]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksDict(networksDict)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 100)
+    }
+}
+
+// MARK: - Extract Networks Array Additional Edge Cases
+
+@available(iOS 15.0, *)
+final class ExtractNetworksArrayAdditionalTests: XCTestCase {
+
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        repository = HeadlessRepositoryImpl()
+    }
+
+    override func tearDown() {
+        repository = nil
+        super.tearDown()
+    }
+
+    func testExtractFromNetworksArray_WithEmptyNestedDict_SkipsEntry() {
+        // Given
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": [:]],  // Empty surcharge dict
+            ["type": "MASTERCARD", "surcharge": ["amount": 100]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksArray(networksArray)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 100)
+    }
+
+    func testExtractFromNetworksArray_WithMissingAmountKey_SkipsEntry() {
+        // Given
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["currency": "EUR"]],  // No amount
+            ["type": "MASTERCARD", "surcharge": ["amount": 75]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksArray(networksArray)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 75)
+    }
+
+    func testExtractFromNetworksArray_WithFloatAmount_SkipsEntry() {
+        // Given - Float amounts should be skipped (only Int is valid)
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["amount": 99.99]],  // Float
+            ["type": "MASTERCARD", "surcharge": ["amount": 100]]  // Int
+        ]
+
+        // When
+        let result = repository.extractFromNetworksArray(networksArray)
+
+        // Then
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["MASTERCARD"], 100)
+    }
+
+    func testExtractFromNetworksArray_WithLargeAmount_IncludesEntry() {
+        // Given - Large amounts should work
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["amount": 999999999]]
+        ]
+
+        // When
+        let result = repository.extractFromNetworksArray(networksArray)
+
+        // Then
+        XCTAssertEqual(result?["VISA"], 999999999)
+    }
+
+    func testExtractFromNetworksArray_WithDuplicateNetworkTypes_KeepsLast() {
+        // Given - Duplicate network types
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["amount": 50]],
+            ["type": "VISA", "surcharge": ["amount": 100]]  // Duplicate
+        ]
+
+        // When
+        let result = repository.extractFromNetworksArray(networksArray)
+
+        // Then - Dictionary keeps last value for duplicate keys
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?["VISA"], 100)
+    }
+}
+
+// MARK: - Get Payment Methods Additional Edge Cases
+
+@available(iOS 15.0, *)
+final class GetPaymentMethodsAdditionalEdgeCasesTests: XCTestCase {
+
+    private var mockConfigurationService: MockConfigurationService!
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        mockConfigurationService = MockConfigurationService()
+        repository = HeadlessRepositoryImpl(
+            configurationServiceFactory: { [weak self] in
+                self?.mockConfigurationService ?? MockConfigurationService()
+            }
+        )
+    }
+
+    override func tearDown() {
+        mockConfigurationService = nil
+        repository = nil
+        super.tearDown()
+    }
+
+    func testGetPaymentMethods_WithVeryLongPaymentMethodName_MapsCorrectly() async throws {
+        // Given - Payment method with very long name
+        let longName = String(repeating: "A", count: 1000)
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: longName,
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.first?.name, longName)
+    }
+
+    func testGetPaymentMethods_WithEmptyPaymentMethodName_MapsCorrectly() async throws {
+        // Given - Payment method with empty name
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.first?.name, "")
+    }
+
+    func testGetPaymentMethods_WithSpecialCharactersInName_MapsCorrectly() async throws {
+        // Given - Payment method with special characters
+        let specialName = "Карта 💳 & 日本語 <script>"
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: specialName,
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.first?.name, specialName)
+    }
+
+    func testGetPaymentMethods_WithNilProcessorConfigId_MapsToNil() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: nil,
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertNil(methods.first?.configId)
+    }
+
+    func testGetPaymentMethods_WithLargeSurcharge_MapsCorrectly() async throws {
+        // Given - Very large surcharge value
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: Int.max,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.first?.surcharge, Int.max)
+    }
+
+    func testGetPaymentMethods_CalledMultipleTimes_ReturnsConsistentResults() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: 100,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When - Call multiple times
+        let methods1 = try await repository.getPaymentMethods()
+        let methods2 = try await repository.getPaymentMethods()
+        let methods3 = try await repository.getPaymentMethods()
+
+        // Then - All should return same results
+        XCTAssertEqual(methods1.count, methods2.count)
+        XCTAssertEqual(methods2.count, methods3.count)
+        XCTAssertEqual(methods1.first?.type, methods2.first?.type)
+        XCTAssertEqual(methods2.first?.surcharge, methods3.first?.surcharge)
+    }
+}
