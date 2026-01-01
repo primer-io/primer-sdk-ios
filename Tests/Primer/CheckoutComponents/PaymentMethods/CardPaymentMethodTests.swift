@@ -127,6 +127,254 @@ final class CardPaymentMethodTests: XCTestCase {
     // - PaymentMethodRegistry having the payment method registered
     // - Required dependencies being resolvable
 
+    // MARK: - Invalid Checkout Scope Tests
+
+    func test_createScope_withInvalidCheckoutScopeType_throwsInvalidArchitecture() async throws {
+        // Given - a mock checkout scope that is NOT DefaultCheckoutScope
+        let invalidCheckoutScope = MockInvalidCheckoutScopeForCardTests()
+        await registerCardPaymentDependencies()
+
+        // When/Then
+        do {
+            _ = try CardPaymentMethod.createScope(
+                checkoutScope: invalidCheckoutScope,
+                diContainer: container
+            )
+            XCTFail("Expected error when checkout scope is not DefaultCheckoutScope")
+        } catch let error as PrimerError {
+            switch error {
+            case let .invalidArchitecture(description, _, _):
+                XCTAssertTrue(description.contains("DefaultCheckoutScope"))
+            default:
+                XCTFail("Expected invalidArchitecture error, got \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error type: \(error)")
+        }
+    }
+
+    // MARK: - Missing Required Dependency Tests
+
+    func test_createScope_withMissingProcessCardPaymentInteractor_throwsError() async throws {
+        // Given - container with ConfigurationService but missing ProcessCardPaymentInteractor
+        _ = try? await container.register(ConfigurationService.self)
+            .asSingleton()
+            .with { _ in MockConfigurationService.withDefaultConfiguration() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When/Then
+        do {
+            _ = try CardPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: container
+            )
+            XCTFail("Expected error when ProcessCardPaymentInteractor is missing")
+        } catch let error as PrimerError {
+            switch error {
+            case let .invalidArchitecture(description, _, _):
+                XCTAssertTrue(description.contains("dependencies"))
+            default:
+                XCTFail("Expected invalidArchitecture error, got \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error type: \(error)")
+        }
+    }
+
+    func test_createScope_withMissingConfigurationService_throwsError() async throws {
+        // Given - fresh empty container with ProcessCardPaymentInteractor but missing ConfigurationService
+        let emptyContainer = Container()
+        _ = try? await emptyContainer.register(ProcessCardPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in MockProcessCardPaymentInteractor() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When/Then
+        do {
+            _ = try CardPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: emptyContainer
+            )
+            XCTFail("Expected error when ConfigurationService is missing")
+        } catch let error as PrimerError {
+            switch error {
+            case let .invalidArchitecture(description, _, _):
+                XCTAssertTrue(description.contains("dependencies"))
+            default:
+                XCTFail("Expected invalidArchitecture error, got \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error type: \(error)")
+        }
+    }
+
+    // MARK: - Optional Dependency Tests
+
+    func test_createScope_withoutOptionalValidateInputInteractor_succeeds() async throws {
+        // Given - container with required deps but without ValidateInputInteractor
+        _ = try? await container.register(ProcessCardPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in MockProcessCardPaymentInteractor() }
+        _ = try? await container.register(ConfigurationService.self)
+            .asSingleton()
+            .with { _ in MockConfigurationService.withDefaultConfiguration() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should succeed even without optional dependency
+        XCTAssertNotNil(scope)
+    }
+
+    func test_createScope_withoutOptionalCardNetworkDetectionInteractor_succeeds() async throws {
+        // Given - container without CardNetworkDetectionInteractor
+        _ = try? await container.register(ProcessCardPaymentInteractor.self)
+            .asSingleton()
+            .with { _ in MockProcessCardPaymentInteractor() }
+        _ = try? await container.register(ConfigurationService.self)
+            .asSingleton()
+            .with { _ in MockConfigurationService.withDefaultConfiguration() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should succeed even without optional dependency
+        XCTAssertNotNil(scope)
+    }
+
+    func test_createScope_withAllOptionalDependencies_succeeds() async throws {
+        // Given - container with all required and optional dependencies
+        await registerCardPaymentDependencies()
+
+        // Also register analytics interactor
+        _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+            .asSingleton()
+            .with { _ in MockAnalyticsInteractor() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then
+        XCTAssertNotNil(scope)
+    }
+
+    // MARK: - Presentation Context Edge Cases
+
+    func test_createScope_withZeroPaymentMethods_usesDirectContext() async throws {
+        // Given - checkout scope with zero payment methods
+        await registerCardPaymentDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [] // Explicitly empty
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should use direct context
+        XCTAssertEqual(scope.presentationContext, .direct)
+    }
+
+    func test_createScope_withExactlyOnePaymentMethod_usesDirectContext() async throws {
+        // Given - checkout scope with exactly one payment method
+        await registerCardPaymentDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(
+                id: "card-only",
+                type: PrimerPaymentMethodType.paymentCard.rawValue,
+                name: "Card"
+            )
+        ]
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should use direct context
+        XCTAssertEqual(scope.presentationContext, .direct)
+    }
+
+    func test_createScope_withExactlyTwoPaymentMethods_usesPaymentSelectionContext() async throws {
+        // Given - checkout scope with exactly two payment methods
+        await registerCardPaymentDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(
+                id: "card-1",
+                type: PrimerPaymentMethodType.paymentCard.rawValue,
+                name: "Card"
+            ),
+            InternalPaymentMethod(
+                id: "paypal-1",
+                type: PrimerPaymentMethodType.payPal.rawValue,
+                name: "PayPal"
+            )
+        ]
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should use fromPaymentSelection context
+        XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+    }
+
     // MARK: - Register Tests
 
     func test_register_addsToPaymentMethodRegistry() async throws {
@@ -203,4 +451,29 @@ final class CardPaymentMethodTests: XCTestCase {
 
         return scope
     }
+}
+
+// MARK: - Mock Invalid Checkout Scope
+
+@available(iOS 15.0, *)
+private final class MockInvalidCheckoutScopeForCardTests: PrimerCheckoutScope {
+    var state: AsyncStream<PrimerCheckoutState> {
+        AsyncStream { continuation in
+            continuation.finish()
+        }
+    }
+
+    var container: ContainerComponent?
+    var splashScreen: Component?
+    var loading: Component?
+    var errorScreen: ErrorComponent?
+    var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
+        fatalError("Not implemented")
+    }
+    var paymentHandling: PrimerPaymentHandling { .auto }
+
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? { nil }
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? { nil }
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T? { nil }
+    func onDismiss() {}
 }
