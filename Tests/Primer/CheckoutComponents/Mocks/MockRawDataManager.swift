@@ -19,6 +19,11 @@ final class MockRawDataManager: RawDataManagerProtocol {
             rawDataSetCount += 1
             rawDataHistory.append(rawData)
             onRawDataSet?(rawData)
+
+            // Auto-trigger validation callback if enabled
+            if autoTriggerValidation {
+                triggerValidationCallback()
+            }
         }
     }
 
@@ -26,6 +31,12 @@ final class MockRawDataManager: RawDataManagerProtocol {
     var onRawDataSet: ((PrimerRawData?) -> Void)?
     var isDataValid: Bool = true
     var requiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
+
+    /// When true, automatically triggers delegate validation callback when rawData is set
+    var autoTriggerValidation: Bool = false
+
+    /// Delay before triggering validation callback (simulates async behavior)
+    var validationDelay: TimeInterval = 0.05
 
     // MARK: - Call Tracking
 
@@ -73,6 +84,46 @@ final class MockRawDataManager: RawDataManagerProtocol {
 
     // MARK: - Test Helpers
 
+    /// Manually triggers the validation callback on the delegate
+    /// This simulates what the real RawDataManager does after validating rawData
+    /// Uses a real RawDataManager instance to satisfy the delegate method signature
+    func triggerValidationCallback() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + validationDelay) { [weak self] in
+            guard let self, let delegate = self.delegate else { return }
+
+            // Create a real RawDataManager for the callback (delegate only uses isValid/errors params)
+            do {
+                let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
+                delegate.primerRawDataManager?(
+                    rawDataManager,
+                    dataIsValid: self.isDataValid,
+                    errors: self.validationErrors
+                )
+            } catch {
+                // If we can't create a RawDataManager, the test setup is incomplete
+                // This is expected in unit tests without full SDK configuration
+            }
+        }
+    }
+
+    /// Triggers validation callback with custom values
+    func triggerValidationCallback(isValid: Bool, errors: [Error]?) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + validationDelay) { [weak self] in
+            guard let self, let delegate = self.delegate else { return }
+
+            do {
+                let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
+                delegate.primerRawDataManager?(
+                    rawDataManager,
+                    dataIsValid: isValid,
+                    errors: errors
+                )
+            } catch {
+                // Expected in unit tests without full SDK configuration
+            }
+        }
+    }
+
     func reset() {
         delegate = nil
         rawData = nil
@@ -87,6 +138,8 @@ final class MockRawDataManager: RawDataManagerProtocol {
         onSubmit = nil
         simulateSuccessfulPayment = false
         paymentError = nil
+        autoTriggerValidation = false
+        validationDelay = 0.05
     }
 }
 
