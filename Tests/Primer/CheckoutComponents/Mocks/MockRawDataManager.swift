@@ -18,11 +18,12 @@ final class MockRawDataManager: RawDataManagerProtocol {
         didSet {
             rawDataSetCount += 1
             rawDataHistory.append(rawData)
-            // Note: Delegate callbacks are not simulated here because the delegate
-            // expects a real RawDataManager instance. Tests should verify rawData
-            // is set correctly rather than testing the full callback flow.
+            onRawDataSet?(rawData)
         }
     }
+
+    /// Called when rawData is set - use this to trigger validation callbacks in tests
+    var onRawDataSet: ((PrimerRawData?) -> Void)?
     var isDataValid: Bool = true
     var requiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
 
