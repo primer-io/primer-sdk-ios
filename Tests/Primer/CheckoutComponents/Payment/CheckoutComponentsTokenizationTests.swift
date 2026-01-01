@@ -1,7 +1,7 @@
 //
 //  CheckoutComponentsTokenizationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -36,7 +36,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
         mockAPIClient.token = "tok_visa_4242"
 
@@ -54,7 +54,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
         mockAPIClient.token = "tok_test"
 
@@ -73,7 +73,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: "4242", // Too short
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
 
         // When/Then
@@ -91,7 +91,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "12", // Too short
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
 
         // When/Then
@@ -129,7 +129,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.invalidLuhn, // Fails Luhn check
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
 
         // When/Then
@@ -149,7 +149,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
         mockAPIClient.shouldFail = true
         mockAPIClient.error = TestData.Errors.networkTimeout
@@ -167,7 +167,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
 
     func test_tokenizeCard_concurrent_handlesMultipleRequests() async throws {
         // Given
-        let card1 = CardData(number: TestData.CardNumbers.validVisa, cvv: "123", expiryMonth: "12", expiryYear: "25")
+        let card1 = CardData(number: TestData.CardNumbers.validVisa, cvv: "123", expiryMonth: "12", expiryYear: "27")
         let card2 = CardData(number: TestData.CardNumbers.validMastercard, cvv: "456", expiryMonth: "06", expiryYear: "26")
         mockAPIClient.token = "tok_test"
 
@@ -191,7 +191,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
         mockAPIClient.token = "tok_first"
 
@@ -215,7 +215,7 @@ final class CheckoutComponentsTokenizationTests: XCTestCase {
             number: TestData.CardNumbers.validVisa,
             cvv: "123",
             expiryMonth: "12",
-            expiryYear: "25"
+            expiryYear: "27"
         )
         mockAPIClient.token = "tok_test"
 

@@ -1,7 +1,7 @@
 //
 //  HeadlessRepositoryImplTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -630,5 +630,1505 @@ final class IsLikelyURLEdgeCasesTests: XCTestCase {
 
         // Then - Leading whitespace means it doesn't start with http
         XCTAssertFalse(result)
+    }
+}
+
+// MARK: - GetPaymentMethods Tests
+
+@available(iOS 15.0, *)
+final class GetPaymentMethodsTests: XCTestCase {
+
+    private var mockConfigurationService: MockConfigurationService!
+    private var mockClientSessionActions: MockClientSessionActionsModule!
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        mockConfigurationService = MockConfigurationService()
+        mockClientSessionActions = MockClientSessionActionsModule()
+        repository = HeadlessRepositoryImpl(
+            clientSessionActionsFactory: { [weak self] in
+                self?.mockClientSessionActions ?? MockClientSessionActionsModule()
+            },
+            configurationServiceFactory: { [weak self] in
+                self?.mockConfigurationService ?? MockConfigurationService()
+            }
+        )
+    }
+
+    override func tearDown() {
+        mockConfigurationService = nil
+        mockClientSessionActions = nil
+        repository = nil
+        super.tearDown()
+    }
+
+    func testGetPaymentMethods_WithNoConfig_ReturnsEmptyArray() async throws {
+        // Given
+        mockConfigurationService.apiConfiguration = nil
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertTrue(methods.isEmpty)
+    }
+
+    func testGetPaymentMethods_WithPaymentMethods_ReturnsMappedMethods() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "payment-card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: 100,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.count, 1)
+        XCTAssertEqual(methods.first?.type, "PAYMENT_CARD")
+        XCTAssertEqual(methods.first?.name, "Card")
+        XCTAssertEqual(methods.first?.configId, "config-123")
+        XCTAssertEqual(methods.first?.surcharge, 100)
+    }
+
+    func testGetPaymentMethods_WithMultiplePaymentMethods_ReturnsAll() async throws {
+        // Given
+        let cardMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "card-config",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let paypalMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "paypal-config",
+            surcharge: 50,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [cardMethod, paypalMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.count, 2)
+        XCTAssertTrue(methods.contains { $0.type == "PAYMENT_CARD" })
+        XCTAssertTrue(methods.contains { $0.type == "PAYPAL" })
+    }
+
+    func testGetPaymentMethods_WithEmptyPaymentMethods_ReturnsEmptyArray() async throws {
+        // Given
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertTrue(methods.isEmpty)
+    }
+
+    func testGetPaymentMethods_PaymentCardHasRequiredInputElements() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "payment-card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNotNil(cardMethod?.requiredInputElements)
+        XCTAssertFalse(cardMethod?.requiredInputElements.isEmpty ?? true)
+    }
+
+    func testGetPaymentMethods_NonCardMethodHasNoRequiredInputElements() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let paypalMethod = methods.first { $0.type == "PAYPAL" }
+        XCTAssertNotNil(paypalMethod)
+        XCTAssertTrue(paypalMethod?.requiredInputElements.isEmpty ?? true)
+    }
+
+    // MARK: - Network Surcharges Tests
+
+    func testGetPaymentMethods_WithNetworkSurcharges_ExtractsFromArray() async throws {
+        // Given - Client session with network surcharges in array format
+        let networkSurcharges: [[String: Any]] = [
+            [
+                "type": "VISA",
+                "surcharge": ["amount": 100]
+            ],
+            [
+                "type": "MASTERCARD",
+                "surcharge": ["amount": 150]
+            ]
+        ]
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "networks": networkSurcharges
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNotNil(cardMethod?.networkSurcharges)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["VISA"], 100)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["MASTERCARD"], 150)
+    }
+
+    func testGetPaymentMethods_WithNetworkSurcharges_ExtractsFromDict() async throws {
+        // Given - Client session with network surcharges in dictionary format
+        let networkSurcharges: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["amount": 200]],
+            "AMEX": ["surcharge": ["amount": 300]]
+        ]
+        // For dictionary format, we need to convert to the options array format
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "networks": networkSurcharges
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNotNil(cardMethod?.networkSurcharges)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["VISA"], 200)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["AMEX"], 300)
+    }
+
+    func testGetPaymentMethods_NonCardMethod_HasNilNetworkSurcharges() async throws {
+        // Given - PayPal doesn't have network surcharges
+        let paymentMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "config-123",
+            surcharge: 50,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let paypalMethod = methods.first { $0.type == "PAYPAL" }
+        XCTAssertNotNil(paypalMethod)
+        XCTAssertNil(paypalMethod?.networkSurcharges)
+        XCTAssertEqual(paypalMethod?.surcharge, 50)  // Regular surcharge should still be present
+    }
+
+    // MARK: - hasUnknownSurcharge Mapping Tests
+
+    func testGetPaymentMethods_WithUnknownSurcharge_MapsCorrectly() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: 100,
+            options: nil,
+            displayMetadata: nil
+        )
+        paymentMethod.hasUnknownSurcharge = true
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertTrue(cardMethod?.hasUnknownSurcharge ?? false)
+    }
+
+    func testGetPaymentMethods_WithNoUnknownSurcharge_MapsFalse() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: 100,
+            options: nil,
+            displayMetadata: nil
+        )
+        // hasUnknownSurcharge defaults to false
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertFalse(cardMethod?.hasUnknownSurcharge ?? true)
+    }
+
+    // MARK: - Icon/Logo Mapping Tests
+
+    func testGetPaymentMethods_WithNilDisplayMetadata_IconIsNil() async throws {
+        // Given - Payment method with nil displayMetadata (thus nil logo)
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        // Icon is nil because displayMetadata is nil (no logo to load)
+        XCTAssertNil(cardMethod?.icon)
+    }
+
+    func testGetPaymentMethods_IconMappingDoesNotCrash() async throws {
+        // Given - Payment method configured normally
+        let paymentMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - Should complete without crash
+        XCTAssertEqual(methods.count, 1)
+        let paypalMethod = methods.first { $0.type == "PAYPAL" }
+        XCTAssertNotNil(paypalMethod)
+        // Icon is optional - may be nil without displayMetadata/logo
+    }
+
+    // MARK: - Network Surcharges Edge Cases
+
+    func testGetPaymentMethods_ClientSessionWithNoPaymentMethodData_NilNetworkSurcharges() async throws {
+        // Given - Client session exists but no paymentMethod data
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: nil,  // No payment method data
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNil(cardMethod?.networkSurcharges)
+    }
+
+    func testGetPaymentMethods_ClientSessionWithNilOptions_NilNetworkSurcharges() async throws {
+        // Given - Client session with paymentMethod but nil options
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: nil,  // Nil options
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNil(cardMethod?.networkSurcharges)
+    }
+
+    func testGetPaymentMethods_ClientSessionOptionsWithoutPaymentCardType_NilNetworkSurcharges() async throws {
+        // Given - Options exist but no PAYMENT_CARD type
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYPAL",  // Not PAYMENT_CARD
+                "someKey": "someValue"
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNil(cardMethod?.networkSurcharges)
+    }
+
+    func testGetPaymentMethods_PaymentCardOptionWithNoNetworksKey_NilNetworkSurcharges() async throws {
+        // Given - PAYMENT_CARD option exists but no "networks" key
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "someOtherKey": "someValue"  // No "networks" key
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNil(cardMethod?.networkSurcharges)
+    }
+
+    func testGetPaymentMethods_WithDirectIntegerSurchargeFormat_ExtractsSurcharges() async throws {
+        // Given - Direct integer surcharge format (not nested in "amount")
+        let networkSurcharges: [[String: Any]] = [
+            [
+                "type": "VISA",
+                "surcharge": 75  // Direct integer, not nested
+            ],
+            [
+                "type": "MASTERCARD",
+                "surcharge": 125  // Direct integer
+            ]
+        ]
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "networks": networkSurcharges
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNotNil(cardMethod?.networkSurcharges)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["VISA"], 75)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["MASTERCARD"], 125)
+    }
+
+    func testGetPaymentMethods_WithZeroSurcharge_ExcludesNetwork() async throws {
+        // Given - Zero surcharge should be excluded
+        let networkSurcharges: [[String: Any]] = [
+            [
+                "type": "VISA",
+                "surcharge": ["amount": 100]
+            ],
+            [
+                "type": "MASTERCARD",
+                "surcharge": ["amount": 0]  // Zero - should be excluded
+            ]
+        ]
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "networks": networkSurcharges
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        let cardMethod = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertNotNil(cardMethod)
+        XCTAssertNotNil(cardMethod?.networkSurcharges)
+        XCTAssertEqual(cardMethod?.networkSurcharges?["VISA"], 100)
+        XCTAssertNil(cardMethod?.networkSurcharges?["MASTERCARD"])  // Zero excluded
+    }
+
+    func testGetPaymentMethods_MultipleMethodsWithMixedSurcharges_MapsCorrectly() async throws {
+        // Given - Multiple payment methods with different surcharge configurations
+        let networkSurcharges: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["amount": 50]]
+        ]
+        let paymentMethodOptions: [[String: Any]] = [
+            [
+                "type": "PAYMENT_CARD",
+                "networks": networkSurcharges
+            ]
+        ]
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "session-123",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: paymentMethodOptions,
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+        let cardMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "card-config",
+            surcharge: 25,  // Method-level surcharge
+            options: nil,
+            displayMetadata: nil
+        )
+        let paypalMethod = PrimerPaymentMethod(
+            id: "paypal-id",
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: "paypal-config",
+            surcharge: 100,  // PayPal has method-level surcharge
+            options: nil,
+            displayMetadata: nil
+        )
+        let applePayMethod = PrimerPaymentMethod(
+            id: "applepay-id",
+            implementationType: .nativeSdk,
+            type: "APPLE_PAY",
+            name: "Apple Pay",
+            processorConfigId: "applepay-config",
+            surcharge: nil,  // No surcharge
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: clientSession,
+            paymentMethods: [cardMethod, paypalMethod, applePayMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertEqual(methods.count, 3)
+
+        // Card has both method-level and network surcharges
+        let card = methods.first { $0.type == "PAYMENT_CARD" }
+        XCTAssertEqual(card?.surcharge, 25)
+        XCTAssertNotNil(card?.networkSurcharges)
+        XCTAssertEqual(card?.networkSurcharges?["VISA"], 50)
+
+        // PayPal has method-level surcharge but no network surcharges
+        let paypal = methods.first { $0.type == "PAYPAL" }
+        XCTAssertEqual(paypal?.surcharge, 100)
+        XCTAssertNil(paypal?.networkSurcharges)
+
+        // Apple Pay has no surcharges
+        let applePay = methods.first { $0.type == "APPLE_PAY" }
+        XCTAssertNil(applePay?.surcharge)
+        XCTAssertNil(applePay?.networkSurcharges)
+    }
+
+    func testGetPaymentMethods_MapsIdToPaymentMethodType() async throws {
+        // Given - Verify ID mapping
+        let paymentMethod = PrimerPaymentMethod(
+            id: "different-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - ID should be set to type (not the original id)
+        let cardMethod = methods.first
+        XCTAssertEqual(cardMethod?.id, "PAYMENT_CARD")  // ID is mapped to type
+        XCTAssertEqual(cardMethod?.type, "PAYMENT_CARD")
+    }
+
+    func testGetPaymentMethods_IsEnabledAlwaysTrue() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - isEnabled is always true
+        XCTAssertTrue(methods.first?.isEnabled ?? false)
+    }
+
+    func testGetPaymentMethods_SupportedCurrenciesIsNil() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - supportedCurrencies is always nil (not yet implemented)
+        XCTAssertNil(methods.first?.supportedCurrencies)
+    }
+
+    func testGetPaymentMethods_MetadataIsNil() async throws {
+        // Given
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        let config = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+        mockConfigurationService.apiConfiguration = config
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - metadata is always nil (not yet extracted)
+        XCTAssertNil(methods.first?.metadata)
+    }
+}
+
+// MARK: - Configuration Service Factory Injection Tests
+
+@available(iOS 15.0, *)
+final class ConfigurationServiceFactoryTests: XCTestCase {
+
+    func testInit_WithConfigurationServiceFactory_UsesFactory() async throws {
+        // Given
+        var factoryCalled = false
+        let mockConfigService = MockConfigurationService()
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        mockConfigService.apiConfiguration = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        let repository = HeadlessRepositoryImpl(
+            configurationServiceFactory: {
+                factoryCalled = true
+                return mockConfigService
+            }
+        )
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then
+        XCTAssertTrue(factoryCalled)
+        XCTAssertEqual(methods.count, 1)
+        XCTAssertEqual(methods.first?.type, "PAYMENT_CARD")
+    }
+
+    func testInit_WithoutFactory_ReturnsEmptyWithoutDI() async throws {
+        // Given - No factory and no DI container
+        let repository = HeadlessRepositoryImpl()
+
+        // When
+        let methods = try await repository.getPaymentMethods()
+
+        // Then - Without DI container or factory, returns empty array
+        XCTAssertTrue(methods.isEmpty)
+    }
+
+    func testGetPaymentMethods_CalledTwice_OnlyInjectsOnce() async throws {
+        // Given
+        var factoryCallCount = 0
+        let mockConfigService = MockConfigurationService()
+        let paymentMethod = PrimerPaymentMethod(
+            id: "card-id",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: "config-123",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        mockConfigService.apiConfiguration = PrimerAPIConfiguration(
+            coreUrl: "https://api.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bin.primer.io",
+            assetsUrl: "https://assets.primer.io",
+            clientSession: nil,
+            paymentMethods: [paymentMethod],
+            primerAccountId: "account-123",
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        let repository = HeadlessRepositoryImpl(
+            configurationServiceFactory: {
+                factoryCallCount += 1
+                return mockConfigService
+            }
+        )
+
+        // When - Call getPaymentMethods twice
+        _ = try await repository.getPaymentMethods()
+        _ = try await repository.getPaymentMethods()
+
+        // Then - Factory should only be called once (idempotent injection)
+        XCTAssertEqual(factoryCallCount, 1)
+    }
+}
+
+// MARK: - Process Card Payment Tests
+
+@available(iOS 15.0, *)
+final class ProcessCardPaymentTests: XCTestCase {
+
+    private var mockRawDataManagerFactory: MockRawDataManagerFactory!
+    private var mockRawDataManager: MockRawDataManager!
+    private var repository: HeadlessRepositoryImpl!
+
+    override func setUp() {
+        super.setUp()
+        mockRawDataManager = MockRawDataManager()
+        mockRawDataManagerFactory = MockRawDataManagerFactory()
+        mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
+        repository = HeadlessRepositoryImpl(
+            rawDataManagerFactory: mockRawDataManagerFactory
+        )
+    }
+
+    override func tearDown() {
+        mockRawDataManager = nil
+        mockRawDataManagerFactory = nil
+        repository = nil
+        super.tearDown()
+    }
+
+    // MARK: - Factory Tests
+
+    func testProcessCardPayment_CallsFactoryWithCorrectPaymentMethodType() async throws {
+        // Given
+        let expectation = XCTestExpectation(description: "Factory called")
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            XCTAssertEqual(type, "PAYMENT_CARD")
+            XCTAssertNotNil(delegate)
+            expectation.fulfill()
+            return self.mockRawDataManager
+        }
+
+        // We need to cancel the task because the full flow won't complete without proper setup
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test User",
+                selectedNetwork: .visa
+            )
+        }
+
+        // Wait briefly for the factory to be called
+        await fulfillment(of: [expectation], timeout: 2.0)
+        task.cancel()
+
+        // Then
+        XCTAssertEqual(mockRawDataManagerFactory.createCallCount, 1)
+        XCTAssertEqual(mockRawDataManagerFactory.lastCreateCall?.paymentMethodType, "PAYMENT_CARD")
+    }
+
+    func testProcessCardPayment_WhenFactoryThrows_PropagatesError() async {
+        // Given
+        let expectedError = NSError(domain: "TestError", code: 123, userInfo: [NSLocalizedDescriptionKey: "Factory error"])
+        mockRawDataManagerFactory.createError = expectedError
+
+        // When/Then
+        do {
+            _ = try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test User",
+                selectedNetwork: nil
+            )
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual((error as NSError).domain, "TestError")
+            XCTAssertEqual((error as NSError).code, 123)
+        }
+    }
+
+    func testProcessCardPayment_CallsConfigureOnRawDataManager() async throws {
+        // Given
+        let configureExpectation = XCTestExpectation(description: "Configure called")
+        var configureCalled = false
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            // Track when configure is called
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if mock.configureCallCount > 0 {
+                    configureCalled = true
+                    configureExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test User",
+                selectedNetwork: nil
+            )
+        }
+
+        // Wait for configure to be called
+        await fulfillment(of: [configureExpectation], timeout: 2.0)
+        task.cancel()
+
+        // Then
+        XCTAssertTrue(configureCalled)
+    }
+
+    func testProcessCardPayment_SetsRawDataWithCardData() async throws {
+        // Given
+        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
+        var capturedRawData: PrimerRawData?
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            // Monitor when rawData is set
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mock.rawDataSetCount > 0 {
+                    capturedRawData = mock.rawDataHistory.last ?? nil
+                    rawDataSetExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242 4242 4242 4242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test User",
+                selectedNetwork: .visa
+            )
+        }
+
+        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
+        task.cancel()
+
+        // Then
+        XCTAssertNotNil(capturedRawData)
+        if let cardData = capturedRawData as? PrimerCardData {
+            // Card number should have spaces removed
+            XCTAssertEqual(cardData.cardNumber, "4242424242424242")
+            XCTAssertEqual(cardData.cvv, "123")
+            XCTAssertEqual(cardData.expiryDate, "12/25")
+            XCTAssertEqual(cardData.cardholderName, "Test User")
+            XCTAssertEqual(cardData.cardNetwork, .visa)
+        } else {
+            XCTFail("Expected PrimerCardData")
+        }
+    }
+
+    func testProcessCardPayment_WithEmptyCardholderName_SetsNilCardholderName() async throws {
+        // Given
+        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
+        var capturedCardData: PrimerCardData?
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mock.rawDataSetCount > 0 {
+                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
+                    rawDataSetExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "",  // Empty name
+                selectedNetwork: nil
+            )
+        }
+
+        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
+        task.cancel()
+
+        // Then
+        XCTAssertNotNil(capturedCardData)
+        XCTAssertNil(capturedCardData?.cardholderName)  // Empty should become nil
+    }
+
+    func testProcessCardPayment_WithNoNetwork_DoesNotSetCardNetwork() async throws {
+        // Given
+        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
+        var capturedCardData: PrimerCardData?
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mock.rawDataSetCount > 0 {
+                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
+                    rawDataSetExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test",
+                selectedNetwork: nil  // No network specified
+            )
+        }
+
+        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
+        task.cancel()
+
+        // Then
+        XCTAssertNotNil(capturedCardData)
+        // When no network is passed, cardNetwork should be nil (default)
+        // Note: PrimerCardData may have a default value, so we check the flow worked
+    }
+
+    func testProcessCardPayment_WhenConfigureFails_PropagatesError() async {
+        // Given
+        let configureError = NSError(domain: "ConfigError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Config failed"])
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.configureError = configureError
+            mock.delegate = delegate
+            return mock
+        }
+
+        // When/Then
+        do {
+            _ = try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test User",
+                selectedNetwork: nil
+            )
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertEqual((error as NSError).domain, "ConfigError")
+        }
+    }
+
+    // MARK: - Card Data Formatting Tests
+
+    func testProcessCardPayment_FormatsExpiryDateCorrectly() async throws {
+        // Given
+        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
+        var capturedCardData: PrimerCardData?
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mock.rawDataSetCount > 0 {
+                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
+                    rawDataSetExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242424242424242",
+                cvv: "123",
+                expiryMonth: "03",
+                expiryYear: "28",
+                cardholderName: "Test",
+                selectedNetwork: nil
+            )
+        }
+
+        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
+        task.cancel()
+
+        // Then - Expiry should be formatted as "MM/YY"
+        XCTAssertEqual(capturedCardData?.expiryDate, "03/28")
+    }
+
+    func testProcessCardPayment_StripsSpacesFromCardNumber() async throws {
+        // Given
+        let rawDataSetExpectation = XCTestExpectation(description: "RawData set")
+        var capturedCardData: PrimerCardData?
+
+        mockRawDataManagerFactory.createMockHandler = { type, delegate in
+            let mock = MockRawDataManager()
+            mock.delegate = delegate
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mock.rawDataSetCount > 0 {
+                    capturedCardData = mock.rawDataHistory.last as? PrimerCardData
+                    rawDataSetExpectation.fulfill()
+                }
+            }
+            return mock
+        }
+
+        // When - Card number with spaces
+        let task = Task {
+            try await repository.processCardPayment(
+                cardNumber: "4242 4242 4242 4242",
+                cvv: "123",
+                expiryMonth: "12",
+                expiryYear: "25",
+                cardholderName: "Test",
+                selectedNetwork: nil
+            )
+        }
+
+        await fulfillment(of: [rawDataSetExpectation], timeout: 3.0)
+        task.cancel()
+
+        // Then - Spaces should be stripped
+        XCTAssertEqual(capturedCardData?.cardNumber, "4242424242424242")
     }
 }

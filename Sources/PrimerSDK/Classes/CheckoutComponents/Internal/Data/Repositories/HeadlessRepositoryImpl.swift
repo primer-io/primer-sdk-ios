@@ -1,7 +1,7 @@
 //
 //  HeadlessRepositoryImpl.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -166,9 +166,17 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     // MARK: - Dependency Injection for Testing
 
     private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+    private var configurationServiceFactory: (() -> ConfigurationService)?
+    private var rawDataManagerFactory: RawDataManagerFactoryProtocol
 
-    init(clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() }) {
+    init(
+        clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+        configurationServiceFactory: (() -> ConfigurationService)? = nil,
+        rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory()
+    ) {
         self.clientSessionActionsFactory = clientSessionActionsFactory
+        self.configurationServiceFactory = configurationServiceFactory
+        self.rawDataManagerFactory = rawDataManagerFactory
     }
 
     @available(iOS 15.0, *)
@@ -195,6 +203,12 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     @available(iOS 15.0, *)
     private func injectConfigurationService() async {
         guard configurationService == nil else { return }
+
+        // Use factory if provided (for testing)
+        if let factory = configurationServiceFactory {
+            configurationService = factory()
+            return
+        }
 
         do {
             guard let container = await DIContainer.current else {
@@ -358,7 +372,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                         }
                         PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
-                        let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+                        let rawDataManager = try self.rawDataManagerFactory.createRawDataManager(
                             paymentMethodType: "PAYMENT_CARD",
                             delegate: paymentHandler
                         )
@@ -407,7 +421,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func configureRawDataManagerAndSubmit(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         cardData: PrimerCardData,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
@@ -445,7 +459,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func submitPaymentWithValidation(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationResult: Bool,
@@ -477,7 +491,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     @MainActor
-    private func submitPaymentWithHandlingMode(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) async {
+    private func submitPaymentWithHandlingMode(rawDataManager: RawDataManagerProtocol) async {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
             await ensureSettings()
@@ -496,7 +510,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     private func handleValidationFailure(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationErrors: [Error]?
     ) {
