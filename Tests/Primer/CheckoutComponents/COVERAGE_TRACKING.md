@@ -1,6 +1,6 @@
 # CheckoutComponents Code Coverage Tracking
 
-**Overall Coverage on New Code:** 44.6%
+**Overall Coverage on New Code:** 44.7%
 **Last Updated:** 2026-01-01
 **Branch:** 002-checkout-components-unit-tests
 **Total Tests in Project:** 3463 (all passing)
@@ -98,11 +98,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | MockDesignTokens.swift | 39 | N/A | Test utility |
 | MockDIContainer.swift | 29 | N/A | Test utility |
 | MockValidationService.swift | 49 | N/A | Test utility |
-<<<<<<< HEAD
-| RawDataManagerProtocol.swift | 6 | Low | Protocol |
-=======
 | RawDataManagerProtocol.swift | 6 | N/A | Protocol |
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
 | WebAuthenticationService.swift | 3 | Low | Simple service |
 
 ---
@@ -117,17 +113,9 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | SelectCountryProvider.swift | 15.2% | 28 | Tests Added |
 | CheckoutComponentsPrimer.swift | 17.4% | 195 | Tests Added |
 | ApplePayButtonView.swift | 29.3% | 41 | SwiftUI - Skip |
-<<<<<<< HEAD
-| PrimerSettings.swift | 33.3% | 4 | Tests Added |
 | UserInterfaceModule.swift | 38.5% | 8 | Tests Added |
 | HeadlessRepositoryImpl.swift | 43.7% | 411 | Tests Added |
 | View+Accessibility.swift | 44.0% | 14 | Tests Added |
-=======
-| PrimerSettings.swift | 33.3% | 4 | Needs Tests |
-| UserInterfaceModule.swift | 38.5% | 8 | Needs Tests |
-| HeadlessRepositoryImpl.swift | 43.7% | 411 | Tests Added (+94 tests) |
-| View+Accessibility.swift | 44.0% | 14 | Needs Tests |
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
 
 ---
 
@@ -184,22 +172,13 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | Factory.swift | 93.9% | 3 | Tests Added |
 | CheckoutNavigator.swift | 94.2% | 3 | Good |
 | PrimerAPIConfigurationModule.swift | 95.3% | 3 | Good |
-<<<<<<< HEAD
-| AnalyticsEventMetadata.swift | 95.6% | 3 | Good |
 | CheckoutRoute.swift | 95.9% | 2 | Good |
 | IntExtension.swift | 96.3% | 1 | Good |
 | ProcessApplePayPaymentInteractor.swift | 96.3% | 4 | Good |
-| CardValidationRules.swift | 97.6% | 3 | Good |
-| ApplePayRequestBuilder.swift | 97.9% | 3 | Good |
-| CommonValidationRules.swift | 98.7% | 4 | Good |
-=======
-| CheckoutRoute.swift | 95.9% | 2 | Good |
-| IntExtension.swift | 96.3% | 1 | Good |
-| ProcessApplePayPaymentInteractor.swift | 96.3% | 4 | Good |
+| AnalyticsEventMetadata.swift | 97.1% | 2 | Good |
 | CardValidationRules.swift | 97.6% | 3 | Tests Added |
 | ApplePayRequestBuilder.swift | 97.9% | 3 | Good |
 | CommonValidationRules.swift | 98.7% | 4 | Tests Added |
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
 | DefaultSelectCountryScope.swift | 98.7% | 1 | Good |
 | PrimerHeadlessUniversalCheckoutInputElement.swift | 99.3% | 1 | Tests Added |
 | VaultedPaymentMethod+DisplayData.swift | 99.5% | 1 | Good |
@@ -212,7 +191,6 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 |------|-------|
 | AccessibilityConfiguration.swift | 0 |
 | AnalyticsEventBuffer.swift | 0 |
-| AnalyticsEventMetadata.swift | 0 |
 | AnalyticsPayloadBuilder.swift | 0 |
 | AnalyticsSessionConfig.swift | 0 |
 | ApplePayFormState.swift | 0 |
@@ -244,6 +222,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | PrimerPaymentMethodSelectionScope.swift | 0 |
 | PrimerPaymentMethodType+ImageName.swift | 0 |
 | PrimerSelectCountryScope.swift | 0 |
+| PrimerSettings.swift | 0 |
 | ProcessCardPaymentInteractor.swift | 0 |
 | ProcessPayPalPaymentInteractor.swift | 0 |
 | RetentionStrategy.swift | 0 |
@@ -267,11 +246,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | CardPaymentMethodTests.swift | 6 | CardPaymentMethod.swift | 34.8% | 57.3% | Done |
 | PayPalPaymentMethodTests.swift | 7 | PayPalPaymentMethod.swift | 4.2% | 64.8% | Done |
 | DefaultCardFormScopeTests.swift | 73 | DefaultCardFormScope.swift | 27.3% | 54.0% | Done |
-<<<<<<< HEAD
-| DefaultPaymentMethodSelectionScopeTests.swift | 16 | DefaultPaymentMethodSelectionScope.swift | 31.4% | 54.2% | Done |
-=======
 | DefaultPaymentMethodSelectionScopeTests.swift | 32 | DefaultPaymentMethodSelectionScope.swift | 31.4% | 54.2% | Done |
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
 | DesignTokensProcessorTests.swift | 28 | DesignTokensProcessor.swift | 82.8% | 82.8% | Existing |
 | FactoryTests.swift | 15 | Factory.swift | 0% | 93.9% | Done |
 | ProcessPayPalPaymentInteractorTests.swift | 20 | ProcessPayPalPaymentInteractor.swift | 0% | 100% | Done |
@@ -304,55 +279,37 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | DesignTokensKeyTests.swift | 6 | DesignTokensKey.swift | 0% | 100% | Done |
 | CheckoutColorsTests.swift | 24 | CheckoutColors.swift | 0% | 100% | Done |
 | PrimerLayoutTests.swift | 20 | PrimerLayout.swift | 0% | 100% | Done |
-<<<<<<< HEAD
-| HeadlessRepositoryImplTests.swift | 67 | HeadlessRepositoryImpl.swift | 12.4% | 43.7% | Done |
-| PrimerSettingsTests.swift | 48 | PrimerSettings.swift | 33.3% | TBD | Done |
-| UserInterfaceModuleTests.swift | 45 | UserInterfaceModule.swift | 38.5% | TBD | Done |
-| ViewAccessibilityConditionalsTests.swift | 30 | View+Accessibility.swift | 44.0% | TBD | Done |
-
-**Total Tests:** 978+ (all passing)
-=======
 | HeadlessRepositoryImplTests.swift | 94 | HeadlessRepositoryImpl.swift | 12.4% | 43.7% | Done |
 | CardValidationRulesTests.swift | 15 | CardValidationRules.swift | 88.8% | 97.6% | Done |
 | CommonValidationRulesTests.swift | 35 | CommonValidationRules.swift | 78.9% | 98.7% | Done |
+| PrimerSettingsTests.swift | 48 | PrimerSettings.swift | 33.3% | 100% | Done |
+| UserInterfaceModuleTests.swift | 45 | UserInterfaceModule.swift | 38.5% | 38.5% | Done |
+| ViewAccessibilityConditionalsTests.swift | 30 | View+Accessibility.swift | 44.0% | 44.0% | Done |
 
-**Total Tests Added:** 950+ (all passing)
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
+**Total Tests Added:** 1000+ (all passing)
 
 ---
 
 ## Next Steps - Priority Order
 
 ### High Priority (Completed)
-<<<<<<< HEAD
-- ✅ HeadlessRepositoryImpl.swift (43.7%) - 67 tests added including processCardPayment
-- ✅ DesignTokensManager.swift (4.9%) - Tests added (44 tests)
-- ✅ CheckoutComponentsPrimer.swift (17.4%) - Tests added (21 tests)
-- ✅ Provider classes - Tests added (~54 tests)
-- ✅ DefaultCardFormScope.swift (54.0%) - Tests added (73 tests, +26.7% coverage)
-- ✅ DefaultPaymentMethodSelectionScope.swift (54.2%) - Tests added (+22.8% coverage)
-=======
 - ✅ HeadlessRepositoryImpl.swift (43.7%) - 94 tests added including processCardPayment
 - ✅ DesignTokensManager.swift (4.9%) - Tests added (44 tests)
 - ✅ CheckoutComponentsPrimer.swift (17.4%) - Tests added (21 tests)
 - ✅ Provider classes - Tests added (~54 tests)
 - ✅ DefaultCardFormScope.swift (54.0%) - Tests added (73 tests)
 - ✅ DefaultPaymentMethodSelectionScope.swift (54.2%) - Tests added (32 tests)
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
 - ✅ DesignTokens.swift (92.0%) - Tests added (34 tests)
 - ✅ PrimerHeadlessUniversalCheckoutInputElement.swift (99.3%) - Tests added
 - ✅ CardValidationRules.swift (97.6%) - Tests added
 - ✅ CommonValidationRules.swift (98.7%) - Tests added
+- ✅ PrimerSettings.swift (100%) - Tests added (48 tests)
+- ✅ UserInterfaceModule.swift (38.5%) - Tests added (45 tests)
+- ✅ View+Accessibility.swift (44.0%) - Tests added (30 tests)
 
-### Medium Priority (Low coverage, partial tests exist)
-<<<<<<< HEAD
-1. ~~View+Accessibility.swift (44.0%)~~ - Tests added (30 tests)
-2. PrimerSettings.swift - Tests added (48 tests)
-3. UserInterfaceModule.swift - Tests added (45 tests)
-=======
-1. View+Accessibility.swift (44.0%)
-2. HeadlessRepositoryImpl.swift (43.7%) - Can still improve
->>>>>>> a1c62a410 (test: Add additional edge case tests for HeadlessRepositoryImpl)
+### Medium Priority (Low coverage, can still improve)
+1. HeadlessRepositoryImpl.swift (43.7%) - Can still improve
+2. View+Accessibility.swift (44.0%) - Can still improve
 
 ### Low Priority (Already good coverage)
 - Files at 80%+ coverage - minor improvements only
