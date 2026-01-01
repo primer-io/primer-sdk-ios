@@ -418,4 +418,531 @@ final class CommonValidationRulesTests: XCTestCase {
         // Then
         XCTAssertFalse(result.isValid)
     }
+
+    // MARK: - Additional Name Validation Tests
+
+    func test_validateFirstName_withUnicodeCharacters_returnsValid() {
+        // Given - Names with unicode letters (François)
+        let rule = FirstNameRule()
+        let name = "François"
+
+        // When
+        let result = rule.validate(name)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateFirstName_withAccentedCharacters_returnsValid() {
+        // Given - Names with accents (René)
+        let rule = FirstNameRule()
+        let name = "René"
+
+        // When
+        let result = rule.validate(name)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateFirstName_withSingleCharacter_returnsInvalid() {
+        // Given - Single character names should be invalid (min 2 chars)
+        let rule = FirstNameRule()
+        let name = "J"
+
+        // When
+        let result = rule.validate(name)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateLastName_withApostrophe_returnsValid() {
+        // Given - Names like O'Connor should be valid
+        let rule = LastNameRule()
+        let name = "O'Connor"
+
+        // When
+        let result = rule.validate(name)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateLastName_withHyphen_returnsValid() {
+        // Given - Hyphenated names like Smith-Jones should be valid
+        let rule = LastNameRule()
+        let name = "Smith-Jones"
+
+        // When
+        let result = rule.validate(name)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateLastName_withNil_returnsInvalid() {
+        // Given
+        let rule = LastNameRule()
+
+        // When
+        let result = rule.validate(nil)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    // MARK: - Additional Email Validation Tests
+
+    func test_validateEmail_withInternationalTLD_returnsValid() {
+        // Given - Emails with international TLDs (.co.uk)
+        let rule = EmailValidationRule()
+        let email = "user@example.co.uk"
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateEmail_withNumbers_returnsValid() {
+        // Given - Emails with numbers in local part
+        let rule = EmailValidationRule()
+        let email = "user123@test.com"
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateEmail_withDotsInLocalPart_returnsValid() {
+        // Given - Emails with dots in local part
+        let rule = EmailValidationRule()
+        let email = "user.name@test.com"
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateEmail_withMultipleAtSymbols_returnsInvalid() {
+        // Given - Invalid email with multiple @ symbols
+        let rule = EmailValidationRule()
+        let email = "user@@test.com"
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateEmail_withSpaces_returnsInvalid() {
+        // Given - Invalid email with spaces
+        let rule = EmailValidationRule()
+        let email = "user name@test.com"
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateEmail_withMissingDomain_returnsInvalid() {
+        // Given
+        let rule = EmailValidationRule()
+        let email = TestData.EmailAddresses.missingDomain
+
+        // When
+        let result = rule.validate(email)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    // MARK: - Additional Phone Number Validation Tests
+
+    func test_validatePhoneNumber_withMinLength7_returnsValid() {
+        // Given - Minimum valid length is 7 digits
+        let rule = PhoneNumberValidationRule()
+        let phone = "1234567"
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePhoneNumber_withMaxLength15_returnsValid() {
+        // Given - Maximum valid length is 15 digits
+        let rule = PhoneNumberValidationRule()
+        let phone = "123456789012345"
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePhoneNumber_with16Digits_returnsInvalid() {
+        // Given - 16 digits exceeds max length
+        let rule = PhoneNumberValidationRule()
+        let phone = "1234567890123456"
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePhoneNumber_withInternationalFormat_returnsValid() {
+        // Given - International format +44 20 7946 0958
+        let rule = PhoneNumberValidationRule()
+        let phone = TestData.PhoneNumbers.validInternational
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePhoneNumber_withLetters_returnsInvalid() {
+        // Given - Phone numbers with letters should be invalid
+        let rule = PhoneNumberValidationRule()
+        let phone = TestData.PhoneNumbers.withLetters
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePhoneNumber_withParentheses_cleansAndValidates() {
+        // Given - Phone with parentheses should be cleaned
+        let rule = PhoneNumberValidationRule()
+        let phone = "(123) 456-7890"
+
+        // When
+        let result = rule.validate(phone)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePhoneNumber_withNil_returnsInvalid() {
+        // Given
+        let rule = PhoneNumberValidationRule()
+
+        // When
+        let result = rule.validate(nil)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    // MARK: - Additional Postal Code Validation Tests (Country-Specific)
+
+    func test_validatePostalCode_US_withZipPlus4_returnsValid() {
+        // Given - US ZIP+4 format (12345-6789)
+        let rule = PostalCodeRule(countryCode: "US")
+        let postalCode = TestData.PostalCodes.validUSExtended
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePostalCode_US_withLetters_returnsInvalid() {
+        // Given - US ZIP code should be numeric only
+        let rule = PostalCodeRule(countryCode: "US")
+        let postalCode = "1000A"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePostalCode_CA_withValidFormat_returnsValid() {
+        // Given - Canadian postal code format (A1A 1A1)
+        let rule = PostalCodeRule(countryCode: "CA")
+        let postalCode = TestData.PostalCodes.validCanada
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePostalCode_CA_withInvalidFormat_returnsInvalid() {
+        // Given - Invalid Canadian postal code
+        let rule = PostalCodeRule(countryCode: "CA")
+        let postalCode = "12345"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePostalCode_GB_withValidLength_returnsValid() {
+        // Given - UK postcode (SW1A 2AA)
+        let rule = PostalCodeRule(countryCode: "GB")
+        let postalCode = TestData.PostalCodes.validUK
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePostalCode_GB_withTooShort_returnsInvalid() {
+        // Given - UK postcode too short (min 5 chars)
+        let rule = PostalCodeRule(countryCode: "GB")
+        let postalCode = "SW1"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePostalCode_generic_withMinLength3_required() {
+        // Given - Generic postal code needs at least 3 chars
+        let rule = PostalCodeRule(countryCode: nil)
+        let postalCode = "12"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePostalCode_generic_with3Chars_returnsValid() {
+        // Given - 3 chars is minimum for generic
+        let rule = PostalCodeRule(countryCode: nil)
+        let postalCode = "123"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validatePostalCode_generic_withMaxLength10_enforced() {
+        // Given - 11+ chars exceeds max
+        let rule = PostalCodeRule(countryCode: nil)
+        let postalCode = "12345678901"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validatePostalCode_generic_with10Chars_returnsValid() {
+        // Given - 10 chars is max for generic
+        let rule = PostalCodeRule(countryCode: nil)
+        let postalCode = "1234567890"
+
+        // When
+        let result = rule.validate(postalCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    // MARK: - Additional Address Validation Tests
+
+    func test_validateAddress_withMaxLength100_returnsValid() {
+        // Given - Address at max length (100 chars)
+        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
+        let address = String(repeating: "a", count: 100)
+
+        // When
+        let result = rule.validate(address)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateAddress_exceeding100Characters_returnsInvalid() {
+        // Given - Address exceeding 100 chars
+        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
+        let address = String(repeating: "a", count: 101)
+
+        // When
+        let result = rule.validate(address)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateAddress_withMinLength3_required() {
+        // Given - Address needs at least 3 chars
+        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
+        let address = "AB"
+
+        // When
+        let result = rule.validate(address)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateAddress_with3Chars_returnsValid() {
+        // Given - 3 chars is minimum
+        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
+        let address = "ABC"
+
+        // When
+        let result = rule.validate(address)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateAddressLine1_withNil_whenRequired_returnsInvalid() {
+        // Given
+        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
+
+        // When
+        let result = rule.validate(nil)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    // MARK: - City and State Validation Tests
+
+    func test_validateCity_withHyphen_returnsValid() {
+        // Given - Cities with hyphens (Winston-Salem)
+        let rule = CityRule()
+        let city = "Winston-Salem"
+
+        // When
+        let result = rule.validate(city)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateCity_withPeriod_returnsValid() {
+        // Given - Cities with periods (St. Louis)
+        let rule = CityRule()
+        let city = "St. Louis"
+
+        // When
+        let result = rule.validate(city)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateCity_withEmpty_returnsInvalid() {
+        // Given
+        let rule = CityRule()
+        let city = ""
+
+        // When
+        let result = rule.validate(city)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateCity_withSingleChar_returnsInvalid() {
+        // Given - City needs at least 2 chars
+        let rule = CityRule()
+        let city = "A"
+
+        // When
+        let result = rule.validate(city)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateState_withEmpty_returnsInvalid() {
+        // Given
+        let rule = StateRule()
+        let state = ""
+
+        // When
+        let result = rule.validate(state)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateState_withSingleChar_returnsInvalid() {
+        // Given - State needs at least 2 chars
+        let rule = StateRule()
+        let state = "N"
+
+        // When
+        let result = rule.validate(state)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    // MARK: - Country Code Validation Tests
+
+    func test_validateCountryCode_with3LetterCode_returnsValid() {
+        // Given - 3-letter ISO codes should be valid
+        let rule = BillingCountryCodeRule()
+        let countryCode = "USA"
+
+        // When
+        let result = rule.validate(countryCode)
+
+        // Then
+        XCTAssertTrue(result.isValid)
+    }
+
+    func test_validateCountryCode_withSingleChar_returnsInvalid() {
+        // Given - Single character is too short
+        let rule = BillingCountryCodeRule()
+        let countryCode = "U"
+
+        // When
+        let result = rule.validate(countryCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
+
+    func test_validateCountryCode_with4Letters_returnsInvalid() {
+        // Given - 4+ characters is too long
+        let rule = BillingCountryCodeRule()
+        let countryCode = "USAA"
+
+        // When
+        let result = rule.validate(countryCode)
+
+        // Then
+        XCTAssertFalse(result.isValid)
+    }
 }

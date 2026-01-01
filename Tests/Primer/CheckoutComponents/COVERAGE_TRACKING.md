@@ -111,6 +111,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | CardFormProvider.swift | 12.5% | 42 | Tests Added |
 | SelectCountryProvider.swift | 15.2% | 28 | Tests Added |
 | CheckoutComponentsPrimer.swift | 17.4% | 195 | Tests Added |
+| HeadlessRepositoryImpl.swift | 20.8% | 571 | Tests Added |
 | DefaultCardFormScope.swift | 27.3% | 540 | Tests Exist |
 | ApplePayButtonView.swift | 29.3% | 41 | SwiftUI - Skip |
 | DefaultPaymentMethodSelectionScope.swift | 31.4% | 210 | Tests Exist |
@@ -127,12 +128,13 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 |------|----------|-------|--------|
 | PrimerEnvironment.swift | 50.0% | 4 | Tests Added |
 | SwiftUI+DI.swift | 52.1% | 35 | Tests Added |
+| DefaultCardFormScope.swift | 54.0% | 342 | Tests Added |
 | CardPaymentMethod.swift | 57.3% | 38 | Tests Added |
 | PrimerCardFormScope.swift | 58.3% | 40 | Tests Added |
 | PrimerTheme.swift | 60.0% | 4 | Good |
 | AccessibilityIdentifiers.swift | 62.5% | 9 | Needs Tests |
-| CheckoutComponentsPaymentMethodsBridge.swift | 64.7% | 61 | Tests Added |
 | PayPalPaymentMethod.swift | 64.8% | 25 | Tests Added |
+| CheckoutComponentsPaymentMethodsBridge.swift | 69.9% | 52 | Tests Added |
 | ContainerProtocol.swift | 66.7% | 3 | Good |
 | DIContainer.swift | 69.1% | 34 | Good |
 | CheckoutComponentsStrings.swift | 72.9% | 42 | Good |
@@ -244,7 +246,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | TypeKeyTests.swift | 24 | TypeKey.swift | 50.0% | 100% | Done |
 | CardPaymentMethodTests.swift | 6 | CardPaymentMethod.swift | 34.8% | 57.3% | Done |
 | PayPalPaymentMethodTests.swift | 7 | PayPalPaymentMethod.swift | 4.2% | 64.8% | Done |
-| DefaultCardFormScopeTests.swift | 73 | DefaultCardFormScope.swift | 27.3% | TBD | Updated |
+| DefaultCardFormScopeTests.swift | 73 | DefaultCardFormScope.swift | 27.3% | 54.0% | Done |
 | DefaultPaymentMethodSelectionScopeTests.swift | 16 | DefaultPaymentMethodSelectionScope.swift | 31.4% | 31.4% | Existing |
 | DesignTokensProcessorTests.swift | 28 | DesignTokensProcessor.swift | 82.8% | 82.8% | Existing |
 | FactoryTests.swift | 15 | Factory.swift | 0% | 93.9% | Done |
@@ -291,7 +293,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 - ✅ DesignTokensManager.swift (4.9%) - Tests added (44 tests)
 - ✅ CheckoutComponentsPrimer.swift (17.4%) - Tests added (21 tests)
 - ✅ Provider classes - Tests added (~54 tests)
-- ✅ DefaultCardFormScope.swift (27.3%) - Tests exist (25 tests)
+- ✅ DefaultCardFormScope.swift (54.0%) - Tests added (73 tests, +26.7% coverage)
 - ✅ DesignTokens.swift (92.0%) - Tests added (34 tests)
 - ✅ PrimerHeadlessUniversalCheckoutInputElement.swift (99.3%) - Tests added
 
