@@ -155,6 +155,21 @@ GitHub Actions workflows in `.github/workflows/`:
 - Update `CHANGELOG.md`
 - Tag release in git
 
+## Test Commands
+
+### Run All Tests
+```bash
+xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
+  -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+### Run Specific Test File
+```bash
+xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -only-testing:'PrimerSDKTests/TestClassName'
+```
+
 ## Important Notes
 
 - **Minimum iOS version**: 13.0 (main SDK), 15.0 (CheckoutComponents)
