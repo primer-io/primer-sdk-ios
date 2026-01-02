@@ -355,7 +355,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5+7 | 🔄 In Review |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | 🔄 In Review |
 | 8 | `ov/test/checkout-components-08-network` | Network | 4+6 | 🔄 In Review |
-| 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6 | ⬜ Pending |
+| 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6+6 | 🔄 In Review |
 | 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 7 | ⬜ Pending |
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6 | ⬜ Pending |
 | 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5 | ⬜ Pending |
@@ -477,13 +477,20 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
 - [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
-### PR 9: Data Config (6 files)
-- [ ] Data/ConfigurationServiceTests.swift
-- [ ] Data/ConfigurationValidationTests.swift
-- [ ] Data/DataPersistenceTests.swift
-- [ ] Data/MerchantConfigCachingTests.swift
-- [ ] Data/PaymentMethodCacheTests.swift
-- [ ] Data/PaymentMethodRepositoryTests.swift
+### PR 9: Data Config (6 files + 6 foundation dependencies)
+*Includes foundation files since PR 1 hasn't merged yet*
+- [x] Data/ConfigurationServiceTests.swift
+- [x] Data/ConfigurationValidationTests.swift
+- [x] Data/DataPersistenceTests.swift
+- [x] Data/MerchantConfigCachingTests.swift
+- [x] Data/PaymentMethodCacheTests.swift
+- [x] Data/PaymentMethodRepositoryTests.swift
+- [x] *Foundation:* TestSupport/TestData.swift
+- [x] *Foundation:* TestSupport/XCTestCase+Async.swift
+- [x] *Foundation:* TestSupport/ContainerTestHelpers.swift
+- [x] *Foundation:* Mocks/MockConfigurationService.swift
+- [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
+- [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
 ### PR 10: HeadlessRepo Pt1 (7 files)
 - [ ] Mocks/MockHeadlessRepository.swift
