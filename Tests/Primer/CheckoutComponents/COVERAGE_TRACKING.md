@@ -349,7 +349,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 |----|--------|----------|-------|--------|
 | 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | 🔄 In Review |
 | 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | 🔄 In Review |
-| 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | ⬜ Pending |
+| 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | 🔄 In Review |
 | 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | ⬜ Pending |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
@@ -406,14 +406,14 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] DI/RetentionPolicyTests.swift
 - [x] DI/FactoryTests.swift
 
-### PR 3: DI SwiftUI (7 files)
-- [ ] Core/SettingsObserverTests.swift
-- [ ] Core/AnalyticsSessionConfigProviderTests.swift
-- [ ] DI/AsyncResolutionTests.swift
-- [ ] DI/DIContainerSwiftUITests.swift
-- [ ] DI/SwiftUIDITests.swift
-- [ ] DI/PrimerSettingsDIIntegrationTests.swift
-- [ ] DI/PrimerSettingsIntegrationTests.swift
+### PR 3: DI SwiftUI (7 files) *Includes file reorganization*
+- [x] Core/SettingsObserverTests.swift
+- [x] Core/AnalyticsSessionConfigProviderTests.swift *(moved from root)*
+- [x] DI/AsyncResolutionTests.swift
+- [x] DI/DIContainerSwiftUITests.swift
+- [x] DI/SwiftUIDITests.swift
+- [x] DI/PrimerSettingsDIIntegrationTests.swift *(moved from root)*
+- [x] DI/PrimerSettingsIntegrationTests.swift *(moved from root)*
 
 ### PR 4: Accessibility (8 files) *Depends on PR 1*
 - [ ] Accessibility/AccessibilityIdentifiersTests.swift
