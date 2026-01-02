@@ -350,7 +350,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | 🔄 In Review |
 | 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | 🔄 In Review |
 | 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | 🔄 In Review |
-| 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | ⬜ Pending |
+| 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | 🔄 In Review |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
@@ -415,15 +415,15 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] DI/PrimerSettingsDIIntegrationTests.swift *(moved from root)*
 - [x] DI/PrimerSettingsIntegrationTests.swift *(moved from root)*
 
-### PR 4: Accessibility (8 files) *Depends on PR 1*
-- [ ] Accessibility/AccessibilityIdentifiersTests.swift
-- [ ] Accessibility/AccessibilityConfigurationTests.swift
-- [ ] Accessibility/AccessibilityAnnouncementServiceTests.swift
-- [ ] Accessibility/AccessibilityStringsTests.swift
-- [ ] Accessibility/AccessibilityDIContainerTests.swift
-- [ ] Accessibility/ViewAccessibilityExtensionTests.swift
-- [ ] Accessibility/ViewAccessibilityExtendedTests.swift
-- [ ] Accessibility/ViewAccessibilityConditionalsTests.swift
+### PR 4: Accessibility (8 files) *Depends on PR 1, includes file reorganization*
+- [x] Accessibility/AccessibilityIdentifiersTests.swift
+- [x] Accessibility/AccessibilityConfigurationTests.swift *(moved from root)*
+- [x] Accessibility/AccessibilityAnnouncementServiceTests.swift *(moved from root)*
+- [x] Accessibility/AccessibilityStringsTests.swift *(moved from root)*
+- [x] Accessibility/AccessibilityDIContainerTests.swift *(moved from root)*
+- [x] Accessibility/ViewAccessibilityExtensionTests.swift *(moved from root)*
+- [x] Accessibility/ViewAccessibilityExtendedTests.swift
+- [x] Accessibility/ViewAccessibilityConditionalsTests.swift
 
 ### PR 5: Validation Pt1 (8 files)
 - [ ] Mocks/MockValidationService.swift
