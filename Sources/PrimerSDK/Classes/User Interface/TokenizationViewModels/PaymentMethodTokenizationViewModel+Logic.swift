@@ -1,7 +1,7 @@
 //
 //  PaymentMethodTokenizationViewModel+Logic.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -330,21 +330,19 @@ extension PaymentMethodTokenizationViewModel {
         let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
         let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
 
-        var decisionHandlerHasBeenCalled = false
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            if !decisionHandlerHasBeenCalled {
-                let message =
-                    """
-                    The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
-                    Make sure you call the decision handler otherwise the SDK will hang.
-                    """
-                self?.logger.warn(message: message)
-            }
+        let task = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard let self else { return }
+            logger.warn(message:
+                """
+                The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
+                hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
+                """
+            )
         }
 
         let paymentCreationDecision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
-        decisionHandlerHasBeenCalled = true
+        task.cancel()
 
         switch paymentCreationDecision.type {
         case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")

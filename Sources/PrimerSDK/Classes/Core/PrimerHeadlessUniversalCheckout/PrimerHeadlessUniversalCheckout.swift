@@ -1,7 +1,7 @@
 //
 //  PrimerHeadlessUniversalCheckout.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -25,11 +25,11 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             PrimerInternal.shared.sdkIntegrationType = .headless
         }
     }
-    private(set) public var clientToken: String?
+    public private(set) var clientToken: String?
 
-    internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
+    let sdkSessionId = UUID().uuidString
+    private(set) var checkoutSessionId: String?
+    private(set) var timingEventId: String?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
@@ -61,11 +61,11 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
                     delegate: delegate,
                     uiDelegate: uiDelegate
                 )
-                DispatchQueue.main.async {
+                await MainActor.run {
                     completion(paymentMethods, nil)
                 }
             } catch {
-                DispatchQueue.main.async {
+                await MainActor.run {
                     completion(nil, error)
                 }
             }
@@ -207,7 +207,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    internal func listAvailablePaymentMethodsTypes() -> [String]? {
+    func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
 
         #if !canImport(PrimerKlarnaSDK)
@@ -247,7 +247,7 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
         }
         #endif
 
-        return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
+        return paymentMethods?.compactMap(\.type).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
 
     private static let queue: DispatchQueue = DispatchQueue(label: "primer.headlessUniversalCheckout", qos: .default)
