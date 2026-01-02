@@ -1,7 +1,7 @@
 //
 //  TestData.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -606,6 +606,38 @@ enum TestData {
         static let amex = CardNetwork.amex
         static let discover = CardNetwork.discover
         static let unknown = CardNetwork.unknown
+    }
+
+    // MARK: - Payment Method Types
+
+    enum PaymentMethodTypes {
+        static let card = "PAYMENT_CARD"
+        static let applePay = "APPLE_PAY"
+    }
+
+    // MARK: - Diagnostics IDs
+
+    enum DiagnosticsIds {
+        static let test = "test-diagnostics"
+    }
+
+    // MARK: - Payment IDs
+
+    enum PaymentIds {
+        static let test = "test-payment"
+        static let success = "success-123"
+    }
+
+    // MARK: - Formatted Amounts
+
+    enum FormattedAmounts {
+        static let tenDollars = "$10.00"
+    }
+
+    // MARK: - Error Keys
+
+    enum ErrorKeys {
+        static let test = "test"
     }
 }
 
