@@ -1,7 +1,7 @@
 //
 //  MockValidationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -11,16 +11,16 @@ import Foundation
 @available(iOS 15.0, *)
 final class MockValidationService: ValidationService {
 
-    // MARK: - Call Tracking
-
-    var validateFieldCallCount = 0
-    var lastFieldType: PrimerInputElementType?
-    var lastFieldValue: String?
-
-    // MARK: - Stubbed Returns
+    // MARK: - Configurable Return Values
 
     var stubbedValidationResult = ValidationResult.valid
     var stubbedResultsByType: [PrimerInputElementType: ValidationResult] = [:]
+
+    // MARK: - Call Tracking
+
+    private(set) var validateFieldCallCount = 0
+    private(set) var lastFieldType: PrimerInputElementType?
+    private(set) var lastFieldValue: String?
 
     // MARK: - ValidationService Protocol
 

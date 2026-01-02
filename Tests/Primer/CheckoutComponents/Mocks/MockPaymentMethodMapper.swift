@@ -1,7 +1,7 @@
 //
 //  MockPaymentMethodMapper.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -11,12 +11,20 @@ import Foundation
 /// Provides configurable return values and call tracking.
 @available(iOS 15.0, *)
 final class MockPaymentMethodMapper: PaymentMethodMapper {
-    var mapToPublicSingleCallCount = 0
-    var mapToPublicArrayCallCount = 0
-    var lastInternalMethod: InternalPaymentMethod?
-    var lastInternalMethods: [InternalPaymentMethod]?
+
+    // MARK: - Configurable Return Values
+
     var singleResultToReturn: CheckoutPaymentMethod?
     var arrayResultToReturn: [CheckoutPaymentMethod] = []
+
+    // MARK: - Call Tracking
+
+    private(set) var mapToPublicSingleCallCount = 0
+    private(set) var mapToPublicArrayCallCount = 0
+    private(set) var lastInternalMethod: InternalPaymentMethod?
+    private(set) var lastInternalMethods: [InternalPaymentMethod]?
+
+    // MARK: - Protocol Implementation
 
     func mapToPublic(_ internalMethod: InternalPaymentMethod) -> CheckoutPaymentMethod {
         mapToPublicSingleCallCount += 1
@@ -45,6 +53,8 @@ final class MockPaymentMethodMapper: PaymentMethodMapper {
         // Map each method using the single mapper
         return internalMethods.map { mapToPublic($0) }
     }
+
+    // MARK: - Test Helpers
 
     func reset() {
         mapToPublicSingleCallCount = 0

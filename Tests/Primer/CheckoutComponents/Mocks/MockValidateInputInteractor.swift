@@ -1,7 +1,7 @@
 //
 //  MockValidateInputInteractor.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -11,11 +11,19 @@ import Foundation
 /// Provides configurable validation results and call tracking.
 @available(iOS 15.0, *)
 final class MockValidateInputInteractor: ValidateInputInteractor {
-    var validateCallCount = 0
-    var validateMultipleCallCount = 0
-    var lastValidatedValue: String?
-    var lastValidatedType: PrimerInputElementType?
+
+    // MARK: - Configurable Return Values
+
     var validationResults: [PrimerInputElementType: ValidationResult] = [:]
+
+    // MARK: - Call Tracking
+
+    private(set) var validateCallCount = 0
+    private(set) var validateMultipleCallCount = 0
+    private(set) var lastValidatedValue: String?
+    private(set) var lastValidatedType: PrimerInputElementType?
+
+    // MARK: - Protocol Implementation
 
     func validate(value: String, type: PrimerInputElementType) async -> ValidationResult {
         validateCallCount += 1
@@ -32,6 +40,8 @@ final class MockValidateInputInteractor: ValidateInputInteractor {
         }
         return results
     }
+
+    // MARK: - Test Helpers
 
     func reset() {
         validateCallCount = 0
