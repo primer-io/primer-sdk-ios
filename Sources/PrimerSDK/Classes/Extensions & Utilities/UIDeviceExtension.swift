@@ -7,7 +7,7 @@
 import UIKit
 
 // swiftlint:disable identifier_name
-internal enum Model: String, Codable {
+enum Model: String, Codable {
 
     // Simulator
     case simulator     = "simulator",
@@ -30,12 +30,17 @@ internal enum Model: String, Codable {
          iPadAir3           = "iPad Air 3",
          iPadAir4           = "iPad Air 4",
          iPadAir5           = "iPad Air 5",
+         iPadAir11M2        = "iPad Air 11\" M2",
+         iPadAir13M2        = "iPad Air 13\" M2",
+         iPadAir11M3        = "iPad Air 11\" M3",
+         iPadAir13M3        = "iPad Air 13\" M3",
          iPad5              = "iPad 5", // iPad 2017
          iPad6              = "iPad 6", // iPad 2018
          iPad7              = "iPad 7", // iPad 2019
          iPad8              = "iPad 8", // iPad 2020
          iPad9              = "iPad 9", // iPad 2021
          iPad10             = "iPad 10", // iPad 2022
+         iPad11             = "iPad 11", // iPad 2024
 
          // iPad Mini
          iPadMini           = "iPad Mini",
@@ -44,6 +49,7 @@ internal enum Model: String, Codable {
          iPadMini4          = "iPad Mini 4",
          iPadMini5          = "iPad Mini 5",
          iPadMini6          = "iPad Mini 6",
+         iPadMiniA17Pro     = "iPad Mini A17 Pro",
 
          // iPad Pro
          iPadPro9_7         = "iPad Pro 9.7\"",
@@ -51,11 +57,15 @@ internal enum Model: String, Codable {
          iPadPro11          = "iPad Pro 11\"",
          iPadPro2_11        = "iPad Pro 11\" 2nd gen",
          iPadPro3_11        = "iPad Pro 11\" 3rd gen",
+         iPadPro4_11        = "iPad Pro 11\" 4th gen",
+         iPadPro11M4        = "iPad Pro 11\" M4",
          iPadPro12_9        = "iPad Pro 12.9\"",
          iPadPro2_12_9      = "iPad Pro 2 12.9\"",
          iPadPro3_12_9      = "iPad Pro 3 12.9\"",
          iPadPro4_12_9      = "iPad Pro 4 12.9\"",
          iPadPro5_12_9      = "iPad Pro 5 12.9\"",
+         iPadPro6_12_9      = "iPad Pro 6 12.9\"",
+         iPadPro13M4        = "iPad Pro 13\" M4",
 
          // iPhone
          iPhone4            = "iPhone 4",
@@ -97,6 +107,15 @@ internal enum Model: String, Codable {
          iPhone15Plus       = "iPhone 15 Plus",
          iPhone15Pro        = "iPhone 15 Pro",
          iPhone15ProMax     = "iPhone 15 Pro Max",
+         iPhone16           = "iPhone 16",
+         iPhone16Plus       = "iPhone 16 Plus",
+         iPhone16Pro        = "iPhone 16 Pro",
+         iPhone16ProMax     = "iPhone 16 Pro Max",
+         iPhone16e          = "iPhone 16e",
+         iPhone17           = "iPhone 17",
+         iPhone17Pro        = "iPhone 17 Pro",
+         iPhone17ProMax     = "iPhone 17 Pro Max",
+         iPhoneAir          = "iPhone Air",
 
          // Apple Watch
          AppleWatch1         = "Apple Watch 1gen",
@@ -120,7 +139,7 @@ internal enum Model: String, Codable {
          unrecognized       = "?unrecognized?"
 }
 
-internal extension UIDevice {
+extension UIDevice {
 
     static var modelIdentifier: String? {
         var systemInfo = utsname()
@@ -173,6 +192,8 @@ internal extension UIDevice {
             "iPad12,2": .iPad9,
             "iPad13,18": .iPad10,
             "iPad13,19": .iPad10,
+            "iPad15,7": .iPad11, // iPad 2024
+            "iPad15,8": .iPad11,
 
             // iPad Mini
             "iPad2,5": .iPadMini,
@@ -190,6 +211,8 @@ internal extension UIDevice {
             "iPad11,2": .iPadMini5,
             "iPad14,1": .iPadMini6,
             "iPad14,2": .iPadMini6,
+            "iPad16,1": .iPadMiniA17Pro,
+            "iPad16,2": .iPadMiniA17Pro,
 
             // iPad Pro
             "iPad6,3": .iPadPro9_7,
@@ -210,6 +233,10 @@ internal extension UIDevice {
             "iPad13,5": .iPadPro3_11,
             "iPad13,6": .iPadPro3_11,
             "iPad13,7": .iPadPro3_11,
+            "iPad14,3": .iPadPro4_11,
+            "iPad14,4": .iPadPro4_11,
+            "iPad16,3": .iPadPro11M4,
+            "iPad16,4": .iPadPro11M4,
             "iPad8,5": .iPadPro3_12_9,
             "iPad8,6": .iPadPro3_12_9,
             "iPad8,7": .iPadPro3_12_9,
@@ -220,6 +247,10 @@ internal extension UIDevice {
             "iPad13,9": .iPadPro5_12_9,
             "iPad13,10": .iPadPro5_12_9,
             "iPad13,11": .iPadPro5_12_9,
+            "iPad14,5": .iPadPro6_12_9,
+            "iPad14,6": .iPadPro6_12_9,
+            "iPad16,5": .iPadPro13M4,
+            "iPad16,6": .iPadPro13M4,
 
             // iPad Air
             "iPad4,1": .iPadAir,
@@ -233,6 +264,14 @@ internal extension UIDevice {
             "iPad13,2": .iPadAir4,
             "iPad13,16": .iPadAir5,
             "iPad13,17": .iPadAir5,
+            "iPad14,8": .iPadAir11M2,
+            "iPad14,9": .iPadAir11M2,
+            "iPad14,10": .iPadAir13M2,
+            "iPad14,11": .iPadAir13M2,
+            "iPad15,3": .iPadAir11M3,
+            "iPad15,4": .iPadAir11M3,
+            "iPad15,5": .iPadAir13M3,
+            "iPad15,6": .iPadAir13M3,
 
             // iPhone
             "iPhone3,1": .iPhone4,
@@ -285,6 +324,15 @@ internal extension UIDevice {
             "iPhone15,5": .iPhone15Plus,
             "iPhone16,1": .iPhone15Pro,
             "iPhone16,2": .iPhone15ProMax,
+            "iPhone17,3": .iPhone16,
+            "iPhone17,4": .iPhone16Plus,
+            "iPhone17,1": .iPhone16Pro,
+            "iPhone17,2": .iPhone16ProMax,
+            "iPhone17,5": .iPhone16e,
+            "iPhone18,3": .iPhone17,
+            "iPhone18,4": .iPhoneAir,
+            "iPhone18,1": .iPhone17Pro,
+            "iPhone18,2": .iPhone17ProMax,
 
             // Apple Watch
             "Watch1,1": .AppleWatch1,
@@ -337,6 +385,42 @@ internal extension UIDevice {
             }
         }
         return model
+    }
+
+    static var deviceType: String {
+        let identifier = modelIdentifier ?? ""
+
+        // Try physical device first
+        if let type = deviceTypeFromIdentifier(identifier) {
+            return type
+        }
+
+        // Try simulator
+        if ["i386", "x86_64", "arm64"].contains(identifier) {
+            if let simModelCode = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"],
+               let type = deviceTypeFromIdentifier(simModelCode) {
+                return type
+            }
+        }
+
+        return "phone" // Default
+    }
+
+    private static func deviceTypeFromIdentifier(_ identifier: String) -> String? {
+        if identifier.hasPrefix("iPhone") {
+            return "phone"
+        } else if identifier.hasPrefix("iPad") {
+            return "tablet"
+        } else if identifier.hasPrefix("Watch") {
+            return "watch"
+        }
+        return nil
+    }
+    
+    static var userAgent: String {
+        let osVersion = UIDevice.current.systemVersion
+        let modelIdentifier = UIDevice.modelIdentifier ?? "Unknown"
+        return "iOS/\(osVersion) (\(modelIdentifier))"
     }
 }
 

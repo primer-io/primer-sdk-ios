@@ -111,17 +111,31 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                                                                    withPlaceholderText: "John Smith")
                 case .otp:
                     break
-
                 case .postalCode:
                     break
-
                 case .phoneNumber:
                     break
-
                 case .retailer:
                     break
-
                 case .unknown:
+                    break
+                case .countryCode:
+                    break
+                case .firstName:
+                    break
+                case .lastName:
+                    break
+                case .addressLine1:
+                    break
+                case .addressLine2:
+                    break
+                case .city:
+                    break
+                case .state:
+                    break
+                case .all:
+                    break
+                case .email:
                     break
                 }
             }

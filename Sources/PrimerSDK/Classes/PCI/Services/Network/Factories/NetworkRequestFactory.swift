@@ -87,12 +87,11 @@ final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
         }()
 
         logger.debug(message: """
-
-🌎 [Request: \(method)] 👉 \(url)
-Headers:
-\(headersDescription.joined(separator: "\n"))
-Body:
-\(body)
-""")
+       🌎 [Request: \(method)] 👉 \(url)
+       Headers:
+       \(headersDescription.joined(separator: "\n"))
+       Body:
+       \(body)
+       """)
     }
 }

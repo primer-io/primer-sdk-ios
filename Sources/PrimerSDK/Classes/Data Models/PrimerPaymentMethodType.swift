@@ -6,7 +6,7 @@
 
 import Foundation
 
-internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
+public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"

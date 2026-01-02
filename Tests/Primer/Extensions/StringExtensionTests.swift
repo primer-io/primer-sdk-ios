@@ -235,7 +235,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "01/2030".validateExpiryDateString())
-        
+
         // Test MM/YY format support
         XCTAssertNoThrow(try "01/28".validateExpiryDateString())
         XCTAssertNoThrow(try "02/28".validateExpiryDateString())
@@ -321,6 +321,128 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertNil("30\\t".normalizedFourDigitYear())
         XCTAssertNil("3.0".normalizedFourDigitYear())
         XCTAssertNil("3,0".normalizedFourDigitYear())
+    }
+
+    // MARK: - NSRange Text Processing Tests
+
+    func testRangeFromNSRange() {
+        let testString = "Hello, World!"
+
+        // Valid ranges
+        let range1 = NSRange(location: 0, length: 5)
+        XCTAssertNotNil(testString.range(from: range1))
+
+        let range2 = NSRange(location: 7, length: 5)
+        XCTAssertNotNil(testString.range(from: range2))
+
+        let range3 = NSRange(location: 0, length: testString.count)
+        XCTAssertNotNil(testString.range(from: range3))
+
+        // Invalid ranges
+        let invalidRange1 = NSRange(location: 100, length: 5)
+        XCTAssertNil(testString.range(from: invalidRange1))
+
+        let invalidRange2 = NSRange(location: 0, length: 100)
+        XCTAssertNil(testString.range(from: invalidRange2))
+
+        // Empty string
+        let emptyString = ""
+        let emptyRange = NSRange(location: 0, length: 0)
+        XCTAssertNotNil(emptyString.range(from: emptyRange))
+
+        // Test with emoji
+        let emojiString = "Hello 👋 World 🌍"
+        let emojiRange = NSRange(location: 0, length: 7)
+        XCTAssertNotNil(emojiString.range(from: emojiRange))
+    }
+
+    func testReplacingCharactersInNSRange() {
+        // Basic replacement
+        let string1 = "Hello, World!"
+        let range1 = NSRange(location: 0, length: 5)
+        XCTAssertEqual(string1.replacingCharacters(in: range1, with: "Hi"), "Hi, World!")
+
+        // Replace in middle
+        let string2 = "Hello, World!"
+        let range2 = NSRange(location: 7, length: 5)
+        XCTAssertEqual(string2.replacingCharacters(in: range2, with: "Swift"), "Hello, Swift!")
+
+        // Delete (replace with empty string)
+        let string3 = "Hello, World!"
+        let range3 = NSRange(location: 5, length: 2)
+        XCTAssertEqual(string3.replacingCharacters(in: range3, with: ""), "HelloWorld!")
+
+        // Insert (zero-length range)
+        let string4 = "Hello World!"
+        let range4 = NSRange(location: 5, length: 0)
+        XCTAssertEqual(string4.replacingCharacters(in: range4, with: ","), "Hello, World!")
+
+        // Invalid range (should return original string)
+        let string5 = "Hello, World!"
+        let invalidRange = NSRange(location: 100, length: 5)
+        XCTAssertEqual(string5.replacingCharacters(in: invalidRange, with: "Test"), "Hello, World!")
+
+        // Empty string
+        let emptyString = ""
+        let emptyRange = NSRange(location: 0, length: 0)
+        XCTAssertEqual(emptyString.replacingCharacters(in: emptyRange, with: "Hello"), "Hello")
+
+        // Expiry date scenario (MM/YY)
+        let expiryDate = "12/25"
+        let deleteRange = NSRange(location: 3, length: 1)
+        XCTAssertEqual(expiryDate.replacingCharacters(in: deleteRange, with: ""), "12/5")
+
+        // Card number scenario
+        let cardNumber = "4111 1111 1111 1111"
+        let cardRange = NSRange(location: 0, length: 4)
+        XCTAssertEqual(cardNumber.replacingCharacters(in: cardRange, with: "5555"), "5555 1111 1111 1111")
+
+        // Test with emoji (NSRange length: 7 covers "Hello " but not the emoji which takes 2 UTF-16 units)
+        let emojiString = "Hello 👋"
+        let emojiRange = NSRange(location: 0, length: 7)
+        XCTAssertEqual(emojiString.replacingCharacters(in: emojiRange, with: "Hi"), "Hi👋")
+    }
+
+    func testUnformattedPosition() {
+        // Card number with spaces
+        let cardNumber = "4111 2222 3333 4444"
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 0, separator: " "), 0)
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 4, separator: " "), 4)
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 5, separator: " "), 4) // After first space
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 9, separator: " "), 8)
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 10, separator: " "), 8) // After second space
+        XCTAssertEqual(cardNumber.unformattedPosition(from: 19, separator: " "), 16) // End
+
+        // Expiry date with slash
+        let expiryDate = "12/25"
+        XCTAssertEqual(expiryDate.unformattedPosition(from: 0, separator: "/"), 0)
+        XCTAssertEqual(expiryDate.unformattedPosition(from: 2, separator: "/"), 2)
+        XCTAssertEqual(expiryDate.unformattedPosition(from: 3, separator: "/"), 2) // After slash
+        XCTAssertEqual(expiryDate.unformattedPosition(from: 4, separator: "/"), 3)
+        XCTAssertEqual(expiryDate.unformattedPosition(from: 5, separator: "/"), 4)
+
+        // String without separator
+        let noSeparator = "1234567890"
+        XCTAssertEqual(noSeparator.unformattedPosition(from: 0, separator: " "), 0)
+        XCTAssertEqual(noSeparator.unformattedPosition(from: 5, separator: " "), 5)
+        XCTAssertEqual(noSeparator.unformattedPosition(from: 10, separator: " "), 10)
+
+        // Empty string
+        let emptyString = ""
+        XCTAssertEqual(emptyString.unformattedPosition(from: 0, separator: " "), 0)
+
+        // Position beyond string length
+        let shortString = "123"
+        XCTAssertEqual(shortString.unformattedPosition(from: 100, separator: " "), 3)
+
+        // Multiple consecutive separators
+        let multipleSeparators = "12  34"
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 0, separator: " "), 0)
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 2, separator: " "), 2)
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 3, separator: " "), 2) // After first space
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 4, separator: " "), 2) // After second space
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 5, separator: " "), 3)
+        XCTAssertEqual(multipleSeparators.unformattedPosition(from: 6, separator: " "), 4)
     }
 
     // MARK: Helpers
