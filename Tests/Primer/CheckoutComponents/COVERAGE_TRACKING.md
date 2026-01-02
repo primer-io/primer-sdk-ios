@@ -356,7 +356,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | 🔄 In Review |
 | 8 | `ov/test/checkout-components-08-network` | Network | 4+6 | 🔄 In Review |
 | 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6+6 | 🔄 In Review |
-| 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 7 | ⬜ Pending |
+| 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 4+6 | 🔄 In Review |
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6 | ⬜ Pending |
 | 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5 | ⬜ Pending |
 | 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | ⬜ Pending |
@@ -492,14 +492,21 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
 - [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
-### PR 10: HeadlessRepo Pt1 (7 files)
-- [ ] Mocks/MockHeadlessRepository.swift
-- [ ] Mocks/MockClientSessionActionsModule.swift
-- [ ] Data/HeadlessRepositoryTests.swift
-- [ ] Data/HeadlessRepositoryHelperTests.swift
-- [ ] Data/HeadlessRepositorySettingsTests.swift
-- [ ] Data/HeadlessRepository/HeadlessRepositoryInitTests.swift
-- [ ] Data/HeadlessRepository/HeadlessRepositoryUtilityTests.swift
+### PR 10: HeadlessRepo Pt1 (4 files + 6 foundation) *Includes file reorganization*
+*Note: 3 tests excluded (access private methods not exposed in base branch)*
+- [x] Mocks/MockHeadlessRepository.swift
+- [x] Mocks/MockClientSessionActionsModule.swift
+- [x] Data/HeadlessRepositoryTests.swift *(moved from root)*
+- [x] Data/HeadlessRepositorySettingsTests.swift *(moved from root)*
+- [x] *Foundation:* TestSupport/TestData.swift
+- [x] *Foundation:* TestSupport/XCTestCase+Async.swift
+- [x] *Foundation:* TestSupport/ContainerTestHelpers.swift
+- [x] *Foundation:* Mocks/MockConfigurationService.swift
+- [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
+- [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
+- [ ] ~~Data/HeadlessRepositoryHelperTests.swift~~ *(excluded - private access)*
+- [ ] ~~Data/HeadlessRepository/HeadlessRepositoryInitTests.swift~~ *(excluded - private access)*
+- [ ] ~~Data/HeadlessRepository/HeadlessRepositoryUtilityTests.swift~~ *(excluded - private access)*
 
 ### PR 11: HeadlessRepo Pt2 (6 files)
 - [ ] Data/HeadlessRepository/HeadlessRepositoryPaymentFlowTests.swift
