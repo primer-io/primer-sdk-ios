@@ -1,7 +1,7 @@
 //
 //  AnalyticsSessionConfigProviderTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -162,7 +162,7 @@ private enum JWTTestTokenFactory {
     }
 
     private static func base64URLEncode(_ data: Data) -> String {
-        return data.base64EncodedString()
+        data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
