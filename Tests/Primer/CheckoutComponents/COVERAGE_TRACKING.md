@@ -348,7 +348,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | PR | Branch | Category | Files | Status |
 |----|--------|----------|-------|--------|
 | 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | 🔄 In Review |
-| 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | ⬜ Pending |
+| 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | 🔄 In Review |
 | 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | ⬜ Pending |
 | 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | ⬜ Pending |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
@@ -397,14 +397,14 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Mocks/MockAccessibilityAnnouncementService.swift *(moved from PR 4)*
 
 ### PR 2: DI Core (8 files)
-- [ ] Core/ContainerTests.swift
-- [ ] DI/ContainerErrorTests.swift
-- [ ] DI/ContainerDiagnosticsTests.swift
-- [ ] DI/ContainerProtocolTests.swift
-- [ ] DI/DIContainerTests.swift
-- [ ] DI/TypeKeyTests.swift
-- [ ] DI/RetentionPolicyTests.swift
-- [ ] DI/FactoryTests.swift
+- [x] Core/ContainerTests.swift
+- [x] DI/ContainerErrorTests.swift
+- [x] DI/ContainerDiagnosticsTests.swift
+- [x] DI/ContainerProtocolTests.swift
+- [x] DI/DIContainerTests.swift
+- [x] DI/TypeKeyTests.swift
+- [x] DI/RetentionPolicyTests.swift
+- [x] DI/FactoryTests.swift
 
 ### PR 3: DI SwiftUI (7 files)
 - [ ] Core/SettingsObserverTests.swift
