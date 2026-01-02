@@ -354,7 +354,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8+6 | 🔄 In Review |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5+7 | 🔄 In Review |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | 🔄 In Review |
-| 8 | `ov/test/checkout-components-08-network` | Network | 4 | ⬜ Pending |
+| 8 | `ov/test/checkout-components-08-network` | Network | 4+6 | 🔄 In Review |
 | 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6 | ⬜ Pending |
 | 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 7 | ⬜ Pending |
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6 | ⬜ Pending |
@@ -464,11 +464,18 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Navigation/CheckoutNavigatorTests.swift
 - [x] Navigation/CheckoutRouteTests.swift
 
-### PR 8: Network (4 files)
-- [ ] Network/APIClientEdgeCasesTests.swift
-- [ ] Network/APIResponseParsingTests.swift
-- [ ] Network/ErrorMappingTests.swift
-- [ ] Network/NetworkManagerErrorHandlingTests.swift
+### PR 8: Network (4 files + 6 foundation dependencies)
+*Includes foundation files since PR 1 hasn't merged yet*
+- [x] Network/APIClientEdgeCasesTests.swift
+- [x] Network/APIResponseParsingTests.swift
+- [x] Network/ErrorMappingTests.swift
+- [x] Network/NetworkManagerErrorHandlingTests.swift
+- [x] *Foundation:* TestSupport/TestData.swift
+- [x] *Foundation:* TestSupport/XCTestCase+Async.swift
+- [x] *Foundation:* TestSupport/ContainerTestHelpers.swift
+- [x] *Foundation:* Mocks/MockConfigurationService.swift
+- [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
+- [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
 ### PR 9: Data Config (6 files)
 - [ ] Data/ConfigurationServiceTests.swift
