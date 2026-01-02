@@ -1,7 +1,7 @@
 //
 //  PrimerRawCardDataTokenizationBuilder.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -181,7 +181,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         } else {
             // Only validate network TYPE (allowed/disallowed) when card number is valid
             // This prevents "unsupported-card-type" errors for empty/partial cards
-            if let cardNetworksMetadata = cardNetworksMetadata {
+            if cardNetworksMetadata != nil {
                 // Unsupported card type error
                 if !self.allowedCardNetworks.contains(cardNetwork) {
                     let err = PrimerValidationError.invalidCardType(

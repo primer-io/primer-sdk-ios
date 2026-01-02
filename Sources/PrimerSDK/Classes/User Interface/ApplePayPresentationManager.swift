@@ -1,7 +1,7 @@
 //
 //  ApplePayPresentationManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -14,7 +14,7 @@ protocol ApplePayPresenting {
                  delegate: PKPaymentAuthorizationControllerDelegate) async throws
 }
 
-final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
+final class ApplePayPresentationManager: ApplePayPresenting, LogReporter, Sendable {
 
     private var supportedNetworks: [PKPaymentNetwork] {
         ApplePayUtils.supportedPKPaymentNetworks()
@@ -35,14 +35,18 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         let request = try createRequest(for: applePayRequest)
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = delegate
+        
+        let logError: () -> PrimerError = {
+            let err = PrimerError.unableToPresentApplePay()
+            self.logger.error(message: "APPLE PAY")
+            self.logger.error(message: err.recoverySuggestion ?? "")
+            return err
+        }
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             paymentController.present { success in
                 guard success else {
-                    let err = PrimerError.unableToPresentApplePay()
-                    self.logger.error(message: "APPLE PAY")
-                    self.logger.error(message: err.recoverySuggestion ?? "")
-                    return continuation.resume(throwing: handled(primerError: err))
+                    return continuation.resume(throwing: handled(primerError: logError()))
                 }
 
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
@@ -65,7 +69,7 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         request.merchantIdentifier = applePayRequest.merchantIdentifier
         request.merchantCapabilities = [.capability3DS]
         request.supportedNetworks = supportedNetworks
-        request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+        request.paymentSummaryItems = applePayRequest.items.compactMap(\.applePayItem)
 
         if let shippingMethods = applePayRequest.shippingMethods {
             request.shippingMethods = shippingMethods

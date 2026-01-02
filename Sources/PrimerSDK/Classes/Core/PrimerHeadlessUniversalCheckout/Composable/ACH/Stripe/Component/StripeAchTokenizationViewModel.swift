@@ -1,7 +1,7 @@
 //
 //  StripeAchTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable type_body_length
@@ -133,7 +133,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         guard !isMockBE else { return }
 
         try await getPublishableKey()
-        try await getClientSessionUserDetails()
+        getClientSessionUserDetails()
         let urlScheme = try getUrlScheme()
         try await showCollector(urlScheme: urlScheme)
     }
@@ -311,8 +311,8 @@ extension StripeAchTokenizationViewModel {
 
 // MARK: - Helpers
 extension StripeAchTokenizationViewModel {
-    private func getClientSessionUserDetails() async throws {
-        userDetails = try await clientSessionService.getClientSessionUserDetails()
+    private func getClientSessionUserDetails() {
+        userDetails = clientSessionService.getClientSessionUserDetails()
     }
 
     private func getPublishableKey() async throws {
@@ -366,19 +366,21 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
      */
     public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
         switch stripeStatus {
-        case .succeeded(let paymentId):
+        case let .succeeded(paymentId):
             returnedStripeAchPaymentId = paymentId
             stripeBankAccountCollectorCompletion?(.success(()))
         case .canceled:
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(.failure(error))
-        case .failed(let error):
+        case let .failed(error):
             let primerError = handled(primerError: .stripeError(
                 key: error.errorId,
                 message: error.errorDescription,
                 diagnosticsId: error.diagnosticsId
             ))
             stripeBankAccountCollectorCompletion?(.failure(primerError))
+        @unknown default:
+            fatalError()
         }
     }
 }
