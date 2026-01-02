@@ -1,7 +1,7 @@
 //
 //  BankSelectorTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -12,8 +12,8 @@ import SafariServices
 import UIKit
 
 final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
-    internal private(set) var banks: [AdyenBank] = []
-    internal private(set) var dataSource: [AdyenBank] = [] {
+    private(set) var banks: [AdyenBank] = []
+    private(set) var dataSource: [AdyenBank] = [] {
         didSet {
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -57,7 +57,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         }
     }
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
@@ -73,7 +73,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         return tableView
     }()
 
-    internal lazy var searchBankTextField: PrimerSearchTextField? = {
+    lazy var searchBankTextField: PrimerSearchTextField? = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -115,7 +115,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         ))
 
         defer {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self.willDismissPaymentMethodUI?()
                 self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissPaymentMethodUI?()
@@ -138,7 +138,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 
     override func performTokenizationStep() async throws {
         defer {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                     self.willDismissPaymentMethodUI?()
                     self.webViewController?.dismiss(animated: true, completion: {
                         self.didDismissPaymentMethodUI?()
@@ -231,7 +231,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        dataSource.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

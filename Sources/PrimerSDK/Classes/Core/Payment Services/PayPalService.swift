@@ -1,7 +1,7 @@
 //
 //  PayPalService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -9,7 +9,7 @@
 
 import Foundation
 
-internal protocol PayPalServiceProtocol {
+protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
@@ -89,9 +89,9 @@ final class PayPalService: PayPalServiceProtocol {
 
         apiClient.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
-            case .success(let res):
+            case let .success(res):
                 completion(.success(res))
             }
         }
@@ -131,8 +131,6 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
@@ -158,9 +156,9 @@ final class PayPalService: PayPalServiceProtocol {
         apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
                                                       payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
-            case .success(let config):
+            case let .success(config):
                 self?.paypalTokenId = config.tokenId
                 completion(.success(config.approvalUrl))
             }
@@ -196,8 +194,6 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
@@ -215,9 +211,9 @@ final class PayPalService: PayPalServiceProtocol {
         apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
                                                 payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(handled(primerError: .failedToCreateSession(error: err))))
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response))
             }
         }
@@ -250,8 +246,6 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
-        let state: AppStateProtocol = AppState.current
-
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return completion(.failure(handled(primerError: .invalidClientToken())))
         }
@@ -265,9 +259,9 @@ final class PayPalService: PayPalServiceProtocol {
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)
         ) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response))
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(err))
             }
         }
