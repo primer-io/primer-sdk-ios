@@ -353,7 +353,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | 🔄 In Review |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8+6 | 🔄 In Review |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5+7 | 🔄 In Review |
-| 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
+| 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | 🔄 In Review |
 | 8 | `ov/test/checkout-components-08-network` | Network | 4 | ⬜ Pending |
 | 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6 | ⬜ Pending |
 | 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 7 | ⬜ Pending |
@@ -457,12 +457,12 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Dependencies:* Mocks/MockAccessibilityAnnouncementService.swift
 - [x] *Dependencies:* Mocks/MockValidationService.swift
 
-### PR 7: Navigation (5 files)
-- [ ] Mocks/MockCheckoutCoordinator.swift
-- [ ] Mocks/MockCheckoutNavigator.swift
-- [ ] Navigation/CheckoutCoordinatorTests.swift
-- [ ] Navigation/CheckoutNavigatorTests.swift
-- [ ] Navigation/CheckoutRouteTests.swift
+### PR 7: Navigation (5 files) ✅ *No dependencies required*
+- [x] Mocks/MockCheckoutCoordinator.swift
+- [x] Mocks/MockCheckoutNavigator.swift
+- [x] Navigation/CheckoutCoordinatorTests.swift
+- [x] Navigation/CheckoutNavigatorTests.swift
+- [x] Navigation/CheckoutRouteTests.swift
 
 ### PR 8: Network (4 files)
 - [ ] Network/APIClientEdgeCasesTests.swift
