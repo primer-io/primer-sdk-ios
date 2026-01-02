@@ -1,7 +1,7 @@
 # CheckoutComponents Code Coverage Tracking
 
-**Overall Coverage on New Code:** 45.2%
-**Last Updated:** 2026-01-01
+**Overall Coverage on New Code:** 49.6%
+**Last Updated:** 2026-01-02
 **Branch:** 002-checkout-components-unit-tests
 **Total Tests in Project:** 3463 (all passing)
 
@@ -107,14 +107,24 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
-| DesignTokensManager.swift | 4.9% | 391 | Tests Added |
+| CardNumberInputField.swift | 9.6% | 132 | SwiftUI - Skip |
 | PaymentMethodSelectionProvider.swift | 10.6% | 42 | Tests Added |
 | CardFormProvider.swift | 12.5% | 42 | Tests Added |
+| OTPCodeInputField.swift | 13.2% | 79 | SwiftUI - Skip |
+| PostalCodeInputField.swift | 14.3% | 60 | SwiftUI - Skip |
+| CardholderNameInputField.swift | 14.8% | 52 | SwiftUI - Skip |
+| CityInputField.swift | 15.0% | 51 | SwiftUI - Skip |
 | SelectCountryProvider.swift | 15.2% | 28 | Tests Added |
-| CheckoutComponentsPrimer.swift | 17.4% | 195 | Tests Added |
+| CVVInputField.swift | 16.1% | 52 | SwiftUI - Skip |
+| EmailInputField.swift | 16.2% | 57 | SwiftUI - Skip |
+| StateInputField.swift | 17.0% | 44 | SwiftUI - Skip |
+| ExpiryDateInputField.swift | 17.2% | 53 | SwiftUI - Skip |
+| NameInputField.swift | 17.4% | 57 | SwiftUI - Skip |
+| AddressLineInputField.swift | 18.6% | 57 | SwiftUI - Skip |
+| CheckoutComponentsPrimer.swift | 27.5% | 171 | Tests Added |
 | ApplePayButtonView.swift | 29.3% | 41 | SwiftUI - Skip |
 | UserInterfaceModule.swift | 38.5% | 8 | Tests Added |
-| HeadlessRepositoryImpl.swift | 43.7% | 411 | Tests Added |
+| DesignTokensManager.swift | 39.4% | 249 | Tests Added |
 | View+Accessibility.swift | 44.0% | 14 | Tests Added |
 
 ---
@@ -123,24 +133,20 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
-| SwiftUI+DI.swift | 52.1% | 35 | Tests Added |
-| DefaultCardFormScope.swift | 54.0% | 342 | Tests Added |
+| HeadlessRepositoryImpl.swift | 52.9% | 344 | Tests Added |
 | DefaultPaymentMethodSelectionScope.swift | 54.2% | 140 | Tests Added |
-| CardPaymentMethod.swift | 57.3% | 38 | Tests Added |
-| PrimerCardFormScope.swift | 58.3% | 40 | Tests Added |
-| PrimerTheme.swift | 60.0% | 4 | Good |
-| CheckoutComponentsPaymentMethodsBridge.swift | 64.7% | 61 | Tests Added |
-| PayPalPaymentMethod.swift | 64.8% | 25 | Tests Added |
-| ContainerProtocol.swift | 66.7% | 3 | Good |
-| DIContainer.swift | 69.1% | 34 | Good |
+| SwiftUI+DI.swift | 60.3% | 29 | Tests Added |
+| PrimerCardFormScope.swift | 64.6% | 34 | Tests Added |
+| PayPalPaymentMethod.swift | 70.4% | 21 | Tests Added |
+| CardPaymentMethod.swift | 71.9% | 25 | Tests Added |
 | CheckoutComponentsStrings.swift | 72.9% | 42 | Good |
 | PrimerCheckoutScope.swift | 73.3% | 4 | Good |
 | DependencyScope.swift | 73.7% | 5 | Good |
 | ContainerDiagnostics.swift | 73.9% | 37 | Good |
-| DefaultCheckoutScope.swift | 74.5% | 132 | Good |
 | StructuredCardFormState.swift | 74.6% | 15 | Good |
 | PrimerError.swift | 75.0% | 2 | Good |
 | ComposableContainer.swift | 77.6% | 36 | Good |
+| DefaultCheckoutScope.swift | 78.4% | 112 | Good |
 | DefaultApplePayScope.swift | 79.4% | 44 | Good |
 
 ---
@@ -155,10 +161,10 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | ApplePayPaymentMethod.swift | 82.2% | 8 | Good |
 | ErrorMessageResolver.swift | 82.5% | 51 | Good |
 | FontRegistration.swift | 82.6% | 8 | Good |
-| DesignTokensProcessor.swift | 82.8% | 35 | Tests Added |
 | ApplePayScreen.swift | 85.1% | 24 | Good |
 | PrimerPaymentMethodScope.swift | 85.7% | 11 | Tests Added |
 | PayPalRepositoryImpl.swift | 86.6% | 15 | Tests Added |
+| DefaultCardFormScope.swift | 87.1% | 96 | Tests Added |
 | PrimerFont.swift | 87.1% | 20 | Tests Added |
 | AnalyticsEventService.swift | 87.5% | 8 | Tests Added |
 | CheckoutSDKInitializer.swift | 87.9% | 12 | Good |
@@ -166,18 +172,20 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | Container.swift | 90.8% | 30 | Good |
 | AnalyticsEnvironmentProvider.swift | 91.7% | 1 | Good |
 | CardNetwork.swift | 91.7% | 1 | Good |
-| DesignTokens.swift | 92.0% | 42 | Tests Added |
 | Factory.swift | 93.9% | 3 | Tests Added |
 | CheckoutNavigator.swift | 94.2% | 3 | Good |
 | PrimerAPIConfigurationModule.swift | 95.3% | 3 | Good |
+| CheckoutComponentsPaymentMethodsBridge.swift | 95.4% | 8 | Tests Added |
 | CheckoutRoute.swift | 95.9% | 2 | Good |
 | IntExtension.swift | 96.3% | 1 | Good |
 | ProcessApplePayPaymentInteractor.swift | 96.3% | 4 | Good |
+| DesignTokensProcessor.swift | 96.6% | 7 | Tests Added |
 | AnalyticsEventMetadata.swift | 97.1% | 2 | Good |
 | CardValidationRules.swift | 97.6% | 3 | Tests Added |
 | ApplePayRequestBuilder.swift | 97.9% | 3 | Good |
 | CommonValidationRules.swift | 98.7% | 4 | Tests Added |
 | DefaultSelectCountryScope.swift | 98.7% | 1 | Good |
+| DIContainer.swift | 99.1% | 1 | Good |
 | PrimerHeadlessUniversalCheckoutInputElement.swift | 99.3% | 1 | Tests Added |
 | VaultedPaymentMethod+DisplayData.swift | 99.5% | 1 | Good |
 
@@ -187,8 +195,8 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Lines |
 |------|-------|
-| AccessibilityIdentifiers.swift | 9 |
 | AccessibilityConfiguration.swift | 0 |
+| AccessibilityIdentifiers.swift | 0 |
 | AnalyticsEventBuffer.swift | 0 |
 | AnalyticsPayloadBuilder.swift | 0 |
 | AnalyticsSessionConfig.swift | 0 |
@@ -199,10 +207,12 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | CheckoutCoordinator.swift | 0 |
 | ConfigurationService.swift | 0 |
 | ContainerError.swift | 0 |
+| ContainerProtocol.swift | 0 |
 | ContainerRetainPolicy.swift | 0 |
 | DefaultAccessibilityAnnouncementService.swift | 0 |
 | DefaultAnalyticsInteractor.swift | 0 |
 | DefaultPayPalScope.swift | 0 |
+| DesignTokens.swift | 0 |
 | DesignTokensDark.swift | 0 |
 | DesignTokensKey.swift | 0 |
 | DIContainer+SwiftUI.swift | 0 |
@@ -215,14 +225,15 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | PayPalState.swift | 0 |
 | Primer.swift | 0 |
 | PrimerApplePayScope.swift | 0 |
+| PrimerEnvironment.swift | 0 |
 | PrimerFieldStyling.swift | 0 |
 | PrimerLayout.swift | 0 |
-| PrimerEnvironment.swift | 4 |
 | PrimerLocaleData.swift | 0 |
 | PrimerPaymentMethodSelectionScope.swift | 0 |
 | PrimerPaymentMethodType+ImageName.swift | 0 |
 | PrimerSelectCountryScope.swift | 0 |
 | PrimerSettings.swift | 0 |
+| PrimerTheme.swift | 0 |
 | ProcessCardPaymentInteractor.swift | 0 |
 | ProcessPayPalPaymentInteractor.swift | 0 |
 | RetentionStrategy.swift | 0 |
@@ -329,3 +340,246 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
+
+---
+
+## PR Split Tracking
+
+| PR | Branch | Category | Files | Status |
+|----|--------|----------|-------|--------|
+| 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | ⬜ Pending |
+| 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | ⬜ Pending |
+| 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | ⬜ Pending |
+| 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 9 | ⬜ Pending |
+| 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
+| 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
+| 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
+| 8 | `ov/test/checkout-components-08-network` | Network | 4 | ⬜ Pending |
+| 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6 | ⬜ Pending |
+| 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 7 | ⬜ Pending |
+| 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6 | ⬜ Pending |
+| 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5 | ⬜ Pending |
+| 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | ⬜ Pending |
+| 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | ⬜ Pending |
+| 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | ⬜ Pending |
+| 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | ⬜ Pending |
+| 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 5 | ⬜ Pending |
+| 18 | `ov/test/checkout-components-18-scope-pt1` | Scope Pt1 | 7 | ⬜ Pending |
+| 19 | `ov/test/checkout-components-19-scope-pt2` | Scope Pt2 | 7 | ⬜ Pending |
+| 20 | `ov/test/checkout-components-20-vault-providers` | Vault & Providers | 8 | ⬜ Pending |
+| 21 | `ov/test/checkout-components-21-theme-tokens` | Theme & Tokens | 9 | ⬜ Pending |
+| 22 | `ov/test/checkout-components-22-ui-utilities-pt1` | UI & Utilities Pt1 | 9 | ⬜ Pending |
+| 23 | `ov/test/checkout-components-23-utilities-pt2` | Utilities Pt2 | 8 | ⬜ Pending |
+
+**Status Legend:** ⬜ Pending | 🔄 In Review | ✅ Merged
+
+---
+
+## PR File Details
+
+### PR 1: Foundation (6 files)
+- [ ] TestSupport/TestData.swift
+- [ ] TestSupport/XCTestCase+Async.swift
+- [ ] TestSupport/ContainerTestHelpers.swift
+- [ ] Mocks/MockConfigurationService.swift
+- [ ] Mocks/MockAnalyticsInteractor.swift
+- [ ] COVERAGE_TRACKING.md
+
+### PR 2: DI Core (8 files)
+- [ ] Core/ContainerTests.swift
+- [ ] DI/ContainerErrorTests.swift
+- [ ] DI/ContainerDiagnosticsTests.swift
+- [ ] DI/ContainerProtocolTests.swift
+- [ ] DI/DIContainerTests.swift
+- [ ] DI/TypeKeyTests.swift
+- [ ] DI/RetentionPolicyTests.swift
+- [ ] DI/FactoryTests.swift
+
+### PR 3: DI SwiftUI (7 files)
+- [ ] Core/SettingsObserverTests.swift
+- [ ] Core/AnalyticsSessionConfigProviderTests.swift
+- [ ] DI/AsyncResolutionTests.swift
+- [ ] DI/DIContainerSwiftUITests.swift
+- [ ] DI/SwiftUIDITests.swift
+- [ ] DI/PrimerSettingsDIIntegrationTests.swift
+- [ ] DI/PrimerSettingsIntegrationTests.swift
+
+### PR 4: Accessibility (9 files)
+- [ ] Mocks/MockAccessibilityAnnouncementService.swift
+- [ ] Accessibility/AccessibilityIdentifiersTests.swift
+- [ ] Accessibility/AccessibilityConfigurationTests.swift
+- [ ] Accessibility/AccessibilityAnnouncementServiceTests.swift
+- [ ] Accessibility/AccessibilityStringsTests.swift
+- [ ] Accessibility/AccessibilityDIContainerTests.swift
+- [ ] Accessibility/ViewAccessibilityExtensionTests.swift
+- [ ] Accessibility/ViewAccessibilityExtendedTests.swift
+- [ ] Accessibility/ViewAccessibilityConditionalsTests.swift
+
+### PR 5: Validation Pt1 (8 files)
+- [ ] Mocks/MockValidationService.swift
+- [ ] Mocks/MockRulesFactory.swift
+- [ ] Validation/CardValidationRulesTests.swift
+- [ ] Validation/CommonValidationRulesTests.swift
+- [ ] Validation/ValidationServiceTests.swift
+- [ ] Validation/ValidationErrorTests.swift
+- [ ] Validation/ValidationResultTests.swift
+- [ ] Validation/ValidationRuleTests.swift
+
+### PR 6: Validation Pt2 (5 files)
+- [ ] Mocks/MockValidateInputInteractor.swift
+- [ ] Validation/RulesFactoryTests.swift
+- [ ] Validation/ExpiryDateValidationEdgeCasesTests.swift
+- [ ] Core/ErrorMessageResolverTests.swift
+- [ ] Interactors/ValidateInputInteractorTests.swift
+
+### PR 7: Navigation (5 files)
+- [ ] Mocks/MockCheckoutCoordinator.swift
+- [ ] Mocks/MockCheckoutNavigator.swift
+- [ ] Navigation/CheckoutCoordinatorTests.swift
+- [ ] Navigation/CheckoutNavigatorTests.swift
+- [ ] Navigation/CheckoutRouteTests.swift
+
+### PR 8: Network (4 files)
+- [ ] Network/APIClientEdgeCasesTests.swift
+- [ ] Network/APIResponseParsingTests.swift
+- [ ] Network/ErrorMappingTests.swift
+- [ ] Network/NetworkManagerErrorHandlingTests.swift
+
+### PR 9: Data Config (6 files)
+- [ ] Data/ConfigurationServiceTests.swift
+- [ ] Data/ConfigurationValidationTests.swift
+- [ ] Data/DataPersistenceTests.swift
+- [ ] Data/MerchantConfigCachingTests.swift
+- [ ] Data/PaymentMethodCacheTests.swift
+- [ ] Data/PaymentMethodRepositoryTests.swift
+
+### PR 10: HeadlessRepo Pt1 (7 files)
+- [ ] Mocks/MockHeadlessRepository.swift
+- [ ] Mocks/MockClientSessionActionsModule.swift
+- [ ] Data/HeadlessRepositoryTests.swift
+- [ ] Data/HeadlessRepositoryHelperTests.swift
+- [ ] Data/HeadlessRepositorySettingsTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryInitTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryUtilityTests.swift
+
+### PR 11: HeadlessRepo Pt2 (6 files)
+- [ ] Data/HeadlessRepository/HeadlessRepositoryPaymentFlowTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryProcessCardPaymentTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryGetPaymentMethodsTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositorySelectCardNetworkTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryAnalyticsTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryDelegateTests.swift
+
+### PR 12: HeadlessRepo Pt3 (5 files)
+- [ ] Mocks/MockPaymentMethodMapper.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryNetworkSurchargesTests.swift
+- [ ] Data/HeadlessRepository/HeadlessRepositoryVaultTests.swift
+- [ ] Data/PayPalRepositoryImplTests.swift
+- [ ] Mappers/PaymentMethodMapperTests.swift
+
+### PR 13: Interactors (7 files)
+- [ ] Mocks/MockProcessCardPaymentInteractor.swift
+- [ ] Mocks/MockCardNetworkDetectionInteractor.swift
+- [ ] Interactors/CardNetworkDetectionInteractorTests.swift
+- [ ] Interactors/GetPaymentMethodsInteractorTests.swift
+- [ ] Interactors/ProcessCardPaymentInteractorTests.swift
+- [ ] Interactors/SubmitVaultedPaymentInteractorTests.swift
+- [ ] Domain/Interactors/ProcessPayPalPaymentInteractorTests.swift
+
+### PR 14: Payment Pt1 (8 files)
+- [ ] Payment/PaymentProcessorTests.swift
+- [ ] Payment/PaymentStateMachineTests.swift
+- [ ] Payment/PaymentValidationTests.swift
+- [ ] Payment/PaymentResultHandlingTests.swift
+- [ ] Payment/PaymentCancellationTests.swift
+- [ ] Payment/PaymentMethodHandlerTests.swift
+- [ ] Payment/PaymentAnalyticsTests.swift
+- [ ] Payment/PaymentRetryLogicTests.swift
+
+### PR 15: Payment Pt2 (7 files)
+- [ ] Payment/CardTokenizationTests.swift
+- [ ] Payment/CheckoutComponentsTokenizationTests.swift
+- [ ] Payment/ThreeDSFlowTests.swift
+- [ ] Payment/ThreeDSChallengeTests.swift
+- [ ] Payment/FraudCheckIntegrationTests.swift
+- [ ] Payment/SurchargeCalculationTests.swift
+- [ ] Payment/TransactionManagerTests.swift
+
+### PR 16: ApplePay (10 files)
+- [ ] ApplePay/Mocks/MockProcessApplePayPaymentInteractor.swift
+- [ ] ApplePay/ApplePayTestData.swift
+- [ ] ApplePay/ApplePayFormStateTests.swift
+- [ ] ApplePay/ApplePayPaymentMethodTests.swift
+- [ ] ApplePay/ApplePayButtonViewTests.swift
+- [ ] ApplePay/ApplePayScreenTests.swift
+- [ ] ApplePay/ApplePayAuthorizationCoordinatorTests.swift
+- [ ] ApplePay/ApplePayRequestBuilderTests.swift
+- [ ] ApplePay/ProcessApplePayPaymentInteractorTests.swift
+- [ ] ApplePay/DefaultApplePayScopeTests.swift
+
+### PR 17: PayPal & Methods (5 files)
+- [ ] PayPal/DefaultPayPalScopeTests.swift
+- [ ] PaymentMethods/CardPaymentMethodTests.swift
+- [ ] PaymentMethods/PayPalPaymentMethodTests.swift
+- [ ] Registry/PaymentMethodRegistryTests.swift
+- [ ] Bridge/CheckoutComponentsPaymentMethodsBridgeTests.swift
+
+### PR 18: Scope Pt1 (7 files)
+- [ ] Mocks/MockRawDataManager.swift
+- [ ] Scope/DefaultCardFormScopeTests.swift
+- [ ] Scope/PrimerCardFormScopeTests.swift
+- [ ] Scope/InputFieldConfigTests.swift
+- [ ] Scope/PrimerFieldStylingTests.swift
+- [ ] Scope/ScopeLifecycleTests.swift
+- [ ] Scope/ScopeStateManagerTests.swift
+
+### PR 19: Scope Pt2 (7 files)
+- [ ] Mocks/MockSubmitVaultedPaymentInteractor.swift
+- [ ] Scope/DefaultCheckoutScopeTests.swift
+- [ ] Scope/DefaultPaymentMethodSelectionScopeTests.swift
+- [ ] Scope/PaymentMethodSelectionStateTests.swift
+- [ ] Scope/DefaultSelectCountryScopeTests.swift
+- [ ] Scope/SelectCountryStateTests.swift
+- [ ] Scope/PrimerEnvironmentTests.swift
+
+### PR 20: Vault & Providers (8 files)
+- [ ] Vault/VaultDefaultCheckoutScopeTests.swift
+- [ ] Vault/VaultDefaultPaymentMethodSelectionScopeTests.swift
+- [ ] Vault/VaultedCardCVVInputTests.swift
+- [ ] Vault/VaultedPaymentMethodDisplayDataTests.swift
+- [ ] Providers/CardFormProviderTests.swift
+- [ ] Providers/PaymentMethodSelectionProviderTests.swift
+- [ ] Providers/SelectCountryProviderTests.swift
+- [ ] Primer/CheckoutComponentsPrimerTests.swift
+
+### PR 21: Theme & Tokens (9 files)
+- [ ] Theme/CheckoutComponentsThemeTests.swift
+- [ ] Theme/PrimerThemeImagesTests.swift
+- [ ] Theme/PrimerThemeTests.swift
+- [ ] Tokens/DesignTokensTests.swift
+- [ ] Tokens/DesignTokensDarkTests.swift
+- [ ] Tokens/DesignTokensKeyTests.swift
+- [ ] Tokens/DesignTokensManagerTests.swift
+- [ ] Tokens/DesignTokensProcessorTests.swift
+- [ ] Tokens/PrimerFontTests.swift
+
+### PR 22: UI & Utilities Pt1 (9 files)
+- [ ] UI/CheckoutColorsTests.swift
+- [ ] UI/PrimerLayoutTests.swift
+- [ ] Utilities/StringExtensionsTests.swift
+- [ ] Utilities/IntExtensionTests.swift
+- [ ] Utilities/CollectionExtensionsTests.swift
+- [ ] Utilities/FormatterUtilsTests.swift
+- [ ] Utilities/CurrencyFormattingTests.swift
+- [ ] Utilities/DateTimeUtilsTests.swift
+- [ ] Tests/Primer/Modules/UserInterfaceModuleTests.swift
+
+### PR 23: Utilities Pt2 (8 files)
+- [ ] Utilities/DebugUtilsTests.swift
+- [ ] Utilities/LoggerTests.swift
+- [ ] Utilities/ValidationHelpersTests.swift
+- [ ] Utilities/PrimerPaymentMethodTypeImageNameTests.swift
+- [ ] Utilities/AppearanceModeTests.swift
+- [ ] Models/InternalPaymentMethodTests.swift
+- [ ] Models/PrimerInputElementTypeExtendedTests.swift
+- [ ] Services/DefaultConfigurationServiceTests.swift
