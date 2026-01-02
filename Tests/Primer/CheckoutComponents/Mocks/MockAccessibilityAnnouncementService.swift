@@ -7,9 +7,17 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of AccessibilityAnnouncementService for testing
 @available(iOS 15.0, *)
 final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementService {
+
+    // MARK: - Constants
+
+    private enum AnnouncementPrefix {
+        static let error = "[ERROR]"
+        static let state = "[STATE]"
+        static let layout = "[LAYOUT]"
+        static let screen = "[SCREEN]"
+    }
 
     // MARK: - Call Tracking
 
@@ -30,25 +38,25 @@ final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementServi
     func announceError(_ message: String) {
         announceErrorCallCount += 1
         lastErrorMessage = message
-        allAnnouncements.append("[ERROR] \(message)")
+        allAnnouncements.append("\(AnnouncementPrefix.error) \(message)")
     }
 
     func announceStateChange(_ message: String) {
         announceStateChangeCallCount += 1
         lastStateChangeMessage = message
-        allAnnouncements.append("[STATE] \(message)")
+        allAnnouncements.append("\(AnnouncementPrefix.state) \(message)")
     }
 
     func announceLayoutChange(_ message: String) {
         announceLayoutChangeCallCount += 1
         lastLayoutChangeMessage = message
-        allAnnouncements.append("[LAYOUT] \(message)")
+        allAnnouncements.append("\(AnnouncementPrefix.layout) \(message)")
     }
 
     func announceScreenChange(_ message: String) {
         announceScreenChangeCallCount += 1
         lastScreenChangeMessage = message
-        allAnnouncements.append("[SCREEN] \(message)")
+        allAnnouncements.append("\(AnnouncementPrefix.screen) \(message)")
     }
 
     // MARK: - Test Helpers

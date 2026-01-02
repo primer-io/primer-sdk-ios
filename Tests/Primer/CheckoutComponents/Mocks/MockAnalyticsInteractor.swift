@@ -7,14 +7,17 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of CheckoutComponentsAnalyticsInteractorProtocol for testing
 @available(iOS 15.0, *)
 actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
+
+    // MARK: - Types
+
+    typealias TrackedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)
 
     // MARK: - Call Tracking
 
     private(set) var trackEventCallCount = 0
-    private(set) var trackedEvents: [(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)] = []
+    private(set) var trackedEvents: [TrackedEvent] = []
 
     // MARK: - Protocol Implementation
 
@@ -28,10 +31,6 @@ actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
     func reset() {
         trackEventCallCount = 0
         trackedEvents = []
-    }
-
-    func getLastTrackedEvent() -> (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)? {
-        trackedEvents.last
     }
 
     func hasTrackedEvent(_ eventType: AnalyticsEventType) -> Bool {
