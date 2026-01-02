@@ -347,10 +347,10 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 
 | PR | Branch | Category | Files | Status |
 |----|--------|----------|-------|--------|
-| 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | ⬜ Pending |
+| 1 | `ov/test/checkout-components-01-foundation` | Foundation | 6 | 🔄 In Review |
 | 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | ⬜ Pending |
 | 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | ⬜ Pending |
-| 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 9 | ⬜ Pending |
+| 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | ⬜ Pending |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
@@ -373,17 +373,28 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 
 **Status Legend:** ⬜ Pending | 🔄 In Review | ✅ Merged
 
+### PR Workflow
+1. Create branch from `bn/feature/checkout-components`
+2. Checkout files from `002-checkout-components-unit-tests`
+3. **Run tests first** to verify build succeeds
+4. Commit and push
+5. Update this file and commit to `002-checkout-components-unit-tests`
+
+### Known Test Failures
+- `PrimerInputElementTests.test_validate_expiryDate` - Uses hardcoded `12/25` expiry date (now expired in 2026)
+- **Fix:** Handled in separate branch, ignore for PR testing
+
 ---
 
 ## PR File Details
 
-### PR 1: Foundation (6 files)
-- [ ] TestSupport/TestData.swift
-- [ ] TestSupport/XCTestCase+Async.swift
-- [ ] TestSupport/ContainerTestHelpers.swift
-- [ ] Mocks/MockConfigurationService.swift
-- [ ] Mocks/MockAnalyticsInteractor.swift
-- [ ] COVERAGE_TRACKING.md
+### PR 1: Foundation (6 files) ⚠️ *Must merge first - required by base branch*
+- [x] TestSupport/TestData.swift
+- [x] TestSupport/XCTestCase+Async.swift
+- [x] TestSupport/ContainerTestHelpers.swift
+- [x] Mocks/MockConfigurationService.swift
+- [x] Mocks/MockAnalyticsInteractor.swift
+- [x] Mocks/MockAccessibilityAnnouncementService.swift *(moved from PR 4)*
 
 ### PR 2: DI Core (8 files)
 - [ ] Core/ContainerTests.swift
@@ -404,8 +415,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [ ] DI/PrimerSettingsDIIntegrationTests.swift
 - [ ] DI/PrimerSettingsIntegrationTests.swift
 
-### PR 4: Accessibility (9 files)
-- [ ] Mocks/MockAccessibilityAnnouncementService.swift
+### PR 4: Accessibility (8 files) *Depends on PR 1*
 - [ ] Accessibility/AccessibilityIdentifiersTests.swift
 - [ ] Accessibility/AccessibilityConfigurationTests.swift
 - [ ] Accessibility/AccessibilityAnnouncementServiceTests.swift
