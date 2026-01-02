@@ -1,7 +1,7 @@
 //
 //  PrimerTestPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -82,7 +82,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
         ))
 
         defer {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self.didDismissPaymentMethodUI?()
                 self.didFinishPayment?(nil)
             }
@@ -97,7 +97,7 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
             willDismissPaymentMethodUI?()
         } catch {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self.didFinishPayment?(error)
             }
             throw error
