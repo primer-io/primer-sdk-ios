@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
+import SwiftUI
 @testable import PrimerSDK
 
 @available(iOS 15.0, *)
@@ -730,4 +731,491 @@ final class DefaultPaymentMethodSelectionScopeTests: XCTestCase {
             XCTAssertNotNil(scope)
         }
     }
+
+    // MARK: - State Initial Values Tests
+
+    func test_state_initialValues_correctDefaults() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // Verify initial state defaults
+            XCTAssertNotNil(foundState)
+            XCTAssertTrue(foundState?.isPaymentMethodsExpanded ?? false)  // Default is true (expanded)
+            XCTAssertEqual(foundState?.searchQuery, "")
+            XCTAssertFalse(foundState?.isCvvValid ?? true)
+        }
+    }
+
+    func test_state_selectedVaultedPaymentMethod_initiallyNil() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // Selected vaulted payment method initially nil
+            XCTAssertNil(foundState?.selectedVaultedPaymentMethod)
+        }
+    }
+
+    func test_state_filteredPaymentMethods_matchesPaymentMethods() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // When no search, filtered should match all
+            XCTAssertEqual(
+                foundState?.filteredPaymentMethods.count,
+                foundState?.paymentMethods.count
+            )
+        }
+    }
+
+    // MARK: - CVV Validation Edge Cases Tests
+
+    func test_updateCvvInput_withLeadingZeroes_setsValid() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // CVV with leading zeroes (valid)
+            scope.updateCvvInput("001")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            XCTAssertTrue(foundState?.isCvvValid ?? false)
+            XCTAssertNil(foundState?.cvvError)
+        }
+    }
+
+    func test_updateCvvInput_withFourDigitCvv_dependsOnCardNetwork() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // Four digit CVV (valid for Amex)
+            scope.updateCvvInput("1234")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // Without selected vaulted method with Amex network, this should be invalid
+            // as default expected length is 3
+            XCTAssertFalse(foundState?.isCvvValid ?? true)
+            XCTAssertNotNil(foundState?.cvvError)
+        }
+    }
+
+    func test_updateCvvInput_withSpaces_setsInvalid() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // CVV with spaces (non-numeric)
+            scope.updateCvvInput("12 3")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            XCTAssertFalse(foundState?.isCvvValid ?? true)
+            XCTAssertNotNil(foundState?.cvvError)
+        }
+    }
+
+    // MARK: - Search Payment Methods Edge Cases
+
+    func test_searchPaymentMethods_withEmoji_handlesCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // Search with emoji
+            scope.searchPaymentMethods("💳")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            XCTAssertEqual(foundState?.searchQuery, "💳")
+        }
+    }
+
+    func test_searchPaymentMethods_withNumbers_handlesCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // Search with numbers
+            scope.searchPaymentMethods("123")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            XCTAssertEqual(foundState?.searchQuery, "123")
+        }
+    }
+
+    func test_searchPaymentMethods_clearsSearch_resetsFilteredMethods() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // First search
+            scope.searchPaymentMethods("card")
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            // Clear search
+            scope.searchPaymentMethods("")
+
+            // Wait for state update
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            XCTAssertEqual(foundState?.searchQuery, "")
+        }
+    }
+
+    // MARK: - State Stream Tests
+
+    func test_state_streamContinuesWithUpdates() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            var statesReceived = 0
+            let task = Task {
+                for await _ in scope.state {
+                    statesReceived += 1
+                    if statesReceived >= 2 { break }
+                }
+            }
+
+            // Trigger an update
+            scope.updateCvvInput("123")
+
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            task.cancel()
+
+            XCTAssertGreaterThanOrEqual(statesReceived, 1)
+        }
+    }
+
+    // MARK: - UI Customization Property Set Tests
+
+    func test_screen_canBeSet() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            let customScreen: PaymentMethodSelectionScreenComponent = { _ in Text("Custom") }
+            scope.screen = customScreen
+
+            XCTAssertNotNil(scope.screen)
+        }
+    }
+
+    func test_container_canBeSet() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            let customContainer: ContainerComponent = { _ in Text("Container") }
+            scope.container = customContainer
+
+            XCTAssertNotNil(scope.container)
+        }
+    }
+
+    func test_paymentMethodItem_canBeSet() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            let customItem: PaymentMethodItemComponent = { _ in Text("Item") }
+            scope.paymentMethodItem = customItem
+
+            XCTAssertNotNil(scope.paymentMethodItem)
+        }
+    }
+
+    func test_categoryHeader_canBeSet() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            let customHeader: CategoryHeaderComponent = { _ in Text("Header") }
+            scope.categoryHeader = customHeader
+
+            XCTAssertNotNil(scope.categoryHeader)
+        }
+    }
+
+    func test_emptyStateView_canBeSet() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            let customEmpty: Component = { Text("Empty") }
+            scope.emptyStateView = customEmpty
+
+            XCTAssertNotNil(scope.emptyStateView)
+        }
+    }
+
+    // MARK: - Selected Vaulted Payment Method Tests
+
+    func test_selectedVaultedPaymentMethod_initiallyNil() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            XCTAssertNil(scope.selectedVaultedPaymentMethod)
+        }
+    }
+
+    func test_syncSelectedVaultedPaymentMethod_sameMethod_preservesCvvState() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // First update CVV
+            scope.updateCvvInput("123")
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            // Then sync with same method (nil -> nil)
+            scope.syncSelectedVaultedPaymentMethod()
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // CVV should be preserved when same method (both nil)
+            XCTAssertEqual(foundState?.cvvInput, "123")
+        }
+    }
+
+    // MARK: - Expand/Collapse State Tests
+
+    func test_showOtherWaysToPay_thenCollapse_togglesCorrectly() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            // Initial state should be expanded (default)
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+            let initialExpanded = foundState?.isPaymentMethodsExpanded ?? false
+
+            // Collapse first
+            scope.collapsePaymentMethods()
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+            let collapsedState = foundState?.isPaymentMethodsExpanded ?? true
+
+            // Then expand
+            scope.showOtherWaysToPay()
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+            let expandedState = foundState?.isPaymentMethodsExpanded ?? false
+
+            XCTAssertTrue(initialExpanded)   // Default is expanded
+            XCTAssertFalse(collapsedState)   // Should be collapsed after collapse
+            XCTAssertTrue(expandedState)     // Should be expanded again
+        }
+    }
+
+    // MARK: - Payment Method Selected with Different Types Tests
+
+    func test_onPaymentMethodSelected_withApplePay_tracksCorrectType() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockAnalytics = MockAnalyticsInteractor()
+            let scope = createPaymentMethodSelectionScope(
+                checkoutScope: checkoutScope,
+                analyticsInteractor: mockAnalytics
+            )
+
+            let paymentMethod = createTestPaymentMethod(type: "APPLE_PAY", name: "Apple Pay")
+            scope.onPaymentMethodSelected(paymentMethod: paymentMethod)
+
+            try? await Task.sleep(nanoseconds: 100_000_000)
+
+            let callCount = await mockAnalytics.trackEventCallCount
+            XCTAssertGreaterThan(callCount, 0)
+        }
+    }
+
+    func test_onPaymentMethodSelected_withGooglePay_tracksCorrectType() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let mockAnalytics = MockAnalyticsInteractor()
+            let scope = createPaymentMethodSelectionScope(
+                checkoutScope: checkoutScope,
+                analyticsInteractor: mockAnalytics
+            )
+
+            let paymentMethod = createTestPaymentMethod(type: "GOOGLE_PAY", name: "Google Pay")
+            scope.onPaymentMethodSelected(paymentMethod: paymentMethod)
+
+            try? await Task.sleep(nanoseconds: 100_000_000)
+
+            let callCount = await mockAnalytics.trackEventCallCount
+            XCTAssertGreaterThan(callCount, 0)
+        }
+    }
+
+    // MARK: - CVV Input Boundary Tests
+
+    func test_updateCvvInput_singleDigit_partialInput() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            scope.updateCvvInput("1")
+
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // Single digit is partial input - not valid, no error
+            XCTAssertFalse(foundState?.isCvvValid ?? true)
+            XCTAssertNil(foundState?.cvvError)
+        }
+    }
+
+    func test_updateCvvInput_exactTwoDigits_partialInput() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createPaymentMethodSelectionScope(checkoutScope: checkoutScope)
+
+            scope.updateCvvInput("12")
+
+            try? await Task.sleep(nanoseconds: 50_000_000)
+
+            var foundState: PrimerPaymentMethodSelectionState?
+            for await state in scope.state {
+                foundState = state
+                break
+            }
+
+            // Two digits is partial input - not valid, no error
+            XCTAssertFalse(foundState?.isCvvValid ?? true)
+            XCTAssertNil(foundState?.cvvError)
+        }
+    }
+
 }

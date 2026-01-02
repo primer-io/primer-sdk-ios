@@ -398,6 +398,163 @@ final class CardPaymentMethodTests: XCTestCase {
         }
     }
 
+    // MARK: - createView Tests
+
+    func test_createView_withoutCardFormScope_returnsNil() async throws {
+        // Given - checkout scope without card form scope registered
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When - try to create view without scope
+        let view = CardPaymentMethod.createView(checkoutScope: checkoutScope)
+
+        // Then - should return nil
+        XCTAssertNil(view)
+    }
+
+    func test_createView_withMockInvalidScope_returnsNil() async throws {
+        // Given - an invalid checkout scope type
+        let invalidCheckoutScope = MockInvalidCheckoutScopeForCardTests()
+
+        // When - try to create view
+        let view = CardPaymentMethod.createView(checkoutScope: invalidCheckoutScope)
+
+        // Then - should return nil (getPaymentMethodScope returns nil)
+        XCTAssertNil(view)
+    }
+
+    // MARK: - Scope Type Tests
+
+    func test_scopeType_isDefaultCardFormScope() {
+        // The typealias ScopeType should be DefaultCardFormScope
+        XCTAssertTrue(CardPaymentMethod.ScopeType.self == DefaultCardFormScope.self)
+    }
+
+    // MARK: - Presentation Context Edge Cases
+
+    func test_createScope_withThreePaymentMethods_usesPaymentSelectionContext() async throws {
+        // Given - checkout scope with three payment methods
+        await registerCardPaymentDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(
+                id: "card-1",
+                type: PrimerPaymentMethodType.paymentCard.rawValue,
+                name: "Card"
+            ),
+            InternalPaymentMethod(
+                id: "paypal-1",
+                type: PrimerPaymentMethodType.payPal.rawValue,
+                name: "PayPal"
+            ),
+            InternalPaymentMethod(
+                id: "apple-pay-1",
+                type: PrimerPaymentMethodType.applePay.rawValue,
+                name: "Apple Pay"
+            )
+        ]
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should use fromPaymentSelection context
+        XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+    }
+
+    func test_createScope_withManyPaymentMethods_usesPaymentSelectionContext() async throws {
+        // Given - checkout scope with many payment methods
+        await registerCardPaymentDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+
+        // Add 10 payment methods
+        checkoutScope.availablePaymentMethods = (0..<10).map { index in
+            InternalPaymentMethod(
+                id: "method-\(index)",
+                type: "TYPE_\(index)",
+                name: "Method \(index)"
+            )
+        }
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - should use fromPaymentSelection context
+        XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+    }
+
+    // MARK: - Dependency Injection Tests
+
+    func test_createScope_withAnalyticsInteractor_includesAnalytics() async throws {
+        // Given - container with analytics interactor registered
+        await registerCardPaymentDependencies()
+        _ = try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+            .asSingleton()
+            .with { _ in MockAnalyticsInteractor() }
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        // When
+        let scope = try CardPaymentMethod.createScope(
+            checkoutScope: checkoutScope,
+            diContainer: container
+        )
+
+        // Then - scope should be created successfully with analytics
+        XCTAssertNotNil(scope)
+    }
+
+    // MARK: - Registry Integration Tests
+
+    func test_register_canBeCalledMultipleTimes() async throws {
+        // Given - payment method already registered
+        CardPaymentMethod.register()
+
+        // When - register again
+        CardPaymentMethod.register()
+
+        // Then - should not throw, should still work
+        await registerCardPaymentDependencies()
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        do {
+            let scope = try PaymentMethodRegistry.shared.createScope(
+                for: PrimerPaymentMethodType.paymentCard.rawValue,
+                checkoutScope: checkoutScope,
+                diContainer: container
+            )
+            XCTAssertNotNil(scope)
+        } catch {
+            XCTFail("Registry should still work after multiple registrations: \(error)")
+        }
+    }
+
     // MARK: - Helper Methods
 
     private func registerCardPaymentDependencies() async {

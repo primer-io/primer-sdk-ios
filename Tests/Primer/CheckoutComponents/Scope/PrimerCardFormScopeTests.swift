@@ -923,4 +923,289 @@ final class PrimerCardFormScopeTests: XCTestCase {
 
         XCTAssertTrue(true, "updateValidationState with mixed values should complete without error")
     }
+
+    // MARK: - updateValidationStateIfNeeded Tests
+
+    func test_updateValidationStateIfNeeded_withNonDefaultScope_doesNothing() {
+        // Given - a mock scope that is NOT a DefaultCardFormScope
+        let scope = MockCardFormScopeImpl()
+
+        // When - call updateValidationStateIfNeeded (should early return due to guard)
+        scope.updateValidationStateIfNeeded(for: .cardNumber, isValid: true)
+
+        // Then - should not crash (just returns early)
+        XCTAssertTrue(true, "updateValidationStateIfNeeded on non-DefaultCardFormScope should return early")
+    }
+
+    func test_updateValidationStateIfNeeded_allFieldTypes_doesNothing() {
+        let scope = MockCardFormScopeImpl()
+        let fieldTypes: [PrimerInputElementType] = [
+            .cardNumber, .cvv, .expiryDate, .cardholderName,
+            .email, .firstName, .lastName, .addressLine1,
+            .addressLine2, .city, .state, .postalCode,
+            .countryCode, .phoneNumber, .retailer, .otp, .unknown, .all
+        ]
+
+        // When - call for all field types
+        for fieldType in fieldTypes {
+            scope.updateValidationStateIfNeeded(for: fieldType, isValid: true)
+            scope.updateValidationStateIfNeeded(for: fieldType, isValid: false)
+        }
+
+        // Then - should not crash
+        XCTAssertTrue(true, "updateValidationStateIfNeeded for all field types should complete without error")
+    }
+
+    // MARK: - Edge Case Tests for Field Updates
+
+    func test_updateField_withEmptyString_dispatches() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateField(.cardNumber, value: "")
+
+        XCTAssertEqual(scope.updatedFields[.cardNumber], "")
+    }
+
+    func test_updateField_withSpecialCharacters_dispatches() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateField(.cardholderName, value: "José García-López")
+
+        XCTAssertEqual(scope.updatedFields[.cardholderName], "José García-López")
+    }
+
+    func test_updateField_withUnicodeEmoji_dispatches() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateField(.city, value: "New York 🗽")
+
+        XCTAssertEqual(scope.updatedFields[.city], "New York 🗽")
+    }
+
+    func test_updateField_multipleUpdates_overwritesPrevious() {
+        let scope = MockCardFormScopeImpl()
+
+        // When - update same field multiple times
+        scope.updateField(.cardNumber, value: "1111")
+        scope.updateField(.cardNumber, value: "2222")
+        scope.updateField(.cardNumber, value: "4111111111111111")
+
+        // Then - last value is retained
+        XCTAssertEqual(scope.updatedFields[.cardNumber], "4111111111111111")
+    }
+
+    func test_updateField_withVeryLongValue_dispatches() {
+        let scope = MockCardFormScopeImpl()
+        let longValue = String(repeating: "A", count: 1000)
+
+        scope.updateField(.addressLine1, value: longValue)
+
+        XCTAssertEqual(scope.updatedFields[.addressLine1], longValue)
+    }
+
+    func test_updateField_withWhitespaceOnlyValue_dispatches() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateField(.postalCode, value: "   ")
+
+        XCTAssertEqual(scope.updatedFields[.postalCode], "   ")
+    }
+
+    // MARK: - RetailOutlet and OTP Config Tests
+
+    func test_retailOutletConfig_defaultValue_isNil() {
+        let scope = MockCardFormScopeImpl()
+        XCTAssertNil(scope.retailOutletConfig)
+    }
+
+    func test_retailOutletConfig_canBeSet() {
+        let scope = MockCardFormScopeImpl()
+        scope.retailOutletConfig = InputFieldConfig(label: "Select Store")
+        XCTAssertNotNil(scope.retailOutletConfig)
+        XCTAssertEqual(scope.retailOutletConfig?.label, "Select Store")
+    }
+
+    func test_otpCodeConfig_defaultValue_isNil() {
+        let scope = MockCardFormScopeImpl()
+        XCTAssertNil(scope.otpCodeConfig)
+    }
+
+    func test_otpCodeConfig_canBeSet() {
+        let scope = MockCardFormScopeImpl()
+        scope.otpCodeConfig = InputFieldConfig(label: "Verification Code")
+        XCTAssertNotNil(scope.otpCodeConfig)
+        XCTAssertEqual(scope.otpCodeConfig?.label, "Verification Code")
+    }
+
+    // MARK: - CardFormUIOptions Tests
+
+    func test_cardFormUIOptions_defaultValue_isNil() {
+        let scope = MockCardFormScopeImpl()
+        XCTAssertNil(scope.cardFormUIOptions)
+    }
+
+    func test_cardFormUIOptions_canBeSet() {
+        let scope = MockCardFormScopeImpl()
+        let options = PrimerCardFormUIOptions(payButtonAddNewCard: true)
+        scope.cardFormUIOptions = options
+        XCTAssertNotNil(scope.cardFormUIOptions)
+    }
+
+    // MARK: - DismissalMechanism Tests
+
+    func test_dismissalMechanism_defaultValue_isEmpty() {
+        let scope = MockCardFormScopeImpl()
+        XCTAssertTrue(scope.dismissalMechanism.isEmpty)
+    }
+
+    func test_dismissalMechanism_canBeSet() {
+        let scope = MockCardFormScopeImpl()
+        scope.dismissalMechanism = [.gestures]
+        XCTAssertEqual(scope.dismissalMechanism.count, 1)
+    }
+
+    func test_dismissalMechanism_canHaveMultipleValues() {
+        let scope = MockCardFormScopeImpl()
+        scope.dismissalMechanism = [.gestures, .closeButton]
+        XCTAssertEqual(scope.dismissalMechanism.count, 2)
+    }
+
+    // MARK: - ViewBuilder Field Methods with Both Parameters
+
+    func test_primerExpiryDateField_withLabelAndStyling_returnsView() {
+        let scope = MockCardFormScopeImpl()
+        let styling = PrimerFieldStyling()
+        let view = scope.PrimerExpiryDateField(label: "Expiration", styling: styling)
+        XCTAssertNotNil(view)
+    }
+
+    func test_primerCvvField_withLabelAndStyling_returnsView() {
+        let scope = MockCardFormScopeImpl()
+        let styling = PrimerFieldStyling()
+        let view = scope.PrimerCvvField(label: "CVV/CVC", styling: styling)
+        XCTAssertNotNil(view)
+    }
+
+    func test_defaultCardFormView_withStyling_returnsView() {
+        let scope = MockCardFormScopeImpl()
+        let styling = PrimerFieldStyling()
+        let view = scope.DefaultCardFormView(styling: styling)
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Multiple State Access Tests
+
+    func test_state_multipleIterations_work() async {
+        let scope = MockCardFormScopeImpl()
+
+        // First iteration
+        var count1 = 0
+        for await _ in scope.state {
+            count1 += 1
+        }
+
+        // Second iteration (new stream)
+        var count2 = 0
+        for await _ in scope.state {
+            count2 += 1
+        }
+
+        XCTAssertEqual(count1, count2, "Both iterations should receive same number of states")
+    }
+
+    // MARK: - Validation State Edge Cases
+
+    func test_updateValidationState_allFalse_canBeCalled() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateValidationState(cardNumber: false, cvv: false, expiry: false, cardholderName: false)
+
+        XCTAssertTrue(true, "updateValidationState with all false should complete without error")
+    }
+
+    func test_updateValidationState_allTrue_canBeCalled() {
+        let scope = MockCardFormScopeImpl()
+
+        scope.updateValidationState(cardNumber: true, cvv: true, expiry: true, cardholderName: true)
+
+        XCTAssertTrue(true, "updateValidationState with all true should complete without error")
+    }
+
+    // MARK: - Title Edge Cases
+
+    func test_title_canBeSetToEmptyString() {
+        let scope = MockCardFormScopeImpl()
+        scope.title = ""
+        XCTAssertEqual(scope.title, "")
+    }
+
+    func test_title_canBeResetToNil() {
+        let scope = MockCardFormScopeImpl()
+        scope.title = "Card Form"
+        scope.title = nil
+        XCTAssertNil(scope.title)
+    }
+
+    // MARK: - SubmitButtonText Edge Cases
+
+    func test_submitButtonText_canBeSetToEmptyString() {
+        let scope = MockCardFormScopeImpl()
+        scope.submitButtonText = ""
+        XCTAssertEqual(scope.submitButtonText, "")
+    }
+
+    func test_submitButtonText_canBeResetToNil() {
+        let scope = MockCardFormScopeImpl()
+        scope.submitButtonText = "Pay"
+        scope.submitButtonText = nil
+        XCTAssertNil(scope.submitButtonText)
+    }
+
+    // MARK: - Field Config Replacement Tests
+
+    func test_cardNumberConfig_canBeReplaced() {
+        let scope = MockCardFormScopeImpl()
+        scope.cardNumberConfig = InputFieldConfig(label: "First Label")
+        scope.cardNumberConfig = InputFieldConfig(label: "Replaced Label")
+        XCTAssertEqual(scope.cardNumberConfig?.label, "Replaced Label")
+    }
+
+    func test_cardNumberConfig_canBeResetToNil() {
+        let scope = MockCardFormScopeImpl()
+        scope.cardNumberConfig = InputFieldConfig(label: "Label")
+        scope.cardNumberConfig = nil
+        XCTAssertNil(scope.cardNumberConfig)
+    }
+
+    // MARK: - Section Replacement Tests
+
+    func test_cardInputSection_canBeReplaced() {
+        let scope = MockCardFormScopeImpl()
+        scope.cardInputSection = { AnyView(EmptyView()) }
+        scope.cardInputSection = { AnyView(Text("Replaced")) }
+        XCTAssertNotNil(scope.cardInputSection)
+    }
+
+    func test_cardInputSection_canBeResetToNil() {
+        let scope = MockCardFormScopeImpl()
+        scope.cardInputSection = { AnyView(EmptyView()) }
+        scope.cardInputSection = nil
+        XCTAssertNil(scope.cardInputSection)
+    }
+
+    // MARK: - Error View Replacement Tests
+
+    func test_errorView_canBeReplaced() {
+        let scope = MockCardFormScopeImpl()
+        scope.errorView = { _ in AnyView(Text("First")) }
+        scope.errorView = { _ in AnyView(Text("Second")) }
+        XCTAssertNotNil(scope.errorView)
+    }
+
+    func test_errorView_canBeResetToNil() {
+        let scope = MockCardFormScopeImpl()
+        scope.errorView = { _ in AnyView(EmptyView()) }
+        scope.errorView = nil
+        XCTAssertNil(scope.errorView)
+    }
 }

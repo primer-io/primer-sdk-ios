@@ -1,6 +1,6 @@
 # CheckoutComponents Code Coverage Tracking
 
-**Overall Coverage on New Code:** 44.7%
+**Overall Coverage on New Code:** 45.2%
 **Last Updated:** 2026-01-01
 **Branch:** 002-checkout-components-unit-tests
 **Total Tests in Project:** 3463 (all passing)
@@ -123,14 +123,12 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Coverage | Lines | Status |
 |------|----------|-------|--------|
-| PrimerEnvironment.swift | 50.0% | 4 | Tests Added |
 | SwiftUI+DI.swift | 52.1% | 35 | Tests Added |
 | DefaultCardFormScope.swift | 54.0% | 342 | Tests Added |
 | DefaultPaymentMethodSelectionScope.swift | 54.2% | 140 | Tests Added |
 | CardPaymentMethod.swift | 57.3% | 38 | Tests Added |
 | PrimerCardFormScope.swift | 58.3% | 40 | Tests Added |
 | PrimerTheme.swift | 60.0% | 4 | Good |
-| AccessibilityIdentifiers.swift | 62.5% | 9 | Needs Tests |
 | CheckoutComponentsPaymentMethodsBridge.swift | 64.7% | 61 | Tests Added |
 | PayPalPaymentMethod.swift | 64.8% | 25 | Tests Added |
 | ContainerProtocol.swift | 66.7% | 3 | Good |
@@ -189,6 +187,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 
 | File | Lines |
 |------|-------|
+| AccessibilityIdentifiers.swift | 9 |
 | AccessibilityConfiguration.swift | 0 |
 | AnalyticsEventBuffer.swift | 0 |
 | AnalyticsPayloadBuilder.swift | 0 |
@@ -218,6 +217,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | PrimerApplePayScope.swift | 0 |
 | PrimerFieldStyling.swift | 0 |
 | PrimerLayout.swift | 0 |
+| PrimerEnvironment.swift | 4 |
 | PrimerLocaleData.swift | 0 |
 | PrimerPaymentMethodSelectionScope.swift | 0 |
 | PrimerPaymentMethodType+ImageName.swift | 0 |
@@ -273,7 +273,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | ViewAccessibilityExtendedTests.swift | 15 | View+Accessibility.swift | 44.0% | 44.0% | Done |
 | PrimerInputElementTypeExtendedTests.swift | 40 | PrimerHeadlessUniversalCheckoutInputElement.swift | 32.4% | 99.3% | Done |
 | InputFieldConfigTests.swift | 8 | InputFieldConfig.swift | 0% | 100% | Done |
-| PrimerEnvironmentTests.swift | 10 | PrimerEnvironment.swift | 0% | 50.0% | Done |
+| PrimerEnvironmentTests.swift | 25 | PrimerEnvironment.swift | 0% | 100% | Done |
 | PrimerFieldStylingTests.swift | 18 | PrimerFieldStyling.swift | 0% | 100% | Done |
 | PrimerThemeImagesTests.swift | 25 | PrimerTheme+Images.swift | 0% | 80.8% | Done |
 | DesignTokensKeyTests.swift | 6 | DesignTokensKey.swift | 0% | 100% | Done |
@@ -285,6 +285,7 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 | PrimerSettingsTests.swift | 48 | PrimerSettings.swift | 33.3% | 100% | Done |
 | UserInterfaceModuleTests.swift | 45 | UserInterfaceModule.swift | 38.5% | 38.5% | Done |
 | ViewAccessibilityConditionalsTests.swift | 30 | View+Accessibility.swift | 44.0% | 44.0% | Done |
+| AccessibilityIdentifiersTests.swift | 35 | AccessibilityIdentifiers.swift | 62.5% | 100% | Done |
 
 **Total Tests Added:** 1000+ (all passing)
 
@@ -306,10 +307,15 @@ These are SwiftUI views that are difficult to unit test. They should be tested v
 - ✅ PrimerSettings.swift (100%) - Tests added (48 tests)
 - ✅ UserInterfaceModule.swift (38.5%) - Tests added (45 tests)
 - ✅ View+Accessibility.swift (44.0%) - Tests added (30 tests)
+- ✅ AccessibilityIdentifiers.swift (100%) - Tests added (35 tests)
+- ✅ PrimerEnvironment.swift (100%) - Tests added (25 tests)
 
 ### Medium Priority (Low coverage, can still improve)
 1. HeadlessRepositoryImpl.swift (43.7%) - Can still improve
 2. View+Accessibility.swift (44.0%) - Can still improve
+3. SwiftUI+DI.swift (52.1%) - Can still improve
+4. CardPaymentMethod.swift (57.3%) - Can still improve
+5. PrimerCardFormScope.swift (58.3%) - Can still improve
 
 ### Low Priority (Already good coverage)
 - Files at 80%+ coverage - minor improvements only

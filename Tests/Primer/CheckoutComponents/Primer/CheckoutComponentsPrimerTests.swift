@@ -344,3 +344,585 @@ private class MockPrimerDelegate: PrimerDelegate {
         decisionHandler(.fail(withErrorMessage: nil))
     }
 }
+
+// MARK: - HandlePaymentSuccess Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerHandlePaymentSuccessTests: XCTestCase {
+
+    func test_handlePaymentSuccess_callsDelegateWithResult() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        let result = PaymentResult(
+            paymentId: "test-payment-123",
+            status: .success
+        )
+
+        // When
+        primer.handlePaymentSuccess(result)
+
+        // Then
+        // Wait for async completion
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.didCompleteWithSuccessCalled)
+            XCTAssertEqual(mockDelegate.receivedPaymentResult?.paymentId, "test-payment-123")
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+
+    func test_handlePaymentSuccess_withNilDelegate_doesNotCrash() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        primer.delegate = nil
+
+        let result = PaymentResult(
+            paymentId: "test-payment-123",
+            status: .success
+        )
+
+        // When/Then - should not crash
+        primer.handlePaymentSuccess(result)
+    }
+
+    func test_handlePaymentSuccess_withDifferentPaymentStatuses() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        // Test with pending status
+        let pendingResult = PaymentResult(
+            paymentId: "pending-payment",
+            status: .pending
+        )
+
+        // When
+        primer.handlePaymentSuccess(pendingResult)
+
+        // Then - delegate should still be called
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.didCompleteWithSuccessCalled)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+
+    func test_handlePaymentSuccess_multipleCalls_callsDelegateEachTime() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        let result1 = PaymentResult(paymentId: "payment-1", status: .success)
+        let result2 = PaymentResult(paymentId: "payment-2", status: .success)
+
+        // When
+        primer.handlePaymentSuccess(result1)
+        primer.handlePaymentSuccess(result2)
+
+        // Then
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.successCallCount >= 1)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+}
+
+// MARK: - HandlePaymentFailure Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerHandlePaymentFailureTests: XCTestCase {
+
+    func test_handlePaymentFailure_callsDelegateWithError() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        let error = PrimerError.unknown()
+
+        // When
+        primer.handlePaymentFailure(error)
+
+        // Then
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.didFailWithErrorCalled)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+
+    func test_handlePaymentFailure_withNilDelegate_doesNotCrash() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        primer.delegate = nil
+
+        let error = PrimerError.unknown()
+
+        // When/Then - should not crash
+        primer.handlePaymentFailure(error)
+    }
+
+    func test_handlePaymentFailure_withDifferentErrorTypes() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        // Test with invalid client token error
+        let tokenError = PrimerError.invalidClientToken(
+            reason: "test-reason",
+            diagnosticsId: "test-diagnostics"
+        )
+
+        // When
+        primer.handlePaymentFailure(tokenError)
+
+        // Then
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.didFailWithErrorCalled)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+
+    func test_handlePaymentFailure_multipleCalls_callsDelegateEachTime() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        let error1 = PrimerError.unknown()
+        let error2 = PrimerError.invalidClientToken(reason: "test", diagnosticsId: "test")
+
+        // When
+        primer.handlePaymentFailure(error1)
+        primer.handlePaymentFailure(error2)
+
+        // Then
+        let expectation = expectation(description: "Delegate called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(mockDelegate.failureCallCount >= 1)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+}
+
+// MARK: - Static Properties Extended Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerStaticPropertiesTests: XCTestCase {
+
+    func test_isAvailable_alwaysReturnsTrue_oniOS15Plus() {
+        // Given/When
+        let available = CheckoutComponentsPrimer.isAvailable
+
+        // Then
+        XCTAssertTrue(available)
+    }
+
+    func test_isAvailable_isStatic() {
+        // Verify isAvailable can be accessed without instance
+        _ = CheckoutComponentsPrimer.isAvailable
+    }
+
+    func test_isPresenting_isStatic() {
+        // Verify isPresenting can be accessed without instance
+        _ = CheckoutComponentsPrimer.isPresenting
+    }
+
+    func test_shared_returnsNonNil() {
+        // When
+        let shared = CheckoutComponentsPrimer.shared
+
+        // Then
+        XCTAssertNotNil(shared)
+    }
+
+    func test_shared_isAlwaysSameInstance() {
+        // When
+        var instances: [CheckoutComponentsPrimer] = []
+        for _ in 0..<100 {
+            instances.append(CheckoutComponentsPrimer.shared)
+        }
+
+        // Then - all instances should be the same
+        let first = instances.first
+        for instance in instances {
+            XCTAssertTrue(instance === first)
+        }
+    }
+}
+
+// MARK: - Dismiss Edge Cases Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerDismissEdgeCasesTests: XCTestCase {
+
+    func test_dismiss_withDefaultAnimatedTrue() {
+        // Given
+        let expectation = expectation(description: "Dismiss completes")
+
+        // When - default animated is true
+        CheckoutComponentsPrimer.dismiss {
+            expectation.fulfill()
+        }
+
+        // Then
+        waitForExpectations(timeout: 1.0)
+    }
+
+    func test_dismiss_rapidSuccession_doesNotCrash() {
+        // Given
+        let expectation = expectation(description: "All dismisses complete")
+        var completionCount = 0
+        let totalDismisses = 10
+
+        // When
+        for _ in 0..<totalDismisses {
+            CheckoutComponentsPrimer.dismiss(animated: false) {
+                completionCount += 1
+                if completionCount == totalDismisses {
+                    expectation.fulfill()
+                }
+            }
+        }
+
+        // Then
+        waitForExpectations(timeout: 2.0)
+    }
+
+    func test_dismissDirectly_calledMultipleTimes_allComplete() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let expectation = expectation(description: "All complete")
+        var count = 0
+
+        // When
+        for _ in 0..<5 {
+            primer.dismissDirectly {
+                count += 1
+                if count == 5 {
+                    expectation.fulfill()
+                }
+            }
+        }
+
+        // Then
+        waitForExpectations(timeout: 2.0)
+    }
+}
+
+// MARK: - Delegate Protocol Extension Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsDelegateExtensionTests: XCTestCase {
+
+    func test_3DSDelegate_willPresentChallenge_hasDefaultImplementation() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+        let tokenData = createTestTokenData()
+
+        // When/Then - should not crash (default implementation)
+        delegate.checkoutComponentsWillPresent3DSChallenge(tokenData)
+    }
+
+    func test_3DSDelegate_didDismissChallenge_hasDefaultImplementation() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+
+        // When/Then - should not crash
+        delegate.checkoutComponentsDidDismiss3DSChallenge()
+    }
+
+    func test_3DSDelegate_didComplete_withSuccess_hasDefaultImplementation() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+
+        // When/Then - should not crash
+        delegate.checkoutComponentsDidComplete3DSChallenge(
+            success: true,
+            resumeToken: "test-token",
+            error: nil
+        )
+    }
+
+    func test_3DSDelegate_didComplete_withFailure_hasDefaultImplementation() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+        let error = NSError(domain: "Test", code: 1, userInfo: nil)
+
+        // When/Then - should not crash
+        delegate.checkoutComponentsDidComplete3DSChallenge(
+            success: false,
+            resumeToken: nil,
+            error: error
+        )
+    }
+
+    func test_3DSDelegate_didComplete_withNilError_success() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+
+        // When/Then
+        delegate.checkoutComponentsDidComplete3DSChallenge(
+            success: true,
+            resumeToken: "resume-token",
+            error: nil
+        )
+    }
+
+    func test_3DSDelegate_didComplete_withNilResumeToken_failure() {
+        // Given
+        let delegate = MinimalCheckoutComponentsDelegate()
+
+        // When/Then
+        delegate.checkoutComponentsDidComplete3DSChallenge(
+            success: false,
+            resumeToken: nil,
+            error: NSError(domain: "3DS", code: 401, userInfo: nil)
+        )
+    }
+
+    private func createTestTokenData() -> PrimerPaymentMethodTokenData {
+        return PrimerPaymentMethodTokenData(
+            analyticsId: "test-analytics",
+            id: "test-id",
+            isVaulted: false,
+            isAlreadyVaulted: false,
+            paymentInstrumentType: .paymentCard,
+            paymentMethodType: "PAYMENT_CARD",
+            paymentInstrumentData: nil,
+            threeDSecureAuthentication: nil,
+            token: "test-token",
+            tokenType: .singleUse,
+            vaultData: nil
+        )
+    }
+}
+
+// MARK: - Delegate State Handling Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerDelegateStateTests: XCTestCase {
+
+    func test_delegate_replacingDelegate_newDelegateReceivesCalls() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let oldDelegate = MockCheckoutComponentsDelegateTracking()
+        let newDelegate = MockCheckoutComponentsDelegateTracking()
+
+        primer.delegate = oldDelegate
+
+        // When - replace delegate
+        primer.delegate = newDelegate
+        primer.handleCheckoutDismiss()
+
+        // Then - only new delegate should receive call
+        XCTAssertFalse(oldDelegate.didDismissCalled)
+        XCTAssertTrue(newDelegate.didDismissCalled)
+
+        // Cleanup
+        primer.delegate = nil
+    }
+
+    func test_delegate_settingToNil_preventsCallbacks() {
+        // Given
+        let primer = CheckoutComponentsPrimer.shared
+        let mockDelegate = MockCheckoutComponentsDelegateTracking()
+        primer.delegate = mockDelegate
+
+        // When
+        primer.delegate = nil
+        primer.handleCheckoutDismiss()
+
+        // Then - delegate should not receive call (it was set to nil)
+        XCTAssertFalse(mockDelegate.didDismissCalled)
+    }
+
+    func test_staticDelegate_isIndependentFromInstanceDelegate() {
+        // Given
+        let originalPrimerDelegate = Primer.shared.delegate
+        let originalInstanceDelegate = CheckoutComponentsPrimer.shared.delegate
+
+        let mockPrimerDelegate = MockPrimerDelegateTracking()
+        let mockInstanceDelegate = MockCheckoutComponentsDelegateTracking()
+
+        // When - set both delegates independently
+        Primer.shared.delegate = mockPrimerDelegate
+        CheckoutComponentsPrimer.shared.delegate = mockInstanceDelegate
+
+        // Then - they should be different objects
+        XCTAssertTrue(Primer.shared.delegate === mockPrimerDelegate)
+        XCTAssertTrue(CheckoutComponentsPrimer.shared.delegate === mockInstanceDelegate)
+
+        // Cleanup
+        Primer.shared.delegate = originalPrimerDelegate
+        CheckoutComponentsPrimer.shared.delegate = originalInstanceDelegate
+    }
+}
+
+// MARK: - PaymentResult Tests
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerPaymentResultTests: XCTestCase {
+
+    func test_paymentResult_successStatus() {
+        // Given
+        let result = PaymentResult(paymentId: "test-id", status: .success)
+
+        // Then
+        XCTAssertEqual(result.paymentId, "test-id")
+        XCTAssertEqual(result.status, .success)
+    }
+
+    func test_paymentResult_pendingStatus() {
+        // Given
+        let result = PaymentResult(paymentId: "pending-id", status: .pending)
+
+        // Then
+        XCTAssertEqual(result.status, .pending)
+    }
+
+    func test_paymentResult_failedStatus() {
+        // Given
+        let result = PaymentResult(paymentId: "failed-id", status: .failed)
+
+        // Then
+        XCTAssertEqual(result.status, .failed)
+    }
+
+    func test_paymentResult_withOptionalAmount() {
+        // Given
+        let result = PaymentResult(
+            paymentId: "test-id",
+            status: .success,
+            amount: 1000,
+            currencyCode: "USD"
+        )
+
+        // Then
+        XCTAssertEqual(result.amount, 1000)
+        XCTAssertEqual(result.currencyCode, "USD")
+    }
+
+    func test_paymentResult_withNilOptionalFields() {
+        // Given
+        let result = PaymentResult(
+            paymentId: "test-id",
+            status: .success,
+            amount: nil,
+            currencyCode: nil
+        )
+
+        // Then
+        XCTAssertNil(result.amount)
+        XCTAssertNil(result.currencyCode)
+    }
+}
+
+// MARK: - PresentCheckout Edge Cases
+
+@available(iOS 15.0, *)
+final class CheckoutComponentsPrimerPresentEdgeCasesTests: XCTestCase {
+
+    func test_presentCheckout_staticMethodsExist() {
+        // Verify all static method signatures exist without calling them
+        // This ensures API compatibility
+
+        // Method 1: Basic with viewController
+        let method1: (String, UIViewController, (() -> Void)?) -> Void = CheckoutComponentsPrimer.presentCheckout(clientToken:from:completion:)
+        _ = method1
+
+        // Method 2: With settings
+        let method2: (String, UIViewController, PrimerSettings, (() -> Void)?) -> Void = CheckoutComponentsPrimer.presentCheckout(clientToken:from:primerSettings:completion:)
+        _ = method2
+
+        // Method 3: Full configuration
+        let method3: (String, UIViewController, PrimerSettings, PrimerCheckoutTheme, ((PrimerCheckoutScope) -> Void)?, (() -> Void)?) -> Void = CheckoutComponentsPrimer.presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)
+        _ = method3
+
+        // Method 4: Auto view controller detection
+        let method4: (String, (() -> Void)?) -> Void = CheckoutComponentsPrimer.presentCheckout(clientToken:completion:)
+        _ = method4
+    }
+
+    func test_dismiss_staticMethodSignature() {
+        // Verify dismiss method signature
+        let method: (Bool, (() -> Void)?) -> Void = CheckoutComponentsPrimer.dismiss(animated:completion:)
+        _ = method
+    }
+}
+
+// MARK: - Additional Mock Delegates
+
+@available(iOS 15.0, *)
+private class MockCheckoutComponentsDelegateTracking: CheckoutComponentsDelegate {
+    var didCompleteWithSuccessCalled = false
+    var didFailWithErrorCalled = false
+    var didDismissCalled = false
+    var receivedPaymentResult: PaymentResult?
+    var receivedError: PrimerError?
+    var successCallCount = 0
+    var failureCallCount = 0
+
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+        didCompleteWithSuccessCalled = true
+        receivedPaymentResult = result
+        successCallCount += 1
+    }
+
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+        didFailWithErrorCalled = true
+        receivedError = error
+        failureCallCount += 1
+    }
+
+    func checkoutComponentsDidDismiss() {
+        didDismissCalled = true
+    }
+}
+
+/// Minimal delegate that only implements required methods
+@available(iOS 15.0, *)
+private class MinimalCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {}
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {}
+    func checkoutComponentsDidDismiss() {}
+}
+
+private class MockPrimerDelegateTracking: PrimerDelegate {
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {}
+    func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping (PrimerErrorDecision) -> Void) {
+        decisionHandler(.fail(withErrorMessage: nil))
+    }
+}

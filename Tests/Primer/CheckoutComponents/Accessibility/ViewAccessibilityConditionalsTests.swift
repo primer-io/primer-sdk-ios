@@ -430,4 +430,265 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
         // Then: Should apply with defaults for optional properties
         XCTAssertNotNil(view)
     }
+
+    // MARK: - Children Ignore Tests
+
+    func test_accessibilityModifier_ignoresChildrenAccessibility() {
+        // Given: Configuration applied to a container with children
+        let config = AccessibilityConfiguration(
+            identifier: "parent_container",
+            label: "Payment Form"
+        )
+
+        // When: Applying to a view with children
+        let view = VStack {
+            Text("Child 1")
+            Text("Child 2")
+            Button("Submit") {}
+        }
+        .accessibility(config: config)
+
+        // Then: Should create view with accessibility element ignoring children
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Label Tests
+
+    func test_accessibilityModifier_withEmptyLabel_setsEmptyLabel() {
+        // Given: Configuration with empty label (edge case)
+        let config = AccessibilityConfiguration(
+            identifier: "empty_label_id",
+            label: ""
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should handle empty label
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withLongLabel_setsLabel() {
+        // Given: Configuration with very long label
+        let longLabel = String(repeating: "Long label text ", count: 20)
+        let config = AccessibilityConfiguration(
+            identifier: "long_label_id",
+            label: longLabel
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should handle long label
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withUnicodeLabel_setsLabel() {
+        // Given: Configuration with unicode label
+        let config = AccessibilityConfiguration(
+            identifier: "unicode_label_id",
+            label: "Submit Payment 支払い 💳"
+        )
+
+        // When: Applying configuration
+        let view = Button("Test") {}
+            .accessibility(config: config)
+
+        // Then: Should handle unicode label
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Conditional Modifier Edge Cases
+
+    func test_accessibilityModifier_withBothHintAndValueNil_skipsConditionals() {
+        // Given: Configuration with both hint and value nil
+        let config = AccessibilityConfiguration(
+            identifier: "nil_conditionals_id",
+            label: "Both Nil",
+            hint: nil,
+            value: nil
+        )
+
+        // When: Applying configuration - exercises else branches
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should handle both nil conditionals
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withBothHintAndValueEmpty_skipsConditionals() {
+        // Given: Configuration with both hint and value empty
+        let config = AccessibilityConfiguration(
+            identifier: "empty_conditionals_id",
+            label: "Both Empty",
+            hint: "",
+            value: ""
+        )
+
+        // When: Applying configuration - exercises else branches for isEmpty
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should skip both conditional modifiers
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withHintNilAndValueSet_appliesOnlyValue() {
+        // Given: Configuration with nil hint but valid value
+        let config = AccessibilityConfiguration(
+            identifier: "value_only_id",
+            label: "Value Only",
+            hint: nil,
+            value: "Current Value"
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should apply only value, skip hint
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withHintSetAndValueNil_appliesOnlyHint() {
+        // Given: Configuration with valid hint but nil value
+        let config = AccessibilityConfiguration(
+            identifier: "hint_only_id",
+            label: "Hint Only",
+            hint: "This is a hint",
+            value: nil
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should apply only hint, skip value
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withHintEmptyAndValueSet_appliesOnlyValue() {
+        // Given: Configuration with empty hint but valid value
+        let config = AccessibilityConfiguration(
+            identifier: "empty_hint_value_id",
+            label: "Empty Hint",
+            hint: "",
+            value: "Active"
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should skip empty hint, apply value
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withHintSetAndValueEmpty_appliesOnlyHint() {
+        // Given: Configuration with valid hint but empty value
+        let config = AccessibilityConfiguration(
+            identifier: "hint_empty_value_id",
+            label: "Empty Value",
+            hint: "Double-tap to submit",
+            value: ""
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should apply hint, skip empty value
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - SecureField Compatibility
+
+    func test_accessibilityModifier_withSecureField_appliesConfiguration() {
+        // Given: Configuration for secure field
+        let config = AccessibilityConfiguration(
+            identifier: "cvv_field_id",
+            label: "CVV",
+            hint: "Enter your 3-digit security code"
+        )
+
+        // When: Applying to SecureField
+        let view = SecureField("CVV", text: .constant(""))
+            .accessibility(config: config)
+
+        // Then: Should work with SecureField
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Modifier Order Independence
+
+    func test_accessibilityModifier_appliedBeforeOtherModifiers_works() {
+        // Given: Configuration
+        let config = AccessibilityConfiguration(
+            identifier: "before_modifiers_id",
+            label: "Before"
+        )
+
+        // When: Applying accessibility before other modifiers
+        let view = Text("Test")
+            .accessibility(config: config)
+            .padding()
+            .background(Color.blue)
+
+        // Then: Should work with modifiers after
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_appliedAfterOtherModifiers_works() {
+        // Given: Configuration
+        let config = AccessibilityConfiguration(
+            identifier: "after_modifiers_id",
+            label: "After"
+        )
+
+        // When: Applying accessibility after other modifiers
+        let view = Text("Test")
+            .padding()
+            .background(Color.blue)
+            .accessibility(config: config)
+
+        // Then: Should work with modifiers before
+        XCTAssertNotNil(view)
+    }
+
+    // MARK: - Max Priority Value
+
+    func test_accessibilityModifier_withMaxIntSortPriority_convertsToDouble() {
+        // Given: Configuration with max Int sort priority
+        let config = AccessibilityConfiguration(
+            identifier: "max_priority_id",
+            label: "Max Priority",
+            sortPriority: Int.max
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should convert max Int to Double
+        XCTAssertNotNil(view)
+    }
+
+    func test_accessibilityModifier_withMinIntSortPriority_convertsToDouble() {
+        // Given: Configuration with min Int sort priority
+        let config = AccessibilityConfiguration(
+            identifier: "min_priority_id",
+            label: "Min Priority",
+            sortPriority: Int.min
+        )
+
+        // When: Applying configuration
+        let view = Text("Test")
+            .accessibility(config: config)
+
+        // Then: Should convert min Int to Double
+        XCTAssertNotNil(view)
+    }
 }

@@ -292,4 +292,591 @@ final class PaymentMethodSelectionProviderTests: XCTestCase {
         // Assert - content builder has scope parameter
         XCTAssertNotNil(scopeAccessible)
     }
+
+    // MARK: - CheckoutPaymentMethod Tests
+
+    func test_checkoutPaymentMethod_canBeCreatedWithMinimalParameters() {
+        // Arrange & Act
+        let paymentMethod = CheckoutPaymentMethod(
+            id: "pm_123",
+            type: "PAYMENT_CARD",
+            name: "Card"
+        )
+
+        // Assert
+        XCTAssertEqual(paymentMethod.id, "pm_123")
+        XCTAssertEqual(paymentMethod.type, "PAYMENT_CARD")
+        XCTAssertEqual(paymentMethod.name, "Card")
+        XCTAssertNil(paymentMethod.icon)
+        XCTAssertNil(paymentMethod.metadata)
+        XCTAssertNil(paymentMethod.surcharge)
+        XCTAssertFalse(paymentMethod.hasUnknownSurcharge)
+        XCTAssertNil(paymentMethod.formattedSurcharge)
+        XCTAssertNil(paymentMethod.backgroundColor)
+    }
+
+    func test_checkoutPaymentMethod_canBeCreatedWithAllParameters() {
+        // Arrange & Act
+        let paymentMethod = CheckoutPaymentMethod(
+            id: "pm_456",
+            type: "PAYPAL",
+            name: "PayPal",
+            icon: nil,
+            metadata: ["key": "value"],
+            surcharge: 100,
+            hasUnknownSurcharge: true,
+            formattedSurcharge: "$1.00",
+            backgroundColor: .blue
+        )
+
+        // Assert
+        XCTAssertEqual(paymentMethod.id, "pm_456")
+        XCTAssertEqual(paymentMethod.type, "PAYPAL")
+        XCTAssertEqual(paymentMethod.name, "PayPal")
+        XCTAssertEqual(paymentMethod.surcharge, 100)
+        XCTAssertTrue(paymentMethod.hasUnknownSurcharge)
+        XCTAssertEqual(paymentMethod.formattedSurcharge, "$1.00")
+        XCTAssertEqual(paymentMethod.backgroundColor, .blue)
+    }
+
+    func test_checkoutPaymentMethod_equality_sameProperties() {
+        // Arrange
+        let method1 = CheckoutPaymentMethod(
+            id: "pm_123",
+            type: "PAYMENT_CARD",
+            name: "Card",
+            surcharge: 50,
+            hasUnknownSurcharge: false,
+            formattedSurcharge: "$0.50"
+        )
+        let method2 = CheckoutPaymentMethod(
+            id: "pm_123",
+            type: "PAYMENT_CARD",
+            name: "Card",
+            surcharge: 50,
+            hasUnknownSurcharge: false,
+            formattedSurcharge: "$0.50"
+        )
+
+        // Assert
+        XCTAssertEqual(method1, method2)
+    }
+
+    func test_checkoutPaymentMethod_equality_differentId() {
+        // Arrange
+        let method1 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Card")
+        let method2 = CheckoutPaymentMethod(id: "pm_456", type: "PAYMENT_CARD", name: "Card")
+
+        // Assert
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_checkoutPaymentMethod_equality_differentType() {
+        // Arrange
+        let method1 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Card")
+        let method2 = CheckoutPaymentMethod(id: "pm_123", type: "PAYPAL", name: "Card")
+
+        // Assert
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_checkoutPaymentMethod_equality_differentName() {
+        // Arrange
+        let method1 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Card")
+        let method2 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Credit Card")
+
+        // Assert
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_checkoutPaymentMethod_equality_differentSurcharge() {
+        // Arrange
+        let method1 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Card", surcharge: 50)
+        let method2 = CheckoutPaymentMethod(id: "pm_123", type: "PAYMENT_CARD", name: "Card", surcharge: 100)
+
+        // Assert
+        XCTAssertNotEqual(method1, method2)
+    }
+
+    func test_checkoutPaymentMethod_identifiable_usesIdAsIdentity() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "unique_id_123", type: "PAYMENT_CARD", name: "Card")
+
+        // Assert
+        XCTAssertEqual(method.id, "unique_id_123")
+    }
+
+    // MARK: - PrimerPaymentMethodSelectionState Tests
+
+    func test_paymentMethodSelectionState_defaultInit_hasEmptyValues() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState()
+
+        // Assert
+        XCTAssertTrue(state.paymentMethods.isEmpty)
+        XCTAssertFalse(state.isLoading)
+        XCTAssertNil(state.selectedPaymentMethod)
+        XCTAssertEqual(state.searchQuery, "")
+        XCTAssertTrue(state.filteredPaymentMethods.isEmpty)
+        XCTAssertNil(state.error)
+        XCTAssertNil(state.selectedVaultedPaymentMethod)
+        XCTAssertFalse(state.isVaultPaymentLoading)
+        XCTAssertFalse(state.requiresCvvInput)
+        XCTAssertEqual(state.cvvInput, "")
+        XCTAssertFalse(state.isCvvValid)
+        XCTAssertNil(state.cvvError)
+        XCTAssertTrue(state.isPaymentMethodsExpanded)
+    }
+
+    func test_paymentMethodSelectionState_initWithPaymentMethods() {
+        // Arrange
+        let methods = [
+            CheckoutPaymentMethod(id: "1", type: "CARD", name: "Card"),
+            CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
+        ]
+
+        // Act
+        let state = PrimerPaymentMethodSelectionState(paymentMethods: methods)
+
+        // Assert
+        XCTAssertEqual(state.paymentMethods.count, 2)
+        XCTAssertEqual(state.paymentMethods[0].type, "CARD")
+        XCTAssertEqual(state.paymentMethods[1].type, "PAYPAL")
+    }
+
+    func test_paymentMethodSelectionState_initWithLoadingState() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(isLoading: true)
+
+        // Assert
+        XCTAssertTrue(state.isLoading)
+    }
+
+    func test_paymentMethodSelectionState_initWithSelectedPaymentMethod() {
+        // Arrange
+        let selectedMethod = CheckoutPaymentMethod(id: "pm_selected", type: "CARD", name: "Card")
+
+        // Act
+        let state = PrimerPaymentMethodSelectionState(selectedPaymentMethod: selectedMethod)
+
+        // Assert
+        XCTAssertNotNil(state.selectedPaymentMethod)
+        XCTAssertEqual(state.selectedPaymentMethod?.id, "pm_selected")
+    }
+
+    func test_paymentMethodSelectionState_initWithSearchQuery() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(searchQuery: "card")
+
+        // Assert
+        XCTAssertEqual(state.searchQuery, "card")
+    }
+
+    func test_paymentMethodSelectionState_initWithFilteredPaymentMethods() {
+        // Arrange
+        let filtered = [CheckoutPaymentMethod(id: "1", type: "CARD", name: "Card")]
+
+        // Act
+        let state = PrimerPaymentMethodSelectionState(filteredPaymentMethods: filtered)
+
+        // Assert
+        XCTAssertEqual(state.filteredPaymentMethods.count, 1)
+    }
+
+    func test_paymentMethodSelectionState_initWithError() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(error: "Something went wrong")
+
+        // Assert
+        XCTAssertEqual(state.error, "Something went wrong")
+    }
+
+    func test_paymentMethodSelectionState_initWithCvvInputState() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(
+            requiresCvvInput: true,
+            cvvInput: "123",
+            isCvvValid: true,
+            cvvError: nil
+        )
+
+        // Assert
+        XCTAssertTrue(state.requiresCvvInput)
+        XCTAssertEqual(state.cvvInput, "123")
+        XCTAssertTrue(state.isCvvValid)
+        XCTAssertNil(state.cvvError)
+    }
+
+    func test_paymentMethodSelectionState_initWithCvvError() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(
+            requiresCvvInput: true,
+            cvvInput: "12",
+            isCvvValid: false,
+            cvvError: "CVV must be 3 digits"
+        )
+
+        // Assert
+        XCTAssertFalse(state.isCvvValid)
+        XCTAssertEqual(state.cvvError, "CVV must be 3 digits")
+    }
+
+    func test_paymentMethodSelectionState_initWithCollapsedState() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(isPaymentMethodsExpanded: false)
+
+        // Assert
+        XCTAssertFalse(state.isPaymentMethodsExpanded)
+    }
+
+    func test_paymentMethodSelectionState_equality_sameValues() {
+        // Arrange
+        let methods = [CheckoutPaymentMethod(id: "1", type: "CARD", name: "Card")]
+        let state1 = PrimerPaymentMethodSelectionState(
+            paymentMethods: methods,
+            isLoading: false,
+            searchQuery: "test"
+        )
+        let state2 = PrimerPaymentMethodSelectionState(
+            paymentMethods: methods,
+            isLoading: false,
+            searchQuery: "test"
+        )
+
+        // Assert
+        XCTAssertEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentPaymentMethods() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(
+            paymentMethods: [CheckoutPaymentMethod(id: "1", type: "CARD", name: "Card")]
+        )
+        let state2 = PrimerPaymentMethodSelectionState(
+            paymentMethods: [CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")]
+        )
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentLoadingState() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(isLoading: true)
+        let state2 = PrimerPaymentMethodSelectionState(isLoading: false)
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentSearchQuery() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(searchQuery: "card")
+        let state2 = PrimerPaymentMethodSelectionState(searchQuery: "paypal")
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentCvvInput() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(cvvInput: "123")
+        let state2 = PrimerPaymentMethodSelectionState(cvvInput: "456")
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentCvvValid() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(isCvvValid: true)
+        let state2 = PrimerPaymentMethodSelectionState(isCvvValid: false)
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentError() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(error: "Error 1")
+        let state2 = PrimerPaymentMethodSelectionState(error: "Error 2")
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    func test_paymentMethodSelectionState_equality_differentExpansionState() {
+        // Arrange
+        let state1 = PrimerPaymentMethodSelectionState(isPaymentMethodsExpanded: true)
+        let state2 = PrimerPaymentMethodSelectionState(isPaymentMethodsExpanded: false)
+
+        // Assert
+        XCTAssertNotEqual(state1, state2)
+    }
+
+    // MARK: - Content Builder with Different Views Tests
+
+    func test_contentBuilder_withScrollView() {
+        // Arrange & Act
+        let provider = PaymentMethodSelectionProvider { _ in
+            ScrollView {
+                VStack {
+                    Text("Card")
+                    Text("PayPal")
+                }
+            }
+        }
+
+        // Assert
+        XCTAssertNotNil(provider)
+    }
+
+    func test_contentBuilder_withLazyVStack() {
+        // Arrange & Act
+        let provider = PaymentMethodSelectionProvider { _ in
+            LazyVStack {
+                ForEach(0..<3) { index in
+                    Text("Method \(index)")
+                }
+            }
+        }
+
+        // Assert
+        XCTAssertNotNil(provider)
+    }
+
+    func test_contentBuilder_withEmptyView() {
+        // Arrange & Act
+        let provider = PaymentMethodSelectionProvider { _ in
+            EmptyView()
+        }
+
+        // Assert
+        XCTAssertNotNil(provider)
+    }
+
+    func test_contentBuilder_withGroup() {
+        // Arrange & Act
+        let provider = PaymentMethodSelectionProvider { _ in
+            Group {
+                Text("Payment Method 1")
+                Text("Payment Method 2")
+            }
+        }
+
+        // Assert
+        XCTAssertNotNil(provider)
+    }
+
+    // MARK: - Callback Chaining Tests
+
+    func test_callbacks_canBeChainedWithAdditionalLogic() {
+        // Arrange
+        var step1Executed = false
+        var step2Executed = false
+
+        // Act
+        let provider = PaymentMethodSelectionProvider(
+            onPaymentMethodSelected: { type in
+                step1Executed = true
+                if type == "CARD" {
+                    step2Executed = true
+                }
+            }
+        ) { _ in
+            Text("Test")
+        }
+
+        // Assert - callbacks are configured for chaining
+        XCTAssertNotNil(provider)
+        XCTAssertFalse(step1Executed)
+        XCTAssertFalse(step2Executed)
+    }
+
+    func test_cancelCallback_canExecuteCleanupLogic() {
+        // Arrange
+        var cleanupExecuted = false
+
+        // Act
+        let provider = PaymentMethodSelectionProvider(
+            onCancel: {
+                cleanupExecuted = true
+            }
+        ) { _ in
+            Text("Test")
+        }
+
+        // Assert - cleanup callback is configured
+        XCTAssertNotNil(provider)
+        XCTAssertFalse(cleanupExecuted)
+    }
+
+    // MARK: - Payment Method Type Coverage Tests
+
+    func test_paymentMethodType_card() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "1", type: "PAYMENT_CARD", name: "Card")
+
+        // Assert
+        XCTAssertEqual(method.type, "PAYMENT_CARD")
+    }
+
+    func test_paymentMethodType_paypal() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "2", type: "PAYPAL", name: "PayPal")
+
+        // Assert
+        XCTAssertEqual(method.type, "PAYPAL")
+    }
+
+    func test_paymentMethodType_applePay() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "3", type: "APPLE_PAY", name: "Apple Pay")
+
+        // Assert
+        XCTAssertEqual(method.type, "APPLE_PAY")
+    }
+
+    func test_paymentMethodType_googlePay() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "4", type: "GOOGLE_PAY", name: "Google Pay")
+
+        // Assert
+        XCTAssertEqual(method.type, "GOOGLE_PAY")
+    }
+
+    func test_paymentMethodType_klarna() {
+        // Arrange
+        let method = CheckoutPaymentMethod(id: "5", type: "KLARNA", name: "Klarna")
+
+        // Assert
+        XCTAssertEqual(method.type, "KLARNA")
+    }
+
+    // MARK: - Surcharge Display Tests
+
+    func test_checkoutPaymentMethod_withZeroSurcharge() {
+        // Arrange & Act
+        let method = CheckoutPaymentMethod(
+            id: "1",
+            type: "CARD",
+            name: "Card",
+            surcharge: 0,
+            formattedSurcharge: "$0.00"
+        )
+
+        // Assert
+        XCTAssertEqual(method.surcharge, 0)
+        XCTAssertEqual(method.formattedSurcharge, "$0.00")
+    }
+
+    func test_checkoutPaymentMethod_withLargeSurcharge() {
+        // Arrange & Act
+        let method = CheckoutPaymentMethod(
+            id: "1",
+            type: "CARD",
+            name: "Card",
+            surcharge: 10000,
+            formattedSurcharge: "$100.00"
+        )
+
+        // Assert
+        XCTAssertEqual(method.surcharge, 10000)
+        XCTAssertEqual(method.formattedSurcharge, "$100.00")
+    }
+
+    func test_checkoutPaymentMethod_withUnknownSurcharge() {
+        // Arrange & Act
+        let method = CheckoutPaymentMethod(
+            id: "1",
+            type: "CARD",
+            name: "Card",
+            hasUnknownSurcharge: true
+        )
+
+        // Assert
+        XCTAssertTrue(method.hasUnknownSurcharge)
+        XCTAssertNil(method.surcharge)
+    }
+
+    // MARK: - Background Color Tests
+
+    func test_checkoutPaymentMethod_withCustomBackgroundColor() {
+        // Arrange & Act
+        let method = CheckoutPaymentMethod(
+            id: "1",
+            type: "CARD",
+            name: "Card",
+            backgroundColor: .red
+        )
+
+        // Assert
+        XCTAssertEqual(method.backgroundColor, .red)
+    }
+
+    func test_checkoutPaymentMethod_withNilBackgroundColor() {
+        // Arrange & Act
+        let method = CheckoutPaymentMethod(
+            id: "1",
+            type: "CARD",
+            name: "Card",
+            backgroundColor: nil
+        )
+
+        // Assert
+        XCTAssertNil(method.backgroundColor)
+    }
+
+    // MARK: - State with All CVV Fields Tests
+
+    func test_paymentMethodSelectionState_fullCvvConfiguration() {
+        // Arrange & Act
+        let state = PrimerPaymentMethodSelectionState(
+            requiresCvvInput: true,
+            cvvInput: "999",
+            isCvvValid: true,
+            cvvError: nil
+        )
+
+        // Assert
+        XCTAssertTrue(state.requiresCvvInput)
+        XCTAssertEqual(state.cvvInput, "999")
+        XCTAssertTrue(state.isCvvValid)
+        XCTAssertNil(state.cvvError)
+    }
+
+    // MARK: - Multiple Providers with Different Callbacks
+
+    func test_multipleProviders_withDifferentCallbackTypes() {
+        // Arrange & Act
+        let provider1 = PaymentMethodSelectionProvider(
+            onPaymentMethodSelected: { _ in }
+        ) { _ in Text("1") }
+
+        let provider2 = PaymentMethodSelectionProvider(
+            onCancel: { }
+        ) { _ in Text("2") }
+
+        let provider3 = PaymentMethodSelectionProvider(
+            onPaymentMethodSelected: { _ in },
+            onCancel: { }
+        ) { _ in Text("3") }
+
+        // Assert
+        XCTAssertNotNil(provider1)
+        XCTAssertNotNil(provider2)
+        XCTAssertNotNil(provider3)
+    }
+
+    // MARK: - LogReporter Conformance Tests
+
+    func test_provider_conformsToLogReporter() {
+        // Arrange
+        let provider = PaymentMethodSelectionProvider { _ in
+            Text("Test")
+        }
+
+        // Assert - LogReporter conformance
+        XCTAssertTrue(provider is any LogReporter)
+    }
 }

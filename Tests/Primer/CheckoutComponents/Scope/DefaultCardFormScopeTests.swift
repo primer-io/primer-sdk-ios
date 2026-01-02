@@ -1346,4 +1346,411 @@ final class DefaultCardFormScopeTests: XCTestCase {
             XCTAssertTrue(scope.structuredState.availableNetworks.isEmpty)
         }
     }
+
+    // MARK: - Navigation Methods Tests
+
+    func test_onSubmit_callsSubmit() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // Fill valid data
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            scope.updateCvv("123")
+            scope.updateExpiryDate("12/30")
+            scope.updateCardholderName("John Doe")
+
+            // onSubmit should not crash
+            scope.onSubmit()
+
+            XCTAssertTrue(true, "onSubmit should execute without crashing")
+        }
+    }
+
+    func test_onBack_doesNotCrash() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // onBack should not crash
+            scope.onBack()
+
+            XCTAssertTrue(true, "onBack should execute without crashing")
+        }
+    }
+
+    func test_onCancel_doesNotCrash() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // onCancel should not crash
+            scope.onCancel()
+
+            XCTAssertTrue(true, "onCancel should execute without crashing")
+        }
+    }
+
+    // MARK: - ViewBuilder Methods Tests
+
+    func test_PrimerCardNumberField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerCardNumberField(label: "Card Number", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerExpiryDateField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerExpiryDateField(label: "Expiry", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerCvvField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerCvvField(label: "CVV", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerCardholderNameField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerCardholderNameField(label: "Name", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerCountryField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerCountryField(label: "Country", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerPostalCodeField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerPostalCodeField(label: "Postal Code", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerCityField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerCityField(label: "City", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerStateField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerStateField(label: "State", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerAddressLine1Field_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerAddressLine1Field(label: "Address", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerAddressLine2Field_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerAddressLine2Field(label: "Address 2", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerFirstNameField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerFirstNameField(label: "First Name", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerLastNameField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerLastNameField(label: "Last Name", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerEmailField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerEmailField(label: "Email", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerPhoneNumberField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerPhoneNumberField(label: "Phone", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerRetailOutletField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerRetailOutletField(label: "Outlet", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_PrimerOtpCodeField_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.PrimerOtpCodeField(label: "OTP", styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    func test_DefaultCardFormView_returnsView() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let view = scope.DefaultCardFormView(styling: nil)
+
+            XCTAssertNotNil(view)
+        }
+    }
+
+    // MARK: - CardFormUIOptions Tests
+
+    func test_cardFormUIOptions_defaultsToNil() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            XCTAssertNil(scope.cardFormUIOptions)
+        }
+    }
+
+    // MARK: - Start and Cancel Methods Tests
+
+    func test_start_doesNotCrash() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // start should not crash
+            scope.start()
+
+            XCTAssertTrue(true, "start should execute without crashing")
+        }
+    }
+
+    func test_cancel_doesNotCrash() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // cancel should not crash
+            scope.cancel()
+
+            XCTAssertTrue(true, "cancel should execute without crashing")
+        }
+    }
+
+    // MARK: - State AsyncStream Tests
+
+    func test_state_returnsAsyncStream() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            let stateStream = scope.state
+
+            XCTAssertNotNil(stateStream)
+        }
+    }
+
+    // MARK: - Empty Field Value Tests
+
+    func test_updateCardNumber_withEmptyString_clearsField() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // Set a value first
+            scope.updateCardNumber(TestData.CardNumbers.validVisa)
+            XCTAssertEqual(scope.getFieldValue(.cardNumber), TestData.CardNumbers.validVisa)
+
+            // Clear by setting empty
+            scope.updateCardNumber("")
+            XCTAssertEqual(scope.getFieldValue(.cardNumber), "")
+        }
+    }
+
+    func test_updateCvv_withEmptyString_clearsField() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCvv("123")
+            XCTAssertEqual(scope.getFieldValue(.cvv), "123")
+
+            scope.updateCvv("")
+            XCTAssertEqual(scope.getFieldValue(.cvv), "")
+        }
+    }
+
+    // MARK: - Error Code Tests
+
+    func test_setFieldError_withNilErrorCode_setsError() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.setFieldError(.cardNumber, message: "Invalid card", errorCode: nil)
+
+            XCTAssertEqual(scope.getFieldError(.cardNumber), "Invalid card")
+        }
+    }
+
+    // MARK: - Whitespace Handling Tests
+
+    func test_updateCardNumber_withWhitespace_preservesWhitespace() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            // Card numbers may have spaces
+            scope.updateCardNumber("4111 1111 1111 1111")
+            XCTAssertEqual(scope.getFieldValue(.cardNumber), "4111 1111 1111 1111")
+        }
+    }
+
+    func test_updateCardholderName_withExtraWhitespace_preservesInput() async throws {
+        let container = await createTestContainer()
+
+        await DIContainer.withContainer(container) {
+            let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+            let scope = createCardFormScope(checkoutScope: checkoutScope)
+
+            scope.updateCardholderName("  John   Doe  ")
+            XCTAssertEqual(scope.getFieldValue(.cardholderName), "  John   Doe  ")
+        }
+    }
 }

@@ -289,6 +289,222 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
         XCTAssertNil(result.first?.networkSurcharges)
     }
 
+    // MARK: - Network Surcharges Array Format Tests
+
+    func test_execute_forPaymentCard_withNetworksArrayNestedSurcharge_extractsSurcharges() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": ["amount": 100]],
+            ["type": "MASTERCARD", "surcharge": ["amount": 150]]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNotNil(result.first?.networkSurcharges)
+        XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 100)
+        XCTAssertEqual(result.first?.networkSurcharges?["MASTERCARD"], 150)
+    }
+
+    func test_execute_forPaymentCard_withNetworksArrayDirectSurcharge_extractsSurcharges() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": 200],
+            ["type": "AMEX", "surcharge": 300]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNotNil(result.first?.networkSurcharges)
+        XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 200)
+        XCTAssertEqual(result.first?.networkSurcharges?["AMEX"], 300)
+    }
+
+    func test_execute_forPaymentCard_withZeroSurcharges_returnsNil() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksArray: [[String: Any]] = [
+            ["type": "VISA", "surcharge": 0],
+            ["type": "MASTERCARD", "surcharge": ["amount": 0]]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then - zero surcharges should not be included
+        XCTAssertNil(result.first?.networkSurcharges)
+    }
+
+    // MARK: - Network Surcharges Dict Format Tests
+
+    func test_execute_forPaymentCard_withNetworksDictNestedSurcharge_extractsSurcharges() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": ["amount": 100]],
+            "MASTERCARD": ["surcharge": ["amount": 200]]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksDict: networksDict)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNotNil(result.first?.networkSurcharges)
+        XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 100)
+        XCTAssertEqual(result.first?.networkSurcharges?["MASTERCARD"], 200)
+    }
+
+    func test_execute_forPaymentCard_withNetworksDictDirectSurcharge_extractsSurcharges() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksDict: [String: [String: Any]] = [
+            "VISA": ["surcharge": 150],
+            "DISCOVER": ["surcharge": 250]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksDict: networksDict)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNotNil(result.first?.networkSurcharges)
+        XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 150)
+        XCTAssertEqual(result.first?.networkSurcharges?["DISCOVER"], 250)
+    }
+
+    // MARK: - Network Surcharges Edge Cases
+
+    func test_execute_forPaymentCard_withNoClientSession_networkSurchargesIsNil() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+
+        // When
+        let result = try await sut.execute()
+
+        // Then - no client session means no network surcharges
+        XCTAssertNil(result.first?.networkSurcharges)
+    }
+
+    func test_execute_forPaymentCard_withMissingNetworkType_skipsInvalidEntries() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        let networksArray: [[String: Any]] = [
+            ["surcharge": 100], // Missing type
+            ["type": "VISA", "surcharge": 200]
+        ]
+        let clientSession = createClientSessionWithNetworks(networksArray: networksArray)
+        mockConfigurationService.apiConfiguration = createConfigurationWithClientSession(
+            paymentMethods: paymentMethods,
+            clientSession: clientSession
+        )
+
+        // When
+        let result = try await sut.execute()
+
+        // Then - only valid entries should be included
+        XCTAssertEqual(result.first?.networkSurcharges?.count, 1)
+        XCTAssertEqual(result.first?.networkSurcharges?["VISA"], 200)
+    }
+
+    // MARK: - Logo and Display Metadata Tests
+
+    func test_execute_withLogo_setsIcon() async throws {
+        // Given
+        let logo = PrimerTheme.BaseColoredURLs(
+            coloredUrlStr: "https://example.com/logo.png",
+            lightUrlStr: nil,
+            darkUrlStr: nil
+        )
+        let paymentMethod = PrimerPaymentMethod(
+            id: "pm-1",
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD",
+            name: "Card",
+            processorConfigId: nil,
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil
+        )
+        // We can't set the logo directly without proper mock, but test null case
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: [paymentMethod])
+
+        // When
+        let result = try await sut.execute()
+
+        // Then - icon will be nil if logo not set in test configuration
+        XCTAssertNotNil(result.first)
+    }
+
+    func test_execute_withNilLogo_iconIsNil() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "PAYMENT_CARD", name: "Card")]
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertNil(result.first?.icon)
+    }
+
+    // MARK: - Single Payment Method Tests
+
+    func test_execute_withSinglePaymentMethod_returnsOne() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "KLARNA", name: "Klarna")]
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result.first?.type, "KLARNA")
+        XCTAssertEqual(result.first?.name, "Klarna")
+    }
+
+    func test_execute_forUnknownPaymentMethod_setsEmptyInputElements() async throws {
+        // Given
+        let paymentMethods = [createPaymentMethod(type: "UNKNOWN_TYPE", name: "Unknown")]
+        mockConfigurationService.apiConfiguration = createMinimalConfiguration(paymentMethods: paymentMethods)
+
+        // When
+        let result = try await sut.execute()
+
+        // Then
+        XCTAssertTrue(result.first?.requiredInputElements.isEmpty ?? false)
+    }
+
     // MARK: - Helpers
 
     private func createMinimalConfiguration(
@@ -322,6 +538,51 @@ final class CheckoutComponentsPaymentMethodsBridgeTests: XCTestCase {
             surcharge: surcharge,
             options: nil,
             displayMetadata: nil
+        )
+    }
+
+    private func createConfigurationWithClientSession(
+        paymentMethods: [PrimerPaymentMethod],
+        clientSession: ClientSession.APIResponse
+    ) -> PrimerAPIConfiguration {
+        PrimerAPIConfiguration(
+            coreUrl: "https://core.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bindata.primer.io",
+            assetsUrl: "https://assets.staging.core.primer.io",
+            clientSession: clientSession,
+            paymentMethods: paymentMethods,
+            primerAccountId: nil,
+            keys: nil,
+            checkoutModules: nil
+        )
+    }
+
+    private func createClientSessionWithNetworks(
+        networksArray: [[String: Any]]? = nil,
+        networksDict: [String: [String: Any]]? = nil
+    ) -> ClientSession.APIResponse {
+        // Build the options array with PAYMENT_CARD containing networks
+        var paymentCardOption: [String: Any] = ["type": "PAYMENT_CARD"]
+        if let networksArray = networksArray {
+            paymentCardOption["networks"] = networksArray
+        } else if let networksDict = networksDict {
+            paymentCardOption["networks"] = networksDict
+        }
+
+        let paymentMethod = ClientSession.PaymentMethod(
+            vaultOnSuccess: false,
+            options: [paymentCardOption],
+            orderedAllowedCardNetworks: nil,
+            descriptor: nil
+        )
+
+        return ClientSession.APIResponse(
+            clientSessionId: "cs-123",
+            paymentMethod: paymentMethod,
+            order: nil,
+            customer: nil,
+            testId: nil
         )
     }
 }

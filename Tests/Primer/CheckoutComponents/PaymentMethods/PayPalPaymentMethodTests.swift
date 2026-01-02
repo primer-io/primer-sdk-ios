@@ -121,6 +121,120 @@ final class PayPalPaymentMethodTests: XCTestCase {
         }
     }
 
+    func test_createScope_withNonDefaultCheckoutScope_throws() async throws {
+        // Given - a mock checkout scope that is NOT a DefaultCheckoutScope
+        await registerPayPalDependencies()
+        let mockScope = MockNonDefaultCheckoutScope()
+
+        // When/Then
+        do {
+            _ = try PayPalPaymentMethod.createScope(
+                checkoutScope: mockScope,
+                diContainer: container
+            )
+            XCTFail("Expected error when using non-default checkout scope")
+        } catch let error as PrimerError {
+            switch error {
+            case let .invalidArchitecture(description, _, _):
+                XCTAssertTrue(description.contains("DefaultCheckoutScope"))
+            default:
+                XCTFail("Expected invalidArchitecture error, got \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error type: \(error)")
+        }
+    }
+
+    func test_createScope_withThreePaymentMethods_usesPaymentSelectionContext() async throws {
+        // Register all required dependencies
+        await registerPayPalDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(id: "1", type: "PAYPAL", name: "PayPal"),
+            InternalPaymentMethod(id: "2", type: "PAYMENT_CARD", name: "Card"),
+            InternalPaymentMethod(id: "3", type: "APPLE_PAY", name: "Apple Pay")
+        ]
+
+        do {
+            let scope = try PayPalPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: container
+            )
+
+            XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func test_createScope_withExactlyTwoPaymentMethods_usesPaymentSelectionContext() async throws {
+        // Register all required dependencies
+        await registerPayPalDependencies()
+
+        let navigator = CheckoutNavigator(coordinator: CheckoutCoordinator())
+        let settings = PrimerSettings(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions()
+        )
+        let checkoutScope = DefaultCheckoutScope(
+            clientToken: "test-token",
+            settings: settings,
+            diContainer: DIContainer.shared,
+            navigator: navigator
+        )
+        checkoutScope.availablePaymentMethods = [
+            InternalPaymentMethod(id: "1", type: "PAYPAL", name: "PayPal"),
+            InternalPaymentMethod(id: "2", type: "PAYMENT_CARD", name: "Card")
+        ]
+
+        do {
+            let scope = try PayPalPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: container
+            )
+
+            XCTAssertEqual(scope.presentationContext, .fromPaymentSelection)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func test_createScope_returnsScopeWithCheckoutScopeReference() async throws {
+        // Register all required dependencies
+        await registerPayPalDependencies()
+
+        let checkoutScope = await ContainerTestHelpers.createMockCheckoutScope()
+
+        do {
+            let scope = try PayPalPaymentMethod.createScope(
+                checkoutScope: checkoutScope,
+                diContainer: container
+            )
+
+            // Verify the scope has a reference to the checkout scope
+            XCTAssertNotNil(scope)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    // MARK: - ScopeType Tests
+
+    func test_scopeType_isDefaultPayPalScope() {
+        XCTAssertTrue(PayPalPaymentMethod.ScopeType.self == DefaultPayPalScope.self)
+    }
+
     // MARK: - createView Tests
 
     func test_createView_withNoScope_returnsNil() async throws {
@@ -221,4 +335,33 @@ private final class MockProcessPayPalPaymentInteractor: ProcessPayPalPaymentInte
         executeCallCount += 1
         return try executeResult.get()
     }
+}
+
+// MARK: - Mock Non-Default Checkout Scope
+
+@available(iOS 15.0, *)
+private final class MockNonDefaultCheckoutScope: PrimerCheckoutScope {
+    var state: AsyncStream<PrimerCheckoutState> {
+        AsyncStream { continuation in
+            continuation.yield(.initializing)
+            continuation.finish()
+        }
+    }
+
+    var container: ContainerComponent?
+    var splashScreen: Component?
+    var loading: Component?
+    var errorScreen: ErrorComponent?
+
+    var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
+        fatalError("Not implemented for mock")
+    }
+
+    var paymentHandling: PrimerPaymentHandling { .auto }
+
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? { nil }
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? { nil }
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T? { nil }
+
+    func onDismiss() {}
 }
