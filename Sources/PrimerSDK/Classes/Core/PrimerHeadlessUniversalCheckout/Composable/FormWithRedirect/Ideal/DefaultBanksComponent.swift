@@ -1,7 +1,7 @@
 //
 //  DefaultBanksComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -31,11 +31,11 @@ final class DefaultBanksComponent: BanksComponent {
     public func updateCollectedData(collectableData: BanksCollectableData) {
         trackCollectableData()
         switch collectableData {
-        case .bankId(bankId: let bankId):
+        case let .bankId(bankId: bankId):
             if isBankIdValid(bankId: bankId) {
                 self.bankId = bankId
             }
-        case .bankFilterText(text: let text):
+        case let .bankFilterText(text: text):
             let filteredBanks = tokenizationProvidingModel.filterBanks(query: text)
             let banksStep = BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) })
             stepDelegate?.didReceiveStep(step: banksStep)
@@ -44,20 +44,20 @@ final class DefaultBanksComponent: BanksComponent {
     }
 
     func isBankIdValid(bankId: String) -> Bool {
-        banks.compactMap({ $0.id }).contains(bankId)
+        banks.compactMap(\.id).contains(bankId)
     }
 
     func validateData(for data: BanksCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
-        case .bankId(bankId: let bankId):
+        case let .bankId(bankId: bankId):
             if !isBankIdValid(bankId: bankId) {
                 let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded() : PrimerValidationError.invalidBankId(bankId: bankId)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [handled(error: error)]), for: data)
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
             }
-        case .bankFilterText(text: let text):
+        case .bankFilterText:
             if banks.isEmpty {
                 let error = handled(error: PrimerValidationError.banksNotLoaded())
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)

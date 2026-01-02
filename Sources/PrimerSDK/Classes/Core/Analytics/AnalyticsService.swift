@@ -1,7 +1,7 @@
 //
 //  AnalyticsService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable type_body_length
@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol AnalyticsServiceProtocol {
+protocol AnalyticsServiceProtocol: Actor {
     func record(events: [Analytics.Event]) async throws
     func fire(events: [Analytics.Event])
     func record(event: Analytics.Event) async throws
@@ -18,7 +18,7 @@ protocol AnalyticsServiceProtocol {
 
 extension Analytics {
 
-    final class Service: AnalyticsServiceProtocol, LogReporter {
+    final actor Service: AnalyticsServiceProtocol, LogReporter {
 
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
 
@@ -54,55 +54,49 @@ extension Analytics {
         }
 
         func record(events: [Analytics.Event]) async throws {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                Analytics.queue.async(flags: .barrier) { [self] in
+            let storedEvents: [Analytics.Event] = storage.loadEvents()
+            let storedEventsIds = storedEvents.map(\.localId)
+            var eventsToAppend: [Analytics.Event] = []
 
-                    let storedEvents: [Analytics.Event] = storage.loadEvents()
-                    let storedEventsIds = storedEvents.map(\.localId)
-                    var eventsToAppend: [Analytics.Event] = []
+            for event in events {
+                if storedEventsIds.contains(event.localId) { continue }
+                eventsToAppend.append(event)
+            }
 
-                    for event in events {
-                        if storedEventsIds.contains(event.localId) { continue }
-                        eventsToAppend.append(event)
-                    }
+            var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
+            combinedEvents.append(contentsOf: storedEvents)
 
-                    var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
-                    combinedEvents.append(contentsOf: storedEvents)
+            logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
 
-                    logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
+            do {
+                try storage.save(combinedEvents)
 
-                    do {
-                        try storage.save(combinedEvents)
+                if combinedEvents.count >= batchSize {
+                    let hasEventsRequiringToken = combinedEvents.contains { $0.analyticsUrl != nil }
+                    let hasClientToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken != nil
 
-                        if combinedEvents.count >= batchSize {
-                            let hasEventsRequiringToken = combinedEvents.contains { $0.analyticsUrl != nil }
-                            let hasClientToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken != nil
-
-                            if hasEventsRequiringToken, !hasClientToken {
-                                continuation.resume()
-                            } else {
-                                let batchSizeExceeded = combinedEvents.count > batchSize
-                                let sizeString = batchSizeExceeded ? "exceeded" : "reached"
-                                let count = combinedEvents.count
-                                let message =
-                                    "📚 Analytics: Minimum batch size of \(batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
-                                logger.debug(message: message)
-                                Task {
-                                    do {
-                                        try await sync(events: combinedEvents)
-                                    } catch {
-                                        // Ignore errors during sync
-                                    }
-                                    continuation.resume()
-                                }
+                    if hasEventsRequiringToken, !hasClientToken {
+                        return
+                    } else {
+                        let batchSizeExceeded = combinedEvents.count > batchSize
+                        let sizeString = batchSizeExceeded ? "exceeded" : "reached"
+                        let count = combinedEvents.count
+                        let message =
+                            "📚 Analytics: Minimum batch size of \(batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
+                        logger.debug(message: message)
+                        Task {
+                            do {
+                                try await sync(events: combinedEvents)
+                            } catch {
+                                // Ignore errors during sync
                             }
-                        } else {
-                            continuation.resume()
                         }
-                    } catch {
-                        continuation.resume(throwing: error)
                     }
+                } else {
+                    return
                 }
+            } catch {
+                throw error
             }
         }
 
@@ -134,67 +128,24 @@ extension Analytics {
 
         private func sync(events: [Analytics.Event], isFlush: Bool = false) async throws {
             let syncType = isFlush ? "flush" : "sync"
-
-            guard !events.isEmpty else {
-                return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
-            }
+            guard !events.isEmpty else { return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")}
 
             if !isFlush {
-                guard !isSyncing else {
-                    return logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
-                }
+                guard !isSyncing else { return logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...") }
                 isSyncing = true
             }
 
-            try await withCheckedThrowingContinuation { continuation in
-                Analytics.queue.async(flags: .barrier) {
-                    let eventsToSend = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
+            defer { isSyncing = isFlush ? isSyncing : false }
 
-                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(eventsToSend.count) events ...")
+            let eventsToSend = isFlush ? events : Array(events.prefix(Int(batchSize)))
+            logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(eventsToSend.count) events ...")
+            async let logEvents: Void = sendSdkLogEvents(events: eventsToSend)
+            async let analyticsEvents: Void = sendSdkAnalyticsEvents(events: eventsToSend)
+            _ = try await (logEvents, analyticsEvents)
 
-                    Task {
-                        do {
-                            async let logEvents: Void = self.sendSdkLogEvents(events: eventsToSend)
-                            async let analyticsEvents: Void = self.sendSdkAnalyticsEvents(events: eventsToSend)
-                            _ = try await (logEvents, analyticsEvents)
-
-                            // Reset isSyncing flag on the Analytics queue to ensure thread safety
-                            await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-                                Analytics.queue.async(flags: .barrier) {
-                                    let remainingEvents = self.storage.loadEvents()
-                                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
-                                    self.isSyncing = false
-                                    cont.resume()
-                                }
-                            }
-
-                            // Check if we need to sync remaining events
-                            let remainingEvents = self.storage.loadEvents()
-                            if remainingEvents.count >= self.batchSize {
-                                do {
-                                    try await self.sync(events: remainingEvents)
-                                } catch {
-                                    // Ignore errors during sync
-                                }
-                            }
-                            continuation.resume()
-                        } catch {
-                            let errorMessage = error.localizedDescription
-                            let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
-                            self.logger.error(message: message)
-
-                            // Reset isSyncing flag on the Analytics queue to ensure thread safety
-                            await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-                                Analytics.queue.async(flags: .barrier) {
-                                    self.isSyncing = false
-                                    cont.resume()
-                                }
-                            }
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                }
-            }
+            let remainingEvents = storage.loadEvents()
+            logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
+            if remainingEvents.count >= batchSize { try? await sync(events: remainingEvents) }
         }
 
         func clear() {
@@ -243,7 +194,7 @@ extension Analytics {
                 completion(nil)
                 return
             }
-
+            
             if url.absoluteString != self.sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Skip sending events that require client token when no token is available
@@ -252,34 +203,27 @@ extension Analytics {
                 completion(nil)
                 return
             }
-
+            
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
-
+            
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
-
+            
             self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
                 body: events
             ) { result in
-                switch result {
-                case .success:
-                    Analytics.queue.async(flags: .barrier) {
-                        let urlString = url.absoluteString
+                Task { [weak self] in
+                    guard let self else { return }
+                    let messageContent = "\(events.count) events on URL \(url.absoluteString)"
+                    switch result {
+                    case .success:
                         self.storage.delete(events)
-                        let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString). Deleted \(events.count) sent events from store"
-                        self.logger.debug(message: message)
+                        self.logger.debug(message: "📚 Analytics: Finished sending \(messageContent)")
                         completion(nil)
-                    }
-                case let .failure(err):
-                    Analytics.queue.async(flags: .barrier) {
-                        // Log failure
-                        let urlString = url.absoluteString
-                        let count = events.count
-                        let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
-                        self.logger.error(message: message)
-
-                        self.handleFailedEvents(forUrl: url)
+                    case let .failure(err):
+                        self.logger.error(message: "📚 Analytics: Failed to send \(messageContent) with error \(err)")
+                        await self.handleFailedEvents(forUrl: url)
                         completion(handled(error: err))
                     }
                 }
@@ -323,7 +267,7 @@ extension Analytics.Service {
     }
 
     static func fire(event: Analytics.Event) {
-        shared.fire(event: event)
+        Task { await shared.fire(event: event) }
     }
 
     static func record(events: [Analytics.Event]) async throws {
@@ -331,7 +275,7 @@ extension Analytics.Service {
     }
 
     static func fire(events: [Analytics.Event]) {
-        shared.fire(events: events)
+        Task { await shared.fire(events: events) }
     }
 
     static func flush() async throws {
@@ -339,11 +283,11 @@ extension Analytics.Service {
     }
 
     static func drain() {
-        shared.drain()
+        Task { await shared.drain() }
     }
 
     static func clear() {
-        shared.clear()
+        Task { await shared.clear() }
     }
 }
 
