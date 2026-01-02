@@ -352,7 +352,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | 🔄 In Review |
 | 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | 🔄 In Review |
 | 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8+6 | 🔄 In Review |
-| 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
+| 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5+7 | 🔄 In Review |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
 | 8 | `ov/test/checkout-components-08-network` | Network | 4 | ⬜ Pending |
 | 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6 | ⬜ Pending |
@@ -442,12 +442,20 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
 - [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
-### PR 6: Validation Pt2 (5 files)
-- [ ] Mocks/MockValidateInputInteractor.swift
-- [ ] Validation/RulesFactoryTests.swift
-- [ ] Validation/ExpiryDateValidationEdgeCasesTests.swift
-- [ ] Core/ErrorMessageResolverTests.swift
-- [ ] Interactors/ValidateInputInteractorTests.swift
+### PR 6: Validation Pt2 (5 files + 7 dependencies)
+*Includes foundation + MockValidationService since PR 1 & 5 haven't merged yet*
+- [x] Mocks/MockValidateInputInteractor.swift
+- [x] Validation/RulesFactoryTests.swift
+- [x] Validation/ExpiryDateValidationEdgeCasesTests.swift
+- [x] Core/ErrorMessageResolverTests.swift
+- [x] Interactors/ValidateInputInteractorTests.swift
+- [x] *Dependencies:* TestSupport/TestData.swift
+- [x] *Dependencies:* TestSupport/XCTestCase+Async.swift
+- [x] *Dependencies:* TestSupport/ContainerTestHelpers.swift
+- [x] *Dependencies:* Mocks/MockConfigurationService.swift
+- [x] *Dependencies:* Mocks/MockAnalyticsInteractor.swift
+- [x] *Dependencies:* Mocks/MockAccessibilityAnnouncementService.swift
+- [x] *Dependencies:* Mocks/MockValidationService.swift
 
 ### PR 7: Navigation (5 files)
 - [ ] Mocks/MockCheckoutCoordinator.swift
