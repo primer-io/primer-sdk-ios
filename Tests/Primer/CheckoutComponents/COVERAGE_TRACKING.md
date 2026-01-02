@@ -351,7 +351,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 2 | `ov/test/checkout-components-02-di-core` | DI Core | 8 | 🔄 In Review |
 | 3 | `ov/test/checkout-components-03-di-swiftui` | DI SwiftUI | 7 | 🔄 In Review |
 | 4 | `ov/test/checkout-components-04-accessibility` | Accessibility | 8 | 🔄 In Review |
-| 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8 | ⬜ Pending |
+| 5 | `ov/test/checkout-components-05-validation-pt1` | Validation Pt1 | 8+6 | 🔄 In Review |
 | 6 | `ov/test/checkout-components-06-validation-pt2` | Validation Pt2 | 5 | ⬜ Pending |
 | 7 | `ov/test/checkout-components-07-navigation` | Navigation | 5 | ⬜ Pending |
 | 8 | `ov/test/checkout-components-08-network` | Network | 4 | ⬜ Pending |
@@ -425,15 +425,22 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Accessibility/ViewAccessibilityExtendedTests.swift
 - [x] Accessibility/ViewAccessibilityConditionalsTests.swift
 
-### PR 5: Validation Pt1 (8 files)
-- [ ] Mocks/MockValidationService.swift
-- [ ] Mocks/MockRulesFactory.swift
-- [ ] Validation/CardValidationRulesTests.swift
-- [ ] Validation/CommonValidationRulesTests.swift
-- [ ] Validation/ValidationServiceTests.swift
-- [ ] Validation/ValidationErrorTests.swift
-- [ ] Validation/ValidationResultTests.swift
-- [ ] Validation/ValidationRuleTests.swift
+### PR 5: Validation Pt1 (8 files + 6 foundation dependencies)
+*Includes foundation files because PR 1 hasn't merged yet*
+- [x] Mocks/MockValidationService.swift
+- [x] Mocks/MockRulesFactory.swift
+- [x] Validation/CardValidationRulesTests.swift
+- [x] Validation/CommonValidationRulesTests.swift
+- [x] Validation/ValidationServiceTests.swift
+- [x] Validation/ValidationErrorTests.swift
+- [x] Validation/ValidationResultTests.swift
+- [x] Validation/ValidationRuleTests.swift
+- [x] *Foundation:* TestSupport/TestData.swift
+- [x] *Foundation:* TestSupport/XCTestCase+Async.swift
+- [x] *Foundation:* TestSupport/ContainerTestHelpers.swift
+- [x] *Foundation:* Mocks/MockConfigurationService.swift
+- [x] *Foundation:* Mocks/MockAnalyticsInteractor.swift
+- [x] *Foundation:* Mocks/MockAccessibilityAnnouncementService.swift
 
 ### PR 6: Validation Pt2 (5 files)
 - [ ] Mocks/MockValidateInputInteractor.swift
