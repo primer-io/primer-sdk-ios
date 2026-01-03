@@ -8,7 +8,6 @@ import XCTest
 import SwiftUI
 @testable import PrimerSDK
 
-/// Tests for View+Accessibility extension functionality.
 @available(iOS 15.0, *)
 final class ViewAccessibilityExtendedTests: XCTestCase {
 
@@ -46,8 +45,8 @@ final class ViewAccessibilityExtendedTests: XCTestCase {
     func test_accessibilityModifier_withNilHint_doesNotCrash() {
         // Given
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: nil
         )
 
@@ -61,8 +60,8 @@ final class ViewAccessibilityExtendedTests: XCTestCase {
     func test_accessibilityModifier_withEmptyHint_doesNotCrash() {
         // Given
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: ""
         )
 
@@ -91,8 +90,8 @@ final class ViewAccessibilityExtendedTests: XCTestCase {
     func test_accessibilityModifier_withNilValue_doesNotCrash() {
         // Given
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             value: nil
         )
 
@@ -106,8 +105,8 @@ final class ViewAccessibilityExtendedTests: XCTestCase {
     func test_accessibilityModifier_withEmptyValue_doesNotCrash() {
         // Given
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             value: ""
         )
 

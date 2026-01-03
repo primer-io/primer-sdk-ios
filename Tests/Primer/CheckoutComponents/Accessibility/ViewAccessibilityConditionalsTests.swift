@@ -16,8 +16,8 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
     func test_accessibilityModifier_withWhitespaceOnlyHint_appliesHint() {
         // Given: Configuration with whitespace-only hint (should be applied since not empty)
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: "   "  // Whitespace only - technically not empty
         )
 
@@ -32,8 +32,8 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
     func test_accessibilityModifier_withUnicodeHint_appliesHint() {
         // Given: Configuration with unicode characters in hint
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: "Double-tap to submit 支払い"  // Japanese characters
         )
 
@@ -49,8 +49,8 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
         // Given: Configuration with very long hint
         let longHint = String(repeating: "This is a long accessibility hint. ", count: 10)
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: longHint
         )
 
@@ -65,8 +65,8 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
     func test_accessibilityModifier_withNewlineInHint_appliesHint() {
         // Given: Configuration with newline in hint
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             hint: "Line 1\nLine 2"
         )
 
@@ -83,8 +83,8 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
     func test_accessibilityModifier_withWhitespaceOnlyValue_appliesValue() {
         // Given: Configuration with whitespace-only value
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel,
             value: "   "  // Whitespace only
         )
 
@@ -149,7 +149,7 @@ final class ViewAccessibilityConditionalsTests: XCTestCase {
         // Given: Configuration with empty identifier (edge case)
         let config = AccessibilityConfiguration(
             identifier: "",
-            label: "Test Label"
+            label: TestData.Accessibility.testLabel
         )
 
         // When: Applying configuration

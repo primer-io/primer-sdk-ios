@@ -33,6 +33,11 @@ final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementServi
 
     private(set) var allAnnouncements: [String] = []
 
+    var totalAnnouncementCount: Int {
+        announceErrorCallCount + announceStateChangeCallCount +
+            announceLayoutChangeCallCount + announceScreenChangeCallCount
+    }
+
     // MARK: - Protocol Implementation
 
     func announceError(_ message: String) {
@@ -71,10 +76,5 @@ final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementServi
         lastLayoutChangeMessage = nil
         lastScreenChangeMessage = nil
         allAnnouncements = []
-    }
-
-    var totalAnnouncementCount: Int {
-        announceErrorCallCount + announceStateChangeCallCount +
-            announceLayoutChangeCallCount + announceScreenChangeCallCount
     }
 }
