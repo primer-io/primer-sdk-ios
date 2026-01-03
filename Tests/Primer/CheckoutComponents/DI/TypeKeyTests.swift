@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for TypeKey struct covering initialization, equality, hashing, and Codable conformance.
 @available(iOS 15.0, *)
 final class TypeKeyTests: XCTestCase {
 

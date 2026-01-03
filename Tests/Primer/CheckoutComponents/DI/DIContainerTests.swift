@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for DIContainer class covering container lifecycle, context management, and scoped containers.
 @available(iOS 15.0, *)
 @MainActor
 final class DIContainerTests: XCTestCase {

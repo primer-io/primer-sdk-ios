@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for ContainerDiagnostics, health reporting, and performance metrics.
 @available(iOS 15.0, *)
 final class ContainerDiagnosticsTests: XCTestCase {
 
@@ -503,6 +502,6 @@ private protocol TestProtocol {
 }
 
 @available(iOS 15.0, *)
-private class TestImplementation: TestProtocol {
+private final class TestImplementation: TestProtocol {
     func doSomething() {}
 }

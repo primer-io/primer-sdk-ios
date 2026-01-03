@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for ContainerError enum covering all error cases and their properties.
 @available(iOS 15.0, *)
 final class ContainerErrorTests: XCTestCase {
 

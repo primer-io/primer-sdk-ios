@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for Factory protocols and container extensions.
 @available(iOS 15.0, *)
 final class FactoryTests: XCTestCase {
 

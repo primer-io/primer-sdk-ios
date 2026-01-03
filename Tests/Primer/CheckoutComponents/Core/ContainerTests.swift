@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for the DI Container registration and resolution functionality.
 @available(iOS 15.0, *)
 final class ContainerTests: XCTestCase {
 

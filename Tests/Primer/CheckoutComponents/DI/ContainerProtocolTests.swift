@@ -15,8 +15,6 @@ protocol CPTestService: Sendable {}
 @available(iOS 15.0, *)
 final class CPTestServiceImpl: CPTestService, @unchecked Sendable {}
 
-/// Tests for ContainerProtocol, Registrar, DIResolver, LifecycleManager protocols
-/// and their default extension methods.
 @available(iOS 15.0, *)
 final class ContainerProtocolTests: XCTestCase {
 

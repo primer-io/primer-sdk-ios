@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for DI Container retention policies to achieve 90% DI coverage.
-/// Covers singleton, transient, and weak retention behaviors.
 @available(iOS 15.0, *)
 @MainActor
 final class RetentionPolicyTests: XCTestCase {
@@ -270,13 +268,13 @@ final class RetentionPolicyTests: XCTestCase {
 // MARK: - Test Types
 
 @available(iOS 15.0, *)
-private class MockService {
+private final class MockService {
     let id = UUID()
 }
 
 @available(iOS 15.0, *)
 @MainActor
-private class DIContainer {
+private final class DIContainer {
     enum RetentionPolicy {
         case singleton
         case transient
@@ -325,7 +323,7 @@ private class DIContainer {
         weakInstances.removeAll()
     }
 
-    private class WeakBox {
+    private final class WeakBox {
         weak var value: AnyObject?
         init(value: AnyObject) {
             self.value = value
