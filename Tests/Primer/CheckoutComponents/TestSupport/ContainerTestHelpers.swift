@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Shared test container creation helpers for CheckoutComponents tests.
-/// Provides consistent container setup across all scope tests.
 @available(iOS 15.0, *)
 enum ContainerTestHelpers {
 
