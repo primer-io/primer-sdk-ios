@@ -412,7 +412,7 @@ final class AsyncResolutionTests: XCTestCase {
 // MARK: - Test Services
 
 @available(iOS 15.0, *)
-private class AsyncService {
+private final class AsyncService {
     let isInitialized: Bool
 
     private init(isInitialized: Bool = true) {
@@ -431,12 +431,12 @@ private class AsyncService {
 
 @available(iOS 15.0, *)
 @MainActor
-private class MainActorService {
+private final class MainActorService {
     let id = UUID()
 }
 
 @available(iOS 15.0, *)
-private class DatabaseService {
+private final class DatabaseService {
     let connectionId: UUID
 
     private init() {
@@ -450,7 +450,7 @@ private class DatabaseService {
 }
 
 @available(iOS 15.0, *)
-private class CacheService {
+private final class CacheService {
     let cacheId: UUID
 
     private init() {
@@ -464,7 +464,7 @@ private class CacheService {
 }
 
 @available(iOS 15.0, *)
-private class NetworkService {
+private final class NetworkService {
     let database: DatabaseService
 
     private init(database: DatabaseService) {
@@ -478,7 +478,7 @@ private class NetworkService {
 }
 
 @available(iOS 15.0, *)
-private class RepositoryService {
+private final class RepositoryService {
     let network: NetworkService
     let cache: CacheService
 
@@ -494,7 +494,7 @@ private class RepositoryService {
 }
 
 @available(iOS 15.0, *)
-private class SlowService {
+private final class SlowService {
     let createdAt = Date()
 
     private init() {}
@@ -506,7 +506,7 @@ private class SlowService {
 }
 
 @available(iOS 15.0, *)
-private class SyncService {
+private final class SyncService {
     let id = UUID()
 }
 
@@ -596,7 +596,7 @@ private actor DIContainer {
         inflightSingletons.removeAll()
     }
 
-    private class WeakBox {
+    private final class WeakBox {
         weak var value: AnyObject?
         init(value: AnyObject) {
             self.value = value

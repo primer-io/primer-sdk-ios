@@ -249,7 +249,7 @@ final class SettingsObserverTests: XCTestCase {
 // MARK: - Mock Settings
 
 @available(iOS 15.0, *)
-private class MockSettings {
+private final class MockSettings {
     var theme: Theme = .light
     var analyticsEnabled: Bool = false
     var locale: String = "en"
@@ -281,7 +281,7 @@ private class MockSettings {
 
 @available(iOS 15.0, *)
 @MainActor
-private class SettingsObserver {
+private final class SettingsObserver {
     var currentSettings: MockSettings
     var onSettingsChanged: ((MockSettings) -> Void)?
     private var isObserving: Bool = true
@@ -289,7 +289,7 @@ private class SettingsObserver {
     init(settings: MockSettings) {
         self.currentSettings = settings
         settings.onChange = { [weak self] updatedSettings in
-            guard let self = self, self.isObserving else { return }
+            guard let self, self.isObserving else { return }
             self.currentSettings = updatedSettings
             self.onSettingsChanged?(updatedSettings)
         }
