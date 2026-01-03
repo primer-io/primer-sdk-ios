@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of RulesFactory for testing.
-/// Allows configuring validation rules to return specific results.
 @available(iOS 15.0, *)
 final class MockRulesFactory: RulesFactory {
 

@@ -7,7 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of ValidationService for testing interactors.
 @available(iOS 15.0, *)
 final class MockValidationService: ValidationService {
 

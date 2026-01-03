@@ -1,14 +1,12 @@
 //
 //  TestData.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 @testable import PrimerSDK
 
-/// Centralized test data for CheckoutComponents tests.
-/// All test data is organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
 
@@ -18,6 +16,26 @@ enum TestData {
         static let valid = "test-token"
         static let invalid = "invalid-token"
         static let expired = "expired-token"
+    }
+
+    // MARK: - First Names
+
+    enum FirstNames {
+        static let valid = "John"
+        static let withAccents = "François"
+        static let withUnicode = "René"
+        static let empty = ""
+        static let singleCharacter = "J"
+    }
+
+    // MARK: - Last Names
+
+    enum LastNames {
+        static let valid = "Doe"
+        static let withApostrophe = "O'Connor"
+        static let withHyphen = "Smith-Jones"
+        static let empty = ""
+        static let singleCharacter = "D"
     }
 
     // MARK: - Card Numbers
@@ -33,6 +51,7 @@ enum TestData {
         static let validDiscover = "6011111111111117"
         static let validDiners = "3056930009020004"
         static let validJCB = "3566002020360505"
+        static let valid19Digit = "4532015112830366999"
 
         // Invalid card numbers
         static let invalidLuhn = "4242424242424241"
@@ -42,6 +61,8 @@ enum TestData {
         static let empty = ""
         static let nonNumeric = "4242abcd42424242"
         static let withSpaces = "4242 4242 4242 4242"
+        static let allZeros = "0000000000000000"
+        static let singleDigit = "4"
 
         // Declined/error cards
         static let declined = "4000000000000002"
@@ -109,12 +130,16 @@ enum TestData {
         static let validSingleName = "Madonna"
         static let validWithAccents = "José García"
         static let validWithHyphen = "Mary-Jane Watson"
+        static let validWithApostrophe = "O'Brien"
 
         // Invalid names
         static let withNumbers = "John Doe 3rd"
         static let onlyNumbers = "12345"
         static let empty = ""
         static let tooShort = "J"
+        static let withLeadingTrailingSpaces = "  John Doe  "
+        static let onlySpaces = "    "
+        static let withSpecialCharacters = "John@Doe"
     }
 
     // MARK: - Billing Address
@@ -195,10 +220,69 @@ enum TestData {
         static let validUSExtended = "10001-1234"
         static let validUK = "SW1A 2AA"
         static let validCanada = "M5V 3L9"
+        static let validGeneric3Chars = "123"
+        static let validGeneric10Chars = "1234567890"
 
         // Invalid postal codes
         static let empty = ""
-        static let tooShort = "123"
+        static let tooShort = "12"
+        static let tooLong = "12345678901"
+        static let usWithLetters = "1000A"
+        static let invalidCanadian = "12345"
+        static let ukTooShort = "SW1"
+    }
+
+    // MARK: - Country Codes
+
+    enum CountryCodes {
+        static let us = "US"
+        static let usLowercase = "us"
+        static let gb = "GB"
+        static let gbLowercase = "gb"
+        static let usa3Letter = "USA"
+        static let empty = ""
+        static let singleCharacter = "U"
+        static let tooLong = "USAA"
+    }
+
+    // MARK: - OTP Codes
+
+    enum OTPCodes {
+        static let valid6Digit = "123456"
+        static let valid4Digit = "1234"
+        static let tooShort = "1234"
+        static let withNonNumeric = "12345a"
+        static let empty = ""
+    }
+
+    // MARK: - Cities
+
+    enum Cities {
+        static let valid = "New York"
+        static let withHyphen = "Winston-Salem"
+        static let withPeriod = "St. Louis"
+        static let empty = ""
+        static let singleCharacter = "A"
+    }
+
+    // MARK: - States
+
+    enum States {
+        static let validAbbreviation = "NY"
+        static let validFullName = "New York"
+        static let empty = ""
+        static let singleCharacter = "N"
+    }
+
+    // MARK: - Addresses
+
+    enum Addresses {
+        static let valid = "123 Main Street"
+        static let valid3Chars = "ABC"
+        static let valid100Chars = String(repeating: "a", count: 100)
+        static let tooShort = "AB"
+        static let tooLong = String(repeating: "a", count: 101)
+        static let empty = ""
     }
 
     // MARK: - Payment Amounts

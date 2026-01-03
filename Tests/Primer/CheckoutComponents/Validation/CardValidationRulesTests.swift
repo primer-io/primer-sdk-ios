@@ -7,7 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for card-specific validation rules including card number, CVV, expiry, and cardholder name.
 @available(iOS 15.0, *)
 final class CardValidationRulesTests: XCTestCase {
 
@@ -311,7 +310,7 @@ final class CardValidationRulesTests: XCTestCase {
     func test_validateCardNumber_withAllZeros_failsLuhn() {
         // Given
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = "0000000000000000"
+        let cardNumber = TestData.CardNumbers.allZeros
 
         // When
         let result = rule.validate(cardNumber)
@@ -324,7 +323,7 @@ final class CardValidationRulesTests: XCTestCase {
     func test_validateCardNumber_withSingleDigit_returnsInvalid() {
         // Given
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = "4"
+        let cardNumber = TestData.CardNumbers.singleDigit
 
         // When
         let result = rule.validate(cardNumber)
@@ -335,23 +334,21 @@ final class CardValidationRulesTests: XCTestCase {
     }
 
     func test_validateCardNumber_with19DigitValid_returnsValid() {
-        // Given - A valid 19-digit card number (some cards can have 19 digits)
+        // Given
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        // 19-digit Visa: 4532015112830366999 (valid Luhn)
-        let cardNumber = "4532015112830366999"
+        let cardNumber = TestData.CardNumbers.valid19Digit
 
         // When
         let result = rule.validate(cardNumber)
 
-        // Then - Should be valid length but may fail Luhn or network check
-        // The important test is that it doesn't reject based on length alone
+        // Then
         XCTAssertTrue(cardNumber.count == 19)
     }
 
     func test_validateCardNumber_withMaxLengthExceeded_returnsInvalid() {
-        // Given - 20+ digits is too long
+        // Given
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = "42424242424242424242"  // 20 digits
+        let cardNumber = TestData.CardNumbers.tooLong
 
         // When
         let result = rule.validate(cardNumber)
@@ -427,9 +424,9 @@ final class CardValidationRulesTests: XCTestCase {
     }
 
     func test_validateCardholderName_withApostrophe_returnsValid() {
-        // Given - Names like O'Brien should be valid
+        // Given
         let rule = CardholderNameRule()
-        let name = "O'Brien"
+        let name = TestData.CardholderNames.validWithApostrophe
 
         // When
         let result = rule.validate(name)
@@ -451,9 +448,9 @@ final class CardValidationRulesTests: XCTestCase {
     }
 
     func test_validateCardholderName_withLeadingTrailingSpaces_trimsAndValidates() {
-        // Given - Name with spaces should be trimmed
+        // Given
         let rule = CardholderNameRule()
-        let name = "  John Doe  "
+        let name = TestData.CardholderNames.withLeadingTrailingSpaces
 
         // When
         let result = rule.validate(name)
@@ -465,7 +462,7 @@ final class CardValidationRulesTests: XCTestCase {
     func test_validateCardholderName_withOnlySpaces_returnsInvalid() {
         // Given
         let rule = CardholderNameRule()
-        let name = "    "
+        let name = TestData.CardholderNames.onlySpaces
 
         // When
         let result = rule.validate(name)
@@ -475,9 +472,9 @@ final class CardValidationRulesTests: XCTestCase {
     }
 
     func test_validateCardholderName_withSpecialCharacters_returnsInvalid() {
-        // Given - Special characters like @ or # should be invalid
+        // Given
         let rule = CardholderNameRule()
-        let name = "John@Doe"
+        let name = TestData.CardholderNames.withSpecialCharacters
 
         // When
         let result = rule.validate(name)
