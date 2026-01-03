@@ -1,7 +1,7 @@
 //
 //  PrimerSettingsDIIntegrationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -12,9 +12,19 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
+    private var savedContainer: ContainerProtocol?
+
+    override func setUp() async throws {
+        try await super.setUp()
+        savedContainer = await DIContainer.current
+    }
+
     override func tearDown() async throws {
-        // Clean up global container after each test
-        await DIContainer.clearContainer()
+        if let savedContainer {
+            await DIContainer.setContainer(savedContainer)
+        } else {
+            await DIContainer.clearContainer()
+        }
         try await super.tearDown()
     }
 
