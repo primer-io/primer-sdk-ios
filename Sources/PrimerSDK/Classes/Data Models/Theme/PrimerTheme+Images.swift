@@ -74,6 +74,13 @@ extension PrimerTheme {
         var darkHex: String?
         var lightHex: String?
 
+        /// Convert to UIColor based on current appearance mode
+        var uiColor: UIColor? {
+            let isDarkMode = UIScreen.isDarkModeEnabled
+            let hexString = isDarkMode ? (darkHex ?? coloredHex ?? lightHex) : (coloredHex ?? lightHex ?? darkHex)
+            return hexString?.hexToUIColor()
+        }
+
         // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredHex = "colored"
@@ -147,5 +154,32 @@ extension PrimerTheme {
             try? container.encode(light, forKey: .light)
             try? container.encode(dark, forKey: .dark)
         }
+    }
+}
+
+// MARK: - Helper Extensions
+
+extension String {
+    /// Convert hex string to UIColor
+    func hexToUIColor() -> UIColor? {
+        var hexString = self.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove # prefix if present
+        if hexString.hasPrefix("#") {
+            hexString.removeFirst()
+        }
+
+        // Ensure valid length
+        guard hexString.count == 6 else { return nil }
+
+        // Parse RGB components
+        var rgb: UInt64 = 0
+        guard Scanner(string: hexString).scanHexInt64(&rgb) else { return nil }
+
+        let red = CGFloat((rgb >> 16) & 0xFF) / 255.0
+        let green = CGFloat((rgb >> 8) & 0xFF) / 255.0
+        let blue = CGFloat(rgb & 0xFF) / 255.0
+
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 }
