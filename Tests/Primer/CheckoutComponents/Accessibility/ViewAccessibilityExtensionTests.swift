@@ -1,7 +1,7 @@
 //
 //  ViewAccessibilityExtensionTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -36,8 +36,8 @@ final class ViewAccessibilityExtensionTests: XCTestCase {
     func testAccessibilityModifier_WithMinimalProperties() {
         // Given: Minimal accessibility configuration (only required properties)
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Test Label"
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.testLabel
         )
 
         // When: Applying configuration to view
@@ -53,8 +53,8 @@ final class ViewAccessibilityExtensionTests: XCTestCase {
     func testAccessibilityModifier_WithNilHint() {
         // Given: Configuration with nil hint
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.label,
             hint: nil
         )
 
@@ -69,8 +69,8 @@ final class ViewAccessibilityExtensionTests: XCTestCase {
     func testAccessibilityModifier_WithEmptyHint() {
         // Given: Configuration with empty hint (should not be applied per our logic)
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.label,
             hint: ""
         )
 
@@ -85,8 +85,8 @@ final class ViewAccessibilityExtensionTests: XCTestCase {
     func testAccessibilityModifier_WithNilValue() {
         // Given: Configuration with nil value
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.label,
             value: nil
         )
 
@@ -101,8 +101,8 @@ final class ViewAccessibilityExtensionTests: XCTestCase {
     func testAccessibilityModifier_WithEmptyValue() {
         // Given: Configuration with empty value (should not be applied per our logic)
         let config = AccessibilityConfiguration(
-            identifier: "test_id",
-            label: "Label",
+            identifier: TestData.Accessibility.testIdentifier,
+            label: TestData.Accessibility.label,
             value: ""
         )
 

@@ -7,10 +7,17 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Centralized test data for CheckoutComponents tests.
-/// All test data is organized by category for easy discovery and use.
+/// Organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
+
+    // MARK: - Accessibility
+
+    enum Accessibility {
+        static let testIdentifier = "test_id"
+        static let testLabel = "Test Label"
+        static let label = "Label"
+    }
 
     // MARK: - Tokens
 
