@@ -36,7 +36,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected timeout error")
         } catch {
             XCTAssertEqual((error as NSError).code, TestData.Errors.networkTimeout.code)
@@ -49,7 +49,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com", timeout: 1.0)
+            _ = try await sut.request(url: "TestData.URLs.example", timeout: 1.0)
             XCTFail("Expected timeout")
         } catch NetworkError.timeout {
             // Expected
@@ -64,7 +64,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected connection error")
         } catch {
             XCTAssertEqual((error as NSError).code, TestData.Errors.networkError.code)
@@ -77,7 +77,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected DNS error")
         } catch NetworkError.dnsFailure {
             // Expected
@@ -94,7 +94,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected client error")
         } catch let NetworkError.clientError(statusCode) {
             XCTAssertEqual(statusCode, 400)
@@ -104,7 +104,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
     func test_request_with401Unauthorized_throwsAuthError() async throws {
         // Given
         mockSession.response = HTTPURLResponse(
-            url: URL(string: "https://api.example.com")!,
+            url: URL(string: "TestData.URLs.example")!,
             statusCode: 401,
             httpVersion: nil,
             headerFields: nil
@@ -112,7 +112,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected auth error")
         } catch NetworkError.unauthorized {
             // Expected
@@ -122,7 +122,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
     func test_request_with5xxStatus_throwsServerError() async throws {
         // Given
         mockSession.response = HTTPURLResponse(
-            url: URL(string: "https://api.example.com")!,
+            url: URL(string: "TestData.URLs.example")!,
             statusCode: 500,
             httpVersion: nil,
             headerFields: nil
@@ -130,7 +130,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected server error")
         } catch let NetworkError.serverError(statusCode) {
             XCTAssertEqual(statusCode, 500)
@@ -146,7 +146,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
         mockSession.responseData = "success".data(using: .utf8)
 
         // When
-        let result = try await sut.request(url: "https://api.example.com", retryCount: 3)
+        let result = try await sut.request(url: "TestData.URLs.example", retryCount: 3)
 
         // Then
         XCTAssertNotNil(result)
@@ -159,7 +159,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com", retryCount: 2)
+            _ = try await sut.request(url: "TestData.URLs.example", retryCount: 2)
             XCTFail("Expected error after retries exhausted")
         } catch {
             XCTAssertEqual(mockSession.requestCount, 3) // Initial + 2 retries
@@ -174,7 +174,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When
         let startTime = Date()
-        _ = try await sut.request(url: "https://api.example.com", retryCount: 3, useExponentialBackoff: true)
+        _ = try await sut.request(url: "TestData.URLs.example", retryCount: 3, useExponentialBackoff: true)
         let duration = Date().timeIntervalSince(startTime)
 
         // Then - should have delays between retries (1s + 2s = ~3s minimum)
@@ -187,7 +187,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
         // Given
         mockSession.responseData = TestData.APIResponses.errorResponse.data(using: .utf8)
         mockSession.response = HTTPURLResponse(
-            url: URL(string: "https://api.example.com")!,
+            url: URL(string: "TestData.URLs.example")!,
             statusCode: 400,
             httpVersion: nil,
             headerFields: nil
@@ -195,7 +195,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected error")
         } catch let NetworkError.apiError(message) {
             // Check for actual message content from errorResponse
@@ -212,8 +212,8 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
         // Don't use failUntilAttempt for concurrent tests - it creates race conditions
 
         // When - concurrent requests
-        async let request1 = sut.request(url: "https://api.example.com/first")
-        async let request2 = sut.request(url: "https://api.example.com/second")
+        async let request1 = sut.request(url: "TestData.URLs.example/first")
+        async let request2 = sut.request(url: "TestData.URLs.example/second")
 
         // Then - Both should fail with the same error
         let result1 = try? await request1
@@ -232,7 +232,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When
         let task = Task {
-            try await sut.request(url: "https://api.example.com")
+            try await sut.request(url: "TestData.URLs.example")
         }
 
         task.cancel()
@@ -251,7 +251,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
     func test_request_withNilResponse_throwsInvalidResponseError() async throws {
         // Given - Use URLResponse instead of HTTPURLResponse to trigger invalidResponse
         mockSession.response = URLResponse(
-            url: URL(string: "https://api.example.com")!,
+            url: URL(string: "TestData.URLs.example")!,
             mimeType: nil,
             expectedContentLength: 0,
             textEncodingName: nil
@@ -260,7 +260,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected invalid response error")
         } catch NetworkError.invalidResponse {
             // Expected
@@ -270,7 +270,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
     func test_request_withNonHTTPResponse_throwsInvalidResponseError() async throws {
         // Given
         mockSession.response = URLResponse(
-            url: URL(string: "https://api.example.com")!,
+            url: URL(string: "TestData.URLs.example")!,
             mimeType: nil,
             expectedContentLength: 0,
             textEncodingName: nil
@@ -278,7 +278,7 @@ final class NetworkManagerErrorHandlingTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.request(url: "https://api.example.com")
+            _ = try await sut.request(url: "TestData.URLs.example")
             XCTFail("Expected invalid response error")
         } catch NetworkError.invalidResponse {
             // Expected
@@ -302,7 +302,7 @@ private enum NetworkError: Error, Equatable {
 
 @available(iOS 15.0, *)
 @MainActor
-private class NetworkManagerMockURLSession {
+private final class NetworkManagerMockURLSession {
     var responseData: Data?
     var response: URLResponse?
     var error: Error?
@@ -323,7 +323,7 @@ private class NetworkManagerMockURLSession {
             throw error ?? TestData.Errors.unknown
         }
 
-        if let error = error, failUntilAttempt == 0 {
+        if let error, failUntilAttempt == 0 {
             throw error
         }
 
@@ -342,7 +342,7 @@ private class NetworkManagerMockURLSession {
 
 @available(iOS 15.0, *)
 @MainActor
-private class NetworkManager {
+private final class NetworkManager {
     private let session: NetworkManagerMockURLSession
 
     init(session: NetworkManagerMockURLSession) {

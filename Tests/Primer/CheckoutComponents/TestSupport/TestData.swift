@@ -1,7 +1,7 @@
 //
 //  TestData.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved.
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -638,6 +638,53 @@ enum TestData {
 
     enum ErrorKeys {
         static let test = "test"
+    }
+
+    // MARK: - URLs
+
+    enum URLs {
+        static let primerAPI = "https://api.primer.io"
+        static let example = "https://api.example.com"
+        static let invalidURL = "http://[invalid"
+    }
+
+    // MARK: - API Keys
+
+    enum APIKeys {
+        static let test = "test-api-key"
+    }
+
+    // MARK: - Headers
+
+    enum Headers {
+        static let contentTypeJSON = "application/json"
+        static let customKey = "X-Custom"
+        static let customValue = "value"
+    }
+
+    // MARK: - Query Parameters
+
+    enum QueryParams {
+        static let currency = "currency"
+        static let limit = "limit"
+        static let currencyUSD = "USD"
+        static let limit10 = "10"
+    }
+
+    // MARK: - Response Strings
+
+    enum ResponseStrings {
+        static let emptyJSON = "{}"
+        static let success = "success"
+        static let data = "data"
+        static let invalidJSON = "invalid json"
+    }
+
+    // MARK: - Request Body Keys
+
+    enum RequestBodyKeys {
+        static let key = "key"
+        static let value = "value"
     }
 }
 

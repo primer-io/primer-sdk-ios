@@ -279,10 +279,7 @@ final class APIResponseParsingTests: XCTestCase {
 
     func test_parse_largeResponse_handlesEfficiently() throws {
         // Given - large array
-        var items: [[String: Any]] = []
-        for i in 0..<1000 {
-            items.append(["id": "\(i)", "name": "Item \(i)"])
-        }
+        let items = (0..<1000).map { ["id": "\($0)", "name": "Item \($0)"] }
         let json = try JSONSerialization.data(withJSONObject: items)
 
         // When
@@ -350,7 +347,7 @@ private struct StatusResponse: Decodable {
 // MARK: - Response Parser
 
 @available(iOS 15.0, *)
-private class ResponseParser {
+private final class ResponseParser {
     private let decoder: JSONDecoder
 
     init() {

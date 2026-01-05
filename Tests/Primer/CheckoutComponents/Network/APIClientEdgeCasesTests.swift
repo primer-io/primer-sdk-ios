@@ -19,8 +19,8 @@ final class APIClientEdgeCasesTests: XCTestCase {
         try await super.setUp()
         mockNetworkManager = MockNetworkManager()
         sut = APIClient(
-            baseURL: "https://api.primer.io",
-            apiKey: "test-api-key",
+            baseURL: TestData.URLs.primerAPI,
+            apiKey: TestData.APIKeys.test,
             networkManager: mockNetworkManager
         )
     }
@@ -35,7 +35,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
     func test_request_buildsCorrectURL() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
         let _: EmptyResponse = try await sut.get(endpoint: "/payment-methods")
@@ -46,71 +46,74 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
     func test_request_withQueryParameters_appendsToURL() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
-        let _: EmptyResponse = try await sut.get(endpoint: "/payment-methods", queryParams: ["currency": "USD", "limit": "10"])
+        let _: EmptyResponse = try await sut.get(
+            endpoint: "/payment-methods",
+            queryParams: [TestData.QueryParams.currency: TestData.QueryParams.currencyUSD, TestData.QueryParams.limit: TestData.QueryParams.limit10]
+        )
 
         // Then
         let url = mockNetworkManager.lastRequestURL ?? ""
-        XCTAssertTrue(url.contains("currency=USD"))
-        XCTAssertTrue(url.contains("limit=10"))
+        XCTAssertTrue(url.contains("\(TestData.QueryParams.currency)=\(TestData.QueryParams.currencyUSD)"))
+        XCTAssertTrue(url.contains("\(TestData.QueryParams.limit)=\(TestData.QueryParams.limit10)"))
     }
 
     func test_request_withEmptyEndpoint_usesBaseURL() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
         let _: EmptyResponse = try await sut.get(endpoint: "")
 
         // Then
-        XCTAssertEqual(mockNetworkManager.lastRequestURL, "https://api.primer.io")
+        XCTAssertEqual(mockNetworkManager.lastRequestURL, TestData.URLs.primerAPI)
     }
 
     // MARK: - Header Injection
 
     func test_request_includesAuthorizationHeader() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
         let _: EmptyResponse = try await sut.get(endpoint: "/config")
 
         // Then
-        XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer test-api-key")
+        XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer \(TestData.APIKeys.test)")
     }
 
     func test_request_includesCustomHeaders() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
-        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
+        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: [TestData.Headers.customKey: TestData.Headers.customValue])
 
         // Then
-        XCTAssertEqual(mockNetworkManager.lastHeaders?["X-Custom"], "value")
+        XCTAssertEqual(mockNetworkManager.lastHeaders?[TestData.Headers.customKey], TestData.Headers.customValue)
     }
 
     func test_request_mergesCustomHeadersWithDefaultHeaders() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
-        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: ["X-Custom": "value"])
+        let _: EmptyResponse = try await sut.get(endpoint: "/config", headers: [TestData.Headers.customKey: TestData.Headers.customValue])
 
         // Then
-        XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer test-api-key")
-        XCTAssertEqual(mockNetworkManager.lastHeaders?["X-Custom"], "value")
-        XCTAssertEqual(mockNetworkManager.lastHeaders?["Content-Type"], "application/json")
+        XCTAssertEqual(mockNetworkManager.lastHeaders?["Authorization"], "Bearer \(TestData.APIKeys.test)")
+        XCTAssertEqual(mockNetworkManager.lastHeaders?[TestData.Headers.customKey], TestData.Headers.customValue)
+        XCTAssertEqual(mockNetworkManager.lastHeaders?["Content-Type"], TestData.Headers.contentTypeJSON)
     }
 
     // MARK: - POST Requests with Body
 
     func test_post_withJSONBody_sendsCorrectData() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
-        let body = ["key": "value"]
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
+        let body = [TestData.RequestBodyKeys.key: TestData.RequestBodyKeys.value]
 
         // When
         let _: EmptyResponse = try await sut.post(endpoint: "/transactions", body: body)
@@ -118,12 +121,12 @@ final class APIClientEdgeCasesTests: XCTestCase {
         // Then
         XCTAssertNotNil(mockNetworkManager.lastRequestBody)
         let json = try? JSONSerialization.jsonObject(with: mockNetworkManager.lastRequestBody!) as? [String: String]
-        XCTAssertEqual(json?["key"], "value")
+        XCTAssertEqual(json?[TestData.RequestBodyKeys.key], TestData.RequestBodyKeys.value)
     }
 
     func test_post_withEmptyBody_sendsEmptyJSON() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
         let _: EmptyResponse = try await sut.post(endpoint: "/transactions", body: [:])
@@ -137,7 +140,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
     func test_request_withInvalidAPIKey_throwsAuthError() async throws {
         // Given
         let invalidClient = APIClient(
-            baseURL: "https://api.primer.io",
+            baseURL: TestData.URLs.primerAPI,
             apiKey: "",
             networkManager: mockNetworkManager
         )
@@ -154,8 +157,8 @@ final class APIClientEdgeCasesTests: XCTestCase {
     func test_request_withMalformedURL_throwsInvalidURLError() async throws {
         // Given
         let invalidClient = APIClient(
-            baseURL: "http://[invalid",
-            apiKey: "key",
+            baseURL: TestData.URLs.invalidURL,
+            apiKey: TestData.APIKeys.test,
             networkManager: mockNetworkManager
         )
 
@@ -172,18 +175,18 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
     func test_request_withValidJSON_returnsDecodedResponse() async throws {
         // Given
-        mockNetworkManager.responseData = "{\"status\":\"success\"}".data(using: .utf8)
+        mockNetworkManager.responseData = "{\"status\":\"\(TestData.ResponseStrings.success)\"}".data(using: .utf8)
 
         // When
         let response: [String: String] = try await sut.get(endpoint: "/status")
 
         // Then
-        XCTAssertEqual(response["status"], "success")
+        XCTAssertEqual(response["status"], TestData.ResponseStrings.success)
     }
 
     func test_request_withInvalidJSON_throwsDecodingError() async throws {
         // Given
-        mockNetworkManager.responseData = "invalid json".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.invalidJSON.data(using: .utf8)
 
         // When/Then
         do {
@@ -198,7 +201,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
     func test_concurrentIdenticalRequests_deduplicates() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
         mockNetworkManager.responseDelay = 0.1
 
         // When - identical concurrent requests
@@ -217,7 +220,7 @@ final class APIClientEdgeCasesTests: XCTestCase {
 
     func test_request_withCustomTimeout_usesCustomValue() async throws {
         // Given
-        mockNetworkManager.responseData = "{}".data(using: .utf8)
+        mockNetworkManager.responseData = TestData.ResponseStrings.emptyJSON.data(using: .utf8)
 
         // When
         let _: EmptyResponse = try await sut.get(endpoint: "/config", timeout: 5.0)
@@ -242,7 +245,7 @@ private enum APIClientError: Error {
 
 @available(iOS 15.0, *)
 @MainActor
-private class MockNetworkManager {
+private final class MockNetworkManager {
     var responseData: Data?
     var responseDelay: TimeInterval = 0
     var requestCount = 0
@@ -310,7 +313,7 @@ private actor APIClient {
         timeout: TimeInterval = 30.0
     ) async throws -> T {
         var requestBody: Data?
-        if let body = body {
+        if let body {
             requestBody = try JSONSerialization.data(withJSONObject: body)
         }
 
@@ -338,7 +341,7 @@ private actor APIClient {
 
         // Build URL
         var urlString = baseURL + endpoint
-        if let queryParams = queryParams, !queryParams.isEmpty {
+        if let queryParams, !queryParams.isEmpty {
             let queryString = queryParams.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
             urlString += "?\(queryString)"
         }

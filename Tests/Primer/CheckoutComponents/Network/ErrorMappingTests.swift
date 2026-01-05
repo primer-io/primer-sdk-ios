@@ -328,7 +328,7 @@ private enum DomainError {
 // MARK: - Error Mapper
 
 @available(iOS 15.0, *)
-private class ErrorMapper {
+private final class ErrorMapper {
 
     func map(_ error: Error) -> DomainError {
         let nsError = error as NSError
@@ -343,37 +343,6 @@ private class ErrorMapper {
             return mapAPIError(apiError)
         } else {
             return .unknown(message: error.localizedDescription)
-        }
-    }
-
-    private func mapAPIError(_ error: APIError) -> DomainError {
-        switch error {
-        case let .badRequest(message):
-            return .validation(errors: [message])
-
-        case .unauthorized:
-            return .authentication(message: "Request unauthorized. Please check your credentials.")
-
-        case .forbidden:
-            return .authorization(message: "Access forbidden. You don't have permission to perform this action.")
-
-        case let .notFound(resource):
-            return .resourceNotFound(resource: resource)
-
-        case let .serverError(statusCode):
-            return .serverUnavailable(message: "Server error (\(statusCode)). Please try again later.")
-
-        case let .paymentDeclined(reason):
-            return .paymentDeclined(reason: reason)
-
-        case let .validationFailed(fields):
-            return .validation(errors: Array(fields.values))
-
-        case let .threeDSFailed(reason):
-            return .threeDSFailed(reason: reason)
-
-        case let .unknown(underlying):
-            return .unknown(message: underlying.localizedDescription)
         }
     }
 
@@ -423,6 +392,39 @@ private class ErrorMapper {
 
         case .validation, .resourceNotFound, .unknown:
             return false
+        }
+    }
+
+    // MARK: - Private Helpers
+
+    private func mapAPIError(_ error: APIError) -> DomainError {
+        switch error {
+        case let .badRequest(message):
+            return .validation(errors: [message])
+
+        case .unauthorized:
+            return .authentication(message: "Request unauthorized. Please check your credentials.")
+
+        case .forbidden:
+            return .authorization(message: "Access forbidden. You don't have permission to perform this action.")
+
+        case let .notFound(resource):
+            return .resourceNotFound(resource: resource)
+
+        case let .serverError(statusCode):
+            return .serverUnavailable(message: "Server error (\(statusCode)). Please try again later.")
+
+        case let .paymentDeclined(reason):
+            return .paymentDeclined(reason: reason)
+
+        case let .validationFailed(fields):
+            return .validation(errors: Array(fields.values))
+
+        case let .threeDSFailed(reason):
+            return .threeDSFailed(reason: reason)
+
+        case let .unknown(underlying):
+            return .unknown(message: underlying.localizedDescription)
         }
     }
 }
