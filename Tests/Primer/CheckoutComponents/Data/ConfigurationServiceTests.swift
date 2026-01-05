@@ -342,7 +342,7 @@ final class ConfigurationServiceTests: XCTestCase {
 // MARK: - Mock API Client
 
 @available(iOS 15.0, *)
-private class MockAPIClient {
+private final class MockAPIClient {
     var responseData: Data?
     var shouldFail = false
     var error: Error?
@@ -378,7 +378,7 @@ private class MockAPIClient {
 // MARK: - Mock UserDefaults
 
 @available(iOS 15.0, *)
-private class MockUserDefaults {
+private final class MockUserDefaults {
     var storedData: [String: Data] = [:]
 
     func data(forKey key: String) -> Data? {

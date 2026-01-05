@@ -358,7 +358,7 @@ private struct ValidationResult {
 // MARK: - Config Validator
 
 @available(iOS 15.0, *)
-private class ConfigValidator {
+private final class ConfigValidator {
     private let validEnvironments = ["production", "sandbox"]
     private let validCurrencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD"]
 

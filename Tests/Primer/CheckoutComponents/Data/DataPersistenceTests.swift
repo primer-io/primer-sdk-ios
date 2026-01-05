@@ -383,7 +383,7 @@ private actor MockKeyValueStorage {
 // MARK: - Persistence Manager
 
 @available(iOS 15.0, *)
-private class PersistenceManager {
+private final class PersistenceManager {
     private let storage: MockKeyValueStorage
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()

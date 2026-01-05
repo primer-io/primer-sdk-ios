@@ -363,7 +363,7 @@ fileprivate struct PaymentMethod: Equatable {
 
 @available(iOS 15.0, *)
 @MainActor
-private class MockPaymentMethodStorage {
+private final class MockPaymentMethodStorage {
     var storedMethods: [PaymentMethod] = []
     var didStore = false
     var didClear = false
@@ -390,7 +390,7 @@ private class MockPaymentMethodStorage {
 
 @available(iOS 15.0, *)
 @MainActor
-private class PaymentMethodCache {
+private final class PaymentMethodCache {
     private let storage: MockPaymentMethodStorage
     private var methods: [PaymentMethod] = []
 

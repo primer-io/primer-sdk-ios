@@ -328,7 +328,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
 
 @available(iOS 15.0, *)
 @MainActor
-private class PaymentMethodRepositoryMockNetworkService {
+private final class PaymentMethodRepositoryMockNetworkService {
     var responseData: Data?
     var shouldFail = false
     var error: Error?
@@ -357,7 +357,7 @@ private class PaymentMethodRepositoryMockNetworkService {
 // MARK: - Mock Cache
 
 @available(iOS 15.0, *)
-private class MockCache {
+private final class MockCache {
     var cachedData: Data?
     var hasCachedData = false
     var isExpired = false
@@ -388,7 +388,7 @@ private class MockCache {
 
 @available(iOS 15.0, *)
 @MainActor
-private class PaymentMethodRepository {
+private final class PaymentMethodRepository {
     private let networkService: PaymentMethodRepositoryMockNetworkService
     private let cache: MockCache
     private var inflightRequest: Task<[PaymentMethod], Error>?
