@@ -9,9 +9,6 @@ import XCTest
 
 // MARK: - Mock HeadlessRepository for Testing
 
-/// A mock implementation of HeadlessRepository for testing vault operations.
-/// This allows testing components that depend on HeadlessRepository without
-/// requiring actual network calls or SDK initialization.
 @available(iOS 15.0, *)
 actor VaultMockHeadlessRepository: HeadlessRepository {
 
