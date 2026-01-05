@@ -48,7 +48,6 @@ final class MockConfigurationService: ConfigurationService {
         captureVaultedCardCvv = false
     }
 
-    /// Creates a mock with default USD configuration
     static func withDefaultConfiguration() -> MockConfigurationService {
         let mock = MockConfigurationService()
         mock.currency = Currency(code: TestData.Currencies.usd, decimalDigits: TestData.Currencies.defaultDecimalDigits)

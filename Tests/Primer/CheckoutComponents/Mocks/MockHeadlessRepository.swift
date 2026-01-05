@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of HeadlessRepository for testing.
-/// Provides configurable return values and call tracking.
 @available(iOS 15.0, *)
 final class MockHeadlessRepository: HeadlessRepository {
 
@@ -163,12 +161,10 @@ final class MockHeadlessRepository: HeadlessRepository {
 
     // MARK: - Test Helpers
 
-    /// Emits a new set of detected networks through the stream
     func emitNetworkDetection(_ networks: [CardNetwork]) {
         networkDetectionContinuation?.yield(networks)
     }
 
-    /// Resets all call counts and captured parameters
     func reset() {
         getPaymentMethodsCallCount = 0
         processCardPaymentCallCount = 0
@@ -205,7 +201,6 @@ final class MockHeadlessRepository: HeadlessRepository {
 @available(iOS 15.0, *)
 extension MockHeadlessRepository {
 
-    /// Creates a repository pre-configured with common payment methods
     static func withDefaultPaymentMethods() -> MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentMethodsToReturn = [
@@ -225,7 +220,6 @@ extension MockHeadlessRepository {
         return repository
     }
 
-    /// Creates a repository configured to return a successful payment result
     static func withSuccessfulPayment() -> MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentResultToReturn = PaymentResult(

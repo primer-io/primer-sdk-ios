@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Centralized test data for CheckoutComponents tests.
-/// All test data is organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
 
