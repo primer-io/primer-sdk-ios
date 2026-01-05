@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for MerchantConfigCache to achieve 90% Data layer coverage.
-/// Covers cache hit/miss scenarios, TTL, and invalidation strategies.
 @available(iOS 15.0, *)
 @MainActor
 final class MerchantConfigCachingTests: XCTestCase {
@@ -24,7 +22,7 @@ final class MerchantConfigCachingTests: XCTestCase {
         sut = MerchantConfigCache(
             storage: mockStorage,
             clock: mockClock,
-            ttl: 300 // 5 minutes
+            ttl: TestData.TTL.fiveMinutes
         )
     }
 
@@ -39,25 +37,25 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_withValidCachedData_returnsCachedConfig() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "merchant-config", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.merchantConfig, timestamp: mockClock.now())
 
         // When
-        let cached = sut.get(forKey: "merchant-config")
+        let cached = sut.get(forKey: TestData.CacheKeys.merchantConfig)
 
         // Then
         XCTAssertNotNil(cached)
-        XCTAssertEqual(cached?.merchantId, "test-123")
+        XCTAssertEqual(cached?.merchantId, TestData.MerchantIds.test)
     }
 
     func test_get_withFreshCache_doesNotExpire() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "key", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.key, timestamp: mockClock.now())
 
         // When - advance time by 2 minutes (less than 5 min TTL)
-        mockClock.advance(by: 120)
-        let cached = sut.get(forKey: "key")
+        mockClock.advance(by: TestData.TTL.twoMinutes)
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
 
         // Then
         XCTAssertNotNil(cached)
@@ -65,18 +63,18 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_withMultipleKeys_returnsCorrectConfig() {
         // Given
-        let config1 = MerchantConfig(merchantId: "merchant-1", settings: [:])
-        let config2 = MerchantConfig(merchantId: "merchant-2", settings: [:])
-        mockStorage.store(config1, key: "key-1", timestamp: mockClock.now())
-        mockStorage.store(config2, key: "key-2", timestamp: mockClock.now())
+        let config1 = MerchantConfig(merchantId: TestData.MerchantIds.merchant1, settings: [:])
+        let config2 = MerchantConfig(merchantId: TestData.MerchantIds.merchant2, settings: [:])
+        mockStorage.store(config1, key: TestData.CacheKeys.key1, timestamp: mockClock.now())
+        mockStorage.store(config2, key: TestData.CacheKeys.key2, timestamp: mockClock.now())
 
         // When
-        let cached1 = sut.get(forKey: "key-1")
-        let cached2 = sut.get(forKey: "key-2")
+        let cached1 = sut.get(forKey: TestData.CacheKeys.key1)
+        let cached2 = sut.get(forKey: TestData.CacheKeys.key2)
 
         // Then
-        XCTAssertEqual(cached1?.merchantId, "merchant-1")
-        XCTAssertEqual(cached2?.merchantId, "merchant-2")
+        XCTAssertEqual(cached1?.merchantId, TestData.MerchantIds.merchant1)
+        XCTAssertEqual(cached2?.merchantId, TestData.MerchantIds.merchant2)
     }
 
     // MARK: - Cache Miss Scenarios
@@ -93,12 +91,12 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_withExpiredCache_returnsNil() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "key", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.key, timestamp: mockClock.now())
 
         // When - advance time beyond TTL (5 minutes + 1 second)
-        mockClock.advance(by: 301)
-        let cached = sut.get(forKey: "key")
+        mockClock.advance(by: TestData.TTL.justAfterExpiry)
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
 
         // Then
         XCTAssertNil(cached)
@@ -106,12 +104,12 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_withInvalidatedCache_returnsNil() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "key", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.key, timestamp: mockClock.now())
 
         // When
-        sut.invalidate(forKey: "key")
-        let cached = sut.get(forKey: "key")
+        sut.invalidate(forKey: TestData.CacheKeys.key)
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
 
         // Then
         XCTAssertNil(cached)
@@ -121,41 +119,41 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_set_storesConfigWithCurrentTimestamp() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
 
         // When
-        sut.set(config, forKey: "key")
+        sut.set(config, forKey: TestData.CacheKeys.key)
 
         // Then
-        XCTAssertTrue(mockStorage.hasEntry(forKey: "key"))
-        XCTAssertEqual(mockStorage.getTimestamp(forKey: "key"), mockClock.now())
+        XCTAssertTrue(mockStorage.hasEntry(forKey: TestData.CacheKeys.key))
+        XCTAssertEqual(mockStorage.getTimestamp(forKey: TestData.CacheKeys.key), mockClock.now())
     }
 
     func test_set_overridesPreviousValue() {
         // Given
-        let config1 = MerchantConfig(merchantId: "merchant-1", settings: [:])
-        let config2 = MerchantConfig(merchantId: "merchant-2", settings: [:])
+        let config1 = MerchantConfig(merchantId: TestData.MerchantIds.merchant1, settings: [:])
+        let config2 = MerchantConfig(merchantId: TestData.MerchantIds.merchant2, settings: [:])
 
         // When
-        sut.set(config1, forKey: "key")
-        mockClock.advance(by: 60)
-        sut.set(config2, forKey: "key")
+        sut.set(config1, forKey: TestData.CacheKeys.key)
+        mockClock.advance(by: TestData.TTL.oneMinute)
+        sut.set(config2, forKey: TestData.CacheKeys.key)
 
         // Then
-        let cached = sut.get(forKey: "key")
-        XCTAssertEqual(cached?.merchantId, "merchant-2")
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
+        XCTAssertEqual(cached?.merchantId, TestData.MerchantIds.merchant2)
     }
 
     func test_set_updatesTimestamp() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        sut.set(config, forKey: "key")
-        let firstTimestamp = mockStorage.getTimestamp(forKey: "key")
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        sut.set(config, forKey: TestData.CacheKeys.key)
+        let firstTimestamp = mockStorage.getTimestamp(forKey: TestData.CacheKeys.key)
 
         // When
-        mockClock.advance(by: 100)
-        sut.set(config, forKey: "key")
-        let secondTimestamp = mockStorage.getTimestamp(forKey: "key")
+        mockClock.advance(by: TestData.TTL.refreshInterval)
+        sut.set(config, forKey: TestData.CacheKeys.key)
+        let secondTimestamp = mockStorage.getTimestamp(forKey: TestData.CacheKeys.key)
 
         // Then
         XCTAssertNotEqual(firstTimestamp, secondTimestamp)
@@ -166,12 +164,12 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_atExactTTL_returnsNil() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "key", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.key, timestamp: mockClock.now())
 
         // When - advance to exact TTL (300 seconds)
-        mockClock.advance(by: 300)
-        let cached = sut.get(forKey: "key")
+        mockClock.advance(by: TestData.TTL.fiveMinutes)
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
 
         // Then - should expire at TTL boundary
         XCTAssertNil(cached)
@@ -179,12 +177,12 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_get_justBeforeTTL_returnsConfig() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        mockStorage.store(config, key: "key", timestamp: mockClock.now())
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        mockStorage.store(config, key: TestData.CacheKeys.key, timestamp: mockClock.now())
 
         // When - advance to just before TTL (299 seconds)
-        mockClock.advance(by: 299)
-        let cached = sut.get(forKey: "key")
+        mockClock.advance(by: TestData.TTL.justBeforeExpiry)
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
 
         // Then
         XCTAssertNotNil(cached)
@@ -195,81 +193,81 @@ final class MerchantConfigCachingTests: XCTestCase {
         let shortTTLCache = MerchantConfigCache(
             storage: mockStorage,
             clock: mockClock,
-            ttl: 60 // 1 minute
+            ttl: TestData.TTL.oneMinute
         )
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
 
         // When
-        shortTTLCache.set(config, forKey: "key")
-        mockClock.advance(by: 61) // Past 1 minute TTL
+        shortTTLCache.set(config, forKey: TestData.CacheKeys.key)
+        mockClock.advance(by: TestData.TTL.justAfterOneMinute) // Past 1 minute TTL
 
         // Then
-        XCTAssertNil(shortTTLCache.get(forKey: "key"))
+        XCTAssertNil(shortTTLCache.get(forKey: TestData.CacheKeys.key))
     }
 
     // MARK: - Cache Invalidation
 
     func test_invalidate_removesSpecificKey() {
         // Given
-        let config1 = MerchantConfig(merchantId: "merchant-1", settings: [:])
-        let config2 = MerchantConfig(merchantId: "merchant-2", settings: [:])
-        sut.set(config1, forKey: "key-1")
-        sut.set(config2, forKey: "key-2")
+        let config1 = MerchantConfig(merchantId: TestData.MerchantIds.merchant1, settings: [:])
+        let config2 = MerchantConfig(merchantId: TestData.MerchantIds.merchant2, settings: [:])
+        sut.set(config1, forKey: TestData.CacheKeys.key1)
+        sut.set(config2, forKey: TestData.CacheKeys.key2)
 
         // When
-        sut.invalidate(forKey: "key-1")
+        sut.invalidate(forKey: TestData.CacheKeys.key1)
 
         // Then
-        XCTAssertNil(sut.get(forKey: "key-1"))
-        XCTAssertNotNil(sut.get(forKey: "key-2"))
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key1))
+        XCTAssertNotNil(sut.get(forKey: TestData.CacheKeys.key2))
     }
 
     func test_invalidateAll_removesAllEntries() {
         // Given
-        let config1 = MerchantConfig(merchantId: "merchant-1", settings: [:])
-        let config2 = MerchantConfig(merchantId: "merchant-2", settings: [:])
-        sut.set(config1, forKey: "key-1")
-        sut.set(config2, forKey: "key-2")
+        let config1 = MerchantConfig(merchantId: TestData.MerchantIds.merchant1, settings: [:])
+        let config2 = MerchantConfig(merchantId: TestData.MerchantIds.merchant2, settings: [:])
+        sut.set(config1, forKey: TestData.CacheKeys.key1)
+        sut.set(config2, forKey: TestData.CacheKeys.key2)
 
         // When
         sut.invalidateAll()
 
         // Then
-        XCTAssertNil(sut.get(forKey: "key-1"))
-        XCTAssertNil(sut.get(forKey: "key-2"))
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key1))
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key2))
         XCTAssertTrue(mockStorage.isEmpty)
     }
 
     func test_invalidateExpired_removesOnlyExpiredEntries() {
         // Given
-        let config1 = MerchantConfig(merchantId: "merchant-1", settings: [:])
-        let config2 = MerchantConfig(merchantId: "merchant-2", settings: [:])
-        sut.set(config1, forKey: "key-1")
+        let config1 = MerchantConfig(merchantId: TestData.MerchantIds.merchant1, settings: [:])
+        let config2 = MerchantConfig(merchantId: TestData.MerchantIds.merchant2, settings: [:])
+        sut.set(config1, forKey: TestData.CacheKeys.key1)
 
         // Advance time and add fresh entry
-        mockClock.advance(by: 301) // key-1 is now expired
-        sut.set(config2, forKey: "key-2") // key-2 is fresh
+        mockClock.advance(by: TestData.TTL.justAfterExpiry) // key-1 is now expired
+        sut.set(config2, forKey: TestData.CacheKeys.key2) // key-2 is fresh
 
         // When
         sut.invalidateExpired()
 
         // Then
-        XCTAssertNil(sut.get(forKey: "key-1")) // Expired
-        XCTAssertNotNil(sut.get(forKey: "key-2")) // Fresh
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key1)) // Expired
+        XCTAssertNotNil(sut.get(forKey: TestData.CacheKeys.key2)) // Fresh
     }
 
     // MARK: - Concurrent Access
 
     func test_concurrentGet_returnsSameConfig() async {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        sut.set(config, forKey: "key")
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        sut.set(config, forKey: TestData.CacheKeys.key)
 
         // When - concurrent reads
         let results = await withTaskGroup(of: MerchantConfig?.self, returning: [MerchantConfig?].self) { group in
-            for _ in 0..<10 {
+            for _ in 0..<TestData.MaxEntries.concurrentOperations {
                 group.addTask {
-                    await self.sut.get(forKey: "key")
+                    await self.sut.get(forKey: TestData.CacheKeys.key)
                 }
             }
 
@@ -281,25 +279,25 @@ final class MerchantConfigCachingTests: XCTestCase {
         }
 
         // Then - all should return same config
-        XCTAssertEqual(results.count, 10)
+        XCTAssertEqual(results.count, TestData.MaxEntries.concurrentOperations)
         for result in results {
-            XCTAssertEqual(result?.merchantId, "test-123")
+            XCTAssertEqual(result?.merchantId, TestData.MerchantIds.test)
         }
     }
 
     func test_concurrentSet_lastWriteWins() async {
         // When - concurrent writes
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<10 {
+            for i in 0..<TestData.MaxEntries.concurrentOperations {
                 group.addTask {
                     let config = MerchantConfig(merchantId: "merchant-\(i)", settings: [:])
-                    await self.sut.set(config, forKey: "key")
+                    await self.sut.set(config, forKey: TestData.CacheKeys.key)
                 }
             }
         }
 
         // Then - should have one of the values (last write wins)
-        let cached = sut.get(forKey: "key")
+        let cached = sut.get(forKey: TestData.CacheKeys.key)
         XCTAssertNotNil(cached)
         XCTAssertTrue(cached?.merchantId.starts(with: "merchant-") ?? false)
     }
@@ -308,15 +306,15 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_cache_clearsDataAfterInvalidation() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        sut.set(config, forKey: "key")
-        XCTAssertNotNil(sut.get(forKey: "key"))
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        sut.set(config, forKey: TestData.CacheKeys.key)
+        XCTAssertNotNil(sut.get(forKey: TestData.CacheKeys.key))
 
         // When
-        sut.invalidate(forKey: "key")
+        sut.invalidate(forKey: TestData.CacheKeys.key)
 
         // Then - config should be cleared from cache
-        XCTAssertNil(sut.get(forKey: "key"))
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key))
     }
 
     // MARK: - Cache Size Management
@@ -326,8 +324,8 @@ final class MerchantConfigCachingTests: XCTestCase {
         let limitedCache = MerchantConfigCache(
             storage: mockStorage,
             clock: mockClock,
-            ttl: 300,
-            maxEntries: 3
+            ttl: TestData.TTL.fiveMinutes,
+            maxEntries: TestData.MaxEntries.small
         )
 
         // When - add 4 entries
@@ -338,17 +336,17 @@ final class MerchantConfigCachingTests: XCTestCase {
         }
 
         // Then - oldest (key-1) should be evicted
-        XCTAssertNil(limitedCache.get(forKey: "key-1"))
-        XCTAssertNotNil(limitedCache.get(forKey: "key-2"))
-        XCTAssertNotNil(limitedCache.get(forKey: "key-3"))
-        XCTAssertNotNil(limitedCache.get(forKey: "key-4"))
+        XCTAssertNil(limitedCache.get(forKey: TestData.CacheKeys.key1))
+        XCTAssertNotNil(limitedCache.get(forKey: TestData.CacheKeys.key2))
+        XCTAssertNotNil(limitedCache.get(forKey: TestData.CacheKeys.key3))
+        XCTAssertNotNil(limitedCache.get(forKey: TestData.CacheKeys.key4))
     }
 
     // MARK: - Key-Based Invalidation
 
     func test_invalidateByPattern_removesMatchingKeys() {
         // Given
-        let config = MerchantConfig(merchantId: "test", settings: [:])
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
         sut.set(config, forKey: "merchant:123:config")
         sut.set(config, forKey: "merchant:456:config")
         sut.set(config, forKey: "user:789:config")
@@ -366,31 +364,31 @@ final class MerchantConfigCachingTests: XCTestCase {
 
     func test_refresh_updatesTimestampWithoutChangingData() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        sut.set(config, forKey: "key")
-        let originalTimestamp = mockStorage.getTimestamp(forKey: "key")
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        sut.set(config, forKey: TestData.CacheKeys.key)
+        let originalTimestamp = mockStorage.getTimestamp(forKey: TestData.CacheKeys.key)
 
         // When
-        mockClock.advance(by: 100)
-        sut.refresh(forKey: "key")
+        mockClock.advance(by: TestData.TTL.refreshInterval)
+        sut.refresh(forKey: TestData.CacheKeys.key)
 
         // Then
-        let newTimestamp = mockStorage.getTimestamp(forKey: "key")
+        let newTimestamp = mockStorage.getTimestamp(forKey: TestData.CacheKeys.key)
         XCTAssertNotEqual(originalTimestamp, newTimestamp)
-        XCTAssertEqual(sut.get(forKey: "key")?.merchantId, "test-123")
+        XCTAssertEqual(sut.get(forKey: TestData.CacheKeys.key)?.merchantId, TestData.MerchantIds.test)
     }
 
     func test_refresh_withExpiredCache_doesNothing() {
         // Given
-        let config = MerchantConfig(merchantId: "test-123", settings: [:])
-        sut.set(config, forKey: "key")
+        let config = MerchantConfig(merchantId: TestData.MerchantIds.test, settings: [:])
+        sut.set(config, forKey: TestData.CacheKeys.key)
 
         // When - expire and try to refresh
-        mockClock.advance(by: 301)
-        sut.refresh(forKey: "key")
+        mockClock.advance(by: TestData.TTL.justAfterExpiry)
+        sut.refresh(forKey: TestData.CacheKeys.key)
 
         // Then - still expired
-        XCTAssertNil(sut.get(forKey: "key"))
+        XCTAssertNil(sut.get(forKey: TestData.CacheKeys.key))
     }
 }
 

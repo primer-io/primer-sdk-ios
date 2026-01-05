@@ -18,6 +18,111 @@ enum TestData {
         static let valid = "test-token"
         static let invalid = "invalid-token"
         static let expired = "expired-token"
+        static let token1 = "token-1"
+        static let token2 = "token-2"
+        static let token3 = "token-3"
+    }
+
+    // MARK: - Client Tokens (Alias for Tokens)
+
+    typealias ClientTokens = Tokens
+
+    // MARK: - Merchant IDs
+
+    enum MerchantIds {
+        static let valid = "merchant-123"
+        static let alternate = "merchant-456"
+        static let test = "test-123"
+        static let merchant1 = "merchant-1"
+        static let merchant2 = "merchant-2"
+        static let defaultId = "default"
+    }
+
+    // MARK: - API Keys
+
+    enum APIKeys {
+        static let valid = "api-key-456"
+        static let sandbox = "pk_sandbox_test123"
+        static let live = "pk_live_abc123def456"
+        static let invalidFormat = "invalid key with spaces"
+    }
+
+    // MARK: - Cache Keys
+
+    enum CacheKeys {
+        static let configuration = "configuration"
+        static let payment = "payment"
+        static let merchantConfig = "merchant-config"
+        static let key = "key"
+        static let key1 = "key-1"
+        static let key2 = "key-2"
+        static let key3 = "key-3"
+        static let key4 = "key-4"
+        static let legacy = "legacy"
+        static let current = "current"
+        static let complex = "complex"
+        static let expiring = "expiring"
+        static let large = "large"
+        static let corrupt = "corrupt"
+    }
+
+    // MARK: - Environments
+
+    enum Environments {
+        static let production = "production"
+        static let sandbox = "sandbox"
+        static let invalid = "invalid-env"
+    }
+
+    // MARK: - Delays
+
+    enum Delays {
+        static let short: TimeInterval = 0.05
+        static let medium: TimeInterval = 0.1
+        static let expiration: TimeInterval = 0.1
+        static let expirationWait: UInt64 = 200_000_000  // 200ms in nanoseconds
+    }
+
+    // MARK: - TTL (Time To Live)
+
+    enum TTL {
+        static let fiveMinutes: TimeInterval = 300
+        static let oneMinute: TimeInterval = 60
+        static let justBeforeExpiry: TimeInterval = 299
+        static let justAfterExpiry: TimeInterval = 301
+        static let justAfterOneMinute: TimeInterval = 61
+        static let twoMinutes: TimeInterval = 120
+        static let refreshInterval: TimeInterval = 100
+    }
+
+    // MARK: - IDs
+
+    enum Ids {
+        static let payment = "123"
+        static let payment1 = "1"
+        static let payment2 = "2"
+        static let payment3 = "3"
+        static let version1 = "v1"
+        static let version2 = "v2"
+        static let version3 = "v3"
+        static let large = "large"
+    }
+
+    // MARK: - Max Entries
+
+    enum MaxEntries {
+        static let small = 3
+        static let concurrentOperations = 10
+        static let concurrentUpdates = 5
+    }
+
+    // MARK: - Data Sizes
+
+    enum DataSizes {
+        static let maxDataSize = 5_000_000  // 5MB
+        static let tooLargeSize = 10_000_000  // 10MB
+        static let largeArrayCount = 10000
+        static let metadataMaxLength = 1000
     }
 
     // MARK: - Card Numbers

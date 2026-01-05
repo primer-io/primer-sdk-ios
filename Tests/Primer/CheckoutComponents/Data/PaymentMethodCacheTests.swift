@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for PaymentMethodCache to achieve 90% Data layer coverage.
-/// Covers payment method-specific caching, filtering, and updates.
 @available(iOS 15.0, *)
 @MainActor
 final class PaymentMethodCacheTests: XCTestCase {
@@ -191,7 +189,7 @@ final class PaymentMethodCacheTests: XCTestCase {
 
         // When - concurrent reads
         let results = await withTaskGroup(of: [PaymentMethod].self, returning: [[PaymentMethod]].self) { group in
-            for _ in 0..<10 {
+            for _ in 0..<TestData.MaxEntries.concurrentOperations {
                 group.addTask { @MainActor in
                     self.sut.getCachedPaymentMethods()
                 }
@@ -216,7 +214,7 @@ final class PaymentMethodCacheTests: XCTestCase {
 
         // When - concurrent updates
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<5 {
+            for i in 0..<TestData.MaxEntries.concurrentUpdates {
                 group.addTask { @MainActor in
                     var method = methods[0]
                     method.isEnabled = i % 2 == 0

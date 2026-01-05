@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for PaymentMethodRepository to achieve 90% Data layer coverage.
-/// Covers repository pattern edge cases, caching, and error handling.
 @available(iOS 15.0, *)
 @MainActor
 final class PaymentMethodRepositoryTests: XCTestCase {
@@ -174,7 +172,7 @@ final class PaymentMethodRepositoryTests: XCTestCase {
     func test_fetchPaymentMethods_concurrentCalls_deduplicatesRequests() async throws {
         // Given
         mockNetworkService.responseData = TestData.APIResponses.validPaymentMethods.data(using: .utf8)
-        mockNetworkService.responseDelay = 0.1 // Simulate network delay
+        mockNetworkService.responseDelay = TestData.Delays.medium // Simulate network delay
 
         // When - concurrent calls
         async let methods1 = sut.fetchPaymentMethods()

@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for configuration validation to achieve 90% Data layer coverage.
-/// Covers validation rules, constraints, and error reporting.
 @available(iOS 15.0, *)
 @MainActor
 final class ConfigurationValidationTests: XCTestCase {
@@ -30,9 +28,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withAllRequiredFields_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -47,8 +45,8 @@ final class ConfigurationValidationTests: XCTestCase {
         // Given
         let config = CheckoutConfig(
             merchantId: "",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789"
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -62,9 +60,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withMissingAPIKey_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
+            merchantId: TestData.MerchantIds.valid,
             apiKey: "",
-            clientToken: "client-token-789"
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -78,8 +76,8 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withMissingClientToken_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
             clientToken: ""
         )
 
@@ -96,9 +94,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withInvalidAPIKeyFormat_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "invalid key with spaces",
-            clientToken: "client-token-789"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.invalidFormat,
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -112,9 +110,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withValidAPIKeyFormat_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "pk_live_abc123def456",
-            clientToken: "client-token-789"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.live,
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -129,10 +127,10 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withValidEnvironment_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
-            environment: "production"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
+            environment: TestData.Environments.production
         )
 
         // When
@@ -145,10 +143,10 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withInvalidEnvironment_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
-            environment: "invalid-env"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
+            environment: TestData.Environments.invalid
         )
 
         // When
@@ -164,9 +162,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withNegativeAmount_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
             amount: -100
         )
 
@@ -181,10 +179,10 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withZeroAmount_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
-            amount: 0
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
+            amount: TestData.Amounts.zero
         )
 
         // When
@@ -197,9 +195,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withPositiveAmount_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
             amount: TestData.Amounts.standard
         )
 
@@ -215,9 +213,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withValidCurrency_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
             currency: TestData.Currencies.usd
         )
 
@@ -231,9 +229,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withInvalidCurrencyCode_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
             currency: "INVALID"
         )
 
@@ -270,9 +268,9 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withMissingOptionalFields_passes() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid
         )
 
         // When
@@ -285,10 +283,10 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withInvalidOptionalField_fails() throws {
         // Given
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "api-key-456",
-            clientToken: "client-token-789",
-            metadata: ["invalid": String(repeating: "x", count: 10000)] // Too long
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.valid,
+            clientToken: TestData.Tokens.valid,
+            metadata: ["invalid": String(repeating: "x", count: TestData.DataSizes.largeArrayCount)] // Too long
         )
 
         // When
@@ -304,10 +302,10 @@ final class ConfigurationValidationTests: XCTestCase {
     func test_validate_withMismatchedEnvironmentAndAPIKey_fails() throws {
         // Given - production environment with sandbox API key
         let config = CheckoutConfig(
-            merchantId: "merchant-123",
-            apiKey: "pk_sandbox_test123",
-            clientToken: "client-token-789",
-            environment: "production"
+            merchantId: TestData.MerchantIds.valid,
+            apiKey: TestData.APIKeys.sandbox,
+            clientToken: TestData.Tokens.valid,
+            environment: TestData.Environments.production
         )
 
         // When
@@ -359,8 +357,8 @@ private struct ValidationResult {
 
 @available(iOS 15.0, *)
 private final class ConfigValidator {
-    private let validEnvironments = ["production", "sandbox"]
-    private let validCurrencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD"]
+    private let validEnvironments = [TestData.Environments.production, TestData.Environments.sandbox]
+    private let validCurrencies = [TestData.Currencies.usd, TestData.Currencies.eur, TestData.Currencies.gbp, TestData.Currencies.jpy, "CAD", "AUD"]
 
     func validate(_ config: CheckoutConfig) -> ValidationResult {
         var errors: [String] = []
@@ -390,7 +388,7 @@ private final class ConfigValidator {
             }
 
             // Cross-field validation
-            if environment == "production", config.apiKey.contains("sandbox") {
+            if environment == TestData.Environments.production, config.apiKey.contains("sandbox") {
                 errors.append("Production environment requires production apiKey")
             }
         }
@@ -412,7 +410,7 @@ private final class ConfigValidator {
         // Metadata validation
         if let metadata = config.metadata {
             for (_, value) in metadata {
-                if value.count > 1000 {
+                if value.count > TestData.DataSizes.metadataMaxLength {
                     errors.append("metadata values must be less than 1000 characters")
                     break
                 }

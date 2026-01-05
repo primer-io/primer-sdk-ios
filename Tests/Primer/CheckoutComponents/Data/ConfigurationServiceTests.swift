@@ -7,8 +7,6 @@
 import XCTest
 @testable import PrimerSDK
 
-/// Tests for ConfigurationService to achieve 90% Data layer coverage.
-/// Covers configuration loading, validation, and merging.
 @available(iOS 15.0, *)
 @MainActor
 final class ConfigurationServiceTests: XCTestCase {
@@ -41,7 +39,7 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
 
         // When
-        let config = try await sut.loadConfiguration(clientToken: "test-token")
+        let config = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         // Then
         XCTAssertNotNil(config)
@@ -53,18 +51,18 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
 
         // When
-        _ = try await sut.loadConfiguration(clientToken: "test-token")
+        _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         // Then
-        XCTAssertNotNil(mockDefaults.storedData["configuration"])
+        XCTAssertNotNil(mockDefaults.storedData[TestData.CacheKeys.configuration])
     }
 
     func test_loadConfiguration_withCachedData_returnsCachedConfig() async throws {
         // Given
-        mockDefaults.storedData["configuration"] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
+        mockDefaults.storedData[TestData.CacheKeys.configuration] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
 
         // When
-        let config = try await sut.loadConfiguration(clientToken: "test-token", useCache: true)
+        let config = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid, useCache: true)
 
         // Then
         XCTAssertNotNil(config)
@@ -93,7 +91,7 @@ final class ConfigurationServiceTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.loadConfiguration(clientToken: "test-token")
+            _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
             XCTFail("Expected parsing error")
         } catch {
             // Expected
@@ -104,7 +102,7 @@ final class ConfigurationServiceTests: XCTestCase {
         // Given - Configuration missing required fields
         let invalidConfig = Configuration(
             merchantId: nil, // Missing required field
-            environment: "production"
+            environment: TestData.Environments.production
         )
 
         // When/Then
@@ -119,8 +117,8 @@ final class ConfigurationServiceTests: XCTestCase {
     func test_validateConfiguration_withInvalidEnvironment_throwsError() async throws {
         // Given
         let invalidConfig = Configuration(
-            merchantId: "merchant-123",
-            environment: "invalid-env"
+            merchantId: TestData.MerchantIds.valid,
+            environment: TestData.Environments.invalid
         )
 
         // When/Then
@@ -137,8 +135,8 @@ final class ConfigurationServiceTests: XCTestCase {
     func test_mergeConfigurations_localOverridesRemote() async throws {
         // Given
         let remoteConfig = Configuration(
-            merchantId: "merchant-123",
-            environment: "production",
+            merchantId: TestData.MerchantIds.valid,
+            environment: TestData.Environments.production,
             analyticsEnabled: true
         )
         let localConfig = Configuration(
@@ -151,16 +149,16 @@ final class ConfigurationServiceTests: XCTestCase {
         let merged = await sut.merge(remote: remoteConfig, local: localConfig)
 
         // Then
-        XCTAssertEqual(merged.merchantId, "merchant-123") // From remote
-        XCTAssertEqual(merged.environment, "production") // From remote
+        XCTAssertEqual(merged.merchantId, TestData.MerchantIds.valid) // From remote
+        XCTAssertEqual(merged.environment, TestData.Environments.production) // From remote
         XCTAssertEqual(merged.analyticsEnabled, false) // Local override
     }
 
     func test_mergeConfigurations_withNilLocalValues_usesRemoteDefaults() async throws {
         // Given
         let remoteConfig = Configuration(
-            merchantId: "merchant-123",
-            environment: "production",
+            merchantId: TestData.MerchantIds.valid,
+            environment: TestData.Environments.production,
             analyticsEnabled: true
         )
         let localConfig = Configuration(
@@ -173,8 +171,8 @@ final class ConfigurationServiceTests: XCTestCase {
         let merged = await sut.merge(remote: remoteConfig, local: localConfig)
 
         // Then
-        XCTAssertEqual(merged.merchantId, "merchant-123")
-        XCTAssertEqual(merged.environment, "production")
+        XCTAssertEqual(merged.merchantId, TestData.MerchantIds.valid)
+        XCTAssertEqual(merged.environment, TestData.Environments.production)
         XCTAssertEqual(merged.analyticsEnabled, true)
     }
 
@@ -182,23 +180,23 @@ final class ConfigurationServiceTests: XCTestCase {
 
     func test_clearCache_removesCachedConfiguration() async throws {
         // Given
-        mockDefaults.storedData["configuration"] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
+        mockDefaults.storedData[TestData.CacheKeys.configuration] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
 
         // When
         await sut.clearCache()
 
         // Then
-        XCTAssertNil(mockDefaults.storedData["configuration"])
+        XCTAssertNil(mockDefaults.storedData[TestData.CacheKeys.configuration])
     }
 
     func test_loadConfiguration_afterCacheCleared_fetchesFromAPI() async throws {
         // Given
-        mockDefaults.storedData["configuration"] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
+        mockDefaults.storedData[TestData.CacheKeys.configuration] = TestData.APIResponses.merchantConfig.data(using: .utf8)!
         await sut.clearCache()
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
 
         // When
-        _ = try await sut.loadConfiguration(clientToken: "test-token")
+        _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         // Then
         XCTAssertEqual(mockAPIClient.requestCount, 1)
@@ -209,12 +207,12 @@ final class ConfigurationServiceTests: XCTestCase {
     func test_loadConfiguration_concurrentCalls_deduplicatesRequests() async throws {
         // Given
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
-        mockAPIClient.responseDelay = 0.1
+        mockAPIClient.responseDelay = TestData.Delays.medium
 
         // When - concurrent calls with same token
-        async let config1 = sut.loadConfiguration(clientToken: "test-token")
-        async let config2 = sut.loadConfiguration(clientToken: "test-token")
-        async let config3 = sut.loadConfiguration(clientToken: "test-token")
+        async let config1 = sut.loadConfiguration(clientToken: TestData.Tokens.valid)
+        async let config2 = sut.loadConfiguration(clientToken: TestData.Tokens.valid)
+        async let config3 = sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         let (result1, result2, result3) = try await (config1, config2, config3)
 
@@ -228,12 +226,12 @@ final class ConfigurationServiceTests: XCTestCase {
     func test_loadConfiguration_concurrentCallsWithDifferentTokens_makesMultipleRequests() async throws {
         // Given
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
-        mockAPIClient.responseDelay = 0.05
+        mockAPIClient.responseDelay = TestData.Delays.short
 
         // When - concurrent calls with different tokens
-        async let config1 = sut.loadConfiguration(clientToken: "token-1")
-        async let config2 = sut.loadConfiguration(clientToken: "token-2")
-        async let config3 = sut.loadConfiguration(clientToken: "token-3")
+        async let config1 = sut.loadConfiguration(clientToken: TestData.Tokens.token1)
+        async let config2 = sut.loadConfiguration(clientToken: TestData.Tokens.token2)
+        async let config3 = sut.loadConfiguration(clientToken: TestData.Tokens.token3)
 
         let (result1, result2, result3) = try await (config1, config2, config3)
 
@@ -252,7 +250,7 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.error = TestData.Errors.networkTimeout
 
         do {
-            _ = try await sut.loadConfiguration(clientToken: "test-token")
+            _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
             XCTFail("Expected error")
         } catch {
             // Expected
@@ -261,7 +259,7 @@ final class ConfigurationServiceTests: XCTestCase {
         // When - second call succeeds
         mockAPIClient.shouldFail = false
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
-        let config = try await sut.loadConfiguration(clientToken: "test-token")
+        let config = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         // Then
         XCTAssertNotNil(config)
@@ -275,7 +273,7 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
 
         // When
-        _ = try await sut.loadConfiguration(clientToken: "test-token", environment: .production)
+        _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid, environment: .production)
 
         // Then
         XCTAssertTrue(mockAPIClient.lastRequestURL?.contains("api.primer.io") ?? false)
@@ -286,7 +284,7 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
 
         // When
-        _ = try await sut.loadConfiguration(clientToken: "test-token", environment: .sandbox)
+        _ = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid, environment: .sandbox)
 
         // Then
         XCTAssertTrue(mockAPIClient.lastRequestURL?.contains("api.sandbox.primer.io") ?? false)
@@ -297,7 +295,7 @@ final class ConfigurationServiceTests: XCTestCase {
     func test_updateConfiguration_withNewValues_mergesAndSaves() async throws {
         // Given
         mockAPIClient.responseData = TestData.APIResponses.merchantConfig.data(using: .utf8)
-        let originalConfig = try await sut.loadConfiguration(clientToken: "test-token")
+        let originalConfig = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid)
 
         // When
         let updates = Configuration(
@@ -310,7 +308,7 @@ final class ConfigurationServiceTests: XCTestCase {
         // Then
         XCTAssertEqual(updatedConfig.merchantId, originalConfig.merchantId)
         XCTAssertEqual(updatedConfig.analyticsEnabled, false)
-        XCTAssertNotNil(mockDefaults.storedData["configuration"])
+        XCTAssertNotNil(mockDefaults.storedData[TestData.CacheKeys.configuration])
     }
 
     // MARK: - Default Configuration
@@ -321,11 +319,11 @@ final class ConfigurationServiceTests: XCTestCase {
         mockAPIClient.error = TestData.Errors.networkTimeout
 
         // When
-        let config = try await sut.loadConfiguration(clientToken: "test-token", useDefault: true)
+        let config = try await sut.loadConfiguration(clientToken: TestData.Tokens.valid, useDefault: true)
 
         // Then
         XCTAssertNotNil(config)
-        XCTAssertEqual(config.environment, "sandbox") // Default environment
+        XCTAssertEqual(config.environment, TestData.Environments.sandbox) // Default environment
     }
 
     func test_defaultConfiguration_hasValidDefaults() {
@@ -333,7 +331,7 @@ final class ConfigurationServiceTests: XCTestCase {
         let defaultConfig = sut.defaultConfiguration
 
         // Then
-        XCTAssertEqual(defaultConfig.environment, "sandbox")
+        XCTAssertEqual(defaultConfig.environment, TestData.Environments.sandbox)
         XCTAssertEqual(defaultConfig.analyticsEnabled, false)
         XCTAssertNotNil(defaultConfig.theme)
     }
@@ -430,8 +428,8 @@ private actor ConfigurationService {
     private var inflightRequests: [String: Task<Configuration, Error>] = [:]
 
     nonisolated let defaultConfiguration = Configuration(
-        merchantId: "default",
-        environment: "sandbox",
+        merchantId: TestData.MerchantIds.defaultId,
+        environment: TestData.Environments.sandbox,
         analyticsEnabled: false,
         theme: "default"
     )
@@ -448,7 +446,7 @@ private actor ConfigurationService {
         useDefault: Bool = false
     ) async throws -> Configuration {
         // Check cache first
-        if useCache, let cachedData = userDefaults.data(forKey: "configuration") {
+        if useCache, let cachedData = userDefaults.data(forKey: TestData.CacheKeys.configuration) {
             return try parseConfiguration(from: cachedData)
         }
 
@@ -464,7 +462,7 @@ private actor ConfigurationService {
                 let config = try parseConfiguration(from: data)
 
                 // Cache the result
-                userDefaults.set(data, forKey: "configuration")
+                userDefaults.set(data, forKey: TestData.CacheKeys.configuration)
 
                 return config
             } catch {
@@ -486,7 +484,9 @@ private actor ConfigurationService {
             throw ConfigurationError.missingRequiredField
         }
 
-        if let env = configuration.environment, env != "production", env != "sandbox" {
+        if let env = configuration.environment,
+           env != TestData.Environments.production,
+           env != TestData.Environments.sandbox {
             throw ConfigurationError.invalidEnvironment
         }
     }
@@ -502,19 +502,19 @@ private actor ConfigurationService {
 
     func updateConfiguration(_ updates: Configuration) async throws -> Configuration {
         // Get current config from cache or use default
-        let currentData = userDefaults.data(forKey: "configuration")
+        let currentData = userDefaults.data(forKey: TestData.CacheKeys.configuration)
         let current = currentData != nil ? try parseConfiguration(from: currentData!) : defaultConfiguration
 
         // Merge and save
         let merged = merge(remote: current, local: updates)
         let data = try encodeConfiguration(merged)
-        userDefaults.set(data, forKey: "configuration")
+        userDefaults.set(data, forKey: TestData.CacheKeys.configuration)
 
         return merged
     }
 
     func clearCache() async {
-        userDefaults.removeObject(forKey: "configuration")
+        userDefaults.removeObject(forKey: TestData.CacheKeys.configuration)
     }
 
     private func parseConfiguration(from data: Data) throws -> Configuration {
@@ -534,7 +534,7 @@ private actor ConfigurationService {
     private func encodeConfiguration(_ config: Configuration) throws -> Data {
         let dict: [String: Any] = [
             "merchantId": config.merchantId ?? "",
-            "environment": config.environment ?? "sandbox",
+            "environment": config.environment ?? TestData.Environments.sandbox,
             "analyticsEnabled": config.analyticsEnabled ?? false,
             "theme": config.theme ?? "default"
         ]
