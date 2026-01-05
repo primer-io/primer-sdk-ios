@@ -9,11 +9,6 @@ import Foundation
 
 @available(iOS 15.0, *)
 final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
-    // MARK: - Call Tracking
-
-    private(set) var selectPaymentMethodCalls: [(type: String, network: String?)] = []
-    private(set) var unselectPaymentMethodCallCount = 0
-    private(set) var dispatchActionsCalls: [[ClientSession.Action]] = []
 
     // MARK: - Error Configuration
 
@@ -21,30 +16,21 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
     var unselectPaymentMethodError: Error?
     var dispatchActionsError: Error?
 
-    // MARK: - Protocol Implementation
+    // MARK: - Call Tracking
 
-    func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {
-        selectPaymentMethodCalls.append((paymentMethodType, cardNetwork))
-        if let error = selectPaymentMethodError {
-            throw error
-        }
-    }
-
-    func unselectPaymentMethodIfNeeded() async throws {
-        unselectPaymentMethodCallCount += 1
-        if let error = unselectPaymentMethodError {
-            throw error
-        }
-    }
-
-    func dispatch(actions: [ClientSession.Action]) async throws {
-        dispatchActionsCalls.append(actions)
-        if let error = dispatchActionsError {
-            throw error
-        }
-    }
+    private(set) var selectPaymentMethodCalls: [(type: String, network: String?)] = []
+    private(set) var unselectPaymentMethodCallCount = 0
+    private(set) var dispatchActionsCalls: [[ClientSession.Action]] = []
 
     // MARK: - Test Helpers
+
+    var lastSelectPaymentMethodCall: (type: String, network: String?)? {
+        selectPaymentMethodCalls.last
+    }
+
+    var lastDispatchActionsCall: [ClientSession.Action]? {
+        dispatchActionsCalls.last
+    }
 
     func reset() {
         selectPaymentMethodCalls = []
@@ -55,11 +41,26 @@ final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
         dispatchActionsError = nil
     }
 
-    var lastSelectPaymentMethodCall: (type: String, network: String?)? {
-        selectPaymentMethodCalls.last
+    // MARK: - Protocol Implementation
+
+    func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) async throws {
+        selectPaymentMethodCalls.append((paymentMethodType, cardNetwork))
+        if let selectPaymentMethodError {
+            throw selectPaymentMethodError
+        }
     }
 
-    var lastDispatchActionsCall: [ClientSession.Action]? {
-        dispatchActionsCalls.last
+    func unselectPaymentMethodIfNeeded() async throws {
+        unselectPaymentMethodCallCount += 1
+        if let unselectPaymentMethodError {
+            throw unselectPaymentMethodError
+        }
+    }
+
+    func dispatch(actions: [ClientSession.Action]) async throws {
+        dispatchActionsCalls.append(actions)
+        if let dispatchActionsError {
+            throw dispatchActionsError
+        }
     }
 }

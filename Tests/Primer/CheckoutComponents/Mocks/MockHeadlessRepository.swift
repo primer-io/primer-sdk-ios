@@ -59,8 +59,8 @@ final class MockHeadlessRepository: HeadlessRepository {
 
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
         getPaymentMethodsCallCount += 1
-        if let error = getPaymentMethodsError {
-            throw error
+        if let getPaymentMethodsError {
+            throw getPaymentMethodsError
         }
         return paymentMethodsToReturn
     }
@@ -83,8 +83,8 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastCardholderName = cardholderName
         lastSelectedNetwork = selectedNetwork
 
-        if let error = processCardPaymentError {
-            throw error
+        if let processCardPaymentError {
+            throw processCardPaymentError
         }
 
         guard let result = paymentResultToReturn else {
@@ -97,16 +97,15 @@ final class MockHeadlessRepository: HeadlessRepository {
         setBillingAddressCallCount += 1
         lastBillingAddress = billingAddress
 
-        if let error = setBillingAddressError {
-            throw error
+        if let setBillingAddressError {
+            throw setBillingAddressError
         }
     }
 
     func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
-        AsyncStream { continuation in
-            self.networkDetectionContinuation = continuation
-            // Emit initial value
-            continuation.yield(self.networkDetectionToReturn)
+        AsyncStream { [self] continuation in
+            networkDetectionContinuation = continuation
+            continuation.yield(networkDetectionToReturn)
         }
     }
 
@@ -122,8 +121,8 @@ final class MockHeadlessRepository: HeadlessRepository {
 
     func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] {
         fetchVaultedPaymentMethodsCallCount += 1
-        if let error = fetchVaultedPaymentMethodsError {
-            throw error
+        if let fetchVaultedPaymentMethodsError {
+            throw fetchVaultedPaymentMethodsError
         }
         return vaultedPaymentMethodsToReturn
     }
@@ -140,8 +139,8 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastVaultedPaymentMethodType = paymentMethodType
         lastVaultedPaymentAdditionalData = additionalData
 
-        if let error = processVaultedPaymentError {
-            throw error
+        if let processVaultedPaymentError {
+            throw processVaultedPaymentError
         }
 
         guard let result = paymentResultToReturn else {
@@ -154,8 +153,8 @@ final class MockHeadlessRepository: HeadlessRepository {
         deleteVaultedPaymentMethodCallCount += 1
         lastDeletedVaultedPaymentMethodId = id
 
-        if let error = deleteVaultedPaymentMethodError {
-            throw error
+        if let deleteVaultedPaymentMethodError {
+            throw deleteVaultedPaymentMethodError
         }
     }
 
@@ -205,15 +204,15 @@ extension MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentMethodsToReturn = [
             InternalPaymentMethod(
-                id: "card-1",
-                type: "PAYMENT_CARD",
-                name: "Credit Card",
+                id: TestData.PaymentMethodIds.card,
+                type: TestData.PaymentMethodTypes.card,
+                name: TestData.PaymentMethodNames.card,
                 isEnabled: true
             ),
             InternalPaymentMethod(
-                id: "paypal-1",
-                type: "PAYPAL",
-                name: "PayPal",
+                id: TestData.PaymentMethodIds.paypal,
+                type: TestData.PaymentMethodTypes.paypal,
+                name: TestData.PaymentMethodNames.paypal,
                 isEnabled: true
             )
         ]
@@ -223,7 +222,7 @@ extension MockHeadlessRepository {
     static func withSuccessfulPayment() -> MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentResultToReturn = PaymentResult(
-            paymentId: "test-payment-id",
+            paymentId: TestData.PaymentIds.success,
             status: .success
         )
         return repository
