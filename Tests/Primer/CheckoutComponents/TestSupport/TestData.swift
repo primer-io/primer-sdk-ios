@@ -700,16 +700,11 @@ enum TestError: Error, Equatable {
 
     var localizedDescription: String {
         switch self {
-        case .timeout:
-            return "Operation timed out"
-        case .cancelled:
-            return "Operation was cancelled"
-        case let .validationFailed(message):
-            return "Validation failed: \(message)"
-        case .networkFailure:
-            return "Network request failed"
-        case .unknown:
-            return "An unknown error occurred"
+        case .timeout: "Operation timed out"
+        case .cancelled: "Operation was cancelled"
+        case let .validationFailed(message): "Validation failed: \(message)"
+        case .networkFailure: "Network request failed"
+        case .unknown: "An unknown error occurred"
         }
     }
 }
