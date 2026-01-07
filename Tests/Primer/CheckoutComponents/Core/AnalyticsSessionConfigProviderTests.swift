@@ -1,13 +1,14 @@
 //
 //  AnalyticsSessionConfigProviderTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
 import Foundation
 import XCTest
 
+@available(iOS 15.0, *)
 final class AnalyticsSessionConfigProviderTests: XCTestCase {
 
     private let tokenWithIds = AnalyticsTestTokens.withIds
@@ -27,15 +28,15 @@ final class AnalyticsSessionConfigProviderTests: XCTestCase {
 
         // When
         let result = module.makeAnalyticsSessionConfig(
-            checkoutSessionId: "checkout-session",
+            checkoutSessionId: TestData.Analytics.checkoutSessionId,
             clientToken: tokenWithIds,
-            sdkVersion: "0.0.1"
+            sdkVersion: TestData.Analytics.sdkVersion
         )
 
         // Then
         XCTAssertNotNil(result)
-        XCTAssertEqual(result?.clientSessionId, "token-session-id")
-        XCTAssertEqual(result?.primerAccountId, "token-account-id")
+        XCTAssertEqual(result?.clientSessionId, TestData.Analytics.tokenSessionId)
+        XCTAssertEqual(result?.primerAccountId, TestData.Analytics.tokenAccountId)
         XCTAssertEqual(result?.environment, .sandbox)
     }
 
@@ -47,9 +48,9 @@ final class AnalyticsSessionConfigProviderTests: XCTestCase {
 
         // When
         let result = module.makeAnalyticsSessionConfig(
-            checkoutSessionId: "checkout-session",
+            checkoutSessionId: TestData.Analytics.checkoutSessionId,
             clientToken: tokenWithoutIds,
-            sdkVersion: "0.0.1"
+            sdkVersion: TestData.Analytics.sdkVersion
         )
 
         // Then
@@ -128,16 +129,17 @@ private final class StubConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
 }
 
+@available(iOS 15.0, *)
 private enum AnalyticsTestTokens {
 
     static let withIds = JWTTestTokenFactory.makeJWT(payload: [
-        "env": "SANDBOX",
-        "clientSessionId": "token-session-id",
-        "primerAccountId": "token-account-id"
+        "env": TestData.JWT.sandboxEnv,
+        "clientSessionId": TestData.Analytics.tokenSessionId,
+        "primerAccountId": TestData.Analytics.tokenAccountId
     ])
 
     static let withoutIds = JWTTestTokenFactory.makeJWT(payload: [
-        "env": "PRODUCTION"
+        "env": TestData.JWT.productionEnv
     ])
 }
 
@@ -162,7 +164,7 @@ private enum JWTTestTokenFactory {
     }
 
     private static func base64URLEncode(_ data: Data) -> String {
-        return data.base64EncodedString()
+        data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")

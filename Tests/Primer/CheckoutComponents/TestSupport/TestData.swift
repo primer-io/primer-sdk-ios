@@ -607,6 +607,56 @@ enum TestData {
         static let discover = CardNetwork.discover
         static let unknown = CardNetwork.unknown
     }
+
+    // MARK: - Dependency Injection
+
+    enum DI {
+        static let defaultValue = "default"
+        static let fallbackValue = "fallback"
+        static let resolvedValue = "resolved_value"
+        static let envResolvedValue = "env_resolved"
+        static let resolveTestValue = "resolve_test"
+        static let defaultIdentifier = "default"
+        static let fallbackIdentifier = "fallback"
+        static let fromContainerIdentifier = "from-container"
+        static let cachedPrefix = "cached-"
+        static let protocolFallbackValue = "protocol_fallback"
+        static let observableDefaultValue = "observable_default"
+        static let envFallbackValue = "env_fallback"
+        static let fallbackValueAlternate = "fallback_value"
+    }
+
+    // MARK: - Settings
+
+    enum Settings {
+        static let testSubscriptionDescription = "Test Subscription"
+        static let testUrlScheme = "testapp://payment"
+        static let testUrlSchemePrefix = "testapp"
+    }
+
+    // MARK: - Locale
+
+    enum Locale {
+        static let frenchLanguageCode = "fr"
+        static let franceRegionCode = "FR"
+        static let frenchFranceLocaleCode = "fr-FR"
+    }
+
+    // MARK: - Analytics
+
+    enum Analytics {
+        static let checkoutSessionId = "checkout-session"
+        static let sdkVersion = "0.0.1"
+        static let tokenSessionId = "token-session-id"
+        static let tokenAccountId = "token-account-id"
+    }
+
+    // MARK: - JWT
+
+    enum JWT {
+        static let sandboxEnv = "SANDBOX"
+        static let productionEnv = "PRODUCTION"
+    }
 }
 
 // MARK: - Test Error Type
