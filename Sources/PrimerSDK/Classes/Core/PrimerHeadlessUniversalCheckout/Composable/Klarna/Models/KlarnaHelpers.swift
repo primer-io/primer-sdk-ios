@@ -1,10 +1,11 @@
 //
 //  KlarnaHelpers.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
@@ -35,7 +36,7 @@ struct KlarnaHelpers {
         with paymentMethodConfigId: String,
         sessionId: String
     ) -> Request.Body.Klarna.FinalizePaymentSession {
-        return Request.Body.Klarna.FinalizePaymentSession(
+        Request.Body.Klarna.FinalizePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId)
     }
@@ -48,7 +49,7 @@ struct KlarnaHelpers {
         authorizationToken: String,
         recurringPaymentDescription: String?
     ) -> Request.Body.Klarna.CreateCustomerToken {
-        return Request.Body.Klarna.CreateCustomerToken(
+        Request.Body.Klarna.CreateCustomerToken(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,

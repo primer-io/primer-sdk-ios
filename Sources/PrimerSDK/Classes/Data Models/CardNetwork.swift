@@ -1,7 +1,7 @@
 //
 //  CardNetwork.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable type_body_length
@@ -9,19 +9,7 @@
 import Foundation
 import PassKit
 import UIKit
-
-struct CardNetworkValidation {
-    var niceType: String
-    var patterns: [[Int]]
-    var gaps: [Int]
-    var lengths: [Int]
-    var code: CardNetworkCode
-}
-
-struct CardNetworkCode {
-    var name: String
-    var length: Int
-}
+import PrimerFoundation
 
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 

@@ -1,7 +1,7 @@
 //
 //  PrimerPaymentMethodTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -229,9 +229,6 @@ final class PrimerPaymentMethodTests: XCTestCase {
         let primerPaymentMethod = createPaymentMethod(withImplementationType: .nativeSdk)
         let paymentMethodProvider = TestPaymentMethodProvider(paymentMethod: primerPaymentMethod)
         let pm = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: primerPaymentMethod.type, paymentMethodProvider: paymentMethodProvider)
-
-        let headlessPaymentMethod = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: "PAYMENT_CARD")
-
         XCTAssertNotNil(pm)
     }
 
@@ -244,7 +241,7 @@ final class PrimerPaymentMethodTests: XCTestCase {
 
     private func createPaymentMethod(withImplementationType implementationType: PrimerPaymentMethod.ImplementationType,
                                      paymentType: PrimerPaymentMethodType = .paymentCard) -> PrimerPaymentMethod {
-        return PrimerPaymentMethod(
+        PrimerPaymentMethod(
             id: "id",
             implementationType: implementationType,
             type: paymentType.rawValue,

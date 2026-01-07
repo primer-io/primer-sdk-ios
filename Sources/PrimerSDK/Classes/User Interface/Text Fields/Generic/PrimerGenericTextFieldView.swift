@@ -1,19 +1,20 @@
 //
 //  PrimerGenericTextFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
+import PrimerFoundation
 
 public final class PrimerGenericFieldView: PrimerTextFieldView {
 
     public var allowedCharacterSet: CharacterSet?
     public var maxCharactersAllowed: UInt?
     public var shouldMaskText: Bool = false
-    public override var text: String? {
+    override public var text: String? {
         get {
-            return shouldMaskText ? "****" : textField.internalText
+            shouldMaskText ? "****" : textField.internalText
         }
         set {
             textField.internalText = newValue
@@ -28,14 +29,14 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         textField.delegate = self
     }
 
-    public override func textField(_ textField: UITextField,
+    override public func textField(_ textField: UITextField,
                                    shouldChangeCharactersIn range: NSRange,
                                    replacementString string: String) -> Bool {
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
 
-        if maxCharactersAllowed != nil && !string.isEmpty && currentText.count >= maxCharactersAllowed! {
+        if maxCharactersAllowed != nil, !string.isEmpty, currentText.count >= maxCharactersAllowed! {
             return false
         }
 
@@ -47,7 +48,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
         if let allowedCharacterSet = allowedCharacterSet {
-            if !string.isEmpty && newText.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
+            if !string.isEmpty, newText.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
                 return false
             }
         }

@@ -9,6 +9,7 @@ target 'Debug App' do
 
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
+  pod 'PrimerFoundation', :path => '../' # this is temporary and we can remove when PrimerFoundation is pushed to trunk
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
