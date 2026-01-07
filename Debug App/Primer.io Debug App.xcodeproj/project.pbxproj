@@ -17,7 +17,6 @@
 		04921D0D2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04921D0B2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */; };
-		04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */; };
 		04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
 		04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E129D66F2B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
@@ -59,7 +58,6 @@
 		E558A0468D555C654F13D508 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F96CB43EDFEE9D7117F694EB /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
 		F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */; };
@@ -641,7 +639,6 @@
 			files = (
 				040F19962CC67AA7005C9707 /* secrets.defaults.properties in Resources */,
 				0453CB3B2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan in Resources */,
-				04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -715,7 +712,6 @@
 			files = (
 				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,7 +1,7 @@
 //
 //  TestHelper.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -49,11 +49,12 @@ class TestHelper {
     }
 
     private static var windows: [UIWindow] {
-        return UIApplication.shared.windows
+        UIApplication.shared.windows
     }
 
     private static var keyWindow: UIWindow? {
-        return UIApplication.shared.keyWindow
+        UIApplication.shared.windows.first(where: \.isKeyWindow)
+
     }
 
     // MARK: Client Token handling

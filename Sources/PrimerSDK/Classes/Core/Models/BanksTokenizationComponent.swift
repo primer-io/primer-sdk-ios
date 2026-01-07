@@ -1,7 +1,7 @@
 //
 //  BanksTokenizationComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -216,7 +216,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             case .succeed:
                 return nil
 
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule = PrimerAPIConfigurationModule()
 
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -227,7 +227,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                 return decodedJWTToken
 
-            case .fail(let message):
+            case let .fail(message):
                 if let message {
                     throw PrimerError.merchantError(message: message)
                 } else {
@@ -237,7 +237,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .continueWithNewClientToken(let newClientToken):
+            case let .continueWithNewClientToken(newClientToken):
                 let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
                 try await apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
 
@@ -387,7 +387,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {
-            case .fail(let message):
+            case let .fail(message):
                 if let message {
                     throw PrimerError.merchantError(message: message)
                 } else {
@@ -450,7 +450,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func performTokenizationStep() async throws {
         defer {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self.willDismissPaymentMethodUI?()
                 self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissPaymentMethodUI?()
@@ -677,25 +677,23 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
         let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
         let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-        var decisionHandlerHasBeenCalled = false
-
+        
         // MARK: Check this cancellation (5 seconds?)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            if !decisionHandlerHasBeenCalled {
-                let message =
-                    """
-                    The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
-                    hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
-                    """
-                self?.logger.warn(message: message)
-            }
+        let task = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard let self else { return }
+            logger.warn(message:
+                """
+                The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
+                hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
+                """
+            )
         }
 
         let paymentCreationDecision = await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
-        decisionHandlerHasBeenCalled = true
-
+        task.cancel()
         switch paymentCreationDecision.type {
-        case .abort(let errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
+        case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
         case .continue: return
         }
     }
