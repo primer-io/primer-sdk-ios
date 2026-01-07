@@ -1,21 +1,22 @@
 //
 //  PrimerCustomResultViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import SwiftUI
+import UIKit
 
 final class PrimerCustomResultViewController: PrimerViewController {
 
-    internal enum PaymentStatus {
+    enum PaymentStatus {
         case success, failed, cancelled
     }
 
-    private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
-    private(set) internal var paymentMethodType: PrimerPaymentMethodType
-    private(set) internal var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
+    private(set) var paymentStatusView: PrimerResultPaymentStatusView?
+    private(set) var paymentMethodType: PrimerPaymentMethodType
+    private(set) var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
 
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType

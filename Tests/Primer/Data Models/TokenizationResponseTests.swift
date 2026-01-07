@@ -1,7 +1,7 @@
 //
 //  TokenizationResponseTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -80,31 +80,11 @@ class TokenizationResponseTests: XCTestCase {
         self.validatePaymentMethodTokenData(forResponse: tokenizationResponseDictionary, withToken: primerPaymentMethodToken)
     }
 
-    func test_tokenization_response_with_missing_payment_method_type() throws {
-        var tokenizationResponseDictionary = _tokenizationResponseDictionary
-        var paymentInstrumentData = tokenizationResponseDictionary["paymentInstrumentData"] as? [String: Any]
-        paymentInstrumentData?["paymentMethodType"] = nil
-        tokenizationResponseDictionary["paymentInstrumentData"] = paymentInstrumentData
-        var tokenizationResponseData = try JSONSerialization.data(withJSONObject: tokenizationResponseDictionary)
-
-        do {
-            let primerPaymentMethodToken = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: tokenizationResponseData)
-            XCTAssert(true, "Decoder should fail to decode tokenization response")
-        } catch {
-            if case Swift.DecodingError.keyNotFound = error {
-
-            } else {
-                XCTAssert(true, error.localizedDescription)
-            }
-        }
-
-    }
-
     // MARK: Helpers
 
     func validatePaymentMethodTokenData(forResponse tokenizationResponse: [String: Any], withToken primerPaymentMethodToken: PrimerPaymentMethodTokenData) {
         XCTAssert(primerPaymentMethodToken.analyticsId == tokenizationResponse["analyticsId"] as? String, "analyticsId is \(primerPaymentMethodToken.analyticsId ?? "n/a") when it should be \(tokenizationResponse["analyticsId"] as? String ?? "n/a")")
-        XCTAssert(primerPaymentMethodToken.isVaulted == tokenizationResponse["isVaulted"] as? Bool, "isVaulted is \(primerPaymentMethodToken.isVaulted) when it should be \(tokenizationResponse["isVaulted"] as? Bool)")
+        XCTAssert(primerPaymentMethodToken.isVaulted == tokenizationResponse["isVaulted"] as? Bool, "isVaulted is \(primerPaymentMethodToken.isVaulted!) when it should be \(tokenizationResponse["isVaulted"]! as? Bool)")
         XCTAssert(primerPaymentMethodToken.paymentInstrumentData != nil, "paymentInstrumentData should not be nil")
 
         let paymentInstrumentDataResponse = tokenizationResponse["paymentInstrumentData"] as? [String: Any]
@@ -125,9 +105,9 @@ class TokenizationResponseTests: XCTestCase {
         XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication != nil, "primerPaymentMethodToken.threeDSecureAuthentication should not be nil")
 
         let threeDSecureAuthentication = tokenizationResponse["threeDSecureAuthentication"] as? [String: Any]
-        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.responseCode.rawValue == threeDSecureAuthentication?["responseCode"] as? String, "threeDSecureAuthentication?.responseCode is \(primerPaymentMethodToken.threeDSecureAuthentication?.responseCode) when it should be \(threeDSecureAuthentication?["responseCode"] as? String ?? "n/a")")
-        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonCode == threeDSecureAuthentication?["reasonCode"] as? String, "threeDSecureAuthentication?.reasonCode is \(primerPaymentMethodToken.threeDSecureAuthentication?.reasonCode) when it should be \(threeDSecureAuthentication?["reasonCode"] as? String ?? "n/a")")
-        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.reasonText is \(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText) when it should be \(threeDSecureAuthentication?["reasonText"] as? String ?? "n/a")")
-        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.protocolVersion is \(primerPaymentMethodToken.threeDSecureAuthentication?.protocolVersion) when it should be \(threeDSecureAuthentication?["protocolVersion"] as? String ?? "n/a")")
+        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.responseCode.rawValue == threeDSecureAuthentication?["responseCode"] as? String, "threeDSecureAuthentication?.responseCode is \(primerPaymentMethodToken.threeDSecureAuthentication!.responseCode) when it should be \(threeDSecureAuthentication?["responseCode"] as? String ?? "n/a")")
+        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonCode == threeDSecureAuthentication?["reasonCode"] as? String, "threeDSecureAuthentication?.reasonCode is \(primerPaymentMethodToken.threeDSecureAuthentication!.reasonCode!) when it should be \(threeDSecureAuthentication?["reasonCode"] as? String ?? "n/a")")
+        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.reasonText is \(primerPaymentMethodToken.threeDSecureAuthentication!.reasonText!) when it should be \(threeDSecureAuthentication?["reasonText"] as? String ?? "n/a")")
+        XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.protocolVersion is \(primerPaymentMethodToken.threeDSecureAuthentication!.protocolVersion!) when it should be \(threeDSecureAuthentication!["protocolVersion"] as? String ?? "n/a")")
     }
 }

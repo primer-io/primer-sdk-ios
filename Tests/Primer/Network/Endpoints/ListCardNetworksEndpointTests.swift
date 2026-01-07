@@ -1,7 +1,7 @@
 //
 //  ListCardNetworksEndpointTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -43,9 +43,9 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.mockedResult = Response.Body.Bin.Networks(networks: [network])
 
-        apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
+        _ = apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
-            case .success(let result):
+            case let .success(result):
                 XCTAssertEqual(result.networks, [network])
                 expectSuccessfulResponse.fulfill()
             case .failure:
@@ -73,11 +73,11 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.mockedError = NSError(domain: "", code: 123)
 
-        apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
+        _ = apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
             case .success:
                 XCTFail("Expected failure with error response")
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertEqual((error as NSError).code, 123)
                 expectSuccessfulResponse.fulfill()
             }
@@ -88,7 +88,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
 }
 
-extension Response.Body.Bin.Networks.Network: Equatable {
+extension Response.Body.Bin.Networks.Network: @retroactive Equatable {
     public static func == (lhs: PrimerSDK.Response.Body.Bin.Networks.Network, rhs: PrimerSDK.Response.Body.Bin.Networks.Network) -> Bool {
             lhs.value == rhs.value
     }

@@ -1,13 +1,13 @@
 //
 //  PrimerValidationStatus+Equatable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 @testable import PrimerSDK
 
-extension PrimerValidationStatus: Equatable {
+extension PrimerValidationStatus: @retroactive Equatable {
 
     public static func == (lhs: PrimerValidationStatus, rhs: PrimerValidationStatus) -> Bool {
         switch (lhs, rhs) {
@@ -15,9 +15,9 @@ extension PrimerValidationStatus: Equatable {
             return true
         case (.valid, .valid):
             return true
-        case (.invalid(let errorsLHS), .invalid(let errorsRHS)):
+        case let (.invalid(errorsLHS), .invalid(errorsRHS)):
             return errorsLHS == errorsRHS
-        case (.error(let errorLHS), .error(let errorRHS)):
+        case let (.error(errorLHS), .error(errorRHS)):
             return errorLHS.errorCode == errorRHS.errorCode
         default:
             return false
@@ -25,34 +25,34 @@ extension PrimerValidationStatus: Equatable {
     }
 }
 
-extension PrimerValidationError: Equatable {
+extension PrimerValidationError: @retroactive Equatable {
     public static func == (lhs: PrimerValidationError, rhs: PrimerValidationError) -> Bool {
         switch (lhs, rhs) {
-        case (.invalidCardholderName(let message1, let id1), .invalidCardholderName(let message2, let id2)),
-             (.invalidCardnumber(let message1, let id1), .invalidCardnumber(let message2, let id2)),
-             (.invalidCvv(let message1, let id1), .invalidCvv(let message2, let id2)),
-             (.invalidExpiryDate(let message1, let id1), .invalidExpiryDate(let message2, let id2)),
-             (.invalidPostalCode(let message1, let id1), .invalidPostalCode(let message2, let id2)),
-             (.invalidFirstName(let message1, let id1), .invalidFirstName(let message2, let id2)),
-             (.invalidLastName(let message1, let id1), .invalidLastName(let message2, let id2)),
-             (.invalidAddress(let message1, let id1), .invalidAddress(let message2, let id2)),
-             (.invalidState(let message1, let id1), .invalidState(let message2, let id2)),
-             (.invalidCountry(let message1, let id1), .invalidCountry(let message2, let id2)),
-             (.invalidPhoneNumber(let message1, let id1), .invalidPhoneNumber(let message2, let id2)),
-             (.invalidOTPCode(let message1, let id1), .invalidOTPCode(let message2, let id2)),
-             (.invalidCardType(let message1, let id1), .invalidCardType(let message2, let id2)):
+        case let (.invalidCardholderName(message1, id1), .invalidCardholderName(message2, id2)),
+             let (.invalidCardnumber(message1, id1), .invalidCardnumber(message2, id2)),
+             let (.invalidCvv(message1, id1), .invalidCvv(message2, id2)),
+             let (.invalidExpiryDate(message1, id1), .invalidExpiryDate(message2, id2)),
+             let (.invalidPostalCode(message1, id1), .invalidPostalCode(message2, id2)),
+             let (.invalidFirstName(message1, id1), .invalidFirstName(message2, id2)),
+             let (.invalidLastName(message1, id1), .invalidLastName(message2, id2)),
+             let (.invalidAddress(message1, id1), .invalidAddress(message2, id2)),
+             let (.invalidState(message1, id1), .invalidState(message2, id2)),
+             let (.invalidCountry(message1, id1), .invalidCountry(message2, id2)),
+             let (.invalidPhoneNumber(message1, id1), .invalidPhoneNumber(message2, id2)),
+             let (.invalidOTPCode(message1, id1), .invalidOTPCode(message2, id2)),
+             let (.invalidCardType(message1, id1), .invalidCardType(message2, id2)):
             return message1 == message2 && id1 == id2
-        case (.invalidRawData(let id1), .invalidRawData(let id2)),
-             (.banksNotLoaded(let id1), .banksNotLoaded(let id2)),
-             (.sessionNotCreated(let id1), .sessionNotCreated(let id2)),
-             (.invalidPaymentCategory(let id1), .invalidPaymentCategory(let id2)),
-             (.paymentAlreadyFinalized(let id1), .paymentAlreadyFinalized(let id2)):
+        case let (.invalidRawData(id1), .invalidRawData(id2)),
+             let (.banksNotLoaded(id1), .banksNotLoaded(id2)),
+             let (.sessionNotCreated(id1), .sessionNotCreated(id2)),
+             let (.invalidPaymentCategory(id1), .invalidPaymentCategory(id2)),
+             let (.paymentAlreadyFinalized(id1), .paymentAlreadyFinalized(id2)):
             return id1 == id2
-        case (.vaultedPaymentDataMismatch(let type1, let validType1, let id1),
-              .vaultedPaymentDataMismatch(let type2, let validType2, let id2)):
+        case let (.vaultedPaymentDataMismatch(type1, validType1, id1),
+              .vaultedPaymentDataMismatch(type2, validType2, id2)):
             return type1 == type2 && validType1 == validType2 && id1 == id2
-        case (.invalidBankId(let bankId1, diagnosticsId: let id1),
-              .invalidBankId(let bankId2, diagnosticsId: let id2)):
+        case let (.invalidBankId(bankId1, diagnosticsId: id1),
+              .invalidBankId(bankId2, diagnosticsId: id2)):
             return bankId1 == bankId2 && id1 == id2
         default:
             return false

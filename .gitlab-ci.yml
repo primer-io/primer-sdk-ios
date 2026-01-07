@@ -13,6 +13,7 @@ build-and-release:
     - apt-get install -y rsync
   script:
     - bundle install
-    - pod trunk push --allow-root
+    - pod trunk push PrimerFoundation.podspec --allow-root
+    - pod trunk push PrimerSDK.podspec --allow-root
   when: manual
   environment: production

@@ -1,10 +1,11 @@
 //
 //  NativeUIManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -16,7 +17,7 @@ extension PrimerHeadlessUniversalCheckout {
         private let validationComponent: NativeUIValidateable
         private let presentationComponent: NativeUIPresentable
 
-        required public init(paymentMethodType: String) throws {
+        public required init(paymentMethodType: String) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
             let sdkEvent = Analytics.Event.sdk(

@@ -1,12 +1,13 @@
 //
 //  ApplePayTokenizationViewModelTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
 private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
@@ -407,48 +408,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         } catch {
             XCTFail("Failed with error: \(error.localizedDescription)")
         }
-    }
-
-    func test_createOrderItems_withMerchantAmount_shouldHandleCorrectly() throws {
-        let itemName = "Fancy Shoes"
-        let itemDescription = "Some nice shoes"
-        let itemAmount = 1000
-
-        let surchargeAmount = 10
-        let fees = [ClientSession.Order.Fee(type: .surcharge, amount: surchargeAmount)]
-
-        let merchantName = "Merchant Name"
-        let applePayOptions = ApplePayOptions(merchantName: merchantName)
-
-        let apiResponse = ClientSession.APIResponse(
-            clientSessionId: nil,
-            paymentMethod: nil,
-            order: .init(
-                id: "OrderId",
-                merchantAmount: nil,
-                totalOrderAmount: itemAmount + surchargeAmount,
-                totalTaxAmount: nil,
-                countryCode: .init(rawValue: "GB"),
-                currencyCode: .init(code: "GBP", decimalDigits: 2),
-                fees: fees,
-                lineItems: [
-                    .init(
-                        itemId: "123",
-                        quantity: 1,
-                        amount: itemAmount,
-                        discountAmount: nil,
-                        name: itemName,
-                        description: itemDescription,
-                        taxAmount: nil,
-                        taxCode: nil,
-                        productType: nil
-                    ),
-                ],
-                shippingMethod: nil
-            ),
-            customer: nil,
-            testId: nil
-        )
     }
 
     func test_createOrderItems_withShipping_shouldIncludeShippingItem() throws {

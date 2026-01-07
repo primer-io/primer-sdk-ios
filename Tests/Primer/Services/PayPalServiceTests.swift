@@ -1,9 +1,10 @@
 //
 //  PayPalServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -35,7 +36,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-client-token] Client token is not valid"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -70,7 +71,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'configuration.paypal.id'"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -105,7 +106,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'amount'"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -141,7 +142,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'currency'"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -182,7 +183,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'urlScheme'"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -227,7 +228,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[failed-to-create-session] Failed to create session with error: [unknown] Something went wrong"))
                 expectationStartOrderSession.fulfill()
             case .success:
@@ -271,10 +272,10 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startOrderSession { result in
             switch result {
-            case .success(let model):
+            case let .success(model):
                 XCTAssertEqual(model.orderId, "order_id")
                 XCTAssertEqual(model.approvalUrl, "scheme://approve")
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
             expectationStartOrderSession.fulfill()
@@ -315,7 +316,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-client-token] Client token is not valid"))
                 expectationStartBillingAgreementSession.fulfill()
             case .success:
@@ -350,7 +351,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'configuration.paypal.id'"))
                 expectationStartBillingAgreementSession.fulfill()
             case .success:
@@ -389,7 +390,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'urlScheme'"))
                 expectationStartBillingAgreementSession.fulfill()
             case .success:
@@ -430,7 +431,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[failed-to-create-session] Failed to create session with error: [unknown] Something went wrong"))
                 expectationStartBillingAgreementSession.fulfill()
             case .success:
@@ -472,9 +473,9 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .success(let approvalUrl):
+            case let .success(approvalUrl):
                 XCTAssertEqual(approvalUrl, "scheme://approve")
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
             expectationStartBillingAgreementSession.fulfill()
@@ -513,7 +514,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.confirmBillingAgreement { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-client-token] Client token is not valid"))
                 expectationConfirmBillingAgreement.fulfill()
             case .success:
@@ -548,7 +549,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.confirmBillingAgreement { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'configuration.paypal.id'"))
                 expectationConfirmBillingAgreement.fulfill()
             case .success:
@@ -583,7 +584,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.confirmBillingAgreement { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'paypalTokenId'"))
                 expectationConfirmBillingAgreement.fulfill()
             case .success:
@@ -624,9 +625,9 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .success(let approvalUrl):
+            case let .success(approvalUrl):
                 XCTAssertEqual(approvalUrl, "scheme://approve")
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
             expectationStartBillingAgreementSession.fulfill()
@@ -637,7 +638,7 @@ final class PayPalServiceTests: XCTestCase {
 
         sut.confirmBillingAgreement { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[failed-to-create-session] Failed to create session with error: [unknown] Something went wrong"))
                 expectationConfirmBillingAgreement.fulfill()
             case .success:
@@ -691,9 +692,9 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.startBillingAgreementSession { result in
             switch result {
-            case .success(let approvalUrl):
+            case let .success(approvalUrl):
                 XCTAssertEqual(approvalUrl, "scheme://approve")
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
             expectationStartBillingAgreementSession.fulfill()
@@ -704,13 +705,13 @@ final class PayPalServiceTests: XCTestCase {
 
         sut.confirmBillingAgreement { result in
             switch result {
-            case .success(let model):
+            case let .success(model):
                 XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
                 XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
                 XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
                 XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
                 expectationConfirmBillingAgreement.fulfill()
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
         }
@@ -760,7 +761,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-client-token] Client token is not valid"))
                 expectationFetchPayPalExternalPayerInfo.fulfill()
             case .success:
@@ -795,7 +796,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[invalid-value] Invalid value 'nil' for key 'configuration.paypal.id'"))
                 expectationFetchPayPalExternalPayerInfo.fulfill()
             case .success:
@@ -833,7 +834,7 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
             switch result {
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertTrue(error.localizedDescription.starts(with: "[unknown] Something went wrong"))
                 expectationFetchPayPalExternalPayerInfo.fulfill()
             case .success:
@@ -880,13 +881,13 @@ final class PayPalServiceTests: XCTestCase {
         // When
         sut.fetchPayPalExternalPayerInfo(orderId: "order_id") { result in
             switch result {
-            case .success(let model):
+            case let .success(model):
                 XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
                 XCTAssertEqual(model.externalPayerInfo.email, "email@email.com")
                 XCTAssertEqual(model.externalPayerInfo.firstName, "first_name")
                 XCTAssertEqual(model.externalPayerInfo.lastName, "last_name")
                 XCTAssertEqual(model.orderId, "order_id")
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got error: \(error)")
             }
             expectationFetchPayPalExternalPayerInfo.fulfill()
@@ -923,4 +924,3 @@ final class PayPalServiceTests: XCTestCase {
         }
     }
 }
-
