@@ -1,10 +1,11 @@
 //
 //  NolPayPhoneMetadataServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
+import PrimerFoundation
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -45,7 +46,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertEqual(error.errorId, "invalid-client-token")
             }
             exp.fulfill()
@@ -65,16 +66,16 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // When
         sut.getPhoneMetadata(mobileNumber: "") { result in
             switch result {
-            case .success((let validationStatus, let countryCode, let mobileNumber)):
-                if case .invalid(let errors) = validationStatus {
-                    XCTAssertEqual(errors.map { $0.errorDescription }, [expectedPhoneError].map { $0.errorDescription })
+            case let .success((validationStatus, countryCode, mobileNumber)):
+                if case let .invalid(errors) = validationStatus {
+                    XCTAssertEqual(errors.map(\.errorDescription), [expectedPhoneError].map(\.errorDescription))
                     XCTAssertNil(countryCode)
                     XCTAssertNil(mobileNumber)
                 } else {
                     XCTFail("Expected invalid but got \(validationStatus)")
                 }
 
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got failure: \(error)")
             }
             exp.fulfill()
@@ -94,17 +95,17 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // When
         sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success((let validationStatus, let countryCode, let mobileNumber)):
+            case let .success((validationStatus, countryCode, mobileNumber)):
                 XCTFail("Expected failure but got success: \(validationStatus), \(countryCode ?? ""), \(mobileNumber ?? "")")
-            case .failure(let error):
+            case let .failure(error):
                 switch error {
-                case .underlyingErrors(let errors, _):
+                case let .underlyingErrors(errors, _):
                     guard let firstPrimerError = errors.first as? PrimerError else {
                         XCTFail("Expected PrimerError but got \(error)")
                         return
                     }
                     switch firstPrimerError {
-                    case .nolError(let code, _, _):
+                    case let .nolError(code, _, _):
                         XCTAssertEqual(code, expectedErrorCode)
                     default:
                         XCTFail("Expected PrimerError.nolError but got \(firstPrimerError)")
@@ -131,15 +132,15 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // When
         sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success((let validationStatus, let countryCode, let mobileNumber)):
-                if case .invalid(let errors) = validationStatus {
-                    XCTAssertEqual(errors.map { $0.errorDescription }, [expectedError].map { $0.errorDescription })
+            case let .success((validationStatus, countryCode, mobileNumber)):
+                if case let .invalid(errors) = validationStatus {
+                    XCTAssertEqual(errors.map(\.errorDescription), [expectedError].map(\.errorDescription))
                     XCTAssertNil(countryCode)
                     XCTAssertNil(mobileNumber)
                 } else {
                     XCTFail("Expected invalid but got \(validationStatus)")
                 }
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got failure: \(error)")
             }
             exp.fulfill()
@@ -157,14 +158,14 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         // When
         sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success((let validationStatus, let countryCode, let mobileNumber)):
+            case let .success((validationStatus, countryCode, mobileNumber)):
                 if case .valid = validationStatus {
                     XCTAssertEqual(countryCode, self.countryCode)
                     XCTAssertEqual(mobileNumber, self.nationalNumber)
                 } else {
                     XCTFail("Expected valid but got \(validationStatus)")
                 }
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success but got failure: \(error)")
             }
             exp.fulfill()

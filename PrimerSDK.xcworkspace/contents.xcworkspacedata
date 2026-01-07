@@ -141,9 +141,6 @@
                         </FileRef>
                      </Group>
                   </Group>
-                  <FileRef
-                     location = "group:RetryHandler.swift">
-                  </FileRef>
                   <Group
                      location = "group:API"
                      name = "API">
@@ -158,9 +155,6 @@
                         </FileRef>
                      </Group>
                   </Group>
-                  <FileRef
-                     location = "group:RequestDispatcher.swift">
-                  </FileRef>
                </Group>
                <Group
                   location = "group:User Interface"
@@ -216,13 +210,7 @@
                   </FileRef>
                </Group>
                <FileRef
-                  location = "group:_PaymentAPIModel.swift">
-               </FileRef>
-               <FileRef
                   location = "group:VoucherValue.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerFlowEnums.swift">
                </FileRef>
                <FileRef
                   location = "group:ApplePayOrderItem.swift">
@@ -262,9 +250,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerPaymentMethod+DisplayMetadata.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Throwable.swift">
                </FileRef>
                <FileRef
                   location = "group:Bin.swift">
@@ -409,9 +394,6 @@
                   location = "group:Currency"
                   name = "Currency">
                   <FileRef
-                     location = "group:Currency.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:CurrencyNetworkServiceProtocol.swift">
                   </FileRef>
                   <FileRef
@@ -438,40 +420,19 @@
                   location = "group:UIScreenExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:NSObject+ClassName.swift">
-               </FileRef>
-               <FileRef
                   location = "group:EncodingDecodingContainerExtensions.swift">
                </FileRef>
                <FileRef
                   location = "group:VersionUtils.swift">
                </FileRef>
                <FileRef
-                  location = "group:NSErrorExtension.swift">
-               </FileRef>
-               <FileRef
                   location = "group:UIColorExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DateFormatter+Extensions.swift">
                </FileRef>
                <FileRef
                   location = "group:PaymentMethodTypeProviding.swift">
                </FileRef>
                <FileRef
-                  location = "group:AnyDecodable.swift">
-               </FileRef>
-               <FileRef
                   location = "group:CardNetworkParser.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:ArrayExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCancellable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:IntExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:ImageFileProcessor.swift">
@@ -492,9 +453,6 @@
                   location = "group:PrimerImageView.swift">
                </FileRef>
                <FileRef
-                  location = "group:Mask.swift">
-               </FileRef>
-               <FileRef
                   location = "group:UILocalizableUtil.swift">
                </FileRef>
                <FileRef
@@ -504,19 +462,7 @@
                   location = "group:DeeplinkUtils.swift">
                </FileRef>
                <FileRef
-                  location = "group:UIDeviceExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerImage.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ApplePayUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DataExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Dictionary+Extensions.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerViewController.swift">
@@ -525,28 +471,10 @@
                   location = "group:StringExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:UserAgent.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Debouncer.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerViewExtensions.swift">
                </FileRef>
                <FileRef
                   location = "group:UserDefaultsExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DateExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Error+Extensions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyCodable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyEncodable.swift">
                </FileRef>
             </Group>
             <Group
@@ -596,13 +524,6 @@
                   </FileRef>
                </Group>
                <Group
-                  location = "group:Connectivity"
-                  name = "Connectivity">
-                  <FileRef
-                     location = "group:Connectivity.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:Constants"
                   name = "Constants">
                   <FileRef
@@ -628,9 +549,6 @@
                <Group
                   location = "group:Models"
                   name = "Models">
-                  <FileRef
-                     location = "group:TokenizationProtocols.swift">
-                  </FileRef>
                   <FileRef
                      location = "group:BanksTokenizationComponent.swift">
                   </FileRef>
@@ -927,13 +845,6 @@
                   </FileRef>
                </Group>
                <Group
-                  location = "group:Keychain"
-                  name = "Keychain">
-                  <FileRef
-                     location = "group:Keychain.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:3DS"
                   name = "3DS">
                   <Group
@@ -1043,9 +954,6 @@
                <FileRef
                   location = "group:ErrorExtension.swift">
                </FileRef>
-               <FileRef
-                  location = "group:PrimerError.swift">
-               </FileRef>
             </Group>
             <Group
                location = "group:Modules"
@@ -1079,19 +987,10 @@
                      location = "group:PrimerAPIClient.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:RetryConfiguration.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:WebAuthenticationService.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:NetworkServiceProtocol.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerAPIClientProtocol.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:SuccessResponse.swift">
                   </FileRef>
                   <Group
                      location = "group:Protocols"
@@ -2191,9 +2090,6 @@
             </Group>
             <FileRef
                location = "group:CheckoutSessionTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:MaskTests.swift">
             </FileRef>
             <FileRef
                location = "group:StringTests.swift">

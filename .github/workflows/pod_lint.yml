@@ -34,6 +34,6 @@ jobs:
       - name: Lint pod
         run: |
           set -eo pipefail
-          pod lib lint --allow-warnings --swift-version=${{ matrix.version }} --analyze
+          pod lib lint --allow-warnings --verbose --swift-version=${{ matrix.version }} --analyze
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}

@@ -1,13 +1,14 @@
 //
 //  DefaultNetworkServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
-class MockRequestDispatcher: RequestDispatcher {
+class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     var error: Error?
 
@@ -20,7 +21,10 @@ class MockRequestDispatcher: RequestDispatcher {
         return responseModel
     }
 
-    func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
+    func dispatch(
+        request: URLRequest,
+        completion: @escaping PrimerSDK.DispatcherCompletion
+    ) -> (any PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
         } else {
@@ -29,7 +33,11 @@ class MockRequestDispatcher: RequestDispatcher {
         return nil
     }
 
-    func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
+    func dispatchWithRetry(
+        request: URLRequest,
+        retryConfig: PrimerSDK.RetryConfig,
+        completion: @escaping DispatcherCompletion
+    ) -> (any PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
         } else {
@@ -78,7 +86,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
             switch result {
-            case .success(let model):
+            case let .success(model):
                 XCTAssertEqual(model.coreUrl, "https://core_url")
                 XCTAssertEqual(model.pciUrl, "https://pci_url")
                 XCTAssertEqual(model.binDataUrl, "https://bin_data_url")
@@ -144,9 +152,9 @@ final class DefaultNetworkServiceTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail(); return
-            case .failure(let error):
+            case let .failure(error):
                 switch error as! PrimerSDK.InternalError {
-                case .failedToDecode(let message, _):
+                case let .failedToDecode(message, _):
                     XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
                 default:
                     XCTFail()
@@ -172,7 +180,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
             XCTFail("Expected error to be thrown")
         } catch {
             switch error as! PrimerSDK.InternalError {
-            case .failedToDecode(let message, _):
+            case let .failedToDecode(message, _):
                 XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
             default:
                 XCTFail()
@@ -255,7 +263,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure due to network error")
-            case .failure(let error):
+            case let .failure(error):
                 XCTAssertEqual((error as NSError).domain, NSURLErrorDomain)
                 XCTAssertEqual((error as NSError).code, NSURLErrorNotConnectedToInternet)
                 expectation.fulfill()
@@ -299,7 +307,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>, headers: [String: String]?) in
             switch result {
-            case .success(let model):
+            case let .success(model):
                 XCTAssertEqual(model.coreUrl, "https://core_url")
                 XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
                 expectation.fulfill()

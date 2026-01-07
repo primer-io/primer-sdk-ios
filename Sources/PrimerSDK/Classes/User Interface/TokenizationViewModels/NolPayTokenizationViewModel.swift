@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerFoundation
 import SafariServices
 import UIKit
 

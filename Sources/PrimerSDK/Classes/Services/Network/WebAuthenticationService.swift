@@ -1,11 +1,12 @@
 //
 //  WebAuthenticationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import AuthenticationServices
+import Foundation
+import PrimerFoundation
 import SafariServices
 
 protocol WebAuthenticationService {
@@ -68,7 +69,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 
 extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+        UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
 
 }
@@ -83,6 +84,6 @@ extension UIApplication {
     }
 
     var keyWindow: UIWindow? {
-        return windows.last
+        windows.last
     }
 }
