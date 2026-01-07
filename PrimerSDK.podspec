@@ -17,7 +17,8 @@ Pod::Spec.new do |s|
     s.ios.frameworks  = "Foundation", "UIKit"
 
     s.subspec "Core" do |ss|
-        ss.ios.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
+        ss.dependency 'PrimerFoundation', '~> 1.0.0'
+        ss.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
         ss.ios.resource_bundles = {
             "PrimerResources" => [
                 "Sources/PrimerSDK/Resources/*.xcassets",
