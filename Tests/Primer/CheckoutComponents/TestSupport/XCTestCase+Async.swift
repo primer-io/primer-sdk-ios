@@ -238,7 +238,6 @@ extension XCTestCase {
 
 // MARK: - Async Test Errors
 
-/// Errors that can occur during async stream testing
 enum AsyncTestError: Error, LocalizedError {
     case timeout(message: String)
     case streamDidNotEmit
