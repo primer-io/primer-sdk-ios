@@ -1,7 +1,7 @@
 //
 //  HeadlessRepositorySettingsTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -12,14 +12,20 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
+    private var savedContainer: ContainerProtocol?
+
     override func setUp() async throws {
         try await super.setUp()
-        // Ensure clean state
+        savedContainer = await DIContainer.current
         await DIContainer.clearContainer()
     }
 
     override func tearDown() async throws {
-        await DIContainer.clearContainer()
+        if let savedContainer {
+            await DIContainer.setContainer(savedContainer)
+        } else {
+            await DIContainer.clearContainer()
+        }
         try await super.tearDown()
     }
 
@@ -137,7 +143,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
     func testKlarnaOptionsAccessibleFromSettings() async throws {
         // Given: Settings with Klarna options
         let klarnaOptions = PrimerKlarnaOptions(
-            recurringPaymentDescription: "Monthly subscription"
+            recurringPaymentDescription: TestData.PaymentMethodOptions.monthlySubscription
         )
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -158,13 +164,13 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertNotNil(resolved.paymentMethodOptions.klarnaOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            "Monthly subscription"
+            TestData.PaymentMethodOptions.monthlySubscription
         )
     }
 
     func testApplePayOptionsAccessibleFromSettings() async throws {
         let applePayOptions = PrimerApplePayOptions(
-            merchantIdentifier: "merchant.com.example.app",
+            merchantIdentifier: TestData.PaymentMethodOptions.exampleMerchantId,
             merchantName: nil
         )
         let settings = PrimerSettings(
@@ -185,7 +191,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertNotNil(resolved.paymentMethodOptions.applePayOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.applePayOptions?.merchantIdentifier,
-            "merchant.com.example.app"
+            TestData.PaymentMethodOptions.exampleMerchantId
         )
     }
 
@@ -193,7 +199,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings with URL scheme
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "myapp://payment"
+                urlScheme: TestData.PaymentMethodOptions.myAppUrlScheme
             )
         )
         let composableContainer = ComposableContainer(settings: settings)
@@ -209,7 +215,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Then: URL scheme should be accessible via validation methods
         XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
-        XCTAssertEqual(urlScheme, "myapp")
+        XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.myAppScheme)
     }
 
     // MARK: - Settings Persistence Tests
