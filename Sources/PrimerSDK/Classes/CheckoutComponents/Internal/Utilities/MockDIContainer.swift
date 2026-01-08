@@ -1,7 +1,7 @@
 //
 //  MockDIContainer.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if DEBUG
@@ -25,11 +25,11 @@ public class MockDIContainer: ContainerProtocol {
     }
 
     public func unregister<T>(_ type: T.Type, name: String?) -> Self {
-        return self
+        self
     }
 
     public func resolve<T>(_ type: T.Type, name: String?) async throws -> T {
-        return try resolveSync(type, name: name)
+        try resolveSync(type, name: name)
     }
 
     public func resolveSync<T>(_ type: T.Type, name: String?) throws -> T {
@@ -45,7 +45,7 @@ public class MockDIContainer: ContainerProtocol {
     }
 
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
-        return []
+        []
     }
 
     public func reset<T>(ignoreDependencies: [T.Type]) async {}

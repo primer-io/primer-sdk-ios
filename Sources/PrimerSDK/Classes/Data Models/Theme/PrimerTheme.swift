@@ -1,7 +1,7 @@
 //
 //  PrimerTheme.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -81,6 +81,6 @@ extension PrimerTheme: Equatable {
     /// - Note: Uses identity comparison since PrimerTheme is a reference type.
     ///         Two themes are considered equal if they reference the same instance.
     public static func == (lhs: PrimerTheme, rhs: PrimerTheme) -> Bool {
-        return lhs === rhs
+        lhs === rhs
     }
 }

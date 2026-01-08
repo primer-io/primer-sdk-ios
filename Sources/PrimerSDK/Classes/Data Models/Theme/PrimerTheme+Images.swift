@@ -1,7 +1,7 @@
 //
 //  PrimerTheme+Images.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -55,7 +55,7 @@ extension PrimerTheme {
             lightUrlStr = (try? container.decode(String?.self, forKey: .lightUrlStr)) ?? nil
             darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
 
-            if coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil {
+            if coloredUrlStr == nil, lightUrlStr == nil, darkUrlStr == nil {
                 throw handled(error: InternalError.failedToDecode(message: "BaseColoredURLs"))
             }
         }
@@ -105,7 +105,7 @@ extension PrimerTheme {
             darkHex = (try? container.decode(String?.self, forKey: .darkHex)) ?? nil
             lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
 
-            if coloredHex == nil && lightHex == nil && darkHex == nil {
+            if coloredHex == nil, lightHex == nil, darkHex == nil {
                 throw handled(error: InternalError.failedToDecode(message: "BaseColors"))
             }
         }

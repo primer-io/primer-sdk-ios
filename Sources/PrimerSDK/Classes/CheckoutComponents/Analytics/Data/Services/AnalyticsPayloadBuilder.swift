@@ -1,7 +1,7 @@
 //
 //  AnalyticsPayloadBuilder.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -67,6 +67,6 @@ struct AnalyticsPayloadBuilder {
 
     /// Detect SDK type based on React Native bridge availability
     private func detectSDKType() -> String {
-        return NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
+        NSClassFromString("RCTBridge") != nil ? "RN_IOS" : "IOS_NATIVE"
     }
 }

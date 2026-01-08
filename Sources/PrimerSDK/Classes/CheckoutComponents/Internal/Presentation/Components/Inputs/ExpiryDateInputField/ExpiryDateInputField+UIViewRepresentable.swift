@@ -1,7 +1,7 @@
 //
 //  ExpiryDateInputField+UIViewRepresentable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
@@ -119,7 +119,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
 
             // Only allow numbers and return for non-numeric input except deletion
-            if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+            if !string.isEmpty, !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
 
@@ -146,7 +146,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
             if string.isEmpty {
                 // If deleting the separator, also remove the character before it
-                if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
+                if range.location == 2, range.length == 1, currentText.count >= 3,
                     currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     return String(currentText.prefix(1))
                 }
@@ -162,7 +162,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             // Calculate where to insert the new text
             var sanitizedLocation = range.location
-            if range.location > 2 && currentText.count >= 3 && currentText.contains("/") {
+            if range.location > 2, currentText.count >= 3, currentText.contains("/") {
                 sanitizedLocation -= 1
             }
 

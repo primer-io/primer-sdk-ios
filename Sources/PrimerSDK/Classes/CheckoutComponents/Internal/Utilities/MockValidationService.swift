@@ -1,7 +1,7 @@
 //
 //  MockValidationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if DEBUG
@@ -73,15 +73,15 @@ public class MockValidationService: ValidationService {
     }
 
     public func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        return []
+        []
     }
 
     public func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
-        return []
+        []
     }
 
     public func validateFieldWithStructuredResult(type: PrimerInputElementType, value: String?) -> FieldError? {
-        return nil
+        nil
     }
 }
 

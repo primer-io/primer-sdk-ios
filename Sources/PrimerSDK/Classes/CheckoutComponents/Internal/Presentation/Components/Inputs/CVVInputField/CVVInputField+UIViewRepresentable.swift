@@ -1,7 +1,7 @@
 //
 //  CVVInputField+UIViewRepresentable.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
@@ -116,7 +116,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             let newText = currentText.replacingCharacters(in: textRange, with: string)
 
             // Only allow numbers
-            if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
+            if !string.isEmpty, !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
 

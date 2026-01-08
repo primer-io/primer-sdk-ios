@@ -1,7 +1,7 @@
 //
 //  AccessibilityIdentifiersTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -51,7 +51,7 @@ final class AccessibilityIdentifiersTests: XCTestCase {
         let allIdentifiers = collectAllAccessibilityIdentifiers()
 
         // When: Filter empty identifiers
-        let emptyIdentifiers = allIdentifiers.filter { $0.isEmpty }
+        let emptyIdentifiers = allIdentifiers.filter(\.isEmpty)
 
         // Then: No identifier should be empty
         XCTAssertTrue(

@@ -1,7 +1,7 @@
 //
 //  PrimerAPIConfigurationModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -56,7 +56,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
     static var apiConfiguration: PrimerAPIConfiguration? {
         get {
-            return AppState.current.apiConfiguration
+            AppState.current.apiConfiguration
         }
         set {
             if PrimerAPIConfigurationModule.clientToken != nil {
@@ -322,7 +322,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     private func reportAllowedCardNetworks() {
-        let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
+        let networksDescription = [CardNetwork].allowedCardNetworks.map(\.rawValue).joined(separator: ", ")
         let event = Analytics.Event.message(
             message: "Merchant supported networks: \(networksDescription)",
             messageType: .other,

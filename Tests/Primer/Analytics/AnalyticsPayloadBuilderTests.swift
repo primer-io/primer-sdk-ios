@@ -1,7 +1,7 @@
 //
 //  AnalyticsPayloadBuilderTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
@@ -318,7 +318,7 @@ final class AnalyticsPayloadBuilderTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func makeTestConfig() -> AnalyticsSessionConfig {
-        return AnalyticsSessionConfig(
+        AnalyticsSessionConfig(
             environment: .dev,
             checkoutSessionId: "cs_test_123",
             clientSessionId: "client_test_456",

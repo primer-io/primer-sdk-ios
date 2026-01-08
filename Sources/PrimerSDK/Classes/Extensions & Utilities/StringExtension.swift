@@ -1,7 +1,7 @@
 //
 //  StringExtension.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -13,7 +13,7 @@ public extension String {
 extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNumeric: Bool {
@@ -53,7 +53,7 @@ extension String {
     }
 
     var withoutNonNumericCharacters: String {
-        return withoutWhiteSpace.filter("0123456789".contains)
+        withoutWhiteSpace.filter("0123456789".contains)
     }
 
     var isValidExpiryDate: Bool {
@@ -168,7 +168,7 @@ extension String {
     }
 
     var base64RFC4648Format: Self {
-        return self.replacingOccurrences(of: "+", with: "-")
+        self.replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
@@ -188,7 +188,7 @@ extension String {
     }
 
     func separate(every: Int, with separator: String) -> String {
-        return String(stride(from: 0, to: Array(self).count, by: every).map {
+        String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
         }.joined(separator: separator))
     }

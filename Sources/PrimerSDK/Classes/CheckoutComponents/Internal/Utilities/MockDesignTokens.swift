@@ -1,7 +1,7 @@
 //
 //  MockDesignTokens.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable all
@@ -19,7 +19,7 @@ struct MockDesignTokens {
     /// Light theme design tokens with default Primer values
     static let light: DesignTokens = {
         // Create instance with default values
-        return DesignTokens()
+        DesignTokens()
     }()
 
     /// Dark theme design tokens with default Primer dark mode values
