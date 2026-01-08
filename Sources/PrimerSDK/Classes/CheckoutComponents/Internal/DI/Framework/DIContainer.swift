@@ -1,14 +1,13 @@
 //
 //  DIContainer.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 /// Provides global access to the current DI container with context management
 @available(iOS 15.0, *)
-@MainActor
 public final class DIContainer: LogReporter {
     public static let shared = DIContainer()
 
@@ -52,17 +51,26 @@ public final class DIContainer: LogReporter {
 
     /// Access to the current container (synchronous)
     /// Note: This uses a cached reference that is updated when the container changes
+    /// MainActor isolation ensures thread safety for SwiftUI integration
+    @MainActor
     public static var currentSync: (any ContainerProtocol)? {
-        shared.cachedContainer
+        let container = shared.cachedContainer
+        return container
     }
 
     /// Cached reference to the current container for synchronous access
+    /// MainActor isolation prevents race conditions during updates
+    @MainActor
     private var cachedContainer: (any ContainerProtocol)?
 
     private init() {
         let container = Container()
         self.storage = ContainerStorage(container: container)
-        self.cachedContainer = container
+
+        // Initialize cached container on MainActor to prevent race conditions
+        Task { @MainActor in
+            self.cachedContainer = container
+        }
     }
 
     public static func createContainer() -> any ContainerProtocol {
@@ -71,9 +79,13 @@ public final class DIContainer: LogReporter {
 
     public static func setContainer(_ container: any ContainerProtocol) async {
         await shared.storage.setContainer(container)
-        shared.cachedContainer = container
+
+        await MainActor.run {
+            shared.cachedContainer = container
+        }
     }
 
+    @MainActor
     public static func clearContainer() async {
         await shared.storage.setContainer(nil)
         shared.cachedContainer = nil
@@ -99,19 +111,25 @@ public final class DIContainer: LogReporter {
         perform action: () async throws -> T
     ) async rethrows -> T {
         let previous = await shared.storage.getContainer()
-        let previousSync = shared.cachedContainer
+        let previousSync = await MainActor.run { shared.cachedContainer }
 
         await shared.storage.setContainer(container)
-        shared.cachedContainer = container
+        await MainActor.run {
+            shared.cachedContainer = container
+        }
 
         do {
             let result = try await action()
             await shared.storage.setContainer(previous)
-            shared.cachedContainer = previousSync
+            await MainActor.run {
+                shared.cachedContainer = previousSync
+            }
             return result
         } catch {
             await shared.storage.setContainer(previous)
-            shared.cachedContainer = previousSync
+            await MainActor.run {
+                shared.cachedContainer = previousSync
+            }
             throw error
         }
     }
