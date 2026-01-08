@@ -23,6 +23,28 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
         try await super.tearDown()
     }
 
+    // MARK: - Helper Methods
+
+    private func assertExpiryValid(
+        month: String,
+        year: String,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let result = sut.validateExpiry(month: month, year: year)
+        XCTAssertTrue(result.isValid, "Expected \(month)/\(year) to be valid", file: file, line: line)
+    }
+
+    private func assertExpiryInvalid(
+        month: String,
+        year: String,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let result = sut.validateExpiry(month: month, year: year)
+        XCTAssertFalse(result.isValid, "Expected \(month)/\(year) to be invalid", file: file, line: line)
+    }
+
     // MARK: - Current Month Edge Cases
 
     func test_validateExpiry_withCurrentMonth_returnsValid() {
@@ -131,27 +153,13 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
     }
 
     func test_validateExpiry_centuryRollover_2099To2100_handlesCorrectly() {
-        // Given - Testing century rollover
-        let month = "12"
-        let year = "99" // 2099
-
-        // When
-        let result = sut.validateExpiry(month: month, year: year)
-
-        // Then - 2099 should be valid (far future)
-        XCTAssertTrue(result.isValid)
+        // 2099 should be valid (far future)
+        assertExpiryValid(month: "12", year: "99")
     }
 
     func test_validateExpiry_centuryRollover_2000_handlesCorrectly() {
-        // Given
-        let month = "01"
-        let year = "00" // Could be 2000 or 2100
-
-        // When
-        let result = sut.validateExpiry(month: month, year: year)
-
-        // Then - Should interpret as past (2000) and return invalid
-        XCTAssertFalse(result.isValid)
+        // Should interpret "00" as past (2000) and return invalid
+        assertExpiryInvalid(month: "01", year: "00")
     }
 
     // MARK: - Invalid Month Validation

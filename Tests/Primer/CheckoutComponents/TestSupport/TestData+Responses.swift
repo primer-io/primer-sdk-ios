@@ -158,11 +158,14 @@ extension TestData {
 
     // MARK: - Network Responses
 
+    /// Typealias for network response tuple to avoid `as X?` clutter
+    typealias NetworkResponseResult = (data: Data?, response: HTTPURLResponse?, error: Error?)
+
     enum NetworkResponses {
         private static let testURL = URL(string: "https://api.primer.io/test")!
         private static let defaultHeaders = ["Content-Type": "application/json"]
 
-        static func success200(with data: Data? = nil) -> (Data?, HTTPURLResponse?, Error?) {
+        static func success200(with data: Data? = nil) -> NetworkResponseResult {
             let json = data ?? APIResponses.validPaymentMethods.data(using: .utf8)
             let response = HTTPURLResponse(
                 url: testURL,
@@ -173,68 +176,68 @@ extension TestData {
             return (json, response, nil)
         }
 
-        static let badRequest400 = (
-            data: nil as Data?,
+        static let badRequest400: NetworkResponseResult = (
+            data: nil,
             response: HTTPURLResponse(
                 url: testURL,
                 statusCode: 400,
                 httpVersion: nil,
                 headerFields: defaultHeaders
             ),
-            error: nil as Error?
+            error: nil
         )
 
-        static let unauthorized401 = (
-            data: nil as Data?,
+        static let unauthorized401: NetworkResponseResult = (
+            data: nil,
             response: HTTPURLResponse(
                 url: testURL,
                 statusCode: 401,
                 httpVersion: nil,
                 headerFields: defaultHeaders
             ),
-            error: nil as Error?
+            error: nil
         )
 
-        static let notFound404 = (
-            data: nil as Data?,
+        static let notFound404: NetworkResponseResult = (
+            data: nil,
             response: HTTPURLResponse(
                 url: testURL,
                 statusCode: 404,
                 httpVersion: nil,
                 headerFields: defaultHeaders
             ),
-            error: nil as Error?
+            error: nil
         )
 
-        static let serverError500 = (
-            data: nil as Data?,
+        static let serverError500: NetworkResponseResult = (
+            data: nil,
             response: HTTPURLResponse(
                 url: testURL,
                 statusCode: 500,
                 httpVersion: nil,
                 headerFields: defaultHeaders
             ),
-            error: nil as Error?
+            error: nil
         )
 
-        static let timeout = (
-            data: nil as Data?,
-            response: nil as HTTPURLResponse?,
+        static let timeout: NetworkResponseResult = (
+            data: nil,
+            response: nil,
             error: NSError(
                 domain: NSURLErrorDomain,
                 code: NSURLErrorTimedOut,
                 userInfo: [NSLocalizedDescriptionKey: "Request timed out"]
-            ) as Error
+            )
         )
 
-        static let noConnection = (
-            data: nil as Data?,
-            response: nil as HTTPURLResponse?,
+        static let noConnection: NetworkResponseResult = (
+            data: nil,
+            response: nil,
             error: NSError(
                 domain: NSURLErrorDomain,
                 code: NSURLErrorNotConnectedToInternet,
                 userInfo: [NSLocalizedDescriptionKey: "No internet connection"]
-            ) as Error
+            )
         )
     }
 

@@ -10,267 +10,114 @@ import XCTest
 @available(iOS 15.0, *)
 final class ErrorMessageResolverFieldErrorTests: XCTestCase {
 
+    // MARK: - Test Data
+
+    /// Expected error message keys for required field errors
+    private let requiredErrorMessageKeys: [ValidationError.InputElementType: String] = [
+        .firstName: TestData.ErrorMessageKeys.firstNameRequired,
+        .lastName: TestData.ErrorMessageKeys.lastNameRequired,
+        .email: TestData.ErrorMessageKeys.emailRequired,
+        .countryCode: TestData.ErrorMessageKeys.countryRequired,
+        .addressLine1: TestData.ErrorMessageKeys.addressLine1Required,
+        .addressLine2: TestData.ErrorMessageKeys.addressLine2Required,
+        .city: TestData.ErrorMessageKeys.cityRequired,
+        .state: TestData.ErrorMessageKeys.stateRequired,
+        .postalCode: TestData.ErrorMessageKeys.postalCodeRequired,
+        .phoneNumber: TestData.ErrorMessageKeys.phoneNumberRequired,
+        .retailOutlet: TestData.ErrorMessageKeys.retailOutletRequired
+    ]
+
+    /// Expected error message keys for invalid field errors
+    private let invalidErrorMessageKeys: [ValidationError.InputElementType: String] = [
+        .cardNumber: TestData.ErrorMessageKeys.cardNumberInvalid,
+        .cvv: TestData.ErrorMessageKeys.cvvInvalid,
+        .expiryDate: TestData.ErrorMessageKeys.expiryDateInvalid,
+        .cardholderName: TestData.ErrorMessageKeys.cardholderNameInvalid,
+        .firstName: TestData.ErrorMessageKeys.firstNameInvalid,
+        .lastName: TestData.ErrorMessageKeys.lastNameInvalid,
+        .email: TestData.ErrorMessageKeys.emailInvalid,
+        .countryCode: TestData.ErrorMessageKeys.countryInvalid,
+        .addressLine1: TestData.ErrorMessageKeys.addressLine1Invalid,
+        .addressLine2: TestData.ErrorMessageKeys.addressLine2Invalid,
+        .city: TestData.ErrorMessageKeys.cityInvalid,
+        .state: TestData.ErrorMessageKeys.stateInvalid,
+        .postalCode: TestData.ErrorMessageKeys.postalCodeInvalid,
+        .phoneNumber: TestData.ErrorMessageKeys.phoneNumberInvalid,
+        .retailOutlet: TestData.ErrorMessageKeys.retailOutletInvalid
+    ]
+
+    /// Types that support required field errors
+    private var typesWithRequiredErrors: [ValidationError.InputElementType] {
+        Array(requiredErrorMessageKeys.keys)
+    }
+
+    /// Types that support invalid field errors
+    private var typesWithInvalidErrors: [ValidationError.InputElementType] {
+        Array(invalidErrorMessageKeys.keys)
+    }
+
+    // MARK: - Helper Methods
+
+    private func assertRequiredFieldError(
+        for type: ValidationError.InputElementType,
+        expectedMessageKey: String,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let error = ErrorMessageResolver.createRequiredFieldError(for: type)
+
+        XCTAssertEqual(error.inputElementType, type, file: file, line: line)
+        XCTAssertEqual(error.errorMessageKey, expectedMessageKey,
+                       "Expected message key '\(expectedMessageKey)' for \(type), got '\(error.errorMessageKey ?? "nil")'",
+                       file: file, line: line)
+        XCTAssertEqual(error.errorId, "\(type.rawValue.lowercased())_required", file: file, line: line)
+        XCTAssertEqual(error.code, "invalid-\(type.rawValue.lowercased())", file: file, line: line)
+        XCTAssertEqual(error.message, TestData.ErrorMessages.fieldRequired, file: file, line: line)
+    }
+
+    private func assertInvalidFieldError(
+        for type: ValidationError.InputElementType,
+        expectedMessageKey: String,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let error = ErrorMessageResolver.createInvalidFieldError(for: type)
+
+        XCTAssertEqual(error.inputElementType, type, file: file, line: line)
+        XCTAssertEqual(error.errorMessageKey, expectedMessageKey,
+                       "Expected message key '\(expectedMessageKey)' for \(type), got '\(error.errorMessageKey ?? "nil")'",
+                       file: file, line: line)
+        XCTAssertEqual(error.errorId, "\(type.rawValue.lowercased())_invalid", file: file, line: line)
+        XCTAssertEqual(error.code, "invalid-\(type.rawValue.lowercased())", file: file, line: line)
+        XCTAssertEqual(error.message, TestData.ErrorMessages.fieldInvalid, file: file, line: line)
+    }
+
     // MARK: - createRequiredFieldError Tests
 
-    func test_createRequiredFieldError_forFirstName_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .firstName)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .firstName)
-        XCTAssertEqual(error.errorId, TestData.ErrorIds.firstNameRequired)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.firstNameRequired)
-        XCTAssertEqual(error.code, TestData.ErrorCodes.invalidFirstName)
-        XCTAssertEqual(error.message, TestData.ErrorMessages.fieldRequired)
-    }
-
-    func test_createRequiredFieldError_forLastName_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .lastName)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .lastName)
-        XCTAssertEqual(error.errorId, TestData.ErrorIds.lastNameRequired)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.lastNameRequired)
-    }
-
-    func test_createRequiredFieldError_forEmail_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .email)
-        XCTAssertEqual(error.errorId, TestData.ErrorIds.emailRequired)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.emailRequired)
-    }
-
-    func test_createRequiredFieldError_forCountryCode_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .countryCode)
-        XCTAssertEqual(error.errorId, TestData.ErrorIds.countryCodeRequired)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.countryRequired)
-    }
-
-    func test_createRequiredFieldError_forAddressLine1_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .addressLine1)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .addressLine1)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.addressLine1Required)
-    }
-
-    func test_createRequiredFieldError_forAddressLine2_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .addressLine2)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .addressLine2)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.addressLine2Required)
-    }
-
-    func test_createRequiredFieldError_forCity_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .city)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .city)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.cityRequired)
-    }
-
-    func test_createRequiredFieldError_forState_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .state)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .state)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.stateRequired)
-    }
-
-    func test_createRequiredFieldError_forPostalCode_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .postalCode)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.postalCodeRequired)
-    }
-
-    func test_createRequiredFieldError_forPhoneNumber_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .phoneNumber)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.phoneNumberRequired)
-    }
-
-    func test_createRequiredFieldError_forRetailOutlet_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createRequiredFieldError(for: .retailOutlet)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .retailOutlet)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.retailOutletRequired)
+    func test_createRequiredFieldError_forAllSupportedTypes_createsCorrectErrors() {
+        for (type, expectedMessageKey) in requiredErrorMessageKeys {
+            assertRequiredFieldError(for: type, expectedMessageKey: expectedMessageKey)
+        }
     }
 
     func test_createRequiredFieldError_forUnknown_usesGenericKey() {
-        // When
         let error = ErrorMessageResolver.createRequiredFieldError(for: .unknown)
 
-        // Then
         XCTAssertEqual(error.inputElementType, .unknown)
         XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.genericRequired)
     }
 
     // MARK: - createInvalidFieldError Tests
 
-    func test_createInvalidFieldError_forCardNumber_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .cardNumber)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .cardNumber)
-        XCTAssertEqual(error.errorId, TestData.ErrorIds.cardNumberInvalid)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.cardNumberInvalid)
-        XCTAssertEqual(error.code, TestData.ErrorCodes.invalidCardNumber)
-        XCTAssertEqual(error.message, TestData.ErrorMessages.fieldInvalid)
-    }
-
-    func test_createInvalidFieldError_forCVV_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .cvv)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .cvv)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.cvvInvalid)
-    }
-
-    func test_createInvalidFieldError_forExpiryDate_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .expiryDate)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.expiryDateInvalid)
-    }
-
-    func test_createInvalidFieldError_forCardholderName_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .cardholderName)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .cardholderName)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.cardholderNameInvalid)
-    }
-
-    func test_createInvalidFieldError_forFirstName_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .firstName)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .firstName)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.firstNameInvalid)
-    }
-
-    func test_createInvalidFieldError_forLastName_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .lastName)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .lastName)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.lastNameInvalid)
-    }
-
-    func test_createInvalidFieldError_forEmail_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .email)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .email)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.emailInvalid)
-    }
-
-    func test_createInvalidFieldError_forCountryCode_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .countryCode)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.countryInvalid)
-    }
-
-    func test_createInvalidFieldError_forAddressLine1_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .addressLine1)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .addressLine1)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.addressLine1Invalid)
-    }
-
-    func test_createInvalidFieldError_forAddressLine2_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .addressLine2)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .addressLine2)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.addressLine2Invalid)
-    }
-
-    func test_createInvalidFieldError_forCity_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .city)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .city)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.cityInvalid)
-    }
-
-    func test_createInvalidFieldError_forState_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .state)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .state)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.stateInvalid)
-    }
-
-    func test_createInvalidFieldError_forPostalCode_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .postalCode)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.postalCodeInvalid)
-    }
-
-    func test_createInvalidFieldError_forPhoneNumber_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .phoneNumber)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.phoneNumberInvalid)
-    }
-
-    func test_createInvalidFieldError_forRetailOutlet_createsCorrectError() {
-        // When
-        let error = ErrorMessageResolver.createInvalidFieldError(for: .retailOutlet)
-
-        // Then
-        XCTAssertEqual(error.inputElementType, .retailOutlet)
-        XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.retailOutletInvalid)
+    func test_createInvalidFieldError_forAllSupportedTypes_createsCorrectErrors() {
+        for (type, expectedMessageKey) in invalidErrorMessageKeys {
+            assertInvalidFieldError(for: type, expectedMessageKey: expectedMessageKey)
+        }
     }
 
     func test_createInvalidFieldError_forUnknown_usesGenericKey() {
-        // When
         let error = ErrorMessageResolver.createInvalidFieldError(for: .unknown)
 
-        // Then
         XCTAssertEqual(error.inputElementType, .unknown)
         XCTAssertEqual(error.errorMessageKey, TestData.ErrorMessageKeys.genericInvalid)
     }
@@ -302,13 +149,12 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
     // MARK: - All Input Element Types Coverage
 
     func test_allInputElementTypes_haveRequiredErrorKeys() {
-        let typesToTest: [ValidationError.InputElementType] = [
-            .firstName, .lastName, .email, .countryCode,
-            .addressLine1, .addressLine2, .city, .state,
-            .postalCode, .phoneNumber, .retailOutlet
+        // Test all cases except those that don't support required errors (card-related types and otpCode)
+        let unsupportedTypes: Set<ValidationError.InputElementType> = [
+            .cardNumber, .cvv, .expiryDate, .cardholderName, .otpCode, .unknown
         ]
 
-        for type in typesToTest {
+        for type in ValidationError.InputElementType.allCases where !unsupportedTypes.contains(type) {
             let error = ErrorMessageResolver.createRequiredFieldError(for: type)
             let message = ErrorMessageResolver.resolveErrorMessage(for: error)
 
@@ -318,19 +164,30 @@ final class ErrorMessageResolverFieldErrorTests: XCTestCase {
     }
 
     func test_allInputElementTypes_haveInvalidErrorKeys() {
-        let typesToTest: [ValidationError.InputElementType] = [
-            .cardNumber, .cvv, .expiryDate, .cardholderName,
-            .firstName, .lastName, .email, .countryCode,
-            .addressLine1, .addressLine2, .city, .state,
-            .postalCode, .phoneNumber, .retailOutlet
-        ]
+        // Test all cases except those that don't support invalid errors (otpCode and unknown)
+        let unsupportedTypes: Set<ValidationError.InputElementType> = [.otpCode, .unknown]
 
-        for type in typesToTest {
+        for type in ValidationError.InputElementType.allCases where !unsupportedTypes.contains(type) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: type)
             let message = ErrorMessageResolver.resolveErrorMessage(for: error)
 
             XCTAssertNotEqual(message, CheckoutComponentsStrings.unexpectedError,
                               "Type \(type) should have a valid invalid error message")
         }
+    }
+
+    // MARK: - Exhaustive Coverage Test
+
+    func test_allInputElementTypes_areHandled() {
+        // Ensure we've considered all InputElementType cases
+        // This test will fail if a new case is added to the enum without updating the tests
+        let allTypes = Set(ValidationError.InputElementType.allCases)
+        let handledInRequired = Set(typesWithRequiredErrors + [.unknown, .cardNumber, .cvv, .expiryDate, .cardholderName, .otpCode])
+        let handledInInvalid = Set(typesWithInvalidErrors + [.unknown, .otpCode])
+
+        XCTAssertEqual(allTypes, handledInRequired,
+                       "All InputElementTypes should be handled in required error tests")
+        XCTAssertEqual(allTypes, handledInInvalid,
+                       "All InputElementTypes should be handled in invalid error tests")
     }
 }
