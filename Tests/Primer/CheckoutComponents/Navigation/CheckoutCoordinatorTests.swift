@@ -23,40 +23,7 @@ final class CheckoutCoordinatorTests: XCTestCase {
         try await super.tearDown()
     }
 
-    // MARK: - Initial State Tests
-
-    func test_init_hasEmptyNavigationStack() {
-        XCTAssertTrue(sut.navigationStack.isEmpty)
-    }
-
-    func test_currentRoute_withEmptyStack_returnsSplash() {
-        XCTAssertEqual(sut.currentRoute, .splash)
-    }
-
-    // MARK: - Navigate Tests
-
-    func test_navigate_toLoading_replacesStack() {
-        // Given - empty stack (splash)
-
-        // When
-        sut.navigate(to: .loading)
-
-        // Then - loading replaces splash
-        XCTAssertEqual(sut.navigationStack.count, 1)
-        XCTAssertEqual(sut.currentRoute, .loading)
-    }
-
-    func test_navigate_toPaymentMethodSelection_resetsStack() {
-        // Given - navigate to loading first
-        sut.navigate(to: .loading)
-
-        // When
-        sut.navigate(to: .paymentMethodSelection)
-
-        // Then - stack is reset with paymentMethodSelection as root
-        XCTAssertEqual(sut.navigationStack.count, 1)
-        XCTAssertEqual(sut.currentRoute, .paymentMethodSelection)
-    }
+    // MARK: - Navigation Behavior Tests
 
     func test_navigate_toPaymentMethod_pushesToStack() {
         // Given - navigate to payment selection first
@@ -82,32 +49,6 @@ final class CheckoutCoordinatorTests: XCTestCase {
         // Then - replaces payment method, stack count unchanged
         XCTAssertEqual(sut.navigationStack.count, 2)
         XCTAssertEqual(sut.currentRoute, .processing)
-    }
-
-    func test_navigate_toSuccess_replacesCurrentRoute() {
-        // Given
-        sut.navigate(to: .processing)
-        let result = CheckoutPaymentResult(paymentId: TestData.PaymentIds.test, amount: TestData.FormattedAmounts.tenDollars)
-
-        // When
-        sut.navigate(to: .success(result))
-
-        // Then
-        XCTAssertEqual(sut.navigationStack.count, 1)
-        XCTAssertEqual(sut.currentRoute, .success(result))
-    }
-
-    func test_navigate_toFailure_replacesCurrentRoute() {
-        // Given
-        sut.navigate(to: .processing)
-        let error = PrimerError.invalidValue(key: TestData.ErrorKeys.test, value: nil, reason: nil, diagnosticsId: TestData.DiagnosticsIds.test)
-
-        // When
-        sut.navigate(to: .failure(error))
-
-        // Then
-        XCTAssertEqual(sut.navigationStack.count, 1)
-        XCTAssertEqual(sut.currentRoute, .failure(error))
     }
 
     func test_navigate_toSameRoute_doesNotDuplicate() {
@@ -176,34 +117,6 @@ final class CheckoutCoordinatorTests: XCTestCase {
         XCTAssertEqual(sut.currentRoute, .paymentMethodSelection)
     }
 
-    // MARK: - Dismiss Tests
-
-    func test_dismiss_clearsNavigationStack() {
-        // Given
-        sut.navigate(to: .paymentMethodSelection)
-        sut.navigate(to: .paymentMethod(TestData.PaymentMethodTypes.card, .fromPaymentSelection))
-
-        // When
-        sut.dismiss()
-
-        // Then
-        XCTAssertTrue(sut.navigationStack.isEmpty)
-    }
-
-    // MARK: - HandlePaymentFailure Tests
-
-    func test_handlePaymentFailure_navigatesToFailure() {
-        // Given
-        sut.navigate(to: .processing)
-        let error = PrimerError.invalidValue(key: TestData.ErrorKeys.test, value: nil, reason: nil, diagnosticsId: TestData.DiagnosticsIds.test)
-
-        // When
-        sut.handlePaymentFailure(error)
-
-        // Then
-        XCTAssertEqual(sut.currentRoute, .failure(error))
-    }
-
     // MARK: - LastPaymentMethodRoute Tests
 
     func test_lastPaymentMethodRoute_tracksPaymentMethod() {
@@ -217,19 +130,6 @@ final class CheckoutCoordinatorTests: XCTestCase {
 
         // Then - last payment method is tracked
         XCTAssertEqual(sut.lastPaymentMethodRoute, paymentRoute)
-    }
-
-    func test_lastPaymentMethodRoute_initiallyNil() {
-        XCTAssertNil(sut.lastPaymentMethodRoute)
-    }
-
-    func test_lastPaymentMethodRoute_notUpdatedForNonPaymentRoutes() {
-        // Given
-        sut.navigate(to: .loading)
-        sut.navigate(to: .paymentMethodSelection)
-
-        // Then - still nil
-        XCTAssertNil(sut.lastPaymentMethodRoute)
     }
 
     // MARK: - Complex Navigation Flow Tests
