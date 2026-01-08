@@ -47,40 +47,20 @@ final class SwiftUIDITests: XCTestCase {
         try await super.tearDown()
     }
 
-    // MARK: - Protocol Type Tests
+    // MARK: - Tests
 
-    func test_requiredInjected_withProtocolType_returnsFallback() {
+    func test_requiredInjected_returnsFallback() {
         // Arrange
         var requiredInjected = RequiredInjected(
-            MockProtocol.self,
-            fallback: MockProtocolImpl(value: TestData.DI.protocolFallbackValue)
+            MockService.self,
+            fallback: MockService(identifier: TestData.DI.protocolFallbackValue)
         )
 
         // Act
         let value = requiredInjected.wrappedValue
 
         // Assert
-        XCTAssertEqual(value.getValue(), TestData.DI.protocolFallbackValue)
+        XCTAssertEqual(value.identifier, TestData.DI.protocolFallbackValue)
     }
 
-}
-
-// MARK: - Test Protocol
-
-@available(iOS 15.0, *)
-private protocol MockProtocol {
-    func getValue() -> String
-}
-
-@available(iOS 15.0, *)
-private final class MockProtocolImpl: MockProtocol {
-    private let value: String
-
-    init(value: String) {
-        self.value = value
-    }
-
-    func getValue() -> String {
-        value
-    }
 }
