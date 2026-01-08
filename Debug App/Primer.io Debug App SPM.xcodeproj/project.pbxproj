@@ -68,7 +68,6 @@
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */; };
-		F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */; };
 		F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */; };
 		F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */; };
 		F09978842D0326860058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978832D0326860058E4B5 /* Metadata.swift */; };
@@ -560,7 +559,6 @@
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
-				F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */,
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
 				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,

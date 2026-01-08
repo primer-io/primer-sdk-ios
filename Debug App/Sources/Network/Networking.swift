@@ -1,7 +1,7 @@
 //
 //  Networking.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -12,10 +12,7 @@ enum APIVersion: String {
 
     static func from(primerApiVersion: PrimerApiVersion) -> APIVersion {
         switch primerApiVersion {
-        case .V2_4:
-            return .v2_4
-        default:
-            return .v2_4
+        case .V2_4: .v2_4
         }
     }
 }
@@ -98,7 +95,7 @@ final class Networking {
 
         let headerDescriptions =
             request.allHTTPHeaderFields?.map { key, value in
-                return "\(key) = \(value)"
+                "\(key) = \(value)"
             } ?? []
         logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 
@@ -203,7 +200,7 @@ final class Networking {
             body: bodyData
         ) { result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 do {
                     let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
                     completion(paymentResponse, nil)
@@ -211,7 +208,7 @@ final class Networking {
                     completion(nil, error)
                 }
 
-            case .failure(let err):
+            case let .failure(err):
                 completion(nil, err)
             }
         }
@@ -251,7 +248,7 @@ final class Networking {
             body: bodyData
         ) { result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 do {
                     let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
                     completion(paymentResponse, nil)
@@ -259,7 +256,7 @@ final class Networking {
                     completion(nil, error)
                 }
 
-            case .failure(let err):
+            case let .failure(err):
                 completion(nil, err)
             }
         }
@@ -291,7 +288,7 @@ final class Networking {
             body: bodyData
         ) { result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 do {
                     if let token =
                         (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -307,7 +304,7 @@ final class Networking {
                 } catch {
                     completion(nil, error)
                 }
-            case .failure(let err):
+            case let .failure(err):
                 completion(nil, err)
             }
         }
@@ -342,7 +339,7 @@ final class Networking {
             body: bodyData
         ) { result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 do {
                     if let token =
                         (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -358,7 +355,7 @@ final class Networking {
                 } catch {
                     completion(nil, error)
                 }
-            case .failure(let err):
+            case let .failure(err):
                 completion(nil, err)
             }
         }
@@ -403,7 +400,7 @@ public struct Payment {
         public let customerId: String?
         public let dateStr: String?
         public var date: Date? {
-            return dateStr?.toDate()
+            dateStr?.toDate()
         }
         public let order: Request.Body.ClientSession.Order?
         public let orderId: String?

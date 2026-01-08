@@ -1,8 +1,8 @@
 //
 //  version.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable:next identifier_name
-public let PrimerSDKVersion = "2.43.2"
+public let PrimerSDKVersion = "2.44.0"

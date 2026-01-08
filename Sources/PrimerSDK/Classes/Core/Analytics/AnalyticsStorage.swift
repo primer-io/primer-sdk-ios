@@ -1,7 +1,7 @@
 //
 //  AnalyticsStorage.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -9,8 +9,8 @@ import Foundation
 private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
                                                              in: .userDomainMask)[0].appendingPathComponent("analytics")
 
-protocol AnalyticsStorage {
-    
+protocol AnalyticsStorage: Sendable {
+
     func loadEvents() -> [Analytics.Event]
     
     func save(_ events: [Analytics.Event]) throws
@@ -66,7 +66,7 @@ extension Analytics {
         }
         
         func delete(_ events: [Analytics.Event]) {
-            guard events.count > 0 else {
+            guard !events.isEmpty else {
                 logger.warn(message: "📚 Analytics: tried to delete events but array was empty ...")
                 return
             }
@@ -75,7 +75,7 @@ extension Analytics {
             
             do {
                 let storedEvents = loadEvents()
-                let eventsLocalIds = events.compactMap({ $0.localId })
+                let eventsLocalIds = events.compactMap(\.localId)
                 let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
                 
                 logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")

@@ -1,3 +1,15 @@
+## 2.44.0 (2026-01-08)
+
+### Feat
+
+- Show 3DS processing screen with EMVCo-compliant 2-second minimum (#1437)
+
+### Fix
+
+- Update expiry date test to use future dates (#1453)
+- Use calendar year format in expiry date test helper (#1450)
+- Remove progress dialog dismiss before 3DS challenge to prevent flicker (#1447)
+
 ## 2.43.2 (2025-12-19)
 
 ### Fix
