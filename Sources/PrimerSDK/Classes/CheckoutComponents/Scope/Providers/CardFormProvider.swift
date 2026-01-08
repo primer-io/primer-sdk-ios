@@ -56,8 +56,7 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
 
     public var body: some View {
         if let checkoutScope,
-           let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self)
-        {
+           let cardFormScope = checkoutScope.getPaymentMethodScope(DefaultCardFormScope.self) {
             content(cardFormScope)
                 .environment(\.primerCardFormScope, cardFormScope)
                 .task {

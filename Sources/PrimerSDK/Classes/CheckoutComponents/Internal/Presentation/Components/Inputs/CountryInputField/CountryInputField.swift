@@ -71,29 +71,32 @@ struct CountryInputField: View, LogReporter {
             errorMessage: $errorMessage,
             isFocused: $isFocused,
             textFieldBuilder: {
-                Button(action: {
-                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                    impactFeedback.impactOccurred()
+                Button(
+                    action: {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
 
-                    showCountryPicker = true
-                }) {
-                    HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-                        // Flag emoji
-                        if let countryFlag, !countryName.isEmpty {
-                            Text(countryFlag)
+                        showCountryPicker = true
+                    },
+                    label: {
+                        HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+                            // Flag emoji
+                            if let countryFlag, !countryName.isEmpty {
+                                Text(countryFlag)
+                                    .font(fieldFont)
+                            }
+
+                            // Country name or placeholder
+                            Text(countryName.isEmpty ? placeholder : countryName)
                                 .font(fieldFont)
+                                .foregroundColor(countryTextColor)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer(minLength: 0)
                         }
-
-                        // Country name or placeholder
-                        Text(countryName.isEmpty ? placeholder : countryName)
-                            .font(fieldFont)
-                            .foregroundColor(countryTextColor)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Spacer(minLength: 0)
+                        .frame(height: PrimerSize.xxlarge(tokens: tokens))
+                        .contentShape(Rectangle())
                     }
-                    .frame(height: PrimerSize.xxlarge(tokens: tokens))
-                    .contentShape(Rectangle())
-                }
+                )
                 .buttonStyle(PlainButtonStyle())
             },
             rightComponent: {
