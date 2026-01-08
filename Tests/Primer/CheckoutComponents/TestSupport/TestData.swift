@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Centralized test data for CheckoutComponents tests.
-/// All test data is organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
 
@@ -18,6 +16,27 @@ enum TestData {
         static let valid = "test-token"
         static let invalid = "invalid-token"
         static let expired = "expired-token"
+    }
+
+    // MARK: - Payment Methods
+
+    enum PaymentMethodIds {
+        static let card = "card-1"
+        static let paypal = "paypal-1"
+    }
+
+    enum PaymentMethodTypes {
+        static let card = "PAYMENT_CARD"
+        static let paypal = "PAYPAL"
+    }
+
+    enum PaymentMethodNames {
+        static let card = "Credit Card"
+        static let paypal = "PayPal"
+    }
+
+    enum PaymentIds {
+        static let success = "test-payment-id"
     }
 
     // MARK: - Card Numbers

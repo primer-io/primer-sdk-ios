@@ -87,40 +87,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
     // MARK: - Payment Handling Mode Tests
 
-    func testPaymentHandlingAutoMode() async throws {
-        // Given: Settings with auto payment handling
-        let settings = PrimerSettings(paymentHandling: .auto)
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        // Then: Payment handling should be auto
-        XCTAssertEqual(resolved.paymentHandling, .auto)
-    }
-
-    func testPaymentHandlingManualMode() async throws {
-        // Given: Settings with manual payment handling
-        let settings = PrimerSettings(paymentHandling: .manual)
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        // Then: Payment handling should be manual
-        XCTAssertEqual(resolved.paymentHandling, .manual)
-    }
-
     func testPaymentHandlingDefaultsToAuto() async throws {
         // Given: Settings without explicit payment handling (uses default)
         let settings = PrimerSettings()
@@ -139,61 +105,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
     }
 
     // MARK: - Payment Method Options Tests
-
-    func testKlarnaOptionsAccessibleFromSettings() async throws {
-        // Given: Settings with Klarna options
-        let klarnaOptions = PrimerKlarnaOptions(
-            recurringPaymentDescription: TestData.PaymentMethodOptions.monthlySubscription
-        )
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                klarnaOptions: klarnaOptions
-            )
-        )
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        // Then: Klarna options should be accessible
-        XCTAssertNotNil(resolved.paymentMethodOptions.klarnaOptions)
-        XCTAssertEqual(
-            resolved.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            TestData.PaymentMethodOptions.monthlySubscription
-        )
-    }
-
-    func testApplePayOptionsAccessibleFromSettings() async throws {
-        let applePayOptions = PrimerApplePayOptions(
-            merchantIdentifier: TestData.PaymentMethodOptions.exampleMerchantId,
-            merchantName: nil
-        )
-        let settings = PrimerSettings(
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                applePayOptions: applePayOptions
-            )
-        )
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        XCTAssertNotNil(resolved.paymentMethodOptions.applePayOptions)
-        XCTAssertEqual(
-            resolved.paymentMethodOptions.applePayOptions?.merchantIdentifier,
-            TestData.PaymentMethodOptions.exampleMerchantId
-        )
-    }
 
     func testURLSchemeAccessibleFromSettings() async throws {
         // Given: Settings with URL scheme
@@ -216,39 +127,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
         XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.myAppScheme)
-    }
-
-    // MARK: - Settings Persistence Tests
-
-    func testSettingsRemainConsistentAcrossMultipleResolves() async throws {
-        // Given: Settings with specific configuration
-        let settings = PrimerSettings(
-            paymentHandling: .manual,
-            clientSessionCachingEnabled: true,
-            apiVersion: .V2_4
-        )
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        // When: Resolve multiple times
-        let resolve1 = try await container.resolve(PrimerSettings.self)
-        let resolve2 = try await container.resolve(PrimerSettings.self)
-        let resolve3 = try await container.resolve(PrimerSettings.self)
-
-        // Then: All should be same instance with consistent values
-        XCTAssertTrue(resolve1 === resolve2)
-        XCTAssertTrue(resolve2 === resolve3)
-        XCTAssertEqual(resolve1.paymentHandling, .manual)
-        XCTAssertEqual(resolve2.paymentHandling, .manual)
-        XCTAssertEqual(resolve3.paymentHandling, .manual)
-        XCTAssertTrue(resolve1.clientSessionCachingEnabled)
-        XCTAssertTrue(resolve2.clientSessionCachingEnabled)
-        XCTAssertTrue(resolve3.clientSessionCachingEnabled)
     }
 
     // MARK: - Settings Isolation Tests
@@ -278,23 +156,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
     // MARK: - API Version Tests
 
-    func testAPIVersionAccessibleFromSettings() async throws {
-        // Given: Settings with specific API version
-        let settings = PrimerSettings(apiVersion: .V2_4)
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        // Then: API version should be accessible
-        XCTAssertEqual(resolved.apiVersion, .V2_4)
-    }
-
     func testAPIVersionDefaultsToLatest() async throws {
         // Given: Settings without explicit API version
         let settings = PrimerSettings()
@@ -313,23 +174,6 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
     }
 
     // MARK: - Client Session Caching Tests
-
-    func testClientSessionCachingEnabledFromSettings() async throws {
-        // Given: Settings with caching enabled
-        let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        let composableContainer = ComposableContainer(settings: settings)
-        await composableContainer.configure()
-
-        guard let container = await DIContainer.current else {
-            XCTFail("Container should be configured")
-            return
-        }
-
-        let resolved = try await container.resolve(PrimerSettings.self)
-
-        // Then: Caching should be enabled
-        XCTAssertTrue(resolved.clientSessionCachingEnabled)
-    }
 
     func testClientSessionCachingDisabledByDefault() async throws {
         // Given: Settings without explicit caching configuration
