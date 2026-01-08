@@ -358,7 +358,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 9 | `ov/test/checkout-components-09-data-config` | Data Config | 6+6 | 🔄 In Review |
 | 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 4+6 | 🔄 In Review |
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6+source | 🔄 In Review |
-| 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5 | ⬜ Pending |
+| 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5+source | 🔄 In Review |
 | 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | ⬜ Pending |
 | 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | ⬜ Pending |
 | 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | ⬜ Pending |
@@ -520,12 +520,15 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Source:* Internal/Data/Repositories/HeadlessRepositoryImpl.swift (modified)
 - [x] *Fix:* Tests/Primer/DependencyInjectionTests.swift (test isolation fix)
 
-### PR 12: HeadlessRepo Pt3 (5 files)
-- [ ] Mocks/MockPaymentMethodMapper.swift
-- [ ] Data/HeadlessRepository/HeadlessRepositoryNetworkSurchargesTests.swift
-- [ ] Data/HeadlessRepository/HeadlessRepositoryVaultTests.swift
-- [ ] Data/PayPalRepositoryImplTests.swift
-- [ ] Mappers/PaymentMethodMapperTests.swift
+### PR 12: HeadlessRepo Pt3 (5 files + source changes)
+*Note: Includes same source changes as PR 11 for testability*
+- [x] Mocks/MockPaymentMethodMapper.swift
+- [x] Data/HeadlessRepository/HeadlessRepositoryNetworkSurchargesTests.swift
+- [x] Data/HeadlessRepository/HeadlessRepositoryVaultTests.swift
+- [x] Data/PayPalRepositoryImplTests.swift
+- [x] Mappers/PaymentMethodMapperTests.swift
+- [x] *Source:* Internal/Services/RawDataManagerProtocol.swift
+- [x] *Source:* Internal/Data/Repositories/HeadlessRepositoryImpl.swift (modified)
 
 ### PR 13: Interactors (7 files)
 - [ ] Mocks/MockProcessCardPaymentInteractor.swift
