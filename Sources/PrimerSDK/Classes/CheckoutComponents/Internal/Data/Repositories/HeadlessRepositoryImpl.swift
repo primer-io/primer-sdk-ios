@@ -163,6 +163,22 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
+    // MARK: - Dependency Injection for Testing
+
+    private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+    private var configurationServiceFactory: (() -> ConfigurationService)?
+    private var rawDataManagerFactory: RawDataManagerFactoryProtocol
+
+    init(
+        clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+        configurationServiceFactory: (() -> ConfigurationService)? = nil,
+        rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory()
+    ) {
+        self.clientSessionActionsFactory = clientSessionActionsFactory
+        self.configurationServiceFactory = configurationServiceFactory
+        self.rawDataManagerFactory = rawDataManagerFactory
+    }
+
     @available(iOS 15.0, *)
     private func injectSettings() async {
         guard settings == nil else { return }
@@ -187,6 +203,12 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     @available(iOS 15.0, *)
     private func injectConfigurationService() async {
         guard configurationService == nil else { return }
+
+        // Use factory if provided (for testing)
+        if let factory = configurationServiceFactory {
+            configurationService = factory()
+            return
+        }
 
         do {
             guard let container = await DIContainer.current else {
@@ -265,7 +287,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
+    func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for networkData in networksArray {
@@ -290,7 +312,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
+    func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for (networkType, networkData) in networksDict {
@@ -311,7 +333,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
+    func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return [.cardNumber, .cvv, .expiryDate, .cardholderName]
@@ -350,7 +372,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                         }
                         PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
-                        let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+                        let rawDataManager = try self.rawDataManagerFactory.createRawDataManager(
                             paymentMethodType: "PAYMENT_CARD",
                             delegate: paymentHandler
                         )
@@ -373,7 +395,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func createCardData(
+    func createCardData(
         cardNumber: String,
         cvv: String,
         expiryMonth: String,
@@ -399,7 +421,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func configureRawDataManagerAndSubmit(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         cardData: PrimerCardData,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
@@ -437,7 +459,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func submitPaymentWithValidation(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationResult: Bool,
@@ -469,7 +491,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     @MainActor
-    private func submitPaymentWithHandlingMode(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) async {
+    private func submitPaymentWithHandlingMode(rawDataManager: RawDataManagerProtocol) async {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
             await ensureSettings()
@@ -488,7 +510,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     private func handleValidationFailure(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationErrors: [Error]?
     ) {
@@ -556,7 +578,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.rawData = rawCardData
 
         // Use Client Session Actions to select payment method based on network
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
         Task {
             do {
                 try await clientSessionActionsModule
@@ -661,7 +683,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
         // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
 
         Task {
             do {
@@ -787,7 +809,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func extractURL(from value: Any) -> String? {
+    func extractURL(from value: Any) -> String? {
         if let string = value as? String, isLikelyURL(string) {
             return string
         }
@@ -803,7 +825,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func isLikelyURL(_ string: String) -> Bool {
+    func isLikelyURL(_ string: String) -> Bool {
         ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
     }
 
