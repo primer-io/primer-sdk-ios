@@ -7,12 +7,9 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Shared test container creation helpers for CheckoutComponents tests.
-/// Provides consistent container setup across all scope tests.
 @available(iOS 15.0, *)
 enum ContainerTestHelpers {
 
-    /// Creates a test container with standard mock registrations.
     /// Registers: ConfigurationService, AccessibilityAnnouncementService, AnalyticsInteractor
     static func createTestContainer() async -> Container {
         let container = Container()
@@ -36,7 +33,6 @@ enum ContainerTestHelpers {
         return container
     }
 
-    /// Creates a mock DefaultCheckoutScope for testing.
     /// Uses standard test settings with manual payment handling.
     @MainActor
     static func createMockCheckoutScope() async -> DefaultCheckoutScope {
