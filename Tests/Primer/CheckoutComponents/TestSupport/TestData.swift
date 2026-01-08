@@ -715,6 +715,51 @@ enum TestData {
         static let sandboxEnv = "SANDBOX"
         static let productionEnv = "PRODUCTION"
     }
+
+    // MARK: - Payment Method Types
+
+    enum PaymentMethodTypes {
+        static let card = "PAYMENT_CARD"
+        static let applePay = "APPLE_PAY"
+    }
+
+    // MARK: - Diagnostics IDs
+
+    enum DiagnosticsIds {
+        static let test = "test-diagnostics"
+    }
+
+    // MARK: - Payment IDs
+
+    enum PaymentIds {
+        static let test = "test-payment"
+        static let success = "success-123"
+    }
+
+    // MARK: - Formatted Amounts
+
+    enum FormattedAmounts {
+        static let tenDollars = "$10.00"
+    }
+
+    // MARK: - Error Keys
+
+    enum ErrorKeys {
+        static let test = "test"
+    }
+
+    // MARK: - Route IDs
+
+    enum RouteIds {
+        static let splash = "splash"
+        static let loading = "loading"
+        static let paymentMethodSelection = "payment-method-selection"
+        static let processing = "processing"
+        static let success = "success"
+        static let failure = "failure"
+        static let paymentMethodCardDirect = "payment-method-PAYMENT_CARD-direct"
+        static let paymentMethodCardSelection = "payment-method-PAYMENT_CARD-selection"
+    }
 }
 
 // MARK: - Test Error Type
