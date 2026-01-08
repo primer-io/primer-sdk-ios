@@ -7,10 +7,33 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Centralized test data for CheckoutComponents tests.
-/// All test data is organized by category for easy discovery and use.
+/// Organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
+
+    // MARK: - Accessibility
+
+    enum Accessibility {
+        // Test configuration
+        static let concurrentOperationCount = 10
+        static let testTimeout: TimeInterval = 5.0
+        static let testQueueLabel = "test.concurrent"
+        static let concurrentExpectationDescription = "Concurrent announcements"
+
+        // Announcement messages for tests
+        static let errorPrefix = "Error"
+        static let statePrefix = "State"
+        static let errorMessage = "Error message"
+        static let stateChangeMessage = "State change"
+        static let layoutChangeMessage = "Layout change"
+        static let screenChangeMessage = "Screen change"
+
+        // Test case descriptions
+        static let errorDescription = "Error announcements"
+        static let stateChangeDescription = "State change announcements"
+        static let layoutChangeDescription = "Layout change announcements"
+        static let screenChangeDescription = "Screen change announcements"
+    }
 
     // MARK: - Tokens
 
@@ -223,7 +246,6 @@ enum TestData {
 
     // MARK: - API Responses
 
-    /// Mock API responses for repository testing
     enum APIResponses {
         /// Valid payment methods response with full configuration
         static let validPaymentMethods = """
@@ -274,7 +296,6 @@ enum TestData {
 
     // MARK: - Payment Results
 
-    /// Payment processing outcome fixtures
     enum PaymentResults {
         /// Successful payment completion
         static let success = (
@@ -332,7 +353,6 @@ enum TestData {
 
     // MARK: - 3DS Flows
 
-    /// 3D Secure challenge scenario fixtures
     enum ThreeDSFlows {
         /// Challenge required - user must complete 3DS authentication
         static let challengeRequired = (
@@ -387,7 +407,6 @@ enum TestData {
 
     // MARK: - Network Responses
 
-    /// Mock network response fixtures for testing repository network layer
     enum NetworkResponses {
         private static let testURL = URL(string: "https://api.primer.io/test")!
         private static let defaultHeaders = ["Content-Type": "application/json"]
@@ -719,7 +738,6 @@ enum TestData {
 
 // MARK: - Test Error Type
 
-/// Custom error type for test scenarios
 enum TestError: Error, Equatable {
     case timeout
     case cancelled
