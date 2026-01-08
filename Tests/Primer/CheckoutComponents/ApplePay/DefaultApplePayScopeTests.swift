@@ -380,10 +380,16 @@ final class DefaultApplePayScopeTests: XCTestCase {
         var receivedState: ApplePayFormState?
         let task = Task {
             for await state in scope.state {
-                receivedState = state
-                break
+                // Wait for the state with the expected buttonStyle
+                if state.buttonStyle == .white {
+                    receivedState = state
+                    break
+                }
             }
         }
+
+        // Allow the task to start iterating before triggering the update
+        await Task.yield()
 
         // Trigger a state update
         scope.buttonStyle = .white
