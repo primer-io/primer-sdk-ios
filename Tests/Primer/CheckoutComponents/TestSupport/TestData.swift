@@ -12,14 +12,6 @@ import Foundation
 @available(iOS 15.0, *)
 enum TestData {
 
-    // MARK: - Tokens
-
-    enum Tokens {
-        static let valid = "test-token"
-        static let invalid = "invalid-token"
-        static let expired = "expired-token"
-    }
-
     // MARK: - Card Numbers
 
     enum CardNumbers {
@@ -218,7 +210,6 @@ enum TestData {
         static let eur = "EUR"
         static let gbp = "GBP"
         static let jpy = "JPY"
-        static let defaultDecimalDigits = 2
     }
 
     // MARK: - API Responses
@@ -389,17 +380,14 @@ enum TestData {
 
     /// Mock network response fixtures for testing repository network layer
     enum NetworkResponses {
-        private static let testURL = URL(string: "https://api.primer.io/test")!
-        private static let defaultHeaders = ["Content-Type": "application/json"]
-
         /// Successful HTTP 200 response
         static func success200(with data: Data? = nil) -> (Data?, HTTPURLResponse?, Error?) {
             let json = data ?? APIResponses.validPaymentMethods.data(using: .utf8)
             let response = HTTPURLResponse(
-                url: testURL,
+                url: URL(string: "https://api.primer.io/test")!,
                 statusCode: 200,
                 httpVersion: nil,
-                headerFields: defaultHeaders
+                headerFields: ["Content-Type": "application/json"]
             )
             return (json, response, nil)
         }
@@ -408,10 +396,10 @@ enum TestData {
         static let badRequest400 = (
             data: nil as Data?,
             response: HTTPURLResponse(
-                url: testURL,
+                url: URL(string: "https://api.primer.io/test")!,
                 statusCode: 400,
                 httpVersion: nil,
-                headerFields: defaultHeaders
+                headerFields: ["Content-Type": "application/json"]
             ),
             error: nil as Error?
         )
@@ -420,10 +408,10 @@ enum TestData {
         static let unauthorized401 = (
             data: nil as Data?,
             response: HTTPURLResponse(
-                url: testURL,
+                url: URL(string: "https://api.primer.io/test")!,
                 statusCode: 401,
                 httpVersion: nil,
-                headerFields: defaultHeaders
+                headerFields: ["Content-Type": "application/json"]
             ),
             error: nil as Error?
         )
@@ -432,10 +420,10 @@ enum TestData {
         static let notFound404 = (
             data: nil as Data?,
             response: HTTPURLResponse(
-                url: testURL,
+                url: URL(string: "https://api.primer.io/test")!,
                 statusCode: 404,
                 httpVersion: nil,
-                headerFields: defaultHeaders
+                headerFields: ["Content-Type": "application/json"]
             ),
             error: nil as Error?
         )
@@ -444,10 +432,10 @@ enum TestData {
         static let serverError500 = (
             data: nil as Data?,
             response: HTTPURLResponse(
-                url: testURL,
+                url: URL(string: "https://api.primer.io/test")!,
                 statusCode: 500,
                 httpVersion: nil,
-                headerFields: defaultHeaders
+                headerFields: ["Content-Type": "application/json"]
             ),
             error: nil as Error?
         )
