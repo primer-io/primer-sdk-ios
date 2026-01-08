@@ -626,20 +626,78 @@ enum TestData {
         static let fallbackValueAlternate = "fallback_value"
     }
 
-    // MARK: - Settings
+    // MARK: - DI Container
 
-    enum Settings {
-        static let testSubscriptionDescription = "Test Subscription"
-        static let testUrlScheme = "testapp://payment"
-        static let testUrlSchemePrefix = "testapp"
+    enum DIContainer {
+        enum Timing {
+            static let oneSecondNanoseconds: UInt64 = 1_000_000_000
+            static let oneMillisecondNanoseconds: UInt64 = 1_000_000
+        }
+
+        enum Duration {
+            static let oneMs: TimeInterval = 0.001
+            static let twoMs: TimeInterval = 0.002
+            static let threeMs: TimeInterval = 0.003
+            static let fiveMs: TimeInterval = 0.005
+            static let tenMs: TimeInterval = 0.010
+        }
+
+        enum Factory {
+            static let testIdPrefix = "test-"
+            static let syncIdPrefix = "sync-"
+            static let voidIdPrefix = "void-"
+            static let syncVoidIdPrefix = "sync-void-"
+            static let asyncSyncIdPrefix = "async-sync-"
+            static let defaultMultiplier = 10
+            static let largeMultiplier = 100
+            static let factoryName1 = "factory-1"
+            static let factoryName2 = "factory-2"
+            static let namedClosure = "named-closure"
+            static let closureTestId = "closure-test"
+        }
+
+        enum Values {
+            static let expectedValue = 42
+            static let multiplier3 = 3
+            static let multiplier4 = 4
+            static let multiplier5 = 5
+            static let multiplier7 = 7
+        }
     }
 
     // MARK: - Locale
 
     enum Locale {
+        static let spanish = "es"
+        static let mexico = "MX"
+        static let spanishMexico = "es-MX"
+        static let french = "fr"
+        static let france = "FR"
+        static let frenchFrance = "fr-FR"
+        static let german = "de"
+        static let germany = "DE"
+        static let germanGermany = "de-DE"
+        static let japanese = "ja"
+        // Legacy aliases for backward compatibility
         static let frenchLanguageCode = "fr"
         static let franceRegionCode = "FR"
         static let frenchFranceLocaleCode = "fr-FR"
+    }
+
+    // MARK: - Payment Method Options
+
+    enum PaymentMethodOptions {
+        static let monthlySubscription = "Monthly subscription"
+        static let testSubscription = "Test Subscription"
+        static let subscription = "Subscription"
+        static let exampleMerchantId = "merchant.com.example.app"
+        static let testMerchantId = "merchant.test"
+        static let testMerchantName = "Test Merchant"
+        static let myAppUrlScheme = "myapp://payment"
+        static let testAppUrl = "testapp://payment"
+        static let testAppUrlTrailing = "testapp://"
+        static let testAppScheme = "testapp"
+        static let myAppScheme = "myapp"
     }
 
     // MARK: - Analytics

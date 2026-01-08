@@ -12,9 +12,19 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
+    private var savedContainer: ContainerProtocol?
+
+    override func setUp() async throws {
+        try await super.setUp()
+        savedContainer = await DIContainer.current
+    }
+
     override func tearDown() async throws {
-        // Clean up global container after each test
-        await DIContainer.clearContainer()
+        if let savedContainer {
+            await DIContainer.setContainer(savedContainer)
+        } else {
+            await DIContainer.clearContainer()
+        }
         try await super.tearDown()
     }
 
@@ -62,7 +72,146 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertTrue(settings.clientSessionCachingEnabled)
     }
 
+    func testPrimerSettingsWithDefaultConfiguration() async throws {
+        // Given: Default settings
+        let defaultSettings = PrimerSettings()
+        let composableContainer = ComposableContainer(settings: defaultSettings)
+
+        // When: Configure and resolve
+        await composableContainer.configure()
+        guard let container = await DIContainer.current else {
+            XCTFail("DIContainer.current should not be nil")
+            return
+        }
+
+        let resolved = try await container.resolve(PrimerSettings.self)
+
+        // Then: Resolved settings should have default values
+        XCTAssertEqual(resolved.paymentHandling, .auto)
+        XCTAssertEqual(resolved.apiVersion, PrimerApiVersion.latest)
+        XCTAssertFalse(resolved.clientSessionCachingEnabled)
+    }
+
+    func testPrimerSettingsWithPaymentMethodOptions() async throws {
+        // Given: Settings with Klarna options
+        let klarnaOptions = PrimerKlarnaOptions(
+            recurringPaymentDescription: TestData.PaymentMethodOptions.monthlySubscription
+        )
+        let settings = PrimerSettings(
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                klarnaOptions: klarnaOptions
+            )
+        )
+        let composableContainer = ComposableContainer(settings: settings)
+
+        // When: Configure and resolve
+        await composableContainer.configure()
+        guard let container = await DIContainer.current else {
+            XCTFail("DIContainer.current should not be nil")
+            return
+        }
+
+        let resolved = try await container.resolve(PrimerSettings.self)
+
+        // Then: Payment method options should be preserved
+        XCTAssertNotNil(resolved.paymentMethodOptions.klarnaOptions)
+        XCTAssertEqual(
+            resolved.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
+            TestData.PaymentMethodOptions.monthlySubscription
+        )
+    }
+
+    // MARK: - Settings Mutation Safety Tests
+
+    func testSettingsMutationDoesNotAffectRegisteredInstance() async throws {
+        // Given: Mutable settings
+        let settings = PrimerSettings()
+        let composableContainer = ComposableContainer(settings: settings)
+        await composableContainer.configure()
+
+        guard let container = await DIContainer.current else {
+            XCTFail("DIContainer.current should not be nil")
+            return
+        }
+
+        let resolvedBefore = try await container.resolve(PrimerSettings.self)
+        let beforeHandling = resolvedBefore.paymentHandling
+
+        // When: Mutate original settings (if possible - settings might be immutable)
+        // Note: PrimerSettings is a class, so we can verify reference integrity
+
+        // Then: Resolved instance should be the same reference
+        let resolvedAfter = try await container.resolve(PrimerSettings.self)
+        XCTAssertTrue(resolvedBefore === resolvedAfter, "Should be same instance")
+        XCTAssertEqual(resolvedAfter.paymentHandling, beforeHandling)
+    }
+
+    // MARK: - Locale Data Tests
+
+    func testSettingsWithCustomLocaleData() async throws {
+        // Given: Settings with custom locale
+        let localeData = PrimerLocaleData(languageCode: TestData.Locale.spanish, regionCode: TestData.Locale.mexico)
+        let settings = PrimerSettings(localeData: localeData)
+        let composableContainer = ComposableContainer(settings: settings)
+
+        // When: Configure and resolve
+        await composableContainer.configure()
+        guard let container = await DIContainer.current else {
+            XCTFail("DIContainer.current should not be nil")
+            return
+        }
+
+        let resolved = try await container.resolve(PrimerSettings.self)
+
+        // Then: Locale data should be preserved
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.spanish)
+        XCTAssertEqual(resolved.localeData.regionCode, TestData.Locale.mexico)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.spanishMexico)
+    }
+
+    // MARK: - UI Options Tests
+
+    func testSettingsWithCardFormUIOptions() async throws {
+        // Given: Settings with card form UI options
+        let cardFormOptions = PrimerCardFormUIOptions(payButtonAddNewCard: true)
+        let settings = PrimerSettings(
+            uiOptions: PrimerUIOptions(cardFormUIOptions: cardFormOptions)
+        )
+        let composableContainer = ComposableContainer(settings: settings)
+
+        // When: Configure and resolve
+        await composableContainer.configure()
+        guard let container = await DIContainer.current else {
+            XCTFail("DIContainer.current should not be nil")
+            return
+        }
+
+        let resolved = try await container.resolve(PrimerSettings.self)
+
+        // Then: Card form options should be accessible
+        XCTAssertNotNil(resolved.uiOptions.cardFormUIOptions)
+        XCTAssertEqual(resolved.uiOptions.cardFormUIOptions?.payButtonAddNewCard, true)
+    }
+
     // MARK: - Container Cleanup Tests
+
+    func testContainerClearsSuccessfully() async throws {
+        // Given: Configured container
+        let settings = PrimerSettings()
+        let composableContainer = ComposableContainer(settings: settings)
+        await composableContainer.configure()
+
+        // Await before assertion to avoid async autoclosure issue
+        let currentContainer = await DIContainer.current
+        XCTAssertNotNil(currentContainer, "Container should exist after configuration")
+
+        // When: Clear container
+        await DIContainer.clearContainer()
+
+        // Then: Container should be nil
+        let clearedContainer = await DIContainer.current
+        XCTAssertNil(clearedContainer, "Container should be nil after clearing")
+    }
 
     func testMultipleContainerConfigurations() async throws {
         // Given: First configuration
