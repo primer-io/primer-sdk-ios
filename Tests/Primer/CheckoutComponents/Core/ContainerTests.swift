@@ -7,6 +7,8 @@
 import XCTest
 @testable import PrimerSDK
 
+private typealias ResolutionRequest<T> = (type: T.Type, name: String?)
+
 @available(iOS 15.0, *)
 final class ContainerTests: XCTestCase {
 
@@ -199,7 +201,7 @@ final class ContainerTests: XCTestCase {
             .with { _ in DefaultValidationService() }
 
         // When - resolve in batch
-        let requests: [(type: DefaultValidationService.Type, name: String?)] = [
+        let requests: [ResolutionRequest<DefaultValidationService>] = [
             (DefaultValidationService.self, "service1"),
             (DefaultValidationService.self, "service2"),
             (DefaultValidationService.self, "service3")
@@ -216,7 +218,7 @@ final class ContainerTests: XCTestCase {
 
     func test_resolveBatch_throwsOnUnregisteredService() async throws {
         // When/Then - should throw when encountering unregistered service
-        let requests: [(type: DefaultValidationService.Type, name: String?)] = [
+        let requests: [ResolutionRequest<DefaultValidationService>] = [
             (DefaultValidationService.self, nil)
         ]
 
