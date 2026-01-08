@@ -1,7 +1,7 @@
 //
 //  TestData+Cards.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -23,6 +23,7 @@ extension TestData {
         static let validDiscover = "6011111111111117"
         static let validDiners = "3056930009020004"
         static let validJCB = "3566002020360505"
+        static let valid19Digit = "4532015112830366999"
 
         // Invalid card numbers
         static let invalidLuhn = "4242424242424241"
@@ -32,6 +33,8 @@ extension TestData {
         static let empty = ""
         static let nonNumeric = "4242abcd42424242"
         static let withSpaces = "4242 4242 4242 4242"
+        static let allZeros = "0000000000000000"
+        static let singleDigit = "4"
 
         // Declined/error cards
         static let declined = "4000000000000002"
@@ -99,12 +102,16 @@ extension TestData {
         static let validSingleName = "Madonna"
         static let validWithAccents = "José García"
         static let validWithHyphen = "Mary-Jane Watson"
+        static let validWithApostrophe = "O'Brien"
 
         // Invalid names
         static let withNumbers = "John Doe 3rd"
         static let onlyNumbers = "12345"
         static let empty = ""
         static let tooShort = "J"
+        static let withLeadingTrailingSpaces = "  John Doe  "
+        static let onlySpaces = "    "
+        static let withSpecialCharacters = "John@Doe"
     }
 
     // MARK: - Card Networks
@@ -115,5 +122,11 @@ extension TestData {
         static let amex = CardNetwork.amex
         static let discover = CardNetwork.discover
         static let unknown = CardNetwork.unknown
+    }
+
+    // MARK: - Error Codes
+
+    enum ErrorCodes {
+        static let unsupportedCardType = "unsupported-card-type"
     }
 }
