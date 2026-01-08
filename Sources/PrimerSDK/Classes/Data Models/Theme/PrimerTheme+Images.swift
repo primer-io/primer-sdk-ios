@@ -1,7 +1,7 @@
 //
 //  PrimerTheme+Images.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -55,7 +55,7 @@ extension PrimerTheme {
             lightUrlStr = (try? container.decode(String?.self, forKey: .lightUrlStr)) ?? nil
             darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
 
-            if coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil {
+            if coloredUrlStr == nil, lightUrlStr == nil, darkUrlStr == nil {
                 throw handled(error: InternalError.failedToDecode(message: "BaseColoredURLs"))
             }
         }
@@ -73,6 +73,13 @@ extension PrimerTheme {
         var coloredHex: String?
         var darkHex: String?
         var lightHex: String?
+
+        /// Convert to UIColor based on current appearance mode
+        var uiColor: UIColor? {
+            let isDarkMode = UIScreen.isDarkModeEnabled
+            let hexString = isDarkMode ? (darkHex ?? coloredHex ?? lightHex) : (coloredHex ?? lightHex ?? darkHex)
+            return hexString?.hexToUIColor()
+        }
 
         // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
@@ -98,7 +105,7 @@ extension PrimerTheme {
             darkHex = (try? container.decode(String?.self, forKey: .darkHex)) ?? nil
             lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
 
-            if coloredHex == nil && lightHex == nil && darkHex == nil {
+            if coloredHex == nil, lightHex == nil, darkHex == nil {
                 throw handled(error: InternalError.failedToDecode(message: "BaseColors"))
             }
         }
@@ -147,5 +154,32 @@ extension PrimerTheme {
             try? container.encode(light, forKey: .light)
             try? container.encode(dark, forKey: .dark)
         }
+    }
+}
+
+// MARK: - Helper Extensions
+
+extension String {
+    /// Convert hex string to UIColor
+    func hexToUIColor() -> UIColor? {
+        var hexString = self.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove # prefix if present
+        if hexString.hasPrefix("#") {
+            hexString.removeFirst()
+        }
+
+        // Ensure valid length
+        guard hexString.count == 6 else { return nil }
+
+        // Parse RGB components
+        var rgb: UInt64 = 0
+        guard Scanner(string: hexString).scanHexInt64(&rgb) else { return nil }
+
+        let red = CGFloat((rgb >> 16) & 0xFF) / 255.0
+        let green = CGFloat((rgb >> 8) & 0xFF) / 255.0
+        let blue = CGFloat(rgb & 0xFF) / 255.0
+
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 }
