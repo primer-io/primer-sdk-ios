@@ -17,7 +17,7 @@ final class MockConfigurationService: ConfigurationService {
     var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions?
     var currency: Currency?
     var amount: Int?
-    var captureVaultedCardCvv: Bool
+    var captureVaultedCardCvv: Bool = false
 
     // MARK: - Initialization
 
@@ -48,7 +48,6 @@ final class MockConfigurationService: ConfigurationService {
         captureVaultedCardCvv = false
     }
 
-    /// Creates a mock with default USD configuration
     static func withDefaultConfiguration() -> MockConfigurationService {
         let mock = MockConfigurationService()
         mock.currency = Currency(code: TestData.Currencies.usd, decimalDigits: TestData.Currencies.defaultDecimalDigits)
