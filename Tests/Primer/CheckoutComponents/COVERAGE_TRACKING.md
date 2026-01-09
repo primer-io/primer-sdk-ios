@@ -360,7 +360,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6+source | 🔄 In Review |
 | 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5+source | 🔄 In Review |
 | 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | 🔄 In Review |
-| 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | ⬜ Pending |
+| 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | 🔄 In Review |
 | 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | ⬜ Pending |
 | 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | ⬜ Pending |
 | 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 5 | ⬜ Pending |
@@ -542,14 +542,14 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Reorganized:* Data/HeadlessRepositorySettingsTests.swift
 
 ### PR 14: Payment Pt1 (8 files)
-- [ ] Payment/PaymentProcessorTests.swift
-- [ ] Payment/PaymentStateMachineTests.swift
-- [ ] Payment/PaymentValidationTests.swift
-- [ ] Payment/PaymentResultHandlingTests.swift
-- [ ] Payment/PaymentCancellationTests.swift
-- [ ] Payment/PaymentMethodHandlerTests.swift
-- [ ] Payment/PaymentAnalyticsTests.swift
-- [ ] Payment/PaymentRetryLogicTests.swift
+- [x] Payment/PaymentProcessorTests.swift
+- [x] Payment/PaymentStateMachineTests.swift
+- [x] Payment/PaymentValidationTests.swift
+- [x] Payment/PaymentResultHandlingTests.swift
+- [x] Payment/PaymentCancellationTests.swift
+- [x] Payment/PaymentMethodHandlerTests.swift
+- [x] Payment/PaymentAnalyticsTests.swift
+- [x] Payment/PaymentRetryLogicTests.swift
 
 ### PR 15: Payment Pt2 (7 files)
 - [ ] Payment/CardTokenizationTests.swift
