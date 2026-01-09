@@ -13,7 +13,7 @@ import XCTest
 /// This allows testing components that depend on HeadlessRepository without
 /// requiring actual network calls or SDK initialization.
 @available(iOS 15.0, *)
-actor MockHeadlessRepository: HeadlessRepository {
+actor VaultMockHeadlessRepository: HeadlessRepository {
 
     // MARK: - Vault Method Stubs
 
@@ -110,7 +110,7 @@ final class FetchVaultedPaymentMethodsTests: XCTestCase {
 
     func testFetchVaultedPaymentMethods_Success_ReturnsVaultedMethods() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         let expectedMethods = createMockVaultedMethods()
         await repository.setFetchVaultedPaymentMethodsResult(.success(expectedMethods))
 
@@ -125,7 +125,7 @@ final class FetchVaultedPaymentMethodsTests: XCTestCase {
 
     func testFetchVaultedPaymentMethods_EmptyList_ReturnsEmptyArray() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setFetchVaultedPaymentMethodsResult(.success([]))
 
         // When
@@ -137,7 +137,7 @@ final class FetchVaultedPaymentMethodsTests: XCTestCase {
 
     func testFetchVaultedPaymentMethods_Error_ThrowsError() async {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         let expectedError = NSError(domain: "TestError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Not found"])
         await repository.setFetchVaultedPaymentMethodsResult(.failure(expectedError))
 
@@ -152,7 +152,7 @@ final class FetchVaultedPaymentMethodsTests: XCTestCase {
 
     func testFetchVaultedPaymentMethods_TracksCalls() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
 
         // When
         _ = try await repository.fetchVaultedPaymentMethods()
@@ -221,7 +221,7 @@ final class ProcessVaultedPaymentTests: XCTestCase {
 
     func testProcessVaultedPayment_Success_ReturnsPaymentResult() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         let expectedResult = PaymentResult(
             paymentId: "pay_123",
             status: .success,
@@ -244,7 +244,7 @@ final class ProcessVaultedPaymentTests: XCTestCase {
 
     func testProcessVaultedPayment_WithCvvData_PassesAdditionalData() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setProcessVaultedPaymentResult(.success(PaymentResult(paymentId: "pay_1", status: .success)))
         let cvvData = PrimerVaultedCardAdditionalData(cvv: "123")
 
@@ -264,7 +264,7 @@ final class ProcessVaultedPaymentTests: XCTestCase {
 
     func testProcessVaultedPayment_PayPal_NoAdditionalData() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setProcessVaultedPaymentResult(.success(PaymentResult(paymentId: "pay_1", status: .success)))
 
         // When
@@ -282,7 +282,7 @@ final class ProcessVaultedPaymentTests: XCTestCase {
 
     func testProcessVaultedPayment_Error_ThrowsError() async {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         let expectedError = NSError(domain: "PaymentError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Payment declined"])
         await repository.setProcessVaultedPaymentResult(.failure(expectedError))
 
@@ -301,7 +301,7 @@ final class ProcessVaultedPaymentTests: XCTestCase {
 
     func testProcessVaultedPayment_MultipleCalls_TracksAllCalls() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setProcessVaultedPaymentResult(.success(PaymentResult(paymentId: "pay_1", status: .success)))
 
         // When
@@ -331,7 +331,7 @@ final class DeleteVaultedPaymentMethodTests: XCTestCase {
 
     func testDeleteVaultedPaymentMethod_Success_CompletesWithoutError() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setDeleteVaultedPaymentMethodResult(.success(()))
 
         // When/Then - Should not throw
@@ -340,7 +340,7 @@ final class DeleteVaultedPaymentMethodTests: XCTestCase {
 
     func testDeleteVaultedPaymentMethod_Error_ThrowsError() async {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         let expectedError = NSError(domain: "DeleteError", code: 403, userInfo: [NSLocalizedDescriptionKey: "Forbidden"])
         await repository.setDeleteVaultedPaymentMethodResult(.failure(expectedError))
 
@@ -355,7 +355,7 @@ final class DeleteVaultedPaymentMethodTests: XCTestCase {
 
     func testDeleteVaultedPaymentMethod_TracksDeletedIds() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setDeleteVaultedPaymentMethodResult(.success(()))
 
         // When
@@ -370,7 +370,7 @@ final class DeleteVaultedPaymentMethodTests: XCTestCase {
 
     func testDeleteVaultedPaymentMethod_MultipleDeletes_EachCallsRepository() async throws {
         // Given
-        let repository = MockHeadlessRepository()
+        let repository = VaultMockHeadlessRepository()
         await repository.setDeleteVaultedPaymentMethodResult(.success(()))
 
         // When
@@ -386,7 +386,7 @@ final class DeleteVaultedPaymentMethodTests: XCTestCase {
 // MARK: - Payment Result Tests
 
 @available(iOS 15.0, *)
-final class PaymentResultTests: XCTestCase {
+final class VaultPaymentResultTests: XCTestCase {
 
     func testPaymentResult_SuccessStatus() {
         // Given/When
@@ -394,7 +394,7 @@ final class PaymentResultTests: XCTestCase {
             paymentId: "pay_123",
             status: .success,
             token: "tok_abc",
-            amount: 1000,
+            amount: TestData.Amounts.standard,
             paymentMethodType: "PAYMENT_CARD"
         )
 
