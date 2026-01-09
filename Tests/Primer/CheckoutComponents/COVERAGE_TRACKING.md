@@ -359,7 +359,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 10 | `ov/test/checkout-components-10-headless-pt1` | HeadlessRepo Pt1 | 4+6 | 🔄 In Review |
 | 11 | `ov/test/checkout-components-11-headless-pt2` | HeadlessRepo Pt2 | 6+source | 🔄 In Review |
 | 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5+source | 🔄 In Review |
-| 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | ⬜ Pending |
+| 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | 🔄 In Review |
 | 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | ⬜ Pending |
 | 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | ⬜ Pending |
 | 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | ⬜ Pending |
@@ -530,14 +530,16 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] *Source:* Internal/Services/RawDataManagerProtocol.swift
 - [x] *Source:* Internal/Data/Repositories/HeadlessRepositoryImpl.swift (modified)
 
-### PR 13: Interactors (7 files)
-- [ ] Mocks/MockProcessCardPaymentInteractor.swift
-- [ ] Mocks/MockCardNetworkDetectionInteractor.swift
-- [ ] Interactors/CardNetworkDetectionInteractorTests.swift
-- [ ] Interactors/GetPaymentMethodsInteractorTests.swift
-- [ ] Interactors/ProcessCardPaymentInteractorTests.swift
-- [ ] Interactors/SubmitVaultedPaymentInteractorTests.swift
-- [ ] Domain/Interactors/ProcessPayPalPaymentInteractorTests.swift
+### PR 13: Interactors (7 files) *Includes file reorganization*
+- [x] Mocks/MockProcessCardPaymentInteractor.swift
+- [x] Mocks/MockCardNetworkDetectionInteractor.swift
+- [x] Interactors/CardNetworkDetectionInteractorTests.swift
+- [x] Interactors/GetPaymentMethodsInteractorTests.swift
+- [x] Interactors/ProcessCardPaymentInteractorTests.swift
+- [x] Interactors/SubmitVaultedPaymentInteractorTests.swift *(reorganized from root)*
+- [x] Domain/Interactors/ProcessPayPalPaymentInteractorTests.swift
+- [x] *Reorganized:* Data/HeadlessRepositoryTests.swift
+- [x] *Reorganized:* Data/HeadlessRepositorySettingsTests.swift
 
 ### PR 14: Payment Pt1 (8 files)
 - [ ] Payment/PaymentProcessorTests.swift
