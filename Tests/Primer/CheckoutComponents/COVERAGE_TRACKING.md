@@ -363,8 +363,8 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | 🔄 In Review |
 | 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | 🔄 In Review |
 | 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | 🔄 In Review |
-| 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 5 | ⬜ Pending |
-| 18 | `ov/test/checkout-components-18-scope-pt1` | Scope Pt1 | 7 | ⬜ Pending |
+| 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 8 | 🔄 In Review |
+| 18 | `ov/test/checkout-components-18-scope-pt1` | Scope Pt1 | 9 | 🔄 In Review |
 | 19 | `ov/test/checkout-components-19-scope-pt2` | Scope Pt2 | 7 | ⬜ Pending |
 | 20 | `ov/test/checkout-components-20-vault-providers` | Vault & Providers | 8 | ⬜ Pending |
 | 21 | `ov/test/checkout-components-21-theme-tokens` | Theme & Tokens | 9 | ⬜ Pending |
@@ -582,14 +582,17 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Mocks/MockCardNetworkDetectionInteractor.swift
 - [x] Mocks/MockValidateInputInteractor.swift
 
-### PR 18: Scope Pt1 (7 files)
-- [ ] Mocks/MockRawDataManager.swift
-- [ ] Scope/DefaultCardFormScopeTests.swift
-- [ ] Scope/PrimerCardFormScopeTests.swift
-- [ ] Scope/InputFieldConfigTests.swift
-- [ ] Scope/PrimerFieldStylingTests.swift
-- [ ] Scope/ScopeLifecycleTests.swift
-- [ ] Scope/ScopeStateManagerTests.swift
+### PR 18: Scope Pt1 (9 files) - 🔄 In Review
+*Note: MockRawDataManager excluded (requires RawDataManagerProtocol source change from PR 11/12)*
+- [x] Scope/DefaultCardFormScopeTests.swift
+- [x] Scope/PrimerCardFormScopeTests.swift
+- [x] Scope/InputFieldConfigTests.swift
+- [x] Scope/PrimerFieldStylingTests.swift
+- [x] Scope/ScopeLifecycleTests.swift
+- [x] Scope/ScopeStateManagerTests.swift
+- [x] Mocks/MockProcessCardPaymentInteractor.swift
+- [x] Mocks/MockValidateInputInteractor.swift
+- [x] Mocks/MockCardNetworkDetectionInteractor.swift
 
 ### PR 19: Scope Pt2 (7 files)
 - [ ] Mocks/MockSubmitVaultedPaymentInteractor.swift
