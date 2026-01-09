@@ -707,6 +707,7 @@ enum TestData {
         static let sdkVersion = "0.0.1"
         static let tokenSessionId = "token-session-id"
         static let tokenAccountId = "token-account-id"
+        static let analyticsId = "analytics-123"
     }
 
     // MARK: - JWT
@@ -714,6 +715,111 @@ enum TestData {
     enum JWT {
         static let sandboxEnv = "SANDBOX"
         static let productionEnv = "PRODUCTION"
+    }
+
+    // MARK: - PayPal
+
+    enum PayPal {
+        // Order IDs
+        static let orderId = "order-123"
+        static let customOrderId = "custom-order"
+        static let orderIdAbc = "order-abc"
+
+        // Billing Agreement
+        static let billingAgreementId = "ba-123"
+        static let billingAgreementId456 = "ba-456"
+        static let billingAgreementId789 = "ba-789"
+
+        // URLs
+        static let approvalUrl = "https://paypal.com/approve"
+        static let billingUrl = "https://paypal.com/billing"
+        static let customUrl = "https://custom.url"
+        static let customBillingUrl = "https://custom-billing.url"
+        static let testUrl = "https://paypal.com/test"
+        static let callbackUrl = "testapp://callback"
+        static let customSuccessUrl = "customapp://success"
+
+        // Payer Info
+        static let payerId = "payer-123"
+        static let payerIdAbc = "payer-abc"
+        static let payerIdXyz = "payer-xyz"
+
+        // Token IDs
+        static let tokenId = "token-123"
+        static let tokenIdAbc = "id-abc"
+        static let tokenBilling = "token-billing"
+        static let tokenXyz = "token-xyz"
+    }
+
+    // MARK: - Person Names
+
+    enum PersonNames {
+        static let firstName = "John"
+        static let lastName = "Doe"
+        static let firstNameAlt = "Jane"
+        static let lastNameAlt = "Smith"
+        static let billingFirstName = "Billing"
+        static let billingLastName = "User"
+        static let singleLastName = "User"
+    }
+
+    // MARK: - Addresses
+
+    enum Addresses {
+        static let line1 = "123 Main St"
+        static let line2 = "Apt 4"
+        static let city = "San Francisco"
+        static let state = "CA"
+        static let countryCode = "US"
+        static let postalCode = "94102"
+    }
+
+    // MARK: - Surcharges
+
+    enum Surcharges {
+        static let amount50 = 50
+        static let amount75 = 75
+        static let amount100 = 100
+        static let amount150 = 150
+        static let amount200 = 200
+        static let amount500 = 500
+        static let amountLarge = 999999999
+    }
+
+    // MARK: - Network Types (String)
+
+    enum NetworkTypes {
+        static let visa = "VISA"
+        static let mastercard = "MASTERCARD"
+        static let amex = "AMEX"
+    }
+
+    // MARK: - Error Codes
+
+    enum ErrorCodes {
+        static let code100 = 100
+        static let code200 = 200
+        static let code300 = 300
+        static let code400 = 400
+        static let code500 = 500
+        static let code600 = 600
+    }
+
+    // MARK: - Test Error Domain
+
+    enum ErrorDomains {
+        static let test = "test"
+    }
+
+    // MARK: - Payment Method
+
+    enum PaymentMethod {
+        static let testId = "test-id"
+        static let paymentCard = "PAYMENT_CARD"
+        static let creditCard = "Credit Card"
+        static let firstName = "First"
+        static let secondName = "Second"
+        static let thirdName = "Third"
     }
 }
 

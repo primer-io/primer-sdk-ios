@@ -21,7 +21,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
 
     init(
         repository: HeadlessRepositoryImpl,
-        paymentMethodType: String = "PAYMENT_CARD",
+        paymentMethodType: String = PrimerPaymentMethodType.paymentCard.rawValue,
         completion: @escaping (Result<PaymentResult, Error>) -> Void
     ) {
         self.repository = repository
@@ -130,7 +130,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
         let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
-            paymentMethodType: "PAYMENT_CARD",
+            paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
             delegate: self,
             isUsedInDropIn: false
         )
@@ -163,6 +163,22 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
+    // MARK: - Dependency Injection for Testing
+
+    private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+    private var configurationServiceFactory: (() -> ConfigurationService)?
+    private var rawDataManagerFactory: RawDataManagerFactoryProtocol
+
+    init(
+        clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },
+        configurationServiceFactory: (() -> ConfigurationService)? = nil,
+        rawDataManagerFactory: RawDataManagerFactoryProtocol = DefaultRawDataManagerFactory()
+    ) {
+        self.clientSessionActionsFactory = clientSessionActionsFactory
+        self.configurationServiceFactory = configurationServiceFactory
+        self.rawDataManagerFactory = rawDataManagerFactory
+    }
+
     @available(iOS 15.0, *)
     private func injectSettings() async {
         guard settings == nil else { return }
@@ -187,6 +203,12 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     @available(iOS 15.0, *)
     private func injectConfigurationService() async {
         guard configurationService == nil else { return }
+
+        // Use factory if provided (for testing)
+        if let factory = configurationServiceFactory {
+            configurationService = factory()
+            return
+        }
 
         do {
             guard let container = await DIContainer.current else {
@@ -265,7 +287,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
+    func extractFromNetworksArray(_ networksArray: [[String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for networkData in networksArray {
@@ -290,7 +312,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
+    func extractFromNetworksDict(_ networksDict: [String: [String: Any]]) -> [String: Int]? {
         var networkSurcharges: [String: Int] = [:]
 
         for (networkType, networkData) in networksDict {
@@ -311,7 +333,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return networkSurcharges.isEmpty ? nil : networkSurcharges
     }
 
-    private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
+    func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return [.cardNumber, .cvv, .expiryDate, .cardholderName]
@@ -345,13 +367,14 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                             selectedNetwork: selectedNetwork
                         )
 
-                        let paymentHandler = PaymentCompletionHandler(repository: self) { result in
-                            continuation.resume(with: result)
-                        }
+                        let paymentHandler = PaymentCompletionHandler(
+                            repository: self,
+                            completion: continuation.resume(with:)
+                        )
                         PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
 
-                        let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                            paymentMethodType: "PAYMENT_CARD",
+                        let rawDataManager = try self.rawDataManagerFactory.createRawDataManager(
+                            paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                             delegate: paymentHandler
                         )
 
@@ -373,7 +396,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    private func createCardData(
+    func createCardData(
         cardNumber: String,
         cvv: String,
         expiryMonth: String,
@@ -399,7 +422,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func configureRawDataManagerAndSubmit(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         cardData: PrimerCardData,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
@@ -437,7 +460,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
     @MainActor
     private func submitPaymentWithValidation(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         selectedNetwork: CardNetwork?,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationResult: Bool,
@@ -447,7 +470,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         // to avoid race condition where the property hasn't been updated yet
         if validationResult {
             updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 if let error {
                     // Client session update failed
@@ -469,7 +492,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     @MainActor
-    private func submitPaymentWithHandlingMode(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) async {
+    private func submitPaymentWithHandlingMode(rawDataManager: RawDataManagerProtocol) async {
         let paymentHandlingMode: PrimerPaymentHandling
         if #available(iOS 15.0, *) {
             await ensureSettings()
@@ -488,12 +511,12 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     private func handleValidationFailure(
-        rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+        rawDataManager: RawDataManagerProtocol,
         continuation: CheckedContinuation<PaymentResult, Error>,
         validationErrors: [Error]?
     ) {
         // Use the actual validation errors from the delegate if available
-        if let validationErrors = validationErrors, !validationErrors.isEmpty {
+        if let validationErrors, !validationErrors.isEmpty {
             // If there's a single validation error, use it directly
             if validationErrors.count == 1, let error = validationErrors.first {
                 continuation.resume(throwing: error)
@@ -556,11 +579,11 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         rawDataManager?.rawData = rawCardData
 
         // Use Client Session Actions to select payment method based on network
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
         Task {
             do {
                 try await clientSessionActionsModule
-                    .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
+                    .selectPaymentMethodIfNeeded(PrimerPaymentMethodType.paymentCard.rawValue, cardNetwork: cardNetwork.rawValue)
             } catch {
                 // Log error but don't block the flow since this is a fire-and-forget operation
                 logger.error(message: "Failed to select payment method: \(error)")
@@ -641,27 +664,26 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
     }
 
-    /// Update client session with payment method selection (matches Drop-in's dispatchActions)
-    /// This is CRITICAL for surcharge functionality - backend needs network context for correct calculation
+    /// CRITICAL for surcharge functionality - backend needs network context for correct calculation
     private func updateClientSessionBeforePayment(selectedNetwork: CardNetwork?, completion: @escaping (Error?) -> Void) {
 
         // Determine card network (following Drop-in logic exactly)
         var network = selectedNetwork?.rawValue.uppercased()
-        if [nil, "UNKNOWN"].contains(network) {
-            network = "OTHER"
+        if [nil, CardNetwork.unknown.rawValue].contains(network) {
+            network = CardNetwork.unknown.rawValue
         }
 
         let params: [String: Any] = [
-            "paymentMethodType": "PAYMENT_CARD",
+            "paymentMethodType": PrimerPaymentMethodType.paymentCard.rawValue,
             "binData": [
-                "network": network ?? "OTHER"
+                "network": network ?? CardNetwork.unknown.rawValue
             ]
         ]
 
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
 
         // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        let clientSessionActionsModule = clientSessionActionsFactory()
 
         Task {
             do {
@@ -743,7 +765,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         }
 
         trackAnalyticsEvent(.paymentThreeds, metadata: .threeDS(ThreeDSEvent(
-            paymentMethod: tokenData.paymentMethodType ?? "PAYMENT_CARD",
+            paymentMethod: tokenData.paymentMethodType ?? PrimerPaymentMethodType.paymentCard.rawValue,
             provider: threeDSProvider ?? "Unknown",
             response: authentication.responseCode.rawValue
         )))
@@ -787,7 +809,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func extractURL(from value: Any) -> String? {
+    func extractURL(from value: Any) -> String? {
         if let string = value as? String, isLikelyURL(string) {
             return string
         }
@@ -803,7 +825,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         return nil
     }
 
-    private func isLikelyURL(_ string: String) -> Bool {
+    func isLikelyURL(_ string: String) -> Bool {
         ["http://", "https://"].contains { string.lowercased().hasPrefix($0) }
     }
 
