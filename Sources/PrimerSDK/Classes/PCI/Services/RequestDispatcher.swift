@@ -6,50 +6,11 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
-typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
-
-protocol RequestDispatcher: Sendable {
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
-    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
-}
-
-struct DispatcherResponseModel: DispatcherResponse {
-    let metadata: ResponseMetadata
-    let requestDuration: TimeInterval
-    let data: Data?
-    let error: Error?
-}
-
-struct ResponseMetadataModel: ResponseMetadata {
-    let responseUrl: String?
-    let statusCode: Int
-    let headers: [String: String]?
-}
-
-protocol DispatcherResponse {
-    var metadata: ResponseMetadata { get }
-    var requestDuration: TimeInterval { get }
-    var data: Data? { get }
-    var error: Error? { get }
-}
-
-protocol URLSessionProtocol: Sendable {
-    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask
-}
-
-extension URLSession: URLSessionProtocol {}
-
-final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
-
-    let urlSession: URLSessionProtocol
-
-    init(urlSession: URLSessionProtocol = URLSession.shared) {
-        self.urlSession = urlSession
-    }
-
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse {
+extension DefaultRequestDispatcher: @retroactive RequestDispatcher, LogReporter {
+    
+    public func dispatch(request: URLRequest) async throws -> DispatcherResponse {
         try await withCheckedThrowingContinuation { continuation in
             dispatch(request: request) { response in
                 continuation.resume(with: response)
@@ -58,7 +19,10 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 
     @discardableResult
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatch(
+        request: URLRequest,
+        completion: @escaping DispatcherCompletion
+    ) -> PrimerCancellable? {
         let startTime = DispatchTime.now()
         let task = urlSession.dataTask(with: request) { data, urlResponse, error in
             let endTime = DispatchTime.now()
@@ -81,11 +45,13 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 
     @discardableResult
-    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+    public func dispatchWithRetry(
+        request: URLRequest,
+        retryConfig: RetryConfig,
+        completion: @escaping DispatcherCompletion
+    ) -> PrimerCancellable? {
         let retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
         retryHandler.attempt()
         return retryHandler.currentTask
     }
 }
-
-extension Task {}

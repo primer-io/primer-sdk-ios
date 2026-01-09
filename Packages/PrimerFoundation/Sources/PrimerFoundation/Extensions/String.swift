@@ -11,21 +11,17 @@ public extension String {
 }
 
 public extension String {
-	func jsonObject<T>() throws -> T {
-        do {
-            let object = try JSONSerialization.jsonObject(with: Data(utf8), options: [])
-            if let typedObject = object as? T {
-                return typedObject
-            } else {
-                throw CastError.typeMismatch(value: object, type: T.self)
-            }
-        }
-	}
     
     func unsafeData() -> Data { data(using: .utf8)! }
     
     var withoutWhiteSpace: String {
         self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    var isHttpOrHttpsURL: Bool {
+        let canCreateURL = URL(string: self) != nil
+        let startsWithHttpOrHttps = hasPrefix("http") || hasPrefix("https")
+        return canCreateURL && startsWithHttpOrHttps
     }
 
     var isNumeric: Bool {

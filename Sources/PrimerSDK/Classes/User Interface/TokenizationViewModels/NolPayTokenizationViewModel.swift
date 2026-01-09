@@ -9,6 +9,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 import SafariServices
 import UIKit
 

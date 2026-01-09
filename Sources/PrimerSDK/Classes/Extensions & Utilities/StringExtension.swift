@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 extension String {
 
@@ -31,12 +32,6 @@ extension String {
         }
 
         return isValid
-    }
-
-    var isHttpOrHttpsURL: Bool {
-        let canCreateURL = URL(string: self) != nil
-        let startsWithHttpOrHttps = hasPrefix("http") || hasPrefix("https")
-        return canCreateURL && startsWithHttpOrHttps
     }
 
     var isValidExpiryDate: Bool {

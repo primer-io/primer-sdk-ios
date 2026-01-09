@@ -10,6 +10,7 @@
 
 import PrimerFoundation
 import SafariServices
+import PrimerNetworking
 import UIKit
 
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {

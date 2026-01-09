@@ -10,6 +10,7 @@
 
 import AuthenticationServices
 import SafariServices
+import PrimerNetworking
 import UIKit
 
 final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {

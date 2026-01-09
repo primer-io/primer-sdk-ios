@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 typealias ResponseCompletion<T> = (Result<T, Error>) -> Void
 typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]?) -> Void

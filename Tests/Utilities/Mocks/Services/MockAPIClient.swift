@@ -6,6 +6,7 @@
 
 @testable import PrimerSDK
 import PrimerFoundation
+import PrimerNetworking
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
@@ -74,7 +75,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 
-    func fetchConfiguration(clientToken: PrimerSDK.DecodedJWTToken,
+    func fetchConfiguration(clientToken: DecodedJWTToken,
                             requestParameters: PrimerSDK.Request.URLParameters.Configuration?,
                             completion: @escaping PrimerSDK.ConfigurationCompletion) {
         guard let result = fetchConfigurationResult,
@@ -444,7 +445,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func exchangePaymentMethodToken(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         vaultedPaymentMethodId: String,
         vaultedPaymentMethodAdditionalData: PrimerSDK.PrimerVaultedPaymentMethodAdditionalData?,
         completion: @escaping (Result<PrimerSDK.PrimerPaymentMethodTokenData, Error>) -> Void
@@ -525,7 +526,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func continue3DSAuth(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         threeDSTokenId: String,
         continueInfo: PrimerSDK.ThreeDS.ContinueInfo,
         completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void
@@ -603,7 +604,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func listRetailOutlets(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         paymentMethodId: String,
         completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void
     ) {
@@ -623,7 +624,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         }
     }
 
-    func listRetailOutlets(clientToken: PrimerSDK.DecodedJWTToken, paymentMethodId: String) async throws -> PrimerSDK.RetailOutletsList {
+    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String) async throws -> PrimerSDK.RetailOutletsList {
         guard let result = listRetailOutletsResult else {
             XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -773,7 +774,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         }
     }
 
-    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?,
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
                              url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let result = sendAnalyticsEventsResult,
               result.0 != nil || result.1 != nil
@@ -869,7 +870,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 
-    func testFinalizePolling(clientToken: PrimerSDK.DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    func testFinalizePolling(clientToken: DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let result = testFinalizePollingResult,
               result.0 != nil || result.1 != nil
         else {
@@ -930,7 +931,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func fetchNolSdkSecret(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest,
         completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void
     ) {
@@ -961,7 +962,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
         }
     }
 
-    func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func genericAPICall(clientToken: DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             completion(.success(true))
         }
@@ -976,7 +977,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func getPhoneMetadata(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
         completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void
     ) {
@@ -1008,7 +1009,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func completePayment(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         url: URL,
         paymentRequest: PrimerSDK.Request.Body.Payment.Complete,
         completion: @escaping PrimerSDK.APICompletion<PrimerSDK.Response.Body.Complete>
@@ -1030,7 +1031,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func completePayment(
-        clientToken: PrimerSDK.DecodedJWTToken,
+        clientToken: DecodedJWTToken,
         url: URL,
         paymentRequest: PrimerSDK.Request.Body.Payment.Complete
     ) async throws -> PrimerSDK.Response.Body.Complete {

@@ -6,26 +6,15 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
-protocol ResponseMetadata {
-    var responseUrl: String? { get }
-    var statusCode: Int { get }
-    var headers: [String: String]? { get }
-}
+extension HTTPURLResponse: @retroactive ResponseMetadata {
 
-extension ResponseMetadata {
-    var description: String {
-        "\(responseUrl ?? "Unknown URL") => \(statusCode)"
-    }
-}
-
-extension HTTPURLResponse: ResponseMetadata {
-
-    var responseUrl: String? {
+    public var responseUrl: String? {
         url?.absoluteString
     }
 
-    var headers: [String: String]? {
+    public var headers: [String: String]? {
         allHeaderFields.reduce(into: [:]) { result, item in
             if let key = item.key as? String, let value = item.value as? String {
                 result[key] = value

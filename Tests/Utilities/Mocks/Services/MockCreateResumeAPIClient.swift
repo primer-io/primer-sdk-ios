@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerNetworking
 import XCTest
 
 final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtocol {
@@ -32,7 +33,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion(createResponse)
     }
 
-    func createPayment(clientToken: PrimerSDK.DecodedJWTToken,
+    func createPayment(clientToken: DecodedJWTToken,
                        paymentRequestBody: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
         guard let createResponse else {
             throw PrimerError.unknown()
@@ -55,7 +56,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion(resumeResponse)
     }
 
-    func resumePayment(clientToken: PrimerSDK.DecodedJWTToken, paymentId: String,
+    func resumePayment(clientToken: DecodedJWTToken, paymentId: String,
                        paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
         guard let resumeResponse else {
             throw PrimerError.unknown()
@@ -75,7 +76,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion(completeResponse)
     }
 
-    func completePayment(clientToken: PrimerSDK.DecodedJWTToken,
+    func completePayment(clientToken: DecodedJWTToken,
                          url completeUrl: URL,
                          paymentRequest body: Request.Body.Payment.Complete) async throws -> Response.Body.Complete {
         guard let completeResponse else {

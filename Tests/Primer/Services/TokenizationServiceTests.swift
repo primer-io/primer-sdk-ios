@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerNetworking
 import XCTest
 
 final class TokenizationServiceTests: XCTestCase {

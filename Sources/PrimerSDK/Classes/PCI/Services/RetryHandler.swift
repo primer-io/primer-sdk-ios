@@ -6,29 +6,10 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
-final class RetryHandler: LogReporter {
-    let request: URLRequest
-    let retryConfig: RetryConfig
-    let completion: DispatcherCompletion
-    let urlSession: URLSessionProtocol
-
-    var retries = 0
-    var currentTask: URLSessionDataTask?
-
-    init(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion, urlSession: URLSessionProtocol) {
-        self.request = request
-        self.retryConfig = retryConfig
-        self.completion = completion
-        self.urlSession = urlSession
-    }
-
-    func calculateBackoffWithJitter(baseDelay: TimeInterval, retryCount: Int, maxJitter: TimeInterval) -> TimeInterval {
-        let exponentialPart = baseDelay * pow(2.0, Double(retryCount - 1))
-        let jitterPart = Double.random(in: 0...maxJitter)
-        return exponentialPart + jitterPart
-    }
-
+extension RetryHandler: LogReporter {
+    
     func handleRetry(responseModel: DispatcherResponseModel, error: Error?) {
         if self.shouldRetry(response: responseModel, error: error) {
             self.retries += 1

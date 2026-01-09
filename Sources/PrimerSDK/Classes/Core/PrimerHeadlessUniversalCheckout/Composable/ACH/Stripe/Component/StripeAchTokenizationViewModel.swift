@@ -9,6 +9,7 @@
 
 import PrimerFoundation
 import UIKit
+import PrimerNetworking
 #if canImport(PrimerStripeSDK)
 import PrimerStripeSDK
 #endif

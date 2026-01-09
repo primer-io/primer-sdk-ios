@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
@@ -35,7 +36,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
     typealias ResponseCompletion = (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void
 
-    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken,
+    func listCardNetworks(clientToken: DecodedJWTToken,
                           bin: String,
                           completion: @escaping ResponseCompletion) -> PrimerFoundation.PrimerCancellable? {
         let workItem = DispatchWorkItem { [self] in
@@ -55,7 +56,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         return cancellable
     }
 
-    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
         try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
         
         if let error = error {

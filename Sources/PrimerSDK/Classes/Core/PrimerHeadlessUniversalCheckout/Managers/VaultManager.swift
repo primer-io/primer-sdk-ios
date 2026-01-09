@@ -10,6 +10,7 @@
 // swiftlint:disable type_body_length
 
 import PrimerFoundation
+import PrimerNetworking
 import SafariServices
 import UIKit
 

@@ -6,6 +6,7 @@
 
 import XCTest
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 
 class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
@@ -14,7 +15,7 @@ class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     var responseModel: DispatcherResponse!
 
-    func dispatch(request: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
+    func dispatch(request: URLRequest) async throws -> any DispatcherResponse {
         if let error = error {
             throw error
         }
@@ -23,7 +24,7 @@ class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     func dispatch(
         request: URLRequest,
-        completion: @escaping PrimerSDK.DispatcherCompletion
+        completion: @escaping DispatcherCompletion
     ) -> (any PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
@@ -35,7 +36,7 @@ class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     func dispatchWithRetry(
         request: URLRequest,
-        retryConfig: PrimerSDK.RetryConfig,
+        retryConfig: RetryConfig,
         completion: @escaping DispatcherCompletion
     ) -> (any PrimerCancellable)? {
         if let error = error {

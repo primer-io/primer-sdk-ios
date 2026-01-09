@@ -1,9 +1,10 @@
 //
 //  NetworkingReportingServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerNetworking
 import XCTest
 @testable import PrimerSDK
 
@@ -28,7 +29,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
                                                     requestParameters: nil)
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
-
 
         // Assert
         analyticsService.onRecord = { events in
@@ -71,7 +71,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
                                                               endpoint: endpoint,
                                                               response: responseMetadata,
                                                               duration: 1000))
-
 
         wait(for: [expectation], timeout: 1)
     }

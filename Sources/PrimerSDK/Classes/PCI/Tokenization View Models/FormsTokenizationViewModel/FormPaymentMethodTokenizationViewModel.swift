@@ -13,6 +13,7 @@
 import Foundation
 import UIKit
 import PrimerFoundation
+import PrimerNetworking
 
 class Input {
     var name: String?

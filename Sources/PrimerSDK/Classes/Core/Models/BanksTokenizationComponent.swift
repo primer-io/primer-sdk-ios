@@ -10,8 +10,9 @@
 
 import Foundation
 import PrimerFoundation
-import SafariServices
 import UIKit
+import PrimerNetworking
+import SafariServices
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
 

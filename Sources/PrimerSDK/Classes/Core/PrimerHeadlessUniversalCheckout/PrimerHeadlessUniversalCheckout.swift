@@ -9,6 +9,7 @@
 // swiftlint:disable file_length
 
 import UIKit
+import PrimerNetworking
 
 // MARK: MISSING_TESTS
 public final class PrimerHeadlessUniversalCheckout: LogReporter {

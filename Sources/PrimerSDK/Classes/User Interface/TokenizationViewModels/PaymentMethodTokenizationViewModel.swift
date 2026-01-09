@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)

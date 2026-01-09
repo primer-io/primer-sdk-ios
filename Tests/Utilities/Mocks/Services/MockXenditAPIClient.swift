@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerNetworking
 
 final class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
 

@@ -16,14 +16,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0"),
-        .package(path: "Packages/PrimerFoundation")
+        .package(path: "Packages/PrimerFoundation"),
+        .package(path: "Packages/PrimerNetworking")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
-                .product(name: "PrimerFoundation", package: "PrimerFoundation")
+                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+                .product(name: "PrimerNetworking", package: "PrimerNetworking")
             ],
             path: "Sources/PrimerSDK",
             resources: [

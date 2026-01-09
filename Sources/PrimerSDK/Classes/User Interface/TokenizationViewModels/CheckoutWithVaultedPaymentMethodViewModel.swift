@@ -12,6 +12,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 

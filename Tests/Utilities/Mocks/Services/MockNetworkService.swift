@@ -6,13 +6,14 @@
 
 @testable import PrimerSDK
 import PrimerFoundation
+import PrimerNetworking
 import XCTest
 
 final class MockNetworkService: NetworkServiceProtocol {
     nonisolated(unsafe) var mockedResult: Decodable?
     nonisolated(unsafe) var mockedError: Error?
     nonisolated(unsafe) var mockedHeaders: [String: String]?
-    nonisolated(unsafe) var onReceiveEndpoint: ((Endpoint) -> Void)?
+    nonisolated(unsafe) var onReceiveEndpoint: ((PrimerSDK.Endpoint) -> Void)?
     private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 1)
 
     func request<T>(
@@ -35,7 +36,7 @@ final class MockNetworkService: NetworkServiceProtocol {
     }
 
     func request<T>(
-        _ endpoint: any Endpoint
+        _ endpoint: any PrimerSDK.Endpoint
     ) async throws -> T where T: Decodable {
         onReceiveEndpoint?(endpoint)
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
@@ -69,7 +70,7 @@ final class MockNetworkService: NetworkServiceProtocol {
         return nil
     }
 
-    func request<T>(_ endpoint: any Endpoint) async throws -> (T, [String: String]?) where T: Decodable {
+    func request<T>(_ endpoint: any PrimerSDK.Endpoint) async throws -> (T, [String: String]?) where T: Decodable {
         onReceiveEndpoint?(endpoint)
         try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
 
@@ -85,7 +86,7 @@ final class MockNetworkService: NetworkServiceProtocol {
 
     func request<T>(
         _ endpoint: any PrimerSDK.Endpoint,
-        retryConfig _: PrimerSDK.RetryConfig?,
+        retryConfig _: RetryConfig?,
         completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
     ) -> (any PrimerFoundation.PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
@@ -104,7 +105,7 @@ final class MockNetworkService: NetworkServiceProtocol {
     }
 
     func request<T>(
-        _ endpoint: any Endpoint,
+        _ endpoint: any PrimerSDK.Endpoint,
         retryConfig _: RetryConfig?
     ) async throws -> (T, [String: String]?) where T: Decodable {
         onReceiveEndpoint?(endpoint)
