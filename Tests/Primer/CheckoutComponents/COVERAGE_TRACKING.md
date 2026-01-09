@@ -362,7 +362,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | 🔄 In Review |
 | 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | 🔄 In Review |
 | 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | 🔄 In Review |
-| 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | ⬜ Pending |
+| 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | 🔄 In Review |
 | 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 5 | ⬜ Pending |
 | 18 | `ov/test/checkout-components-18-scope-pt1` | Scope Pt1 | 7 | ⬜ Pending |
 | 19 | `ov/test/checkout-components-19-scope-pt2` | Scope Pt2 | 7 | ⬜ Pending |
@@ -560,17 +560,17 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Payment/SurchargeCalculationTests.swift
 - [x] Payment/TransactionManagerTests.swift
 
-### PR 16: ApplePay (10 files)
-- [ ] ApplePay/Mocks/MockProcessApplePayPaymentInteractor.swift
-- [ ] ApplePay/ApplePayTestData.swift
-- [ ] ApplePay/ApplePayFormStateTests.swift
-- [ ] ApplePay/ApplePayPaymentMethodTests.swift
-- [ ] ApplePay/ApplePayButtonViewTests.swift
-- [ ] ApplePay/ApplePayScreenTests.swift
-- [ ] ApplePay/ApplePayAuthorizationCoordinatorTests.swift
-- [ ] ApplePay/ApplePayRequestBuilderTests.swift
-- [ ] ApplePay/ProcessApplePayPaymentInteractorTests.swift
-- [ ] ApplePay/DefaultApplePayScopeTests.swift
+### PR 16: ApplePay (10 files) *Note: 2 tests excluded (scope caching dependency)*
+- [x] ApplePay/Mocks/MockProcessApplePayPaymentInteractor.swift
+- [x] ApplePay/ApplePayTestData.swift
+- [x] ApplePay/ApplePayFormStateTests.swift
+- [x] ApplePay/ApplePayPaymentMethodTests.swift *(2 tests excluded)*
+- [x] ApplePay/ApplePayButtonViewTests.swift
+- [x] ApplePay/ApplePayScreenTests.swift
+- [x] ApplePay/ApplePayAuthorizationCoordinatorTests.swift
+- [x] ApplePay/ApplePayRequestBuilderTests.swift
+- [x] ApplePay/ProcessApplePayPaymentInteractorTests.swift
+- [x] ApplePay/DefaultApplePayScopeTests.swift
 
 ### PR 17: PayPal & Methods (5 files)
 - [ ] PayPal/DefaultPayPalScopeTests.swift
