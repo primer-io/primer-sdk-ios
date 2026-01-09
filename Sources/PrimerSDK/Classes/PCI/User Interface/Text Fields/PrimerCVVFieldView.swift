@@ -1,17 +1,18 @@
 //
 //  PrimerCVVFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
 import UIKit
+import PrimerFoundation
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
 
     var cvv: String {
-        return textField.internalText ?? ""
+        textField.internalText ?? ""
     }
     public var cardNetwork: CardNetwork = .unknown
 
@@ -42,7 +43,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !(newText.isNumeric || newText.isEmpty) { return false }
-        if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
+        if string != "", newText.withoutWhiteSpace.count >= 5 { return false }
 
         switch self.isValid?(newText) {
         case true:

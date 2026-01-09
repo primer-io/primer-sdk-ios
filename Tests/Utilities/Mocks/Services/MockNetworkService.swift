@@ -1,17 +1,18 @@
 //
 //  MockNetworkService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 @testable import PrimerSDK
+import PrimerFoundation
 import XCTest
 
 final class MockNetworkService: NetworkServiceProtocol {
-    var mockedResult: Decodable?
-    var mockedError: Error?
-    var mockedHeaders: [String: String]?
-    var onReceiveEndpoint: ((Endpoint) -> Void)?
+    nonisolated(unsafe) var mockedResult: Decodable?
+    nonisolated(unsafe) var mockedError: Error?
+    nonisolated(unsafe) var mockedHeaders: [String: String]?
+    nonisolated(unsafe) var onReceiveEndpoint: ((Endpoint) -> Void)?
     private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 1)
 
     func request<T>(
@@ -52,7 +53,7 @@ final class MockNetworkService: NetworkServiceProtocol {
     func request<T>(
         _ endpoint: any PrimerSDK.Endpoint,
         completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
-    ) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
+    ) -> (any PrimerFoundation.PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
@@ -86,7 +87,7 @@ final class MockNetworkService: NetworkServiceProtocol {
         _ endpoint: any PrimerSDK.Endpoint,
         retryConfig _: PrimerSDK.RetryConfig?,
         completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
-    ) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
+    ) -> (any PrimerFoundation.PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {

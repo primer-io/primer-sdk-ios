@@ -1,10 +1,17 @@
 //
 //  AppState.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-internal protocol AppStateProtocol: AnyObject {
+//
+//  AppState.swift
+//
+//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+import PrimerFoundation
+
+protocol AppStateProtocol: AnyObject {
 
     static var current: AppStateProtocol { get }
     var amount: Int? { get }
@@ -24,12 +31,12 @@ final class AppState: AppStateProtocol {
     }
 
     var amount: Int? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ??
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ??
             PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
 
     var currency: Currency? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currencyCode
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currencyCode
     }
 
     var clientToken: String?
