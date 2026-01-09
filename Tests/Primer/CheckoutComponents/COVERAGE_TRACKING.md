@@ -572,12 +572,15 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] ApplePay/ProcessApplePayPaymentInteractorTests.swift
 - [x] ApplePay/DefaultApplePayScopeTests.swift
 
-### PR 17: PayPal & Methods (5 files)
-- [ ] PayPal/DefaultPayPalScopeTests.swift
-- [ ] PaymentMethods/CardPaymentMethodTests.swift
-- [ ] PaymentMethods/PayPalPaymentMethodTests.swift
-- [ ] Registry/PaymentMethodRegistryTests.swift
-- [ ] Bridge/CheckoutComponentsPaymentMethodsBridgeTests.swift
+### PR 17: PayPal & Methods (8 files) - 🔄 In Review
+- [x] PayPal/DefaultPayPalScopeTests.swift
+- [x] PaymentMethods/CardPaymentMethodTests.swift
+- [x] PaymentMethods/PayPalPaymentMethodTests.swift
+- [x] Registry/PaymentMethodRegistryTests.swift
+- [x] Bridge/CheckoutComponentsPaymentMethodsBridgeTests.swift
+- [x] Mocks/MockProcessCardPaymentInteractor.swift
+- [x] Mocks/MockCardNetworkDetectionInteractor.swift
+- [x] Mocks/MockValidateInputInteractor.swift
 
 ### PR 18: Scope Pt1 (7 files)
 - [ ] Mocks/MockRawDataManager.swift
