@@ -361,7 +361,7 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 | 12 | `ov/test/checkout-components-12-headless-pt3` | HeadlessRepo Pt3 | 5+source | 🔄 In Review |
 | 13 | `ov/test/checkout-components-13-interactors` | Interactors | 7 | 🔄 In Review |
 | 14 | `ov/test/checkout-components-14-payment-pt1` | Payment Pt1 | 8 | 🔄 In Review |
-| 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | ⬜ Pending |
+| 15 | `ov/test/checkout-components-15-payment-pt2` | Payment Pt2 | 7 | 🔄 In Review |
 | 16 | `ov/test/checkout-components-16-applepay` | ApplePay | 10 | ⬜ Pending |
 | 17 | `ov/test/checkout-components-17-paypal-methods` | PayPal & Methods | 5 | ⬜ Pending |
 | 18 | `ov/test/checkout-components-18-scope-pt1` | Scope Pt1 | 7 | ⬜ Pending |
@@ -552,13 +552,13 @@ xcodebuild test -workspace PrimerSDK.xcworkspace -scheme PrimerSDKTests \
 - [x] Payment/PaymentRetryLogicTests.swift
 
 ### PR 15: Payment Pt2 (7 files)
-- [ ] Payment/CardTokenizationTests.swift
-- [ ] Payment/CheckoutComponentsTokenizationTests.swift
-- [ ] Payment/ThreeDSFlowTests.swift
-- [ ] Payment/ThreeDSChallengeTests.swift
-- [ ] Payment/FraudCheckIntegrationTests.swift
-- [ ] Payment/SurchargeCalculationTests.swift
-- [ ] Payment/TransactionManagerTests.swift
+- [x] Payment/CardTokenizationTests.swift
+- [x] Payment/CheckoutComponentsTokenizationTests.swift
+- [x] Payment/ThreeDSFlowTests.swift
+- [x] Payment/ThreeDSChallengeTests.swift
+- [x] Payment/FraudCheckIntegrationTests.swift
+- [x] Payment/SurchargeCalculationTests.swift
+- [x] Payment/TransactionManagerTests.swift
 
 ### PR 16: ApplePay (10 files)
 - [ ] ApplePay/Mocks/MockProcessApplePayPaymentInteractor.swift
