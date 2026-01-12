@@ -134,6 +134,8 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             requestVaultedPaymentMethods: false
         )
 
+        fireCheckoutInitializedEvent()
+
         let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
         currencyLoader.updateCurrenciesFromAPI()
 
@@ -155,6 +157,16 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         let interval = end - start
         let showEvent = Analytics.Event.headlessLoading(duration: interval)
         Analytics.Service.fire(events: [showEvent])
+    }
+
+    private func fireCheckoutInitializedEvent() {
+        let timeToCheckout = Date().millisecondsSince1970 - (PrimerInternal.shared.sdkInitTimestamp ?? Date().millisecondsSince1970)
+        let environment = PrimerAPIConfigurationModule.decodedJWTToken?.env
+        let checkoutInitEvent = Analytics.Event.checkoutInitialized(
+            timeToCheckoutMs: timeToCheckout,
+            environment: environment
+        )
+        Analytics.Service.fire(event: checkoutInitEvent)
     }
 
     public func cleanUp() {
