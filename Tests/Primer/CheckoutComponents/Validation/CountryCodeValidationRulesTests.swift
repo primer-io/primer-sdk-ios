@@ -12,86 +12,42 @@ final class CountryCodeValidationRulesTests: XCTestCase {
 
     // MARK: - Country Code Validation Tests
 
-    func test_validateCountryCode_withValidCode_returnsValid() {
-        // Given
+    func test_validateCountryCode_withValidCodes_returnsValid() {
         let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.us
+        let validCodes: [String?] = [
+            TestData.CountryCodes.us,
+            TestData.CountryCodes.gbLowercase,
+            TestData.CountryCodes.usa3Letter
+        ]
 
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validCodes)
     }
 
-    func test_validateCountryCode_withLowercase_returnsValid() {
-        // Given
+    func test_validateCountryCode_withInvalidCodes_returnsInvalid() {
         let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.gbLowercase
+        let invalidCodes: [String?] = [
+            TestData.CountryCodes.empty,
+            TestData.CountryCodes.singleCharacter,
+            TestData.CountryCodes.tooLong,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    func test_validateCountryCode_withEmpty_returnsInvalid() {
-        // Given
-        let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.empty
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateCountryCode_withNil_returnsInvalid() {
-        // Given
-        let rule = BillingCountryCodeRule()
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCountryCode_with3LetterCode_returnsValid() {
-        // Given
-        let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.usa3Letter
-
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCountryCode_withSingleChar_returnsInvalid() {
-        // Given
-        let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.singleCharacter
-
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCountryCode_with4Letters_returnsInvalid() {
-        // Given
-        let rule = BillingCountryCodeRule()
-        let countryCode = TestData.CountryCodes.tooLong
-
-        // When
-        let result = rule.validate(countryCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
+        }
     }
 }

@@ -10,160 +10,119 @@ import XCTest
 @available(iOS 15.0, *)
 final class PostalCodeValidationRulesTests: XCTestCase {
 
-    // MARK: - Postal Code Validation Tests
+    // MARK: - Billing Postal Code Tests
 
-    func test_validatePostalCode_withValidUSCode_returnsValid() {
-        // Given
+    func test_validateBillingPostalCode_withValidCode_returnsValid() {
         let rule = BillingPostalCodeRule()
-        let postalCode = TestData.PostalCodes.validUS
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.validUS)
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validatePostalCode_withEmpty_returnsInvalid() {
-        // Given
+    func test_validateBillingPostalCode_withInvalidCodes_returnsInvalid() {
         let rule = BillingPostalCodeRule()
-        let postalCode = TestData.PostalCodes.empty
+        let invalidCodes: [String?] = [
+            TestData.PostalCodes.empty,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    func test_validatePostalCode_withNil_returnsInvalid() {
-        // Given
-        let rule = BillingPostalCodeRule()
+    // MARK: - US Postal Code Tests
 
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validatePostalCode_US_withZipPlus4_returnsValid() {
-        // Given
+    func test_validatePostalCode_US_withValidCodes_returnsValid() {
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.us)
-        let postalCode = TestData.PostalCodes.validUSExtended
+        let validCodes: [String] = [
+            TestData.PostalCodes.validUS,
+            TestData.PostalCodes.validUSExtended
+        ]
 
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validCodes)
     }
 
-    func test_validatePostalCode_US_withLetters_returnsInvalid() {
-        // Given
+    func test_validatePostalCode_US_withInvalidCodes_returnsInvalid() {
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.us)
-        let postalCode = TestData.PostalCodes.usWithLetters
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.usWithLetters)
         XCTAssertFalse(result.isValid)
     }
 
-    func test_validatePostalCode_CA_withValidFormat_returnsValid() {
-        // Given
+    // MARK: - Canada Postal Code Tests
+
+    func test_validatePostalCode_CA_withValidCode_returnsValid() {
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.ca)
-        let postalCode = TestData.PostalCodes.validCanada
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.validCanada)
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validatePostalCode_CA_withInvalidFormat_returnsInvalid() {
-        // Given
+    func test_validatePostalCode_CA_withInvalidCode_returnsInvalid() {
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.ca)
-        let postalCode = TestData.PostalCodes.invalidCanadian
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.invalidCanadian)
         XCTAssertFalse(result.isValid)
     }
 
-    func test_validatePostalCode_GB_withValidLength_returnsValid() {
-        // Given
+    // MARK: - UK Postal Code Tests
+
+    func test_validatePostalCode_GB_withValidCode_returnsValid() {
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.gb)
-        let postalCode = TestData.PostalCodes.validUK
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.validUK)
         XCTAssertTrue(result.isValid)
     }
 
     func test_validatePostalCode_GB_withTooShort_returnsInvalid() {
-        // Given
         let rule = PostalCodeRule(countryCode: TestData.CountryCodes.gb)
-        let postalCode = TestData.PostalCodes.ukTooShort
-
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
+        let result = rule.validate(TestData.PostalCodes.ukTooShort)
         XCTAssertFalse(result.isValid)
     }
 
-    func test_validatePostalCode_generic_withMinLength3_required() {
-        // Given
+    // MARK: - Generic Postal Code Tests
+
+    func test_validatePostalCode_generic_withValidCodes_returnsValid() {
         let rule = PostalCodeRule(countryCode: nil)
-        let postalCode = TestData.PostalCodes.tooShort
+        let validCodes: [String] = [
+            TestData.PostalCodes.validGeneric3Chars,
+            TestData.PostalCodes.validGeneric10Chars
+        ]
 
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllValid(rule: rule, values: validCodes)
     }
 
-    func test_validatePostalCode_generic_with3Chars_returnsValid() {
-        // Given
+    func test_validatePostalCode_generic_withInvalidCodes_returnsInvalid() {
         let rule = PostalCodeRule(countryCode: nil)
-        let postalCode = TestData.PostalCodes.validGeneric3Chars
+        let invalidCodes: [String] = [
+            TestData.PostalCodes.tooShort,
+            TestData.PostalCodes.tooLong
+        ]
 
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    func test_validatePostalCode_generic_withMaxLength10_enforced() {
-        // Given
-        let rule = PostalCodeRule(countryCode: nil)
-        let postalCode = TestData.PostalCodes.tooLong
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(postalCode)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validatePostalCode_generic_with10Chars_returnsValid() {
-        // Given
-        let rule = PostalCodeRule(countryCode: nil)
-        let postalCode = TestData.PostalCodes.validGeneric10Chars
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
+        }
+    }
 
-        // When
-        let result = rule.validate(postalCode)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value)' to be valid", file: file, line: line)
+        }
+    }
 
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
+        }
     }
 }

@@ -12,51 +12,45 @@ final class StateValidationRulesTests: XCTestCase {
 
     // MARK: - State Validation Tests
 
-    func test_validateState_withValidState_returnsValid() {
-        // Given
+    func test_validateState_withValidStates_returnsValid() {
+        let rule = StateRule()
+        let validStates: [String] = [
+            TestData.States.validFullName,
+            TestData.States.validAbbreviation
+        ]
+
+        assertAllValid(rule: rule, values: validStates)
+    }
+
+    func test_validateState_withInvalidStates_returnsInvalid() {
+        let rule = StateRule()
+        let invalidStates: [String] = [
+            TestData.States.empty,
+            TestData.States.singleCharacter
+        ]
+
+        assertAllInvalid(rule: rule, values: invalidStates)
+    }
+
+    func test_validateState_withAddressFieldRule_returnsValid() {
         let rule = AddressFieldRule(inputType: .state, isRequired: true)
-        let state = TestData.States.validFullName
-
-        // When
-        let result = rule.validate(state)
-
-        // Then
+        let result = rule.validate(TestData.States.validFullName)
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validateState_withStateRule_allowsAbbreviation() {
-        // Given
-        let rule = StateRule()
-        let state = TestData.States.validAbbreviation
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(state)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value)' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateState_withEmpty_returnsInvalid() {
-        // Given
-        let rule = StateRule()
-        let state = TestData.States.empty
-
-        // When
-        let result = rule.validate(state)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateState_withSingleChar_returnsInvalid() {
-        // Given
-        let rule = StateRule()
-        let state = TestData.States.singleCharacter
-
-        // When
-        let result = rule.validate(state)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
+        }
     }
 }

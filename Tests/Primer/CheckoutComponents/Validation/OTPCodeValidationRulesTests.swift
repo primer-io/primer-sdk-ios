@@ -13,50 +13,28 @@ final class OTPCodeValidationRulesTests: XCTestCase {
     // MARK: - OTP Code Validation Tests
 
     func test_validateOTPCode_withValidCode_returnsValid() {
-        // Given
         let rule = OTPCodeRule(expectedLength: TestData.OTPCodes.expectedLength6)
-        let otp = TestData.OTPCodes.valid6Digit
-
-        // When
-        let result = rule.validate(otp)
-
-        // Then
+        let result = rule.validate(TestData.OTPCodes.valid6Digit)
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validateOTPCode_withWrongLength_returnsInvalid() {
-        // Given
+    func test_validateOTPCode_withInvalidCodes_returnsInvalid() {
         let rule = OTPCodeRule(expectedLength: TestData.OTPCodes.expectedLength6)
-        let otp = TestData.OTPCodes.tooShort
+        let invalidCodes: [String] = [
+            TestData.OTPCodes.tooShort,
+            TestData.OTPCodes.withNonNumeric,
+            TestData.OTPCodes.empty
+        ]
 
-        // When
-        let result = rule.validate(otp)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidCodes)
     }
 
-    func test_validateOTPCode_withNonNumeric_returnsInvalid() {
-        // Given
-        let rule = OTPCodeRule(expectedLength: TestData.OTPCodes.expectedLength6)
-        let otp = TestData.OTPCodes.withNonNumeric
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(otp)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateOTPCode_withEmpty_returnsInvalid() {
-        // Given
-        let rule = OTPCodeRule(expectedLength: TestData.OTPCodes.expectedLength6)
-        let otp = TestData.OTPCodes.empty
-
-        // When
-        let result = rule.validate(otp)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
+        }
     }
 }

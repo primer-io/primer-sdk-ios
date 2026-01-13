@@ -12,63 +12,46 @@ final class CityValidationRulesTests: XCTestCase {
 
     // MARK: - City Validation Tests
 
-    func test_validateCity_withValidCity_returnsValid() {
-        // Given
+    func test_validateCity_withValidCities_returnsValid() {
+        let rule = CityRule()
+        let validCities: [String] = [
+            TestData.Cities.valid,
+            TestData.Cities.withHyphen,
+            TestData.Cities.withPeriod
+        ]
+
+        assertAllValid(rule: rule, values: validCities)
+    }
+
+    func test_validateCity_withInvalidCities_returnsInvalid() {
+        let rule = CityRule()
+        let invalidCities: [String] = [
+            TestData.Cities.empty,
+            TestData.Cities.singleCharacter
+        ]
+
+        assertAllInvalid(rule: rule, values: invalidCities)
+    }
+
+    func test_validateCity_withAddressFieldRule_returnsValid() {
         let rule = AddressFieldRule(inputType: .city, isRequired: true)
-        let city = TestData.Cities.valid
-
-        // When
-        let result = rule.validate(city)
-
-        // Then
+        let result = rule.validate(TestData.Cities.valid)
         XCTAssertTrue(result.isValid)
     }
 
-    func test_validateCity_withHyphen_returnsValid() {
-        // Given
-        let rule = CityRule()
-        let city = TestData.Cities.withHyphen
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(city)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value)' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateCity_withPeriod_returnsValid() {
-        // Given
-        let rule = CityRule()
-        let city = TestData.Cities.withPeriod
-
-        // When
-        let result = rule.validate(city)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCity_withEmpty_returnsInvalid() {
-        // Given
-        let rule = CityRule()
-        let city = TestData.Cities.empty
-
-        // When
-        let result = rule.validate(city)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCity_withSingleChar_returnsInvalid() {
-        // Given
-        let rule = CityRule()
-        let city = TestData.Cities.singleCharacter
-
-        // When
-        let result = rule.validate(city)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
+        }
     }
 }

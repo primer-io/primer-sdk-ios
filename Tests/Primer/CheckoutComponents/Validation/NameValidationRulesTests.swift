@@ -12,135 +12,64 @@ final class NameValidationRulesTests: XCTestCase {
 
     // MARK: - First Name Validation Tests
 
-    func test_validateFirstName_withValidName_returnsValid() {
-        // Given
+    func test_validateFirstName_withValidNames_returnsValid() {
         let rule = FirstNameRule()
-        let name = TestData.FirstNames.valid
+        let validNames: [String?] = [
+            TestData.FirstNames.valid,
+            TestData.FirstNames.withAccents,
+            TestData.FirstNames.withUnicode
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validNames)
     }
 
-    func test_validateFirstName_withEmpty_returnsInvalid() {
-        // Given
+    func test_validateFirstName_withInvalidNames_returnsInvalid() {
         let rule = FirstNameRule()
-        let name = TestData.FirstNames.empty
+        let invalidNames: [String?] = [
+            TestData.FirstNames.empty,
+            TestData.FirstNames.singleCharacter,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateFirstName_withNil_returnsInvalid() {
-        // Given
-        let rule = FirstNameRule()
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateFirstName_withUnicodeCharacters_returnsValid() {
-        // Given
-        let rule = FirstNameRule()
-        let name = TestData.FirstNames.withAccents
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateFirstName_withAccentedCharacters_returnsValid() {
-        // Given
-        let rule = FirstNameRule()
-        let name = TestData.FirstNames.withUnicode
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateFirstName_withSingleCharacter_returnsInvalid() {
-        // Given
-        let rule = FirstNameRule()
-        let name = TestData.FirstNames.singleCharacter
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidNames)
     }
 
     // MARK: - Last Name Validation Tests
 
-    func test_validateLastName_withValidName_returnsValid() {
-        // Given
+    func test_validateLastName_withValidNames_returnsValid() {
         let rule = LastNameRule()
-        let name = TestData.LastNames.valid
+        let validNames: [String?] = [
+            TestData.LastNames.valid,
+            TestData.LastNames.withApostrophe,
+            TestData.LastNames.withHyphen
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validNames)
     }
 
-    func test_validateLastName_withEmpty_returnsInvalid() {
-        // Given
+    func test_validateLastName_withInvalidNames_returnsInvalid() {
         let rule = LastNameRule()
-        let name = TestData.LastNames.empty
+        let invalidNames: [String?] = [
+            TestData.LastNames.empty,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidNames)
     }
 
-    func test_validateLastName_withApostrophe_returnsValid() {
-        // Given
-        let rule = LastNameRule()
-        let name = TestData.LastNames.withApostrophe
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateLastName_withHyphen_returnsValid() {
-        // Given
-        let rule = LastNameRule()
-        let name = TestData.LastNames.withHyphen
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateLastName_withNil_returnsInvalid() {
-        // Given
-        let rule = LastNameRule()
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
+        }
     }
 }

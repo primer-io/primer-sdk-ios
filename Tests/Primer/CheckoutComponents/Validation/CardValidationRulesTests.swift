@@ -10,476 +10,140 @@ import XCTest
 @available(iOS 15.0, *)
 final class CardValidationRulesTests: XCTestCase {
 
-    // MARK: - Card Number Validation Tests
-
-    // All major card networks for testing
     private let allCardNetworks: [CardNetwork] = [.visa, .masterCard, .amex, .discover, .jcb, .diners]
 
-    func test_validateCardNumber_withValidVisa_returnsValid() {
-        // Given
+    // MARK: - Card Number Validation Tests
+
+    func test_validateCardNumber_withValidCards_returnsValid() {
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.validVisa
+        let validCards: [String] = [
+            TestData.CardNumbers.validVisa,
+            TestData.CardNumbers.validMastercard,
+            TestData.CardNumbers.validAmex,
+            TestData.CardNumbers.withSpaces
+        ]
 
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
+        assertAllValid(rule: rule, values: validCards)
     }
 
-    func test_validateCardNumber_withValidMastercard_returnsValid() {
-        // Given
+    func test_validateCardNumber_withInvalidCards_returnsInvalid() {
         let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.validMastercard
+        let invalidCards: [String] = [
+            TestData.CardNumbers.invalidLuhn,
+            TestData.CardNumbers.tooShort,
+            TestData.CardNumbers.empty,
+            TestData.CardNumbers.nonNumeric,
+            TestData.CardNumbers.allZeros,
+            TestData.CardNumbers.singleDigit,
+            TestData.CardNumbers.tooLong
+        ]
 
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
+        assertAllInvalid(rule: rule, values: invalidCards)
     }
 
-    func test_validateCardNumber_withValidAmex_returnsValid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.validAmex
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_withInvalidLuhn_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.invalidLuhn
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_withTooShort_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.tooShort
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_withEmpty_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.empty
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardNumber_withNonNumeric_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.nonNumeric
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardNumber_withUnsupportedNetwork_returnsInvalid() {
-        // Given - Only allow Visa, but test with Mastercard
+    func test_validateCardNumber_withUnsupportedNetwork_returnsUnsupportedError() {
         let rule = CardNumberRule(allowedCardNetworks: [.visa])
-        let cardNumber = TestData.CardNumbers.validMastercard
+        let result = rule.validate(TestData.CardNumbers.validMastercard)
 
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
         XCTAssertFalse(result.isValid)
         XCTAssertEqual(result.errorCode, TestData.ErrorCodes.unsupportedCardType)
+    }
+
+    func test_validateCardNumber_withEmptyAllowedNetworks_returnsUnsupportedError() {
+        let rule = CardNumberRule(allowedCardNetworks: [])
+        let result = rule.validate(TestData.CardNumbers.validVisa)
+
+        XCTAssertFalse(result.isValid)
+        XCTAssertEqual(result.errorCode, TestData.ErrorCodes.unsupportedCardType)
+    }
+
+    func test_validateCardNumber_with19Digits_hasCorrectLength() {
+        let cardNumber = TestData.CardNumbers.valid19Digit
+        XCTAssertEqual(cardNumber.count, 19)
     }
 
     // MARK: - CVV Validation Tests
 
-    func test_validateCVV_with3DigitsForVisa_returnsValid() {
-        // Given
+    func test_validateCVV_withValidCVVs_returnsValid() {
+        let testCases: [(CardNetwork?, String)] = [
+            (.visa, TestData.CVV.valid3Digit),
+            (.masterCard, TestData.CVV.valid3Digit),
+            (.amex, TestData.CVV.valid4Digit),
+            (.unknown, TestData.CVV.valid3Digit),
+            (nil, TestData.CVV.valid3Digit)
+        ]
+
+        for (network, cvv) in testCases {
+            let rule = CVVRule(cardNetwork: network)
+            let result = rule.validate(cvv)
+            XCTAssertTrue(result.isValid, "Expected CVV '\(cvv)' to be valid for network \(String(describing: network))")
+        }
+    }
+
+    func test_validateCVV_withInvalidCVVs_returnsInvalid() {
         let rule = CVVRule(cardNetwork: .visa)
-        let cvv = TestData.CVV.valid3Digit
+        let invalidCVVs: [String] = [
+            TestData.CVV.tooShort,
+            TestData.CVV.empty,
+            TestData.CVV.nonNumeric,
+            TestData.CVV.valid4Digit  // Visa requires 3 digits
+        ]
 
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
+        assertAllInvalid(rule: rule, values: invalidCVVs)
     }
 
-    func test_validateCVV_with3DigitsForMastercard_returnsValid() {
-        // Given
-        let rule = CVVRule(cardNetwork: .masterCard)
-        let cvv = TestData.CVV.valid3Digit
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCVV_with4DigitsForAmex_returnsValid() {
-        // Given
+    func test_validateCVV_amexWith3Digits_returnsInvalid() {
         let rule = CVVRule(cardNetwork: .amex)
-        let cvv = TestData.CVV.valid4Digit
+        let result = rule.validate(TestData.CVV.valid3Digit)
 
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
-    }
-
-    func test_validateCVV_with3DigitsForAmex_returnsInvalid() {
-        // Given
-        let rule = CVVRule(cardNetwork: .amex)
-        let cvv = TestData.CVV.valid3Digit  // Amex requires 4 digits
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
         XCTAssertFalse(result.isValid)
         XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCVV_withTooShort_returnsInvalid() {
-        // Given
-        let rule = CVVRule(cardNetwork: .visa)
-        let cvv = TestData.CVV.tooShort
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCVV_withEmpty_returnsInvalid() {
-        // Given
-        let rule = CVVRule(cardNetwork: .visa)
-        let cvv = TestData.CVV.empty
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCVV_withNonNumeric_returnsInvalid() {
-        // Given
-        let rule = CVVRule(cardNetwork: .visa)
-        let cvv = TestData.CVV.nonNumeric
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCVV_withUnknownNetwork_uses3Digits() {
-        // Given - when network is unknown, CVV is 3 digits by default
-        let rule = CVVRule(cardNetwork: .unknown)
-        let cvv = TestData.CVV.valid3Digit
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertTrue(result.isValid)
     }
 
     // MARK: - Cardholder Name Validation Tests
 
-    func test_validateCardholderName_withValidName_returnsValid() {
-        // Given
+    func test_validateCardholderName_withValidNames_returnsValid() {
         let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.valid
+        let validNames: [String] = [
+            TestData.CardholderNames.valid,
+            TestData.CardholderNames.validWithMiddle,
+            TestData.CardholderNames.validSingleName,
+            TestData.CardholderNames.validWithAccents,
+            TestData.CardholderNames.validWithHyphen,
+            TestData.CardholderNames.validWithApostrophe,
+            TestData.CardholderNames.withLeadingTrailingSpaces
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-        XCTAssertNil(result.errorCode)
+        assertAllValid(rule: rule, values: validNames)
     }
 
-    func test_validateCardholderName_withMiddleName_returnsValid() {
-        // Given
+    func test_validateCardholderName_withInvalidNames_returnsInvalid() {
         let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.validWithMiddle
+        let invalidNames: [String] = [
+            TestData.CardholderNames.withNumbers,
+            TestData.CardholderNames.empty,
+            TestData.CardholderNames.onlyNumbers,
+            TestData.CardholderNames.tooShort,
+            TestData.CardholderNames.onlySpaces,
+            TestData.CardholderNames.withSpecialCharacters
+        ]
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidNames)
     }
 
-    func test_validateCardholderName_withSingleName_returnsValid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.validSingleName
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value)' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateCardholderName_withAccents_returnsValid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.validWithAccents
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCardholderName_withNumbers_returnsInvalid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.withNumbers
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardholderName_withEmpty_returnsInvalid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.empty
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardholderName_withOnlyNumbers_returnsInvalid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.onlyNumbers
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    // MARK: - Additional Card Number Edge Cases
-
-    func test_validateCardNumber_withAllZeros_failsLuhn() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.allZeros
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_withSingleDigit_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.singleDigit
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_with19DigitValid_returnsValid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.valid19Digit
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertTrue(cardNumber.count == 19)
-    }
-
-    func test_validateCardNumber_withMaxLengthExceeded_returnsInvalid() {
-        // Given
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.tooLong
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertNotNil(result.errorCode)
-    }
-
-    func test_validateCardNumber_withEmptyAllowedNetworks_rejectsAll() {
-        // Given - Empty allowed networks should reject all cards
-        let rule = CardNumberRule(allowedCardNetworks: [])
-        let cardNumber = TestData.CardNumbers.validVisa
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-        XCTAssertEqual(result.errorCode, TestData.ErrorCodes.unsupportedCardType)
-    }
-
-    func test_validateCardNumber_withSpaces_isCleanedAndValidated() {
-        // Given - Card number with spaces should be cleaned
-        let rule = CardNumberRule(allowedCardNetworks: allCardNetworks)
-        let cardNumber = TestData.CardNumbers.withSpaces
-
-        // When
-        let result = rule.validate(cardNumber)
-
-        // Then - The spaces are stripped, and the underlying number is valid
-        XCTAssertTrue(result.isValid)
-    }
-
-    // MARK: - Additional CVV Edge Cases
-
-    func test_validateCVV_withNilNetwork_uses3Digits() {
-        // Given - when network is nil, CVV is 3 digits by default
-        let rule = CVVRule(cardNetwork: nil)
-        let cvv = TestData.CVV.valid3Digit
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCVV_with4DigitsForVisa_returnsInvalid() {
-        // Given - Visa requires 3 digits, not 4
-        let rule = CVVRule(cardNetwork: .visa)
-        let cvv = TestData.CVV.valid4Digit
-
-        // When
-        let result = rule.validate(cvv)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    // MARK: - Additional Cardholder Name Edge Cases
-
-    func test_validateCardholderName_withHyphen_returnsValid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.validWithHyphen
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCardholderName_withApostrophe_returnsValid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.validWithApostrophe
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCardholderName_withTooShort_returnsInvalid() {
-        // Given - Single character name should be invalid
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.tooShort
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardholderName_withLeadingTrailingSpaces_trimsAndValidates() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.withLeadingTrailingSpaces
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateCardholderName_withOnlySpaces_returnsInvalid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.onlySpaces
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateCardholderName_withSpecialCharacters_returnsInvalid() {
-        // Given
-        let rule = CardholderNameRule()
-        let name = TestData.CardholderNames.withSpecialCharacters
-
-        // When
-        let result = rule.validate(name)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String], file: StaticString = #file, line: UInt = #line) where R.Input == String {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value)' to be invalid", file: file, line: line)
+        }
     }
 }

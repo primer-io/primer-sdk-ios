@@ -12,279 +12,68 @@ final class EmailPhoneValidationRulesTests: XCTestCase {
 
     // MARK: - Email Validation Tests
 
-    func test_validateEmail_withValidEmail_returnsValid() {
-        // Given
+    func test_validateEmail_withValidEmails_returnsValid() {
         let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.valid
+        let validEmails: [String?] = [
+            TestData.EmailAddresses.valid,
+            TestData.EmailAddresses.validWithSubdomain,
+            TestData.EmailAddresses.validWithPlus
+        ]
 
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validEmails)
     }
 
-    func test_validateEmail_withSubdomain_returnsValid() {
-        // Given
+    func test_validateEmail_withInvalidEmails_returnsInvalid() {
         let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.validWithSubdomain
+        let invalidEmails: [String?] = [
+            TestData.EmailAddresses.missingAt,
+            TestData.EmailAddresses.empty,
+            TestData.EmailAddresses.invalidFormat,
+            TestData.EmailAddresses.missingDomain,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateEmail_withPlusTag_returnsValid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.validWithPlus
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateEmail_withMissingAt_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.missingAt
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateEmail_withEmpty_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.empty
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateEmail_withNil_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateEmail_withInternationalTLD_returnsValid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.validWithSubdomain
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateEmail_withNumbers_returnsValid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.valid
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateEmail_withDotsInLocalPart_returnsValid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.valid
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateEmail_withMultipleAtSymbols_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.invalidFormat
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateEmail_withSpaces_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.invalidFormat
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateEmail_withMissingDomain_returnsInvalid() {
-        // Given
-        let rule = EmailValidationRule()
-        let email = TestData.EmailAddresses.missingDomain
-
-        // When
-        let result = rule.validate(email)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidEmails)
     }
 
     // MARK: - Phone Number Validation Tests
 
-    func test_validatePhoneNumber_withValidUSNumber_returnsValid() {
-        // Given
+    func test_validatePhoneNumber_withValidNumbers_returnsValid() {
         let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validUS
+        let validPhones: [String?] = [
+            TestData.PhoneNumbers.validUS,
+            TestData.PhoneNumbers.validWithCountryCode,
+            TestData.PhoneNumbers.validInternational
+        ]
 
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validPhones)
     }
 
-    func test_validatePhoneNumber_withCountryCode_returnsValid() {
-        // Given
+    func test_validatePhoneNumber_withInvalidNumbers_returnsInvalid() {
         let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validWithCountryCode
+        let invalidPhones: [String?] = [
+            TestData.PhoneNumbers.tooShort,
+            TestData.PhoneNumbers.empty,
+            TestData.PhoneNumbers.withLetters,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidPhones)
     }
 
-    func test_validatePhoneNumber_withTooShort_returnsInvalid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.tooShort
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validatePhoneNumber_withEmpty_returnsInvalid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.empty
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withMinLength7_returnsValid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validUS
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withMaxLength15_returnsValid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validInternational
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validatePhoneNumber_with16Digits_returnsInvalid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.tooShort
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withInternationalFormat_returnsValid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validInternational
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withLetters_returnsInvalid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.withLetters
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withParentheses_cleansAndValidates() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-        let phone = TestData.PhoneNumbers.validWithCountryCode
-
-        // When
-        let result = rule.validate(phone)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validatePhoneNumber_withNil_returnsInvalid() {
-        // Given
-        let rule = PhoneNumberValidationRule()
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
+        }
     }
 }

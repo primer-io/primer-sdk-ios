@@ -10,111 +10,56 @@ import XCTest
 @available(iOS 15.0, *)
 final class AddressFieldValidationRulesTests: XCTestCase {
 
-    // MARK: - Address Field Validation Tests
+    // MARK: - Address Line 1 (Required) Tests
 
-    func test_validateAddressLine1_withValidAddress_returnsValid() {
-        // Given
+    func test_validateAddressLine1_withValidAddresses_returnsValid() {
         let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.valid
+        let validAddresses: [String?] = [
+            TestData.Addresses.valid,
+            TestData.Addresses.valid100Chars,
+            TestData.Addresses.valid3Chars
+        ]
 
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: validAddresses)
     }
 
-    func test_validateAddressLine1_withEmpty_whenRequired_returnsInvalid() {
-        // Given
+    func test_validateAddressLine1_withInvalidAddresses_returnsInvalid() {
         let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.empty
+        let invalidAddresses: [String?] = [
+            TestData.Addresses.empty,
+            TestData.Addresses.tooLong,
+            TestData.Addresses.tooShort,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+        assertAllInvalid(rule: rule, values: invalidAddresses)
     }
 
-    func test_validateAddressLine2_withEmpty_whenOptional_returnsValid() {
-        // Given
+    // MARK: - Address Line 2 (Optional) Tests
+
+    func test_validateAddressLine2_whenOptional_returnsValid() {
         let rule = AddressFieldRule(inputType: .addressLine2, isRequired: false)
-        let address = TestData.Addresses.empty
+        let optionalValues: [String?] = [
+            TestData.Addresses.empty,
+            nil
+        ]
 
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+        assertAllValid(rule: rule, values: optionalValues)
     }
 
-    func test_validateAddressLine2_withNil_whenOptional_returnsValid() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine2, isRequired: false)
+    // MARK: - Helpers
 
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertTrue(result.isValid)
+    private func assertAllValid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertTrue(result.isValid, "Expected '\(value ?? "nil")' to be valid", file: file, line: line)
+        }
     }
 
-    func test_validateAddress_withMaxLength100_returnsValid() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.valid100Chars
-
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateAddress_exceeding100Characters_returnsInvalid() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.tooLong
-
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateAddress_withMinLength3_required() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.tooShort
-
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertFalse(result.isValid)
-    }
-
-    func test_validateAddress_with3Chars_returnsValid() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-        let address = TestData.Addresses.valid3Chars
-
-        // When
-        let result = rule.validate(address)
-
-        // Then
-        XCTAssertTrue(result.isValid)
-    }
-
-    func test_validateAddressLine1_withNil_whenRequired_returnsInvalid() {
-        // Given
-        let rule = AddressFieldRule(inputType: .addressLine1, isRequired: true)
-
-        // When
-        let result = rule.validate(nil)
-
-        // Then
-        XCTAssertFalse(result.isValid)
+    private func assertAllInvalid<R: ValidationRule>(rule: R, values: [String?], file: StaticString = #file, line: UInt = #line) where R.Input == String? {
+        for value in values {
+            let result = rule.validate(value)
+            XCTAssertFalse(result.isValid, "Expected '\(value ?? "nil")' to be invalid", file: file, line: line)
+        }
     }
 }
