@@ -21,6 +21,11 @@ final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementServi
 
     // MARK: - Call Tracking
 
+    var totalAnnouncementCount: Int {
+        announceErrorCallCount + announceStateChangeCallCount +
+            announceLayoutChangeCallCount + announceScreenChangeCallCount
+    }
+
     private(set) var announceErrorCallCount = 0
     private(set) var announceStateChangeCallCount = 0
     private(set) var announceLayoutChangeCallCount = 0
@@ -71,10 +76,5 @@ final class MockAccessibilityAnnouncementService: AccessibilityAnnouncementServi
         lastLayoutChangeMessage = nil
         lastScreenChangeMessage = nil
         allAnnouncements = []
-    }
-
-    var totalAnnouncementCount: Int {
-        announceErrorCallCount + announceStateChangeCallCount +
-            announceLayoutChangeCallCount + announceScreenChangeCallCount
     }
 }
