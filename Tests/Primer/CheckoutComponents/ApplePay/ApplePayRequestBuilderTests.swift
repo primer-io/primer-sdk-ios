@@ -151,7 +151,7 @@ final class ApplePayRequestBuilderTests: XCTestCase {
                 ClientSession.Order.LineItem(
                     itemId: "item_1",
                     quantity: 1,
-                    amount: 1000,
+                    amount: TestData.Amounts.standard,
                     discountAmount: nil,
                     name: "Test Item",
                     description: nil,

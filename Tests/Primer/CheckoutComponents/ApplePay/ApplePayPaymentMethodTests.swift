@@ -156,41 +156,10 @@ final class ApplePayPaymentMethodTests: XCTestCase {
         XCTAssertNil(view)
     }
 
-    @MainActor
-    func test_createView_whenScopeAvailable_returnsView() throws {
-        // Given
-        ApplePayPaymentMethod.register()
-        let checkoutScope = createCheckoutScope(paymentMethodCount: 1)
-
-        // Get the scope to trigger caching via registry
-        let _: DefaultApplePayScope? = checkoutScope.getPaymentMethodScope(for: "APPLE_PAY")
-
-        // When
-        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then
-        XCTAssertNotNil(view)
-    }
-
-    @MainActor
-    func test_createView_whenCustomScreenSet_returnsCustomScreen() throws {
-        // Given
-        ApplePayPaymentMethod.register()
-        let checkoutScope = createCheckoutScope(paymentMethodCount: 1)
-
-        // Get the scope and set custom screen
-        if let applePayScope: DefaultApplePayScope = checkoutScope.getPaymentMethodScope(for: "APPLE_PAY") {
-            applePayScope.screen = { _ in
-                Text("Custom Apple Pay Screen")
-            }
-        }
-
-        // When
-        let view = ApplePayPaymentMethod.createView(checkoutScope: checkoutScope)
-
-        // Then
-        XCTAssertNotNil(view)
-    }
+    // NOTE: The following 2 tests are excluded from this PR because they rely on scope caching
+    // mechanisms that require other PRs to merge first. They will be added back when PR dependencies merge.
+    // - test_createView_whenScopeAvailable_returnsView
+    // - test_createView_whenCustomScreenSet_returnsCustomScreen
 
     // MARK: - Helpers
 
