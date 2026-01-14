@@ -18,8 +18,8 @@ jobs:
         variant: 
           - cocoapods
           - spm
-        xcode: 
-          - 16.3.0
+        xcode:
+          - '16.4.0'
     steps:
       - name: Git - Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -62,7 +62,7 @@ jobs:
       - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
-          bundle exec fastlane test_sdk sim_version:18.4
+          bundle exec fastlane test_sdk sim_version:18.5
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
