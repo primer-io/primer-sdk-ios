@@ -7,8 +7,33 @@
 import Foundation
 @testable import PrimerSDK
 
+/// Organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
+
+    // MARK: - Accessibility
+
+    enum Accessibility {
+        // Test configuration
+        static let concurrentOperationCount = 10
+        static let testTimeout: TimeInterval = 5.0
+        static let testQueueLabel = "test.concurrent"
+        static let concurrentExpectationDescription = "Concurrent announcements"
+
+        // Announcement messages for tests
+        static let errorPrefix = "Error"
+        static let statePrefix = "State"
+        static let errorMessage = "Error message"
+        static let stateChangeMessage = "State change"
+        static let layoutChangeMessage = "Layout change"
+        static let screenChangeMessage = "Screen change"
+
+        // Test case descriptions
+        static let errorDescription = "Error announcements"
+        static let stateChangeDescription = "State change announcements"
+        static let layoutChangeDescription = "Layout change announcements"
+        static let screenChangeDescription = "Screen change announcements"
+    }
 
     // MARK: - Tokens
 
@@ -16,121 +41,6 @@ enum TestData {
         static let valid = "test-token"
         static let invalid = "invalid-token"
         static let expired = "expired-token"
-    }
-
-    // MARK: - Names
-
-    enum Names {
-        static let firstName = "John"
-        static let lastName = "Doe"
-    }
-
-    // MARK: - Error Messages
-
-    enum ErrorMessages {
-        static let fieldRequired = "Field is required"
-        static let fieldInvalid = "Field is invalid"
-        static let retailOutletRequired = "Retail outlet is required"
-        static let retailOutletInvalid = "Invalid retail outlet"
-        static let invalidCardNumber = "Invalid card number"
-        static let invalidCVV = "CVV is invalid"
-    }
-
-    // MARK: - Error Codes
-
-    enum ErrorCodes {
-        static let invalid = "INVALID"
-        static let invalidFirstName = "invalid-first_name"
-        static let invalidCardNumber = "invalid-card_number"
-        static let invalidCard = "invalid-card"
-        static let invalidCVV = "invalid-cvv"
-    }
-
-    // MARK: - Error IDs
-
-    enum ErrorIds {
-        // Required field errors
-        static let firstNameRequired = "first_name_required"
-        static let lastNameRequired = "last_name_required"
-        static let emailRequired = "email_required"
-        static let countryCodeRequired = "country_code_required"
-        static let addressLine1Required = "address_line_1_required"
-        static let addressLine2Required = "address_line_2_required"
-        static let cityRequired = "city_required"
-        static let stateRequired = "state_required"
-        static let postalCodeRequired = "postal_code_required"
-        static let phoneNumberRequired = "phone_number_required"
-        static let retailOutletRequired = "retail_outlet_required"
-
-        // Invalid field errors
-        static let cardNumberInvalid = "card_number_invalid"
-        static let cvvInvalid = "cvv_invalid"
-        static let expiryDateInvalid = "expiry_date_invalid"
-        static let cardholderNameInvalid = "cardholder_name_invalid"
-        static let firstNameInvalid = "first_name_invalid"
-        static let lastNameInvalid = "last_name_invalid"
-        static let emailInvalid = "email_invalid"
-        static let countryCodeInvalid = "country_code_invalid"
-        static let addressLine1Invalid = "address_line_1_invalid"
-        static let addressLine2Invalid = "address_line_2_invalid"
-        static let cityInvalid = "city_invalid"
-        static let stateInvalid = "state_invalid"
-        static let postalCodeInvalid = "postal_code_invalid"
-        static let phoneNumberInvalid = "phone_number_invalid"
-        static let retailOutletInvalid = "retail_outlet_invalid"
-    }
-
-    // MARK: - Error Message Keys
-
-    enum ErrorMessageKeys {
-        // Required field message keys
-        static let firstNameRequired = "checkout_components_first_name_required"
-        static let lastNameRequired = "checkout_components_last_name_required"
-        static let emailRequired = "checkout_components_email_required"
-        static let countryRequired = "checkout_components_country_required"
-        static let addressLine1Required = "checkout_components_address_line_1_required"
-        static let addressLine2Required = "checkout_components_address_line_2_required"
-        static let cityRequired = "checkout_components_city_required"
-        static let stateRequired = "checkout_components_state_required"
-        static let postalCodeRequired = "checkout_components_postal_code_required"
-        static let phoneNumberRequired = "checkout_components_phone_number_required"
-        static let retailOutletRequired = "checkout_components_retail_outlet_required"
-        static let genericRequired = "form_error_required"
-
-        // Invalid field message keys
-        static let cardNumberInvalid = "checkout_components_card_number_invalid"
-        static let cvvInvalid = "checkout_components_cvv_invalid"
-        static let expiryDateInvalid = "checkout_components_expiry_date_invalid"
-        static let cardholderNameInvalid = "checkout_components_cardholder_name_invalid"
-        static let firstNameInvalid = "checkout_components_first_name_invalid"
-        static let lastNameInvalid = "checkout_components_last_name_invalid"
-        static let emailInvalid = "checkout_components_email_invalid"
-        static let countryInvalid = "checkout_components_country_invalid"
-        static let addressLine1Invalid = "checkout_components_address_line_1_invalid"
-        static let addressLine2Invalid = "checkout_components_address_line_2_invalid"
-        static let cityInvalid = "checkout_components_city_invalid"
-        static let stateInvalid = "checkout_components_state_invalid"
-        static let postalCodeInvalid = "checkout_components_postal_code_invalid"
-        static let phoneNumberInvalid = "checkout_components_phone_number_invalid"
-        static let retailOutletInvalid = "checkout_components_retail_outlet_invalid"
-        static let genericInvalid = "form_error_invalid"
-
-        // Form validation message keys
-        static let cardTypeNotSupported = "form_error_card_type_not_supported"
-        static let cardHolderNameLength = "form_error_card_holder_name_length"
-        static let cardExpired = "form_error_card_expired"
-
-        // Result message keys
-        static let paymentSuccessful = "payment_successful"
-        static let paymentFailed = "payment_failed"
-    }
-
-    // MARK: - Test Fixtures
-
-    enum TestFixtures {
-        static let defaultErrorId = "test_error"
-        static let defaultCode = "test-code"
-        static let defaultMessage = "Test message"
     }
 
     // MARK: - Card Numbers
@@ -451,56 +361,10 @@ enum TestData {
         static let sandboxEnv = "SANDBOX"
         static let productionEnv = "PRODUCTION"
     }
-
-    // MARK: - Payment Method Types
-
-    enum PaymentMethodTypes {
-        static let card = "PAYMENT_CARD"
-        static let applePay = "APPLE_PAY"
-    }
-
-    // MARK: - Diagnostics IDs
-
-    enum DiagnosticsIds {
-        static let test = "test-diagnostics"
-    }
-
-    // MARK: - Payment IDs
-
-    enum PaymentIds {
-        static let test = "test-payment"
-        static let success = "success-123"
-    }
-
-    // MARK: - Formatted Amounts
-
-    enum FormattedAmounts {
-        static let tenDollars = "$10.00"
-    }
-
-    // MARK: - Error Keys
-
-    enum ErrorKeys {
-        static let test = "test"
-    }
-
-    // MARK: - Route IDs
-
-    enum RouteIds {
-        static let splash = "splash"
-        static let loading = "loading"
-        static let paymentMethodSelection = "payment-method-selection"
-        static let processing = "processing"
-        static let success = "success"
-        static let failure = "failure"
-        static let paymentMethodCardDirect = "payment-method-PAYMENT_CARD-direct"
-        static let paymentMethodCardSelection = "payment-method-PAYMENT_CARD-selection"
-    }
 }
 
 // MARK: - Test Error Type
 
-/// Custom error type for test scenarios
 enum TestError: Error, Equatable {
     case timeout
     case cancelled
