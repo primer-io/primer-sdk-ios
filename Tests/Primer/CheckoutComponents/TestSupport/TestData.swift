@@ -361,6 +361,24 @@ enum TestData {
         static let sandboxEnv = "SANDBOX"
         static let productionEnv = "PRODUCTION"
     }
+
+    // MARK: - Payment Method Identifiers
+
+    enum PaymentMethodIds {
+        static let cardId = "card-pm-id"
+        static let paypalId = "paypal-pm-id"
+        static let applePayId = "apple-pay-pm-id"
+        static let googlePayId = "google-pay-pm-id"
+    }
+
+    // MARK: - Payment Method Names
+
+    enum PaymentMethodNames {
+        static let cardName = "Card"
+        static let paypalName = "PayPal"
+        static let applePayName = "Apple Pay"
+        static let googlePayName = "Google Pay"
+    }
 }
 
 // MARK: - Test Error Type

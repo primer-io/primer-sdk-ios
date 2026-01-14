@@ -202,20 +202,21 @@ extension MockHeadlessRepository {
 
     static func withDefaultPaymentMethods() -> MockHeadlessRepository {
         let repository = MockHeadlessRepository()
-        repository.paymentMethodsToReturn = [
+        let methods: [InternalPaymentMethod] = [
             InternalPaymentMethod(
-                id: TestData.PaymentMethodIds.card,
+                id: TestData.PaymentMethodIds.cardId,
                 type: TestData.PaymentMethodTypes.card,
-                name: TestData.PaymentMethodNames.card,
+                name: TestData.PaymentMethodNames.cardName,
                 isEnabled: true
             ),
             InternalPaymentMethod(
-                id: TestData.PaymentMethodIds.paypal,
+                id: TestData.PaymentMethodIds.paypalId,
                 type: TestData.PaymentMethodTypes.paypal,
-                name: TestData.PaymentMethodNames.paypal,
+                name: TestData.PaymentMethodNames.paypalName,
                 isEnabled: true
             )
         ]
+        repository.paymentMethodsToReturn = methods
         return repository
     }
 
@@ -223,7 +224,7 @@ extension MockHeadlessRepository {
         let repository = MockHeadlessRepository()
         repository.paymentResultToReturn = PaymentResult(
             paymentId: TestData.PaymentIds.success,
-            status: .success
+            status: PaymentStatus.success
         )
         return repository
     }
