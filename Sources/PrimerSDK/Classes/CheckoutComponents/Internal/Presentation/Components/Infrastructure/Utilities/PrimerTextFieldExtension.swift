@@ -150,7 +150,7 @@ extension UITextField {
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             doneButton.trailingAnchor.constraint(equalTo: accessoryView.trailingAnchor, constant: -16),
-            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor),
+            doneButton.centerYAnchor.constraint(equalTo: accessoryView.centerYAnchor)
         ])
 
         inputAccessoryView = accessoryView
