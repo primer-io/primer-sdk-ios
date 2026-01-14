@@ -14,7 +14,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_withNilInput_returnsInvalid() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "Email")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.email)
 
         // When
         let result = rule.validate(nil)
@@ -27,7 +27,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_withEmptyString_returnsInvalid() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "Name")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.name)
 
         // When
         let result = rule.validate("")
@@ -40,7 +40,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_withWhitespaceOnly_returnsInvalid() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "Address")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.address)
 
         // When
         let result = rule.validate("   \n\t  ")
@@ -51,7 +51,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_withValidInput_returnsValid() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "City")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.city)
 
         // When
         let result = rule.validate("New York")
@@ -64,7 +64,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_withCustomErrorCode_usesCustomCode() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "Phone", errorCode: "custom-phone-required")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.phone, errorCode: "custom-phone-required")
 
         // When
         let result = rule.validate(nil)
@@ -76,7 +76,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_requiredFieldRule_fieldNameWithSpaces_generatesCorrectErrorCode() {
         // Given
-        let rule = RequiredFieldRule(fieldName: "First Name")
+        let rule = RequiredFieldRule(fieldName: TestData.FieldNames.firstName)
 
         // When
         let result = rule.validate(nil)
@@ -89,7 +89,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_belowMinLength_returnsInvalid() {
         // Given
-        let rule = LengthRule(fieldName: "Password", minLength: 8)
+        let rule = LengthRule(fieldName: TestData.FieldNames.password, minLength: 8)
 
         // When
         let result = rule.validate("short")
@@ -102,7 +102,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_aboveMaxLength_returnsInvalid() {
         // Given
-        let rule = LengthRule(fieldName: "Username", minLength: 3, maxLength: 10)
+        let rule = LengthRule(fieldName: TestData.FieldNames.username, minLength: 3, maxLength: 10)
 
         // When
         let result = rule.validate("thisusernameistoolong")
@@ -115,7 +115,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_atMinLength_returnsValid() {
         // Given
-        let rule = LengthRule(fieldName: "PIN", minLength: 4)
+        let rule = LengthRule(fieldName: TestData.FieldNames.pin, minLength: 4)
 
         // When
         let result = rule.validate("1234")
@@ -126,7 +126,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_atMaxLength_returnsValid() {
         // Given
-        let rule = LengthRule(fieldName: "Code", minLength: 1, maxLength: 6)
+        let rule = LengthRule(fieldName: TestData.FieldNames.code, minLength: 1, maxLength: 6)
 
         // When
         let result = rule.validate("123456")
@@ -137,7 +137,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_withinRange_returnsValid() {
         // Given
-        let rule = LengthRule(fieldName: "Title", minLength: 5, maxLength: 50)
+        let rule = LengthRule(fieldName: TestData.FieldNames.title, minLength: 5, maxLength: 50)
 
         // When
         let result = rule.validate("This is a valid title")
@@ -148,7 +148,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_trimsWhitespace_beforeValidation() {
         // Given
-        let rule = LengthRule(fieldName: "Input", minLength: 3)
+        let rule = LengthRule(fieldName: TestData.FieldNames.input, minLength: 3)
 
         // When - "ab" with whitespace is only 2 chars when trimmed
         let result = rule.validate("  ab  ")
@@ -159,7 +159,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_withCustomErrorCodePrefix_usesCustomPrefix() {
         // Given
-        let rule = LengthRule(fieldName: "Field", minLength: 5, errorCodePrefix: "custom-field")
+        let rule = LengthRule(fieldName: TestData.FieldNames.field, minLength: 5, errorCodePrefix: "custom-field")
 
         // When
         let result = rule.validate("abc")
@@ -170,7 +170,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_lengthRule_noMaxLength_allowsLongInput() {
         // Given
-        let rule = LengthRule(fieldName: "Description", minLength: 1)
+        let rule = LengthRule(fieldName: TestData.FieldNames.description, minLength: 1)
         let longInput = String(repeating: "a", count: 10000)
 
         // When
@@ -184,7 +184,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_characterSetRule_withValidCharacters_returnsValid() {
         // Given
-        let rule = CharacterSetRule(fieldName: "Digits", allowedCharacterSet: .decimalDigits)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.digits, allowedCharacterSet: .decimalDigits)
 
         // When
         let result = rule.validate("1234567890")
@@ -195,7 +195,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_characterSetRule_withInvalidCharacters_returnsInvalid() {
         // Given
-        let rule = CharacterSetRule(fieldName: "Digits", allowedCharacterSet: .decimalDigits)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.digits, allowedCharacterSet: .decimalDigits)
 
         // When
         let result = rule.validate("123abc456")
@@ -208,7 +208,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_characterSetRule_withLettersOnly_validatesAlphanumeric() {
         // Given
-        let rule = CharacterSetRule(fieldName: "Name", allowedCharacterSet: .letters)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.name, allowedCharacterSet: .letters)
 
         // When
         let validResult = rule.validate("JohnDoe")
@@ -222,7 +222,7 @@ final class ValidationRuleTests: XCTestCase {
     func test_characterSetRule_withCustomCharacterSet_validates() {
         // Given
         let allowedSet = CharacterSet(charactersIn: "ABCDabcd1234")
-        let rule = CharacterSetRule(fieldName: "Custom", allowedCharacterSet: allowedSet)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.custom, allowedCharacterSet: allowedSet)
 
         // When
         let validResult = rule.validate("ABcd12")
@@ -235,7 +235,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_characterSetRule_withEmptyString_returnsValid() {
         // Given
-        let rule = CharacterSetRule(fieldName: "Field", allowedCharacterSet: .letters)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.field, allowedCharacterSet: .letters)
 
         // When
         let result = rule.validate("")
@@ -247,7 +247,7 @@ final class ValidationRuleTests: XCTestCase {
     func test_characterSetRule_withCustomErrorCode_usesCustomCode() {
         // Given
         let rule = CharacterSetRule(
-            fieldName: "Phone",
+            fieldName: TestData.FieldNames.phone,
             allowedCharacterSet: .decimalDigits,
             errorCode: "phone-invalid-format"
         )
@@ -261,7 +261,7 @@ final class ValidationRuleTests: XCTestCase {
 
     func test_characterSetRule_fieldNameWithSpaces_generatesCorrectErrorCode() {
         // Given
-        let rule = CharacterSetRule(fieldName: "Card Number", allowedCharacterSet: .decimalDigits)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.cardNumber, allowedCharacterSet: .decimalDigits)
 
         // When
         let result = rule.validate("1234-5678")
@@ -274,7 +274,7 @@ final class ValidationRuleTests: XCTestCase {
         // Given
         var allowedSet = CharacterSet.alphanumerics
         allowedSet.insert(charactersIn: " ")
-        let rule = CharacterSetRule(fieldName: "Address", allowedCharacterSet: allowedSet)
+        let rule = CharacterSetRule(fieldName: TestData.FieldNames.address, allowedCharacterSet: allowedSet)
 
         // When
         let validResult = rule.validate("123 Main Street")

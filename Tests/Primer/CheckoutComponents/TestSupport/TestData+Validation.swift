@@ -1,10 +1,11 @@
 //
 //  TestData+Validation.swift
 //
-//  Copyright © 2026 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved.
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 extension TestData {
@@ -17,6 +18,7 @@ extension TestData {
         static let invalidCVV = "invalid-cvv"
         static let invalidExpiry = "invalid-expiry"
         static let required = "required"
+        static let unsupportedCardType = "unsupported-card-type"
     }
 
     // MARK: - Error Messages
@@ -75,5 +77,27 @@ extension TestData {
         static let defaultErrorId = "test-error-id"
         static let defaultCode = "TEST_ERROR"
         static let defaultMessage = "Test error message"
+    }
+
+    // MARK: - Field Names (for validation rule testing)
+
+    enum FieldNames {
+        static let email = "Email"
+        static let name = "Name"
+        static let address = "Address"
+        static let city = "City"
+        static let phone = "Phone"
+        static let firstName = "First Name"
+        static let password = "Password"
+        static let username = "Username"
+        static let pin = "PIN"
+        static let code = "Code"
+        static let title = "Title"
+        static let input = "Input"
+        static let field = "Field"
+        static let description = "Description"
+        static let digits = "Digits"
+        static let cardNumber = "Card Number"
+        static let custom = "Custom"
     }
 }

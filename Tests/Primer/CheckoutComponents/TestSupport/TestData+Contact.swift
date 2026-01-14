@@ -10,6 +10,13 @@ import Foundation
 @available(iOS 15.0, *)
 extension TestData {
 
+    // MARK: - Names
+
+    enum Names {
+        static let firstName = "John"
+        static let lastName = "Doe"
+    }
+
     // MARK: - First Names
 
     enum FirstNames {

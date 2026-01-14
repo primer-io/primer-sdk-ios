@@ -46,7 +46,6 @@ extension TestData {
     // MARK: - Expiry Dates
 
     enum ExpiryDates {
-        /// Returns a valid future expiry date (current month + 2 years)
         static var validFuture: (month: String, year: String) {
             let calendar = Calendar.current
             let date = calendar.date(byAdding: .year, value: 2, to: Date())!
@@ -55,7 +54,6 @@ extension TestData {
             return (String(format: "%02d", month), String(year % 100))
         }
 
-        /// Returns the current month expiry (still valid)
         static var currentMonth: (month: String, year: String) {
             let calendar = Calendar.current
             let month = calendar.component(.month, from: Date())
@@ -63,7 +61,6 @@ extension TestData {
             return (String(format: "%02d", month), String(year % 100))
         }
 
-        /// Returns an expired date (last month)
         static var expired: (month: String, year: String) {
             let calendar = Calendar.current
             let date = calendar.date(byAdding: .month, value: -1, to: Date())!
@@ -71,6 +68,19 @@ extension TestData {
             let year = calendar.component(.year, from: date)
             return (String(format: "%02d", month), String(year % 100))
         }
+
+        // Individual month/year values for edge case testing
+        static let december = "12"
+        static let january = "01"
+        static let singleDigitMonth = "5"
+        static let negativeMonth = "-01"
+        static let lettersMonth = "AB"
+        static let specialCharMonth = "1@"
+        static let monthWithWhitespace = " 12 "
+        static let year99 = "99"
+        static let year00 = "00"
+        static let year25 = "25"
+        static let lettersYear = "XY"
 
         // Invalid formats
         static let invalidMonth = ("13", "25")
@@ -122,11 +132,5 @@ extension TestData {
         static let amex = CardNetwork.amex
         static let discover = CardNetwork.discover
         static let unknown = CardNetwork.unknown
-    }
-
-    // MARK: - Error Codes
-
-    enum ErrorCodes {
-        static let unsupportedCardType = "unsupported-card-type"
     }
 }
