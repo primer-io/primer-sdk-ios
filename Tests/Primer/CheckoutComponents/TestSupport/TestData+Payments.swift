@@ -29,24 +29,4 @@ extension TestData {
         static let jpy = "JPY"
         static let defaultDecimalDigits = 2
     }
-
-    // MARK: - Payment Method Types
-
-    enum PaymentMethodTypes {
-        static let card = "PAYMENT_CARD"
-        static let applePay = "APPLE_PAY"
-    }
-
-    // MARK: - Payment IDs
-
-    enum PaymentIds {
-        static let test = "test-payment"
-        static let success = "success-123"
-    }
-
-    // MARK: - Formatted Amounts
-
-    enum FormattedAmounts {
-        static let tenDollars = "$10.00"
-    }
 }

@@ -15,6 +15,7 @@ extension TestData {
     enum Names {
         static let firstName = "John"
         static let lastName = "Doe"
+        static let fullName = "John Doe"
     }
 
     // MARK: - First Names
