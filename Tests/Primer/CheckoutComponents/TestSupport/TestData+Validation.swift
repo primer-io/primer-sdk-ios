@@ -69,14 +69,6 @@ extension TestData {
         static let retailOutletInvalid = "checkout_components_retail_outlet_invalid"
     }
 
-    // MARK: - Names
-
-    enum Names {
-        static let firstName = "John"
-        static let lastName = "Doe"
-        static let fullName = "John Doe"
-    }
-
     // MARK: - Test Fixtures
 
     enum TestFixtures {
