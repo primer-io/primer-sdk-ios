@@ -1,12 +1,13 @@
 //
 //  ACHTokenizationServiceTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ACHTokenizationServiceTests: XCTestCase {
 
@@ -73,7 +74,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
 
             switch primerError {
-            case .invalidValue(let key, _, _, _):
+            case let .invalidValue(key, _, _, _):
                 XCTAssertTrue(key == "amount")
             default:
                 XCTFail("primerError should be of type invalidSetting")
@@ -92,7 +93,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
 
             switch primerError {
-            case .invalidValue(let key, _, _, _):
+            case let .invalidValue(key, _, _, _):
                 XCTAssertTrue(key == "currency")
             default:
                 XCTFail("primerError should be of type invalidSetting")
@@ -111,7 +112,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
 
             switch primerError {
-            case .invalidValue(let key, _, _, _):
+            case let .invalidValue(key, _, _, _):
                 XCTAssertTrue(key == "lineItems")
             default:
                 XCTFail("primerError should be of type invalidValue")
@@ -130,7 +131,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
 
             switch primerError {
-            case .invalidValue(let key, _, _, _):
+            case let .invalidValue(key, _, _, _):
                 XCTAssertTrue(key == "settings.orderItems")
             default:
                 XCTFail("primerError should be of type invalidValue")

@@ -1,10 +1,11 @@
 //
 //  TokenizationViewModelTestCase.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 @testable import PrimerSDK
 
 protocol TokenizationViewModelTestCase {}
@@ -37,7 +38,7 @@ extension TokenizationViewModelTestCase {
     }
 
     var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "GBP",

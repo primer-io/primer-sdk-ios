@@ -1,10 +1,11 @@
 //
 //  NolTestsMocks.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
+import PrimerFoundation
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -111,7 +112,7 @@ class MockPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
 class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         validationsReceived = validationStatus
-        if case .invalid(let errors) = validationStatus {
+        if case let .invalid(errors) = validationStatus {
             validationErrorsReceived = errors
         }
         wasValidatedCalled = true
@@ -133,7 +134,7 @@ class MockStepDelegate: PrimerHeadlessSteppableDelegate {
 class MockErrorDelegate: PrimerHeadlessErrorableDelegate {
     var errorReceived: Error?
 
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         errorReceived = error
     }
 }
@@ -147,7 +148,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 
@@ -158,8 +159,8 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
         }
 
         switch result {
-        case .success(let result): return result
-        case .failure(let error): throw error
+        case let .success(result): return result
+        case let .failure(error): throw error
         }
     }
 
@@ -172,7 +173,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 
@@ -185,7 +186,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 
@@ -198,8 +199,8 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
         }
 
         switch result {
-        case .success(let result): return result
-        case .failure(let error): throw error
+        case let .success(result): return result
+        case let .failure(error): throw error
         }
     }
 
@@ -212,7 +213,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 
@@ -225,7 +226,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 
@@ -238,7 +239,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
 
         switch result {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         }
     }
 

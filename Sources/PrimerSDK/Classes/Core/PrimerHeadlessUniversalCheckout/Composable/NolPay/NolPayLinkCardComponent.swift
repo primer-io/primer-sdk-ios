@@ -1,13 +1,14 @@
 //
 //  NolPayLinkCardComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
+import PrimerFoundation
 import UIKit
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -60,10 +61,10 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.fire(events: [sdkEvent])
 
         switch collectableData {
-        case .phoneData(let mobileNumber):
+        case let .phoneData(mobileNumber):
             nextDataStep = .collectPhoneData(cardNumber: cardNumber ?? "")
             self.mobileNumber = mobileNumber
-        case .otpData(let otpCode):
+        case let .otpData(otpCode):
             nextDataStep = .collectOtpData(phoneNumber: mobileNumber ?? "")
             self.otpCode = otpCode
         }
@@ -76,26 +77,26 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         var errors: [PrimerValidationError] = []
 
         switch data {
-        case .phoneData(mobileNumber: let mobileNumber):
+        case let .phoneData(mobileNumber: mobileNumber):
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success((let validationStatus, let countryCode, let mobileNumber)):
+                case let .success((validationStatus, countryCode, mobileNumber)):
                     switch validationStatus {
                     case .valid:
                         self.countryCode = countryCode
                         self.mobileNumber = mobileNumber
                         self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
-                    case .invalid(errors: let validationErrors):
+                    case let .invalid(errors: validationErrors):
                         errors += validationErrors
                         self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                     default: break
                     }
-                case .failure(let error):
+                case let .failure(error):
                     self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 }
             }
-        case .otpData(otpCode: let otpCode):
+        case let .otpData(otpCode: otpCode):
             if !otpCode.isValidOTP {
                 errors.append(handled(error: PrimerValidationError.invalidOTPCode( message: "OTP is not valid.")))
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
@@ -137,7 +138,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                                and: linkToken) { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     if success {
                         self.nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
                         self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
@@ -151,7 +152,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                             )
                         )
                     }
-                case .failure(let error):
+                case let .failure(error):
                     self.errorDelegate?.didReceiveError(
                         error: handled(
                             primerError: .nolError(
@@ -182,7 +183,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                             and: linkToken) { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     if success {
                         self.nextDataStep = .cardLinked
                         self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
@@ -196,7 +197,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                             )
                         )
                     }
-                case .failure(let error):
+                case let .failure(error):
                     self.errorDelegate?.didReceiveError(
                         error: handled(
                             error: .nolError(
@@ -219,15 +220,15 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             nolPay.scanNFCCard { [weak self] result in
                 guard let self else { return }
                 switch result {
-                case .success(let cardNumber):
+                case let .success(cardNumber):
                     self.cardNumber = cardNumber
                     nolPay.makeLinkingToken(for: cardNumber) { result in
                         switch result {
-                        case .success(let token):
+                        case let .success(token):
                             self.linkToken = token
                             self.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
                             self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
-                        case .failure(let error):
+                        case let .failure(error):
                             self.errorDelegate?.didReceiveError(
                                 error: handled(
                                     primerError: .nolError(
@@ -239,7 +240,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         }
                     }
 
-                case .failure(let error):
+                case let .failure(error):
                     self.errorDelegate?.didReceiveError(
                         error: handled(
                             primerError: .nolError(
@@ -292,9 +293,9 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             return try await withCheckedThrowingContinuation { continuation in
                 self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
-                    case .success(let appSecret):
+                    case let .success(appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)
-                    case .failure(let error):
+                    case let .failure(error):
                         continuation.resume(throwing: error)
                     }
                 }

@@ -1,11 +1,12 @@
 //
 //  DateTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class PrimerDateTests: XCTestCase {
 
@@ -116,6 +117,6 @@ class PrimerDateTests: XCTestCase {
 
 private extension RangeReplaceableCollection where Self: StringProtocol {
     func paddingToLeft(upTo length: Int, using element: Element = " ") -> SubSequence {
-        return repeatElement(element, count: Swift.max(0, length-count)) + suffix(Swift.max(count, count-length))
+        repeatElement(element, count: Swift.max(0, length-count)) + suffix(Swift.max(count, count-length))
     }
 }

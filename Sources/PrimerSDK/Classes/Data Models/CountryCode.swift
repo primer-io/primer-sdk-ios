@@ -1,13 +1,14 @@
 //
 //  CountryCode.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable identifier_name
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerFoundation
 import UIKit
 
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
@@ -264,10 +265,10 @@ public enum CountryCode: String, Codable, CaseIterable {
     case zw = "ZW"
 }
 
-internal extension CountryCode {
+extension CountryCode {
 
     var country: String {
-        return localizedCountryName
+        localizedCountryName
     }
 
     var flag: String {
@@ -333,7 +334,7 @@ extension CountryCode {
     }
 
     private var localizedCountryName: String {
-        return LocalizedCountries.loadedCountriesBasedOnLocale?.countries
+        LocalizedCountries.loadedCountriesBasedOnLocale?.countries
             .first { $0.key == self.rawValue }?
             .value ?? "N/A"
     }
@@ -341,7 +342,7 @@ extension CountryCode {
 
 extension CountryCode {
 
-    internal struct PhoneNumberCountryCode: Codable {
+    struct PhoneNumberCountryCode: Codable {
         let name: String
         let dialCode: String
         let code: String
