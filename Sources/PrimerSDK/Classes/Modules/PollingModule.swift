@@ -1,10 +1,11 @@
 //
 //  PollingModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol Module {
 
@@ -23,17 +24,17 @@ final class PollingModule: Module {
 
     static var apiClient: PrimerAPIClientProtocol?
 
-    internal let url: URL
-    internal var retryInterval: TimeInterval = 3
-    internal private(set) var cancellationError: PrimerError?
-    internal private(set) var failureError: PrimerError?
+    let url: URL
+    var retryInterval: TimeInterval = 3
+    private(set) var cancellationError: PrimerError?
+    private(set) var failureError: PrimerError?
 
     required init(url: URL) {
         self.url = url
     }
 
     func start() async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             self.startPolling { id, err in
                 if let err {
                     continuation.resume(throwing: err)
@@ -76,7 +77,7 @@ final class PollingModule: Module {
 
         apiClient.poll(clientToken: decodedJWTToken, url: self.url.absoluteString) { result in
             switch result {
-            case .success(let res):
+            case let .success(res):
                 if res.status == .pending {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.startPolling(completion: completion)
@@ -87,7 +88,7 @@ final class PollingModule: Module {
                     let err = PrimerError.unknown(message: "Received unexpected polling status for id '\(res.id)'")
                     ErrorHandler.handle(error: err)
                 }
-            case .failure(let err):
+            case let .failure(err):
                 ErrorHandler.handle(error: err)
                 // Retry
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.retryInterval) {

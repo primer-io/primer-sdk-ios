@@ -1,11 +1,12 @@
 //
 //  MockPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
+@testable @preconcurrency import PrimerSDK
 import XCTest
-@testable import PrimerSDK
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
@@ -85,7 +86,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                     self.didStartPayment = nil
 
                     do {
-                        try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                        _ = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                         self.didFinishPayment?(nil)
                         self.nullifyEventCallbacks()
                         DispatchQueue.main.async {
@@ -144,7 +145,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
-        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
+        try await handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 
     func presentPaymentMethodUserInterface() async throws {
@@ -159,7 +160,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         _ decodedJWTToken: DecodedJWTToken,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
-        return "mock_resume_token"
+        "mock_resume_token"
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
@@ -201,7 +202,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         return try await withCheckedThrowingContinuation { continuation in
             Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                 switch paymentCreationDecision.type {
-                case .abort(let errorMessage):
+                case let .abort(errorMessage):
                     let error = PrimerError.merchantError(message: errorMessage ?? "")
                     continuation.resume(throwing: error)
                 case .continue:
