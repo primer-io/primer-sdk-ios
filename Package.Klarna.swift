@@ -15,13 +15,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.3.1")
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.3.1"),
+        .package(path: "Packages/PrimerFoundation")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios")
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
+                .product(name: "PrimerFoundation", package: "PrimerFoundation")
             ],
             path: "Sources/PrimerSDK",
             resources: [
