@@ -8,16 +8,15 @@ import Foundation
 @testable import PrimerSDK
 
 @available(iOS 15.0, *)
+typealias TrackedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)
+
+@available(iOS 15.0, *)
 actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
-
-    // MARK: - Types
-
-    typealias TrackedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)
 
     // MARK: - Call Tracking
 
     private(set) var trackEventCallCount = 0
-    private(set) var trackedEvents: [TrackedEvent] = []
+    private(set) var trackedEvents: [(eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)] = []
 
     // MARK: - Protocol Implementation
 
