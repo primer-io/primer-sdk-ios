@@ -7,7 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of RawDataManagerProtocol for testing HeadlessRepositoryImpl
 @available(iOS 15.0, *)
 final class MockRawDataManager: RawDataManagerProtocol {
 
@@ -20,22 +19,16 @@ final class MockRawDataManager: RawDataManagerProtocol {
             rawDataHistory.append(rawData)
             onRawDataSet?(rawData)
 
-            // Auto-trigger validation callback if enabled
             if autoTriggerValidation {
                 triggerValidationCallback()
             }
         }
     }
 
-    /// Called when rawData is set - use this to trigger validation callbacks in tests
     var onRawDataSet: ((PrimerRawData?) -> Void)?
     var isDataValid: Bool = true
     var requiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-
-    /// When true, automatically triggers delegate validation callback when rawData is set
     var autoTriggerValidation: Bool = false
-
-    /// Delay before triggering validation callback (simulates async behavior)
     var validationDelay: TimeInterval = 0.05
 
     // MARK: - Call Tracking
@@ -47,22 +40,11 @@ final class MockRawDataManager: RawDataManagerProtocol {
 
     // MARK: - Configuration
 
-    /// Error to throw from configure()
     var configureError: Error?
-
-    /// Initialization data to return from configure()
     var initializationData: PrimerInitializationData?
-
-    /// Validation errors for reference in tests (not automatically used in callbacks)
     var validationErrors: [Error]?
-
-    /// Closure called when submit() is invoked
     var onSubmit: (() -> Void)?
-
-    /// Simulates a successful payment completion
     var simulateSuccessfulPayment = false
-
-    /// Simulates a failed payment with this error
     var paymentError: Error?
 
     // MARK: - Protocol Implementation
@@ -70,7 +52,6 @@ final class MockRawDataManager: RawDataManagerProtocol {
     func configure(completion: @escaping (PrimerInitializationData?, Error?) -> Void) {
         configureCallCount += 1
 
-        // Simulate async callback like real RawDataManager
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             completion(self.initializationData, self.configureError)
@@ -84,14 +65,10 @@ final class MockRawDataManager: RawDataManagerProtocol {
 
     // MARK: - Test Helpers
 
-    /// Manually triggers the validation callback on the delegate
-    /// This simulates what the real RawDataManager does after validating rawData
-    /// Uses a real RawDataManager instance to satisfy the delegate method signature
     func triggerValidationCallback() {
         DispatchQueue.main.asyncAfter(deadline: .now() + validationDelay) { [weak self] in
-            guard let self, let delegate = self.delegate else { return }
+            guard let self, let delegate else { return }
 
-            // Create a real RawDataManager for the callback (delegate only uses isValid/errors params)
             do {
                 let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
                 delegate.primerRawDataManager?(
@@ -100,16 +77,14 @@ final class MockRawDataManager: RawDataManagerProtocol {
                     errors: self.validationErrors
                 )
             } catch {
-                // If we can't create a RawDataManager, the test setup is incomplete
-                // This is expected in unit tests without full SDK configuration
+                // Expected in unit tests without full SDK configuration
             }
         }
     }
 
-    /// Triggers validation callback with custom values
     func triggerValidationCallback(isValid: Bool, errors: [Error]?) {
         DispatchQueue.main.asyncAfter(deadline: .now() + validationDelay) { [weak self] in
-            guard let self, let delegate = self.delegate else { return }
+            guard let self, let delegate else { return }
 
             do {
                 let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
@@ -145,7 +120,6 @@ final class MockRawDataManager: RawDataManagerProtocol {
 
 // MARK: - Mock Factory
 
-/// Mock factory for creating MockRawDataManager instances in tests
 @available(iOS 15.0, *)
 final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
 
@@ -156,13 +130,8 @@ final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
 
     // MARK: - Configuration
 
-    /// The mock raw data manager to return
     var mockRawDataManager: MockRawDataManager?
-
-    /// Error to throw when creating
     var createError: Error?
-
-    /// Factory closure for custom mock creation
     var createMockHandler: ((String, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?) -> MockRawDataManager)?
 
     // MARK: - Protocol Implementation
@@ -189,7 +158,6 @@ final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
             return mock
         }
 
-        // Create a default mock
         let mock = MockRawDataManager()
         mock.delegate = delegate
         return mock
