@@ -367,7 +367,7 @@ final class UpdateClientSessionBeforePaymentTests: XCTestCase {
         mockRawDataManagerFactory = MockRawDataManagerFactory()
         mockRawDataManagerFactory.mockRawDataManager = mockRawDataManager
         repository = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions },
+            clientSessionActionsFactory: { [self] in mockClientSessionActions },
             rawDataManagerFactory: mockRawDataManagerFactory
         )
     }

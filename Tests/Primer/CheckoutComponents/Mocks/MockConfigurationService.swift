@@ -7,7 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of ConfigurationService for testing
 @available(iOS 15.0, *)
 final class MockConfigurationService: ConfigurationService {
 
@@ -51,8 +50,8 @@ final class MockConfigurationService: ConfigurationService {
 
     static func withDefaultConfiguration() -> MockConfigurationService {
         let mock = MockConfigurationService()
-        mock.currency = Currency(code: "USD", decimalDigits: 2)
-        mock.amount = 1000  // $10.00 in cents
+        mock.currency = Currency(code: TestData.Currencies.usd, decimalDigits: TestData.Currencies.defaultDecimalDigits)
+        mock.amount = TestData.Amounts.standard
         return mock
     }
 }

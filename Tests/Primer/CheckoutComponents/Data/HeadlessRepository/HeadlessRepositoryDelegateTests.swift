@@ -145,7 +145,7 @@ final class SelectCardNetworkDelegateTests: XCTestCase {
         super.setUp()
         mockClientSessionActions = MockClientSessionActionsModule()
         repository = HeadlessRepositoryImpl(
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions }
+            clientSessionActionsFactory: { [self] in mockClientSessionActions }
         )
     }
 

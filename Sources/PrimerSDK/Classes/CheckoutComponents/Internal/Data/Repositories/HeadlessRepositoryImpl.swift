@@ -163,8 +163,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
-    // MARK: - Dependency Injection for Testing
-
     private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
     private var configurationServiceFactory: (() -> ConfigurationService)?
     private var rawDataManagerFactory: RawDataManagerFactoryProtocol
@@ -204,7 +202,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func injectConfigurationService() async {
         guard configurationService == nil else { return }
 
-        // Use factory if provided (for testing)
         if let factory = configurationServiceFactory {
             configurationService = factory()
             return

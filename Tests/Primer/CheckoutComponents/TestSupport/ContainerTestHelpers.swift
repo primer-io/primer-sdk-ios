@@ -40,7 +40,7 @@ enum ContainerTestHelpers {
             paymentMethodOptions: PrimerPaymentMethodOptions()
         )
         return DefaultCheckoutScope(
-            clientToken: "test-token",
+            clientToken: TestData.Tokens.valid,
             settings: settings,
             diContainer: DIContainer.shared,
             navigator: navigator

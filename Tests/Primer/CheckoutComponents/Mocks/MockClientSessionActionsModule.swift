@@ -7,7 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of ClientSessionActionsProtocol for testing HeadlessRepositoryImpl
 @available(iOS 15.0, *)
 final class MockClientSessionActionsModule: ClientSessionActionsProtocol {
 
