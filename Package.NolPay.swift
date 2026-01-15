@@ -15,13 +15,15 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2")
+        .package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2"),
+        .package(path: "Packages/PrimerFoundation")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios")
+                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
+                .product(name: "PrimerFoundation", package: "PrimerFoundation")
             ],
             path: "Sources/PrimerSDK",
             resources: [
