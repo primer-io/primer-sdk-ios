@@ -1,17 +1,18 @@
 //
 //  AnalyticsEvent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 // swiftlint:disable all
 extension Analytics {
     struct Event: Codable, Equatable {
 
         static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
-            return lhs.localId == rhs.localId
+            lhs.localId == rhs.localId
         }
 
         let analyticsUrl: String?
@@ -754,7 +755,7 @@ struct SDKProperties: Codable {
 extension Analytics.Event {
 
     static func sdk(name: String, params: [String: String]?) -> Self {
-        return .init(
+        .init(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: name,
@@ -768,7 +769,7 @@ extension Analytics.Event {
                         severity: Property.Severity,
                         diagnosticsId: String? = nil,
                         context: [String: Any]? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .message,
             properties: MessageEventProperties(
                 message: message,
@@ -787,7 +788,7 @@ extension Analytics.Event {
                    objectId: Property.ObjectId?,
                    objectClass: String?,
                    place: Property.Place) -> Self {
-        return .init(
+        .init(
             eventType: .ui,
             properties: UIEventProperties(
                 action: action,
@@ -807,7 +808,7 @@ extension Analytics.Event {
                             errorBody: String?,
                             responseCode: Int?,
                             duration: TimeInterval? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .networkCall,
             properties: NetworkCallEventProperties(
                 callType: callType,
@@ -821,8 +822,10 @@ extension Analytics.Event {
         )
     }
 
-    static func networkConnectivity(networkType: Connectivity.NetworkType = Connectivity.networkType) -> Self {
-        return .init(
+    public static func networkConnectivity(
+        networkType: Connectivity.NetworkType = Connectivity.networkType
+    ) -> Self {
+        .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
         )
@@ -832,7 +835,7 @@ extension Analytics.Event {
                       id: String?,
                       duration: TimeInterval? = nil,
                       context: [String: Any]? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .timerEvent,
             properties: TimerEventProperties(
                 momentType: momentType,
@@ -873,10 +876,9 @@ extension Analytics.Event {
                context: ["source": source.rawValue])
     }
 
-
     static func allImagesLoading(momentType: Property.TimerType,
                                  id: String?) -> Self {
-        return .init(
+        .init(
             eventType: .paymentMethodAllImagesLoading,
             properties: TimerEventProperties(
                 momentType: momentType,
@@ -887,7 +889,7 @@ extension Analytics.Event {
 
     static func imageLoading(momentType: Property.TimerType,
                              id: String?) -> Self {
-        return .init(
+        .init(
             eventType: .paymentMethodImageLoading,
             properties: TimerEventProperties(
                 momentType: momentType,

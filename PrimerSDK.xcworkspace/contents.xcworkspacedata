@@ -929,9 +929,6 @@
                <Group
                   location = "group:Keychain"
                   name = "Keychain">
-                  <FileRef
-                     location = "group:Keychain.swift">
-                  </FileRef>
                </Group>
                <Group
                   location = "group:3DS"
@@ -1023,9 +1020,6 @@
                   location = "group:PrimerIPay88Error+Extension.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerValidationError.swift">
-               </FileRef>
-               <FileRef
                   location = "group:Primer3DSErrorContainer.swift">
                </FileRef>
                <FileRef
@@ -1036,9 +1030,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerKlarnaError+Extension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerServerError.swift">
                </FileRef>
                <FileRef
                   location = "group:ErrorExtension.swift">

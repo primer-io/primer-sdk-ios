@@ -1,17 +1,17 @@
 //
 //  PaymentMethodConfigTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class PaymentMethodConfigTests: XCTestCase {
 
     var json: [String: Any] = [:]
     var jsonStr: String {
-        return """
+        """
             {
                 "pciUrl": "\(pciUrl)",
                 "coreUrl": "\(coreUrl)",
@@ -21,14 +21,14 @@ class PaymentMethodConfigTests: XCTestCase {
             """
     }
     var jsonData: Data? {
-        return jsonStr.data(using: .utf8)
+        jsonStr.data(using: .utf8)
     }
 
     var coreUrl = ""
     var pciUrl = ""
     var paymentMethodsArr: [String] = []
     var paymentMethods: String {
-        return PaymentMethodConfigTests.buildPaymentMethodsArrayStr(paymentMethodsStr: paymentMethodsArr)
+        PaymentMethodConfigTests.buildPaymentMethodsArrayStr(paymentMethodsStr: paymentMethodsArr)
     }
 
     static func buildPaymentMethodStr(id: Any?, implementationType: Any?, type: Any?, name: Any?, processorConfigId: Any?, options: Any?) -> String {
@@ -87,7 +87,6 @@ class PaymentMethodConfigTests: XCTestCase {
         pciUrl = "https://pci.com"
 
         var applePayStr: String
-        var goCardlessStr: String
         var googlePayStr: String
         var klarnaStr: String
         var paymentCardStr: String

@@ -1,11 +1,12 @@
 //
 //  PrimerRawOTPDataTokenizationBuilderTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 
@@ -151,7 +152,7 @@ class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 
         // When & Then
         do {
-            try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
+            _ = try await tokenizationBuilder.makeRequestBodyWithRawData(rawOTPData)
             XCTFail("Should not have succeeded with invalid payment method type")
         } catch {
             // Expected to throw an error for invalid payment method
@@ -170,7 +171,7 @@ class PrimerRawOTPDataTokenizationBuilderTests: XCTestCase {
 
         // When & Then
         do {
-            try await tokenizationBuilder.makeRequestBodyWithRawData(invalidRawData)
+            _ = try await tokenizationBuilder.makeRequestBodyWithRawData(invalidRawData)
             XCTFail("Expected failure when raw data is invalid")
         } catch {
             XCTAssert(error is PrimerError)

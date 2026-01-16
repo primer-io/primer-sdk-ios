@@ -1,13 +1,14 @@
 //
 //  ApplePay.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if DEBUG
-import XCTest
 import PassKit
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 @available(iOS 16.4, *)
 extension ApplePayAutomaticReloadRequest {

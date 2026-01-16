@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
     s.homepage     = "https://www.primer.io"
     s.license      = { :type => "MIT", :file => "LICENSE" }
     s.author       = { "Primer" => "dx@primer.io" }
+    # TODO: AFTER PUSHING TO COCOAPODS, CHANGE THIS TO USE VERSION CONSTRAINT (e.g., '~> 1.0.0')
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = '5'
@@ -17,7 +18,7 @@ Pod::Spec.new do |s|
     s.ios.frameworks  = "Foundation", "UIKit"
 
     s.subspec "Core" do |ss|
-        ss.dependency 'PrimerFoundation', '~> 1.0.0'
+        ss.dependency 'PrimerFoundation'
         ss.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
         ss.ios.resource_bundles = {
             "PrimerResources" => [

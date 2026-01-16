@@ -1,15 +1,15 @@
 //
 //  MockCreateResumePaymentService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 @testable import PrimerSDK
 
 final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
-
     var onResumePayment: ((String, Request.Body.Payment.Resume) -> Response.Body.Payment?)?
     var onCreatePayment: ((Request.Body.Payment.Create) -> Response.Body.Payment?)?
 

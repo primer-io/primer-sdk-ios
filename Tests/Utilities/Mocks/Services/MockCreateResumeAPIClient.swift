@@ -1,9 +1,10 @@
 //
 //  MockCreateResumeAPIClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -37,8 +38,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown()
         }
         switch createResponse {
-        case .success(let result): return result
-        case .failure(let error): throw error
+        case let .success(result): return result
+        case let .failure(error): throw error
         }
     }
 
@@ -60,8 +61,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown()
         }
         switch resumeResponse {
-        case .success(let result): return result
-        case .failure(let error): throw error
+        case let .success(result): return result
+        case let .failure(error): throw error
         }
     }
 
@@ -81,8 +82,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown()
         }
         switch completeResponse {
-        case .success(let result): return result
-        case .failure(let error): throw error
+        case let .success(result): return result
+        case let .failure(error): throw error
         }
     }
 }
