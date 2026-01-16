@@ -23,6 +23,7 @@ extension TestData {
         static let validDiscover = "6011111111111117"
         static let validDiners = "3056930009020004"
         static let validJCB = "3566002020360505"
+        static let valid19Digit = "4532015112830366999"
 
         // Invalid card numbers
         static let invalidLuhn = "4242424242424241"
@@ -32,6 +33,10 @@ extension TestData {
         static let empty = ""
         static let nonNumeric = "4242abcd42424242"
         static let withSpaces = "4242 4242 4242 4242"
+        static let allZeros = "0000000000000000"
+        static let singleDigit = "4"
+        static let invalidRandom = "1234567890"
+        static let invalidExpiryFormat = "invalid"
 
         // Declined/error cards
         static let declined = "4000000000000002"
@@ -43,7 +48,6 @@ extension TestData {
     // MARK: - Expiry Dates
 
     enum ExpiryDates {
-        /// Returns a valid future expiry date (current month + 2 years)
         static var validFuture: (month: String, year: String) {
             let calendar = Calendar.current
             let date = calendar.date(byAdding: .year, value: 2, to: Date())!
@@ -52,7 +56,6 @@ extension TestData {
             return (String(format: "%02d", month), String(year % 100))
         }
 
-        /// Returns the current month expiry (still valid)
         static var currentMonth: (month: String, year: String) {
             let calendar = Calendar.current
             let month = calendar.component(.month, from: Date())
@@ -60,7 +63,6 @@ extension TestData {
             return (String(format: "%02d", month), String(year % 100))
         }
 
-        /// Returns an expired date (last month)
         static var expired: (month: String, year: String) {
             let calendar = Calendar.current
             let date = calendar.date(byAdding: .month, value: -1, to: Date())!
@@ -68,6 +70,20 @@ extension TestData {
             let year = calendar.component(.year, from: date)
             return (String(format: "%02d", month), String(year % 100))
         }
+
+        // Individual month/year values for edge case testing
+        static let december = "12"
+        static let january = "01"
+        static let singleDigitMonth = "5"
+        static let negativeMonth = "-01"
+        static let lettersMonth = "AB"
+        static let specialCharMonth = "1@"
+        static let monthWithWhitespace = " 12 "
+        static let year99 = "99"
+        static let year00 = "00"
+        static let year25 = "25"
+        static let year30 = "30"
+        static let lettersYear = "XY"
 
         // Invalid formats
         static let invalidMonth = ("13", "25")
@@ -99,12 +115,16 @@ extension TestData {
         static let validSingleName = "Madonna"
         static let validWithAccents = "José García"
         static let validWithHyphen = "Mary-Jane Watson"
+        static let validWithApostrophe = "O'Brien"
 
         // Invalid names
         static let withNumbers = "John Doe 3rd"
         static let onlyNumbers = "12345"
         static let empty = ""
         static let tooShort = "J"
+        static let withLeadingTrailingSpaces = "  John Doe  "
+        static let onlySpaces = "    "
+        static let withSpecialCharacters = "John@Doe"
     }
 
     // MARK: - Card Networks

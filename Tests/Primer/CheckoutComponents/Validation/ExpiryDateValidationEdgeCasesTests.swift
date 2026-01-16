@@ -113,7 +113,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
         // Given
         let calendar = Calendar.current
         let lastYear = calendar.component(.year, from: Date()) - 1
-        let month = "12"
+        let month = TestData.ExpiryDates.december
         let year = String(lastYear % 100)
 
         // When
@@ -128,7 +128,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
     func test_validateExpiry_atYearBoundary_december_returnsValidOrInvalid() {
         // Given
         let currentYear = Calendar.current.component(.year, from: Date())
-        let month = "12"
+        let month = TestData.ExpiryDates.december
         let year = String(currentYear % 100)
 
         // When
@@ -142,7 +142,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
     func test_validateExpiry_atYearBoundary_january_returnsValid() {
         // Given
         let nextYear = Calendar.current.component(.year, from: Date()) + 1
-        let month = "01"
+        let month = TestData.ExpiryDates.january
         let year = String(nextYear % 100)
 
         // When
@@ -154,12 +154,12 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_centuryRollover_2099To2100_handlesCorrectly() {
         // 2099 should be valid (far future)
-        assertExpiryValid(month: "12", year: "99")
+        assertExpiryValid(month: TestData.ExpiryDates.december, year: TestData.ExpiryDates.year99)
     }
 
     func test_validateExpiry_centuryRollover_2000_handlesCorrectly() {
         // Should interpret "00" as past (2000) and return invalid
-        assertExpiryInvalid(month: "01", year: "00")
+        assertExpiryInvalid(month: TestData.ExpiryDates.january, year: TestData.ExpiryDates.year00)
     }
 
     // MARK: - Invalid Month Validation
@@ -188,8 +188,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withNegativeMonth_returnsInvalid() {
         // Given
-        let month = "-01"
-        let year = "25"
+        let month = TestData.ExpiryDates.negativeMonth
+        let year = TestData.ExpiryDates.year25
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -202,7 +202,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withSingleDigitMonth_withoutLeadingZero_returnsValid() {
         // Given
-        let month = "5" // May without leading zero
+        let month = TestData.ExpiryDates.singleDigitMonth
         let (_, year) = TestData.ExpiryDates.validFuture
 
         // When
@@ -214,7 +214,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withTwoDigitMonth_withLeadingZero_returnsValid() {
         // Given
-        let month = "05" // May with leading zero
+        let month = "0" + TestData.ExpiryDates.singleDigitMonth
         let (_, year) = TestData.ExpiryDates.validFuture
 
         // When
@@ -226,10 +226,10 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withFourDigitYear_returnsValid() {
         // Given
-        let month = "12"
+        let month = TestData.ExpiryDates.december
         let currentYear = Calendar.current.component(.year, from: Date())
         let futureYear = currentYear + 2
-        let year = String(futureYear) // Full 4-digit year
+        let year = String(futureYear)
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -240,8 +240,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withTwoDigitYear_returnsValid() {
         // Given
-        let month = "12"
-        let (_, year) = TestData.ExpiryDates.validFuture // 2-digit year
+        let month = TestData.ExpiryDates.december
+        let (_, year) = TestData.ExpiryDates.validFuture
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -265,8 +265,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withEmptyYear_returnsInvalid() {
         // Given
-        let month = "12"
-        let year = ""
+        let month = TestData.ExpiryDates.december
+        let (_, year) = TestData.ExpiryDates.empty
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -277,8 +277,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withBothEmpty_returnsInvalid() {
         // Given
-        let month = ""
-        let year = ""
+        let (month, year) = TestData.ExpiryDates.empty
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -291,8 +290,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withLettersInMonth_returnsInvalid() {
         // Given
-        let month = "AB"
-        let year = "25"
+        let month = TestData.ExpiryDates.lettersMonth
+        let year = TestData.ExpiryDates.year25
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -303,8 +302,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withLettersInYear_returnsInvalid() {
         // Given
-        let month = "12"
-        let year = "XY"
+        let month = TestData.ExpiryDates.december
+        let year = TestData.ExpiryDates.lettersYear
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -315,8 +314,8 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withSpecialCharactersInMonth_returnsInvalid() {
         // Given
-        let month = "1@"
-        let year = "25"
+        let month = TestData.ExpiryDates.specialCharMonth
+        let year = TestData.ExpiryDates.year25
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
@@ -329,7 +328,7 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withWhitespaceInMonth_shouldTrimAndValidate() {
         // Given
-        let month = " 12 " // With leading/trailing whitespace
+        let month = TestData.ExpiryDates.monthWithWhitespace
         let (_, year) = TestData.ExpiryDates.validFuture
 
         // When
@@ -341,9 +340,9 @@ final class ExpiryDateValidationEdgeCasesTests: XCTestCase {
 
     func test_validateExpiry_withWhitespaceInYear_shouldTrimAndValidate() {
         // Given
-        let month = "12"
+        let month = TestData.ExpiryDates.december
         let (_, yearValue) = TestData.ExpiryDates.validFuture
-        let year = " \(yearValue) " // With leading/trailing whitespace
+        let year = " \(yearValue) "
 
         // When
         let result = sut.validateExpiry(month: month, year: year)
