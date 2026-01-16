@@ -27,56 +27,35 @@ final class MockValidationService: ValidationService {
         validateFieldCallCount += 1
         lastFieldType = .cardNumber
         lastFieldValue = number
-
-        if let result = stubbedResultsByType[.cardNumber] {
-            return result
-        }
-        return stubbedValidationResult
+        return stubbedResultsByType[.cardNumber] ?? stubbedValidationResult
     }
 
     func validateExpiry(month: String, year: String) -> ValidationResult {
         validateFieldCallCount += 1
         lastFieldType = .expiryDate
         lastFieldValue = "\(month)/\(year)"
-
-        if let result = stubbedResultsByType[.expiryDate] {
-            return result
-        }
-        return stubbedValidationResult
+        return stubbedResultsByType[.expiryDate] ?? stubbedValidationResult
     }
 
     func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
         validateFieldCallCount += 1
         lastFieldType = .cvv
         lastFieldValue = cvv
-
-        if let result = stubbedResultsByType[.cvv] {
-            return result
-        }
-        return stubbedValidationResult
+        return stubbedResultsByType[.cvv] ?? stubbedValidationResult
     }
 
     func validateCardholderName(_ name: String) -> ValidationResult {
         validateFieldCallCount += 1
         lastFieldType = .cardholderName
         lastFieldValue = name
-
-        if let result = stubbedResultsByType[.cardholderName] {
-            return result
-        }
-        return stubbedValidationResult
+        return stubbedResultsByType[.cardholderName] ?? stubbedValidationResult
     }
 
     func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
         validateFieldCallCount += 1
         lastFieldType = type
         lastFieldValue = value
-
-        // Return type-specific result if configured, otherwise default
-        if let result = stubbedResultsByType[type] {
-            return result
-        }
-        return stubbedValidationResult
+        return stubbedResultsByType[type] ?? stubbedValidationResult
     }
 
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T {
@@ -84,12 +63,10 @@ final class MockValidationService: ValidationService {
     }
 
     func validateFormData(_ formData: FormData, configuration: CardFormConfiguration) -> [FieldError] {
-        // Return empty for tests - we're not testing this path
         []
     }
 
     func validateFields(_ fieldTypes: [PrimerInputElementType], formData: FormData) -> [FieldError] {
-        // Return empty for tests
         []
     }
 

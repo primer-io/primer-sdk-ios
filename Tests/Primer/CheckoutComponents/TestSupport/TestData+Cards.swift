@@ -35,6 +35,8 @@ extension TestData {
         static let withSpaces = "4242 4242 4242 4242"
         static let allZeros = "0000000000000000"
         static let singleDigit = "4"
+        static let invalidRandom = "1234567890"
+        static let invalidExpiryFormat = "invalid"
 
         // Declined/error cards
         static let declined = "4000000000000002"
@@ -80,6 +82,7 @@ extension TestData {
         static let year99 = "99"
         static let year00 = "00"
         static let year25 = "25"
+        static let year30 = "30"
         static let lettersYear = "XY"
 
         // Invalid formats

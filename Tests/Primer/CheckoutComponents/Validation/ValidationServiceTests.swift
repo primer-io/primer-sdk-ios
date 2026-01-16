@@ -30,7 +30,7 @@ final class ValidationServiceTests: XCTestCase {
     }
 
     func test_validateCardNumber_withInvalidNumber_returnsInvalid() {
-        let result = sut.validateCardNumber("1234567890")
+        let result = sut.validateCardNumber(TestData.CardNumbers.invalidRandom)
         XCTAssertFalse(result.isValid)
     }
 
@@ -54,7 +54,7 @@ final class ValidationServiceTests: XCTestCase {
     }
 
     func test_validateExpiry_withInvalidMonth_returnsInvalid() {
-        let result = sut.validateExpiry(month: "13", year: "30")
+        let result = sut.validateExpiry(month: TestData.ExpiryDates.invalidMonth.0, year: TestData.ExpiryDates.year30)
         XCTAssertFalse(result.isValid)
     }
 
@@ -117,7 +117,7 @@ final class ValidationServiceTests: XCTestCase {
     }
 
     func test_validateField_expiryDate_withInvalidFormat_returnsInvalid() {
-        let result = sut.validateField(type: .expiryDate, value: "invalid")
+        let result = sut.validateField(type: .expiryDate, value: TestData.CardNumbers.invalidExpiryFormat)
         XCTAssertFalse(result.isValid)
     }
 
@@ -142,7 +142,7 @@ final class ValidationServiceTests: XCTestCase {
     }
 
     func test_validateField_email_withInvalidValue_returnsInvalid() {
-        let result = sut.validateField(type: .email, value: "invalid-email")
+        let result = sut.validateField(type: .email, value: TestData.EmailAddresses.invalidFormat)
         XCTAssertFalse(result.isValid)
     }
 
