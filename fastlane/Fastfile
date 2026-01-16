@@ -86,7 +86,10 @@ platform :ios do
       app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
       service_credentials_file: "firebase_credentials.json"
     )
-    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+    increment_build_number(
+      build_number: latest_release[:buildVersion].to_i + 1,
+      xcodeproj: app_xcode_proj
+    )
   end
 
   lane :qa_release do
@@ -295,7 +298,7 @@ platform :ios do
     custom_id = case source_branch_trimmed
       when "release/next" then "release-latest-ios"
       when "master" then "nightly-latest-ios"
-      else "preview-" + pr_number + "-ios"
+      else "preview-" + "-ios"
     end
 
     upload_to_lambdatest(
