@@ -83,7 +83,8 @@ platform :ios do
 
   lane :increment_version do
     latest_release = firebase_app_distribution_get_latest_release(
-      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b"
+      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+      service_credentials_file: "firebase_credentials.json"
     )
     increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
   end
