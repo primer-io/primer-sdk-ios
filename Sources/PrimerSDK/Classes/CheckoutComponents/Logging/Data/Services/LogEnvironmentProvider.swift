@@ -16,19 +16,12 @@ enum LogEnvironmentProvider {
     }
 
     static func getEndpointURL(for environment: AnalyticsEnvironment) -> URL {
-        let baseURL: String
-
-        switch environment {
-        case .dev:
-            baseURL = Constants.devBaseURL
-        case .staging:
-            baseURL = Constants.stagingBaseURL
-        case .sandbox:
-            baseURL = Constants.sandboxBaseURL
-        case .production:
-            baseURL = Constants.productionBaseURL
+        let baseURL = switch environment {
+        case .dev: Constants.devBaseURL
+        case .staging: Constants.stagingBaseURL
+        case .sandbox: Constants.sandboxBaseURL
+        case .production: Constants.productionBaseURL
         }
-
         return URL(string: "\(baseURL)\(Constants.logsPath)")!
     }
 }
