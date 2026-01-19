@@ -265,7 +265,7 @@ public extension CheckoutComponentsDelegate {
         isPresentingCheckout = true
 
         Task { @MainActor in
-            // SDK initialization is now handled automatically by PrimerCheckout/InternalCheckout
+            // SDK initialization is now handled automatically by PrimerCheckout
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
                 settings: primerSettings,

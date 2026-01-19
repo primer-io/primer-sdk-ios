@@ -44,7 +44,6 @@ public actor LoggingSessionContext {
     // MARK: - Initialization
 
     private init() {
-        // Initialize with default values
         environment = .production
         sdkVersion = ""
         clientSessionToken = nil
@@ -56,7 +55,6 @@ public actor LoggingSessionContext {
     // MARK: - Public Methods
 
     public func initialize(clientToken: String, integrationType: CheckoutComponentsIntegrationType) {
-        // Store the client token and integration type for later use
         clientSessionToken = clientToken
         self.integrationType = integrationType
 
