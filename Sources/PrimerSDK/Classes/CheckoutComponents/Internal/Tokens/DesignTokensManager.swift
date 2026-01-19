@@ -1,7 +1,7 @@
 //
 //  DesignTokensManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -155,6 +155,9 @@ final class DesignTokensManager: ObservableObject {
         if let sizes = theme.sizes {
             applySizeOverrides(to: tokens, from: sizes)
         }
+        if let typography = theme.typography {
+            applyTypographyOverrides(to: tokens, from: typography)
+        }
 
         return tokens
     }
@@ -260,6 +263,68 @@ final class DesignTokensManager: ObservableObject {
         if let value = sizes.primerSizeXxlarge { tokens.primerSizeXxlarge = value }
         if let value = sizes.primerSizeXxxlarge { tokens.primerSizeXxxlarge = value }
         if let value = sizes.primerSizeBase { tokens.primerSizeBase = value }
+    }
+
+    private func applyTypographyOverrides(to tokens: DesignTokens, from typography: TypographyOverrides) {
+        // Title XLarge
+        if let style = typography.titleXlarge {
+            if let font = style.font { tokens.primerTypographyTitleXlargeFont = font }
+            if let size = style.size { tokens.primerTypographyTitleXlargeSize = size }
+            if let weight = style.weight { tokens.primerTypographyTitleXlargeWeight = fontWeightToCGFloat(weight) }
+            if let letterSpacing = style.letterSpacing { tokens.primerTypographyTitleXlargeLetterSpacing = letterSpacing }
+            if let lineHeight = style.lineHeight { tokens.primerTypographyTitleXlargeLineHeight = lineHeight }
+        }
+
+        // Title Large
+        if let style = typography.titleLarge {
+            if let font = style.font { tokens.primerTypographyTitleLargeFont = font }
+            if let size = style.size { tokens.primerTypographyTitleLargeSize = size }
+            if let weight = style.weight { tokens.primerTypographyTitleLargeWeight = fontWeightToCGFloat(weight) }
+            if let letterSpacing = style.letterSpacing { tokens.primerTypographyTitleLargeLetterSpacing = letterSpacing }
+            if let lineHeight = style.lineHeight { tokens.primerTypographyTitleLargeLineHeight = lineHeight }
+        }
+
+        // Body Large
+        if let style = typography.bodyLarge {
+            if let font = style.font { tokens.primerTypographyBodyLargeFont = font }
+            if let size = style.size { tokens.primerTypographyBodyLargeSize = size }
+            if let weight = style.weight { tokens.primerTypographyBodyLargeWeight = fontWeightToCGFloat(weight) }
+            if let letterSpacing = style.letterSpacing { tokens.primerTypographyBodyLargeLetterSpacing = letterSpacing }
+            if let lineHeight = style.lineHeight { tokens.primerTypographyBodyLargeLineHeight = lineHeight }
+        }
+
+        // Body Medium
+        if let style = typography.bodyMedium {
+            if let font = style.font { tokens.primerTypographyBodyMediumFont = font }
+            if let size = style.size { tokens.primerTypographyBodyMediumSize = size }
+            if let weight = style.weight { tokens.primerTypographyBodyMediumWeight = fontWeightToCGFloat(weight) }
+            if let letterSpacing = style.letterSpacing { tokens.primerTypographyBodyMediumLetterSpacing = letterSpacing }
+            if let lineHeight = style.lineHeight { tokens.primerTypographyBodyMediumLineHeight = lineHeight }
+        }
+
+        // Body Small
+        if let style = typography.bodySmall {
+            if let font = style.font { tokens.primerTypographyBodySmallFont = font }
+            if let size = style.size { tokens.primerTypographyBodySmallSize = size }
+            if let weight = style.weight { tokens.primerTypographyBodySmallWeight = fontWeightToCGFloat(weight) }
+            if let letterSpacing = style.letterSpacing { tokens.primerTypographyBodySmallLetterSpacing = letterSpacing }
+            if let lineHeight = style.lineHeight { tokens.primerTypographyBodySmallLineHeight = lineHeight }
+        }
+    }
+
+    private func fontWeightToCGFloat(_ weight: Font.Weight) -> CGFloat {
+        switch weight {
+        case .ultraLight: return 100
+        case .thin: return 200
+        case .light: return 300
+        case .regular: return 400
+        case .medium: return 500
+        case .semibold: return 600
+        case .bold: return 700
+        case .heavy: return 800
+        case .black: return 900
+        default: return 400
+        }
     }
 
     // MARK: - JSON Loading

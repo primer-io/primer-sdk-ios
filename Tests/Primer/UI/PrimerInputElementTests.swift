@@ -1,7 +1,7 @@
 //
 //  PrimerInputElementTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -94,12 +94,12 @@ final class PrimerInputElementTests: XCTestCase {
     func test_validate_expiryDate() throws {
         let sut = PrimerInputElementType.expiryDate
 
-        XCTAssertTrue(sut.validate(value: "12/25", detectedValueType: nil))
-        XCTAssertTrue(sut.validate(value: "1225", detectedValueType: nil))
+        XCTAssertTrue(sut.validate(value: "12/27", detectedValueType: nil))
+        XCTAssertTrue(sut.validate(value: "1227", detectedValueType: nil))
 
         // Current logic says the string stripped of "/" should be exactly 4 digits
         // note: this seems to be at odds with CardComponents validation
-        XCTAssertFalse(sut.validate(value: "12/2025", detectedValueType: nil))
+        XCTAssertFalse(sut.validate(value: "12/2027", detectedValueType: nil))
     }
 }
 

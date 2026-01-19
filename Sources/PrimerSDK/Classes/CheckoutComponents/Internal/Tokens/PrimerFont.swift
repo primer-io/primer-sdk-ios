@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-/// Typography utility providing Inter variable fonts with design token integration.
+/// Typography utility providing design token integration with custom font support.
 ///
 /// Architecture:
 /// - **Base Function**: Core font creation (`uiFont`)
@@ -15,8 +15,10 @@ import SwiftUI
 /// - **Semantic Helpers**: Named helpers mapping to typography styles
 ///
 /// Custom Font Support:
-/// All typography flows through `uiFont()` → `variableInterFont()` which attempts to load
-/// the Inter variable font with proper weight variation. Falls back to system fonts.
+/// All typography flows through `uiFont()` which supports:
+/// - Inter variable font with proper weight variation (default)
+/// - Custom font families specified via TypographyOverrides
+/// - Falls back to system fonts if custom font is unavailable
 @available(iOS 15.0, *)
 struct PrimerFont {
 
@@ -45,7 +47,7 @@ struct PrimerFont {
 
         let baseFont: UIFont
 
-        // Attempt to load Inter variable font
+        // Attempt to load the specified font family
         if fontFamily == "Inter" {
             if let customUIFont = variableInterFont(weight: fontWeight, size: fontSize) {
                 baseFont = customUIFont
@@ -54,8 +56,13 @@ struct PrimerFont {
                 baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
             }
         } else {
-            // Use system font for non-Inter families
-            baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+            // Attempt to load custom font family
+            if let customFont = UIFont(name: fontFamily, size: fontSize) {
+                baseFont = customFont
+            } else {
+                // Fallback to system font if custom font is not available
+                baseFont = .systemFont(ofSize: fontSize, weight: uiFontWeightFromNumber(fontWeight))
+            }
         }
 
         // Apply Dynamic Type scaling

@@ -1,7 +1,7 @@
 //
 //  StringExtensionTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -33,7 +33,7 @@ final class StringExtensionTests: XCTestCase {
     }
 
     func testIsValidCardNumber() {
-        Constants.testCardNumbers.flatMap { $0.value }.forEach {
+        Constants.testCardNumbers.flatMap(\.value).forEach {
             XCTAssertTrue($0.isValidCardNumber)
         }
 
@@ -447,10 +447,10 @@ final class StringExtensionTests: XCTestCase {
 
     // MARK: Helpers
 
-    private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
+    private func almostOneYearAgoDateString(format: String = "MM/yyyy") -> String {
         let date = Date() - (60 * 60 * 24 * 364)
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/YYYY"
+        dateFormatter.dateFormat = format
         return dateFormatter.string(from: date)
     }
 }

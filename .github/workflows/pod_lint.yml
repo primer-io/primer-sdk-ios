@@ -21,12 +21,12 @@ jobs:
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
           access_token: ${{ github.token }}
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd  # v1.6.0 
         with:
             xcode-version: 16.3.0
-      - uses: ruby/setup-ruby@8aeb6ff8030dd539317f8e1769a044873b56ea71  # v1.268.0
+      - uses: ruby/setup-ruby@ae195bbe749a7cef685ac729197124a48305c1cb  # v1.276.0
         with:
           ruby-version: "3.2"
           bundler-cache: true

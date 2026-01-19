@@ -30,7 +30,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
@@ -67,7 +67,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
 
@@ -87,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@8aeb6ff8030dd539317f8e1769a044873b56ea71  # v1.268.0
+      - uses: ruby/setup-ruby@ae195bbe749a7cef685ac729197124a48305c1cb  # v1.276.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -121,7 +121,7 @@ jobs:
           LAMBDATEST_ACCESS_KEY: ${{ secrets.LAMBDATEST_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save LambdaTest ID
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 #v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6.0.0
         id: save_lambdatest_id_step
         with:
           name: lambdatest_id
@@ -129,7 +129,7 @@ jobs:
           path: /var/tmp/lambdatest_id.txt
       - name: Save App Artifact
         id: save_app_artifact_step
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: app_artifact_id
           retention-days: 1
@@ -150,7 +150,7 @@ jobs:
           - "E2E"
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
@@ -175,7 +175,7 @@ jobs:
     if: ${{ inputs.testType != '' }}
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: ${{ github.ref }}
           sparse-checkout: .github
