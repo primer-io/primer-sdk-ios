@@ -24,9 +24,8 @@ public struct LogMessageObject: Codable, Sendable {
     public let event: String?
     public let initDurationMs: Int?
 
-    // MARK: - Dummy Metadata Fields
+    // MARK: - Metadata Fields
 
-    public let customData: [String: String]?
     public let appMetadata: AppMetadata?
     public let sessionMetadata: SessionMetadata?
 
@@ -41,7 +40,6 @@ public struct LogMessageObject: Codable, Sendable {
         errorStack: String? = nil,
         event: String? = nil,
         initDurationMs: Int? = nil,
-        customData: [String: String]? = nil,
         appMetadata: AppMetadata? = nil,
         sessionMetadata: SessionMetadata? = nil
     ) {
@@ -53,7 +51,6 @@ public struct LogMessageObject: Codable, Sendable {
         self.errorStack = errorStack
         self.event = event
         self.initDurationMs = initDurationMs
-        self.customData = customData
         self.appMetadata = appMetadata
         self.sessionMetadata = sessionMetadata
     }

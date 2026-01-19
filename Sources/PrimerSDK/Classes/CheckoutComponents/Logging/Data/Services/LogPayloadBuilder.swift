@@ -37,7 +37,6 @@ struct LogPayloadBuilder {
             deviceInfo: Self.buildDeviceInfoMetadata(),
             event: event,
             initDurationMs: initDurationMs,
-            customData: nil,
             appMetadata: Self.buildAppMetadata(),
             sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
@@ -59,7 +58,6 @@ struct LogPayloadBuilder {
             deviceInfo: Self.buildDeviceInfoMetadata(),
             errorMessage: errorMessage,
             errorStack: errorStack,
-            customData: nil,
             appMetadata: Self.buildAppMetadata(),
             sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
