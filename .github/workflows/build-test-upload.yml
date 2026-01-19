@@ -13,6 +13,7 @@ jobs:
     runs-on: macos-latest-large
     timeout-minutes: 20
     name: "Unit Tests - SDK & Debug App"
+    if: "!startsWith(github.head_ref, 'dependabot/')"
     steps:
       - name: Git - Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -131,7 +132,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
-          xcode-version: '16.3.0'
+          xcode-version: '16.4.0'
       - name: Install SSH key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
         with:
@@ -141,7 +142,7 @@ jobs:
       - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@ae195bbe749a7cef685ac729197124a48305c1cb  # v1.276.0
+      - uses: ruby/setup-ruby@675dd7ba1b06c8786a1480d89c384f5620a42647  # v1.281.0
         with:
           ruby-version: "3.2"
           bundler-cache: true

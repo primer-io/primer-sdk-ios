@@ -1,7 +1,7 @@
 //
 //  PrimerSettingsIntegrationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -12,8 +12,19 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
+    private var savedContainer: ContainerProtocol?
+
+    override func setUp() async throws {
+        try await super.setUp()
+        savedContainer = await DIContainer.current
+    }
+
     override func tearDown() async throws {
-        await DIContainer.clearContainer()
+        if let savedContainer {
+            await DIContainer.setContainer(savedContainer)
+        } else {
+            await DIContainer.clearContainer()
+        }
         try await super.tearDown()
     }
 
@@ -22,14 +33,14 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
     func testSettingsFlowThroughEntireStack() async throws {
         // Given: Custom settings with full configuration
         let klarnaOptions = PrimerKlarnaOptions(
-            recurringPaymentDescription: "Test Subscription"
+            recurringPaymentDescription: TestData.PaymentMethodOptions.testSubscription
         )
 
         let settings = PrimerSettings(
             paymentHandling: .manual,
-            localeData: PrimerLocaleData(languageCode: "fr", regionCode: "FR"),
+            localeData: PrimerLocaleData(languageCode: TestData.Locale.french, regionCode: TestData.Locale.france),
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "testapp://payment",
+                urlScheme: TestData.PaymentMethodOptions.testAppUrl,
                 klarnaOptions: klarnaOptions
             ),
             uiOptions: PrimerUIOptions(
@@ -60,15 +71,15 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         XCTAssertEqual(resolvedSettings.paymentHandling, .manual)
         XCTAssertTrue(resolvedSettings.clientSessionCachingEnabled)
         XCTAssertEqual(resolvedSettings.apiVersion, .V2_4)
-        XCTAssertEqual(resolvedSettings.localeData.localeCode, "fr-FR")
+        XCTAssertEqual(resolvedSettings.localeData.localeCode, TestData.Locale.frenchFrance)
         XCTAssertEqual(
             resolvedSettings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            "Test Subscription"
+            TestData.PaymentMethodOptions.testSubscription
         )
         // Test URL scheme via validation method instead of accessing private property
         XCTAssertNoThrow(try resolvedSettings.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolvedSettings.paymentMethodOptions.validSchemeForUrlScheme()
-        XCTAssertEqual(urlScheme, "testapp")
+        XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.testAppScheme)
         XCTAssertEqual(resolvedSettings.uiOptions.appearanceMode, .dark)
         XCTAssertEqual(resolvedSettings.uiOptions.cardFormUIOptions?.payButtonAddNewCard, true)
     }
@@ -102,16 +113,16 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
     func testAllPaymentMethodOptionsAccessible() async throws {
         // Given: Settings with all payment method options configured
         let klarnaOptions = PrimerKlarnaOptions(
-            recurringPaymentDescription: "Subscription"
+            recurringPaymentDescription: TestData.PaymentMethodOptions.subscription
         )
         let applePayOptions = PrimerApplePayOptions(
-            merchantIdentifier: "merchant.test",
-            merchantName: "Test Merchant"
+            merchantIdentifier: TestData.PaymentMethodOptions.testMerchantId,
+            merchantName: TestData.PaymentMethodOptions.testMerchantName
         )
 
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "testapp://",
+                urlScheme: TestData.PaymentMethodOptions.testAppUrlTrailing,
                 applePayOptions: applePayOptions,
                 klarnaOptions: klarnaOptions
             )
@@ -131,16 +142,16 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         // Test URL scheme via validation method instead of accessing private property
         XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
-        XCTAssertEqual(urlScheme, "testapp")
+        XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.testAppScheme)
         XCTAssertNotNil(resolved.paymentMethodOptions.applePayOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.applePayOptions?.merchantIdentifier,
-            "merchant.test"
+            TestData.PaymentMethodOptions.testMerchantId
         )
         XCTAssertNotNil(resolved.paymentMethodOptions.klarnaOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            "Subscription"
+            TestData.PaymentMethodOptions.subscription
         )
     }
 
@@ -184,7 +195,7 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
 
     func testLocaleDataPropagation() async throws {
         // Given: Settings with specific locale
-        let localeData = PrimerLocaleData(languageCode: "de", regionCode: "DE")
+        let localeData = PrimerLocaleData(languageCode: TestData.Locale.german, regionCode: TestData.Locale.germany)
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
@@ -198,14 +209,14 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale data should be correctly propagated
-        XCTAssertEqual(resolved.localeData.languageCode, "de")
-        XCTAssertEqual(resolved.localeData.regionCode, "DE")
-        XCTAssertEqual(resolved.localeData.localeCode, "de-DE")
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.german)
+        XCTAssertEqual(resolved.localeData.regionCode, TestData.Locale.germany)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.germanGermany)
     }
 
     func testLocaleDataWithLanguageOnly() async throws {
         // Given: Settings with language code only
-        let localeData = PrimerLocaleData(languageCode: "ja", regionCode: nil)
+        let localeData = PrimerLocaleData(languageCode: TestData.Locale.japanese, regionCode: nil)
         let settings = PrimerSettings(localeData: localeData)
 
         let composableContainer = ComposableContainer(settings: settings)
@@ -219,9 +230,9 @@ final class PrimerSettingsIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale should use language code only
-        XCTAssertEqual(resolved.localeData.languageCode, "ja")
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.japanese)
         XCTAssertNil(resolved.localeData.regionCode)
-        XCTAssertEqual(resolved.localeData.localeCode, "ja")
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.japanese)
     }
 
     // MARK: - Container Lifecycle Tests

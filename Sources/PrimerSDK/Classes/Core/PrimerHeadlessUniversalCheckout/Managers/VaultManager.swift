@@ -1,7 +1,7 @@
 //
 //  VaultManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -102,13 +102,11 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func fetchVaultedPaymentMethods(completion: @escaping (_ vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, _ error: Error?) -> Void) {
-            Task {
+            Task { @MainActor in
                 do {
                     try await vaultService.fetchVaultedPaymentMethods()
                     self.vaultedPaymentMethods = AppState.current.paymentMethods.compactMap(\.vaultedPaymentMethod)
-                    DispatchQueue.main.async {
                         completion(self.vaultedPaymentMethods, nil)
-                    }
                 } catch {
                     DispatchQueue.main.async {
                         completion(nil, error)
@@ -378,7 +376,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             defer {
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                     self.webViewCompletion = nil
                     self.webViewController?.dismiss(animated: true, completion: { [weak self] in

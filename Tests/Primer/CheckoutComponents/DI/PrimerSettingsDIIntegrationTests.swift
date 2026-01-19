@@ -1,7 +1,7 @@
 //
 //  PrimerSettingsDIIntegrationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import XCTest
@@ -12,9 +12,19 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
+    private var savedContainer: ContainerProtocol?
+
+    override func setUp() async throws {
+        try await super.setUp()
+        savedContainer = await DIContainer.current
+    }
+
     override func tearDown() async throws {
-        // Clean up global container after each test
-        await DIContainer.clearContainer()
+        if let savedContainer {
+            await DIContainer.setContainer(savedContainer)
+        } else {
+            await DIContainer.clearContainer()
+        }
         try await super.tearDown()
     }
 
@@ -85,7 +95,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
     func testPrimerSettingsWithPaymentMethodOptions() async throws {
         // Given: Settings with Klarna options
         let klarnaOptions = PrimerKlarnaOptions(
-            recurringPaymentDescription: "Monthly subscription"
+            recurringPaymentDescription: TestData.PaymentMethodOptions.monthlySubscription
         )
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -107,7 +117,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         XCTAssertNotNil(resolved.paymentMethodOptions.klarnaOptions)
         XCTAssertEqual(
             resolved.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            "Monthly subscription"
+            TestData.PaymentMethodOptions.monthlySubscription
         )
     }
 
@@ -140,7 +150,7 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
 
     func testSettingsWithCustomLocaleData() async throws {
         // Given: Settings with custom locale
-        let localeData = PrimerLocaleData(languageCode: "es", regionCode: "MX")
+        let localeData = PrimerLocaleData(languageCode: TestData.Locale.spanish, regionCode: TestData.Locale.mexico)
         let settings = PrimerSettings(localeData: localeData)
         let composableContainer = ComposableContainer(settings: settings)
 
@@ -154,9 +164,9 @@ final class PrimerSettingsDIIntegrationTests: XCTestCase {
         let resolved = try await container.resolve(PrimerSettings.self)
 
         // Then: Locale data should be preserved
-        XCTAssertEqual(resolved.localeData.languageCode, "es")
-        XCTAssertEqual(resolved.localeData.regionCode, "MX")
-        XCTAssertEqual(resolved.localeData.localeCode, "es-MX")
+        XCTAssertEqual(resolved.localeData.languageCode, TestData.Locale.spanish)
+        XCTAssertEqual(resolved.localeData.regionCode, TestData.Locale.mexico)
+        XCTAssertEqual(resolved.localeData.localeCode, TestData.Locale.spanishMexico)
     }
 
     // MARK: - UI Options Tests

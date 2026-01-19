@@ -1,14 +1,14 @@
 //
 //  RequestDispatcher.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
-protocol RequestDispatcher {
+protocol RequestDispatcher: Sendable {
     func dispatch(request: URLRequest) async throws -> DispatcherResponse
     func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
     func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
@@ -34,7 +34,7 @@ protocol DispatcherResponse {
     var error: Error? { get }
 }
 
-protocol URLSessionProtocol {
+protocol URLSessionProtocol: Sendable {
     func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask
 }
 
@@ -49,7 +49,7 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 
     func dispatch(request: URLRequest) async throws -> DispatcherResponse {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             dispatch(request: request) { response in
                 continuation.resume(with: response)
             }

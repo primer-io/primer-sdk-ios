@@ -1,7 +1,7 @@
 //
 //  ComposableContainer.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -32,6 +32,8 @@ final class ComposableContainer: LogReporter {
         await registerDomain()
 
         await registerData()
+
+        await registerLogging()
 
         await DIContainer.setContainer(container)
 
@@ -106,7 +108,8 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 GetPaymentMethodsInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self),
+                    loggingInteractor: try? await resolver.resolve(DefaultLoggingInteractor.self)
                 )
             }
 
@@ -114,7 +117,8 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 ProcessCardPaymentInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self),
+                    loggingInteractor: try? await resolver.resolve(DefaultLoggingInteractor.self)
                 )
             }
 
@@ -138,16 +142,18 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 ProcessPayPalPaymentInteractorImpl(
-                    repository: try await resolver.resolve(PayPalRepository.self)
+                    repository: try await resolver.resolve(PayPalRepository.self),
+                    loggingInteractor: try? await resolver.resolve(DefaultLoggingInteractor.self)
                 )
             }
 
         try? await container.register(ProcessApplePayPaymentInteractor.self)
             .asTransient()
-            .with { _ in
+            .with { resolver in
                 ProcessApplePayPaymentInteractorImpl(
                     tokenizationService: TokenizationService(),
-                    createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+                    createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue),
+                    loggingInteractor: try? await resolver.resolve(DefaultLoggingInteractor.self)
                 )
             }
 
@@ -155,7 +161,8 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 SubmitVaultedPaymentInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self),
+                    loggingInteractor: try? await resolver.resolve(DefaultLoggingInteractor.self)
                 )
             }
     }
@@ -180,6 +187,38 @@ private extension ComposableContainer {
             .asTransient()
             .with { _ in
                 PayPalRepositoryImpl()
+            }
+    }
+
+    func registerLogging() async {
+        try? await container.register(LogNetworkClient.self)
+            .asSingleton()
+            .with { _ in LogNetworkClient() }
+
+        try? await container.register(SensitiveDataMasker.self)
+            .asSingleton()
+            .with { _ in SensitiveDataMasker() }
+
+        try? await container.register(LogPayloadBuilder.self)
+            .asSingleton()
+            .with { _ in LogPayloadBuilder() }
+
+        try? await container.register(LoggingService.self)
+            .asSingleton()
+            .with { resolver in
+                LoggingService(
+                    networkClient: try await resolver.resolve(LogNetworkClient.self),
+                    payloadBuilder: try await resolver.resolve(LogPayloadBuilder.self),
+                    masker: try await resolver.resolve(SensitiveDataMasker.self)
+                )
+            }
+
+        try? await container.register(DefaultLoggingInteractor.self)
+            .asSingleton()
+            .with { resolver in
+                DefaultLoggingInteractor(
+                    loggingService: try await resolver.resolve(LoggingService.self)
+                )
             }
     }
 

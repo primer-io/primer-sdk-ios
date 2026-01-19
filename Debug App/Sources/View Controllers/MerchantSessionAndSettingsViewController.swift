@@ -1,7 +1,7 @@
 //
 //  MerchantSessionAndSettingsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -150,7 +150,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
-            return self.clientSession.order?.lineItems ?? []
+            self.clientSession.order?.lineItems ?? []
         }
         set {
             self.clientSession.order?.lineItems = newValue
@@ -1047,7 +1047,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        1
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {

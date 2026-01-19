@@ -1,7 +1,7 @@
 //
 //  PrimerSwiftUIBridgeViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -240,6 +240,7 @@ extension PrimerSwiftUIBridgeViewController {
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
+        integrationType: CheckoutComponentsIntegrationType = .uiKit,
         scope: ((PrimerCheckoutScope) -> Void)? = nil,
         onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
@@ -255,6 +256,7 @@ extension PrimerSwiftUIBridgeViewController {
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext,
+            integrationType: integrationType,
             scope: scope,
             onCompletion: onCompletion
         )

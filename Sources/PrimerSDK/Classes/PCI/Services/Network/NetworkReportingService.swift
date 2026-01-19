@@ -1,7 +1,7 @@
 //
 //  NetworkReportingService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -13,15 +13,15 @@ enum NetworkEventType {
 
     var endpoint: Endpoint {
         switch self {
-        case .requestStart(_, let endpoint, _),
-             .requestEnd(_, let endpoint, _, _),
-             .networkConnectivity(let endpoint):
+        case let .requestStart(_, endpoint, _),
+             let .requestEnd(_, endpoint, _, _),
+             let .networkConnectivity(endpoint):
             return endpoint
         }
     }
 }
 
-protocol NetworkReportingService {
+protocol NetworkReportingService: Sendable {
     func report(eventType: NetworkEventType)
 }
 
@@ -44,7 +44,7 @@ final class DefaultNetworkReportingService: NetworkReportingService {
         guard shouldReportNetworkEvents(for: eventType.endpoint) else { return }
 
         switch eventType {
-        case .requestStart(let id, let endpoint, let request):
+        case let .requestStart(id, endpoint, request):
             event = Analytics.Event.networkCall(
                 callType: .requestStart,
                 id: id,
@@ -53,7 +53,7 @@ final class DefaultNetworkReportingService: NetworkReportingService {
                 errorBody: nil,
                 responseCode: nil,
                 duration: nil)
-        case .requestEnd(let id, let endpoint, let response, let duration):
+        case let .requestEnd(id, endpoint, response, duration):
             event = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: id,
@@ -67,7 +67,7 @@ final class DefaultNetworkReportingService: NetworkReportingService {
             event = Analytics.Event.networkConnectivity()
         }
 
-        (analyticsService ?? Analytics.Service.shared).fire(event: event)
+        Task { await (analyticsService ?? Analytics.Service.shared).fire(event: event) }
     }
 
     private func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {

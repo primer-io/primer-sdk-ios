@@ -1,7 +1,7 @@
 //
 //  PrimerHeadlessKlarnaComponent+SessionCreation.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
@@ -85,11 +85,11 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         switch error {
         case .missingConfiguration: primerError = .missingPrimerConfiguration()
         case .invalidClientToken: primerError = .invalidClientToken()
-        case .sessionCreationFailed(let error): primerError = .failedToCreateSession(error: error)
+        case let .sessionCreationFailed(error): primerError = .failedToCreateSession(error: error)
         case .klarnaAuthorizationFailed: primerError = PrimerError.klarnaError(message: "PrimerKlarnaWrapperAuthorization failed")
         case .klarnaFinalizationFailed: primerError = .klarnaError(message: "PrimerKlarnaWrapperFinalization failed")
         case .klarnaUserNotApproved: primerError = .klarnaUserNotApproved()
-        case .sessionAuthorizationFailed(error: let error):
+        case let .sessionAuthorizationFailed(error: error):
             primerError = .failedToCreatePayment(paymentMethodType: "KLARNA", description: error.localizedDescription)
         }
         handleReceivedError(error: primerError)
@@ -103,15 +103,25 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
             let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-
-            var decisionHandlerHasBeenCalled = false
+            
+            let task = Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                guard let self else { return }
+                self.logger.warn(
+                    message:
+                    """
+                    The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
+                    Make sure you call the decision handler otherwise the SDK will hang.
+                    """
+                )
+            }
 
             PrimerDelegateProxy.primerWillCreatePaymentWithData(
                 checkoutPaymentMethodData,
                 decisionHandler: { paymentCreationDecision in
-                    decisionHandlerHasBeenCalled = true
+                    task.cancel()
                     switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
+                    case let .abort(errorMessage):
                         let error = PrimerError.merchantError(message: errorMessage ?? "")
                         continuation.resume(throwing: error)
                     case .continue:
@@ -119,16 +129,6 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                     }
                 }
             )
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                if !decisionHandlerHasBeenCalled {
-                    let message =
-                        """
-                        The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
-                        Make sure you call the decision handler otherwise the SDK will hang.
-                        """
-                    self?.logger.warn(message: message)
-                }
-            }
         }
     }
 }

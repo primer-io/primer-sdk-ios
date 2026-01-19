@@ -20,7 +20,7 @@ spm_app_xcode_proj = "Debug App/Primer.io Debug App SPM.xcodeproj"
 
 info_plist_path = "Debug App/Info.plist"
 
-default_sim_version = "18.4"
+default_sim_version = "18.5"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
@@ -282,9 +282,9 @@ platform :ios do
   private_lane :upload_to_lambdatest_and_save_id do |options|
 
     custom_id = case source_branch_trimmed
-      when "release/next" then "release-latest"
-      when "master" then "nightly-latest"
-      else "preview-" + pr_number
+      when "release/next" then "release-latest-ios"
+      when "master" then "nightly-latest-ios"
+      else "preview-" + pr_number + "-ios"
     end
 
     upload_to_lambdatest(

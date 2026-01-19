@@ -1,7 +1,7 @@
 //
 //  ProcessPayPalPaymentInteractor.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -20,9 +20,11 @@ protocol ProcessPayPalPaymentInteractor {
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
     private let repository: PayPalRepository
+    private let loggingInteractor: DefaultLoggingInteractor?
 
-    init(repository: PayPalRepository) {
+    init(repository: PayPalRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
         self.repository = repository
+        self.loggingInteractor = loggingInteractor
     }
 
     func execute() async throws -> PaymentResult {
@@ -43,64 +45,78 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
     private func executeCheckoutFlow() async throws -> PaymentResult {
         logger.debug(message: "Executing PayPal checkout (order) flow")
 
-        // 1. Start order session
-        let (orderId, approvalUrl) = try await repository.startOrderSession()
-        logger.debug(message: "PayPal order session started with orderId: \(orderId)")
+        do {
+            // 1. Start order session
+            let (orderId, approvalUrl) = try await repository.startOrderSession()
+            logger.debug(message: "PayPal order session started with orderId: \(orderId)")
 
-        guard let url = URL(string: approvalUrl) else {
-            throw PrimerError.invalidValue(
-                key: "approvalUrl",
-                value: approvalUrl,
-                reason: "Invalid PayPal approval URL"
+            guard let url = URL(string: approvalUrl) else {
+                throw PrimerError.invalidValue(
+                    key: "approvalUrl",
+                    value: approvalUrl,
+                    reason: "Invalid PayPal approval URL"
+                )
+            }
+
+            // 2. Open web authentication
+            _ = try await repository.openWebAuthentication(url: url)
+            logger.debug(message: "PayPal web authentication completed")
+
+            // 3. Fetch payer info
+            let payerInfo = try await repository.fetchPayerInfo(orderId: orderId)
+            logger.debug(message: "PayPal payer info fetched")
+
+            // 4. Tokenize and process payment
+            let result = try await repository.tokenize(
+                paymentInstrument: .order(orderId: orderId, payerInfo: payerInfo)
             )
+            logger.debug(message: "PayPal checkout payment completed successfully")
+
+            return result
+
+        } catch {
+            logger.error(message: "PayPal checkout flow failed: \(error)")
+            loggingInteractor?.logError(message: "PayPal payment processing failed", error: error)
+            throw error
         }
-
-        // 2. Open web authentication
-        _ = try await repository.openWebAuthentication(url: url)
-        logger.debug(message: "PayPal web authentication completed")
-
-        // 3. Fetch payer info
-        let payerInfo = try await repository.fetchPayerInfo(orderId: orderId)
-        logger.debug(message: "PayPal payer info fetched")
-
-        // 4. Tokenize and process payment
-        let result = try await repository.tokenize(
-            paymentInstrument: .order(orderId: orderId, payerInfo: payerInfo)
-        )
-        logger.debug(message: "PayPal checkout payment completed successfully")
-
-        return result
     }
 
     private func executeVaultFlow() async throws -> PaymentResult {
         logger.debug(message: "Executing PayPal vault (billing agreement) flow")
 
-        // 1. Start billing agreement session
-        let approvalUrl = try await repository.startBillingAgreementSession()
-        logger.debug(message: "PayPal billing agreement session started")
+        do {
+            // 1. Start billing agreement session
+            let approvalUrl = try await repository.startBillingAgreementSession()
+            logger.debug(message: "PayPal billing agreement session started")
 
-        guard let url = URL(string: approvalUrl) else {
-            throw PrimerError.invalidValue(
-                key: "approvalUrl",
-                value: approvalUrl,
-                reason: "Invalid PayPal approval URL"
+            guard let url = URL(string: approvalUrl) else {
+                throw PrimerError.invalidValue(
+                    key: "approvalUrl",
+                    value: approvalUrl,
+                    reason: "Invalid PayPal approval URL"
+                )
+            }
+
+            // 2. Open web authentication
+            _ = try await repository.openWebAuthentication(url: url)
+            logger.debug(message: "PayPal web authentication completed")
+
+            // 3. Confirm billing agreement
+            let billingAgreementResult = try await repository.confirmBillingAgreement()
+            logger.debug(message: "PayPal billing agreement confirmed: \(billingAgreementResult.billingAgreementId)")
+
+            // 4. Tokenize and process payment
+            let result = try await repository.tokenize(
+                paymentInstrument: .billingAgreement(result: billingAgreementResult)
             )
+            logger.debug(message: "PayPal vault payment completed successfully")
+
+            return result
+
+        } catch {
+            logger.error(message: "PayPal vault flow failed: \(error)")
+            loggingInteractor?.logError(message: "PayPal payment processing failed", error: error)
+            throw error
         }
-
-        // 2. Open web authentication
-        _ = try await repository.openWebAuthentication(url: url)
-        logger.debug(message: "PayPal web authentication completed")
-
-        // 3. Confirm billing agreement
-        let billingAgreementResult = try await repository.confirmBillingAgreement()
-        logger.debug(message: "PayPal billing agreement confirmed: \(billingAgreementResult.billingAgreementId)")
-
-        // 4. Tokenize and process payment
-        let result = try await repository.tokenize(
-            paymentInstrument: .billingAgreement(result: billingAgreementResult)
-        )
-        logger.debug(message: "PayPal vault payment completed successfully")
-
-        return result
     }
 }

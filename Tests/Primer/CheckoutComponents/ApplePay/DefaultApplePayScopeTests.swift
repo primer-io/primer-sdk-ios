@@ -1,7 +1,7 @@
 //
 //  DefaultApplePayScopeTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
@@ -380,10 +380,16 @@ final class DefaultApplePayScopeTests: XCTestCase {
         var receivedState: ApplePayFormState?
         let task = Task {
             for await state in scope.state {
-                receivedState = state
-                break
+                // Wait for the state with the expected buttonStyle
+                if state.buttonStyle == .white {
+                    receivedState = state
+                    break
+                }
             }
         }
+
+        // Wait for subscription to be established
+        try? await Task.sleep(nanoseconds: 50_000_000)
 
         // Trigger a state update
         scope.buttonStyle = .white

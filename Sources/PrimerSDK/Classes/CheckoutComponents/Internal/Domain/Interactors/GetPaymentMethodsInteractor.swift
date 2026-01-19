@@ -1,7 +1,7 @@
 //
 //  GetPaymentMethodsInteractor.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -13,9 +13,11 @@ protocol GetPaymentMethodsInteractor {
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
     private let repository: HeadlessRepository
+    private let loggingInteractor: DefaultLoggingInteractor?
 
-    init(repository: HeadlessRepository) {
+    init(repository: HeadlessRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
         self.repository = repository
+        self.loggingInteractor = loggingInteractor
     }
 
     func execute() async throws -> [InternalPaymentMethod] {
@@ -29,6 +31,7 @@ final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogRep
             return paymentMethods
         } catch {
             logger.error(message: "Failed to fetch payment methods: \(error)")
+            loggingInteractor?.logError(message: "Failed to load payment methods", error: error)
             throw error
         }
     }

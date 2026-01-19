@@ -1,7 +1,7 @@
 //
 //  SubmitVaultedPaymentInteractor.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -26,9 +26,11 @@ protocol SubmitVaultedPaymentInteractor {
 final class SubmitVaultedPaymentInteractorImpl: SubmitVaultedPaymentInteractor, LogReporter {
 
     private let repository: HeadlessRepository
+    private let loggingInteractor: DefaultLoggingInteractor?
 
-    init(repository: HeadlessRepository) {
+    init(repository: HeadlessRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
         self.repository = repository
+        self.loggingInteractor = loggingInteractor
     }
 
     func execute(
@@ -53,6 +55,7 @@ final class SubmitVaultedPaymentInteractorImpl: SubmitVaultedPaymentInteractor, 
             return result
         } catch {
             logger.error(message: "[Vault] Vaulted payment processing failed: \(error)")
+            loggingInteractor?.logError(message: "[Vault] Vaulted payment processing failed", error: error)
             throw error
         }
     }

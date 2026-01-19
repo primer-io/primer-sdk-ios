@@ -18,8 +18,8 @@ jobs:
         variant: 
           - cocoapods
           - spm
-        xcode: 
-          - 16.3.0
+        xcode:
+          - '16.4.0'
     steps:
       - name: Git - Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -38,7 +38,7 @@ jobs:
       - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@ae195bbe749a7cef685ac729197124a48305c1cb  # v1.276.0
+      - uses: ruby/setup-ruby@675dd7ba1b06c8786a1480d89c384f5620a42647  # v1.281.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -62,7 +62,7 @@ jobs:
       - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
-          bundle exec fastlane test_sdk sim_version:18.4
+          bundle exec fastlane test_sdk sim_version:18.5
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
