@@ -1,21 +1,22 @@
 //
 //  PrimerSimpleCardFormTextFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
-    internal var validationError: PrimerValidationError?
+    var validationError: PrimerValidationError?
 
     override func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
     }
 
-    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+    override public func textFieldDidBeginEditing(_ textField: UITextField) {
         super.textFieldDidBeginEditing(textField)
         if let objectId = editingAnalyticsObjectId {
             let event = cardFormFieldDidBeginEditingEventWithObjectId(objectId)
@@ -23,7 +24,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
         }
     }
 
-    public override func textFieldDidEndEditing(_ textField: UITextField) {
+    override public func textFieldDidEndEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
         if let objectId = editingAnalyticsObjectId {
             let event = cardFormFieldDidEndEditingEventWithObjectId(objectId)
@@ -31,7 +32,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let positionOriginal = textField.beginningOfDocument
         let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
 

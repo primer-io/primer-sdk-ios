@@ -1,10 +1,11 @@
 //
 //  NolPayLinkedCardsComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
+import PrimerFoundation
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -80,7 +81,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "nolPayAppId")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -116,7 +117,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTAssertTrue(true) // Expecting success
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got error: \(error)")
             }
             exp.fulfill()
@@ -140,9 +141,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .nolError(let code, _, _):
+                case let .nolError(code, _, _):
                     XCTAssertEqual(code, expectedErrorCode)
                 default:
                     XCTFail("Error should be of type .nolError, but got \(primerError)")
@@ -168,7 +169,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTAssertTrue(true) // Expecting success
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got error: \(error)")
             }
 
@@ -187,9 +188,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // When
         sut.continueWithLinkedCardsFetch(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success(let cards):
+            case let .success(cards):
                 XCTFail("Expected failure but got success with cards: \(cards)")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 XCTAssertEqual(primerError.errorId, expectedError.errorId)
             }
             exp.fulfill()
@@ -211,10 +212,10 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // When
         sut.continueWithLinkedCardsFetch(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success(let cards):
+            case let .success(cards):
                 XCTFail("Expected failure but got success with cards: \(cards)")
-            case .failure(let error):
-                if case .invalidValue(let key, _, _, _) = error {
+            case let .failure(error):
+                if case let .invalidValue(key, _, _, _) = error {
                     XCTAssertEqual(key, expectedErrorKey)
                 } else {
                     XCTFail("Expected error to be of type .invalidValue")
@@ -241,16 +242,16 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .underlyingErrors(let errors, _):
+                case let .underlyingErrors(errors, _):
                     guard let firstPrimerValidationError = errors.first as? PrimerValidationError else {
                         XCTFail("Error should be of type PrimerError")
                         return
                     }
 
                     switch firstPrimerValidationError {
-                    case .invalidPhoneNumber(let message, _):
+                    case let .invalidPhoneNumber(message, _):
                         XCTAssertEqual(expectedErrorMessage, message)
                     default:
                         XCTFail("Error should be of type .nolError")
@@ -277,9 +278,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .invalidValue(let key, _, _, _):
+                case let .invalidValue(key, _, _, _):
                     XCTAssertEqual(key, "mobileNumber")
                 default:
                     XCTFail("Error should be of type .invalidValue")
@@ -303,9 +304,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .invalidValue(let key, _, _, _):
+                case let .invalidValue(key, _, _, _):
                     XCTAssertEqual(key, "countryCode")
                 default:
                     XCTFail("Error should be of type .underlyingErrors")
@@ -332,9 +333,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .nolError(let code, _, _):
+                case let .nolError(code, _, _):
                     XCTAssertEqual(code, expectedErrorCode)
                 default:
                     XCTFail("Error should be of type .nolError")
@@ -357,10 +358,10 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // When
         sut.continueWithLinkedCardsFetch(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success(let cards):
+            case let .success(cards):
                 XCTAssertFalse(cards.isEmpty, "Expected non-empty card list")
                 XCTAssertEqual(cards.first?.cardNumber, self.cardNumber)
-            case .failure(let primerError):
+            case let .failure(primerError):
                 XCTFail("Expected success, but got error: \(primerError)")
             }
             exp.fulfill()
@@ -383,9 +384,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure but got success")
-            case .failure(let primerError):
+            case let .failure(primerError):
                 switch primerError {
-                case .nolError(let code, _, _):
+                case let .nolError(code, _, _):
                     XCTAssertEqual(code, expectedErrorCode)
                 default:
                     XCTFail("Error should be of type .nolError, but got \(primerError)")
@@ -408,10 +409,10 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // When
         sut.getLinkedCardsFor(mobileNumber: mobileNumber) { result in
             switch result {
-            case .success(let cards):
+            case let .success(cards):
                 XCTAssertFalse(cards.isEmpty, "Expected non-empty card list")
                 XCTAssertEqual(cards.first?.cardNumber, self.cardNumber)
-            case .failure(let primerError):
+            case let .failure(primerError):
                 XCTFail("Expected success, but got error: \(primerError)")
             }
             exp.fulfill()

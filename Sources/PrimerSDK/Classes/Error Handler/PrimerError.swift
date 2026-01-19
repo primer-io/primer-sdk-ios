@@ -22,6 +22,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
 }
+import PrimerFoundation
 
 func handled<E: Error>(
     error: E,

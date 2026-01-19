@@ -1,19 +1,20 @@
 //
 //  PrimerCardNumberFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
+import PrimerFoundation
 import UIKit
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
-    private(set) public var cardNetwork: CardNetwork = .unknown
-    internal var cardnumber: String {
-        return (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
+    public private(set) var cardNetwork: CardNetwork = .unknown
+    var cardnumber: String {
+        (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
 
     override func xibSetup() {
@@ -25,14 +26,14 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cardNumber
         isValid = { text in
-            return text.isValidCardNumber
+            text.isValidCardNumber
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
-        if string != "" && currentText.withoutWhiteSpace.count == 19 { return false }
+        if string != "", currentText.withoutWhiteSpace.count == 19 { return false }
 
         // Ensure range is within bounds
         guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
@@ -40,7 +41,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         }
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
-        if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
+        if !newText.withoutWhiteSpace.isNumeric, !string.isEmpty { return false }
         primerTextField.internalText = newText
 
         DispatchQueue.global(qos: .userInitiated).async {
@@ -88,7 +89,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
 
         // Detect pasting of the card number
-        if string.count > 1 && (primerTextField.internalText?.count ?? 0) > 1 {
+        if string.count > 1, (primerTextField.internalText?.count ?? 0) > 1 {
             if let text = primerTextField.internalText {
 
                 // Get the position of the last character in the string

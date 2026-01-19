@@ -1,7 +1,7 @@
 //
 //  CardFormPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerFoundation
 import SafariServices
 import UIKit
 

@@ -1,17 +1,18 @@
 //
 //  MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 
 extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorableDelegate,
                                                            PrimerHeadlessValidatableDelegate,
                                                            PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         presentResultsVC(checkoutData: nil, error: error)
     }
 
@@ -21,7 +22,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
         switch validationStatus {
         case .valid:
             updateFieldStatus(data)
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             guard let error = errors.first else { return }
             updateFieldStatus(data, error: error)
         default:
@@ -33,7 +34,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? ACHUserDetailsStep else { return }
         switch step {
-        case .retrievedUserDetails(let userDetails):
+        case let .retrievedUserDetails(userDetails):
             stripeFormViewModel.firstName = userDetails.firstName
             stripeFormViewModel.lastName = userDetails.lastName
             stripeFormViewModel.emailAddress = userDetails.emailAddress

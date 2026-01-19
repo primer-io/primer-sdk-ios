@@ -1,12 +1,13 @@
 //
 //  ACHMocks.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ACHMocks {
     static var stripeACHPaymentMethodId = "STRIPE_ACH"
@@ -27,7 +28,7 @@ final class ACHMocks {
         lastName: String = "",
         email: String = ""
     ) -> ClientSession.APIResponse {
-        return ClientSession.APIResponse(
+        ClientSession.APIResponse(
             clientSessionId: "mock-client-session-stripe-ach_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
@@ -64,7 +65,7 @@ final class ACHMocks {
         emptyOrderAmount: Bool,
         emptyCurrencyCode: Bool
     ) -> ClientSession.APIResponse {
-        return ClientSession.APIResponse(
+        ClientSession.APIResponse(
             clientSessionId: "mock-client-session-stripe-ach_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
@@ -85,7 +86,7 @@ final class ACHMocks {
     }
 
     static func getLineItem(hasAmount: Bool) -> ClientSession.Order.LineItem {
-        return ClientSession.Order.LineItem(
+        ClientSession.Order.LineItem(
             itemId: "mock-item-id-1",
             quantity: 1,
             amount: hasAmount ? 100 : nil,
@@ -135,7 +136,7 @@ final class ACHMocks {
         displayMetadata: nil)
 
     static func getClientSessionCustomer(firstName: String, lastName: String, email: String) -> ClientSession.Customer {
-        return ClientSession.Customer(
+        ClientSession.Customer(
             id: "ach-client-id",
             firstName: firstName,
             lastName: lastName,

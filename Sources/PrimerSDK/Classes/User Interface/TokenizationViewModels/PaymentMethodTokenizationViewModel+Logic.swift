@@ -9,6 +9,7 @@
 // swiftlint:disable function_body_length
 
 import Foundation
+import PrimerFoundation
 import UIKit
 
 extension PaymentMethodTokenizationViewModel {
