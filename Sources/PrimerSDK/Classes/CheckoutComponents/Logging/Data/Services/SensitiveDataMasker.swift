@@ -71,10 +71,10 @@ actor SensitiveDataMasker {
                 replacement: Replacement.email
             ),
 
-            // Phone Number Masking
+            // Phone Number Masking (word boundaries prevent matching substrings of longer numbers like diagnosticsIds)
             MaskingPattern(
                 regex: try! NSRegularExpression(
-                    pattern: #"(\+?\d{1,3}[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?\d{3}[\s\-]?\d{4}"#,
+                    pattern: #"\b(\+?\d{1,3}[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?\d{3}[\s\-]?\d{4}\b"#,
                     options: []
                 ),
                 replacement: Replacement.phone

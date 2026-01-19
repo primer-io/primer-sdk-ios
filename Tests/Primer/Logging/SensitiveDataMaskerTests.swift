@@ -342,6 +342,30 @@ final class SensitiveDataMaskerTests: XCTestCase {
         XCTAssertTrue(masked.contains("[REDACTED_PHONE]"))
     }
 
+    func test_mask_preservesDiagnosticsId() async {
+        // Given: Text with diagnosticsId (long numeric identifier that should NOT be masked as phone)
+        let text = "Error occurred (diagnosticsId: 17678774588138220455)"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: DiagnosticsId should NOT be masked - it's not a phone number
+        XCTAssertEqual(masked, text)
+        XCTAssertFalse(masked.contains("[REDACTED_PHONE]"))
+    }
+
+    func test_mask_preservesLongNumericIdentifiers() async {
+        // Given: Various long numeric identifiers that should not be treated as phone numbers
+        let text = "transactionId: 15328211088030928310, orderId: 98765432109876543210"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: Long numeric IDs should NOT be masked
+        XCTAssertEqual(masked, text)
+        XCTAssertFalse(masked.contains("[REDACTED_PHONE]"))
+    }
+
     // MARK: - Combined Masking Tests
 
     func test_mask_masksMultipleSensitiveDataTypes() async {
