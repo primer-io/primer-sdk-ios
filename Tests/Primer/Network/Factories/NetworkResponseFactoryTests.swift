@@ -1,11 +1,12 @@
 //
 //  NetworkResponseFactoryTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class NetworkResponseFactoryTests: XCTestCase {
 
@@ -66,7 +67,6 @@ final class NetworkResponseFactoryTests: XCTestCase {
         }
     }
     
-    
     func testResponseCreation_ErrorJSON_Success() throws {
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 202, headers: nil)
@@ -86,7 +86,7 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail("Expected serverError, but decoding succeeded")
         } catch let error as InternalError {
             switch error {
-            case .serverError(let status, let response, _):
+            case let .serverError(status, response, _):
                 XCTAssertEqual(status, 202)
                 XCTAssertEqual(response?.errorId, "error-id")
                 XCTAssertEqual(response?.description, "a description")
@@ -98,7 +98,6 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail("Expected InternalError.serverError, but got \(error)")
         }
     }
-
 
     func testResponseCreation_errorStatus_Failure() throws {
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()

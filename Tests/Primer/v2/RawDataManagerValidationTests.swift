@@ -1,11 +1,12 @@
 //
 //  RawDataManagerValidationTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 class RawDataManagerValidationTests: XCTestCase {
 
@@ -561,7 +562,7 @@ extension RawDataManagerValidationTests {
     }
 
     private func startHeadlessUniversalCheckout(clientToken: String) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod] {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken) { paymentMethods, error in
                 if let error = error {
                     continuation.resume(throwing: error)

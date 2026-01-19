@@ -1,10 +1,11 @@
 //
 //  MockApplePayPresentationManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
+import PrimerFoundation
 @testable import PrimerSDK
 
 final class MockApplePayPresentationManager: ApplePayPresenting {
@@ -15,7 +16,7 @@ final class MockApplePayPresentationManager: ApplePayPresenting {
     func present(withRequest applePayRequest: ApplePayRequest, delegate: any PKPaymentAuthorizationControllerDelegate) async throws {
         switch onPresent?(applePayRequest, delegate) {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }

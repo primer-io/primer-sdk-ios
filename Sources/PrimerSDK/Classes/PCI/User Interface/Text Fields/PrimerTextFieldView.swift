@@ -1,21 +1,23 @@
 //
 //  PrimerTextFieldView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import PrimerFoundation
 
 // swiftlint:disable function_body_length
 import UIKit
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
-    @IBOutlet internal weak var textField: PrimerTextField!
-    internal var isValid: ((_ text: String) -> Bool?)?
-    internal(set) public var isTextValid: Bool = false
-    internal var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
-    internal(set) public var isEditingAnalyticsEnabled: Bool = false
+    @IBOutlet weak var textField: PrimerTextField!
+    var isValid: ((_ text: String) -> Bool?)?
+    public internal(set) var isTextValid: Bool = false
+    var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
+    public internal(set) var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
-    internal var validation: PrimerTextField.Validation = .notAvailable {
+    var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
             if isValid == nil {
                 isTextValid = true
@@ -30,12 +32,12 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         }
     }
     public var isEmpty: Bool {
-        return textField.isEmpty
+        textField.isEmpty
     }
 
     // MARK: - PROXY
 
-    public override var backgroundColor: UIColor? { didSet {
+    override public var backgroundColor: UIColor? { didSet {
         textField?.backgroundColor = backgroundColor
     } }
 
@@ -66,7 +68,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var background: UIImage? { didSet { textField.background = background } }
     public var disabledBackground: UIImage? { didSet { textField.disabledBackground = disabledBackground } }
     public var isEditing: Bool {
-        return textField.isEditing
+        textField.isEditing
     }
     public var allowsEditingTextAttributes: Bool = false {
         didSet { textField.allowsEditingTextAttributes = allowsEditingTextAttributes }
@@ -88,47 +90,47 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     }
 
     public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
-        return textField.borderRect(forBounds: bounds)
+        textField.borderRect(forBounds: bounds)
     }
 
     public func textRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.textRect(forBounds: bounds)
+        textField.textRect(forBounds: bounds)
     }
 
     public func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.placeholderRect(forBounds: bounds)
+        textField.placeholderRect(forBounds: bounds)
     }
 
     public func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.editingRect(forBounds: bounds)
+        textField.editingRect(forBounds: bounds)
     }
 
     public func clearButtonRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.clearButtonRect(forBounds: bounds)
+        textField.clearButtonRect(forBounds: bounds)
     }
 
     public func leftViewRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.leftViewRect(forBounds: bounds)
+        textField.leftViewRect(forBounds: bounds)
     }
 
     public func rightViewRect(forBounds bounds: CGRect) -> CGRect {
-        return textField.rightViewRect(forBounds: bounds)
+        textField.rightViewRect(forBounds: bounds)
     }
 
     public func drawText(in rect: CGRect) {
-        return textField.drawText(in: rect)
+        textField.drawText(in: rect)
     }
 
     public func drawPlaceholderInRect(in rect: CGRect) {
-        return textField.drawPlaceholder(in: rect)
+        textField.drawPlaceholder(in: rect)
     }
 
-    public override func becomeFirstResponder() -> Bool {
-        return textField.becomeFirstResponder()
+    override public func becomeFirstResponder() -> Bool {
+        textField.becomeFirstResponder()
     }
 
-    public override func resignFirstResponder() -> Bool {
-        return textField.resignFirstResponder()
+    override public func resignFirstResponder() -> Bool {
+        textField.resignFirstResponder()
     }
 
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
@@ -156,11 +158,11 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     }
 
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        return delegate?.primerTextFieldViewShouldBeginEditing(self) ?? true
+        delegate?.primerTextFieldViewShouldBeginEditing(self) ?? true
     }
 
     public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        return delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
+        delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
@@ -177,7 +179,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         case .valid:
             delegate?.primerTextFieldView(self, isValid: true)
 
-        case .invalid(let err):
+        case let .invalid(err):
             delegate?.primerTextFieldView(self, isValid: false)
 
             if let err = err {
@@ -194,7 +196,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public func textField(_ textField: UITextField,
                           shouldChangeCharactersIn range: NSRange,
                           replacementString string: String) -> Bool {
-        return true
+        true
     }
 
 }

@@ -1,12 +1,13 @@
 //
 //  ACHUserDetailsViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-import SwiftUI
 import Combine
+import PrimerFoundation
+import SwiftUI
+import UIKit
 
 protocol ACHUserDetailsDelegate: AnyObject {
     func restartSession()
@@ -126,7 +127,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
                                         PrimerHeadlessValidatableDelegate,
                                         PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         delegate?.didReceivedError(error: error)
     }
 
@@ -136,7 +137,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
         switch validationStatus {
         case .valid:
             updateFieldStatus(data)
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             guard let error = errors.first else { return }
             updateFieldStatus(data, error: error)
         default:
@@ -148,7 +149,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? ACHUserDetailsStep else { return }
         switch step {
-        case .retrievedUserDetails(let userDetails):
+        case let .retrievedUserDetails(userDetails):
             achUserDetailsViewModel.firstName = userDetails.firstName
             achUserDetailsViewModel.lastName = userDetails.lastName
             achUserDetailsViewModel.emailAddress = userDetails.emailAddress

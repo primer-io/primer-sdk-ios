@@ -1,9 +1,10 @@
 //
 //  PrimerResultPaymentStatusViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import SwiftUI
 
 final class PrimerResultPaymentStatusViewModel: ObservableObject {
@@ -40,7 +41,7 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var paymentMessage: String {
-        return paymentStatus == .success ? successMessage : errorMessage
+        paymentStatus == .success ? successMessage : errorMessage
     }
 
     private var successMessage: String {
@@ -77,15 +78,15 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var showOnRetry: Bool {
-        return paymentStatus == .failed
+        paymentStatus == .failed
     }
 
     var showChooseOtherPaymentMethod: Bool {
-        return paymentStatus != .success
+        paymentStatus != .success
     }
 
     var statusIconString: String {
-        return paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
+        paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
     }
 
     var statusIconAccessibilityIdentifier: String {
@@ -95,14 +96,14 @@ final class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var statusIconColor: Color {
-        return paymentStatus == .success ? .blue.opacity(0.8) : .red.opacity(0.8)
+        paymentStatus == .success ? .blue.opacity(0.8) : .red.opacity(0.8)
     }
 
     var titleBottomSpacing: CGFloat {
-        return paymentStatus == .success ? 20 : 40
+        paymentStatus == .success ? 20 : 40
     }
 
     var paymentMessageBottomSpacing: CGFloat {
-        return paymentStatus == .success ? 60 : 40
+        paymentStatus == .success ? 60 : 40
     }
 }
