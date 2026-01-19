@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
+import PrimerFoundation
 import UIKit
 
 @objc

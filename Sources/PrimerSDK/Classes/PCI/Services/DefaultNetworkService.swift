@@ -1,10 +1,11 @@
 //
 //  DefaultNetworkService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol ResponseMetadata {
     var responseUrl: String? { get }
@@ -89,7 +90,7 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint,
                                completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
-        return request(endpoint, retryConfig: nil, completion: completion)
+        request(endpoint, retryConfig: nil, completion: completion)
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> (T, [String: String]?) {
@@ -129,7 +130,7 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
     }
 
     private func createDispatchFunction(retryConfig: RetryConfig?) -> (URLRequest, @escaping DispatcherCompletion) -> PrimerCancellable? {
-        return { request, completion in
+        { request, completion in
             if let retryConfig = retryConfig, retryConfig.enabled {
                 return (self.requestDispatcher as? DefaultRequestDispatcher)?.dispatchWithRetry(request: request,
                                                                                                 retryConfig: retryConfig,
@@ -145,9 +146,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletion<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error))
         }
     }
@@ -157,9 +158,9 @@ final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletionWithHeaders<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error), nil)
         }
     }

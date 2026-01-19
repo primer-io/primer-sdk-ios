@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 @testable import PrimerSDK
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
@@ -37,7 +38,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
     func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken,
                           bin: String,
-                          completion: @escaping ResponseCompletion) -> PrimerSDK.PrimerCancellable? {
+                          completion: @escaping ResponseCompletion) -> PrimerCancellable? {
         let workItem = DispatchWorkItem { [self] in
             if let error {
                 completion(.failure(error))

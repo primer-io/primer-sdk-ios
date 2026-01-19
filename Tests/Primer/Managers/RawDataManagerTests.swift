@@ -1,11 +1,12 @@
 //
 //  RawDataManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class RawDataManagerTests: XCTestCase {
 
@@ -165,7 +166,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectDidFail = self.expectation(description: "Did fail")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
-            case PrimerError.invalidValue(let key, let value, _, _):
+            case let PrimerError.invalidValue(key, value, _, _):
                 XCTAssertEqual(key, "rawData")
                 XCTAssertNil(value)
                 XCTAssertFalse(self.sut.isDataValid)
@@ -230,7 +231,7 @@ final class RawDataManagerTests: XCTestCase {
                 expectFirstValidation.fulfill()
             }
             // Only after setting data the second time and not having fulfilled second expectation yet
-            else if validationCount > 1 && !fulfilledSecond {
+            else if validationCount > 1, !fulfilledSecond {
                 fulfilledSecond = true
                 expectSecondValidation.fulfill()
             }
@@ -273,7 +274,7 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "GBP",
@@ -303,7 +304,7 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "GBP",
