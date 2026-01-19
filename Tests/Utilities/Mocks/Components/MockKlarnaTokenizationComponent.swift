@@ -1,9 +1,10 @@
 //
 //  MockKlarnaTokenizationComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 
 class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
@@ -16,51 +17,47 @@ class MockKlarnaTokenizationComponent: KlarnaTokenizationComponentProtocol {
     func validate() throws {
         switch validateResult {
         case .success: return
-        case .failure(let error): throw error
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }
-
 
     func createPaymentSession() async throws -> PrimerSDK.Response.Body.Klarna.PaymentSession {
         switch createPaymentSessionResult {
-        case .success(let paymentSession): return paymentSession
-        case .failure(let error): throw error
+        case let .success(paymentSession): return paymentSession
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }
-
 
     func authorizePaymentSession(
         authorizationToken: String
     ) async throws -> PrimerSDK.Response.Body.Klarna.CustomerToken {
         switch authorizePaymentSessionResult {
-        case .success(let customerToken): return customerToken
-        case .failure(let error): throw error
+        case let .success(customerToken): return customerToken
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }
-
 
     func tokenizeHeadless(
         customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
     ) async throws -> PrimerSDK.PrimerCheckoutData {
         switch tokenizeHeadlessResult {
-        case .success(let primerCheckoutData): return primerCheckoutData
-        case .failure(let error): throw error
+        case let .success(primerCheckoutData): return primerCheckoutData
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }
-
 
     func tokenizeDropIn(
         customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?,
         offSessionAuthorizationId: String?
     ) async throws -> PrimerSDK.PrimerPaymentMethodTokenData {
         switch tokenizeDropInResult {
-        case .success(let paymentMethodToken): return paymentMethodToken
-        case .failure(let error): throw error
+        case let .success(paymentMethodToken): return paymentMethodToken
+        case let .failure(error): throw error
         case nil: throw PrimerError.unknown()
         }
     }
