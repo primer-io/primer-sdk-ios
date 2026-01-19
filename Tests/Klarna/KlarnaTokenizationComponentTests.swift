@@ -1,10 +1,11 @@
 //
 //  KlarnaTokenizationComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -90,7 +91,6 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         }
     }
 
-
     func test_createPaymentSessionSuccess() async throws {
         let clientSession = KlarnaTestsMocks.getClientSession()
         let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
@@ -103,7 +103,6 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
             XCTFail("Request failed with: \(error)")
         }
     }
-
 
     func test_authorizePaymentSessionSuccess() async throws {
         let clientSession = KlarnaTestsMocks.getClientSession()

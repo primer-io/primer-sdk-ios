@@ -56,7 +56,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
                             accountNumberType: nil)]
         )
 
-        apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
+        _ = apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
             case let .success(result):
                 XCTAssertEqual(result.networks, [Response.Body.Bin.Networks.Network(value: "Test")])
@@ -86,7 +86,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.mockedError = NSError(domain: "", code: 123)
 
-        apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
+        _ = apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
             case .success:
                 XCTFail("Expected failure with error response")
@@ -131,7 +131,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
     }
 }
 
-extension Response.Body.Bin.Networks.Network: Equatable {
+extension Response.Body.Bin.Networks.Network: @retroactive Equatable {
     public static func == (lhs: PrimerSDK.Response.Body.Bin.Networks.Network, rhs: PrimerSDK.Response.Body.Bin.Networks.Network) -> Bool {
             lhs.value == rhs.value
     }
