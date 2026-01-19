@@ -5,16 +5,17 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 #if canImport(PrimerIPay88MYSDK)
 import PrimerIPay88MYSDK
 
-extension PrimerIPay88Error: PrimerErrorProtocol {
-    var exposedError: Error {
+extension PrimerIPay88Error: @retroactive PrimerErrorProtocol {
+    public var exposedError: Error {
         self
     }
 
-    var errorId: String {
+    public var errorId: String {
         switch self {
         case .iPay88Error:
             return "ipay88"
@@ -41,17 +42,17 @@ extension PrimerIPay88Error: PrimerErrorProtocol {
         }
     }
 
-    var analyticsContext: [String: Any] {
+    public var analyticsContext: [String: Any] {
         [
             AnalyticsContextKeys.errorId: errorId,
             AnalyticsContextKeys.paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue
         ]
     }
 
-    var diagnosticsId: String {
+    public var diagnosticsId: String {
         UUID().uuidString
     }
-
+    public var isReportable: Bool { true }
     var isReportable: Bool { true }
 }
 #endif

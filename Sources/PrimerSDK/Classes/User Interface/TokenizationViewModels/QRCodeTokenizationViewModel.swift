@@ -8,13 +8,14 @@
 // swiftlint:disable file_length
 // swiftlint:disable orphaned_doc_comment
 
+import PrimerFoundation
 import SafariServices
 import UIKit
 
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
-    private var statusUrl: URL!
     var qrCode: String?
+    private var statusUrl: URL!
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
     private var isHeadlessCheckoutDelegateImplemented: Bool { PrimerHeadlessUniversalCheckout.current.delegate != nil }

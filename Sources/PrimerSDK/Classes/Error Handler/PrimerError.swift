@@ -23,6 +23,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var analyticsContext: [String: Any] { get }
     var isReportable: Bool { get }
 }
+import PrimerFoundation
 
 func handled<E: Error>(
     error: E,

@@ -6,6 +6,7 @@
 
 // swiftlint:disable function_body_length
 
+import PrimerFoundation
 import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {

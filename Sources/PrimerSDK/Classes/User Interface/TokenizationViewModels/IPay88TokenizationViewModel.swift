@@ -10,6 +10,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerFoundation
 import UIKit
 
 #if canImport(PrimerIPay88MYSDK)

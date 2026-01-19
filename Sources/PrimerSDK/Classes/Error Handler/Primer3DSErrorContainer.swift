@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 public struct Primer3DSErrorInfo {
     let errorId: String
@@ -96,13 +97,13 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         }
     }
 
-    var exposedError: Error {
+    public var exposedError: Error {
         self
     }
 
-    var isReportable: Bool { true }
+    public var isReportable: Bool { true }
 
-    var analyticsContext: [String: Any] {
+    public var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
 
         context[K.initProtocolVersion] = continueInfo.initProtocolVersion
@@ -140,7 +141,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         info ?? [:]
     }
 
-    var diagnosticsId: String {
+    public var diagnosticsId: String {
         switch self {
         case let .missingSdkDependency(diagnosticsId),
              let .invalid3DSSdkVersion(diagnosticsId, _, _),

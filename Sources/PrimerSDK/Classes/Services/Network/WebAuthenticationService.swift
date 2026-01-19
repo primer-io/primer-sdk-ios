@@ -6,6 +6,7 @@
 
 import AuthenticationServices
 import Foundation
+import PrimerFoundation
 import SafariServices
 
 protocol WebAuthenticationService {

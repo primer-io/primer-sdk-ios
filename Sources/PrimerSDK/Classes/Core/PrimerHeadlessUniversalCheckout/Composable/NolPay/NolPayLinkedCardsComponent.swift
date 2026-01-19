@@ -10,6 +10,7 @@ import UIKit
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 #endif
+import PrimerFoundation
 
 public final class NolPayLinkedCardsComponent {
     #if canImport(PrimerNolPaySDK)

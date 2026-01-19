@@ -1,12 +1,13 @@
 //
 //  KlarnaHeadlessManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
 
@@ -44,7 +45,7 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
             XCTFail("Should throw error")
         } catch {
             switch error {
-            case PrimerError.unsupportedPaymentMethod(let paymentMethodType, _, _):
+            case let PrimerError.unsupportedPaymentMethod(paymentMethodType, _, _):
                 XCTAssertEqual(paymentMethodType, "KLARNA")
             default:
                 XCTFail("Expected PrimerError.unsupportedPaymentMethod")
@@ -62,7 +63,7 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
             XCTFail("Should throw error")
         } catch {
             switch error {
-            case PrimerError.unsupportedIntent(let intent, _):
+            case let PrimerError.unsupportedIntent(intent, _):
                 XCTAssertEqual(intent, .vault)
             default:
                 XCTFail("Expected PrimerError.unsupportedPaymentMethod")

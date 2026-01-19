@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol NetworkResponseFactory: AnyObject {
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable

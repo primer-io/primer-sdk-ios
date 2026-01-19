@@ -1,11 +1,12 @@
 //
 //  MerchantHeadlessCheckoutNolPayViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 #if canImport(IQKeyboardManagerSwift)
 import IQKeyboardManagerSwift
 #endif
@@ -293,11 +294,11 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: listCardsPhoneNumberTextField.text ?? "") { result in
             switch result {
 
-            case .success(let cards):
+            case let .success(cards):
                 self.linkedCards = cards
                 self.linkedCardsTableView.reloadData()
                 self.showAlert(title: "Success", message: "Fetching of the listed cards done, you have: \(cards.count) linked cards")
-            case .failure(let error):
+            case let .failure(error):
                 self.showAlert(title: "Error", message: error.localizedDescription)
             }
         }
@@ -330,7 +331,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return linkedCards.count
+        linkedCards.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -373,13 +374,13 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             } else if data is NolPayPaymentCollectableData {
                 paymentComponent.submit()
             }
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             self.showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
+        case let .error(error: error):
             self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         }
     }
