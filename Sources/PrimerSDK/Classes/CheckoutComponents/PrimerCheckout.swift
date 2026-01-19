@@ -186,6 +186,8 @@ struct InternalCheckout: View, LogReporter {
         .environment(\.designTokens, designTokensManager.tokens)
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
         .task {
+            await LoggingSessionContext.shared.recordInitStartTime()
+            await LoggingSessionContext.shared.initialize(clientToken: clientToken)
             await setupDesignTokens()
             await initializeSDK()
         }

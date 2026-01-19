@@ -35,9 +35,11 @@ protocol ProcessCardPaymentInteractor {
 final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
 
     private let repository: HeadlessRepository
+    private let loggingInteractor: DefaultLoggingInteractor?
 
-    init(repository: HeadlessRepository) {
+    init(repository: HeadlessRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
         self.repository = repository
+        self.loggingInteractor = loggingInteractor
     }
 
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
@@ -68,6 +70,7 @@ final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogR
 
         } catch {
             logger.error(message: "Card payment processing failed: \(error)")
+            loggingInteractor?.logError(message: "Card payment processing failed", error: error)
             throw error
         }
     }
