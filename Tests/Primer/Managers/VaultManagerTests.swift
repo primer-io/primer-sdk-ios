@@ -1,11 +1,11 @@
 //
 //  VaultManagerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class VaultManagerTests: XCTestCase {
 
@@ -264,7 +264,7 @@ final class VaultManagerTests: XCTestCase {
     }
 
     var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "GBP",
@@ -294,7 +294,7 @@ final class VaultManagerTests: XCTestCase {
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "GBP",
@@ -327,7 +327,7 @@ final class VaultManagerTests: XCTestCase {
     }
 
     var paymentACHResponseBody: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "USD",
