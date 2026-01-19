@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -15,11 +16,11 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     var mockApiClient: MockPrimerAPIClient!
     var validationResult: PrimerSDK.PrimerValidationStatus = .validating
     var stepTypeDecisionHandler: ((StepDelegationType) -> Void)?
-    var receiveErrorDecisionHandler: ((PrimerSDK.PrimerError) -> Void)?
+    var receiveErrorDecisionHandler: ((PrimerError) -> Void)?
     var tokenizationService: MockTokenizationService!
     var klarnaTokenizationManager: KlarnaTokenizationManager!
 
-    var errorResult: PrimerSDK.PrimerError? {
+    var errorResult: PrimerError? {
         didSet {
             guard let errorResult = errorResult,
                   let handler = receiveErrorDecisionHandler else { return }
@@ -621,7 +622,7 @@ extension PrimerHeadlessKlarnaComponentTests: PrimerHeadlessErrorableDelegate,
         validationResult = validationStatus
     }
 
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         errorResult = error
     }
 

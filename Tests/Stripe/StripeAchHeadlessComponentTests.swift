@@ -1,12 +1,13 @@
 //
 //  StripeAchHeadlessComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class StripeAchHeadlessComponentTests: XCTestCase {
 
@@ -15,7 +16,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     var tokenizationViewModel: StripeAchTokenizationViewModel!
     var mockApiClient: MockPrimerAPIClient!
 
-    var errorResult: PrimerSDK.PrimerError!
+    var errorResult: PrimerError!
     var validationResult: PrimerSDK.PrimerValidationStatus = .validating
     var stepResult: PrimerSDK.PrimerHeadlessStep = ACHUserDetailsStep.notInitialized
 
@@ -53,7 +54,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
-        case .invalid(let errors):
+        case let .invalid(errors):
             guard let error = errors.first else {
                 XCTFail("Errors should not be empty")
                 return
@@ -70,7 +71,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
-        case .invalid(let errors):
+        case let .invalid(errors):
             guard let error = errors.first else {
                 XCTFail("Errors should not be empty")
                 return
@@ -87,7 +88,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
-        case .invalid(let errors):
+        case let .invalid(errors):
             guard let error = errors.first else {
                 XCTFail("Errors should not be empty")
                 return
@@ -143,7 +144,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         sut.stepDelegate?.didReceiveStep(step: expectedStep)
 
         switch stepResult as? ACHUserDetailsStep {
-        case .retrievedUserDetails(let userDetails):
+        case let .retrievedUserDetails(userDetails):
             XCTAssertTrue(ACHUserDetails.compare(lhs: userDetails, rhs: expectedUserDetails).areEqual)
         default:
             XCTFail("The result should be retrievedUserDetails")
@@ -271,7 +272,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
             sleep(2)
 
             switch self.stepResult as? ACHUserDetailsStep {
-            case .retrievedUserDetails(let userDetails):
+            case let .retrievedUserDetails(userDetails):
                 XCTAssertTrue(ACHUserDetails.compare(lhs: userDetails, rhs: expectedUserDetails).areEqual)
                 expectation.fulfill()
             default:
@@ -360,7 +361,7 @@ extension StripeAchHeadlessComponentTests: PrimerHeadlessErrorableDelegate,
                                            PrimerHeadlessValidatableDelegate,
                                            PrimerHeadlessSteppableDelegate {
 
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         errorResult = error
     }
 
@@ -433,7 +434,7 @@ extension StripeAchHeadlessComponentTests {
     }
 
     private func getErrorUserInfo() -> [String: String] {
-        return [
+        [
             "file": #file,
             "class": "\(Self.self)",
             "function": #function,

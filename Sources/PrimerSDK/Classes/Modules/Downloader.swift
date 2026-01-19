@@ -1,16 +1,17 @@
 //
 //  Downloader.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import Foundation
+import PrimerFoundation
 
-internal typealias FileName = String
-internal typealias FileExtension = String
+typealias FileName = String
+typealias FileExtension = String
 
 class File: LogReporter {
 
@@ -66,7 +67,7 @@ class File: LogReporter {
     }
 }
 
-internal protocol DownloaderModule {
+protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]
 }
 
@@ -74,7 +75,7 @@ internal protocol DownloaderModule {
 final class Downloader: NSObject, DownloaderModule {
 
     private var documentDirectoryUrl: URL? {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
 
     func download(files: [File]) async throws -> [File] {
@@ -90,7 +91,7 @@ final class Downloader: NSObject, DownloaderModule {
             }
         }
 
-        if !errors.isEmpty && errors.count == files.count {
+        if !errors.isEmpty, errors.count == files.count {
             throw handled(primerError: .underlyingErrors(errors: errors))
         }
 
@@ -111,7 +112,7 @@ final class Downloader: NSObject, DownloaderModule {
             return file
         } catch {
             if let primerErr = error as? PrimerError,
-               case .underlyingErrors(let errors, _) = primerErr,
+               case let .underlyingErrors(errors, _) = primerErr,
                errors.contains(where: { ($0 as NSError).code == 516 }) {
                 return file
             }
@@ -202,7 +203,7 @@ final class Downloader: NSObject, DownloaderModule {
 extension Downloader: FileManagerDelegate {
 
     func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, copyingItemAt srcURL: URL, to dstURL: URL) -> Bool {
-        return true
+        true
     }
 }
 // swiftlint:enable cyclomatic_complexity
