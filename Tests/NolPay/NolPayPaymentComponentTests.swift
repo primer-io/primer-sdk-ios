@@ -1,10 +1,11 @@
 //
 //  NolPayPaymentComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
+import PrimerFoundation
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -89,7 +90,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertNil(sut.countryCode)
         XCTAssertEqual(sut.cardNumber, "")
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+        if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
             XCTAssertEqual(errors.count, 1)
             guard let primerValidationError = errors.first else {
                 XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
@@ -122,7 +123,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertNil(sut.countryCode)
         XCTAssertEqual(sut.cardNumber, "")
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+        if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
             XCTAssertEqual(errors.count, 2)
 
             // Validate the first error
@@ -153,8 +154,8 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertNil(sut.countryCode)
         XCTAssertEqual(sut.cardNumber, "")
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .error(let error) = mockValidationDelegate.validationsReceived {
-            if case PrimerError.invalidValue(let key, _, _, _) = error {
+        if case let .error(error) = mockValidationDelegate.validationsReceived {
+            if case let PrimerError.invalidValue(key, _, _, _) = error {
                 XCTAssertEqual(key, expectedErrorKey)
             } else {
                 XCTFail("Expected invalidValue error")
@@ -201,7 +202,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "cardNumber")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -223,7 +224,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "mobileNumber")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -246,7 +247,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "countryCode")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -291,7 +292,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                 switch result {
                 case .success:
                     XCTFail("Expected payment request to fail, but it succeeded")
-                case .failure(let error):
+                case let .failure(error):
                     XCTAssertNotNil(error, "Expected an error, but got nil")
 
                     guard let primerError = error as? PrimerError else {
@@ -300,7 +301,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(let code, let message, _):
+                    case let .nolError(code, message, _):
                         XCTAssertTrue(code == "unknown")
                         XCTAssertTrue(message == "Payment failed from unknown reason")
                     default:
@@ -341,7 +342,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                 switch result {
                 case .success:
                     XCTFail("Expected payment request to fail, but it succeeded")
-                case .failure(let error):
+                case let .failure(error):
                     XCTAssertNotNil(error, "Expected an error, but got nil")
                     guard let primerError = error as? PrimerError else {
                         XCTFail("Error should be of type PrimerError")
@@ -349,7 +350,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                     }
 
                     switch primerError {
-                    case .nolError(_, let message, _):
+                    case let .nolError(_, message, _):
                         XCTAssertTrue(message == expectedErrorDescription)
                     default:
                         XCTFail("primerError should be of type nolError")
@@ -388,7 +389,7 @@ class NolPayPaymentComponentTests: XCTestCase {
                 switch result {
                 case .success:
                     expectation.fulfill()
-                case .failure(let error):
+                case let .failure(error):
                     XCTFail("Expected payment request to succeed, but it failed with error: \(error)")
                 }
             }
@@ -418,7 +419,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "nolPayAppId")
         default:
             XCTFail("primerError should be of type invalidSetting")

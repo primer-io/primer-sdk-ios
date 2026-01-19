@@ -1,9 +1,10 @@
 //
 //  MerchantDropInUIViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import PrimerSDK
 import UIKit
 
@@ -161,7 +162,7 @@ extension MerchantDropInUIViewController {
 
         if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
            let threeDSecureAuthentication = paymentMethodTokenData.threeDSecureAuthentication,
-           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed, threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
             var message: String = ""
 
             if let reasonCode = threeDSecureAuthentication.reasonCode {
