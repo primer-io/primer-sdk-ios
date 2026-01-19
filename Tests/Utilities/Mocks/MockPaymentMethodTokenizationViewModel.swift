@@ -4,7 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-@testable import PrimerSDK
+@testable @preconcurrency import PrimerSDK
+import PrimerFoundation
 import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
@@ -85,7 +86,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                     self.didStartPayment = nil
 
                     do {
-                        try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                        _ = try await self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                         self.didFinishPayment?(nil)
                         self.nullifyEventCallbacks()
                         DispatchQueue.main.async {

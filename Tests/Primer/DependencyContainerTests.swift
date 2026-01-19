@@ -1,11 +1,11 @@
 //
 //  DependencyContainerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class DependencyContainerTests: XCTestCase {
 
@@ -40,7 +40,7 @@ class DependencyContainerTests: XCTestCase {
 
         let appState = MockAppState()
 
-        for i in 0..<operationsCount {
+        for _ in 0..<operationsCount {
             queue.async {
                 DependencyContainer.register(appState)
             }
@@ -121,7 +121,7 @@ class DependencyContainerTests: XCTestCase {
 
         for _ in 0..<concurrentQueues {
             DispatchQueue.global().async {
-                for i in 0..<iterationCount {
+                for _ in 0..<iterationCount {
                     // Register a unique dependency
                     let dependency = MockPrimerSettings()
                     DependencyContainer.register(dependency)

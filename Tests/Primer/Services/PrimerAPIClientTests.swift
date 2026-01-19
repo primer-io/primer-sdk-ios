@@ -8,6 +8,7 @@
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -283,7 +284,7 @@ final class PrimerAPIClientTests: XCTestCase {
     func test_deleteVaultedPaymentMethod_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
-        networkService.mockedResult = DummySuccess()
+        networkService.mockedResult = SuccessResponse()
 
         // When
         sut.deleteVaultedPaymentMethod(
@@ -305,7 +306,7 @@ final class PrimerAPIClientTests: XCTestCase {
 
     func test_deleteVaultedPaymentMethod_shouldSuccess_whenValidResponse_async() async throws {
         // Given
-        networkService.mockedResult = DummySuccess()
+        networkService.mockedResult = SuccessResponse()
 
         do {
             // When

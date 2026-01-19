@@ -4,24 +4,22 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
-class StubURLSessionDataTask: URLSessionDataTask {
+class StubURLSessionDataTask: URLSessionDataTask, @unchecked Sendable {
     override func resume() {}
 }
 
-class MockURLSession: URLSessionProtocol {
+final class MockURLSession: URLSessionProtocol {
 
-    var data: Data?
-
-    var response: URLResponse?
-
-    var error: Error?
+    nonisolated(unsafe) var data: Data?
+    nonisolated(unsafe) var response: URLResponse?
+    nonisolated(unsafe) var error: Error?
 
     func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask {
         completionHandler(data, response, error)
-
         return StubURLSessionDataTask()
     }
 
@@ -54,7 +52,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.data = "Test".data(using: .utf8)
 
         let request = URLRequest(url: url)
-        dispatcher.dispatch(request: request) { result in
+        _ = dispatcher.dispatch(request: request) { result in
             switch result {
             case let .success(response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
@@ -80,7 +78,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.data = "Test".data(using: .utf8)
 
         let request = URLRequest(url: url)
-        dispatcher.dispatch(request: request) { result in
+        _ = dispatcher.dispatch(request: request) { result in
             switch result {
             case let .success(response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
@@ -104,7 +102,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost)
 
         let request = URLRequest(url: url)
-        dispatcher.dispatch(request: request) { result in
+        _ = dispatcher.dispatch(request: request) { result in
             switch result {
             case .success:
                 XCTFail()
