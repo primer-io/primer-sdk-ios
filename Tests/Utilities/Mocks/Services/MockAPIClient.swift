@@ -4,10 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
-class MockPrimerAPIClient: PrimerAPIClientProtocol {
+final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     var mockedNetworkDelay: TimeInterval = 0.5
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?

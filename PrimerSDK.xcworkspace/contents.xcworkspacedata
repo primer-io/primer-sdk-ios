@@ -20,6 +20,26 @@
             location = "group:Classes"
             name = "Classes">
             <Group
+               location = "group:BackendDrivenCheckout"
+               name = "BackendDrivenCheckout">
+               <FileRef
+                  location = "group:BackendDrivenCheckoutViewModel.swift">
+               </FileRef>
+               <Group
+                  location = "group:Model"
+                  name = "Model">
+                  <FileRef
+                     location = "group:ClientSessionInstructionResponse.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:BackendDrivenCheckoutEndpoint.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PayBody.swift">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
                location = "group:PCI"
                name = "PCI">
                <Group
@@ -125,9 +145,6 @@
                         <Group
                            location = "group:JSON"
                            name = "JSON">
-                           <FileRef
-                              location = "group:JSONLoader.swift">
-                           </FileRef>
                         </Group>
                      </Group>
                      <Group
@@ -141,9 +158,6 @@
                         </FileRef>
                      </Group>
                   </Group>
-                  <FileRef
-                     location = "group:RetryHandler.swift">
-                  </FileRef>
                   <Group
                      location = "group:API"
                      name = "API">
@@ -216,13 +230,7 @@
                   </FileRef>
                </Group>
                <FileRef
-                  location = "group:_PaymentAPIModel.swift">
-               </FileRef>
-               <FileRef
                   location = "group:VoucherValue.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerFlowEnums.swift">
                </FileRef>
                <FileRef
                   location = "group:ApplePayOrderItem.swift">
@@ -235,12 +243,6 @@
                </FileRef>
                <FileRef
                   location = "group:ImageName.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerLocaleData.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:CountryCode.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerInitializationData.swift">
@@ -264,12 +266,6 @@
                   location = "group:PrimerPaymentMethod+DisplayMetadata.swift">
                </FileRef>
                <FileRef
-                  location = "group:Throwable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Bin.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerPaymentMethodType.swift">
                </FileRef>
                <FileRef
@@ -288,9 +284,6 @@
                   location = "group:PayPal.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerSDKIntegrationType.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerVaultedCardAdditionalData.swift">
                </FileRef>
                <FileRef
@@ -302,9 +295,6 @@
                <Group
                   location = "group:Theme"
                   name = "Theme">
-                  <FileRef
-                     location = "group:PrimerTheme.swift">
-                  </FileRef>
                   <FileRef
                      location = "group:PrimerColor.swift">
                   </FileRef>
@@ -378,9 +368,6 @@
                      location = "group:ClientSessionAPIModel.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:Request.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:PaymentAPIModel.swift">
                   </FileRef>
                </Group>
@@ -409,9 +396,6 @@
                   location = "group:Currency"
                   name = "Currency">
                   <FileRef
-                     location = "group:Currency.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:CurrencyNetworkServiceProtocol.swift">
                   </FileRef>
                   <FileRef
@@ -435,43 +419,19 @@
                   location = "group:ApplePayPaymentRequest+PK.swift">
                </FileRef>
                <FileRef
-                  location = "group:UIScreenExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:NSObject+ClassName.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:EncodingDecodingContainerExtensions.swift">
-               </FileRef>
-               <FileRef
                   location = "group:VersionUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:NSErrorExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:UIColorExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:DateFormatter+Extensions.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PaymentMethodTypeProviding.swift">
                </FileRef>
                <FileRef
-                  location = "group:AnyDecodable.swift">
+                  location = "group:Device.swift">
                </FileRef>
                <FileRef
                   location = "group:CardNetworkParser.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:ArrayExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCancellable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:IntExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:ImageFileProcessor.swift">
@@ -492,31 +452,13 @@
                   location = "group:PrimerImageView.swift">
                </FileRef>
                <FileRef
-                  location = "group:Mask.swift">
-               </FileRef>
-               <FileRef
                   location = "group:UILocalizableUtil.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerButton.swift">
                </FileRef>
                <FileRef
-                  location = "group:DeeplinkUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:UIDeviceExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerImage.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ApplePayUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DataExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Dictionary+Extensions.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerViewController.swift">
@@ -525,28 +467,10 @@
                   location = "group:StringExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:UserAgent.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Debouncer.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerViewExtensions.swift">
                </FileRef>
                <FileRef
                   location = "group:UserDefaultsExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:DateExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Error+Extensions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyCodable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:AnyEncodable.swift">
                </FileRef>
             </Group>
             <Group
@@ -569,9 +493,6 @@
                      location = "group:PrimerDelegate.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:DependencyInjection.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:Primer.swift">
                   </FileRef>
                   <FileRef
@@ -591,16 +512,6 @@
                         location = "group:ConfigurationCache.swift">
                      </FileRef>
                   </Group>
-                  <FileRef
-                     location = "group:Cache.swift">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:Connectivity"
-                  name = "Connectivity">
-                  <FileRef
-                     location = "group:Connectivity.swift">
-                  </FileRef>
                </Group>
                <Group
                   location = "group:Constants"
@@ -610,9 +521,6 @@
                   </FileRef>
                   <FileRef
                      location = "group:Dimensions.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:Content.swift">
                   </FileRef>
                   <FileRef
                      location = "group:Colors.swift">
@@ -628,9 +536,6 @@
                <Group
                   location = "group:Models"
                   name = "Models">
-                  <FileRef
-                     location = "group:TokenizationProtocols.swift">
-                  </FileRef>
                   <FileRef
                      location = "group:BanksTokenizationComponent.swift">
                   </FileRef>
@@ -927,13 +832,6 @@
                   </FileRef>
                </Group>
                <Group
-                  location = "group:Keychain"
-                  name = "Keychain">
-                  <FileRef
-                     location = "group:Keychain.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:3DS"
                   name = "3DS">
                   <Group
@@ -962,19 +860,6 @@
                   </FileRef>
                </Group>
                <Group
-                  location = "group:Logging"
-                  name = "Logging">
-                  <FileRef
-                     location = "group:PrimerLogger.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:PrimerLogging.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:LogReporter.swift">
-                  </FileRef>
-               </Group>
-               <Group
                   location = "group:Payment Services"
                   name = "Payment Services">
                   <FileRef
@@ -995,9 +880,6 @@
                   name = "Analytics">
                   <FileRef
                      location = "group:Analytics.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:Device.swift">
                   </FileRef>
                   <FileRef
                      location = "group:AnalyticsEvent.swift">
@@ -1023,28 +905,16 @@
                   location = "group:PrimerIPay88Error+Extension.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerValidationError.swift">
-               </FileRef>
-               <FileRef
                   location = "group:Primer3DSErrorContainer.swift">
                </FileRef>
                <FileRef
                   location = "group:PrimerInternalError.swift">
                </FileRef>
                <FileRef
-                  location = "group:ErrorHandler.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerKlarnaError+Extension.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerServerError.swift">
-               </FileRef>
-               <FileRef
                   location = "group:ErrorExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerError.swift">
                </FileRef>
             </Group>
             <Group
@@ -1077,52 +947,6 @@
                   name = "Network">
                   <FileRef
                      location = "group:PrimerAPIClient.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:RetryConfiguration.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:WebAuthenticationService.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:NetworkServiceProtocol.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:PrimerAPIClientProtocol.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:SuccessResponse.swift">
-                  </FileRef>
-                  <Group
-                     location = "group:Protocols"
-                     name = "Protocols">
-                     <FileRef
-                        location = "group:PrimerAPIClientCreateResumePaymentProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientAnalyticsProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientVaultProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientXenditProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientBanksProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientAchProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientPayPalProtocol.swift">
-                     </FileRef>
-                     <FileRef
-                        location = "group:PrimerAPIClientBINDataProtocol.swift">
-                     </FileRef>
-                  </Group>
-                  <FileRef
-                     location = "group:Endpoint.swift">
                   </FileRef>
                </Group>
                <Group

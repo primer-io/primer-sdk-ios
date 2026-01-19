@@ -1,10 +1,11 @@
 //
 //  NolPayLinkCardComponentTest.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerNolPaySDK)
+import PrimerFoundation
 import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
@@ -102,8 +103,8 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertNil(sut.cardNumber)
         XCTAssertNil(sut.linkToken)
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .error(let error) = mockValidationDelegate.validationsReceived {
-            if case PrimerError.invalidValue(let key, _, _, _) = error {
+        if case let .error(error) = mockValidationDelegate.validationsReceived {
+            if case let PrimerError.invalidValue(key, _, _, _) = error {
                 XCTAssertEqual(key, expectedErrorKey)
             } else {
                 XCTFail("Expected invalidValue error")
@@ -130,7 +131,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertNil(sut.cardNumber)
         XCTAssertNil(sut.linkToken)
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+        if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
             XCTAssertEqual(errors.count, 1)
             guard let primerValidationError = errors.first else {
                 XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
@@ -182,7 +183,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertNil(sut.cardNumber)
         XCTAssertNil(sut.linkToken)
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
-        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+        if case let .invalid(errors) = mockValidationDelegate.validationsReceived {
             XCTAssertEqual(errors.count, 1)
             guard let primerValidationError = errors.first else {
                 XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
@@ -190,7 +191,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
             }
 
             switch primerValidationError {
-            case .invalidOTPCode(let message, _):
+            case let .invalidOTPCode(message, _):
                 XCTAssertEqual(message, expectedErrorMessage)
             default:
                 XCTFail("primerError should be of type invalidOTPCode")
@@ -236,7 +237,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "mobileNumber")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -258,7 +259,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "countryCode")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -281,7 +282,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "linkToken")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -329,7 +330,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _):
+        case let .nolError(_, message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -356,7 +357,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _):
+        case let .nolError(code, message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Sending of OTP SMS failed from unknown reason")
         default:
@@ -398,7 +399,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "otpCode")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -420,7 +421,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "linkToken")
         default:
             XCTFail("primerError should be of type invalidSetting")
@@ -466,7 +467,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _):
+        case let .nolError(_, message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -492,7 +493,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(let code, let message, _):
+        case let .nolError(code, message, _):
             XCTAssertTrue(code == "unknown")
             XCTAssertTrue(message == "Linking of the card failed failed from unknown reason")
         default:
@@ -554,7 +555,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _):
+        case let .nolError(_, message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -580,7 +581,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .nolError(_, let message, _):
+        case let .nolError(_, message, _):
             XCTAssertTrue(message == expectedErrorDescription)
         default:
             XCTFail("primerError should be of type nolError")
@@ -646,7 +647,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
+        case let .invalidValue(key, _, _, _):
             XCTAssertTrue(key == "nolPayAppId")
         default:
             XCTFail("primerError should be of type invalidSetting")

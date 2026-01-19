@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment

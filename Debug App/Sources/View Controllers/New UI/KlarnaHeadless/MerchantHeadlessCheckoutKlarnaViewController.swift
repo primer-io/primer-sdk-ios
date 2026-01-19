@@ -1,12 +1,13 @@
 //
 //  MerchantHeadlessCheckoutKlarnaViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
-import SwiftUI
+import PrimerFoundation
 import PrimerSDK
+import SwiftUI
+import UIKit
 
 class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
 
@@ -36,9 +37,9 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
             klarnaComponent?.validationDelegate = self
         } catch let error as PrimerError {
             switch error {
-            case .unsupportedPaymentMethod(let pm, let message, _):
+            case let .unsupportedPaymentMethod(pm, message, _):
                 showAlert(title: "Error", message: message ?? "Couldn't configure payment method \(pm)")
-            case .unsupportedIntent(let intent, _):
+            case let .unsupportedIntent(intent, _):
                 showAlert(title: "Error", message: "Unsupported intent: \(intent.rawValue)")
             default:
                 return

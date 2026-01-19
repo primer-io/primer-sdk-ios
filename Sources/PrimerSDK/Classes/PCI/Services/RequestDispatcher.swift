@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
@@ -89,4 +90,4 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
     }
 }
 
-extension Task: PrimerCancellable {}
+extension Task {}
