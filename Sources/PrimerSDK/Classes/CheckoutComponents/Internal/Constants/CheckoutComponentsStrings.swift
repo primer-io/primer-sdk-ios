@@ -990,7 +990,7 @@ enum CheckoutComponentsStrings {
     }
 
     static let noCountriesFound = NSLocalizedString(
-        "checkout-components-no-countries-found",
+        "primer_country_no_results",
         tableName: tableName,
         bundle: .primerResources,
         value: "No countries found",
@@ -998,7 +998,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let autoDismissMessage = NSLocalizedString(
-        "checkout-components-auto-dismiss",
+        "primer_checkout_auto_dismiss_message",
         tableName: tableName,
         bundle: .primerResources,
         value: "This screen will close automatically in 3 seconds",
@@ -1006,7 +1006,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let redirectConfirmationMessage = NSLocalizedString(
-        "checkout-components-redirect-confirmation",
+        "primer_checkout_success_subtitle",
         tableName: tableName,
         bundle: .primerResources,
         value: "You'll be redirected to the order confirmation page soon.",
@@ -1014,7 +1014,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let implementationComingSoon = NSLocalizedString(
-        "checkout-components-implementation-coming-soon",
+        "primer_misc_coming_soon",
         tableName: tableName,
         bundle: .primerResources,
         value: "Implementation coming soon",
@@ -1022,7 +1022,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let retailOutletNotImplemented = NSLocalizedString(
-        "checkout-components-retail-outlet-not-implemented",
+        "primer_card_form_retail_not_implemented",
         tableName: tableName,
         bundle: .primerResources,
         value: "Retail outlet selection not yet implemented",
@@ -1446,7 +1446,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let a11yEdit = NSLocalizedString(
-        "accessibility.common.edit",
+        "accessibility_action_edit",
         tableName: tableName,
         bundle: .primerResources,
         value: "Edit saved payment methods",
@@ -1454,7 +1454,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let a11yDone = NSLocalizedString(
-        "accessibility.common.done",
+        "primer_vault_manage_button_done",
         tableName: tableName,
         bundle: .primerResources,
         value: "Done editing saved payment methods",
@@ -1462,7 +1462,7 @@ enum CheckoutComponentsStrings {
     )
 
     static let a11yDelete = NSLocalizedString(
-        "accessibility.common.delete",
+        "accessibility_action_delete",
         tableName: tableName,
         bundle: .primerResources,
         value: "Delete",

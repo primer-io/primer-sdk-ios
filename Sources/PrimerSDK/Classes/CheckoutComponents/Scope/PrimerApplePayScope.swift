@@ -1,7 +1,7 @@
 //
 //  PrimerApplePayScope.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
@@ -52,11 +52,12 @@ public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == App
     func pay()
 
     // MARK: - ViewBuilder Components
-
+    // swiftlint:disable identifier_name
     /// Returns the default Apple Pay button view
     /// - Parameter action: The action to perform when the button is tapped
     /// - Returns: A SwiftUI view containing the Apple Pay button
     func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView
+    // swiftlint:enable identifier_name
 }
 
 // MARK: - Default Implementations

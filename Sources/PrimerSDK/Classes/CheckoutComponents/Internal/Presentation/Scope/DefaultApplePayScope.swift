@@ -1,7 +1,7 @@
 //
 //  DefaultApplePayScope.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import SwiftUI
@@ -232,6 +232,8 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
     // MARK: - ViewBuilder
 
+    // swiftlint:disable identifier_name
+
     public func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView {
         AnyView(
             ApplePayButtonView(
@@ -242,6 +244,8 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
             )
         )
     }
+    
+    // swiftlint:enable identifier_name
 }
 
 // MARK: - Apple Pay Authorization Coordinator
