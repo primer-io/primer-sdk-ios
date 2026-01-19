@@ -25,59 +25,59 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
 
     private let tokenizationService: TokenizationServiceProtocol
     private let createPaymentService: CreateResumePaymentServiceProtocol
+    private let loggingInteractor: DefaultLoggingInteractor?
 
     // MARK: - Initialization
 
     init(
         tokenizationService: TokenizationServiceProtocol,
-        createPaymentService: CreateResumePaymentServiceProtocol
+        createPaymentService: CreateResumePaymentServiceProtocol,
+        loggingInteractor: DefaultLoggingInteractor? = nil
     ) {
         self.tokenizationService = tokenizationService
         self.createPaymentService = createPaymentService
+        self.loggingInteractor = loggingInteractor
     }
 
     // MARK: - ProcessApplePayPaymentInteractor
 
     func execute(payment: PKPayment) async throws -> PaymentResult {
-        // Get Apple Pay configuration
-        let (configId, merchantIdentifier) = try getApplePayConfiguration()
+        do {
+            // Get Apple Pay configuration
+            let (configId, merchantIdentifier) = try getApplePayConfiguration()
 
-        // Build payment instrument
-        let paymentInstrument = try buildPaymentInstrument(
-            from: payment,
-            configId: configId,
-            merchantIdentifier: merchantIdentifier
-        )
+            // Build payment instrument
+            let paymentInstrument = try buildPaymentInstrument(
+                from: payment,
+                configId: configId,
+                merchantIdentifier: merchantIdentifier
+            )
 
-        // Tokenize
-        let tokenData = try await tokenizationService.tokenize(
-            requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-        )
+            // Tokenize
+            let tokenData = try await tokenizationService.tokenize(
+                requestBody: Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            )
 
-        guard let token = tokenData.token else {
-            throw PrimerError.invalidValue(key: "paymentMethodTokenData.token")
-        }
-
-        // Create payment
-        let paymentRequest = Request.Body.Payment.Create(token: token)
-        let paymentResponse = try await createPaymentService.createPayment(paymentRequest: paymentRequest)
-
-        // Build result
-        let paymentStatus: PaymentStatus = {
-            switch paymentResponse.status {
-            case .success: return .success
-            case .pending: return .pending
-            case .failed: return .failed
+            guard let token = tokenData.token else {
+                throw PrimerError.invalidValue(key: "paymentMethodTokenData.token")
             }
-        }()
 
-        return PaymentResult(
-            paymentId: paymentResponse.id ?? "",
-            status: paymentStatus,
-            amount: paymentResponse.amount,
-            currencyCode: paymentResponse.currencyCode,
-            paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
-        )
+            // Create payment
+            let paymentRequest = Request.Body.Payment.Create(token: token)
+            let paymentResponse = try await createPaymentService.createPayment(paymentRequest: paymentRequest)
+
+            return PaymentResult(
+                paymentId: paymentResponse.id ?? "",
+                status: PaymentStatus(from: paymentResponse.status),
+                amount: paymentResponse.amount,
+                currencyCode: paymentResponse.currencyCode,
+                paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
+            )
+
+        } catch {
+            loggingInteractor?.logError(message: "Apple Pay payment processing failed", error: error)
+            throw error
+        }
     }
 
     // MARK: - Private Helpers

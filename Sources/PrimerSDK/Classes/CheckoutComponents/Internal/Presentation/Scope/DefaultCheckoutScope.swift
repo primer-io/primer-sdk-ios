@@ -109,6 +109,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
+    private var loggingInteractor: DefaultLoggingInteractor?
 
     // Stores the API-provided display name for accessibility announcements
     private var selectedPaymentMethodName: String?
@@ -207,11 +208,14 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
             accessibilityAnnouncementService = try? await container.resolve(AccessibilityAnnouncementService.self)
+
+            loggingInteractor = try? await container.resolve(DefaultLoggingInteractor.self)
         } catch {
             let primerError = PrimerError.invalidArchitecture(
                 description: "Failed to setup interactors: \(error.localizedDescription)",
                 recoverSuggestion: "Ensure proper SDK initialization"
             )
+            loggingInteractor?.logError(message: "Failed to setup interactors", error: primerError)
             updateNavigationState(.failure(primerError))
             updateState(.failure(primerError))
         }
@@ -257,6 +261,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             let primerError = error as? PrimerError ?? PrimerError.unknown(
                 message: error.localizedDescription
             )
+
             updateNavigationState(.failure(primerError))
             updateState(.failure(primerError))
         }
@@ -276,6 +281,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         switch state {
         case .ready:
             await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general())
+            let initDuration = await LoggingSessionContext.shared.calculateInitDuration()
+            loggingInteractor?.logInfo(event: "CHECKOUT_INITIALIZED", initDurationMs: initDuration)
 
         case let .success(result):
             if let paymentMethod = result.paymentMethodType {

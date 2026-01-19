@@ -240,6 +240,7 @@ extension PrimerSwiftUIBridgeViewController {
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext = .direct,
+        integrationType: CheckoutComponentsIntegrationType = .uiKit,
         scope: ((PrimerCheckoutScope) -> Void)? = nil,
         onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
@@ -255,6 +256,7 @@ extension PrimerSwiftUIBridgeViewController {
             diContainer: diContainer,
             navigator: navigator,
             presentationContext: presentationContext,
+            integrationType: integrationType,
             scope: scope,
             onCompletion: onCompletion
         )

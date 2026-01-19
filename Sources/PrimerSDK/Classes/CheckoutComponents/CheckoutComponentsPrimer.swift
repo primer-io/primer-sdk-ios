@@ -273,6 +273,7 @@ public extension CheckoutComponentsDelegate {
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
+                integrationType: .uiKit,
                 scope: scope,
                 onCompletion: { [weak self] state in
                     switch state {
