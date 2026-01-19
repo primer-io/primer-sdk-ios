@@ -19,7 +19,7 @@ final class LoggingSessionContextTests: XCTestCase {
         let context = LoggingSessionContext.shared
 
         // When: Initializing session context
-        await context.initialize(clientToken: clientToken)
+        await context.initialize(clientToken: clientToken, integrationType: .swiftUI)
 
         // Then: Environment should be extracted from JWT
         let sessionData = await context.getSessionData()
@@ -35,7 +35,7 @@ final class LoggingSessionContextTests: XCTestCase {
         let context = LoggingSessionContext.shared
 
         // When: Initializing with invalid token
-        await context.initialize(clientToken: invalidToken)
+        await context.initialize(clientToken: invalidToken, integrationType: .swiftUI)
 
         // Then: Should use default environment (production) but not crash
         let sessionData = await context.getSessionData()
@@ -50,7 +50,7 @@ final class LoggingSessionContextTests: XCTestCase {
         let context = LoggingSessionContext.shared
 
         // When: Initializing with empty token
-        await context.initialize(clientToken: emptyToken)
+        await context.initialize(clientToken: emptyToken, integrationType: .swiftUI)
 
         // Then: Should use default environment (production)
         let sessionData = await context.getSessionData()
@@ -122,7 +122,7 @@ final class LoggingSessionContextTests: XCTestCase {
         // Given: An initialized session context
         let clientToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6IlNBTkRCT1giLCJhcGkiOiJhcGkucHJpbWVyLmlvIn0.signature"
         let context = LoggingSessionContext.shared
-        await context.initialize(clientToken: clientToken)
+        await context.initialize(clientToken: clientToken, integrationType: .swiftUI)
 
         // When: Getting session data
         let sessionData = await context.getSessionData()
@@ -137,7 +137,7 @@ final class LoggingSessionContextTests: XCTestCase {
     func test_getSessionData_includesSDKVersion() async {
         // Given: An initialized session context
         let context = LoggingSessionContext.shared
-        await context.initialize(clientToken: "")
+        await context.initialize(clientToken: "", integrationType: .swiftUI)
 
         // When: Getting session data
         let sessionData = await context.getSessionData()
@@ -149,7 +149,7 @@ final class LoggingSessionContextTests: XCTestCase {
     func test_getSessionData_includesHostnameFromBundleID() async {
         // Given: An initialized session context
         let context = LoggingSessionContext.shared
-        await context.initialize(clientToken: "")
+        await context.initialize(clientToken: "", integrationType: .swiftUI)
 
         // When: Getting session data
         let sessionData = await context.getSessionData()

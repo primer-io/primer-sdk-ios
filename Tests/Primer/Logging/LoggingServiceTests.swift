@@ -52,7 +52,8 @@ final class LoggingServiceTests: XCTestCase {
         await LoggingSessionContext.shared.initialize(
             environment: .sandbox,
             sdkVersion: "2.41.0",
-            clientSessionToken: "test-token"
+            clientSessionToken: "test-token",
+            integrationType: .swiftUI
         )
     }
 

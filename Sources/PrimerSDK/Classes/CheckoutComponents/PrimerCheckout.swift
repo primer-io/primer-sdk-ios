@@ -43,6 +43,7 @@ public struct PrimerCheckout: View {
     private let onCompletion: ((PrimerCheckoutState) -> Void)?
     @StateObject private var navigator: CheckoutNavigator
     private let presentationContext: PresentationContext
+    private let integrationType: CheckoutComponentsIntegrationType
 
     /// Creates a PrimerCheckout view.
     /// - Parameters:
@@ -65,6 +66,7 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: CheckoutNavigator())
         self.presentationContext = .fromPaymentSelection
+        self.integrationType = .swiftUI
     }
 
     init(
@@ -74,6 +76,7 @@ public struct PrimerCheckout: View {
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         presentationContext: PresentationContext,
+        integrationType: CheckoutComponentsIntegrationType,
         scope: ((PrimerCheckoutScope) -> Void)? = nil,
         onCompletion: ((PrimerCheckoutState) -> Void)? = nil
     ) {
@@ -84,6 +87,7 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self._navigator = StateObject(wrappedValue: navigator)
         self.presentationContext = presentationContext
+        self.integrationType = integrationType
     }
 
     public var body: some View {
@@ -95,6 +99,7 @@ public struct PrimerCheckout: View {
             navigator: navigator,
             scope: scope,
             presentationContext: presentationContext,
+            integrationType: integrationType,
             onCompletion: onCompletion
         )
     }
@@ -113,6 +118,7 @@ struct InternalCheckout: View, LogReporter {
     private let navigator: CheckoutNavigator
     private let scope: ((PrimerCheckoutScope) -> Void)?
     private let presentationContext: PresentationContext
+    private let integrationType: CheckoutComponentsIntegrationType
     private let onCompletion: ((PrimerCheckoutState) -> Void)?
 
     @State private var checkoutScope: DefaultCheckoutScope?
@@ -140,6 +146,7 @@ struct InternalCheckout: View, LogReporter {
         navigator: CheckoutNavigator,
         scope: ((PrimerCheckoutScope) -> Void)?,
         presentationContext: PresentationContext,
+        integrationType: CheckoutComponentsIntegrationType,
         onCompletion: ((PrimerCheckoutState) -> Void)?
     ) {
         self.clientToken = clientToken
@@ -149,6 +156,7 @@ struct InternalCheckout: View, LogReporter {
         self.navigator = navigator
         self.scope = scope
         self.presentationContext = presentationContext
+        self.integrationType = integrationType
         self.onCompletion = onCompletion
 
         self.sdkInitializer = CheckoutSDKInitializer(
@@ -187,7 +195,7 @@ struct InternalCheckout: View, LogReporter {
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
         .task {
             await LoggingSessionContext.shared.recordInitStartTime()
-            await LoggingSessionContext.shared.initialize(clientToken: clientToken)
+            await LoggingSessionContext.shared.initialize(clientToken: clientToken, integrationType: integrationType)
             await setupDesignTokens()
             await initializeSDK()
         }

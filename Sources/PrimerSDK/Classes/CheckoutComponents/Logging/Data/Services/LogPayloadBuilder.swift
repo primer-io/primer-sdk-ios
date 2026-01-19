@@ -39,7 +39,7 @@ struct LogPayloadBuilder {
             initDurationMs: initDurationMs,
             customData: nil,
             appMetadata: Self.buildAppMetadata(),
-            sessionMetadata: Self.buildSessionMetadata()
+            sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
 
         let jsonMessage = try Self.encodeToJSONString(logMessageObject)
@@ -61,7 +61,7 @@ struct LogPayloadBuilder {
             errorStack: errorStack,
             customData: nil,
             appMetadata: Self.buildAppMetadata(),
-            sessionMetadata: Self.buildSessionMetadata()
+            sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
 
         let jsonMessage = try Self.encodeToJSONString(logMessageObject)
@@ -95,11 +95,12 @@ struct LogPayloadBuilder {
             .compactMap { $0.internalPaymentMethodType?.rawValue } ?? []
     }
 
-    private static func buildSessionMetadata() -> SessionMetadata {
+    private static func buildSessionMetadata(sessionData: LoggingSessionContext.SessionData) -> SessionMetadata {
         SessionMetadata(
             flowType: Constants.flowTypeCheckoutComponents,
             paymentIntent: buildPaymentIntent(),
-            features: buildAvailablePaymentMethods()
+            features: buildAvailablePaymentMethods(),
+            integrationType: sessionData.integrationType?.rawValue
         )
     }
 

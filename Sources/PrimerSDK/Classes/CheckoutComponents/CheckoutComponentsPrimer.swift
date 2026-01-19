@@ -265,10 +265,7 @@ public extension CheckoutComponentsDelegate {
         isPresentingCheckout = true
 
         Task { @MainActor in
-            await LoggingSessionContext.shared.recordInitStartTime()
-            await LoggingSessionContext.shared.initialize(clientToken: clientToken)
-
-            // SDK initialization is now handled automatically by PrimerCheckout
+            // SDK initialization is now handled automatically by PrimerCheckout/InternalCheckout
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                 clientToken: clientToken,
                 settings: primerSettings,
@@ -276,6 +273,7 @@ public extension CheckoutComponentsDelegate {
                 diContainer: DIContainer.shared,
                 navigator: CheckoutNavigator(),
                 presentationContext: .direct,
+                integrationType: .uiKit,
                 scope: scope,
                 onCompletion: { [weak self] state in
                     switch state {

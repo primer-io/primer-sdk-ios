@@ -60,10 +60,12 @@ public struct SessionMetadata: Codable, Sendable {
     public let flowType: String
     public let paymentIntent: String
     public let features: [String]
+    public let integrationType: String?
 
-    public init(flowType: String, paymentIntent: String, features: [String]) {
+    public init(flowType: String, paymentIntent: String, features: [String], integrationType: String? = nil) {
         self.flowType = flowType
         self.paymentIntent = paymentIntent
         self.features = features
+        self.integrationType = integrationType
     }
 }

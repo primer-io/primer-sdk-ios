@@ -6,6 +6,15 @@
 
 import Foundation
 
+// MARK: - Integration Type
+
+public enum CheckoutComponentsIntegrationType: String, Sendable {
+    case swiftUI = "swiftui"
+    case uiKit = "uikit"
+}
+
+// MARK: - Logging Session Context
+
 public actor LoggingSessionContext {
     // MARK: - Constants
 
@@ -25,6 +34,7 @@ public actor LoggingSessionContext {
     private var clientSessionToken: String?
     private var sdkInitStartTime: CFAbsoluteTime?
     private var hostname: String
+    private var integrationType: CheckoutComponentsIntegrationType?
 
     // Note: Session IDs are sourced dynamically from SDK state, not stored locally
     // - checkoutSessionId: PrimerInternal.shared.checkoutSessionId
@@ -40,13 +50,15 @@ public actor LoggingSessionContext {
         clientSessionToken = nil
         sdkInitStartTime = nil
         hostname = Bundle.main.bundleIdentifier ?? Constants.unknownIosApp
+        integrationType = nil
     }
 
     // MARK: - Public Methods
 
-    public func initialize(clientToken: String) {
-        // Store the client token for later use
+    public func initialize(clientToken: String, integrationType: CheckoutComponentsIntegrationType) {
+        // Store the client token and integration type for later use
         clientSessionToken = clientToken
+        self.integrationType = integrationType
 
         // Parse JWT client token to extract environment
         let components = clientToken.components(separatedBy: ".")
@@ -82,11 +94,13 @@ public actor LoggingSessionContext {
     public func initialize(
         environment: AnalyticsEnvironment,
         sdkVersion: String,
-        clientSessionToken: String?
+        clientSessionToken: String?,
+        integrationType: CheckoutComponentsIntegrationType? = nil
     ) {
         self.environment = environment
         self.sdkVersion = sdkVersion
         self.clientSessionToken = clientSessionToken
+        self.integrationType = integrationType
     }
 
     public func recordInitStartTime() {
@@ -107,7 +121,8 @@ public actor LoggingSessionContext {
             primerAccountId: parsePrimerAccountId() ?? "",
             sdkVersion: sdkVersion,
             clientSessionToken: clientSessionToken,
-            hostname: hostname
+            hostname: hostname,
+            integrationType: integrationType
         )
     }
 
@@ -159,6 +174,7 @@ public actor LoggingSessionContext {
         public let sdkVersion: String
         public let clientSessionToken: String?
         public let hostname: String
+        public let integrationType: CheckoutComponentsIntegrationType?
     }
 }
 

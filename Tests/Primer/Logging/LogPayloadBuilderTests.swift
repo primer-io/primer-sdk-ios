@@ -22,7 +22,8 @@ final class LogPayloadBuilderTests: XCTestCase {
             primerAccountId: "test-account-id",
             sdkVersion: "2.41.0",
             clientSessionToken: nil,
-            hostname: "com.test.app"
+            hostname: "com.test.app",
+            integrationType: .swiftUI
         )
     }
 
