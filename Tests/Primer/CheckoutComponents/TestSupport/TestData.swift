@@ -7,20 +7,17 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Organized by category for easy discovery and use.
 @available(iOS 15.0, *)
 enum TestData {
 
     // MARK: - Accessibility
 
     enum Accessibility {
-        // Test configuration
         static let concurrentOperationCount = 10
         static let testTimeout: TimeInterval = 5.0
         static let testQueueLabel = "test.concurrent"
         static let concurrentExpectationDescription = "Concurrent announcements"
 
-        // Announcement messages for tests
         static let errorPrefix = "Error"
         static let statePrefix = "State"
         static let errorMessage = "Error message"
@@ -28,7 +25,6 @@ enum TestData {
         static let layoutChangeMessage = "Layout change"
         static let screenChangeMessage = "Screen change"
 
-        // Test case descriptions
         static let errorDescription = "Error announcements"
         static let stateChangeDescription = "State change announcements"
         static let layoutChangeDescription = "Layout change announcements"
