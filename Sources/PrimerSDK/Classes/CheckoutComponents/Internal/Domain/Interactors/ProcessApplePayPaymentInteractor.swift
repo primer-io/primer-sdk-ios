@@ -66,18 +66,9 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
             let paymentRequest = Request.Body.Payment.Create(token: token)
             let paymentResponse = try await createPaymentService.createPayment(paymentRequest: paymentRequest)
 
-            // Build result
-            let paymentStatus: PaymentStatus = {
-                switch paymentResponse.status {
-                case .success: return .success
-                case .pending: return .pending
-                case .failed: return .failed
-                }
-            }()
-
             return PaymentResult(
                 paymentId: paymentResponse.id ?? "",
-                status: paymentStatus,
+                status: PaymentStatus(from: paymentResponse.status),
                 amount: paymentResponse.amount,
                 currencyCode: paymentResponse.currencyCode,
                 paymentMethodType: PrimerPaymentMethodType.applePay.rawValue

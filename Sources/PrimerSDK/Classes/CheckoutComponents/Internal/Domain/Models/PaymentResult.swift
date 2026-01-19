@@ -49,4 +49,12 @@ public enum PaymentStatus {
     case cancelled
     case requires3DS
     case requiresAction
+
+    init(from apiStatus: Response.Body.Payment.Status) {
+        switch apiStatus {
+        case .success: self = .success
+        case .pending: self = .pending
+        case .failed: self = .failed
+        }
+    }
 }
