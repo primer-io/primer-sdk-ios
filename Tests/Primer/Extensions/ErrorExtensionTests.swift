@@ -1,11 +1,12 @@
 //
 //  ErrorExtensionTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
+import XCTest
 
 final class ErrorExtensionTests: XCTestCase {
 
@@ -23,10 +24,6 @@ final class ErrorExtensionTests: XCTestCase {
         }
 
         // MARK: 3DS errors
-
-        let internalError3DSFailureBreak = InternalError.failedToPerform3dsAndShouldBreak(error: dummyError)
-        let exposedError3DSFailureBreak = internalError3DSFailureBreak.exposedError
-
         let missingDependencyError = Primer3DSErrorContainer.missingSdkDependency()
         let internalError3DSFailureContinue = InternalError.failedToPerform3dsButShouldContinue(error: missingDependencyError)
         let exposedError3DSFailureContinue = internalError3DSFailureContinue.exposedError
@@ -39,11 +36,10 @@ final class ErrorExtensionTests: XCTestCase {
 
         // MARK: Underlying errors
 
-
         let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError, PrimerError.unknown()])
 
         switch multipleUnderlyingErrorsError.normalizedForSDK {
-        case PrimerError.underlyingErrors(let errors, _):
+        case let PrimerError.underlyingErrors(errors, _):
             XCTAssertEqual(errors.count, 2)
             break
         default:

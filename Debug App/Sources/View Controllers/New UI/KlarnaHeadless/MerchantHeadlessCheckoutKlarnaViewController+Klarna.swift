@@ -1,17 +1,18 @@
 //
 //  MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import PrimerFoundation
 import PrimerSDK
+import UIKit
 
 extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
                                                         PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         print("Klarna finished with error: \(error)")
     }
 
@@ -22,14 +23,14 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             showLoader()
         case .valid:
             hideLoader()
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             hideLoader()
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
+        case let .error(error: error):
             hideLoader()
             showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)
         }
@@ -39,7 +40,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
             switch step {
-            case .paymentSessionCreated(let clientToken, let paymentCategories):
+            case let .paymentSessionCreated(clientToken, paymentCategories):
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.hideLoader()
@@ -47,17 +48,17 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
                     self.klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
                 }
 
-            case .paymentSessionAuthorized( _, let checkoutData):
+            case let .paymentSessionAuthorized( _, checkoutData):
                 print("Payment session authorization successful with data: \(checkoutData)")
 
             case .paymentSessionFinalizationRequired:
                 klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
                 finalizeSession()
 
-            case .paymentSessionFinalized( _, let checkoutData):
+            case let .paymentSessionFinalized( _, checkoutData):
                 print("Payment session finalization successful with data: \(checkoutData)")
 
-            case .viewLoaded(let view):
+            case let .viewLoaded(view):
                 hideLoader()
                 if let view {
                     passRenderedKlarnaView(view)

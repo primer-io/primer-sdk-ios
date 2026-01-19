@@ -7,6 +7,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+import PrimerFoundation
 import UIKit
 #if canImport(PrimerStripeSDK)
 import PrimerStripeSDK

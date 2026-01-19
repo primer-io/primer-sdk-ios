@@ -1,13 +1,14 @@
 //
 //  MerchantHeadlessCheckoutBankViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
-import UIKit
-import SwiftUI
+import PrimerFoundation
 import PrimerSDK
+import SwiftUI
+import UIKit
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     private lazy var manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
@@ -80,14 +81,14 @@ extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDel
                     break
                 }
             }
-        case .invalid(errors: let errors):
+        case let .invalid(errors: errors):
             var message = ""
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             hideLoadingOverlay()
             self.showAlert(title: "Validation Error", message: "\(message)")
-        case .error(error: let error):
+        case let .error(error: error):
             self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
             hideLoadingOverlay()
         }
@@ -104,7 +105,7 @@ extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDel
         }
         switch step {
         case .loading: showLoadingOverlay()
-        case .banksRetrieved(banks: let banks): renderBanks(banks)
+        case let .banksRetrieved(banks: banks): renderBanks(banks)
         }
     }
 }

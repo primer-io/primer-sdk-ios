@@ -1,7 +1,7 @@
 //
 //  InternalCardComponentsManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable large_tuple
 
+import PrimerFoundation
 import UIKit
 
 @objc
@@ -71,7 +72,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     var amount: Int?
     var currency: Currency?
     var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
+        PrimerAPIConfigurationModule.decodedJWTToken
     }
     var paymentMethodsConfig: PrimerAPIConfiguration?
     var primerPaymentMethodType: PrimerPaymentMethodType
@@ -129,7 +130,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     }
 
     private func fetchClientToken() async throws -> DecodedJWTToken {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
                 guard error == nil, let clientToken = clientToken else {
                     return continuation.resume(throwing: error!)
@@ -277,11 +278,11 @@ and 4 characters for expiry year separated by '/'.
 
                     // If the auto-detected network is not allowed but this might be a co-badged card,
                     // try to find an allowed network for this card number
-                    if !allowedCardNetworks.contains(cardNetwork) && self.selectedCardNetwork == nil {
+                    if !allowedCardNetworks.contains(cardNetwork), self.selectedCardNetwork == nil {
                         // For co-badged cards, we need to check if there are other networks this card supports
                         // that are in the allowed list. Common co-badged scenarios:
                         // - Visa/Cartes Bancaires co-badged cards
-                        if autoDetectedNetwork == .visa && allowedCardNetworks.contains(.cartesBancaires) {
+                        if autoDetectedNetwork == .visa, allowedCardNetworks.contains(.cartesBancaires) {
                             // Check if this card could be Cartes Bancaires (starts with 4035, 4360, etc.)
                             let cardNumber = cardPaymentInstrument.number
                             if cardNumber.hasPrefix("4035") || cardNumber.hasPrefix("4360") {

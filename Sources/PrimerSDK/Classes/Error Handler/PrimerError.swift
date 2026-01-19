@@ -1,7 +1,7 @@
 //
 //  PrimerError.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -22,6 +22,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
 }
+import PrimerFoundation
 
 func handled<E: Error>(
     error: E,
@@ -283,7 +284,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
     public var errorUserInfo: [String: Any] {
@@ -399,7 +400,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     var exposedError: Error {
-        return self
+        self
     }
 
     var analyticsContext: [String: Any] {
