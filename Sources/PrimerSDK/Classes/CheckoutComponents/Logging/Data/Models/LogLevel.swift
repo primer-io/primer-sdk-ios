@@ -7,7 +7,7 @@
 import Foundation
 
 public enum DatadogLogStatus: String, Codable, Sendable {
-    case error = "error"
-    case warn = "warn"
-    case info = "info"
+    case error
+    case warn
+    case info
 }

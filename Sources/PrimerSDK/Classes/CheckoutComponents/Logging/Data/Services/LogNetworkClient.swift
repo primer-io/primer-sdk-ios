@@ -15,12 +15,10 @@ actor LogNetworkClient {
         encoder.keyEncodingStrategy = .custom { keys in
             let key = keys.last!.stringValue
 
-            // Special handling for specific fields that need exact snake_case
             switch key {
             case "primer_account_id", "useragent_details", "patch_minor":
                 return CustomCodingKey(stringValue: key)
             default:
-                // Convert camelCase to snake_case for all other fields
                 return CustomCodingKey(stringValue: key.convertToSnakeCase())
             }
         }

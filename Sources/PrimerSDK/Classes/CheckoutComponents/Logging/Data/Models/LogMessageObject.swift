@@ -59,8 +59,6 @@ public struct LogMessageObject: Codable, Sendable {
     }
 }
 
-// MARK: - Nested Types
-
 extension LogMessageObject {
     public struct PrimerIdentifiers: Codable, Sendable {
         public let checkoutSessionId: String?

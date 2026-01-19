@@ -28,8 +28,6 @@ public struct LogPayload: Codable, Sendable {
     }
 }
 
-// MARK: - Nested Structures
-
 public struct DeviceInfoMetadata: Codable, Sendable {
     public let model: String
     public let osVersion: String

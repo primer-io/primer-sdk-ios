@@ -28,7 +28,7 @@ final class DefaultLoggingInteractor {
     func logInfo(event: String, initDurationMs: Int? = nil) {
         let message = initDurationMs.map { "\(Constants.checkoutInitialized) (\($0)ms)" } ?? Constants.checkoutInitialized
 
-        Task {
+        Task { [self] in
             await loggingService.sendInfo(
                 message: message,
                 event: event,
@@ -38,7 +38,7 @@ final class DefaultLoggingInteractor {
     }
 
     func logError(message: String, error: Error) {
-        Task {
+        Task { [self] in
             await loggingService.sendError(
                 message: message,
                 error: error

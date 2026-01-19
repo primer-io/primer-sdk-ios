@@ -7,6 +7,17 @@
 import Foundation
 
 actor SensitiveDataMasker {
+    // MARK: - Constants
+
+    private enum Replacement {
+        static let card = "[REDACTED_CARD]"
+        static let cvv = "$1 [REDACTED]"
+        static let token = "$1[REDACTED_TOKEN]"
+        static let apiKey = "$1 [REDACTED]"
+        static let email = "[REDACTED_EMAIL]"
+        static let phone = "[REDACTED_PHONE]"
+    }
+
     // MARK: - Masking Patterns
 
     private let patterns: [MaskingPattern]
@@ -21,7 +32,7 @@ actor SensitiveDataMasker {
                     pattern: #"\b\d{4}[\s\-]?(\d{4}[\s\-]?\d{4}[\s\-]?\d{3,4}|\d{6}[\s\-]?\d{5})\b"#,
                     options: []
                 ),
-                replacement: "[REDACTED_CARD]"
+                replacement: Replacement.card
             ),
 
             // CVV/CVC Masking: 3-4 digits following "CVV"/"CVC" keywords
@@ -30,7 +41,7 @@ actor SensitiveDataMasker {
                     pattern: #"(?i)(cvv|cvc)[\s:=]*\d{3,4}"#,
                     options: []
                 ),
-                replacement: "$1 [REDACTED]"
+                replacement: Replacement.cvv
             ),
 
             // Bearer Token Masking
@@ -39,7 +50,7 @@ actor SensitiveDataMasker {
                     pattern: #"(?i)(authorization:?\s*bearer\s+)[a-zA-Z0-9_\-\.]+"#,
                     options: []
                 ),
-                replacement: "$1[REDACTED_TOKEN]"
+                replacement: Replacement.token
             ),
 
             // API Key Masking
@@ -48,7 +59,7 @@ actor SensitiveDataMasker {
                     pattern: #"(?i)(api[_\-]?key|key|token)[\s:=]+[a-zA-Z0-9_\-]{16,}"#,
                     options: []
                 ),
-                replacement: "$1 [REDACTED]"
+                replacement: Replacement.apiKey
             ),
 
             // Email Address Masking
@@ -57,7 +68,7 @@ actor SensitiveDataMasker {
                     pattern: #"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"#,
                     options: []
                 ),
-                replacement: "[REDACTED_EMAIL]"
+                replacement: Replacement.email
             ),
 
             // Phone Number Masking
@@ -66,7 +77,7 @@ actor SensitiveDataMasker {
                     pattern: #"(\+?\d{1,3}[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?\d{3}[\s\-]?\d{4}"#,
                     options: []
                 ),
-                replacement: "[REDACTED_PHONE]"
+                replacement: Replacement.phone
             )
         ]
     }

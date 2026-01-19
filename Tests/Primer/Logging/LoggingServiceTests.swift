@@ -51,9 +51,6 @@ final class LoggingServiceTests: XCTestCase {
         // Set up session data for tests
         await LoggingSessionContext.shared.initialize(
             environment: .sandbox,
-            checkoutSessionId: "test-checkout-id",
-            clientSessionId: "test-client-id",
-            primerAccountId: "test-account-id",
             sdkVersion: "2.41.0",
             clientSessionToken: "test-token"
         )

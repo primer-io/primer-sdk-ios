@@ -81,9 +81,6 @@ public actor LoggingSessionContext {
 
     public func initialize(
         environment: AnalyticsEnvironment,
-        checkoutSessionId _: String, // Ignored - fetched from PrimerInternal.shared.checkoutSessionId
-        clientSessionId _: String, // Ignored - fetched from PrimerAPIConfigurationModule
-        primerAccountId _: String, // Ignored - fetched from PrimerAPIConfigurationModule or JWT
         sdkVersion: String,
         clientSessionToken: String?
     ) {
