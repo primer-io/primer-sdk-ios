@@ -1,10 +1,11 @@
 //
 //  PrimerHeadlessKlarnaComponentTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
@@ -15,11 +16,11 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     var mockApiClient: MockPrimerAPIClient!
     var validationResult: PrimerSDK.PrimerValidationStatus = .validating
     var stepTypeDecisionHandler: ((StepDelegationType) -> Void)?
-    var receiveErrorDecisionHandler: ((PrimerSDK.PrimerError) -> Void)?
+    var receiveErrorDecisionHandler: ((PrimerError) -> Void)?
     var tokenizationService: MockTokenizationService!
     var klarnaTokenizationManager: KlarnaTokenizationManager!
 
-    var errorResult: PrimerSDK.PrimerError? {
+    var errorResult: PrimerError? {
         didSet {
             guard let errorResult = errorResult,
                   let handler = receiveErrorDecisionHandler else { return }
@@ -111,7 +112,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
-        case .invalid(let errors):
+        case let .invalid(errors):
             XCTAssertTrue(!errors.isEmpty)
         default:
             break
@@ -614,14 +615,14 @@ extension PrimerHeadlessKlarnaComponentTests: PrimerHeadlessErrorableDelegate,
         validationResult = validationStatus
     }
 
-    func didReceiveError(error: PrimerSDK.PrimerError) {
+    func didReceiveError(error: PrimerError) {
         errorResult = error
     }
 
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
             switch step {
-            case .paymentSessionCreated(clientToken: let clientToken, paymentCategories: let paymentCategories):
+            case let .paymentSessionCreated(clientToken: clientToken, paymentCategories: paymentCategories):
                 stepType = .creationStep
             case .paymentSessionAuthorized:
                 stepType = .authorizationStep

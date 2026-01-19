@@ -1,11 +1,12 @@
 //
 //  PrimerHeadlessUniversalCheckoutPaymentMethod.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PassKit
+import PrimerFoundation
 
 protocol PrimerPaymentMethodProviding {
     func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod?
@@ -17,14 +18,14 @@ extension PrimerHeadlessUniversalCheckout {
 
         static var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] {
             var availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
-                .compactMap({ $0.type })
+                .compactMap(\.type)
                 .compactMap({ PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: $0) })
 
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.showApplePayForUnsupportedDevice != true {
                 if !PKPaymentAuthorizationController.canMakePayments() {
                     // Filter out Apple pay from payment methods
                     availablePaymentMethods = availablePaymentMethods?.filter({ (method: PrimerHeadlessUniversalCheckout.PaymentMethod) in
-                        return method.paymentMethodType != "APPLE_PAY"
+                        method.paymentMethodType != "APPLE_PAY"
                     })
                 }
             }

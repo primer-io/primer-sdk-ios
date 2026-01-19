@@ -1,10 +1,12 @@
 //
 //  PrimerHeadlessBanksComponentWrapper.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
+
 @objc public protocol BanksComponentErrorable: AnyObject {
     @objc func didReceiveError(_ error: NSError)
 }
@@ -80,7 +82,7 @@ extension PrimerHeadlessBanksComponentWrapper: PrimerHeadlessErrorableDelegate,
         }
         switch step {
         case .loading: stepDelegate?.didStartLoading()
-        case .banksRetrieved(banks: let banks): stepDelegate?.didReceiveBanks(banks)
+        case let .banksRetrieved(banks: banks): stepDelegate?.didReceiveBanks(banks)
         }
     }
 

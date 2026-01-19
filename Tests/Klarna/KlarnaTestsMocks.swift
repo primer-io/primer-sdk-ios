@@ -1,13 +1,14 @@
 //
 //  KlarnaTestsMocks.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
-import XCTest
-@testable import PrimerSDK
+import PrimerFoundation
 import PrimerKlarnaSDK
+@testable import PrimerSDK
+import XCTest
 
 class KlarnaTestsMocks {
     static let sessionType: KlarnaSessionType = .oneOffPayment
@@ -80,7 +81,7 @@ class KlarnaTestsMocks {
         hasCurrency: Bool = true,
         hasItems: Bool = true
     ) -> ClientSession.APIResponse {
-        return ClientSession.APIResponse(
+        ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
@@ -103,7 +104,7 @@ class KlarnaTestsMocks {
     }
 
     static func getMockPrimerApiConfiguration(clientSession: ClientSession.APIResponse) -> Response.Body.Configuration {
-        return Response.Body.Configuration(
+        Response.Body.Configuration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
             binDataUrl: "https://primer.io/bindata",
@@ -129,7 +130,7 @@ class KlarnaTestsMocks {
     }
 
     static func getLineItem(hasAmount: Bool) -> ClientSession.Order.LineItem {
-        return ClientSession.Order.LineItem(
+        ClientSession.Order.LineItem(
             itemId: "mock-item-id-1",
             quantity: 1,
             amount: hasAmount ? 100 : nil,
@@ -142,7 +143,7 @@ class KlarnaTestsMocks {
     }
 
     static func getMockFinalizeKlarnaPaymentSession(isValid: Bool) -> Response.Body.Klarna.CustomerToken {
-        return Response.Body.Klarna.CustomerToken(
+        Response.Body.Klarna.CustomerToken(
             customerTokenId: isValid ? "mock-customer-token-id" : nil,
             sessionData: Response.Body.Klarna.SessionData(
                 recurringDescription: "Mock recurring description",
@@ -192,7 +193,7 @@ class KlarnaTestsMocks {
     }
 
     static var paymentResponseBody: Response.Body.Payment {
-        return .init(id: "id",
+        .init(id: "id",
                      paymentId: "payment_id",
                      amount: 123,
                      currencyCode: "EUR",
