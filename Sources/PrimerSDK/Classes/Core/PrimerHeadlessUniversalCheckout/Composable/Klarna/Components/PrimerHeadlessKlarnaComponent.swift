@@ -1,13 +1,14 @@
 //
 //  PrimerHeadlessKlarnaComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 #if canImport(PrimerKlarnaSDK)
 import Foundation
-import UIKit
+import PrimerFoundation
 import PrimerKlarnaSDK
+import UIKit
 
 final class PrimerHeadlessKlarnaComponent {
     // MARK: - Tokenization
@@ -80,7 +81,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
     func validateData(for data: KlarnaCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
-        case .paymentCategory(_: let category, clientToken: let clientToken):
+        case let .paymentCategory(_: category, clientToken: clientToken):
             guard let clientToken = clientToken else {
                 let error = handled(error: KlarnaHelpers.getInvalidTokenError())
                 validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)

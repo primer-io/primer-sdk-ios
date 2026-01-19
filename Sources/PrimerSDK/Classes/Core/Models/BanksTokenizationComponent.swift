@@ -9,8 +9,9 @@
 // swiftlint:disable type_body_length
 
 import Foundation
-import UIKit
+import PrimerFoundation
 import SafariServices
+import UIKit
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
 
