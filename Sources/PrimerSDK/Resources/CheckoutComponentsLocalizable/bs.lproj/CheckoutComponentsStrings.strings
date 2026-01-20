@@ -46,7 +46,7 @@
 "primer_card_form_label_otp" = "OTP kôd";
 "primer_card_form_label_field" = "Polje";
 "primer_card_form_add_card" = "Dodaj karticu";
-"primer_card_form_network_selector_title" = "Odaberi mrežu";
+"primer_card_form_network_selector_title" = "Odaberi tip kartice";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_name" = "Puno ime";
 "primer_card_form_placeholder_expiry" = "MM/GG";
