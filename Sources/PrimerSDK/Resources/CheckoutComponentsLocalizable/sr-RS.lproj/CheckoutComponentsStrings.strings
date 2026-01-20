@@ -26,10 +26,10 @@
 "accessibility_card_form_expiry_hint" = "Unesite datum isteka u formatu MM/GG";
 "accessibility_card_form_expiry_icon" = "Datum isteka kartice";
 "accessibility_card_form_expiry_label" = "Datum isteka, obavezno";
-"accessibility_card_form_network_selector" = "Izaberite mrežu";
-"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite da izaberete drugu mrežu kartice";
-"accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite da izaberete ovu mrežu";
-"accessibility_card_form_network_selector_label" = "Birač mreže kartice";
+"accessibility_card_form_network_selector" = "Izaberite tip kartice";
+"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite da izaberete drugi tip kartice";
+"accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite da izaberete ovaj tip kartice";
+"accessibility_card_form_network_selector_label" = "Birač tipa kartice";
 "accessibility_card_form_submit_disabled" = "Dugme je onemogućeno. Popunite sva obavezna polja da omogućite plaćanje";
 "accessibility_card_form_submit_hint" = "Dvaput dodirnite da podnesete plaćanje";
 "accessibility_card_form_submit_label" = "Podnesite plaćanje";
@@ -112,7 +112,7 @@
 "primer_card_form_label_postal" = "Poštanski broj";
 "primer_card_form_label_retail" = "Prodajno mesto";
 "primer_card_form_label_state" = "Pokrajina";
-"primer_card_form_network_selector_title" = "Izaberite mrežu";
+"primer_card_form_network_selector_title" = "Izaberite tip kartice";
 "primer_card_form_placeholder_address1" = "Knez Mihailova 123";
 "primer_card_form_placeholder_address2" = "Stan 4B";
 "primer_card_form_placeholder_city" = "Beograd";

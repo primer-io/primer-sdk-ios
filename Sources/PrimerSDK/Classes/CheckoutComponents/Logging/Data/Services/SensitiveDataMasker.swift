@@ -4,6 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// swiftlint:disable force_try
+
 import Foundation
 
 actor SensitiveDataMasker {
@@ -81,6 +83,7 @@ actor SensitiveDataMasker {
             )
         ]
     }
+// swiftlint:enable force_try
 
     // MARK: - Public Methods
 

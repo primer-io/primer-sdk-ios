@@ -89,7 +89,7 @@
 "primer_card_form_error_name_invalid" = "Неверное имя держателя карты";
 "primer_card_form_error_name_length" = "Имя должно содержать от 2 до 45 символов";
 "primer_card_form_error_number_invalid" = "Неверный номер карты";
-"primer_card_form_error_phone_invalid" = "Введите действительный номер телефона";
+"primer_card_form_error_phone_invalid" = "Введите корректный номер телефона";
 "primer_card_form_error_postal_invalid" = "Неверный почтовый индекс";
 "primer_card_form_error_postal_required" = "Необходимо указать почтовый индекс";
 "primer_card_form_error_state_invalid" = "Неверный регион или область";
@@ -163,14 +163,14 @@
 "primer_payment_selection_empty" = "Способы оплаты недоступны";
 "primer_payment_selection_header" = "Выберите способ оплаты";
 "primer_payment_selection_surcharge_label" = "Дополнительная комиссия";
-"primer_payment_selection_surcharge_may_apply" = "Могут применяться дополнительные сборы";
+"primer_payment_selection_surcharge_may_apply" = "Могут применяться дополнительные комиссии";
 "primer_payment_selection_surcharge_none" = "Без дополнительной комиссии";
 "primer_paypal_button_continue" = "Продолжить с PayPal";
 "primer_paypal_redirect_description" = "Вы будете перенаправлены в PayPal для безопасного завершения платежа.";
 "primer_paypal_title" = "PayPal";
 "primer_vault_button_show_all" = "Показать все";
 "primer_vault_cvv_error_generic" = "Что-то пошло не так. Попробуйте снова.";
-"primer_vault_cvv_error_invalid" = "Пожалуйста, введите действительный CVV.";
+"primer_vault_cvv_error_invalid" = "Пожалуйста, введите корректный CVV.";
 "primer_vault_cvv_hint" = "Введите CVV карты для безопасного платежа.";
 "primer_vault_cvv_title" = "Введите CVV";
 "primer_vault_default_bank" = "Банковский счет";

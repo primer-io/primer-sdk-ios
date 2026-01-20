@@ -52,7 +52,7 @@
 "accessibility_error_generic" = "Ein Fehler ist aufgetreten. Bitte erneut versuchen.";
 "accessibility_error_multiple_errors" = "%d Fehler gefunden";
 "accessibility_payment_selection_card_full" = "%1$@-Karte endend auf %2$@, gültig bis %3$@";
-"accessibility_payment_selection_card_masked" = "Karte endend auf verdeckte Ziffern";
+"accessibility_payment_selection_card_masked" = "Karte endend auf verdeckten Ziffern";
 "accessibility_payment_selection_coming_soon" = "Zahlungsmethode demnächst verfügbar";
 "accessibility_payment_selection_pay_with_card" = "Mit Karte bezahlen";
 "accessibility_payment_selection_pay_with_ideal" = "Mit iDEAL bezahlen";
@@ -133,7 +133,7 @@
 "primer_card_form_placeholder_state" = "BE";
 "primer_card_form_retail_not_implemented" = "Filialauswahl noch nicht implementiert";
 "primer_card_form_title" = "Mit Karte bezahlen";
-"primer_checkout_auto_dismiss_message" = "Dieser Bildschirm wird in 3 Sekunden automatisch geschlossen";
+"primer_checkout_auto_dismiss_message" = "Dieses Fenster wird in 3 Sekunden automatisch geschlossen";
 "primer_checkout_dismissing" = "Wird geschlossen...";
 "primer_checkout_error_button_other_methods" = "Andere Zahlungsmethoden wählen";
 "primer_checkout_error_subtitle" = "Es gab ein Netzwerkproblem.";
@@ -169,7 +169,7 @@
 "primer_paypal_redirect_description" = "Sie werden zu PayPal weitergeleitet, um Ihre Zahlung sicher abzuschließen.";
 "primer_paypal_title" = "PayPal";
 "primer_vault_button_show_all" = "Alle anzeigen";
-"primer_vault_cvv_error_generic" = "Etwas ist schiefgelaufen. Erneut versuchen.";
+"primer_vault_cvv_error_generic" = "Ein Fehler ist aufgetreten. Bitte nochmal versuchen.";
 "primer_vault_cvv_error_invalid" = "Bitte geben Sie eine gültige CVV ein.";
 "primer_vault_cvv_hint" = "Geben Sie die CVV der Karte für eine sichere Zahlung ein.";
 "primer_vault_cvv_title" = "CVV eingeben";

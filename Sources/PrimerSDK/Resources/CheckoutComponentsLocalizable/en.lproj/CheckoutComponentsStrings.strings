@@ -171,7 +171,7 @@
 "primer_vault_button_show_all" = "Show all";
 "primer_vault_cvv_error_generic" = "Something went wrong. Try again.";
 "primer_vault_cvv_error_invalid" = "Please enter a valid CVV.";
-"primer_vault_cvv_hint" = "Input the card CVV
+"primer_vault_cvv_hint" = "Input the card CVV";
 "primer_vault_cvv_title" = "Enter CVV";
 "primer_vault_default_bank" = "Bank account";
 "primer_vault_default_cardholder" = "Cardholder";
