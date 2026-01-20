@@ -62,7 +62,7 @@
 "primer_card_form_placeholder_phone" = "+387 (33) 123–456";
 "primer_card_form_placeholder_first_name" = "Emir";
 "primer_card_form_placeholder_last_name" = "Hodžić";
-"primer_card_form_placeholder_email" = "emir.hodzic@primjer.ba";
+"primer_card_form_placeholder_email" = "emir.hodzic@primer.ba";
 "primer_card_form_placeholder_retail" = "Odaberi prodajno mjesto";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_error_number_invalid" = "Neispravan broj kartice";
