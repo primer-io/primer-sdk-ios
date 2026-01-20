@@ -137,7 +137,7 @@
 "accessibility_card_form_billing_address_postal_code_label" = "Poštanski broj, obavezno";
 "accessibility_card_form_billing_address_postal_code_hint" = "Unesite poštanski broj";
 "accessibility_card_form_billing_address_country_label" = "Zemlja, obavezno";
-"accessibility_card_form_network_selector" = "Odaberi mrežu";
+"accessibility_card_form_network_selector" = "Odaberi tip kartice";
 "accessibility_card_form_network_selector_label" = "Odabir tipa kartice";
 "accessibility_card_form_network_selector_hint" = "Dvaput dodirnite da odaberete drugi tip kartice";
 "accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite da odaberete ovu mrežu";
