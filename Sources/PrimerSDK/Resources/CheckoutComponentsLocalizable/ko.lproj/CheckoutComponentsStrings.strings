@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "결제를 처리하는 중입니다. 잠시만 기다려 주세요";
 "accessibility_common_required" = "필수";
 "accessibility_common_selected" = "선택됨";
+"accessibility_common_show_all" = "저장된 모든 결제 수단 표시";
 "accessibility_country_selection_clear" = "지우기";
 "accessibility_country_selection_item" = "%1$@, 국가";
 "accessibility_country_selection_search" = "국가 검색";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ 결제 수단";
 "accessibility_screen_processing_payment" = "결제를 처리하는 중입니다";
 "accessibility_screen_success" = "결제 완료";
+"accessibility_vault_delete_payment_method" = "이 결제 수단 삭제";
+"accessibility_vaulted_ach" = "%@ 은행 계좌";
+"accessibility_vaulted_ach_full" = "%@ 은행 계좌, 끝자리 %@";
+"accessibility_vaulted_card_full" = "%@ 카드, 끝자리 %@, 만료일 %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ 카드, 끝자리 %@, 만료일 %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "저장된 결제 수단: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "카드 추가";
 "primer_card_form_billing_address_title" = "청구 주소";
 "primer_card_form_error_address1_invalid" = "유효하지 않은 주소 1번 줄";

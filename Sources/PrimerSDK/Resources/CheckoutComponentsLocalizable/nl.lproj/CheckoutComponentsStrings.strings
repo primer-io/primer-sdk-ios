@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Betaling wordt verwerkt, even geduld";
 "accessibility_common_required" = "verplicht";
 "accessibility_common_selected" = "Geselecteerd";
+"accessibility_common_show_all" = "Alle opgeslagen betaalmethoden weergeven";
 "accessibility_country_selection_clear" = "Wissen";
 "accessibility_country_selection_item" = "%1$@, land";
 "accessibility_country_selection_search" = "Landen zoeken";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ betaalmethode";
 "accessibility_screen_processing_payment" = "Betaling wordt verwerkt";
 "accessibility_screen_success" = "Betaling geslaagd";
+"accessibility_vault_delete_payment_method" = "Deze betaalmethode verwijderen";
+"accessibility_vaulted_ach" = "%@ bankrekening";
+"accessibility_vaulted_ach_full" = "%@ bankrekening eindigend op %@";
+"accessibility_vaulted_card_full" = "%@ kaart eindigend op %@, verloopt %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kaart eindigend op %@, verloopt %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Opgeslagen betaalmethode: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Kaart toevoegen";
 "primer_card_form_billing_address_title" = "Factuuradres";
 "primer_card_form_error_address1_invalid" = "Ongeldige adresregel 1";

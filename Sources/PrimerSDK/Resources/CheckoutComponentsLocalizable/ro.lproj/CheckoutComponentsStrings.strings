@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Se procesează plata, vă rugăm așteptați";
 "accessibility_common_required" = "obligatoriu";
 "accessibility_common_selected" = "Selectat";
+"accessibility_common_show_all" = "Afișați toate metodele de plată salvate";
 "accessibility_country_selection_clear" = "Ștergeți";
 "accessibility_country_selection_item" = "%1$@, țară";
 "accessibility_country_selection_search" = "Căutați țări";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Metodă de plată %@";
 "accessibility_screen_processing_payment" = "Se procesează plata";
 "accessibility_screen_success" = "Plată reușită";
+"accessibility_vault_delete_payment_method" = "Ștergeți această metodă de plată";
+"accessibility_vaulted_ach" = "Cont bancar %@";
+"accessibility_vaulted_ach_full" = "Cont bancar %@ care se termină în %@";
+"accessibility_vaulted_card_full" = "Card %@ care se termină în %@, expiră %@, %@";
+"accessibility_vaulted_card_no_name" = "Card %@ care se termină în %@, expiră %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Metodă de plată salvată: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Adăugați card";
 "primer_card_form_billing_address_title" = "Adresă de facturare";
 "primer_card_form_error_address1_invalid" = "Adresa principală este invalidă";

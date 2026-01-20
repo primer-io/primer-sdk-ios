@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Maksājums tiek apstrādāts, lūdzu, uzgaidiet";
 "accessibility_common_required" = "obligāti";
 "accessibility_common_selected" = "Izvēlēts";
+"accessibility_common_show_all" = "Rādīt visas saglabātās maksājuma metodes";
 "accessibility_country_selection_clear" = "Notīrīt";
 "accessibility_country_selection_item" = "%1$@, valsts";
 "accessibility_country_selection_search" = "Meklēt valstis";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ maksājuma metode";
 "accessibility_screen_processing_payment" = "Maksājums tiek apstrādāts";
 "accessibility_screen_success" = "Maksājums veiksmīgs";
+"accessibility_vault_delete_payment_method" = "Dzēst šo maksājuma metodi";
+"accessibility_vaulted_ach" = "%@ bankas konts";
+"accessibility_vaulted_ach_full" = "%@ bankas konts ar beigu cipariem %@";
+"accessibility_vaulted_card_full" = "%@ karte ar beigu cipariem %@, derīga līdz %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ karte ar beigu cipariem %@, derīga līdz %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Saglabātā maksājuma metode: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Pievienot karti";
 "primer_card_form_billing_address_title" = "Norēķinu adrese";
 "primer_card_form_error_address1_invalid" = "Nederīga adreses 1. rindiņa";

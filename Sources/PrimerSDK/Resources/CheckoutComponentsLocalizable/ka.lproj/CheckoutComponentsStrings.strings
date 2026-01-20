@@ -161,6 +161,7 @@
 "accessibility_common_back" = "უკან დაბრუნება";
 "accessibility_common_dismiss" = "გათიშვა";
 "accessibility_common_selected" = "არჩეული";
+"accessibility_common_show_all" = "ყველა შენახული გადახდის მეთოდის ჩვენება";
 "accessibility_screen_success" = "გადახდა წარმატებულია";
 "accessibility_screen_error" = "გადახდის შეცდომა მოხდა";
 "accessibility_screen_country_selection" = "აირჩიეთ ქვეყანა";
@@ -186,4 +187,13 @@
 "accessibility_error_multiple_errors" = "მოიძებნა %d შეცდომა";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ გადახდის მეთოდი";
+"accessibility_vault_delete_payment_method" = "ამ გადახდის მეთოდის წაშლა";
+"accessibility_vaulted_ach" = "%@ საბანკო ანგარიში";
+"accessibility_vaulted_ach_full" = "%@ საბანკო ანგარიში, ბოლო ციფრები %@";
+"accessibility_vaulted_card_full" = "%@ ბარათი, ბოლო ციფრები %@, ვადა %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ ბარათი, ბოლო ციფრები %@, ვადა %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "შენახული გადახდის მეთოდი: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";

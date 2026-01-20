@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Назад";
 "accessibility_common_dismiss" = "Отфрли";
 "accessibility_common_selected" = "Избрано";
+"accessibility_common_show_all" = "Прикажи ги сите зачувани начини на плаќање";
 "accessibility_screen_success" = "Плаќањето е успешно";
 "accessibility_screen_error" = "Се случи грешка при плаќањето";
 "accessibility_screen_country_selection" = "Избери држава";
@@ -186,4 +187,13 @@
 "accessibility_payment_selection_card_masked" = "картичка завршува на маскирани цифри";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ начин на плаќање";
+"accessibility_vault_delete_payment_method" = "Избриши го овој начин на плаќање";
+"accessibility_vaulted_ach" = "%@ банкарска сметка";
+"accessibility_vaulted_ach_full" = "%@ банкарска сметка завршува на %@";
+"accessibility_vaulted_card_full" = "%@ картичка завршува на %@, истекува %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ картичка завршува на %@, истекува %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Зачуван начин на плаќање: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";

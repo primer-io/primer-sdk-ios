@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Ga terug";
 "accessibility_common_dismiss" = "Sluiten";
 "accessibility_common_selected" = "Geselecteerd";
+"accessibility_common_show_all" = "Alle opgeslagen betaalmethoden tonen";
 "accessibility_screen_success" = "Betaling geslaagd";
 "accessibility_screen_error" = "Betalingsfout opgetreden";
 "accessibility_screen_country_selection" = "Selecteer land";
@@ -186,4 +187,13 @@
 "accessibility_payment_selection_card_masked" = "kaart eindigend op gemaskeerde cijfers";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ betaalmethode";
+"accessibility_vault_delete_payment_method" = "Verwijder deze betaalmethode";
+"accessibility_vaulted_ach" = "%@ bankrekening";
+"accessibility_vaulted_ach_full" = "%@ bankrekening eindigend op %@";
+"accessibility_vaulted_card_full" = "%@ kaart eindigend op %@, verloopt %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kaart eindigend op %@, verloopt %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Opgeslagen betaalmethode: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";

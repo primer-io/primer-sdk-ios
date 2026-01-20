@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Memproses pembayaran, harap tunggu";
 "accessibility_common_required" = "wajib diisi";
 "accessibility_common_selected" = "Dipilih";
+"accessibility_common_show_all" = "Tampilkan semua metode pembayaran tersimpan";
 "accessibility_country_selection_clear" = "Hapus";
 "accessibility_country_selection_item" = "%1$@, negara";
 "accessibility_country_selection_search" = "Cari negara";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Metode pembayaran %@";
 "accessibility_screen_processing_payment" = "Memproses pembayaran";
 "accessibility_screen_success" = "Pembayaran berhasil";
+"accessibility_vault_delete_payment_method" = "Hapus metode pembayaran ini";
+"accessibility_vaulted_ach" = "Rekening bank %@";
+"accessibility_vaulted_ach_full" = "Rekening bank %@ berakhir pada %@";
+"accessibility_vaulted_card_full" = "Kartu %@ berakhir pada %@, kedaluwarsa %@, %@";
+"accessibility_vaulted_card_no_name" = "Kartu %@ berakhir pada %@, kedaluwarsa %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Metode pembayaran tersimpan: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Tambahkan kartu";
 "primer_card_form_billing_address_title" = "Alamat penagihan";
 "primer_card_form_error_address1_invalid" = "Baris Alamat 1 Tidak Valid";

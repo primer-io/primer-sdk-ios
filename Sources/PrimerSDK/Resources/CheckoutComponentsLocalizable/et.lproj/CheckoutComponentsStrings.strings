@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Makse töötlemine, palun oota";
 "accessibility_common_required" = "nõutav";
 "accessibility_common_selected" = "Valitud";
+"accessibility_common_show_all" = "Näita kõiki salvestatud makseviise";
 "accessibility_country_selection_clear" = "Tühjenda";
 "accessibility_country_selection_item" = "%1$@, riik";
 "accessibility_country_selection_search" = "Otsi riike";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ makseviis";
 "accessibility_screen_processing_payment" = "Makse töötlemine";
 "accessibility_screen_success" = "Makse õnnestus";
+"accessibility_vault_delete_payment_method" = "Kustuta see makseviis";
+"accessibility_vaulted_ach" = "%@ pangakonto";
+"accessibility_vaulted_ach_full" = "%@ pangakonto, mis lõpeb numbriga %@";
+"accessibility_vaulted_card_full" = "%@ kaart, mis lõpeb numbriga %@, aegub %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kaart, mis lõpeb numbriga %@, aegub %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Salvestatud makseviis: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Lisa kaart";
 "primer_card_form_billing_address_title" = "Arveaadress";
 "primer_card_form_error_address1_invalid" = "Kehtetu aadressirida 1";

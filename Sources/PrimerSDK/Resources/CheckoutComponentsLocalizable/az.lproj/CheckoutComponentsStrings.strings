@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Geri qayıt";
 "accessibility_common_dismiss" = "İmtina et";
 "accessibility_common_selected" = "Seçilib";
+"accessibility_common_show_all" = "Bütün saxlanmış ödəniş metodlarını göstər";
 "accessibility_screen_success" = "Ödəniş uğurla tamamlandı";
 "accessibility_screen_error" = "Ödəniş xətası baş verdi";
 "accessibility_screen_country_selection" = "Ölkə seçin";
@@ -183,7 +184,16 @@
 "accessibility_checkout_success_icon" = "Uğurlu ödəniş";
 "accessibility_checkout_error_icon" = "Xəta";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Bu ödəniş metodunu sil";
+"accessibility_vaulted_ach" = "%@ bank hesabı";
+"accessibility_vaulted_ach_full" = "%@ bank hesabı, sonu %@";
+"accessibility_vaulted_card_full" = "%@ kart, sonu %@, bitmə %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kart, sonu %@, bitmə %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Saxlanmış ödəniş metodu: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_error_generic" = "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.";
 "accessibility_error_multiple_errors" = "%d xəta tapıldı";
 "accessibility_screen_payment_method" = "%@ ödəniş metodu";

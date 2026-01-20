@@ -161,6 +161,7 @@
 "accessibility_common_back" = "واپس جائیں";
 "accessibility_common_dismiss" = "خارج کریں";
 "accessibility_common_selected" = "منتخب شدہ";
+"accessibility_common_show_all" = "تمام محفوظ شدہ ادائیگی کے طریقے دکھائیں";
 "accessibility_screen_success" = "ادائیگی کامیاب ہو گئی";
 "accessibility_screen_error" = "ادائیگی کی خرابی پیش آئی";
 "accessibility_screen_country_selection" = "ملک منتخب کریں";
@@ -182,7 +183,16 @@
 "accessibility_action_set_default" = "بطور ڈیفالٹ ادائیگی کا طریقہ مقرر کریں";
 "accessibility_checkout_success_icon" = "ادائیگی کامیاب";
 "accessibility_checkout_error_icon" = "خرابی";
+"accessibility_vault_delete_payment_method" = "یہ ادائیگی کا طریقہ حذف کریں";
+"accessibility_vaulted_ach" = "%@ بینک اکاؤنٹ";
+"accessibility_vaulted_ach_full" = "%@ بینک اکاؤنٹ جو %@ پر ختم ہوتا ہے";
+"accessibility_vaulted_card_full" = "%@ کارڈ جو %@ پر ختم ہوتا ہے، میعاد ختم %@، %@";
+"accessibility_vaulted_card_no_name" = "%@ کارڈ جو %@ پر ختم ہوتا ہے، میعاد ختم %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "محفوظ شدہ ادائیگی کا طریقہ: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ ادائیگی کا طریقہ";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔";

@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Bumalik";
 "accessibility_common_dismiss" = "I-dismiss";
 "accessibility_common_selected" = "Napili";
+"accessibility_common_show_all" = "Ipakita ang lahat ng naka-save na paraan ng pagbabayad";
 "accessibility_screen_success" = "Matagumpay ang pagbabayad";
 "accessibility_screen_error" = "Naganap ang error sa pagbabayad";
 "accessibility_screen_country_selection" = "Pumili ng bansa";
@@ -182,7 +183,16 @@
 "accessibility_action_set_default" = "Itakda bilang default na paraan ng pagbabayad";
 "accessibility_checkout_success_icon" = "Matagumpay ang pagbabayad";
 "accessibility_checkout_error_icon" = "Error";
+"accessibility_vault_delete_payment_method" = "Tanggalin ang paraan ng pagbabayad na ito";
+"accessibility_vaulted_ach" = "%@ bank account";
+"accessibility_vaulted_ach_full" = "%@ bank account na nagtatapos sa %@";
+"accessibility_vaulted_card_full" = "%@ kard na nagtatapos sa %@, mag-eexpire %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kard na nagtatapos sa %@, mag-eexpire %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Naka-save na paraan ng pagbabayad: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_error_generic" = "May naganap na error. Mangyaring subukan muli.";
 "accessibility_error_multiple_errors" = "%d na mga error ang natagpuan";
 "accessibility_paypal_logo" = "PayPal";

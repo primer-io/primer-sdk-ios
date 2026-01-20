@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Fizetés feldolgozása folyamatban, kérjük várjon";
 "accessibility_common_required" = "kötelező";
 "accessibility_common_selected" = "Kiválasztva";
+"accessibility_common_show_all" = "Összes mentett fizetési mód megjelenítése";
 "accessibility_country_selection_clear" = "Törlés";
 "accessibility_country_selection_item" = "%1$@, ország";
 "accessibility_country_selection_search" = "Országok keresése";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ fizetési mód";
 "accessibility_screen_processing_payment" = "Fizetés feldolgozása";
 "accessibility_screen_success" = "Sikeres fizetés";
+"accessibility_vault_delete_payment_method" = "Törölje ezt a fizetési módot";
+"accessibility_vaulted_ach" = "%@ bankszámla";
+"accessibility_vaulted_ach_full" = "%@ bankszámla, utolsó számok: %@";
+"accessibility_vaulted_card_full" = "%@ kártya, utolsó számok: %@, lejár: %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kártya, utolsó számok: %@, lejár: %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Mentett fizetési mód: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Kártya hozzáadása";
 "primer_card_form_billing_address_title" = "Számlázási cím";
 "primer_card_form_error_address1_invalid" = "Érvénytelen 1. címsor";

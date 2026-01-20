@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Apdorojamas mokėjimas, prašome palaukti";
 "accessibility_common_required" = "privaloma";
 "accessibility_common_selected" = "Pasirinkta";
+"accessibility_common_show_all" = "Rodyti visus išsaugotus mokėjimo būdus";
 "accessibility_country_selection_clear" = "Išvalyti";
 "accessibility_country_selection_item" = "%1$@, šalis";
 "accessibility_country_selection_search" = "Ieškoti šalių";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ mokėjimo būdas";
 "accessibility_screen_processing_payment" = "Apdorojamas mokėjimas";
 "accessibility_screen_success" = "Mokėjimas sėkmingas";
+"accessibility_vault_delete_payment_method" = "Ištrinti šį mokėjimo būdą";
+"accessibility_vaulted_ach" = "%@ banko sąskaita";
+"accessibility_vaulted_ach_full" = "%@ banko sąskaita, pabaiga %@";
+"accessibility_vaulted_card_full" = "%@ kortelė, pabaiga %@, galioja iki %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kortelė, pabaiga %@, galioja iki %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Išsaugotas mokėjimo būdas: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Pridėti kortelę";
 "primer_card_form_billing_address_title" = "Sąskaitos siuntimo adresas";
 "primer_card_form_error_address1_invalid" = "Neteisinga 1 adreso eilutė";

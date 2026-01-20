@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Артқа оралу";
 "accessibility_common_dismiss" = "Жабу";
 "accessibility_common_selected" = "Таңдалған";
+"accessibility_common_show_all" = "Барлық сақталған төлем әдістерін көрсету";
 "accessibility_screen_success" = "Төлем сәтті орындалды";
 "accessibility_screen_error" = "Төлем қатесі орын алды";
 "accessibility_screen_country_selection" = "Мемлекетті таңдау";
@@ -186,4 +187,13 @@
 "accessibility_error_multiple_errors" = "%d қате табылды";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ төлем әдісі";
+"accessibility_vault_delete_payment_method" = "Бұл төлем әдісін жою";
+"accessibility_vaulted_ach" = "%@ банк шоты";
+"accessibility_vaulted_ach_full" = "%@ банк шоты, соңы %@";
+"accessibility_vaulted_card_full" = "%@ картасы, соңы %@, мерзімі %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ картасы, соңы %@, мерзімі %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Сақталған төлем әдісі: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";

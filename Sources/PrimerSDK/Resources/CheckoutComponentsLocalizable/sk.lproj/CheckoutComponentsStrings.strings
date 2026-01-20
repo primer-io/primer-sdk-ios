@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Spracúvanie platby, prosím čakajte";
 "accessibility_common_required" = "povinné";
 "accessibility_common_selected" = "Vybrané";
+"accessibility_common_show_all" = "Zobraziť všetky uložené spôsoby platby";
 "accessibility_country_selection_clear" = "Vymazať";
 "accessibility_country_selection_item" = "%1$@, krajina";
 "accessibility_country_selection_search" = "Vyhľadať krajiny";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Spôsob platby %@";
 "accessibility_screen_processing_payment" = "Spracúvanie platby";
 "accessibility_screen_success" = "Platba úspešná";
+"accessibility_vault_delete_payment_method" = "Vymazať tento spôsob platby";
+"accessibility_vaulted_ach" = "%@ bankový účet";
+"accessibility_vaulted_ach_full" = "%@ bankový účet končiaci na %@";
+"accessibility_vaulted_card_full" = "%@ karta končiaca na %@, platnosť do %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ karta končiaca na %@, platnosť do %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Uložený spôsob platby: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Pridať kartu";
 "primer_card_form_billing_address_title" = "Fakturačná adresa";
 "primer_card_form_error_address1_invalid" = "Neplatný 1. riadok adresy";

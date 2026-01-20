@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "お支払い処理中です。お待ちください";
 "accessibility_common_required" = "必須";
 "accessibility_common_selected" = "選択済み";
+"accessibility_common_show_all" = "保存済みのお支払い方法をすべて表示";
 "accessibility_country_selection_clear" = "クリア";
 "accessibility_country_selection_item" = "%1$@、国";
 "accessibility_country_selection_search" = "国を検索";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@のお支払い方法";
 "accessibility_screen_processing_payment" = "お支払い処理中";
 "accessibility_screen_success" = "お支払いが完了しました";
+"accessibility_vault_delete_payment_method" = "このお支払い方法を削除";
+"accessibility_vaulted_ach" = "%@銀行口座";
+"accessibility_vaulted_ach_full" = "%@銀行口座、末尾%@";
+"accessibility_vaulted_card_full" = "%@カード、末尾%@、有効期限%@、%@";
+"accessibility_vaulted_card_no_name" = "%@カード、末尾%@、有効期限%@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna、%@";
+"accessibility_vaulted_payment_method" = "保存済みのお支払い方法: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal、%@";
 "primer_card_form_add_card" = "カードを追加";
 "primer_card_form_billing_address_title" = "請求先住所";
 "primer_card_form_error_address1_invalid" = "住所1が無効です";

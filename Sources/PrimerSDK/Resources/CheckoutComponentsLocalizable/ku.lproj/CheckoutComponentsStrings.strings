@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Vegere";
 "accessibility_common_dismiss" = "Bifire";
 "accessibility_common_selected" = "Hatiye hilbijartin";
+"accessibility_common_show_all" = "Hemû rêbazên daynê yên veşartî nîşan bide";
 "accessibility_screen_success" = "Dayn serkeftî bû";
 "accessibility_screen_error" = "Xeletîya daynê qewimî";
 "accessibility_screen_country_selection" = "Welatê hilbijêre";
@@ -184,6 +185,15 @@
 "accessibility_checkout_success_icon" = "Serkeftî";
 "accessibility_checkout_error_icon" = "Xeletî";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Vê rêbaza daynê jê bibe";
+"accessibility_vaulted_ach" = "%@ hesabê bankê";
+"accessibility_vaulted_ach_full" = "%@ hesabê bankê ku bi %@ diqede";
+"accessibility_vaulted_card_full" = "%@ kart bi %@ diqede, diqede %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kart bi %@ diqede, diqede %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Rêbaza daynê ya veşartî: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_error_generic" = "Xeletîyek çêbû. Ji kerema xwe dîsa biceribîne.";
 "accessibility_error_multiple_errors" = "%d xeletî hatin dîtin";

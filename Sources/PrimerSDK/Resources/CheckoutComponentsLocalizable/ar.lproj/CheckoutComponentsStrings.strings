@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "جاري معالجة الدفع، يرجى الانتظار";
 "accessibility_common_required" = "مطلوب";
 "accessibility_common_selected" = "محدد";
+"accessibility_common_show_all" = "عرض جميع طرق الدفع المحفوظة";
 "accessibility_country_selection_clear" = "مسح";
 "accessibility_country_selection_item" = "%1$@، دولة";
 "accessibility_country_selection_search" = "البحث عن الدول";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "طريقة الدفع %@";
 "accessibility_screen_processing_payment" = "جاري معالجة الدفع";
 "accessibility_screen_success" = "تمت عملية الدفع بنجاح";
+"accessibility_vault_delete_payment_method" = "حذف طريقة الدفع هذه";
+"accessibility_vaulted_ach" = "حساب بنكي %@";
+"accessibility_vaulted_ach_full" = "حساب بنكي %@ ينتهي بـ %@";
+"accessibility_vaulted_card_full" = "بطاقة %@ تنتهي بـ %@، تنتهي في %@، %@";
+"accessibility_vaulted_card_no_name" = "بطاقة %@ تنتهي بـ %@، تنتهي في %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna، %@";
+"accessibility_vaulted_payment_method" = "طريقة دفع محفوظة: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal، %@";
 "primer_card_form_add_card" = "إضافة بطاقة";
 "primer_card_form_billing_address_title" = "عنوان الفواتير";
 "primer_card_form_error_address1_invalid" = "سطر العنوان 1 غير صالح";

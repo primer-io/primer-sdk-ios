@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Kthehu mbrapa";
 "accessibility_common_dismiss" = "Hidhe tej";
 "accessibility_common_selected" = "E zgjedhur";
+"accessibility_common_show_all" = "Shfaq të gjitha metodat e pagesës të ruajtura";
 "accessibility_screen_success" = "Pagesa u krye me sukses";
 "accessibility_screen_error" = "Ndodhi një gabim në pagesë";
 "accessibility_screen_country_selection" = "Zgjidhni vendin";
@@ -186,4 +187,13 @@
 "accessibility_error_generic" = "Ndodhi një gabim. Ju lutem provoni përsëri.";
 "accessibility_error_multiple_errors" = "%d gabime u gjetën";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Fshi këtë metodë pagese";
+"accessibility_vaulted_ach" = "Llogaria bankare %@";
+"accessibility_vaulted_ach_full" = "Llogaria bankare %@ që përfundon në %@";
+"accessibility_vaulted_card_full" = "Karta %@ që përfundon në %@, skadon %@, %@";
+"accessibility_vaulted_card_no_name" = "Karta %@ që përfundon në %@, skadon %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Metoda e pagesës e ruajtur: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";

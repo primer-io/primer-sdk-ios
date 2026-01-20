@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Обработване на плащането, моля изчакайте";
 "accessibility_common_required" = "задължително";
 "accessibility_common_selected" = "Избрано";
+"accessibility_common_show_all" = "Покажи всички запазени методи за плащане";
 "accessibility_country_selection_clear" = "Изчисти";
 "accessibility_country_selection_item" = "%1$@, държава";
 "accessibility_country_selection_search" = "Търси държави";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ метод на плащане";
 "accessibility_screen_processing_payment" = "Обработване на плащането";
 "accessibility_screen_success" = "Плащането е успешно";
+"accessibility_vault_delete_payment_method" = "Изтрий този метод на плащане";
+"accessibility_vaulted_ach" = "%@ банкова сметка";
+"accessibility_vaulted_ach_full" = "%@ банкова сметка завършваща на %@";
+"accessibility_vaulted_card_full" = "%@ карта завършваща на %@, валидна до %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ карта завършваща на %@, валидна до %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Запазен метод на плащане: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Добави карта";
 "primer_card_form_billing_address_title" = "Адрес за фактуриране";
 "primer_card_form_error_address1_invalid" = "Невалиден адрес ред 1";

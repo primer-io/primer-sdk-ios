@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "กำลังดำเนินการชำระเงิน กรุณารอสักครู่";
 "accessibility_common_required" = "จำเป็น";
 "accessibility_common_selected" = "เลือกแล้ว";
+"accessibility_common_show_all" = "แสดงวิธีการชำระเงินที่บันทึกไว้ทั้งหมด";
 "accessibility_country_selection_clear" = "ล้าง";
 "accessibility_country_selection_item" = "%1$@ ประเทศ";
 "accessibility_country_selection_search" = "ค้นหาประเทศ";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "วิธีการชำระเงิน %@";
 "accessibility_screen_processing_payment" = "กำลังดำเนินการชำระเงิน";
 "accessibility_screen_success" = "ชำระเงินสำเร็จ";
+"accessibility_vault_delete_payment_method" = "ลบวิธีการชำระเงินนี้";
+"accessibility_vaulted_ach" = "บัญชีธนาคาร %@";
+"accessibility_vaulted_ach_full" = "บัญชีธนาคาร %@ ลงท้ายด้วย %@";
+"accessibility_vaulted_card_full" = "บัตร %@ ลงท้ายด้วย %@ หมดอายุ %@ %@";
+"accessibility_vaulted_card_no_name" = "บัตร %@ ลงท้ายด้วย %@ หมดอายุ %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "วิธีการชำระเงินที่บันทึกไว้: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "เพิ่มบัตร";
 "primer_card_form_billing_address_title" = "ที่อยู่สำหรับการออกบิล";
 "primer_card_form_error_address1_invalid" = "ที่อยู่บรรทัดที่ 1 ไม่ถูกต้อง";

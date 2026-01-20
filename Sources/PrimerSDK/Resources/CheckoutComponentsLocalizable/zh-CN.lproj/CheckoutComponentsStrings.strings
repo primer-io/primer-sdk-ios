@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "正在处理支付，请稍候";
 "accessibility_common_required" = "必填";
 "accessibility_common_selected" = "已选择";
+"accessibility_common_show_all" = "显示所有已保存的支付方式";
 "accessibility_country_selection_clear" = "清除";
 "accessibility_country_selection_item" = "%1$@，国家";
 "accessibility_country_selection_search" = "搜索国家";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@支付方式";
 "accessibility_screen_processing_payment" = "正在处理支付";
 "accessibility_screen_success" = "支付成功";
+"accessibility_vault_delete_payment_method" = "删除此支付方式";
+"accessibility_vaulted_ach" = "%@银行账户";
+"accessibility_vaulted_ach_full" = "%@银行账户，尾号%@";
+"accessibility_vaulted_card_full" = "%@卡，尾号%@，有效期至%@，%@";
+"accessibility_vaulted_card_no_name" = "%@卡，尾号%@，有效期至%@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna，%@";
+"accessibility_vaulted_payment_method" = "已保存的支付方式：%@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal，%@";
 "primer_card_form_add_card" = "添加卡片";
 "primer_card_form_billing_address_title" = "账单地址";
 "primer_card_form_error_address1_invalid" = "地址行1无效";

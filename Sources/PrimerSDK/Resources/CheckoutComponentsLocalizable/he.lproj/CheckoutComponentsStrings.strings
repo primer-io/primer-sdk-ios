@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "מעבד תשלום, אנא המתן";
 "accessibility_common_required" = "נדרש";
 "accessibility_common_selected" = "נבחר";
+"accessibility_common_show_all" = "הצג את כל אמצעי התשלום השמורים";
 "accessibility_country_selection_clear" = "נקה";
 "accessibility_country_selection_item" = "%1$@, מדינה";
 "accessibility_country_selection_search" = "חפש מדינות";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "אמצעי תשלום %@";
 "accessibility_screen_processing_payment" = "מעבד תשלום";
 "accessibility_screen_success" = "התשלום הושלם בהצלחה";
+"accessibility_vault_delete_payment_method" = "מחק אמצעי תשלום זה";
+"accessibility_vaulted_ach" = "חשבון בנק %@";
+"accessibility_vaulted_ach_full" = "חשבון בנק %@ המסתיים ב-%@";
+"accessibility_vaulted_card_full" = "כרטיס %@ המסתיים ב-%@, תוקף עד %@, %@";
+"accessibility_vaulted_card_no_name" = "כרטיס %@ המסתיים ב-%@, תוקף עד %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "אמצעי תשלום שמור: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "הוסף כרטיס";
 "primer_card_form_billing_address_title" = "כתובת לחיוב";
 "primer_card_form_error_address1_invalid" = "שורת כתובת 1 לא תקינה";

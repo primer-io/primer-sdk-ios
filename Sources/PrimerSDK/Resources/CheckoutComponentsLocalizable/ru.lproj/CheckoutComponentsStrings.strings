@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Обработка платежа, пожалуйста, подождите";
 "accessibility_common_required" = "обязательное поле";
 "accessibility_common_selected" = "Выбрано";
+"accessibility_common_show_all" = "Показать все сохраненные способы оплаты";
 "accessibility_country_selection_clear" = "Очистить";
 "accessibility_country_selection_item" = "%1$@, страна";
 "accessibility_country_selection_search" = "Поиск стран";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Способ оплаты: %@";
 "accessibility_screen_processing_payment" = "Обработка платежа";
 "accessibility_screen_success" = "Платеж выполнен успешно";
+"accessibility_vault_delete_payment_method" = "Удалить этот способ оплаты";
+"accessibility_vaulted_ach" = "Банковский счет %@";
+"accessibility_vaulted_ach_full" = "Банковский счет %@, оканчивающийся на %@";
+"accessibility_vaulted_card_full" = "Карта %@, оканчивающаяся на %@, срок действия %@, %@";
+"accessibility_vaulted_card_no_name" = "Карта %@, оканчивающаяся на %@, срок действия %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Сохраненный способ оплаты: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Добавить карту";
 "primer_card_form_billing_address_title" = "Платежный адрес";
 "primer_card_form_error_address1_invalid" = "Неверная адресная строка 1";

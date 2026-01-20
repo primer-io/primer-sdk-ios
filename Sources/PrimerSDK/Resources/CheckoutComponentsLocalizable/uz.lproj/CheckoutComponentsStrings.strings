@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Orqaga qaytish";
 "accessibility_common_dismiss" = "Yopish";
 "accessibility_common_selected" = "Tanlangan";
+"accessibility_common_show_all" = "Barcha saqlangan to'lov usullarini ko'rsatish";
 "accessibility_screen_success" = "To'lov muvaffaqiyatli";
 "accessibility_screen_error" = "To'lov xatosi yuz berdi";
 "accessibility_screen_country_selection" = "Mamlakatni tanlash";
@@ -183,7 +184,16 @@
 "accessibility_checkout_success_icon" = "To'lov muvaffaqiyatli";
 "accessibility_checkout_error_icon" = "Xato";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Bu to'lov usulini o'chirish";
+"accessibility_vaulted_ach" = "%@ bank hisobi";
+"accessibility_vaulted_ach_full" = "%@ bank hisobi, oxiri %@";
+"accessibility_vaulted_card_full" = "%@ karta, oxiri %@, muddati %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ karta, oxiri %@, muddati %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Saqlangan to'lov usuli: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_error_generic" = "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.";
 "accessibility_error_multiple_errors" = "%d ta xato topildi";
 "accessibility_screen_payment_method" = "%@ to'lov usuli";

@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Ödeme işleniyor, lütfen bekleyin";
 "accessibility_common_required" = "zorunlu";
 "accessibility_common_selected" = "Seçildi";
+"accessibility_common_show_all" = "Tüm kayıtlı ödeme yöntemlerini göster";
 "accessibility_country_selection_clear" = "Temizle";
 "accessibility_country_selection_item" = "%1$@, ülke";
 "accessibility_country_selection_search" = "Ülke ara";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ ödeme yöntemi";
 "accessibility_screen_processing_payment" = "Ödeme işleniyor";
 "accessibility_screen_success" = "Ödeme başarılı";
+"accessibility_vault_delete_payment_method" = "Bu ödeme yöntemini sil";
+"accessibility_vaulted_ach" = "%@ banka hesabı";
+"accessibility_vaulted_ach_full" = "%@ banka hesabı, son rakamları %@";
+"accessibility_vaulted_card_full" = "%@ kartı, son rakamları %@, son kullanma %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kartı, son rakamları %@, son kullanma %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Kayıtlı ödeme yöntemi: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Kart ekle";
 "primer_card_form_billing_address_title" = "Fatura adresi";
 "primer_card_form_error_address1_invalid" = "Geçersiz Adres Satırı 1";

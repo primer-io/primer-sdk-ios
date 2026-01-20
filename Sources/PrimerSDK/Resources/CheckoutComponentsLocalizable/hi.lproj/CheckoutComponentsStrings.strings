@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "भुगतान संसाधित हो रहा है, कृपया प्रतीक्षा करें";
 "accessibility_common_required" = "आवश्यक";
 "accessibility_common_selected" = "चयनित";
+"accessibility_common_show_all" = "सभी सहेजी गई भुगतान विधियाँ दिखाएं";
 "accessibility_country_selection_clear" = "साफ़ करें";
 "accessibility_country_selection_item" = "%1$@, देश";
 "accessibility_country_selection_search" = "देश खोजें";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ भुगतान विधि";
 "accessibility_screen_processing_payment" = "भुगतान संसाधित हो रहा है";
 "accessibility_screen_success" = "भुगतान सफल";
+"accessibility_vault_delete_payment_method" = "इस भुगतान विधि को हटाएं";
+"accessibility_vaulted_ach" = "%@ बैंक खाता";
+"accessibility_vaulted_ach_full" = "%@ बैंक खाता %@ में समाप्त होता है";
+"accessibility_vaulted_card_full" = "%@ कार्ड %@ में समाप्त होता है, %@ को समाप्त होगा, %@";
+"accessibility_vaulted_card_no_name" = "%@ कार्ड %@ में समाप्त होता है, %@ को समाप्त होगा";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "सहेजी गई भुगतान विधि: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "कार्ड जोड़ें";
 "primer_card_form_billing_address_title" = "बिलिंग पता";
 "primer_card_form_error_address1_invalid" = "अमान्य पता पंक्ति 1";

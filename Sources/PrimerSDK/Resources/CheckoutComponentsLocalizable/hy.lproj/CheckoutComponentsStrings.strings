@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Վերադառնալ";
 "accessibility_common_dismiss" = "Հեռացնել";
 "accessibility_common_selected" = "Ընտրված";
+"accessibility_common_show_all" = " Delays";
 "accessibility_screen_success" = "Վճարումն իրականացվել է";
 "accessibility_screen_error" = "Վճարման սխալ է տեղի ունեցել";
 "accessibility_screen_country_selection" = "Ընտրեք երկիր";
@@ -182,7 +183,16 @@
 "accessibility_action_set_default" = "Սահմանել որպես կանխադրված վճարման եղանակ";
 "accessibility_checkout_success_icon" = "Վճարումն իրականացվել է";
 "accessibility_checkout_error_icon" = "Սխալ";
+"accessibility_vault_delete_payment_method" = "Ջdelays";
+"accessibility_vaulted_ach" = "%@ delays";
+"accessibility_vaulted_ach_full" = "%@ delays %@-delays";
+"accessibility_vaulted_card_full" = "%@ delays %@-delays, delays %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ delays %@-delays, delays %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "delays: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ վճարման եղանակ";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "Սխալ է տեղի ունեցել։ Խնդրում ենք կրկին փորձել։";

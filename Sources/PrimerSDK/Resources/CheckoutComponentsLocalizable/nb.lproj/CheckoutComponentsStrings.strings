@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Behandler betaling, vennligst vent";
 "accessibility_common_required" = "påkrevd";
 "accessibility_common_selected" = "Valgt";
+"accessibility_common_show_all" = "Vis alle lagrede betalingsmetoder";
 "accessibility_country_selection_clear" = "Tøm";
 "accessibility_country_selection_item" = "%1$@, land";
 "accessibility_country_selection_search" = "Søk etter land";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ betalingsmetode";
 "accessibility_screen_processing_payment" = "Behandler betaling";
 "accessibility_screen_success" = "Betaling vellykket";
+"accessibility_vault_delete_payment_method" = "Slett denne betalingsmetoden";
+"accessibility_vaulted_ach" = "%@ bankkonto";
+"accessibility_vaulted_ach_full" = "%@ bankkonto som slutter på %@";
+"accessibility_vaulted_card_full" = "%@ kort som slutter på %@, utløper %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kort som slutter på %@, utløper %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Lagret betalingsmetode: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Legg til kort";
 "primer_card_form_billing_address_title" = "Fakturaadresse";
 "primer_card_form_error_address1_invalid" = "Ugyldig adresselinje 1";

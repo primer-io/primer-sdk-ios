@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Επεξεργασία πληρωμής, παρακαλώ περιμένετε";
 "accessibility_common_required" = "απαιτείται";
 "accessibility_common_selected" = "Επιλεγμένο";
+"accessibility_common_show_all" = "Εμφάνιση όλων των αποθηκευμένων μεθόδων πληρωμής";
 "accessibility_country_selection_clear" = "Εκκαθάριση";
 "accessibility_country_selection_item" = "%1$@, χώρα";
 "accessibility_country_selection_search" = "Αναζήτηση χωρών";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Μέθοδος πληρωμής %@";
 "accessibility_screen_processing_payment" = "Επεξεργασία πληρωμής";
 "accessibility_screen_success" = "Επιτυχής πληρωμή";
+"accessibility_vault_delete_payment_method" = "Διαγραφή αυτής της μεθόδου πληρωμής";
+"accessibility_vaulted_ach" = "Τραπεζικός λογαριασμός %@";
+"accessibility_vaulted_ach_full" = "Τραπεζικός λογαριασμός %@ που λήγει σε %@";
+"accessibility_vaulted_card_full" = "Κάρτα %@ που λήγει σε %@, λήγει %@, %@";
+"accessibility_vaulted_card_no_name" = "Κάρτα %@ που λήγει σε %@, λήγει %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Αποθηκευμένη μέθοδος πληρωμής: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Προσθήκη κάρτας";
 "primer_card_form_billing_address_title" = "Διεύθυνση χρέωσης";
 "primer_card_form_error_address1_invalid" = "Μη έγκυρη διεύθυνση γραμμή 1";

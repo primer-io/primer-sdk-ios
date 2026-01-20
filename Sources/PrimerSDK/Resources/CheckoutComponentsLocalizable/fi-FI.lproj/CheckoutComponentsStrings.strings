@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Käsitellään maksua, odota";
 "accessibility_common_required" = "pakollinen";
 "accessibility_common_selected" = "Valittu";
+"accessibility_common_show_all" = "Näytä kaikki tallennetut maksutavat";
 "accessibility_country_selection_clear" = "Tyhjennä";
 "accessibility_country_selection_item" = "%1$@, maa";
 "accessibility_country_selection_search" = "Hae maita";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ maksutapa";
 "accessibility_screen_processing_payment" = "Käsitellään maksua";
 "accessibility_screen_success" = "Maksu onnistui";
+"accessibility_vault_delete_payment_method" = "Poista tämä maksutapa";
+"accessibility_vaulted_ach" = "%@ pankkitili";
+"accessibility_vaulted_ach_full" = "%@ pankkitili päättyy numeroon %@";
+"accessibility_vaulted_card_full" = "%@ kortti päättyy numeroon %@, vanhenee %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kortti päättyy numeroon %@, vanhenee %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Tallennettu maksutapa: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Lisää kortti";
 "primer_card_form_billing_address_title" = "Laskutusosoite";
 "primer_card_form_error_address1_invalid" = "Virheellinen osoiterivi 1";

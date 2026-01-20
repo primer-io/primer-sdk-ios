@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Obrada plaćanja, molimo pričekajte";
 "accessibility_common_required" = "obavezno";
 "accessibility_common_selected" = "Odabrano";
+"accessibility_common_show_all" = "Prikaži sve spremljene načine plaćanja";
 "accessibility_country_selection_clear" = "Očisti";
 "accessibility_country_selection_item" = "%1$@, država";
 "accessibility_country_selection_search" = "Pretraži države";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ način plaćanja";
 "accessibility_screen_processing_payment" = "Obrada plaćanja";
 "accessibility_screen_success" = "Plaćanje uspješno";
+"accessibility_vault_delete_payment_method" = "Izbriši ovaj način plaćanja";
+"accessibility_vaulted_ach" = "%@ bankovni račun";
+"accessibility_vaulted_ach_full" = "%@ bankovni račun koji završava na %@";
+"accessibility_vaulted_card_full" = "%@ kartica koja završava na %@, ističe %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kartica koja završava na %@, ističe %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Spremljeni način plaćanja: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Dodaj karticu";
 "primer_card_form_billing_address_title" = "Adresa za naplatu";
 "primer_card_form_error_address1_invalid" = "Nevažeći adresni redak 1";

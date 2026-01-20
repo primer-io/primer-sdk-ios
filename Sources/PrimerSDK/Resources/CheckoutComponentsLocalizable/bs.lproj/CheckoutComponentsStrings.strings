@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Idi nazad";
 "accessibility_common_dismiss" = "Odbaci";
 "accessibility_common_selected" = "Odabrano";
+"accessibility_common_show_all" = "Prikaži sve sačuvane načine plaćanja";
 "accessibility_screen_success" = "Plaćanje uspješno";
 "accessibility_screen_error" = "Došlo je do greške pri plaćanju";
 "accessibility_screen_country_selection" = "Odaberi državu";
@@ -180,7 +181,16 @@
 "accessibility_checkout_success_icon" = "Uspješno";
 "accessibility_checkout_error_icon" = "Greška";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Obriši ovaj način plaćanja";
+"accessibility_vaulted_ach" = "Bankovni račun %@";
+"accessibility_vaulted_ach_full" = "Bankovni račun %@ sa završetkom %@";
+"accessibility_vaulted_card_full" = "%@ kartica sa završetkom %@, ističe %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ kartica sa završetkom %@, ističe %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Sačuvani način plaćanja: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "Način plaćanja %@";
 "accessibility_payment_selection_card_masked" = "kartica sa završetkom u maskiranim ciframa";
 "accessibility_action_edit" = "Uredi detalje kartice";

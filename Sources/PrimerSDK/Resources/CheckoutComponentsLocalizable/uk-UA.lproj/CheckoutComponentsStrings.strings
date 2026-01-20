@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Обробка платежу, будь ласка, зачекайте";
 "accessibility_common_required" = "обов'язково";
 "accessibility_common_selected" = "Вибрано";
+"accessibility_common_show_all" = "Показати всі збережені способи оплати";
 "accessibility_country_selection_clear" = "Очистити";
 "accessibility_country_selection_item" = "%1$@, країна";
 "accessibility_country_selection_search" = "Пошук країн";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Спосіб оплати %@";
 "accessibility_screen_processing_payment" = "Обробка платежу";
 "accessibility_screen_success" = "Платіж успішний";
+"accessibility_vault_delete_payment_method" = "Видалити цей спосіб оплати";
+"accessibility_vaulted_ach" = "Банківський рахунок %@";
+"accessibility_vaulted_ach_full" = "Банківський рахунок %@, що закінчується на %@";
+"accessibility_vaulted_card_full" = "Картка %@, що закінчується на %@, дійсна до %@, %@";
+"accessibility_vaulted_card_no_name" = "Картка %@, що закінчується на %@, дійсна до %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Збережений спосіб оплати: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Додати картку";
 "primer_card_form_billing_address_title" = "Адреса для виставлення рахунку";
 "primer_card_form_error_address1_invalid" = "Невірний адресний рядок 1";

@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Behandlar betalning, vänligen vänta";
 "accessibility_common_required" = "obligatorisk";
 "accessibility_common_selected" = "Vald";
+"accessibility_common_show_all" = "Visa alla sparade betalningsmetoder";
 "accessibility_country_selection_clear" = "Rensa";
 "accessibility_country_selection_item" = "%1$@, land";
 "accessibility_country_selection_search" = "Sök länder";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ betalningsmetod";
 "accessibility_screen_processing_payment" = "Behandlar betalning";
 "accessibility_screen_success" = "Betalningen lyckades";
+"accessibility_vault_delete_payment_method" = "Ta bort denna betalningsmetod";
+"accessibility_vaulted_ach" = "%@ bankkonto";
+"accessibility_vaulted_ach_full" = "%@ bankkonto som slutar på %@";
+"accessibility_vaulted_card_full" = "%@-kort som slutar på %@, utgår %@, %@";
+"accessibility_vaulted_card_no_name" = "%@-kort som slutar på %@, utgår %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Sparad betalningsmetod: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Lägg till kort";
 "primer_card_form_billing_address_title" = "Faktureringsadress";
 "primer_card_form_error_address1_invalid" = "Ogiltig adressrad 1";

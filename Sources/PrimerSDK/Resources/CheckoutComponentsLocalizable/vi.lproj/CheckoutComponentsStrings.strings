@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Đang xử lý thanh toán, vui lòng đợi";
 "accessibility_common_required" = "bắt buộc";
 "accessibility_common_selected" = "Đã chọn";
+"accessibility_common_show_all" = "Hiển thị tất cả phương thức thanh toán đã lưu";
 "accessibility_country_selection_clear" = "Xóa";
 "accessibility_country_selection_item" = "%1$@, quốc gia";
 "accessibility_country_selection_search" = "Tìm kiếm quốc gia";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Phương thức thanh toán %@";
 "accessibility_screen_processing_payment" = "Đang xử lý thanh toán";
 "accessibility_screen_success" = "Thanh toán thành công";
+"accessibility_vault_delete_payment_method" = "Xóa phương thức thanh toán này";
+"accessibility_vaulted_ach" = "Tài khoản ngân hàng %@";
+"accessibility_vaulted_ach_full" = "Tài khoản ngân hàng %@ kết thúc bằng %@";
+"accessibility_vaulted_card_full" = "Thẻ %@ kết thúc bằng %@, hết hạn %@, %@";
+"accessibility_vaulted_card_no_name" = "Thẻ %@ kết thúc bằng %@, hết hạn %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Phương thức thanh toán đã lưu: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Thêm thẻ";
 "primer_card_form_billing_address_title" = "Địa chỉ thanh toán";
 "primer_card_form_error_address1_invalid" = "Dòng địa chỉ 1 không hợp lệ";

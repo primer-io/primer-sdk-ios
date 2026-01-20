@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Processing payment, please wait";
 "accessibility_common_required" = "required";
 "accessibility_common_selected" = "Selected";
+"accessibility_common_show_all" = "Show all saved payment methods";
 "accessibility_country_selection_clear" = "Clear";
 "accessibility_country_selection_item" = "%1$@, country";
 "accessibility_country_selection_search" = "Search countries";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "%@ payment method";
 "accessibility_screen_processing_payment" = "Processing payment";
 "accessibility_screen_success" = "Payment successful";
+"accessibility_vault_delete_payment_method" = "Delete this payment method";
+"accessibility_vaulted_ach" = "%@ bank account";
+"accessibility_vaulted_ach_full" = "%@ bank account ending in %@";
+"accessibility_vaulted_card_full" = "%@ card ending in %@, expires %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ card ending in %@, expires %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Saved payment method: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Add card";
 "primer_card_form_billing_address_title" = "Billing address";
 "primer_card_form_error_address1_invalid" = "Invalid Address Line 1";

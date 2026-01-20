@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Processant el pagament, si us plau espereu";
 "accessibility_common_required" = "obligatori";
 "accessibility_common_selected" = "Seleccionat";
+"accessibility_common_show_all" = "Mostra tots els mètodes de pagament desats";
 "accessibility_country_selection_clear" = "Esborra";
 "accessibility_country_selection_item" = "%1$@, país";
 "accessibility_country_selection_search" = "Cerca països";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Mètode de pagament %@";
 "accessibility_screen_processing_payment" = "Processant el pagament";
 "accessibility_screen_success" = "Pagament correcte";
+"accessibility_vault_delete_payment_method" = "Suprimeix aquest mètode de pagament";
+"accessibility_vaulted_ach" = "Compte bancari %@";
+"accessibility_vaulted_ach_full" = "Compte bancari %@ acabat en %@";
+"accessibility_vaulted_card_full" = "Targeta %@ acabada en %@, caduca %@, %@";
+"accessibility_vaulted_card_no_name" = "Targeta %@ acabada en %@, caduca %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Mètode de pagament desat: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Afegeix una targeta";
 "primer_card_form_billing_address_title" = "Adreça de facturació";
 "primer_card_form_error_address1_invalid" = "Línia d'adreça 1 no vàlida";

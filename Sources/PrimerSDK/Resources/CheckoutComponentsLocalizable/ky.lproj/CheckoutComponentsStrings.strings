@@ -161,6 +161,7 @@
 "accessibility_common_back" = "Артка кайтуу";
 "accessibility_common_dismiss" = "Жабуу";
 "accessibility_common_selected" = "Тандалды";
+"accessibility_common_show_all" = "Бардык сакталган төлөм ыкмаларын көрсөтүү";
 "accessibility_screen_success" = "Төлөм ийгиликтүү";
 "accessibility_screen_error" = "Төлөм катасы кетти";
 "accessibility_screen_country_selection" = "Өлкөнү тандоо";
@@ -180,7 +181,16 @@
 "accessibility_checkout_success_icon" = "Ийгилик";
 "accessibility_checkout_error_icon" = "Ката";
 "accessibility_paypal_logo" = "PayPal";
+"accessibility_vault_delete_payment_method" = "Бул төлөм ыкмасын өчүрүү";
+"accessibility_vaulted_ach" = "%@ банк эсеби";
+"accessibility_vaulted_ach_full" = "%@ банк эсеби, аягы %@";
+"accessibility_vaulted_card_full" = "%@ карта, аягы %@, мөөнөтү %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ карта, аягы %@, мөөнөтү %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Сакталган төлөм ыкмасы: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_payment_selection_card_masked" = "жашыруун сандар менен аяктаган карта";
 "accessibility_screen_payment_method" = "%@ төлөм ыкмасы";
 "accessibility_error_generic" = "Ката кетти. Кайра аракет кылыңыз.";

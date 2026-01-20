@@ -161,6 +161,7 @@
 "accessibility_common_back" = "بازگشت";
 "accessibility_common_dismiss" = "بستن";
 "accessibility_common_selected" = "انتخاب شده";
+"accessibility_common_show_all" = "نمایش همه روش‌های پرداخت ذخیره‌شده";
 "accessibility_screen_success" = "پرداخت موفق";
 "accessibility_screen_error" = "خطای پرداخت رخ داد";
 "accessibility_screen_country_selection" = "انتخاب کشور";
@@ -186,4 +187,13 @@
 "accessibility_payment_selection_card_masked" = "کارت با ارقام پنهان";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "روش پرداخت %@";
-"accessibility_vaulted_paypal" = "حساب PayPal %1$@";
+"accessibility_vault_delete_payment_method" = "حذف این روش پرداخت";
+"accessibility_vaulted_ach" = "حساب بانکی %@";
+"accessibility_vaulted_ach_full" = "حساب بانکی %@ با پایان %@";
+"accessibility_vaulted_card_full" = "کارت %@ با پایان %@، انقضا %@، %@";
+"accessibility_vaulted_card_no_name" = "کارت %@ با پایان %@، انقضا %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna، %@";
+"accessibility_vaulted_payment_method" = "روش پرداخت ذخیره‌شده: %@";
+"accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal، %@";

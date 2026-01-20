@@ -45,6 +45,7 @@
 "accessibility_common_processing_payment" = "Przetwarzanie płatności, proszę czekać";
 "accessibility_common_required" = "wymagane";
 "accessibility_common_selected" = "Wybrane";
+"accessibility_common_show_all" = "Pokaż wszystkie zapisane metody płatności";
 "accessibility_country_selection_clear" = "Wyczyść";
 "accessibility_country_selection_item" = "%1$@, kraj";
 "accessibility_country_selection_search" = "Wyszukaj kraje";
@@ -65,7 +66,16 @@
 "accessibility_screen_payment_method" = "Metoda płatności %@";
 "accessibility_screen_processing_payment" = "Przetwarzanie płatności";
 "accessibility_screen_success" = "Płatność zakończona sukcesem";
+"accessibility_vault_delete_payment_method" = "Usuń tę metodę płatności";
+"accessibility_vaulted_ach" = "Konto bankowe %@";
+"accessibility_vaulted_ach_full" = "Konto bankowe %@ kończące się na %@";
+"accessibility_vaulted_card_full" = "Karta %@ kończąca się na %@, ważna do %@, %@";
+"accessibility_vaulted_card_no_name" = "Karta %@ kończąca się na %@, ważna do %@";
+"accessibility_vaulted_klarna" = "Klarna";
+"accessibility_vaulted_klarna_email" = "Klarna, %@";
+"accessibility_vaulted_payment_method" = "Zapisana metoda płatności: %@";
 "accessibility_vaulted_paypal" = "PayPal";
+"accessibility_vaulted_paypal_email" = "PayPal, %@";
 "primer_card_form_add_card" = "Dodaj kartę";
 "primer_card_form_billing_address_title" = "Adres rozliczeniowy";
 "primer_card_form_error_address1_invalid" = "Nieprawidłowa pierwsza linia adresu";
