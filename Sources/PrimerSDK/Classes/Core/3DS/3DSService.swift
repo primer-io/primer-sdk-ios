@@ -197,9 +197,11 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         } else if case let InternalError.failedToPerform3dsAndShouldBreak(primerErr) = error {
             ErrorHandler.handle(error: primerErr)
             throw primerErr
-        } else if case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error {
+        } else if
+            case let InternalError.failedToPerform3dsButShouldContinue(primer3DSErrorContainer) = error,
+            let container = primer3DSErrorContainer as? Primer3DSErrorContainer {
             ErrorHandler.handle(error: primer3DSErrorContainer)
-            continueInfo = primer3DSErrorContainer.continueInfo
+            continueInfo = container.continueInfo
         } else {
             let errContainer = Primer3DSErrorContainer.underlyingError(error: error)
             continueInfo = ThreeDS.ContinueInfo(
