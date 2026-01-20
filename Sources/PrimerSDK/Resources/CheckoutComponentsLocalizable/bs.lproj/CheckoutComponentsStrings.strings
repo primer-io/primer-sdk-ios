@@ -17,7 +17,7 @@
 "primer_checkout_splash_subtitle" = "Ovo neće potrajati dugo";
 "primer_checkout_loading_indicator" = "Učitavanje";
 "primer_checkout_success_title" = "Plaćanje uspješno";
-"primer_checkout_success_subtitle" = "Uskoro ćete biti preusmjereni na stranicu potvrde narudžbe.";
+"primer_checkout_success_subtitle" = "Uskoro ćete biti preusmjereni na stranicu za potvrdu narudžbe.";
 "primer_checkout_error_title" = "Plaćanje nije uspjelo";
 "primer_checkout_error_subtitle" = "Došlo je do problema sa mrežom.";
 "primer_checkout_error_button_other_methods" = "Odaberite drugi način plaćanja";
