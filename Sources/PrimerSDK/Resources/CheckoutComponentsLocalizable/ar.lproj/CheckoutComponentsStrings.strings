@@ -1,6 +1,6 @@
 "accessibility_action_delete" = "حذف طريقة الدفع";
-"accessibility_action_edit" = "تعديل تفاصيل البطاقة";
-"accessibility_action_set_default" = "تعيين كطريقة دفع افتراضية";
+"accessibility_action_edit" = "تعديل بيانات البطاقة";
+"accessibility_action_set_default" = "تعيين كطريقة الدفع الافتراضية";
 "accessibility_card_form_billing_address_address_line_1_label" = "سطر العنوان 1، مطلوب";
 "accessibility_card_form_billing_address_address_line_2_label" = "سطر العنوان 2، اختياري";
 "accessibility_card_form_billing_address_city_hint" = "أدخل اسم المدينة";
@@ -12,7 +12,7 @@
 "accessibility_card_form_billing_address_postal_code_label" = "الرمز البريدي، مطلوب";
 "accessibility_card_form_billing_address_state_label" = "الولاية/المنطقة، مطلوبة";
 "accessibility_card_form_billing_section" = "عنوان الفواتير";
-"accessibility_card_form_card_number_error_empty" = "رقم البطاقة مطلوب.";
+"accessibility_card_form_card_number_error_empty" = "رقم البطاقة، مطلوب";
 "accessibility_card_form_card_number_error_invalid" = "رقم البطاقة غير صالح. يرجى التحقق والمحاولة مرة أخرى.";
 "accessibility_card_form_card_number_hint" = "أدخل رقم بطاقتك المكون من 16 رقماً";
 "accessibility_card_form_card_number_label" = "رقم البطاقة، مطلوب";
@@ -32,8 +32,8 @@
 "accessibility_card_form_network_selector_label" = "محدد شبكة البطاقة";
 "accessibility_card_form_submit_disabled" = "الزر معطل. أكمل جميع الحقول المطلوبة لتفعيل الدفع";
 "accessibility_card_form_submit_hint" = "انقر مرتين لإرسال الدفع";
-"accessibility_card_form_submit_label" = "إرسال الدفع";
-"accessibility_card_form_submit_loading" = "جاري معالجة الدفع، يرجى الانتظار";
+"accessibility_card_form_submit_label" = "الدفع";
+"accessibility_card_form_submit_loading" = "جاري تنفيذ عملية الدفع، يرجى الانتظار";
 "accessibility_checkout_error_icon" = "خطأ";
 "accessibility_checkout_success_icon" = "تمت عملية الدفع بنجاح";
 "accessibility_common_back" = "الرجوع";
@@ -42,7 +42,7 @@
 "accessibility_common_dismiss" = "إغلاق";
 "accessibility_common_loading" = "جاري التحميل، يرجى الانتظار";
 "accessibility_common_optional" = "اختياري";
-"accessibility_common_processing_payment" = "جاري معالجة الدفع، يرجى الانتظار";
+"accessibility_common_processing_payment" = "جاري تنفيذ عملية الدفع، يرجى الانتظار";
 "accessibility_common_required" = "مطلوب";
 "accessibility_common_selected" = "محدد";
 "accessibility_common_show_all" = "عرض جميع طرق الدفع المحفوظة";
@@ -52,7 +52,7 @@
 "accessibility_country_selection_search_icon" = "بحث";
 "accessibility_error_generic" = "حدث خطأ. يرجى المحاولة مرة أخرى.";
 "accessibility_error_multiple_errors" = "تم العثور على %d أخطاء";
-"accessibility_payment_selection_card_full" = "بطاقة %1$@ تنتهي بـ %2$@، تنتهي في %3$@";
+"accessibility_payment_selection_card_full" = "هذه البطاقة %1$@ المنتهية بـ %2$@ تنتهي صلاحيتها في %3$@";
 "accessibility_payment_selection_card_masked" = "بطاقة تنتهي بأرقام مخفية";
 "accessibility_payment_selection_coming_soon" = "طريقة الدفع قريباً";
 "accessibility_payment_selection_pay_with_card" = "الدفع بالبطاقة";
@@ -64,7 +64,7 @@
 "accessibility_screen_error" = "حدث خطأ في الدفع";
 "accessibility_screen_loading_payment_methods" = "جاري تحميل طرق الدفع";
 "accessibility_screen_payment_method" = "طريقة الدفع %@";
-"accessibility_screen_processing_payment" = "جاري معالجة الدفع";
+"accessibility_screen_processing_payment" = "جاري تنفيذ عملية الدفع";
 "accessibility_screen_success" = "تمت عملية الدفع بنجاح";
 "accessibility_vault_delete_payment_method" = "حذف طريقة الدفع هذه";
 "accessibility_vaulted_ach" = "حساب بنكي %@";
@@ -129,7 +129,7 @@
 "primer_card_form_placeholder_country_code" = "اختر الدولة";
 "primer_card_form_placeholder_cvv" = "123";
 "primer_card_form_placeholder_cvv_amex" = "1234";
-"primer_card_form_placeholder_email" = "محمد.احمد@مثال.com";
+"primer_card_form_placeholder_email" = "mohammed.ahmed@example.com";
 "primer_card_form_placeholder_expiry" = "شهر/سنة";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
 "primer_card_form_placeholder_first_name" = "محمد";

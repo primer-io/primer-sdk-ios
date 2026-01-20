@@ -132,7 +132,7 @@
 "primer_card_form_placeholder_email" = "zhangsan@example.com";
 "primer_card_form_placeholder_expiry" = "MM/YY";
 "primer_card_form_placeholder_expiry_alt" = "12/25";
-"primer_card_form_placeholder_first_name" = "三";
+"primer_card_form_placeholder_first_name" = "伟";
 "primer_card_form_placeholder_last_name" = "张";
 "primer_card_form_placeholder_name" = "姓名全称";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
@@ -152,7 +152,7 @@
 "primer_checkout_processing_subtitle" = "请稍候...";
 "primer_checkout_processing_title" = "正在处理您的支付";
 "primer_checkout_scope_unavailable" = "收银台不可用";
-"primer_checkout_splash_subtitle" = "很快就好";
+"primer_checkout_splash_subtitle" = "马上就完成";
 "primer_checkout_splash_title" = "正在加载您的安全收银台";
 "primer_checkout_success_subtitle" = "您将很快被重定向到订单确认页面。";
 "primer_checkout_success_title" = "支付成功";
@@ -181,7 +181,7 @@
 "primer_vault_button_show_all" = "显示全部";
 "primer_vault_cvv_error_generic" = "出现问题。请重试。";
 "primer_vault_cvv_error_invalid" = "请输入有效的CVV。";
-"primer_vault_cvv_hint" = "输入卡片CVV以安全支付。";
+"primer_vault_cvv_hint" = "输入卡片CVV";
 "primer_vault_cvv_title" = "输入CVV";
 "primer_vault_default_bank" = "银行账户";
 "primer_vault_default_cardholder" = "持卡人";

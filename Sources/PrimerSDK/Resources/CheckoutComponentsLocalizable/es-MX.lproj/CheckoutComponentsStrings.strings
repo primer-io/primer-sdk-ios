@@ -1,5 +1,5 @@
 "accessibility_action_delete" = "Eliminar método de pago";
-"accessibility_action_edit" = "Editar detalles de la tarjeta";
+"accessibility_action_edit" = "Modificar detalles de la tarjeta";
 "accessibility_action_set_default" = "Establecer como método de pago predeterminado";
 "accessibility_card_form_billing_address_address_line_1_label" = "Línea de dirección 1, obligatorio";
 "accessibility_card_form_billing_address_address_line_2_label" = "Línea de dirección 2, opcional";
@@ -151,7 +151,7 @@
 "primer_checkout_loading_indicator" = "Cargando";
 "primer_checkout_processing_subtitle" = "Por favor espere...";
 "primer_checkout_processing_title" = "Procesando su pago";
-"primer_checkout_scope_unavailable" = "Alcance de checkout no disponible";
+"primer_checkout_scope_unavailable" = "Este checkout no está disponible";
 "primer_checkout_splash_subtitle" = "Esto no tomará mucho tiempo";
 "primer_checkout_splash_title" = "Cargando su checkout seguro";
 "primer_checkout_success_subtitle" = "Será redirigido a la página de confirmación del pedido pronto.";
