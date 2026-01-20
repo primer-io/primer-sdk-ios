@@ -17,7 +17,7 @@
 "primer_checkout_splash_subtitle" = "Ovo neće potrajati dugo";
 "primer_checkout_loading_indicator" = "Učitavanje";
 "primer_checkout_success_title" = "Plaćanje uspješno";
-"primer_checkout_success_subtitle" = "Uskoro ćete biti preusmjereni na stranicu potvrde narudžbe.";
+"primer_checkout_success_subtitle" = "Uskoro ćete biti preusmjereni na stranicu za potvrdu narudžbe.";
 "primer_checkout_error_title" = "Plaćanje nije uspjelo";
 "primer_checkout_error_subtitle" = "Došlo je do problema sa mrežom.";
 "primer_checkout_error_button_other_methods" = "Odaberite drugi način plaćanja";
@@ -46,7 +46,7 @@
 "primer_card_form_label_otp" = "OTP kôd";
 "primer_card_form_label_field" = "Polje";
 "primer_card_form_add_card" = "Dodaj karticu";
-"primer_card_form_network_selector_title" = "Odaberi mrežu";
+"primer_card_form_network_selector_title" = "Odaberi tip kartice";
 "primer_card_form_placeholder_number" = "1234 1234 1234 1234";
 "primer_card_form_placeholder_name" = "Puno ime";
 "primer_card_form_placeholder_expiry" = "MM/GG";
@@ -56,13 +56,13 @@
 "primer_card_form_placeholder_country_code" = "Odaberi državu";
 "primer_card_form_placeholder_postal" = "71000";
 "primer_card_form_placeholder_city" = "Sarajevo";
-"primer_card_form_placeholder_state" = "Sarajevski kanton";
+"primer_card_form_placeholder_state" = "Kanton Sarajevo";
 "primer_card_form_placeholder_address1" = "Maršala Tita 123";
 "primer_card_form_placeholder_address2" = "Stan 4B";
 "primer_card_form_placeholder_phone" = "+387 (33) 123–456";
 "primer_card_form_placeholder_first_name" = "Emir";
 "primer_card_form_placeholder_last_name" = "Hodžić";
-"primer_card_form_placeholder_email" = "emir.hodzic@primjer.ba";
+"primer_card_form_placeholder_email" = "emir.hodzic@primer.ba";
 "primer_card_form_placeholder_retail" = "Odaberi prodajno mjesto";
 "primer_card_form_placeholder_otp" = "123456";
 "primer_card_form_error_number_invalid" = "Neispravan broj kartice";
@@ -137,9 +137,9 @@
 "accessibility_card_form_billing_address_postal_code_label" = "Poštanski broj, obavezno";
 "accessibility_card_form_billing_address_postal_code_hint" = "Unesite poštanski broj";
 "accessibility_card_form_billing_address_country_label" = "Zemlja, obavezno";
-"accessibility_card_form_network_selector" = "Odaberi mrežu";
-"accessibility_card_form_network_selector_label" = "Odabir mreže kartice";
-"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite da odaberete drugu mrežu kartice";
+"accessibility_card_form_network_selector" = "Odaberi tip kartice";
+"accessibility_card_form_network_selector_label" = "Odabir tipa kartice";
+"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite da odaberete drugi tip kartice";
 "accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite da odaberete ovu mrežu";
 "accessibility_card_form_submit_label" = "Podnesi plaćanje";
 "accessibility_card_form_submit_hint" = "Dvaput dodirnite da pošaljete plaćanje";
