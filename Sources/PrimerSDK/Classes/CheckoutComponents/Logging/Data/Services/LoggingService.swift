@@ -10,14 +10,14 @@ actor LoggingService: LogReporter {
     // MARK: - Dependencies
 
     private let networkClient: any LogNetworkClientProtocol
-    private let payloadBuilder: LogPayloadBuilder
+    private let payloadBuilder: any LogPayloadBuilding
     private let masker: SensitiveDataMasker
 
     // MARK: - Initialization
 
     init(
         networkClient: any LogNetworkClientProtocol,
-        payloadBuilder: LogPayloadBuilder,
+        payloadBuilder: any LogPayloadBuilding,
         masker: SensitiveDataMasker
     ) {
         self.networkClient = networkClient

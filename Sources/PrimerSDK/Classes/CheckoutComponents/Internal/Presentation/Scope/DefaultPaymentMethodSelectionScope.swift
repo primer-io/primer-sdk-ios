@@ -49,7 +49,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     private weak var checkoutScope: DefaultCheckoutScope?
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
-    private var loggingInteractor: DefaultLoggingInteractor?
+    private var loggingInteractor: (any LoggingInteractor)?
 
     // MARK: - Initialization
 
@@ -94,7 +94,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
         do {
             guard let container = await DIContainer.current else { return }
             accessibilityAnnouncementService = try await container.resolve(AccessibilityAnnouncementService.self)
-            loggingInteractor = try? await container.resolve(DefaultLoggingInteractor.self)
+            loggingInteractor = try? await container.resolve(LoggingInteractor.self)
         } catch {
             // Failed to resolve AccessibilityAnnouncementService, accessibility announcements will be disabled
             logger.debug(message: "[A11Y] Failed to resolve AccessibilityAnnouncementService: \(error.localizedDescription)")

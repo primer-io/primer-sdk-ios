@@ -6,14 +6,14 @@
 
 import Foundation
 
-public struct LogPayload: Codable, Sendable {
-    public let message: String
-    public let hostname: String
-    public let service: String
-    public let ddsource: String
-    public let ddtags: String
+struct LogPayload: Codable, Sendable {
+    let message: String
+    let hostname: String
+    let service: String
+    let ddsource: String
+    let ddtags: String
 
-    public init(
+    init(
         message: String,
         hostname: String,
         service: String = "ios-sdk",
@@ -28,14 +28,14 @@ public struct LogPayload: Codable, Sendable {
     }
 }
 
-public struct DeviceInfoMetadata: Codable, Sendable {
-    public let model: String
-    public let osVersion: String
-    public let locale: String
-    public let timezone: String
-    public let networkType: String
+struct DeviceInfoMetadata: Codable, Sendable {
+    let model: String
+    let osVersion: String
+    let locale: String
+    let timezone: String
+    let networkType: String
 
-    public init(model: String, osVersion: String, locale: String, timezone: String, networkType: String) {
+    init(model: String, osVersion: String, locale: String, timezone: String, networkType: String) {
         self.model = model
         self.osVersion = osVersion
         self.locale = locale
@@ -44,25 +44,25 @@ public struct DeviceInfoMetadata: Codable, Sendable {
     }
 }
 
-public struct AppMetadata: Codable, Sendable {
-    public let appName: String
-    public let appVersion: String
-    public let bundleId: String
+struct AppMetadata: Codable, Sendable {
+    let appName: String
+    let appVersion: String
+    let bundleId: String
 
-    public init(appName: String, appVersion: String, bundleId: String) {
+    init(appName: String, appVersion: String, bundleId: String) {
         self.appName = appName
         self.appVersion = appVersion
         self.bundleId = bundleId
     }
 }
 
-public struct SessionMetadata: Codable, Sendable {
-    public let flowType: String
-    public let paymentIntent: String
-    public let features: [String]
-    public let integrationType: String?
+struct SessionMetadata: Codable, Sendable {
+    let flowType: String
+    let paymentIntent: String
+    let features: [String]
+    let integrationType: String?
 
-    public init(flowType: String, paymentIntent: String, features: [String], integrationType: String? = nil) {
+    init(flowType: String, paymentIntent: String, features: [String], integrationType: String? = nil) {
         self.flowType = flowType
         self.paymentIntent = paymentIntent
         self.features = features
