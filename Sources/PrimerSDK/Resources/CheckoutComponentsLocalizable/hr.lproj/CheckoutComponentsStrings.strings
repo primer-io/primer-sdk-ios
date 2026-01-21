@@ -27,7 +27,7 @@
 "accessibility_card_form_expiry_icon" = "Datum isteka kartice";
 "accessibility_card_form_expiry_label" = "Datum isteka, obavezno";
 "accessibility_card_form_network_selector" = "Odaberite mrežu";
-"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite za odabir druge mreže kartice";
+"accessibility_card_form_network_selector_hint" = "Dvaput dodirnite za odabir drugog tipa kartice";
 "accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite za odabir ovog tipa kartice";
 "accessibility_card_form_network_selector_label" = "Odabir tipa kartice";
 "accessibility_card_form_submit_disabled" = "Gumb je onemogućen. Ispunite sva obavezna polja kako biste omogućili plaćanje";
