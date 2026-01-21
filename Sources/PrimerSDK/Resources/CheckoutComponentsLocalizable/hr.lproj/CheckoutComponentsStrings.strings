@@ -93,7 +93,7 @@
 "primer_card_form_error_email_required" = "E-adresa je obavezna";
 "primer_card_form_error_expiry_invalid" = "Nevažeći datum";
 "primer_card_form_error_first_name_invalid" = "Nevažeće ime";
-"primer_card_form_error_first_name_required" = "Ime je obavezno";
+"primer_card_form_error_first_name_required" = "Ime je obvezno";
 "primer_card_form_error_last_name_invalid" = "Nevažeće prezime";
 "primer_card_form_error_last_name_required" = "Prezime je obvezno";
 "primer_card_form_error_name_invalid" = "Nevažeće ime vlasnika kartice";
