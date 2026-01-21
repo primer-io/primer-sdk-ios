@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "تاریخ انقضا، الزامی";
 "accessibility_card_form_cvc_label" = "کد امنیتی، الزامی";
 "accessibility_card_form_cardholder_name_label" = "نام دارنده کارت";
-"accessibility_card_form_card_number_hint" = "شماره ۱۶ رقمی کارت خود را وارد کنید";
+"accessibility_card_form_card_number_hint" = "شماره کارت خود را وارد کنید";
 "accessibility_card_form_expiry_hint" = "تاریخ انقضا را به فرمت MM/YY وارد کنید";
 "accessibility_card_form_cvc_hint" = "کد ۳ یا ۴ رقمی پشت کارت";
 "accessibility_card_form_cardholder_name_hint" = "نام مندرج روی کارت را وارد کنید";

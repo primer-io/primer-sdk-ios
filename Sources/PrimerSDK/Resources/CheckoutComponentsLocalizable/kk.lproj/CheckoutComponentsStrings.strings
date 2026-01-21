@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Қолдану мерзімі, міндетті";
 "accessibility_card_form_cvc_label" = "Қауіпсіздік коды, міндетті";
 "accessibility_card_form_cardholder_name_label" = "Карта иесінің аты-жөні";
-"accessibility_card_form_card_number_hint" = "16 таңбалы карта нөміріңізді енгізіңіз";
+"accessibility_card_form_card_number_hint" = "Карта нөміріңізді енгізіңіз";
 "accessibility_card_form_expiry_hint" = "Қолдану мерзімін АА/ЖЖ форматында енгізіңіз";
 "accessibility_card_form_cvc_hint" = "Картаның артындағы 3 немесе 4 таңбалы код";
 "accessibility_card_form_cardholder_name_hint" = "Картада көрсетілгендей аты-жөніні енгізіңіз";

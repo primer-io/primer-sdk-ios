@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Διεύθυνση χρέωσης";
 "accessibility_card_form_card_number_error_empty" = "Ο αριθμός κάρτας είναι απαραίτητος.";
 "accessibility_card_form_card_number_error_invalid" = "Μη έγκυρος αριθμός κάρτας. Παρακαλώ ελέγξτε και δοκιμάστε ξανά.";
-"accessibility_card_form_card_number_hint" = "Εισαγάγετε τον 16ψήφιο αριθμό κάρτας σας";
+"accessibility_card_form_card_number_hint" = "Εισαγάγετε τον αριθμό της κάρτας σας";
 "accessibility_card_form_card_number_label" = "Αριθμός κάρτας, απαιτείται";
 "accessibility_card_form_cardholder_name_hint" = "Εισαγάγετε το όνομα όπως εμφανίζεται στην κάρτα";
 "accessibility_card_form_cardholder_name_label" = "Όνομα κατόχου κάρτας";

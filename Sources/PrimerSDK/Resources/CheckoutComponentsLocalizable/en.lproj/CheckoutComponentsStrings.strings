@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Billing address";
 "accessibility_card_form_card_number_error_empty" = "Card number is required.";
 "accessibility_card_form_card_number_error_invalid" = "Invalid card number. Please check and try again.";
-"accessibility_card_form_card_number_hint" = "Enter your 16-digit card number";
+"accessibility_card_form_card_number_hint" = "Enter your card number";
 "accessibility_card_form_card_number_label" = "Card number, required";
 "accessibility_card_form_cardholder_name_hint" = "Enter name as shown on card";
 "accessibility_card_form_cardholder_name_label" = "Cardholder name";

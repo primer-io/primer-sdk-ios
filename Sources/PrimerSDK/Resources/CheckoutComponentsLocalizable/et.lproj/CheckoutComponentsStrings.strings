@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Arveaadress";
 "accessibility_card_form_card_number_error_empty" = "Kaardinumber on nõutav.";
 "accessibility_card_form_card_number_error_invalid" = "Kehtetu kaardinumber. Palun kontrolli ja proovi uuesti.";
-"accessibility_card_form_card_number_hint" = "Sisesta oma 16-kohaline kaardinumber";
+"accessibility_card_form_card_number_hint" = "Sisesta oma kaardinumber";
 "accessibility_card_form_card_number_label" = "Kaardinumber, nõutav";
 "accessibility_card_form_cardholder_name_hint" = "Sisesta nimi, nagu see on kaardil näidatud";
 "accessibility_card_form_cardholder_name_label" = "Kaardiomaniku nimi";

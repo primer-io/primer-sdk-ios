@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "청구 주소";
 "accessibility_card_form_card_number_error_empty" = "카드 번호는 필수입니다.";
 "accessibility_card_form_card_number_error_invalid" = "유효하지 않은 카드 번호입니다. 다시 확인해 주세요.";
-"accessibility_card_form_card_number_hint" = "16자리 카드 번호를 입력하세요";
+"accessibility_card_form_card_number_hint" = "카드 번호를 입력하세요";
 "accessibility_card_form_card_number_label" = "카드 번호, 필수";
 "accessibility_card_form_cardholder_name_hint" = "카드에 표시된 이름을 입력하세요";
 "accessibility_card_form_cardholder_name_label" = "카드 소유자 이름";

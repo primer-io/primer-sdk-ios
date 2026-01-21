@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Faktureringsadresse";
 "accessibility_card_form_card_number_error_empty" = "Kortnummer er påkrævet.";
 "accessibility_card_form_card_number_error_invalid" = "Ugyldigt kortnummer. Kontroller venligst og prøv igen.";
-"accessibility_card_form_card_number_hint" = "Indtast dit 16-cifrede kortnummer";
+"accessibility_card_form_card_number_hint" = "Indtast dit kortnummer";
 "accessibility_card_form_card_number_label" = "Kortnummer, påkrævet";
 "accessibility_card_form_cardholder_name_hint" = "Indtast navn som vist på kortet";
 "accessibility_card_form_cardholder_name_label" = "Kortholders navn";

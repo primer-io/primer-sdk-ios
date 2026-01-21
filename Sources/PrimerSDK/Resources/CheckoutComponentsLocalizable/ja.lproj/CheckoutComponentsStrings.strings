@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "請求先住所";
 "accessibility_card_form_card_number_error_empty" = "カード番号は必須です。";
 "accessibility_card_form_card_number_error_invalid" = "カード番号が無効です。ご確認の上、もう一度お試しください。";
-"accessibility_card_form_card_number_hint" = "16桁のカード番号を入力してください";
+"accessibility_card_form_card_number_hint" = "カード番号を入力してください";
 "accessibility_card_form_card_number_label" = "カード番号、必須";
 "accessibility_card_form_cardholder_name_hint" = "カードに記載されている名前を入力してください";
 "accessibility_card_form_cardholder_name_label" = "カード名義人";

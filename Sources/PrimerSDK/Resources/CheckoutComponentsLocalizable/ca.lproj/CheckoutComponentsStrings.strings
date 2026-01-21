@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Adreça de facturació";
 "accessibility_card_form_card_number_error_empty" = "El número de targeta és obligatori.";
 "accessibility_card_form_card_number_error_invalid" = "Número de targeta no vàlid. Si us plau, comproveu-lo i torneu-ho a intentar.";
-"accessibility_card_form_card_number_hint" = "Introduïu el número de targeta de 16 dígits";
+"accessibility_card_form_card_number_hint" = "Introduïu el número de la targeta";
 "accessibility_card_form_card_number_label" = "Número de targeta, obligatori";
 "accessibility_card_form_cardholder_name_hint" = "Introduïu el nom tal com apareix a la targeta";
 "accessibility_card_form_cardholder_name_label" = "Nom del titular de la targeta";

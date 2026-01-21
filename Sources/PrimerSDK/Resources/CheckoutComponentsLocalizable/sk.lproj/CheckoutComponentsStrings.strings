@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Fakturačná adresa";
 "accessibility_card_form_card_number_error_empty" = "Číslo karty je povinné.";
 "accessibility_card_form_card_number_error_invalid" = "Neplatné číslo karty. Skontrolujte a skúste znova.";
-"accessibility_card_form_card_number_hint" = "Zadajte 16-miestne číslo karty";
+"accessibility_card_form_card_number_hint" = "Zadajte číslo karty";
 "accessibility_card_form_card_number_label" = "Číslo karty, povinné";
 "accessibility_card_form_cardholder_name_hint" = "Zadajte meno uvedené na karte";
 "accessibility_card_form_cardholder_name_label" = "Meno držiteľa karty";

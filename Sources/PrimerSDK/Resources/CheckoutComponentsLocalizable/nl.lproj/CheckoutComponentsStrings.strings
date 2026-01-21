@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Factuuradres";
 "accessibility_card_form_card_number_error_empty" = "Kaartnummer is verplicht.";
 "accessibility_card_form_card_number_error_invalid" = "Ongeldig kaartnummer. Controleer uw invoer en probeer het opnieuw.";
-"accessibility_card_form_card_number_hint" = "Voer uw 16-cijferige kaartnummer in";
+"accessibility_card_form_card_number_hint" = "Voer uw kaartnummer in";
 "accessibility_card_form_card_number_label" = "Kaartnummer, verplicht";
 "accessibility_card_form_cardholder_name_hint" = "Voer naam in zoals op de kaart staat";
 "accessibility_card_form_cardholder_name_label" = "Naam kaarthouder";

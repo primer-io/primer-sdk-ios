@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "میعاد ختم ہونے کی تاریخ، ضروری";
 "accessibility_card_form_cvc_label" = "سیکیورٹی کوڈ، ضروری";
 "accessibility_card_form_cardholder_name_label" = "کارڈ ہولڈر کا نام";
-"accessibility_card_form_card_number_hint" = "اپنا 16 ہندسوں کا کارڈ نمبر درج کریں";
+"accessibility_card_form_card_number_hint" = "اپنا کارڈ نمبر درج کریں";
 "accessibility_card_form_expiry_hint" = "میعاد ختم ہونے کی تاریخ MM/YY فارمیٹ میں درج کریں";
 "accessibility_card_form_cvc_hint" = "کارڈ کے پچھلے حصے پر 3 یا 4 ہندسوں کا کوڈ";
 "accessibility_card_form_cardholder_name_hint" = "کارڈ پر دکھایا گیا نام درج کریں";

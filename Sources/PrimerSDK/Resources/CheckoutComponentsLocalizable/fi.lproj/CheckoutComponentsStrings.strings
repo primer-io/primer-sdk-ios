@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Laskutusosoite";
 "accessibility_card_form_card_number_error_empty" = "Kortin numero vaaditaan.";
 "accessibility_card_form_card_number_error_invalid" = "Virheellinen kortin numero. Tarkista ja yritä uudelleen.";
-"accessibility_card_form_card_number_hint" = "Syötä 16-numeroinen kortin numero";
+"accessibility_card_form_card_number_hint" = "Syötä kortin numero";
 "accessibility_card_form_card_number_label" = "Kortin numero, pakollinen";
 "accessibility_card_form_cardholder_name_hint" = "Syötä nimi kortilla näkyvän mukaisesti";
 "accessibility_card_form_cardholder_name_label" = "Kortinhaltijan nimi";

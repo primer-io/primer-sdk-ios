@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Datum isteka, obavezno";
 "accessibility_card_form_cvc_label" = "Sigurnosni kôd, obavezno";
 "accessibility_card_form_cardholder_name_label" = "Ime vlasnika kartice";
-"accessibility_card_form_card_number_hint" = "Unesite vaš 16-cifreni broj kartice";
+"accessibility_card_form_card_number_hint" = "Unesite broj kartice";
 "accessibility_card_form_expiry_hint" = "Unesite datum isteka u formatu MM/GG";
 "accessibility_card_form_cvc_hint" = "3 ili 4 cifre kôda na poleđini kartice";
 "accessibility_card_form_cardholder_name_hint" = "Unesite ime kao što je prikazano na kartici";

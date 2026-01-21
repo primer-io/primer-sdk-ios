@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Vervaldatum, verplicht";
 "accessibility_card_form_cvc_label" = "Beveiligingscode, verplicht";
 "accessibility_card_form_cardholder_name_label" = "Naam kaarthouder";
-"accessibility_card_form_card_number_hint" = "Voer uw 16-cijferig kaartnummer in";
+"accessibility_card_form_card_number_hint" = "Voer uw kaartnummer in";
 "accessibility_card_form_expiry_hint" = "Voer vervaldatum in als MM/JJ";
 "accessibility_card_form_cvc_hint" = "3- of 4-cijferige code op achterkant van de kaart";
 "accessibility_card_form_cardholder_name_hint" = "Voer naam in zoals op de kaart staat";

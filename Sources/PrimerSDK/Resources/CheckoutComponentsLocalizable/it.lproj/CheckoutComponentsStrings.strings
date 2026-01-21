@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Indirizzo di fatturazione";
 "accessibility_card_form_card_number_error_empty" = "Il numero della carta è obbligatorio.";
 "accessibility_card_form_card_number_error_invalid" = "Il numero della carta non è valido. Controlla e riprova.";
-"accessibility_card_form_card_number_hint" = "Inserisci il numero della carta a 16 cifre";
+"accessibility_card_form_card_number_hint" = "Inserisci il numero della carta";
 "accessibility_card_form_card_number_label" = "Numero della carta, obbligatorio";
 "accessibility_card_form_cardholder_name_hint" = "Inserisci il nome come riportato sulla carta";
 "accessibility_card_form_cardholder_name_label" = "Nome titolare";

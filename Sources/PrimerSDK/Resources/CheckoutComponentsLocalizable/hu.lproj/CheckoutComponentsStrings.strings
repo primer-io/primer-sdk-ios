@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Számlázási cím";
 "accessibility_card_form_card_number_error_empty" = "A kártyaszám megadása kötelező.";
 "accessibility_card_form_card_number_error_invalid" = "Érvénytelen kártyaszám. Kérjük, ellenőrizze és próbálja újra.";
-"accessibility_card_form_card_number_hint" = "Adja meg a 16 számjegyű kártyaszámot";
+"accessibility_card_form_card_number_hint" = "Adja meg a kártyaszámot";
 "accessibility_card_form_card_number_label" = "Kártyaszám, kötelező";
 "accessibility_card_form_cardholder_name_hint" = "Adja meg a kártyán szereplő nevet";
 "accessibility_card_form_cardholder_name_label" = "Kártyabirtokos neve";

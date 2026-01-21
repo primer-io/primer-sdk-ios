@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Bitmə tarixi, tələb olunur";
 "accessibility_card_form_cvc_label" = "Təhlükəsizlik kodu, tələb olunur";
 "accessibility_card_form_cardholder_name_label" = "Kart sahibinin adı";
-"accessibility_card_form_card_number_hint" = "16 rəqəmli kart nömrənizi daxil edin";
+"accessibility_card_form_card_number_hint" = "Kart nömrənizi daxil edin";
 "accessibility_card_form_expiry_hint" = "Bitmə tarixini AA/İİ formatında daxil edin";
 "accessibility_card_form_cvc_hint" = "Kartın arxasındakı 3 və ya 4 rəqəmli kod";
 "accessibility_card_form_cardholder_name_hint" = "Kartda göstərildiyi kimi adı daxil edin";

@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Fatura adresi";
 "accessibility_card_form_card_number_error_empty" = "Kart numarası zorunludur.";
 "accessibility_card_form_card_number_error_invalid" = "Geçersiz kart numarası. Lütfen kontrol edip tekrar deneyin.";
-"accessibility_card_form_card_number_hint" = "16 haneli kart numaranızı girin";
+"accessibility_card_form_card_number_hint" = "Kart numaranızı girin";
 "accessibility_card_form_card_number_label" = "Kart numarası, zorunlu";
 "accessibility_card_form_cardholder_name_hint" = "Kartta yazan adı girin";
 "accessibility_card_form_cardholder_name_label" = "Kart sahibinin adı";

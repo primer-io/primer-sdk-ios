@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Địa chỉ thanh toán";
 "accessibility_card_form_card_number_error_empty" = "Số thẻ là bắt buộc.";
 "accessibility_card_form_card_number_error_invalid" = "Số thẻ không hợp lệ. Vui lòng kiểm tra và thử lại.";
-"accessibility_card_form_card_number_hint" = "Nhập số thẻ gồm 16 chữ số";
+"accessibility_card_form_card_number_hint" = "Nhập số thẻ của bạn";
 "accessibility_card_form_card_number_label" = "Số thẻ, bắt buộc";
 "accessibility_card_form_cardholder_name_hint" = "Nhập tên như trên thẻ";
 "accessibility_card_form_cardholder_name_label" = "Tên chủ thẻ";

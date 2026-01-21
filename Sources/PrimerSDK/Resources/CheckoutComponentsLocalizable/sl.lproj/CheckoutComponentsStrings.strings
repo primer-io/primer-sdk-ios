@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Naslov za obračun";
 "accessibility_card_form_card_number_error_empty" = "Številka kartice je obvezna.";
 "accessibility_card_form_card_number_error_invalid" = "Neveljavna številka kartice. Preverite in poskusite znova.";
-"accessibility_card_form_card_number_hint" = "Vnesite 16-mestno številko kartice";
+"accessibility_card_form_card_number_hint" = "Vnesite številko kartice";
 "accessibility_card_form_card_number_label" = "Številka kartice, obvezno";
 "accessibility_card_form_cardholder_name_hint" = "Vnesite ime, kot je navedeno na kartici";
 "accessibility_card_form_cardholder_name_label" = "Ime imetnika kartice";

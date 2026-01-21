@@ -1188,7 +1188,7 @@ enum CheckoutComponentsStrings {
         "accessibility_card_form_card_number_hint",
         tableName: tableName,
         bundle: Bundle.primerResources,
-        value: "Enter your 16-digit card number",
+        value: "Enter your card number",
         comment: "VoiceOver hint for card number field"
     )
 

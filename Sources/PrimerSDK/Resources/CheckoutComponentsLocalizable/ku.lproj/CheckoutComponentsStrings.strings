@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Dîroka qedandinê, pêwîst e";
 "accessibility_card_form_cvc_label" = "Koda ewlehiyê, pêwîst e";
 "accessibility_card_form_cardholder_name_label" = "Navê xwediyê kartê";
-"accessibility_card_form_card_number_hint" = "Hejmara 16-hejmarî ya kartê xwe binivîse";
+"accessibility_card_form_card_number_hint" = "Hejmara kartê xwe binivîse";
 "accessibility_card_form_expiry_hint" = "Dîroka qedandinê bi formata MM/YY binivîse";
 "accessibility_card_form_cvc_hint" = "Koda 3 an 4 hejmarî li pişta kartê";
 "accessibility_card_form_cardholder_name_hint" = "Navê ku li ser kartê ye binivîse";

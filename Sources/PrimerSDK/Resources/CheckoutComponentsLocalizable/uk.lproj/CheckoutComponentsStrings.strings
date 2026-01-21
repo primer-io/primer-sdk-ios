@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Адреса для виставлення рахунку";
 "accessibility_card_form_card_number_error_empty" = "Номер картки обов'язковий.";
 "accessibility_card_form_card_number_error_invalid" = "Невірний номер картки. Будь ласка, перевірте і спробуйте ще раз.";
-"accessibility_card_form_card_number_hint" = "Введіть 16-значний номер вашої картки";
+"accessibility_card_form_card_number_hint" = "Введіть номер вашої картки";
 "accessibility_card_form_card_number_label" = "Номер картки, обов'язково";
 "accessibility_card_form_cardholder_name_hint" = "Введіть ім'я, як вказано на картці";
 "accessibility_card_form_cardholder_name_label" = "Ім'я власника картки";

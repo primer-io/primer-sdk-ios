@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "عنوان الفواتير";
 "accessibility_card_form_card_number_error_empty" = "رقم البطاقة، مطلوب";
 "accessibility_card_form_card_number_error_invalid" = "رقم البطاقة غير صالح. يرجى التحقق والمحاولة مرة أخرى.";
-"accessibility_card_form_card_number_hint" = "أدخل رقم بطاقتك المكون من 16 رقماً";
+"accessibility_card_form_card_number_hint" = "أدخل رقم بطاقتك";
 "accessibility_card_form_card_number_label" = "رقم البطاقة، مطلوب";
 "accessibility_card_form_cardholder_name_hint" = "أدخل الاسم كما هو مكتوب على البطاقة";
 "accessibility_card_form_cardholder_name_label" = "اسم حامل البطاقة";

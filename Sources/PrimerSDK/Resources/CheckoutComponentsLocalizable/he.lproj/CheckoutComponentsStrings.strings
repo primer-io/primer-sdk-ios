@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "כתובת לחיוב";
 "accessibility_card_form_card_number_error_empty" = "נדרש מספר כרטיס.";
 "accessibility_card_form_card_number_error_invalid" = "מספר כרטיס לא תקין. אנא בדוק ונסה שוב.";
-"accessibility_card_form_card_number_hint" = "הזן את מספר הכרטיס בן 16 הספרות";
+"accessibility_card_form_card_number_hint" = "הזן את מספר הכרטיס";
 "accessibility_card_form_card_number_label" = "מספר כרטיס, נדרש";
 "accessibility_card_form_cardholder_name_hint" = "הזן שם כפי שמופיע על הכרטיס";
 "accessibility_card_form_cardholder_name_label" = "שם בעל הכרטיס";

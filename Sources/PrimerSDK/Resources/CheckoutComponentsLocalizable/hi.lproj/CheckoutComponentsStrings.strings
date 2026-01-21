@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "बिलिंग पता";
 "accessibility_card_form_card_number_error_empty" = "कार्ड नंबर आवश्यक है।";
 "accessibility_card_form_card_number_error_invalid" = "अमान्य कार्ड नंबर। कृपया जांचें और पुनः प्रयास करें।";
-"accessibility_card_form_card_number_hint" = "अपना 16-अंकीय कार्ड नंबर दर्ज करें";
+"accessibility_card_form_card_number_hint" = "अपना कार्ड नंबर दर्ज करें";
 "accessibility_card_form_card_number_label" = "कार्ड नंबर, आवश्यक";
 "accessibility_card_form_cardholder_name_hint" = "कार्ड पर दिखाए अनुसार नाम दर्ज करें";
 "accessibility_card_form_cardholder_name_label" = "कार्डधारक का नाम";

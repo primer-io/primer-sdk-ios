@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "ვადის თარიღი, აუცილებელია";
 "accessibility_card_form_cvc_label" = "უსაფრთხოების კოდი, აუცილებელია";
 "accessibility_card_form_cardholder_name_label" = "ბარათის მფლობელის სახელი";
-"accessibility_card_form_card_number_hint" = "შეიყვანეთ ბარათის 16-ციფრიანი ნომერი";
+"accessibility_card_form_card_number_hint" = "შეიყვანეთ ბარათის ნომერი";
 "accessibility_card_form_expiry_hint" = "შეიყვანეთ ვადის თარიღი თთ/წწ ფორმატში";
 "accessibility_card_form_cvc_hint" = "3 ან 4 ციფრიანი კოდი ბარათის უკან მხარეს";
 "accessibility_card_form_cardholder_name_hint" = "შეიყვანეთ სახელი ბარათზე მითითებული";

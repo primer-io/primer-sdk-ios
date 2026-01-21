@@ -14,7 +14,7 @@
 "accessibility_card_form_billing_section" = "Платежный адрес";
 "accessibility_card_form_card_number_error_empty" = "Необходимо указать номер карты.";
 "accessibility_card_form_card_number_error_invalid" = "Неверный номер карты. Пожалуйста, проверьте и попробуйте снова.";
-"accessibility_card_form_card_number_hint" = "Введите 16-значный номер вашей карты";
+"accessibility_card_form_card_number_hint" = "Введите номер карты";
 "accessibility_card_form_card_number_label" = "Номер карты, обязательное поле";
 "accessibility_card_form_cardholder_name_hint" = "Введите имя, как указано на карте";
 "accessibility_card_form_cardholder_name_label" = "Имя держателя карты";

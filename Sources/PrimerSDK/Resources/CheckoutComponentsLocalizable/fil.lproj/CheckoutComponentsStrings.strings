@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Petsa ng pag-expire, kinakailangan";
 "accessibility_card_form_cvc_label" = "Security code, kinakailangan";
 "accessibility_card_form_cardholder_name_label" = "Pangalan ng may-ari ng kard";
-"accessibility_card_form_card_number_hint" = "Ilagay ang iyong 16-digit na numero ng kard";
+"accessibility_card_form_card_number_hint" = "Ilagay ang numero ng iyong kard";
 "accessibility_card_form_expiry_hint" = "Ilagay ang petsa ng pag-expire sa format na MM/YY";
 "accessibility_card_form_cvc_hint" = "3 o 4 na digit na code sa likod ng kard";
 "accessibility_card_form_cardholder_name_hint" = "Ilagay ang pangalan gaya ng nakasulat sa kard";

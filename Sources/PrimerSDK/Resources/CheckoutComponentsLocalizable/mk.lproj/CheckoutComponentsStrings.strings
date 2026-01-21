@@ -123,7 +123,7 @@
 "accessibility_card_form_expiry_label" = "Датум на истекување, задолжително";
 "accessibility_card_form_cvc_label" = "Безбедносен код, задолжително";
 "accessibility_card_form_cardholder_name_label" = "Име на картичар";
-"accessibility_card_form_card_number_hint" = "Внесете го вашиот 16-цифрен број на картичка";
+"accessibility_card_form_card_number_hint" = "Внесете го бројот на картичката";
 "accessibility_card_form_expiry_hint" = "Внесете датум на истекување во формат ММ/ГГ";
 "accessibility_card_form_cvc_hint" = "3 или 4 цифрен код на задната страна на картичката";
 "accessibility_card_form_cardholder_name_hint" = "Внесете име како што е прикажано на картичката";
