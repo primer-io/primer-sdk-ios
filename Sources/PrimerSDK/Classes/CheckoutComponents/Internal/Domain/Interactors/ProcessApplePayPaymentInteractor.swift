@@ -25,14 +25,14 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
 
     private let tokenizationService: TokenizationServiceProtocol
     private let createPaymentService: CreateResumePaymentServiceProtocol
-    private let loggingInteractor: DefaultLoggingInteractor?
+    private let loggingInteractor: (any LoggingInteractor)?
 
     // MARK: - Initialization
 
     init(
         tokenizationService: TokenizationServiceProtocol,
         createPaymentService: CreateResumePaymentServiceProtocol,
-        loggingInteractor: DefaultLoggingInteractor? = nil
+        loggingInteractor: (any LoggingInteractor)? = nil
     ) {
         self.tokenizationService = tokenizationService
         self.createPaymentService = createPaymentService

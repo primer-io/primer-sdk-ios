@@ -6,7 +6,16 @@
 
 import Foundation
 
-final class DefaultLoggingInteractor {
+// MARK: - Protocol
+
+protocol LoggingInteractor {
+    func logInfo(event: String, initDurationMs: Int?)
+    func logError(message: String, error: Error)
+}
+
+// MARK: - Implementation
+
+final class DefaultLoggingInteractor: LoggingInteractor {
     // MARK: - Constants
 
     private enum Constants {

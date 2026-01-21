@@ -109,7 +109,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
-    private var loggingInteractor: DefaultLoggingInteractor?
+    private var loggingInteractor: (any LoggingInteractor)?
 
     // Stores the API-provided display name for accessibility announcements
     private var selectedPaymentMethodName: String?
@@ -209,7 +209,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
             accessibilityAnnouncementService = try? await container.resolve(AccessibilityAnnouncementService.self)
 
-            loggingInteractor = try? await container.resolve(DefaultLoggingInteractor.self)
+            loggingInteractor = try? await container.resolve(LoggingInteractor.self)
         } catch {
             let primerError = PrimerError.invalidArchitecture(
                 description: "Failed to setup interactors: \(error.localizedDescription)",
