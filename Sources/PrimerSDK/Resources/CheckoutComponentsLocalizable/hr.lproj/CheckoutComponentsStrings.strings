@@ -95,7 +95,7 @@
 "primer_card_form_error_first_name_invalid" = "Nevažeće ime";
 "primer_card_form_error_first_name_required" = "Ime je obavezno";
 "primer_card_form_error_last_name_invalid" = "Nevažeće prezime";
-"primer_card_form_error_last_name_required" = "Prezime je obavezno";
+"primer_card_form_error_last_name_required" = "Prezime je obvezno";
 "primer_card_form_error_name_invalid" = "Nevažeće ime vlasnika kartice";
 "primer_card_form_error_name_length" = "Ime mora imati između 2 i 45 znakova";
 "primer_card_form_error_number_invalid" = "Nevažeći broj kartice";
