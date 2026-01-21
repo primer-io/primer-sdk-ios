@@ -26,7 +26,7 @@
 "accessibility_card_form_expiry_hint" = "Unesite datum isteka u formatu MM/GG";
 "accessibility_card_form_expiry_icon" = "Datum isteka kartice";
 "accessibility_card_form_expiry_label" = "Datum isteka, obavezno";
-"accessibility_card_form_network_selector" = "Odaberite mrežu";
+"accessibility_card_form_network_selector" = "Odaberite tip kartice";
 "accessibility_card_form_network_selector_hint" = "Dvaput dodirnite za odabir drugog tipa kartice";
 "accessibility_card_form_network_selector_inline_hint" = "Dvaput dodirnite za odabir ovog tipa kartice";
 "accessibility_card_form_network_selector_label" = "Odabir tipa kartice";
