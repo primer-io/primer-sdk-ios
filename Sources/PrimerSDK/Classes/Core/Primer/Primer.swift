@@ -1,7 +1,7 @@
 //
 //  Primer.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -66,7 +66,7 @@ public final class Primer {
                 case "headingLarge": PrimerFont.titleLarge(tokens: tokens)
                 case "headingMedium": PrimerFont.bodyMedium(tokens: tokens)
                 case "caption": .caption
-                default: fatalError()
+                default: .body
                 }
             }
         }
