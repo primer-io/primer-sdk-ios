@@ -87,7 +87,7 @@
 "primer_card_form_error_city_invalid" = "Nevažeći grad";
 "primer_card_form_error_city_required" = "Grad je obavezan";
 "primer_card_form_error_country_invalid" = "Nevažeća država";
-"primer_card_form_error_country_required" = "Država je obavezna";
+"primer_card_form_error_country_required" = "Država je obvezna";
 "primer_card_form_error_cvv_invalid" = "Nevažeći CVV";
 "primer_card_form_error_email_invalid" = "Nevažeća e-adresa";
 "primer_card_form_error_email_required" = "E-adresa je obavezna";
