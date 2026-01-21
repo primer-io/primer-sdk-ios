@@ -1,7 +1,16 @@
 # Phrase configuration for CheckoutComponents localization
 # Project ID: 4ef09e68b0f08039c865e202d878b3e9
-# Pull-only config - translations already pushed to Phrase
 
+phrase:
+  access_token: ${PHRASE_ACCESS_TOKEN}
+  project_id: 4ef09e68b0f08039c865e202d878b3e9
+  file_format: strings
+  push:
+    sources:
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/<locale_code>.lproj/CheckoutComponentsStrings.strings
+        params:
+          file_format: strings
+          tags: checkout-components
   pull:
     targets:
       - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/en.lproj/CheckoutComponentsStrings.strings
@@ -94,7 +103,7 @@
           locale_id: Persian
           tags: checkout-components
           encoding: UTF-8
-      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fi-FI.lproj/CheckoutComponentsStrings.strings
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/fi.lproj/CheckoutComponentsStrings.strings
         params:
           file_format: strings
           locale_id: Finnish
@@ -190,7 +199,7 @@
           locale_id: Kyrgyz
           tags: checkout-components
           encoding: UTF-8
-      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/lt-LT.lproj/CheckoutComponentsStrings.strings
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/lt.lproj/CheckoutComponentsStrings.strings
         params:
           file_format: strings
           locale_id: Lithuanian
@@ -280,7 +289,7 @@
           locale_id: Albanian
           tags: checkout-components
           encoding: UTF-8
-      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sr-RS.lproj/CheckoutComponentsStrings.strings
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/sr.lproj/CheckoutComponentsStrings.strings
         params:
           file_format: strings
           locale_id: Serbian
@@ -304,7 +313,7 @@
           locale_id: Turkish
           tags: checkout-components
           encoding: UTF-8
-      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/uk-UA.lproj/CheckoutComponentsStrings.strings
+      - file: Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/uk.lproj/CheckoutComponentsStrings.strings
         params:
           file_format: strings
           locale_id: Ukrainian
