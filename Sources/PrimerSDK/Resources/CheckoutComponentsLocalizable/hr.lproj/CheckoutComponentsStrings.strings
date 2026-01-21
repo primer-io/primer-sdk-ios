@@ -85,7 +85,7 @@
 "primer_card_form_error_card_expired" = "Kartica je istekla";
 "primer_card_form_error_card_type_unsupported" = "Nepodržana vrsta kartice";
 "primer_card_form_error_city_invalid" = "Nevažeći grad";
-"primer_card_form_error_city_required" = "Grad je obavezan";
+"primer_card_form_error_city_required" = "Grad je obvezan";
 "primer_card_form_error_country_invalid" = "Nevažeća država";
 "primer_card_form_error_country_required" = "Država je obvezna";
 "primer_card_form_error_cvv_invalid" = "Nevažeći CVV";
