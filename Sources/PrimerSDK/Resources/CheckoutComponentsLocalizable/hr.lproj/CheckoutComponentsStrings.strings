@@ -103,7 +103,7 @@
 "primer_card_form_error_postal_invalid" = "Nevažeći poštanski broj";
 "primer_card_form_error_postal_required" = "Poštanski broj je obavezan";
 "primer_card_form_error_state_invalid" = "Nevažeća županija, regija ili okrug";
-"primer_card_form_error_state_required" = "Županija, regija ili okrug je obavezan";
+"primer_card_form_error_state_required" = "Županija, regija ili okrug je obvezan";
 "primer_card_form_label_address1" = "Adresni redak 1";
 "primer_card_form_label_address2" = "Adresni redak 2";
 "primer_card_form_label_city" = "Grad";
