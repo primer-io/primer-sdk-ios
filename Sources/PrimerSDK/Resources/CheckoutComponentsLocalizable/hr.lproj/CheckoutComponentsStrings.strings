@@ -2,7 +2,7 @@
 "accessibility_action_edit" = "Uredi podatke kartice";
 "accessibility_action_set_default" = "Postavi kao zadani način plaćanja";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresni redak 1, obvezno";
-"accessibility_card_form_billing_address_address_line_2_label" = "Adresni redak 2, nije obavezno";
+"accessibility_card_form_billing_address_address_line_2_label" = "Adresni redak 2, nije obvezno";
 "accessibility_card_form_billing_address_city_hint" = "Unesite naziv grada";
 "accessibility_card_form_billing_address_city_label" = "Grad, obavezno";
 "accessibility_card_form_billing_address_country_label" = "Država, obavezno";
