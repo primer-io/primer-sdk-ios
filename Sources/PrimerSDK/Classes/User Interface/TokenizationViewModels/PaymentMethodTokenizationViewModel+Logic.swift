@@ -17,7 +17,7 @@ extension PaymentMethodTokenizationViewModel {
     func start() {
         Task {
             do {
-				if config.type == "ADYEN_IDEAL" {
+				if config.type == "ADYEN_AFFIRM" {
 					try await callPay()
 				} else {
 					paymentMethodTokenData = try await startTokenizationFlow()
