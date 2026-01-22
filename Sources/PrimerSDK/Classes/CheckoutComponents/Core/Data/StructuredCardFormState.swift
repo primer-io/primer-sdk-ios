@@ -43,11 +43,33 @@ public struct CardFormConfiguration: Equatable {
 
 // MARK: - Field Error
 
+/// Represents a validation error for a specific form field.
+///
+/// `FieldError` provides detailed error information for individual fields,
+/// allowing you to display targeted error messages and programmatically
+/// handle validation failures.
+///
+/// Example usage:
+/// ```swift
+/// for error in formState.fieldErrors {
+///     print("Field \(error.fieldType.displayName): \(error.message)")
+///     if let code = error.errorCode {
+///         handleErrorCode(code)
+///     }
+/// }
+/// ```
 @available(iOS 15.0, *)
 public struct FieldError: Equatable, Identifiable {
+    /// Unique identifier for this error instance.
     public let id = UUID()
+
+    /// The type of field that has the error.
     public let fieldType: PrimerInputElementType
+
+    /// Human-readable error message to display to the user.
     public let message: String
+
+    /// Machine-readable error code for programmatic handling.
     public let errorCode: String?
 
     public init(
@@ -86,12 +108,32 @@ public struct FormData: Equatable {
 
 // MARK: - Country Information
 
+/// Represents a country for billing address and locale selection.
+///
+/// `PrimerCountry` provides country information including the ISO code,
+/// display name, flag emoji, and dial code for phone number formatting.
+///
+/// Example usage:
+/// ```swift
+/// if let country = formState.selectedCountry {
+///     print("Selected: \(country.flag ?? "") \(country.name) (\(country.code))")
+/// }
+/// ```
 @available(iOS 15.0, *)
 public struct PrimerCountry: Equatable, Identifiable {
+    /// Unique identifier for this country instance.
     public let id = UUID()
+
+    /// ISO 3166-1 alpha-2 country code (e.g., "US", "GB", "DE").
     public let code: String
+
+    /// Localized country name for display.
     public let name: String
+
+    /// Flag emoji for the country (e.g., "🇺🇸").
     public let flag: String?
+
+    /// International dialing code (e.g., "+1" for US).
     public let dialCode: String?
 
     public init(code: String, name: String, flag: String? = nil, dialCode: String? = nil) {
@@ -104,6 +146,39 @@ public struct PrimerCountry: Equatable, Identifiable {
 
 // MARK: - Structured State
 
+/// The complete state of the card payment form including field values, validation, and network selection.
+///
+/// `StructuredCardFormState` provides a comprehensive view of the card form's current state,
+/// including:
+/// - Form configuration (which fields are required)
+/// - Current field values
+/// - Validation errors
+/// - Loading and validity states
+/// - Co-badged card network information
+/// - Surcharge amounts
+///
+/// Observe this state through `PrimerCardFormScope.state` to react to form changes:
+/// ```swift
+/// for await state in cardFormScope.state {
+///     // Check overall form validity
+///     submitButton.isEnabled = state.isValid
+///
+///     // Display field-specific errors
+///     for error in state.fieldErrors {
+///         showError(error.message, for: error.fieldType)
+///     }
+///
+///     // Handle co-badged cards
+///     if state.availableNetworks.count > 1 {
+///         showNetworkSelector(state.availableNetworks)
+///     }
+///
+///     // Show surcharge if applicable
+///     if let surcharge = state.surchargeAmount {
+///         showSurchargeLabel(surcharge)
+///     }
+/// }
+/// ```
 @available(iOS 15.0, *)
 public struct StructuredCardFormState: Equatable {
 

@@ -6,26 +6,84 @@
 
 import UIKit
 
+/// Identifies the type of input field in payment forms.
+///
+/// `PrimerInputElementType` is used to specify and identify different input fields
+/// in the card form and billing address sections. Each case corresponds to a specific
+/// type of user input with its own validation rules and formatting.
+///
+/// The enum is organized into the following categories:
+/// - **Card fields**: `cardNumber`, `expiryDate`, `cvv`, `cardholderName`
+/// - **Billing address fields**: `firstName`, `lastName`, `addressLine1`, `addressLine2`,
+///   `city`, `state`, `postalCode`, `countryCode`, `phoneNumber`, `email`
+/// - **Other fields**: `otp`, `retailer`
+/// - **Special cases**: `unknown`, `all`
+///
+/// Example usage:
+/// ```swift
+/// // Update a specific field value
+/// scope.updateField(.cardNumber, value: "4242424242424242")
+///
+/// // Check if a field has an error
+/// if state.hasError(for: .cvv) {
+///     print(state.errorMessage(for: .cvv))
+/// }
+/// ```
 @objc
 public enum PrimerInputElementType: Int {
+    /// Credit/debit card number (e.g., "4242 4242 4242 4242").
     case cardNumber
+
+    /// Card expiration date in MM/YY format.
     case expiryDate
+
+    /// Card verification value (3-4 digit security code).
     case cvv
+
+    /// Name as printed on the card.
     case cardholderName
+
+    /// One-time password for verification flows.
     case otp
+
+    /// Postal or ZIP code for billing address.
     case postalCode
+
+    /// Phone number for contact or verification.
     case phoneNumber
+
+    /// Retail outlet selection for cash payment methods.
     case retailer
+
+    /// Unknown or unrecognized field type.
     case unknown
+
+    /// ISO country code (e.g., "US", "GB").
     case countryCode
+
+    /// First name for billing address.
     case firstName
+
+    /// Last name for billing address.
     case lastName
+
+    /// Primary street address line.
     case addressLine1
+
+    /// Secondary address line (apartment, suite, etc.).
     case addressLine2
+
+    /// City name for billing address.
     case city
+
+    /// State or province for billing address.
     case state
+
+    /// Email address for receipts and notifications.
     case email
-    case all // General case for "all fields"
+
+    /// Represents all fields collectively (used for bulk operations).
+    case all
 
     public var stringValue: String {
         switch self {

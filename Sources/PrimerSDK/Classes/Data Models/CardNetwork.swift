@@ -23,25 +23,74 @@ struct CardNetworkCode {
     var length: Int
 }
 
+/// Represents a card network (card scheme) that can process card payments.
+///
+/// `CardNetwork` identifies the payment network associated with a credit or debit card.
+/// The SDK uses this to determine card validation rules, display appropriate icons,
+/// and handle co-badged card scenarios where multiple networks are available.
+///
+/// The network is automatically detected from the card number during input,
+/// or can be specified explicitly when working with tokenized payment methods.
+///
+/// Example usage:
+/// ```swift
+/// // Detect network from card number
+/// let network = CardNetwork(cardNumber: "4242424242424242") // Returns .visa
+///
+/// // Check if network is allowed by merchant
+/// if network.allowsUserSelection {
+///     // Show network selector for co-badged cards
+/// }
+/// ```
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
-    // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
+    /// American Express cards (starts with 34 or 37).
     case amex = "AMEX"
+
+    /// Bancontact cards (Belgian debit card network).
     case bancontact = "BANCONTACT"
+
+    /// Cartes Bancaires (French domestic card network).
     case cartesBancaires = "CARTES_BANCAIRES"
+
+    /// Diners Club International cards.
     case diners = "DINERS_CLUB"
+
+    /// Discover cards (primarily US).
     case discover = "DISCOVER"
+
+    /// EFTPOS (Australian domestic debit network).
     case eftpos = "EFTPOS"
+
+    /// Elo cards (Brazilian card network).
     case elo = "ELO"
+
+    /// Hiper cards (Brazilian card network).
     case hiper = "HIPER"
+
+    /// Hipercard cards (Brazilian card network).
     case hipercard = "HIPERCARD"
+
+    /// JCB cards (Japan Credit Bureau).
     case jcb = "JCB"
+
+    /// Maestro debit cards (Mastercard brand).
     case maestro = "MAESTRO"
+
+    /// Mastercard credit and debit cards.
     case masterCard = "MASTERCARD"
+
+    /// Mir cards (Russian national payment system).
     case mir = "MIR"
+
+    /// Visa credit and debit cards.
     case visa = "VISA"
+
+    /// UnionPay cards (China's largest card network).
     case unionpay = "UNIONPAY"
-    case unknown = "OTHER" // or "UNKNOWN"
+
+    /// Unknown or unsupported card network.
+    case unknown = "OTHER"
 
     var validation: CardNetworkValidation? {
         switch self {

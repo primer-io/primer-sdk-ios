@@ -149,15 +149,49 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
 
 // MARK: - Payment Method Model
 
+/// Represents a payment method available for selection in the checkout flow.
+///
+/// `CheckoutPaymentMethod` contains display information and metadata for payment methods
+/// shown in the payment method selection screen. This includes the method's name, icon,
+/// any applicable surcharges, and custom styling.
+///
+/// Use this struct when customizing the payment method selection UI or when handling
+/// user selection events.
+///
+/// Example usage:
+/// ```swift
+/// for await state in selectionScope.state {
+///     for method in state.paymentMethods {
+///         print("\(method.name) - Surcharge: \(method.formattedSurcharge ?? "None")")
+///     }
+/// }
+/// ```
 public struct CheckoutPaymentMethod: Equatable, Identifiable {
+    /// Unique identifier for this payment method instance.
     public let id: String
+
+    /// The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL", "APPLE_PAY").
     public let type: String
+
+    /// Human-readable display name for the payment method.
     public let name: String
+
+    /// Icon image to display for this payment method.
     public let icon: UIImage?
+
+    /// Additional metadata associated with this payment method.
     public let metadata: [String: Any]?
+
+    /// Surcharge amount in minor currency units (e.g., cents), if applicable.
     public let surcharge: Int?
+
+    /// Indicates whether the surcharge amount is unknown (e.g., varies by card network).
     public let hasUnknownSurcharge: Bool
+
+    /// Pre-formatted surcharge string for display (e.g., "+ $0.50").
     public let formattedSurcharge: String?
+
+    /// Custom background color for the payment method button, if specified.
     public let backgroundColor: UIColor?
 
     public init(
