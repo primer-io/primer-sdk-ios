@@ -69,7 +69,8 @@ struct InlineCardNetworkSelector: View {
 
     private func getOffset(selectedIndex: Int) -> CGFloat {
         guard selectedIndex > 0 else { return 0 }
-        return CGFloat(selectedIndex) * (PrimerCardNetworkSelector.buttonFrameWidth + borderWidth)
+        let xOffset = CGFloat(selectedIndex) * (PrimerCardNetworkSelector.buttonFrameWidth + borderWidth)
+        return RTLSupport.isRightToLeft ? -xOffset : xOffset
     }
 
     private var borderWidth: CGFloat {

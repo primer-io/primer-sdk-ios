@@ -49,7 +49,7 @@ struct CardFormScreen: View, LogReporter {
                         scope.onBack()
                     }, label: {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                            Image(systemName: "chevron.left")
+                            Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
                         }

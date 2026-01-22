@@ -90,7 +90,7 @@ struct CheckoutHeaderView: View {
     private func makeBackButtonView() -> some View {
         Button(action: onBack) {
             HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                Image(systemName: "chevron.left")
+                Image(systemName: RTLIcon.backChevron)
                 Text(CheckoutComponentsStrings.backButton)
             }
             .font(PrimerFont.bodyMedium(tokens: tokens))
