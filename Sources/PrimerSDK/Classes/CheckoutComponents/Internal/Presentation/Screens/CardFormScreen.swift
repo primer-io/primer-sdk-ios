@@ -141,13 +141,6 @@ struct CardFormScreen: View, LogReporter {
                     } else {
                         renderField(fieldType)
                     }
-
-                    if fieldType == .cardNumber {
-                        let allowedNetworks = [CardNetwork].allowedCardNetworks
-                        let networksToShow = !allowedNetworks.isEmpty ? allowedNetworks : [.visa, .masterCard, .amex, .discover]
-                        AllowedCardNetworksView(allowedCardNetworks: networksToShow)
-                            .padding(.bottom, PrimerSpacing.medium(tokens: tokens))
-                    }
                 }
             }
         }
