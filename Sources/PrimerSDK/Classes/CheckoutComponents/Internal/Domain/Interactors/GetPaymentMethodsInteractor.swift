@@ -13,11 +13,9 @@ protocol GetPaymentMethodsInteractor {
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
     private let repository: HeadlessRepository
-    private let loggingInteractor: (any LoggingInteractor)?
 
-    init(repository: HeadlessRepository, loggingInteractor: (any LoggingInteractor)? = nil) {
+    init(repository: HeadlessRepository) {
         self.repository = repository
-        self.loggingInteractor = loggingInteractor
     }
 
     func execute() async throws -> [InternalPaymentMethod] {
@@ -30,8 +28,10 @@ final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogRep
             logger.info(message: "[PERF] Retrieved \(paymentMethods.count) payment methods in \(String(format: "%.0f", duration))ms")
             return paymentMethods
         } catch {
-            logger.error(message: "Failed to fetch payment methods: \(error)")
-            loggingInteractor?.logError(message: "Failed to load payment methods", error: error)
+            logger.error(
+                message: "Failed to fetch payment methods: \(error)",
+                error: error
+            )
             throw error
         }
     }

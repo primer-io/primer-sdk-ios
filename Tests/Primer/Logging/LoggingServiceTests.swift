@@ -66,28 +66,28 @@ final class LoggingServiceTests: XCTestCase {
     // MARK: - sendInfo Tests
 
     func test_sendInfo_sendsPayloadToNetwork() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.count, 1)
     }
 
     func test_sendInfo_payloadContainsCorrectService() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.first?.service, "ios-sdk")
     }
 
     func test_sendInfo_payloadContainsDDSource() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.first?.ddsource, "lambda")
     }
 
     func test_sendInfo_payloadContainsHostname() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let payloads = await mockNetworkClient.sentPayloads
         // Hostname is set from Bundle.main.bundleIdentifier
@@ -96,14 +96,14 @@ final class LoggingServiceTests: XCTestCase {
     }
 
     func test_sendInfo_usesCorrectEndpointForSandbox() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let endpoints = await mockNetworkClient.sentEndpoints
         XCTAssertTrue(endpoints.first?.absoluteString.contains("sandbox") == true)
     }
 
     func test_sendInfo_passesToken() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
 
         let tokens = await mockNetworkClient.sentTokens
         XCTAssertEqual(tokens.first ?? nil, "test-token")
@@ -146,7 +146,7 @@ final class LoggingServiceTests: XCTestCase {
         }
 
         // This should not throw - fire-and-forget pattern
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+        await loggingService.sendInfo(message: "test", event: "SDK_INIT", userInfo: nil)
         // If we get here without crash, test passes
     }
 

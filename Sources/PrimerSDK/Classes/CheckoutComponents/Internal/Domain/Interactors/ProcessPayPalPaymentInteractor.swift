@@ -20,11 +20,9 @@ protocol ProcessPayPalPaymentInteractor {
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
     private let repository: PayPalRepository
-    private let loggingInteractor: (any LoggingInteractor)?
 
-    init(repository: PayPalRepository, loggingInteractor: (any LoggingInteractor)? = nil) {
+    init(repository: PayPalRepository) {
         self.repository = repository
-        self.loggingInteractor = loggingInteractor
     }
 
     func execute() async throws -> PaymentResult {
@@ -75,8 +73,10 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
             return result
 
         } catch {
-            logger.error(message: "PayPal checkout flow failed: \(error)")
-            loggingInteractor?.logError(message: "PayPal payment processing failed", error: error)
+            logger.error(
+                message: "PayPal checkout flow failed: \(error)",
+                error: error
+            )
             throw error
         }
     }
@@ -114,8 +114,10 @@ final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, 
             return result
 
         } catch {
-            logger.error(message: "PayPal vault flow failed: \(error)")
-            loggingInteractor?.logError(message: "PayPal payment processing failed", error: error)
+            logger.error(
+                message: "PayPal vault flow failed: \(error)",
+                error: error
+            )
             throw error
         }
     }

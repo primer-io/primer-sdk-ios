@@ -19,7 +19,7 @@ actor LogNetworkClient {
             case "primer_account_id", "useragent_details", "patch_minor":
                 return CustomCodingKey(stringValue: key)
             default:
-                return CustomCodingKey(stringValue: key.convertToSnakeCase())
+                return CustomCodingKey(stringValue: key.toSnakeCase())
             }
         }
 
@@ -66,16 +66,5 @@ actor LogNetworkClient {
               (200...299).contains(httpResponse.statusCode) else {
             throw LoggingError.networkError
         }
-    }
-}
-
-// MARK: - String Extension
-
-private extension String {
-    func convertToSnakeCase() -> String {
-        let pattern = "([a-z0-9])([A-Z])"
-        let regex = try? NSRegularExpression(pattern: pattern)
-        let range = NSRange(location: 0, length: count)
-        return regex?.stringByReplacingMatches(in: self, range: range, withTemplate: "$1_$2").lowercased() ?? lowercased()
     }
 }

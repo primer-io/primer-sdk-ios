@@ -30,7 +30,7 @@ actor LoggingService: LogReporter {
     func sendInfo(
         message: String,
         event: String,
-        initDurationMs: Int?
+        userInfo: [String: Any]?
     ) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
@@ -38,7 +38,7 @@ actor LoggingService: LogReporter {
             let payload = try payloadBuilder.buildInfoPayload(
                 message: message,
                 event: event,
-                initDurationMs: initDurationMs,
+                userInfo: userInfo,
                 sessionData: sessionData
             )
 
@@ -56,25 +56,34 @@ actor LoggingService: LogReporter {
     }
 
     func sendError(
-        message: String,
-        error: Error
+        message: String?,
+        error: Error,
+        userInfo: [String: Any]? = nil
     ) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
 
-            // Extract error message and stack trace
+            // Extract clean message from error if not provided
+            let datadogMessage = message ?? Self.extractDatadogMessage(from: error)
+
+            // Extract error details
             let errorMessage = error.localizedDescription
+            let errorId = Self.extractErrorId(from: error)
+            let diagnosticsId = Self.extractDiagnosticsId(from: error)
             let stack = String(describing: error)
 
             // Mask sensitive data
-            let maskedMessage = await masker.mask(text: message)
+            let maskedMessage = await masker.mask(text: datadogMessage)
             let maskedErrorMessage = await masker.mask(text: errorMessage)
             let maskedStack = await masker.mask(text: stack)
 
             let payload = try payloadBuilder.buildErrorPayload(
                 message: maskedMessage,
                 errorMessage: maskedErrorMessage,
-                errorStack: maskedStack,
+                diagnosticsId: diagnosticsId,
+                stack: maskedStack,
+                event: errorId,
+                userInfo: userInfo,
                 sessionData: sessionData
             )
 
@@ -89,5 +98,24 @@ actor LoggingService: LogReporter {
             // Fire-and-forget: log error locally but don't throw
             Self.logger.error(message: "📊 [Logging] Failed to send ERROR log: \(error.localizedDescription)")
         }
+    }
+
+    // MARK: - Private Methods
+
+    private static func extractDatadogMessage(from error: Error) -> String {
+        guard let errorId = extractErrorId(from: error) else {
+            return "Unknown error"
+        }
+        return errorId
+            .replacingOccurrences(of: "-", with: " ")
+            .capitalized
+    }
+
+    private static func extractErrorId(from error: Error) -> String? {
+        (error as? PrimerError)?.errorId ?? (error as? InternalError)?.errorId
+    }
+
+    private static func extractDiagnosticsId(from error: Error) -> String? {
+        (error as? PrimerError)?.diagnosticsId ?? (error as? InternalError)?.diagnosticsId
     }
 }

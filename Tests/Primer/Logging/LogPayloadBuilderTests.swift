@@ -10,29 +10,35 @@ import XCTest
 // MARK: - Mock LogPayloadBuilding
 
 final class MockLogPayloadBuilder: LogPayloadBuilding {
-    var buildInfoPayloadCalls: [(message: String, event: String, initDurationMs: Int?)] = []
-    var buildErrorPayloadCalls: [(message: String, errorMessage: String?, errorStack: String?)] = []
+    typealias InfoPayloadCall = (message: String, event: String, userInfo: [String: Any]?)
+    typealias ErrorPayloadCall = (message: String, errorMessage: String?, diagnosticsId: String?, stack: String?, event: String?, userInfo: [String: Any]?)
+
+    var buildInfoPayloadCalls: [InfoPayloadCall] = []
+    var buildErrorPayloadCalls: [ErrorPayloadCall] = []
     var shouldThrow = false
 
     func buildInfoPayload(
         message: String,
         event: String,
-        initDurationMs: Int?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload {
         if shouldThrow { throw LoggingError.encodingFailed }
-        buildInfoPayloadCalls.append((message: message, event: event, initDurationMs: initDurationMs))
+        buildInfoPayloadCalls.append((message: message, event: event, userInfo: userInfo))
         return LogPayload(message: message, hostname: "test-host", ddtags: "env:test")
     }
 
     func buildErrorPayload(
         message: String,
         errorMessage: String?,
-        errorStack: String?,
+        diagnosticsId: String?,
+        stack: String?,
+        event: String?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload {
         if shouldThrow { throw LoggingError.encodingFailed }
-        buildErrorPayloadCalls.append((message: message, errorMessage: errorMessage, errorStack: errorStack))
+        buildErrorPayloadCalls.append((message: message, errorMessage: errorMessage, diagnosticsId: diagnosticsId, stack: stack, event: event, userInfo: userInfo))
         return LogPayload(message: message, hostname: "test-host", ddtags: "env:test")
     }
 
@@ -77,7 +83,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         let payload = try builder.buildInfoPayload(
             message: "test",
             event: "TEST",
-            initDurationMs: nil,
+            userInfo: nil,
             sessionData: mockSessionData
         )
 
@@ -93,7 +99,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         let payload = try builder.buildInfoPayload(
             message: "test",
             event: "TEST",
-            initDurationMs: nil,
+            userInfo: nil,
             sessionData: mockSessionData
         )
 
@@ -102,14 +108,14 @@ final class LogPayloadBuilderTests: XCTestCase {
 
         XCTAssertNotNil(appMetadata?["app_name"])
         XCTAssertNotNil(appMetadata?["app_version"])
-        XCTAssertNotNil(appMetadata?["bundle_id"])
+        XCTAssertNotNil(appMetadata?["app_id"])
     }
 
     func test_buildInfoPayload_networkTypeIsValid() throws {
         let payload = try builder.buildInfoPayload(
             message: "test",
             event: "TEST",
-            initDurationMs: nil,
+            userInfo: nil,
             sessionData: mockSessionData
         )
 
@@ -120,18 +126,92 @@ final class LogPayloadBuilderTests: XCTestCase {
         XCTAssertTrue(["WIFI", "CELLULAR", "NONE"].contains(networkType ?? ""))
     }
 
+    func test_buildInfoPayload_extractsInitDurationMsFromUserInfo() throws {
+        let payload = try builder.buildInfoPayload(
+            message: "Checkout initialized (150ms)",
+            event: "checkout-initialized",
+            userInfo: ["init_duration_ms": 150],
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertEqual(json["init_duration_ms"] as? Int, 150)
+    }
+
+    func test_buildInfoPayload_addsCustomFieldsToRootLevel() throws {
+        let payload = try builder.buildInfoPayload(
+            message: "test",
+            event: "TEST",
+            userInfo: ["customKey": "customValue", "anotherKey": 123],
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertEqual(json["custom_key"] as? String, "customValue")
+        XCTAssertEqual(json["another_key"] as? Int, 123)
+    }
+
     // MARK: - Error Payload Tests
 
     func test_buildErrorPayload_containsErrorDetails() throws {
         let payload = try builder.buildErrorPayload(
             message: "Payment failed",
             errorMessage: "Invalid card",
-            errorStack: "at line 42",
+            diagnosticsId: "test-diagnostics-id",
+            stack: "at line 42",
+            event: "failed-to-create-payment",
+            userInfo: nil,
             sessionData: mockSessionData
         )
 
         XCTAssertTrue(payload.message.contains("error"))
         XCTAssertTrue(payload.message.contains("Invalid card"))
+    }
+
+    func test_buildErrorPayload_containsEvent() throws {
+        let payload = try builder.buildErrorPayload(
+            message: "Payment failed",
+            errorMessage: "Invalid card",
+            diagnosticsId: "test-diagnostics-id",
+            stack: "at line 42",
+            event: "failed-to-create-payment",
+            userInfo: nil,
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertEqual(json["event"] as? String, "failed-to-create-payment")
+    }
+
+    func test_buildErrorPayload_eventIsNilWhenNotProvided() throws {
+        let payload = try builder.buildErrorPayload(
+            message: "Payment failed",
+            errorMessage: "Invalid card",
+            diagnosticsId: nil,
+            stack: nil,
+            event: nil,
+            userInfo: nil,
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertNil(json["event"])
+    }
+
+    func test_buildErrorPayload_addsUserInfoToRootLevel() throws {
+        let payload = try builder.buildErrorPayload(
+            message: "Payment failed",
+            errorMessage: "Invalid card",
+            diagnosticsId: nil,
+            stack: nil,
+            event: "payment-failed",
+            userInfo: ["paymentMethod": "CARD", "retryCount": 2],
+            sessionData: mockSessionData
+        )
+
+        let json = try parseJSON(payload.message)
+        XCTAssertEqual(json["payment_method"] as? String, "CARD")
+        XCTAssertEqual(json["retry_count"] as? Int, 2)
     }
 
     // MARK: - Protocol Mockability Tests
@@ -144,14 +224,14 @@ final class LogPayloadBuilderTests: XCTestCase {
         _ = try mock.buildInfoPayload(
             message: "test",
             event: "SDK_INIT",
-            initDurationMs: 100,
+            userInfo: ["init_duration_ms": 100],
             sessionData: mockSessionData
         )
 
         // Then
         XCTAssertEqual(mock.buildInfoPayloadCalls.count, 1)
         XCTAssertEqual(mock.buildInfoPayloadCalls.first?.event, "SDK_INIT")
-        XCTAssertEqual(mock.buildInfoPayloadCalls.first?.initDurationMs, 100)
+        XCTAssertEqual(mock.buildInfoPayloadCalls.first?.userInfo?["init_duration_ms"] as? Int, 100)
     }
 
     func test_logPayloadBuildingProtocol_mockCanBeUsedAsProtocolType() throws {
@@ -163,7 +243,10 @@ final class LogPayloadBuilderTests: XCTestCase {
         _ = try builder.buildErrorPayload(
             message: "Payment failed",
             errorMessage: "Card declined",
-            errorStack: nil,
+            diagnosticsId: nil,
+            stack: nil,
+            event: "failed-to-create-payment",
+            userInfo: nil,
             sessionData: mockSessionData
         )
 
@@ -171,6 +254,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         XCTAssertEqual(mock.buildErrorPayloadCalls.count, 1)
         XCTAssertEqual(mock.buildErrorPayloadCalls.first?.message, "Payment failed")
         XCTAssertEqual(mock.buildErrorPayloadCalls.first?.errorMessage, "Card declined")
+        XCTAssertEqual(mock.buildErrorPayloadCalls.first?.event, "failed-to-create-payment")
     }
 
     func test_logPayloadBuildingProtocol_mockCanThrowErrors() {
@@ -182,7 +266,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         XCTAssertThrowsError(try mock.buildInfoPayload(
             message: "test",
             event: "TEST",
-            initDurationMs: nil,
+            userInfo: nil,
             sessionData: mockSessionData
         ))
     }

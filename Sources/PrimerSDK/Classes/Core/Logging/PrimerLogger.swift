@@ -1,7 +1,7 @@
 //
 //  PrimerLogger.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -86,6 +86,41 @@ extension PrimerLogger {
                       function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
+    }
+
+    public func error(
+        message: String,
+        error: Error,
+        userInfo: [String: Any]? = nil,
+        file: String = #file,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        // Local logging (existing behavior)
+        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
+        logProxy(level: .error, message: message, userInfo: nil, metadata: metadata)
+
+        // Remote logging (iOS 15+ only) - message is auto-derived from error
+        if #available(iOS 15.0, *) {
+            Task {
+                await UnifiedLoggingService.shared.logErrorIfReportable(error, userInfo: userInfo)
+            }
+        }
+    }
+
+    @available(iOS 15.0, *)
+    public func info(
+        message: String,
+        event: String,
+        userInfo: [String: Any]? = nil
+    ) {
+        Task {
+            await UnifiedLoggingService.shared.logInfo(
+                message: message,
+                event: event,
+                userInfo: userInfo
+            )
+        }
     }
 
     private func logUserInfo(level: LogLevel,

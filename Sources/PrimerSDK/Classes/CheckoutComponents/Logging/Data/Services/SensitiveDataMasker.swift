@@ -18,6 +18,16 @@ actor SensitiveDataMasker {
         static let phone = "[REDACTED_PHONE]"
     }
 
+    private enum Placeholder {
+        static let uuidPrefix = "___UUID_PLACEHOLDER_"
+        static let uuidSuffix = "___"
+    }
+
+    // MARK: - UUID Protection Pattern
+
+    /// UUID pattern (8-4-4-4-12 hex format) - protected from masking to prevent false positives
+    private let uuidPattern: NSRegularExpression
+
     // MARK: - Masking Patterns
 
     private let patterns: [MaskingPattern]
@@ -25,6 +35,12 @@ actor SensitiveDataMasker {
     // MARK: - Initialization
 
     init() {
+        // UUID pattern to protect from masking
+        self.uuidPattern = try! NSRegularExpression(
+            pattern: #"\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\b"#,
+            options: []
+        )
+
         self.patterns = [
             // Card Number Masking: Standard 16-digit (4-4-4-4) and Amex 15-digit (4-6-5) formats
             MaskingPattern(
@@ -71,10 +87,14 @@ actor SensitiveDataMasker {
                 replacement: Replacement.email
             ),
 
-            // Phone Number Masking (word boundaries prevent matching substrings of longer numbers like diagnosticsIds)
+            // Phone Number Masking - Stricter patterns to avoid UUID false positives:
+            // - International format: +1 234 567 8901 (requires + prefix)
+            // - Parenthesized area code: (234) 567-8901
+            // - Full 10-digit with separators: 234-567-8901 (requires two separators)
+            // Note: Leading \b removed from ( and + patterns since those chars are non-word chars
             MaskingPattern(
                 regex: try! NSRegularExpression(
-                    pattern: #"\b(\+?\d{1,3}[\s\-]?)?(\(?\d{3}\)?[\s\-]?)?\d{3}[\s\-]?\d{4}\b"#,
+                    pattern: #"(\+\d{1,3}[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,9}|\(\d{3}\)[\s\-]?\d{3}[\s\-]?\d{4}|\b\d{3}[\s\-]\d{3}[\s\-]\d{4})\b"#,
                     options: []
                 ),
                 replacement: Replacement.phone
@@ -85,8 +105,11 @@ actor SensitiveDataMasker {
     // MARK: - Public Methods
 
     func mask(text: String) -> String {
-        var maskedText = text
+        // Step 1: Extract and protect UUIDs from masking
+        let (textWithPlaceholders, uuids) = protectUUIDs(in: text)
 
+        // Step 2: Apply masking patterns
+        var maskedText = textWithPlaceholders
         for pattern in patterns {
             let range = NSRange(location: 0, length: maskedText.utf16.count)
             maskedText = pattern.regex.stringByReplacingMatches(
@@ -97,7 +120,40 @@ actor SensitiveDataMasker {
             )
         }
 
-        return maskedText
+        // Step 3: Restore UUIDs
+        return restoreUUIDs(in: maskedText, uuids: uuids)
+    }
+
+    // MARK: - Private Methods - UUID Protection
+
+    private func protectUUIDs(in text: String) -> (String, [String]) {
+        let range = NSRange(location: 0, length: text.utf16.count)
+        let matches = uuidPattern.matches(in: text, options: [], range: range)
+
+        guard !matches.isEmpty else { return (text, []) }
+
+        var uuids: [String] = []
+        var result = text
+
+        // Process matches in reverse order to preserve indices
+        for match in matches.reversed() {
+            guard let swiftRange = Range(match.range, in: result) else { continue }
+            let uuid = String(result[swiftRange])
+            let placeholder = "\(Placeholder.uuidPrefix)\(uuids.count)\(Placeholder.uuidSuffix)"
+            result.replaceSubrange(swiftRange, with: placeholder)
+            uuids.insert(uuid, at: 0)
+        }
+
+        return (result, uuids)
+    }
+
+    private func restoreUUIDs(in text: String, uuids: [String]) -> String {
+        var result = text
+        for (index, uuid) in uuids.enumerated() {
+            let placeholder = "\(Placeholder.uuidPrefix)\(index)\(Placeholder.uuidSuffix)"
+            result = result.replacingOccurrences(of: placeholder, with: uuid)
+        }
+        return result
     }
 
     // MARK: - Nested Types

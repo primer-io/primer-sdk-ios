@@ -49,7 +49,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     private weak var checkoutScope: DefaultCheckoutScope?
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
-    private var loggingInteractor: (any LoggingInteractor)?
 
     // MARK: - Initialization
 
@@ -83,8 +82,10 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
             checkoutScope?.setVaultedPaymentMethods(vaultedMethods)
             syncSelectedVaultedPaymentMethod()
         } catch {
-            logger.error(message: "[Vault] Failed to load vaulted payment methods: \(error.localizedDescription)")
-            loggingInteractor?.logError(message: "[Vault] Failed to load vaulted payment methods", error: error)
+            logger.error(
+                message: "[Vault] Failed to load vaulted payment methods: \(error.localizedDescription)",
+                error: error
+            )
         }
     }
 
@@ -94,7 +95,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
         do {
             guard let container = await DIContainer.current else { return }
             accessibilityAnnouncementService = try await container.resolve(AccessibilityAnnouncementService.self)
-            loggingInteractor = try? await container.resolve(LoggingInteractor.self)
         } catch {
             // Failed to resolve AccessibilityAnnouncementService, accessibility announcements will be disabled
             logger.debug(message: "[A11Y] Failed to resolve AccessibilityAnnouncementService: \(error.localizedDescription)")

@@ -13,14 +13,17 @@ protocol LogPayloadBuilding {
     func buildInfoPayload(
         message: String,
         event: String,
-        initDurationMs: Int?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload
 
     func buildErrorPayload(
         message: String,
         errorMessage: String?,
-        errorStack: String?,
+        diagnosticsId: String?,
+        stack: String?,
+        event: String?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload
 }
@@ -36,10 +39,10 @@ struct LogPayloadBuilder: LogPayloadBuilding {
         static let statusError = "error"
         static let serviceIosSdk = "ios-sdk"
         static let sourceLambda = "lambda"
-        static let flowTypeCheckoutComponents = "checkout_components"
         static let intentCheckout = "checkout"
         static let intentVault = "vault"
         static let intentUnknown = "unknown"
+        static let initDurationMsKey = "init_duration_ms"
     }
 
     // MARK: - Public Methods
@@ -47,42 +50,56 @@ struct LogPayloadBuilder: LogPayloadBuilding {
     func buildInfoPayload(
         message: String,
         event: String,
-        initDurationMs: Int?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload {
+        // Extract known keys from userInfo
+        let initDurationMs = userInfo?[Constants.initDurationMsKey] as? Int
+
+        // Build custom fields from remaining userInfo (excluding known keys)
+        let customFields = Self.buildCustomFields(from: userInfo, excludingKeys: [Constants.initDurationMsKey])
+
         let logMessageObject = LogMessageObject(
             message: message,
             status: Constants.statusInfo,
-            primer: Self.buildPrimerIdentifiers(sessionData: sessionData),
-            deviceInfo: Self.buildDeviceInfoMetadata(),
             event: event,
+            primer: Self.buildPrimerIdentifiers(sessionData: sessionData),
             initDurationMs: initDurationMs,
+            deviceInfo: Self.buildDeviceInfoMetadata(),
             appMetadata: Self.buildAppMetadata(),
             sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
 
-        let jsonMessage = try Self.encodeToJSONString(logMessageObject)
+        let jsonMessage = try Self.encodeToJSONString(logMessageObject, customFields: customFields)
         return Self.buildLogPayload(jsonMessage: jsonMessage, sessionData: sessionData)
     }
 
     func buildErrorPayload(
         message: String,
         errorMessage: String?,
-        errorStack: String?,
+        diagnosticsId: String?,
+        stack: String?,
+        event: String?,
+        userInfo: [String: Any]?,
         sessionData: LoggingSessionContext.SessionData
     ) throws -> LogPayload {
+        // Build custom fields from userInfo
+        let customFields = Self.buildCustomFields(from: userInfo, excludingKeys: [])
+
         let logMessageObject = LogMessageObject(
             message: message,
             status: Constants.statusError,
+            event: event,
             primer: Self.buildPrimerIdentifiers(sessionData: sessionData),
-            deviceInfo: Self.buildDeviceInfoMetadata(),
             errorMessage: errorMessage,
-            errorStack: errorStack,
+            diagnosticsId: diagnosticsId,
+            stack: stack,
+            deviceInfo: Self.buildDeviceInfoMetadata(),
             appMetadata: Self.buildAppMetadata(),
             sessionMetadata: Self.buildSessionMetadata(sessionData: sessionData)
         )
 
-        let jsonMessage = try Self.encodeToJSONString(logMessageObject)
+        let jsonMessage = try Self.encodeToJSONString(logMessageObject, customFields: customFields)
         return Self.buildLogPayload(jsonMessage: jsonMessage, sessionData: sessionData)
     }
 
@@ -96,7 +113,7 @@ struct LogPayloadBuilder: LogPayloadBuilding {
         AppMetadata(
             appName: Bundle.main.infoDictionary?["CFBundleName"] as? String ?? Constants.unknownValue,
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? Constants.unknownValue,
-            bundleId: Bundle.main.bundleIdentifier ?? Constants.unknownValue
+            appId: Bundle.main.bundleIdentifier ?? Constants.unknownValue
         )
     }
 
@@ -115,9 +132,8 @@ struct LogPayloadBuilder: LogPayloadBuilding {
 
     private static func buildSessionMetadata(sessionData: LoggingSessionContext.SessionData) -> SessionMetadata {
         SessionMetadata(
-            flowType: Constants.flowTypeCheckoutComponents,
             paymentIntent: buildPaymentIntent(),
-            features: buildAvailablePaymentMethods(),
+            availablePaymentMethods: buildAvailablePaymentMethods(),
             integrationType: sessionData.integrationType?.rawValue
         )
     }
@@ -158,16 +174,59 @@ struct LogPayloadBuilder: LogPayloadBuilding {
         )
     }
 
-    private static func encodeToJSONString<T: Encodable>(_ value: T) throws -> String {
+    private static func encodeToJSONString<T: Encodable>(
+        _ value: T,
+        customFields: [String: Any]? = nil
+    ) throws -> String {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         encoder.outputFormatting = [.sortedKeys]
 
         let data = try encoder.encode(value)
-        guard let jsonString = String(data: data, encoding: .utf8) else {
+
+        // If no custom fields, return as-is
+        guard let customFields, !customFields.isEmpty else {
+            guard let jsonString = String(data: data, encoding: .utf8) else {
+                throw LoggingError.encodingFailed
+            }
+            return jsonString
+        }
+
+        // Merge custom fields at root level
+        guard var dictionary = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw LoggingError.encodingFailed
+        }
+
+        // Add custom fields (converted to snake_case keys)
+        for (key, value) in customFields {
+            let snakeCaseKey = key.toSnakeCase()
+            dictionary[snakeCaseKey] = value
+        }
+
+        // Re-encode with sorted keys
+        let mergedData = try JSONSerialization.data(
+            withJSONObject: dictionary,
+            options: [.sortedKeys]
+        )
+
+        guard let jsonString = String(data: mergedData, encoding: .utf8) else {
             throw LoggingError.encodingFailed
         }
         return jsonString
+    }
+
+    // MARK: - Private Helpers - UserInfo Processing
+
+    private static func buildCustomFields(
+        from userInfo: [String: Any]?,
+        excludingKeys: [String]
+    ) -> [String: Any]? {
+        guard let userInfo, !userInfo.isEmpty else { return nil }
+
+        let filteredEntries = userInfo.filter { !excludingKeys.contains($0.key) }
+        guard !filteredEntries.isEmpty else { return nil }
+
+        return filteredEntries
     }
 }
 

@@ -19,24 +19,21 @@ protocol ProcessApplePayPaymentInteractor {
 /// Default implementation of ProcessApplePayPaymentInteractor.
 /// Handles the full Apple Pay flow: tokenization and payment creation.
 @available(iOS 15.0, *)
-final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteractor {
+final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteractor, LogReporter {
 
     // MARK: - Dependencies
 
     private let tokenizationService: TokenizationServiceProtocol
     private let createPaymentService: CreateResumePaymentServiceProtocol
-    private let loggingInteractor: (any LoggingInteractor)?
 
     // MARK: - Initialization
 
     init(
         tokenizationService: TokenizationServiceProtocol,
-        createPaymentService: CreateResumePaymentServiceProtocol,
-        loggingInteractor: (any LoggingInteractor)? = nil
+        createPaymentService: CreateResumePaymentServiceProtocol
     ) {
         self.tokenizationService = tokenizationService
         self.createPaymentService = createPaymentService
-        self.loggingInteractor = loggingInteractor
     }
 
     // MARK: - ProcessApplePayPaymentInteractor
@@ -75,7 +72,10 @@ final class ProcessApplePayPaymentInteractorImpl: ProcessApplePayPaymentInteract
             )
 
         } catch {
-            loggingInteractor?.logError(message: "Apple Pay payment processing failed", error: error)
+            logger.error(
+                message: "Apple Pay payment processing failed: \(error)",
+                error: error
+            )
             throw error
         }
     }

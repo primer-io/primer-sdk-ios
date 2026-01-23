@@ -26,11 +26,9 @@ protocol SubmitVaultedPaymentInteractor {
 final class SubmitVaultedPaymentInteractorImpl: SubmitVaultedPaymentInteractor, LogReporter {
 
     private let repository: HeadlessRepository
-    private let loggingInteractor: (any LoggingInteractor)?
 
-    init(repository: HeadlessRepository, loggingInteractor: (any LoggingInteractor)? = nil) {
+    init(repository: HeadlessRepository) {
         self.repository = repository
-        self.loggingInteractor = loggingInteractor
     }
 
     func execute(
@@ -54,8 +52,10 @@ final class SubmitVaultedPaymentInteractorImpl: SubmitVaultedPaymentInteractor, 
 
             return result
         } catch {
-            logger.error(message: "[Vault] Vaulted payment processing failed: \(error)")
-            loggingInteractor?.logError(message: "[Vault] Vaulted payment processing failed", error: error)
+            logger.error(
+                message: "[Vault] Vaulted payment processing failed: \(error)",
+                error: error
+            )
             throw error
         }
     }
