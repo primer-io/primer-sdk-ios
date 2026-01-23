@@ -1,9 +1,10 @@
 //
 //  CountrySelectorViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 final class CountrySelectorViewController: PrimerFormViewController {
@@ -12,7 +13,7 @@ final class CountrySelectorViewController: PrimerFormViewController {
 
     private var viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol!
     private let countries = CountryCode.allCases
-    internal private(set) var subtitle: String?
+    private(set) var subtitle: String?
 
     deinit {
         viewModel.cancel()
