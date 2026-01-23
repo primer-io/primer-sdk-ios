@@ -96,14 +96,14 @@ extension PrimerLogger {
         line: Int = #line,
         function: String = #function
     ) {
-        // Local logging (existing behavior)
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .error, message: message, userInfo: nil, metadata: metadata)
 
-        // Remote logging (iOS 15+ only) - message is auto-derived from error
         if #available(iOS 15.0, *) {
             Task {
-                await UnifiedLoggingService.shared.logErrorIfReportable(error, userInfo: userInfo)
+                guard let container = await DIContainer.current,
+                      let service = try? await container.resolve(LoggingService.self) else { return }
+                await service.logErrorIfReportable(error, userInfo: userInfo)
             }
         }
     }
@@ -115,11 +115,9 @@ extension PrimerLogger {
         userInfo: [String: Any]? = nil
     ) {
         Task {
-            await UnifiedLoggingService.shared.logInfo(
-                message: message,
-                event: event,
-                userInfo: userInfo
-            )
+            guard let container = await DIContainer.current,
+                  let service = try? await container.resolve(LoggingService.self) else { return }
+            await service.logInfo(message: message, event: event, userInfo: userInfo)
         }
     }
 

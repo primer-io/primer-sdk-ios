@@ -6,7 +6,9 @@
 
 import Foundation
 
+@available(iOS 15.0, *)
 actor LoggingService: LogReporter {
+
     // MARK: - Dependencies
 
     private let networkClient: any LogNetworkClientProtocol
@@ -27,11 +29,22 @@ actor LoggingService: LogReporter {
 
     // MARK: - Public Methods
 
-    func sendInfo(
-        message: String,
-        event: String,
-        userInfo: [String: Any]?
-    ) async {
+    func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil) async {
+        guard error.shouldReportToDatadog else {
+            Self.logger.debug(message: "📊 [Logging] Skipping non-reportable error: \(error)")
+            return
+        }
+
+        await sendError(message: message, error: error, userInfo: userInfo)
+    }
+
+    func logInfo(message: String, event: String, userInfo: [String: Any]? = nil) async {
+        await sendInfo(message: message, event: event, userInfo: userInfo)
+    }
+
+    // MARK: - Private Methods
+
+    private func sendInfo(message: String, event: String, userInfo: [String: Any]?) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
 
@@ -50,29 +63,20 @@ actor LoggingService: LogReporter {
                 token: sessionData.clientSessionToken
             )
         } catch {
-            // Fire-and-forget: log error locally but don't throw
             Self.logger.error(message: "📊 [Logging] Failed to send INFO log: \(error.localizedDescription)")
         }
     }
 
-    func sendError(
-        message: String?,
-        error: Error,
-        userInfo: [String: Any]? = nil
-    ) async {
+    private func sendError(message: String?, error: Error, userInfo: [String: Any]?) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
 
-            // Extract clean message from error if not provided
             let datadogMessage = message ?? Self.extractDatadogMessage(from: error)
-
-            // Extract error details
             let errorMessage = error.localizedDescription
             let errorId = Self.extractErrorId(from: error)
             let diagnosticsId = Self.extractDiagnosticsId(from: error)
             let stack = String(describing: error)
 
-            // Mask sensitive data
             let maskedMessage = await masker.mask(text: datadogMessage)
             let maskedErrorMessage = await masker.mask(text: errorMessage)
             let maskedStack = await masker.mask(text: stack)
@@ -95,12 +99,9 @@ actor LoggingService: LogReporter {
                 token: sessionData.clientSessionToken
             )
         } catch {
-            // Fire-and-forget: log error locally but don't throw
             Self.logger.error(message: "📊 [Logging] Failed to send ERROR log: \(error.localizedDescription)")
         }
     }
-
-    // MARK: - Private Methods
 
     private static func extractDatadogMessage(from error: Error) -> String {
         guard let errorId = extractErrorId(from: error) else {
