@@ -6,6 +6,7 @@
 
 #if canImport(PrimerKlarnaSDK)
 import Foundation
+import PrimerCore
 import PrimerFoundation
 import PrimerKlarnaSDK
 import UIKit

@@ -6,6 +6,7 @@
 
 // swiftlint:disable function_body_length
 import Foundation
+import PrimerCore
 import PrimerFoundation
 
 var inMemoryCurrencies: [Currency]? = []

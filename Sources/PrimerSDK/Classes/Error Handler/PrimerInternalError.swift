@@ -13,7 +13,7 @@ extension InternalError: PrimerErrorProtocol {
         case let .failedToPerform3dsButShouldContinue(error): error.normalizedForSDK
         case let .failedToPerform3dsAndShouldBreak(error): error.normalizedForSDK
         case .serverError: shouldExposeServerError ? self : PrimerError.unknown(diagnosticsId: diagnosticsId)
-        default: PrimerError.unknown(diagnosticsId: diagnosticsId)
+        default: PrimerError.unknown(diagnosticsId: self.diagnosticsId)
         }
     }
 }

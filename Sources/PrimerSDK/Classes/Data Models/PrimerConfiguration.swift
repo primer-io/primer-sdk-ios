@@ -8,6 +8,7 @@
 
 import Foundation
 import PassKit
+import PrimerCore
 import PrimerFoundation
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
