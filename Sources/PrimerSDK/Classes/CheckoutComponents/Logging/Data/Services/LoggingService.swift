@@ -120,3 +120,12 @@ actor LoggingService: LogReporter {
         (error as? PrimerError)?.diagnosticsId ?? (error as? InternalError)?.diagnosticsId
     }
 }
+
+// MARK: - Error Extension
+
+@available(iOS 15.0, *)
+extension Error {
+    var shouldReportToDatadog: Bool {
+        (self as? PrimerErrorProtocol)?.isReportable ?? true
+    }
+}
