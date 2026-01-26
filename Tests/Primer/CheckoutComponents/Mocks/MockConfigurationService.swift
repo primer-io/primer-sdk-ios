@@ -17,7 +17,7 @@ final class MockConfigurationService: ConfigurationService {
     var billingAddressOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions?
     var currency: Currency?
     var amount: Int?
-    var captureVaultedCardCvv: Bool
+    var captureVaultedCardCvv: Bool = false
 
     // MARK: - Initialization
 

@@ -384,14 +384,21 @@ final class DIFrameworkTests: XCTestCase {
     // MARK: - DIContainer.withContainer Context Restoration
 
     func testDIContainerWithContainerRestoresOriginal() async throws {
+        // Set up a known initial container state (other tests may have cleared it)
+        let initialContainer = Container()
+        await DIContainer.setContainer(initialContainer)
+
         // Capture original before swap
         let original = await DIContainer.current
+        XCTAssertNotNil(original, "Container should exist after setup")
+
         let temp = Container()
 
         // Swap in `temp`, run assertions inside, then swap back
         let ret = await DIContainer.withContainer(temp) {
             // ⬇️ Fetch current before asserting
             let inside = await DIContainer.current
+            XCTAssertNotNil(inside, "Container should exist inside withContainer block")
             XCTAssertTrue(inside! as AnyObject === temp as AnyObject)
             return "done"
         }
@@ -399,6 +406,7 @@ final class DIFrameworkTests: XCTestCase {
 
         // After the block, make sure the original was restored
         let outside = await DIContainer.current
+        XCTAssertNotNil(outside, "Container should be restored after withContainer block")
         XCTAssertTrue(outside! as AnyObject === original! as AnyObject)
     }
 
