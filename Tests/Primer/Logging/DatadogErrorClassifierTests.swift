@@ -158,4 +158,26 @@ final class DatadogErrorClassifierTests: XCTestCase {
         // Unknown error types should be reported for visibility
         XCTAssertTrue(error.shouldReportToDatadog)
     }
+
+    // MARK: - 3DS Error Tests
+
+    func test_shouldReportToDatadog_returnsTrueFor3DSErrorContainer() {
+        // All 3DS errors should be reported (isReportable = true)
+        let missingDependency = Primer3DSErrorContainer.missingSdkDependency()
+        XCTAssertTrue(missingDependency.shouldReportToDatadog)
+
+        let invalidVersion = Primer3DSErrorContainer.invalid3DSSdkVersion(
+            invalidVersion: "1.0.0",
+            validVersion: "2.0.0"
+        )
+        XCTAssertTrue(invalidVersion.shouldReportToDatadog)
+
+        let missingConfig = Primer3DSErrorContainer.missing3DSConfiguration(missingKey: "directoryServerId")
+        XCTAssertTrue(missingConfig.shouldReportToDatadog)
+
+        let underlyingError = Primer3DSErrorContainer.underlyingError(
+            error: NSError(domain: "com.netcetera", code: 1)
+        )
+        XCTAssertTrue(underlyingError.shouldReportToDatadog)
+    }
 }

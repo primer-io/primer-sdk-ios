@@ -11,40 +11,10 @@ actor LogNetworkClient {
 
     private let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
-        // Use custom key encoding to handle specific snake_case fields
-        encoder.keyEncodingStrategy = .custom { keys in
-            let key = keys.last!.stringValue
-
-            switch key {
-            case "primer_account_id", "useragent_details", "patch_minor":
-                return CustomCodingKey(stringValue: key)
-            default:
-                return CustomCodingKey(stringValue: key.toSnakeCase())
-            }
-        }
-
-        // Disable forward slash escaping for iOS 13.0+ (always available for iOS 15.0+)
+        encoder.keyEncodingStrategy = .convertToSnakeCase
         encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
-
         return encoder
     }()
-
-    // MARK: - Custom Coding Key
-
-    private struct CustomCodingKey: CodingKey {
-        var stringValue: String
-        var intValue: Int?
-
-        init(stringValue: String) {
-            self.stringValue = stringValue
-            self.intValue = nil
-        }
-
-        init?(intValue: Int) {
-            self.stringValue = "\(intValue)"
-            self.intValue = intValue
-        }
-    }
 
     // MARK: - Public Methods
 

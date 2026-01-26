@@ -87,11 +87,14 @@ actor SensitiveDataMasker {
                 replacement: Replacement.email
             ),
 
-            // Phone Number Masking - Stricter patterns to avoid UUID false positives:
-            // - International format: +1 234 567 8901 (requires + prefix)
-            // - Parenthesized area code: (234) 567-8901
-            // - Full 10-digit with separators: 234-567-8901 (requires two separators)
-            // Note: Leading \b removed from ( and + patterns since those chars are non-word chars
+             // Phone Number Masking (stricter patterns to avoid UUID false positives):
+            //   - International: +1 234 567 8901 (requires + prefix)
+            //   - Parenthesized area code: (234) 567-8901
+            //   - 10-digit with separators: 234-567-8901 (requires two separators)
+            // Notes:
+            //   - Separators (spaces or hyphens) are required to avoid masking UUIDs or numeric IDs.
+            //   - Unformatted 10-digit strings like "5551234567" are NOT masked to prevent masking transaction IDs, account numbers, etc.
+            //   - Leading \b removed from ( and + patterns since those are non-word chars.
             MaskingPattern(
                 regex: try! NSRegularExpression(
                     pattern: #"(\+\d{1,3}[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,9}|\(\d{3}\)[\s\-]?\d{3}[\s\-]?\d{4}|\b\d{3}[\s\-]\d{3}[\s\-]\d{4})\b"#,

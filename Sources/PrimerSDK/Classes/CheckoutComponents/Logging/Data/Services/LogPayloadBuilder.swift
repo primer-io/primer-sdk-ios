@@ -197,10 +197,9 @@ struct LogPayloadBuilder: LogPayloadBuilding {
             throw LoggingError.encodingFailed
         }
 
-        // Add custom fields (converted to snake_case keys)
+        // Add custom fields as-is (merchants control their key format)
         for (key, value) in customFields {
-            let snakeCaseKey = key.toSnakeCase()
-            dictionary[snakeCaseKey] = value
+            dictionary[key] = value
         }
 
         // Re-encode with sorted keys

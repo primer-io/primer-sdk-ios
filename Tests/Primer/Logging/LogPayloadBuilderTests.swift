@@ -142,7 +142,7 @@ final class LogPayloadBuilderTests: XCTestCase {
         let payload = try builder.buildInfoPayload(
             message: "test",
             event: "TEST",
-            userInfo: ["customKey": "customValue", "anotherKey": 123],
+            userInfo: ["custom_key": "customValue", "another_key": 123],
             sessionData: mockSessionData
         )
 
@@ -205,7 +205,7 @@ final class LogPayloadBuilderTests: XCTestCase {
             diagnosticsId: nil,
             stack: nil,
             event: "payment-failed",
-            userInfo: ["paymentMethod": "CARD", "retryCount": 2],
+            userInfo: ["payment_method": "CARD", "retry_count": 2],
             sessionData: mockSessionData
         )
 
