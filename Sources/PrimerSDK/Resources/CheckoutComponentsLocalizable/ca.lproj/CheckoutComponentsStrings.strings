@@ -50,7 +50,7 @@
 "accessibility_country_selection_item" = "%1$@, país";
 "accessibility_country_selection_search" = "Cerca països";
 "accessibility_country_selection_search_icon" = "Cerca";
-"accessibility_error_generic" = "S'ha produït un error. Si us plau, torneu-ho a intentar.";
+"accessibility_error_generic" = "Hi ha hagut un error. Si us plau, torneu-ho a provar.";
 "accessibility_error_multiple_errors" = "%d errors trobats";
 "accessibility_payment_selection_card_full" = "Targeta %1$@ acabada en %2$@, caduca %3$@";
 "accessibility_payment_selection_card_masked" = "targeta acabada en dígits ocults";
