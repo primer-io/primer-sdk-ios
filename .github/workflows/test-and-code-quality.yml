@@ -17,7 +17,7 @@ jobs:
     name: "SDK - Unit Tests"
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # v0.13.0
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
@@ -50,7 +50,7 @@ jobs:
           - { name: 'stripe', file: Package.Stripe.swift }
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # v0.13.0
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout

@@ -26,7 +26,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@0.12.1
+        uses: styfle/cancel-workflow-action@0.13.0
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
@@ -62,7 +62,7 @@ jobs:
       artifact-url: ${{ steps.save_app_artifact_step.outputs.artifact-url }}
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # v0.13.0
         with:
           access_token: ${{ github.token }}
 
@@ -87,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@675dd7ba1b06c8786a1480d89c384f5620a42647  # v1.281.0
+      - uses: ruby/setup-ruby@80740b3b13bf9857e28854481ca95a84e78a2bdf  # v1.284.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
