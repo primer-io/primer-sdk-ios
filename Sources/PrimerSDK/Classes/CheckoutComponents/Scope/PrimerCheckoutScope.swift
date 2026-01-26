@@ -92,21 +92,49 @@ public protocol PrimerCheckoutScope: AnyObject {
 // MARK: - State Definition
 
 /// Represents the current state of the checkout flow.
+///
+/// `PrimerCheckoutState` provides a way to observe the checkout lifecycle and respond
+/// to state changes. Use the `state` async stream on `PrimerCheckoutScope` to receive
+/// state updates.
+///
+/// Example usage:
+/// ```swift
+/// for await state in checkoutScope.state {
+///     switch state {
+///     case .initializing:
+///         showLoadingIndicator()
+///     case .ready(let amount, let currency):
+///         showPaymentMethods(amount: amount, currency: currency)
+///     case .success(let result):
+///         showSuccessScreen(paymentId: result.paymentId)
+///     case .failure(let error):
+///         showErrorScreen(error: error)
+///     case .dismissed:
+///         handleDismissal()
+///     }
+/// }
+/// ```
 public enum PrimerCheckoutState: Equatable {
     /// Initial state while loading configuration and payment methods.
+    /// The SDK is fetching the client session and preparing available payment methods.
     case initializing
 
-    /// Ready state with payment methods loaded, including payment amount information.
+    /// Ready state with payment methods loaded and checkout available.
     /// - Parameters:
-    ///   - totalAmount: The total payment amount in minor units (e.g., cents)
-    ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR")
+    ///   - totalAmount: The total payment amount in minor units (e.g., cents for USD).
+    ///   - currencyCode: The ISO 4217 currency code (e.g., "USD", "EUR", "GBP").
     case ready(totalAmount: Int, currencyCode: String)
 
+    /// Payment completed successfully.
+    /// Contains the full payment result with payment ID, status, and other details.
     case success(PaymentResult)
 
-    /// Checkout has been dismissed by user or merchant.
+    /// Checkout has been dismissed by user action or programmatically.
+    /// This is a terminal state indicating the checkout flow has ended without payment.
     case dismissed
 
+    /// Payment or checkout failed with an error.
+    /// Contains the specific error with diagnostics information for debugging.
     case failure(PrimerError)
 
     public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {

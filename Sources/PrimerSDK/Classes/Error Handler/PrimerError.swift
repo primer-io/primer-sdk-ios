@@ -60,28 +60,94 @@ func handled(
     handled(error: primerValidationError, file: file, line: line, function: function)
 }
 
+/// Errors that can occur during payment processing with the Primer SDK.
+///
+/// `PrimerError` provides detailed error information for debugging and user feedback.
+/// Each error includes:
+/// - A unique `errorId` for categorization
+/// - A `diagnosticsId` for support requests
+/// - Descriptive messages and recovery suggestions
+///
+/// Errors are organized into categories:
+/// - **Configuration errors**: SDK not initialized, invalid tokens, missing configuration
+/// - **Payment errors**: Payment failed, cancelled, or requires action
+/// - **Payment method errors**: Unsupported methods, presentation failures
+/// - **Provider-specific errors**: Apple Pay, Klarna, Stripe, etc.
+///
+/// Example usage:
+/// ```swift
+/// func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?) {
+///     if let primerError = error as? PrimerError {
+///         print("Error ID: \(primerError.errorId)")
+///         print("Diagnostics ID: \(primerError.diagnosticsId)")
+///         print("Recovery suggestion: \(primerError.recoverySuggestion ?? "None")")
+///     }
+/// }
+/// ```
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
+
+    /// The SDK session has not been initialized with a client token.
     case uninitializedSDKSession(diagnosticsId: String = .uuid)
+
+    /// The provided client token is invalid or expired.
     case invalidClientToken(reason: String? = nil, diagnosticsId: String = .uuid)
+
+    /// SDK configuration is missing (no API response received).
     case missingPrimerConfiguration(diagnosticsId: String = .uuid)
+
+    /// Payment methods are not configured correctly in the dashboard.
     case misconfiguredPaymentMethods(diagnosticsId: String = .uuid)
+
+    /// A required input element is missing from the form.
     case missingPrimerInputElement(inputElementType: PrimerInputElementType, diagnosticsId: String = .uuid)
+
+    /// The user cancelled the payment flow.
     case cancelled(paymentMethodType: String, diagnosticsId: String = .uuid)
+
+    /// Failed to create a client session.
     case failedToCreateSession(error: Error?, diagnosticsId: String = .uuid)
+
+    /// An invalid URL was provided or constructed.
     case invalidUrl(url: String? = nil, diagnosticsId: String = .uuid)
+
+    /// The current architecture or configuration is invalid.
     case invalidArchitecture(description: String, recoverSuggestion: String?, diagnosticsId: String = .uuid)
+
+    /// A value in the client session is invalid.
     case invalidClientSessionValue(name: String, value: String? = nil, allowedValue: String? = nil, diagnosticsId: String = .uuid)
+
+    /// The Apple Pay merchant identifier is invalid.
     case invalidMerchantIdentifier(merchantIdentifier: String? = nil, diagnosticsId: String = .uuid)
+
+    /// A provided value is invalid for the given key.
     case invalidValue(key: String, value: Any? = nil, reason: String? = nil, diagnosticsId: String = .uuid)
+
+    /// The device cannot make payments on the provided card networks.
     case unableToMakePaymentsOnProvidedNetworks(diagnosticsId: String = .uuid)
+
+    /// Unable to present the specified payment method UI.
     case unableToPresentPaymentMethod(paymentMethodType: String, reason: String? = nil, diagnosticsId: String = .uuid)
+
+    /// The current session intent is not supported for this operation.
     case unsupportedIntent(intent: PrimerSessionIntent, diagnosticsId: String = .uuid)
+
+    /// The payment method type is not supported.
     case unsupportedPaymentMethod(paymentMethodType: String, reason: String? = nil, diagnosticsId: String = .uuid)
+
+    /// The payment method is not supported by the specified manager.
     case unsupportedPaymentMethodForManager(paymentMethodType: String, category: String, diagnosticsId: String = .uuid)
+
+    /// Multiple errors occurred during the operation.
     case underlyingErrors(errors: [Error], diagnosticsId: String = .uuid)
+
+    /// A required SDK dependency is missing.
     case missingSDK(paymentMethodType: String, sdkName: String, diagnosticsId: String = .uuid)
+
+    /// An error returned by merchant-side logic.
     case merchantError(message: String, diagnosticsId: String = .uuid)
+
+    /// The payment was created but failed or ended in an unexpected status.
     case paymentFailed(
         paymentMethodType: String?,
         paymentId: String,
@@ -89,22 +155,56 @@ public enum PrimerError: PrimerErrorProtocol {
         status: String,
         diagnosticsId: String = .uuid
     )
+
+    /// Failed to redirect to the required URL.
     case failedToRedirect(url: String, diagnosticsId: String = .uuid)
+
+    /// Failed to create the payment after tokenization.
     case failedToCreatePayment(paymentMethodType: String, description: String, diagnosticsId: String = .uuid)
+
+    /// Failed to resume the payment after additional action.
     case failedToResumePayment(paymentMethodType: String, description: String, diagnosticsId: String = .uuid)
+
+    /// Apple Pay authorization timed out.
     case applePayTimedOut(diagnosticsId: String = .uuid)
+
+    /// The specified vaulted payment method ID does not exist.
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, diagnosticsId: String = .uuid)
+
+    /// An error from the NOL Pay SDK.
     case nolError(code: String?, message: String?, diagnosticsId: String = .uuid)
+
+    /// NOL Pay SDK initialization failed.
     case nolSdkInitError(diagnosticsId: String = .uuid)
+
+    /// An error from the Klarna SDK.
     case klarnaError(message: String?, diagnosticsId: String = .uuid)
+
+    /// The user is not approved for Klarna payments.
     case klarnaUserNotApproved(diagnosticsId: String = .uuid)
+
+    /// An error from the Stripe SDK.
     case stripeError(key: String, message: String?, diagnosticsId: String = .uuid)
+
+    /// Unable to present Apple Pay (PassKit unavailable).
     case unableToPresentApplePay(diagnosticsId: String = .uuid)
+
+    /// Apple Pay has no cards configured in the wallet.
     case applePayNoCardsInWallet(diagnosticsId: String = .uuid)
+
+    /// The device does not support Apple Pay.
     case applePayDeviceNotSupported(diagnosticsId: String = .uuid)
+
+    /// Apple Pay configuration error (merchant identifier issue).
     case applePayConfigurationError(merchantIdentifier: String?, diagnosticsId: String = .uuid)
+
+    /// Apple Pay sheet could not be presented.
     case applePayPresentationFailed(reason: String?, diagnosticsId: String = .uuid)
+
+    /// Failed to load design tokens from the bundle.
     case failedToLoadDesignTokens(fileName: String, diagnosticsId: String = .uuid)
+
+    /// An unknown error occurred.
     case unknown(message: String? = nil, diagnosticsId: String = .uuid)
 
     public var errorId: String {

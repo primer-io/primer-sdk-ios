@@ -232,6 +232,8 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
     // MARK: - ViewBuilder
 
+    // swiftlint:disable identifier_name
+
     public func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView {
         AnyView(
             ApplePayButtonView(
@@ -242,6 +244,8 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
             )
         )
     }
+    
+    // swiftlint:enable identifier_name
 }
 
 // MARK: - Apple Pay Authorization Coordinator

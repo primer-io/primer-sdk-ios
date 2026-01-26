@@ -170,7 +170,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
     // MARK: - Initialization
 
-    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
+    init(clientToken: String,
+         settings: PrimerSettings,
+         diContainer: DIContainer,
+         navigator: CheckoutNavigator,
+         presentationContext: PresentationContext = .fromPaymentSelection) {
         self.clientToken = clientToken
         self.settings = settings
         self.navigator = navigator

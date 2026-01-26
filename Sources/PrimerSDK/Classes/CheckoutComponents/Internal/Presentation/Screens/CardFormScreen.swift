@@ -49,7 +49,7 @@ struct CardFormScreen: View, LogReporter {
                         scope.onBack()
                     }, label: {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
-                            Image(systemName: "chevron.left")
+                            Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
                             Text(CheckoutComponentsStrings.backButton)
                         }
@@ -129,26 +129,17 @@ struct CardFormScreen: View, LogReporter {
 
                     if fieldType == .expiryDate,
                        index + 1 < formConfiguration.cardFields.count,
-                       formConfiguration.cardFields[index + 1] == .cvv
-                    {
+                       formConfiguration.cardFields[index + 1] == .cvv {
                         HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                             renderField(.expiryDate)
                             renderField(.cvv)
                         }
                     } else if index > 0,
                               formConfiguration.cardFields[index - 1] == .expiryDate,
-                              fieldType == .cvv
-                    {
+                              fieldType == .cvv {
                         EmptyView()
                     } else {
                         renderField(fieldType)
-                    }
-
-                    if fieldType == .cardNumber {
-                        let allowedNetworks = [CardNetwork].allowedCardNetworks
-                        let networksToShow = !allowedNetworks.isEmpty ? allowedNetworks : [.visa, .masterCard, .amex, .discover]
-                        AllowedCardNetworksView(allowedCardNetworks: networksToShow)
-                            .padding(.bottom, PrimerSpacing.medium(tokens: tokens))
                     }
                 }
             }
@@ -174,16 +165,14 @@ struct CardFormScreen: View, LogReporter {
 
                             if fieldType == .firstName,
                                index + 1 < formConfiguration.billingFields.count,
-                               formConfiguration.billingFields[index + 1] == .lastName
-                            {
+                               formConfiguration.billingFields[index + 1] == .lastName {
                                 HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                                     renderField(.firstName)
                                     renderField(.lastName)
                                 }
                             } else if index > 0,
                                       formConfiguration.billingFields[index - 1] == .firstName,
-                                      fieldType == .lastName
-                            {
+                                      fieldType == .lastName {
                                 EmptyView()
                             } else {
                                 renderField(fieldType)
@@ -259,8 +248,7 @@ struct CardFormScreen: View, LogReporter {
 
         if let merchantAmount = merchantAmount,
            let surchargeRaw = cardFormState.surchargeAmountRaw,
-           cardFormState.selectedNetwork != nil
-        {
+           cardFormState.selectedNetwork != nil {
             let totalAmount = merchantAmount + surchargeRaw
             let accessibilityAmount = totalAmount.toAccessibilityCurrencyString(currency: currency)
             return "Pay with \(accessibilityAmount)"
@@ -291,8 +279,7 @@ struct CardFormScreen: View, LogReporter {
 
         if let merchantAmount = merchantAmount,
            let surchargeRaw = cardFormState.surchargeAmountRaw,
-           cardFormState.selectedNetwork != nil
-        {
+           cardFormState.selectedNetwork != nil {
             let totalAmount = merchantAmount + surchargeRaw
             let formattedTotalAmount = totalAmount.toCurrencyString(currency: currency)
             return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
@@ -346,13 +333,11 @@ struct CardFormScreen: View, LogReporter {
                     if let selectedNetwork = state.selectedNetwork {
                         selectedCardNetwork = selectedNetwork.network
                     } else if state.availableNetworks.count == 1,
-                              let firstNetwork = state.availableNetworks.first
-                    {
+                              let firstNetwork = state.availableNetworks.first {
                         selectedCardNetwork = firstNetwork.network
                     } else if state.availableNetworks.count > 1 {
                         if let firstNetwork = state.availableNetworks.first,
-                           selectedCardNetwork == .unknown
-                        {
+                           selectedCardNetwork == .unknown {
                             selectedCardNetwork = firstNetwork.network
                         }
                     }
@@ -367,8 +352,6 @@ struct CardFormScreen: View, LogReporter {
     @MainActor
     @ViewBuilder
     private func renderField(_ fieldType: PrimerInputElementType) -> some View {
-        let fieldLabel: String? = fieldType.displayName
-
         switch fieldType {
         case .cardNumber:
             let config = scope.cardNumberConfig
@@ -377,7 +360,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .cardNumber)
             } else {
                 CardNumberInputField(
-                    label: config?.label ?? fieldLabel ?? "Card Number",
+                    label: config?.label ?? CheckoutComponentsStrings.cardNumberLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.cardNumberPlaceholder,
                     scope: scope,
                     selectedNetwork: getSelectedCardNetwork(),
@@ -395,7 +378,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .expiryDate)
             } else {
                 ExpiryDateInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.expiryDateLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.expiryDatePlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -414,7 +397,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .cvv)
             } else {
                 CVVInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.cvvLabel,
                     placeholder: config?.placeholder ?? defaultPlaceholder,
                     scope: scope,
                     cardNetwork: getCardNetworkForCvv(),
@@ -431,7 +414,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .cardholderName)
             } else {
                 CardholderNameInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.cardholderNameLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.fullNamePlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -447,7 +430,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .postalCode)
             } else {
                 PostalCodeInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.postalCodeLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.postalCodePlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -463,7 +446,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .countryCode)
             } else if let defaultCardFormScope = scope as? DefaultCardFormScope {
                 CountryInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.countryLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.selectCountryPlaceholder,
                     scope: defaultCardFormScope,
                     styling: config?.styling
@@ -479,7 +462,7 @@ struct CardFormScreen: View, LogReporter {
                     .focused($focusedField, equals: .city)
             } else {
                 CityInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.cityLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.cityPlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -494,7 +477,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 StateInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.stateLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.statePlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -507,7 +490,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 AddressLineInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.addressLine1Label,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.addressLine1Placeholder,
                     isRequired: true,
                     inputType: .addressLine1,
@@ -522,7 +505,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 AddressLineInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.addressLine2Label,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.addressLine2Placeholder,
                     isRequired: false,
                     inputType: .addressLine2,
@@ -537,7 +520,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.phoneNumberLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.phoneNumberPlaceholder,
                     inputType: .phoneNumber,
                     scope: scope,
@@ -551,7 +534,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.firstNameLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.firstNamePlaceholder,
                     inputType: .firstName,
                     scope: scope,
@@ -565,7 +548,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 NameInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.lastNameLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.lastNamePlaceholder,
                     inputType: .lastName,
                     scope: scope,
@@ -579,7 +562,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 EmailInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: config?.label ?? CheckoutComponentsStrings.emailLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.emailPlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -603,7 +586,7 @@ struct CardFormScreen: View, LogReporter {
                 AnyView(customComponent())
             } else {
                 OTPCodeInputField(
-                    label: config?.label ?? fieldLabel ?? "",
+                    label: CheckoutComponentsStrings.otpLabel,
                     placeholder: config?.placeholder ?? CheckoutComponentsStrings.otpCodeNumericPlaceholder,
                     scope: scope,
                     styling: config?.styling
@@ -673,18 +656,14 @@ struct CardFormScreen: View, LogReporter {
     /// **Important**: Only call in response to explicit user actions (form submission, navigation request).
     /// DO NOT call automatically during typing as it creates an accessibility trap.
     private func moveFocusToFirstError() {
-        for field in formConfiguration.cardFields {
-            if cardFormState.hasError(for: field) {
-                focusedField = field
-                return
-            }
+        for field in formConfiguration.cardFields where cardFormState.hasError(for: field) {
+            focusedField = field
+            return
         }
 
-        for field in formConfiguration.billingFields {
-            if cardFormState.hasError(for: field) {
-                focusedField = field
-                return
-            }
+        for field in formConfiguration.billingFields where cardFormState.hasError(for: field) {
+            focusedField = field
+            return
         }
     }
 }
@@ -709,7 +688,7 @@ struct CardFormScreen: View, LogReporter {
                 .lastName,
                 .email,
                 .phoneNumber,
-                .otp,
+                .otp
             ]
         )
     ))
@@ -734,7 +713,7 @@ struct CardFormScreen: View, LogReporter {
                 .lastName,
                 .email,
                 .phoneNumber,
-                .otp,
+                .otp
             ]
         )
     ))

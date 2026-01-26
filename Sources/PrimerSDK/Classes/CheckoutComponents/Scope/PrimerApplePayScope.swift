@@ -52,11 +52,12 @@ public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == App
     func pay()
 
     // MARK: - ViewBuilder Components
-
+    // swiftlint:disable identifier_name
     /// Returns the default Apple Pay button view
     /// - Parameter action: The action to perform when the button is tapped
     /// - Returns: A SwiftUI view containing the Apple Pay button
     func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView
+    // swiftlint:enable identifier_name
 }
 
 // MARK: - Default Implementations

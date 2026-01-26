@@ -34,20 +34,23 @@ struct CountrySelectionButton: View {
     // MARK: - Body
 
     var body: some View {
-        Button(action: {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
-            showCountryPicker = true
-        }) {
-            HStack(spacing: 0) {
-                Text(countryName.isEmpty ? placeholder : countryName)
-                    .font(fieldFont)
-                    .foregroundColor(countryTextColor)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        Button(
+            action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                showCountryPicker = true
+            },
+            label: {
+                HStack(spacing: 0) {
+                    Text(countryName.isEmpty ? placeholder : countryName)
+                        .font(fieldFont)
+                        .foregroundColor(countryTextColor)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(height: PrimerSize.xxlarge(tokens: tokens))
+                .contentShape(Rectangle())
             }
-            .frame(height: PrimerSize.xxlarge(tokens: tokens))
-            .contentShape(Rectangle())
-        }
+        )
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showCountryPicker) {
             SelectCountryScreen(

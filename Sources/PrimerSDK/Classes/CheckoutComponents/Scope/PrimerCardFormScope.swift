@@ -8,25 +8,84 @@
 
 import SwiftUI
 
+/// Scope interface for the card payment form, providing field management and UI customization.
+///
+/// `PrimerCardFormScope` is the primary interface for interacting with card payment forms
+/// in CheckoutComponents. It provides:
+/// - State observation for form fields, validation, and co-badged card networks
+/// - Methods to update individual field values
+/// - UI customization at field, section, and screen levels
+/// - Navigation and submission controls
+///
+/// ## State Observation
+/// Use the `state` async stream to observe form changes:
+/// ```swift
+/// for await formState in cardFormScope.state {
+///     if formState.isValid {
+///         enableSubmitButton()
+///     }
+///     if let network = formState.selectedNetwork {
+///         updateNetworkIcon(network)
+///     }
+/// }
+/// ```
+///
+/// ## Field Updates
+/// Update individual fields using the provided methods:
+/// ```swift
+/// cardFormScope.updateCardNumber("4242424242424242")
+/// cardFormScope.updateExpiryDate("12/25")
+/// cardFormScope.updateCvv("123")
+/// ```
+///
+/// ## UI Customization
+/// Customize the form at multiple levels:
+/// ```swift
+/// // Field-level customization
+/// cardFormScope.cardNumberConfig = InputFieldConfig(label: "Card Number")
+///
+/// // Section-level customization
+/// cardFormScope.cardInputSection = { AnyView(MyCustomCardSection()) }
+///
+/// // Full screen replacement
+/// cardFormScope.screen = { scope in AnyView(MyCustomCardForm(scope: scope)) }
+/// ```
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == StructuredCardFormState {
 
+    /// Async stream of the current card form state including field values, validation, and networks.
     var state: AsyncStream<StructuredCardFormState> { get }
+
+    /// The presentation context indicating how the form was navigated to.
     var presentationContext: PresentationContext { get }
+
+    /// Card form-specific UI options from the SDK settings.
     var cardFormUIOptions: PrimerCardFormUIOptions? { get }
+
+    /// Controls how users can dismiss the card form.
     var dismissalMechanism: [DismissalMechanism] { get }
 
     // MARK: - Payment Method Lifecycle
 
+    /// Initializes the card form and begins field observation.
     func start()
+
+    /// Submits the card form for tokenization and payment processing.
     func submit()
+
+    /// Cancels the card form and returns to the previous screen.
     func cancel()
 
     // MARK: - Navigation Methods
 
+    /// Called when the user taps the submit/pay button.
     func onSubmit()
+
+    /// Called when the user taps the back button.
     func onBack()
+
+    /// Called when the user cancels the card form.
     func onCancel()
 
     // MARK: - Update Methods
