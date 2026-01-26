@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.
 /// This protocol enables unified payment method handling with type-safe scope associations.

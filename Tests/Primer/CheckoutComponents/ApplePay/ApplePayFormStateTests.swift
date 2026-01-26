@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 @available(iOS 15.0, *)
 final class ApplePayFormStateTests: XCTestCase {

@@ -23,6 +23,7 @@ Pod::Spec.new do |s|
                 "Sources/PrimerSDK/Resources/*.xcassets",
                 "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
                 "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
+                "Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/**/*.strings",
                 "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
                 "Sources/PrimerSDK/Resources/Nibs/*",
                 "Sources/PrimerSDK/Resources/JSONs/**/*.json",

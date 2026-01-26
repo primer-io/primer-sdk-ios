@@ -69,12 +69,6 @@ actor LogNetworkClient {
     }
 }
 
-// MARK: - Errors
-
-extension LoggingError {
-    static let networkError = LoggingError.encodingFailed // Reuse existing error for now
-}
-
 // MARK: - String Extension
 
 private extension String {

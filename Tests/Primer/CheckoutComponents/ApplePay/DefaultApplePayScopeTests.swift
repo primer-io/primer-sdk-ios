@@ -5,9 +5,9 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
+@testable import PrimerSDK
 import SwiftUI
 import XCTest
-@testable import PrimerSDK
 
 @available(iOS 15.0, *)
 final class DefaultApplePayScopeTests: XCTestCase {

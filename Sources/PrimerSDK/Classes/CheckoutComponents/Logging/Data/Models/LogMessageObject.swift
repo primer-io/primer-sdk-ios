@@ -6,32 +6,32 @@
 
 import Foundation
 
-public struct LogMessageObject: Codable, Sendable {
+struct LogMessageObject: Codable, Sendable {
     // MARK: - Common Fields
 
-    public let message: String
-    public let status: String
-    public let primer: PrimerIdentifiers?
-    public let deviceInfo: DeviceInfoMetadata?
+    let message: String
+    let status: String
+    let primer: PrimerIdentifiers?
+    let deviceInfo: DeviceInfoMetadata?
 
     // MARK: - ERROR-specific Fields
 
-    public let errorMessage: String?
-    public let errorStack: String?
+    let errorMessage: String?
+    let errorStack: String?
 
     // MARK: - INFO-specific Fields
 
-    public let event: String?
-    public let initDurationMs: Int?
+    let event: String?
+    let initDurationMs: Int?
 
     // MARK: - Metadata Fields
 
-    public let appMetadata: AppMetadata?
-    public let sessionMetadata: SessionMetadata?
+    let appMetadata: AppMetadata?
+    let sessionMetadata: SessionMetadata?
 
     // MARK: - Initialization
 
-    public init(
+    init(
         message: String,
         status: String,
         primer: PrimerIdentifiers? = nil,
@@ -57,13 +57,13 @@ public struct LogMessageObject: Codable, Sendable {
 }
 
 extension LogMessageObject {
-    public struct PrimerIdentifiers: Codable, Sendable {
-        public let checkoutSessionId: String?
-        public let clientSessionId: String?
-        public let primerAccountId: String?
-        public let customerId: String?
+    struct PrimerIdentifiers: Codable, Sendable {
+        let checkoutSessionId: String?
+        let clientSessionId: String?
+        let primerAccountId: String?
+        let customerId: String?
 
-        public init(
+        init(
             checkoutSessionId: String? = nil,
             clientSessionId: String? = nil,
             primerAccountId: String? = nil,

@@ -6,7 +6,7 @@
 
 import Foundation
 
-public enum DatadogLogStatus: String, Codable, Sendable {
+enum DatadogLogStatus: String, Codable, Sendable {
     case error
     case warn
     case info
