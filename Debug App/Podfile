@@ -8,8 +8,9 @@ target 'Debug App' do
   use_frameworks!
 
   # Pods for Debug App
-  # TODO: REMOVE LOCAL PATH FROM BOTH LINES BELOW AFTER PUSHING TO COCOAPODS
+  # TODO: REMOVE LOCAL PATH FROM ALL LINES BELOW AFTER PUSHING TO COCOAPODS
   pod 'PrimerFoundation', :path => '../'
+  pod 'PrimerCore', :path => '../'
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
