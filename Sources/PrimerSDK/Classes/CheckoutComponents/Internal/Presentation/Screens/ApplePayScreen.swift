@@ -48,7 +48,7 @@ struct ApplePayScreen: View {
                 Button(action: {
                     scope.onBack()
                 }) {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: RTLIcon.backChevron)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.primary)
                 }

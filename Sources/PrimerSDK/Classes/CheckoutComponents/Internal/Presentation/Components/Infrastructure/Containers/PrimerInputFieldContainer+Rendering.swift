@@ -56,7 +56,7 @@ extension PrimerInputFieldContainer {
             .aspectRatio(contentMode: .fit)
             .frame(width: iconSize, height: iconSize)
             .foregroundColor(CheckoutColors.iconNegative(tokens: tokens))
-            .offset(x: hasError ? 0 : -10)
+            .offset(x: hasError ? 0 : (RTLSupport.isRightToLeft ? 10 : -10))
             .opacity(hasError ? 1.0 : 0.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: hasError)
     }

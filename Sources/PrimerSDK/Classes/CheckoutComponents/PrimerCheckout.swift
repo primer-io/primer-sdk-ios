@@ -193,6 +193,7 @@ struct InternalCheckout: View, LogReporter {
         .background(backgroundColor)
         .environment(\.designTokens, designTokensManager.tokens)
         .applyAppearanceMode(settings.uiOptions.appearanceMode)
+        .environment(\.layoutDirection, RTLSupport.layoutDirection)
         .task {
             await LoggingSessionContext.shared.recordInitStartTime()
             await LoggingSessionContext.shared.initialize(clientToken: clientToken, integrationType: integrationType)
