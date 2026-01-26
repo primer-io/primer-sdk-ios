@@ -124,7 +124,7 @@
 "primer_card_form_label_state" = "Provincia";
 "primer_card_form_network_selector_title" = "Seleccionar red";
 "primer_card_form_placeholder_address1" = "Calle Mayor 123";
-"primer_card_form_placeholder_address2" = "Piso 4B";
+"primer_card_form_placeholder_address2" = "Puerta 4B";
 "primer_card_form_placeholder_city" = "Madrid";
 "primer_card_form_placeholder_country_code" = "Seleccione un país";
 "primer_card_form_placeholder_cvv" = "123";
