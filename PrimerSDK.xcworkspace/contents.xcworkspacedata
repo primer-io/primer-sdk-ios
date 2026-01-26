@@ -125,9 +125,6 @@
                         <Group
                            location = "group:JSON"
                            name = "JSON">
-                           <FileRef
-                              location = "group:JSONLoader.swift">
-                           </FileRef>
                         </Group>
                      </Group>
                      <Group
@@ -231,12 +228,6 @@
                   location = "group:ImageName.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerLocaleData.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:CountryCode.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerInitializationData.swift">
                </FileRef>
                <FileRef
@@ -287,9 +278,6 @@
                <Group
                   location = "group:Theme"
                   name = "Theme">
-                  <FileRef
-                     location = "group:PrimerTheme.swift">
-                  </FileRef>
                   <FileRef
                      location = "group:PrimerColor.swift">
                   </FileRef>
@@ -414,9 +402,6 @@
                   location = "group:ApplePayPaymentRequest+PK.swift">
                </FileRef>
                <FileRef
-                  location = "group:UIScreenExtension.swift">
-               </FileRef>
-               <FileRef
                   location = "group:VersionUtils.swift">
                </FileRef>
                <FileRef
@@ -486,9 +471,6 @@
                   </Group>
                   <FileRef
                      location = "group:PrimerDelegate.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:DependencyInjection.swift">
                   </FileRef>
                   <FileRef
                      location = "group:Primer.swift">
@@ -909,16 +891,10 @@
                   location = "group:PrimerInternalError.swift">
                </FileRef>
                <FileRef
-                  location = "group:ErrorHandler.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerKlarnaError+Extension.swift">
                </FileRef>
                <FileRef
                   location = "group:ErrorExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerError.swift">
                </FileRef>
             </Group>
             <Group
