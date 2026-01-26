@@ -1,7 +1,7 @@
 //
 //  PrimerError.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -283,7 +283,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
     public var errorUserInfo: [String: Any] {
@@ -336,11 +336,15 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
-        case .unableToPresentPaymentMethod:
-            let message = """
-            Check if all necessary values have been provided on your client session.\
-             You can find the necessary values on our documentation (website).
+        case let .unableToPresentPaymentMethod(paymentMethodType, reason, _):
+            var message = """
+            The payment method '\(paymentMethodType)' is not available for this session. \
+            In HEADLESS mode, only render payment methods that are returned in the 'availablePaymentMethods' \
+            from the start() completion handler or 'listAvailablePaymentMethodsForCheckout()'.
             """
+            if let reason = reason {
+                message += " Reason: \(reason)."
+            }
             return message
         case let .unsupportedIntent(intent, _):
             if intent == .checkout {
@@ -399,7 +403,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     var exposedError: Error {
-        return self
+        self
     }
 
     var analyticsContext: [String: Any] {
