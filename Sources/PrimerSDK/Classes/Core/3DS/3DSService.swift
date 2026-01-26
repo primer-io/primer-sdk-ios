@@ -10,6 +10,7 @@
 // swiftlint:disable large_tuple
 
 import Foundation
+import PrimerCore
 import PrimerFoundation
 import UIKit
 
