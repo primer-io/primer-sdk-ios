@@ -163,9 +163,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var lastDetectedNetworks: [CardNetwork] = []
     private var lastTrackedRedirectDestination: String?
 
-    private var clientSessionActionsFactory: () -> ClientSessionActionsProtocol
+    private let clientSessionActionsFactory: () -> ClientSessionActionsProtocol
     private var configurationServiceFactory: (() -> ConfigurationService)?
-    private var rawDataManagerFactory: RawDataManagerFactoryProtocol
+    private let rawDataManagerFactory: RawDataManagerFactoryProtocol
 
     init(
         clientSessionActionsFactory: @escaping () -> ClientSessionActionsProtocol = { ClientSessionActionsModule() },

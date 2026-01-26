@@ -24,10 +24,12 @@ final class MockRawDataManager: RawDataManagerProtocol {
             }
         }
     }
-
-    var onRawDataSet: ((PrimerRawData?) -> Void)?
     var isDataValid: Bool = true
     var requiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
+
+    // MARK: - Internal Properties
+
+    var onRawDataSet: ((PrimerRawData?) -> Void)?
     var autoTriggerValidation: Bool = false
     var validationDelay: TimeInterval = 0.05
 
@@ -143,19 +145,19 @@ final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
         createCallCount += 1
         createCalls.append((paymentMethodType, delegate))
 
-        if let error = createError {
-            throw error
+        if let createError {
+            throw createError
         }
 
-        if let handler = createMockHandler {
-            let mock = handler(paymentMethodType, delegate)
+        if let createMockHandler {
+            let mock = createMockHandler(paymentMethodType, delegate)
             mock.delegate = delegate
             return mock
         }
 
-        if let mock = mockRawDataManager {
-            mock.delegate = delegate
-            return mock
+        if let mockRawDataManager {
+            mockRawDataManager.delegate = delegate
+            return mockRawDataManager
         }
 
         let mock = MockRawDataManager()
