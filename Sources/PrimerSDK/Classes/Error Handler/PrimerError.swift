@@ -21,6 +21,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var exposedError: Error { get }
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
+    var isReportable: Bool { get }
 }
 
 func handled<E: Error>(
@@ -520,6 +521,18 @@ public enum PrimerError: PrimerErrorProtocol {
         }
         context[AnalyticsContextKeys.errorId] = errorId
         return context
+    }
+
+    var isReportable: Bool {
+        switch self {
+        case .nolError, .nolSdkInitError, .klarnaError, .stripeError,
+             .failedToCreateSession, .failedToCreatePayment, .failedToResumePayment,
+             .applePayConfigurationError, .applePayPresentationFailed,
+             .unknown:
+            true
+        default:
+            false
+        }
     }
 
     private var paymentMethodType: String? {

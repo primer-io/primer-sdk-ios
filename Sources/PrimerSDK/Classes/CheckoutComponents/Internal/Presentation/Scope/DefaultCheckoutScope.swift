@@ -109,7 +109,6 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     private var paymentMethodsInteractor: GetPaymentMethodsInteractor?
     private var analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private var accessibilityAnnouncementService: AccessibilityAnnouncementService?
-    private var loggingInteractor: (any LoggingInteractor)?
 
     // Stores the API-provided display name for accessibility announcements
     private var selectedPaymentMethodName: String?
@@ -212,14 +211,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
             analyticsInteractor = try? await container.resolve(CheckoutComponentsAnalyticsInteractorProtocol.self)
 
             accessibilityAnnouncementService = try? await container.resolve(AccessibilityAnnouncementService.self)
-
-            loggingInteractor = try? await container.resolve(LoggingInteractor.self)
         } catch {
             let primerError = PrimerError.invalidArchitecture(
                 description: "Failed to setup interactors: \(error.localizedDescription)",
                 recoverSuggestion: "Ensure proper SDK initialization"
             )
-            loggingInteractor?.logError(message: "Failed to setup interactors", error: primerError)
+            logger.error(message: "Failed to setup interactors: \(primerError)", error: primerError)
             updateNavigationState(.failure(primerError))
             updateState(.failure(primerError))
         }
@@ -286,7 +283,12 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
         case .ready:
             await analyticsInteractor?.trackEvent(.checkoutFlowStarted, metadata: .general())
             let initDuration = await LoggingSessionContext.shared.calculateInitDuration()
-            loggingInteractor?.logInfo(event: "CHECKOUT_INITIALIZED", initDurationMs: initDuration)
+            let message = initDuration.map { "Checkout initialized (\($0)ms)" } ?? "Checkout initialized"
+            logger.info(
+                message: message,
+                event: "checkout-initialized",
+                userInfo: initDuration.map { ["init_duration_ms": $0] }
+            )
 
         case let .success(result):
             if let paymentMethod = result.paymentMethodType {

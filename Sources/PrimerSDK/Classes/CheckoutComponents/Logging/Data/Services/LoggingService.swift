@@ -6,7 +6,9 @@
 
 import Foundation
 
+@available(iOS 15.0, *)
 actor LoggingService: LogReporter {
+
     // MARK: - Dependencies
 
     private let networkClient: any LogNetworkClientProtocol
@@ -27,18 +29,29 @@ actor LoggingService: LogReporter {
 
     // MARK: - Public Methods
 
-    func sendInfo(
-        message: String,
-        event: String,
-        initDurationMs: Int?
-    ) async {
+    func logErrorIfReportable(_ error: Error, message: String? = nil, userInfo: [String: Any]? = nil) async {
+        guard error.shouldReportToDatadog else {
+            Self.logger.debug(message: "📊 [Logging] Skipping non-reportable error: \(error)")
+            return
+        }
+
+        await sendError(message: message, error: error, userInfo: userInfo)
+    }
+
+    func logInfo(message: String, event: String, userInfo: [String: Any]? = nil) async {
+        await sendInfo(message: message, event: event, userInfo: userInfo)
+    }
+
+    // MARK: - Private Methods
+
+    private func sendInfo(message: String, event: String, userInfo: [String: Any]?) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
 
             let payload = try payloadBuilder.buildInfoPayload(
                 message: message,
                 event: event,
-                initDurationMs: initDurationMs,
+                userInfo: userInfo,
                 sessionData: sessionData
             )
 
@@ -50,31 +63,31 @@ actor LoggingService: LogReporter {
                 token: sessionData.clientSessionToken
             )
         } catch {
-            // Fire-and-forget: log error locally but don't throw
             Self.logger.error(message: "📊 [Logging] Failed to send INFO log: \(error.localizedDescription)")
         }
     }
 
-    func sendError(
-        message: String,
-        error: Error
-    ) async {
+    private func sendError(message: String?, error: Error, userInfo: [String: Any]?) async {
         do {
             let sessionData = await LoggingSessionContext.shared.getSessionData()
 
-            // Extract error message and stack trace
+            let datadogMessage = message ?? Self.extractDatadogMessage(from: error)
             let errorMessage = error.localizedDescription
+            let errorId = Self.extractErrorId(from: error)
+            let diagnosticsId = Self.extractDiagnosticsId(from: error)
             let stack = String(describing: error)
 
-            // Mask sensitive data
-            let maskedMessage = await masker.mask(text: message)
+            let maskedMessage = await masker.mask(text: datadogMessage)
             let maskedErrorMessage = await masker.mask(text: errorMessage)
             let maskedStack = await masker.mask(text: stack)
 
             let payload = try payloadBuilder.buildErrorPayload(
                 message: maskedMessage,
                 errorMessage: maskedErrorMessage,
-                errorStack: maskedStack,
+                diagnosticsId: diagnosticsId,
+                stack: maskedStack,
+                event: errorId,
+                userInfo: userInfo,
                 sessionData: sessionData
             )
 
@@ -86,8 +99,33 @@ actor LoggingService: LogReporter {
                 token: sessionData.clientSessionToken
             )
         } catch {
-            // Fire-and-forget: log error locally but don't throw
             Self.logger.error(message: "📊 [Logging] Failed to send ERROR log: \(error.localizedDescription)")
         }
+    }
+
+    private static func extractDatadogMessage(from error: Error) -> String {
+        guard let errorId = extractErrorId(from: error) else {
+            return "Unknown error"
+        }
+        return errorId
+            .replacingOccurrences(of: "-", with: " ")
+            .capitalized
+    }
+
+    private static func extractErrorId(from error: Error) -> String? {
+        (error as? PrimerError)?.errorId ?? (error as? InternalError)?.errorId
+    }
+
+    private static func extractDiagnosticsId(from error: Error) -> String? {
+        (error as? PrimerError)?.diagnosticsId ?? (error as? InternalError)?.diagnosticsId
+    }
+}
+
+// MARK: - Error Extension
+
+@available(iOS 15.0, *)
+extension Error {
+    var shouldReportToDatadog: Bool {
+        (self as? PrimerErrorProtocol)?.isReportable ?? true
     }
 }

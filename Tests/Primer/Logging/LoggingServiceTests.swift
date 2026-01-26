@@ -9,6 +9,7 @@ import XCTest
 
 // MARK: - Mock Network Client
 
+@available(iOS 15.0, *)
 actor MockLogNetworkClient: LogNetworkClientProtocol {
     var sentPayloads: [LogPayload] = []
     var sentEndpoints: [URL] = []
@@ -34,6 +35,7 @@ actor MockLogNetworkClient: LogNetworkClientProtocol {
 
 // MARK: - Tests
 
+@available(iOS 15.0, *)
 final class LoggingServiceTests: XCTestCase {
 
     var mockNetworkClient: MockLogNetworkClient!
@@ -48,7 +50,6 @@ final class LoggingServiceTests: XCTestCase {
             masker: SensitiveDataMasker()
         )
 
-        // Set up session data for tests
         await LoggingSessionContext.shared.initialize(
             environment: .sandbox,
             sdkVersion: "2.41.0",
@@ -63,98 +64,96 @@ final class LoggingServiceTests: XCTestCase {
         try await super.tearDown()
     }
 
-    // MARK: - sendInfo Tests
+    // MARK: - logInfo Tests
 
-    func test_sendInfo_sendsPayloadToNetwork() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_sendsPayloadToNetwork() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.count, 1)
     }
 
-    func test_sendInfo_payloadContainsCorrectService() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_payloadContainsCorrectService() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.first?.service, "ios-sdk")
     }
 
-    func test_sendInfo_payloadContainsDDSource() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_payloadContainsDDSource() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.first?.ddsource, "lambda")
     }
 
-    func test_sendInfo_payloadContainsHostname() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_payloadContainsHostname() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let payloads = await mockNetworkClient.sentPayloads
-        // Hostname is set from Bundle.main.bundleIdentifier
         XCTAssertNotNil(payloads.first?.hostname)
         XCTAssertFalse(payloads.first?.hostname.isEmpty ?? true)
     }
 
-    func test_sendInfo_usesCorrectEndpointForSandbox() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_usesCorrectEndpointForSandbox() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let endpoints = await mockNetworkClient.sentEndpoints
         XCTAssertTrue(endpoints.first?.absoluteString.contains("sandbox") == true)
     }
 
-    func test_sendInfo_passesToken() async {
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
+    func test_logInfo_passesToken() async {
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
 
         let tokens = await mockNetworkClient.sentTokens
         XCTAssertEqual(tokens.first ?? nil, "test-token")
     }
 
-    // MARK: - sendError Tests
+    // MARK: - logErrorIfReportable Tests
 
-    func test_sendError_sendsPayloadToNetwork() async {
-        let error = NSError(domain: "test", code: 1)
-        await loggingService.sendError(message: "Payment failed", error: error)
+    func test_logErrorIfReportable_sendsReportableError() async {
+        let error = PrimerError.unknown(diagnosticsId: "test-id")
+        await loggingService.logErrorIfReportable(error)
 
         let payloads = await mockNetworkClient.sentPayloads
         XCTAssertEqual(payloads.count, 1)
     }
 
-    func test_sendError_masksSensitiveData() async {
-        let error = NSError(
-            domain: "test",
-            code: 1,
-            userInfo: [NSLocalizedDescriptionKey: "Card 4111111111111111 failed"]
+    func test_logErrorIfReportable_skipsNonReportableError() async {
+        let error = PrimerError.cancelled(paymentMethodType: "PAYMENT_CARD", diagnosticsId: "test-id")
+        await loggingService.logErrorIfReportable(error)
+
+        let payloads = await mockNetworkClient.sentPayloads
+        XCTAssertEqual(payloads.count, 0)
+    }
+
+    func test_logErrorIfReportable_masksSensitiveData() async {
+        let error = PrimerError.unknown(diagnosticsId: "test-id")
+        await loggingService.logErrorIfReportable(
+            error,
+            message: "Payment for user@email.com with card 4111111111111111 failed"
         )
-        await loggingService.sendError(message: "Payment for user@email.com failed", error: error)
 
         let payloads = await mockNetworkClient.sentPayloads
         let message = payloads.first?.message ?? ""
 
-        // Should not contain unmasked sensitive data
         XCTAssertFalse(message.contains("4111111111111111"))
         XCTAssertFalse(message.contains("user@email.com"))
     }
 
     // MARK: - Error Handling Tests
 
-    func test_sendInfo_doesNotThrowOnNetworkError() async {
+    func test_logInfo_doesNotThrowOnNetworkError() async {
         await mockNetworkClient.reset()
-        await MainActor.run {
-            Task {
-                await mockNetworkClient.reset()
-            }
-        }
 
-        // This should not throw - fire-and-forget pattern
-        await loggingService.sendInfo(message: "test", event: "SDK_INIT", initDurationMs: nil)
-        // If we get here without crash, test passes
+        // Fire-and-forget pattern - should not throw
+        await loggingService.logInfo(message: "test", event: "SDK_INIT")
     }
 
-    func test_sendError_doesNotThrowOnNetworkError() async {
-        let error = NSError(domain: "test", code: 1)
+    func test_logErrorIfReportable_doesNotThrowOnNetworkError() async {
+        let error = PrimerError.unknown(diagnosticsId: "test-id")
 
-        // This should not throw - fire-and-forget pattern
-        await loggingService.sendError(message: "test", error: error)
-        // If we get here without crash, test passes
+        // Fire-and-forget pattern - should not throw
+        await loggingService.logErrorIfReportable(error)
     }
 }

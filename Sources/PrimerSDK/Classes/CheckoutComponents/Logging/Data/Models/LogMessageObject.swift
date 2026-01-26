@@ -7,50 +7,40 @@
 import Foundation
 
 struct LogMessageObject: Codable, Sendable {
-    // MARK: - Common Fields
-
     let message: String
     let status: String
-    let primer: PrimerIdentifiers?
-    let deviceInfo: DeviceInfoMetadata?
-
-    // MARK: - ERROR-specific Fields
-
-    let errorMessage: String?
-    let errorStack: String?
-
-    // MARK: - INFO-specific Fields
-
     let event: String?
+    let primer: PrimerIdentifiers?
+    let errorMessage: String?
+    let diagnosticsId: String?
+    let stack: String?
     let initDurationMs: Int?
-
-    // MARK: - Metadata Fields
-
+    let deviceInfo: DeviceInfoMetadata?
     let appMetadata: AppMetadata?
     let sessionMetadata: SessionMetadata?
-
-    // MARK: - Initialization
 
     init(
         message: String,
         status: String,
-        primer: PrimerIdentifiers? = nil,
-        deviceInfo: DeviceInfoMetadata? = nil,
-        errorMessage: String? = nil,
-        errorStack: String? = nil,
         event: String? = nil,
+        primer: PrimerIdentifiers? = nil,
+        errorMessage: String? = nil,
+        diagnosticsId: String? = nil,
+        stack: String? = nil,
         initDurationMs: Int? = nil,
+        deviceInfo: DeviceInfoMetadata? = nil,
         appMetadata: AppMetadata? = nil,
         sessionMetadata: SessionMetadata? = nil
     ) {
         self.message = message
         self.status = status
-        self.primer = primer
-        self.deviceInfo = deviceInfo
-        self.errorMessage = errorMessage
-        self.errorStack = errorStack
         self.event = event
+        self.primer = primer
+        self.errorMessage = errorMessage
+        self.diagnosticsId = diagnosticsId
+        self.stack = stack
         self.initDurationMs = initDurationMs
+        self.deviceInfo = deviceInfo
         self.appMetadata = appMetadata
         self.sessionMetadata = sessionMetadata
     }

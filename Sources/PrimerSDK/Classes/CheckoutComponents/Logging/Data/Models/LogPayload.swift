@@ -47,25 +47,23 @@ struct DeviceInfoMetadata: Codable, Sendable {
 struct AppMetadata: Codable, Sendable {
     let appName: String
     let appVersion: String
-    let bundleId: String
+    let appId: String
 
-    init(appName: String, appVersion: String, bundleId: String) {
+    init(appName: String, appVersion: String, appId: String) {
         self.appName = appName
         self.appVersion = appVersion
-        self.bundleId = bundleId
+        self.appId = appId
     }
 }
 
 struct SessionMetadata: Codable, Sendable {
-    let flowType: String
     let paymentIntent: String
-    let features: [String]
+    let availablePaymentMethods: [String]
     let integrationType: String?
 
-    init(flowType: String, paymentIntent: String, features: [String], integrationType: String? = nil) {
-        self.flowType = flowType
+    init(paymentIntent: String, availablePaymentMethods: [String], integrationType: String? = nil) {
         self.paymentIntent = paymentIntent
-        self.features = features
+        self.availablePaymentMethods = availablePaymentMethods
         self.integrationType = integrationType
     }
 }

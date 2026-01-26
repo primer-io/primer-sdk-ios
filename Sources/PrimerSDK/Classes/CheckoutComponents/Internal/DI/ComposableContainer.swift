@@ -108,8 +108,7 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 GetPaymentMethodsInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self),
-                    loggingInteractor: try? await resolver.resolve(LoggingInteractor.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
 
@@ -117,8 +116,7 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 ProcessCardPaymentInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self),
-                    loggingInteractor: try? await resolver.resolve(LoggingInteractor.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
 
@@ -142,18 +140,16 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 ProcessPayPalPaymentInteractorImpl(
-                    repository: try await resolver.resolve(PayPalRepository.self),
-                    loggingInteractor: try? await resolver.resolve(LoggingInteractor.self)
+                    repository: try await resolver.resolve(PayPalRepository.self)
                 )
             }
 
         try? await container.register(ProcessApplePayPaymentInteractor.self)
             .asTransient()
-            .with { resolver in
+            .with { _ in
                 ProcessApplePayPaymentInteractorImpl(
                     tokenizationService: TokenizationService(),
-                    createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue),
-                    loggingInteractor: try? await resolver.resolve(LoggingInteractor.self)
+                    createPaymentService: CreateResumePaymentService(paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
                 )
             }
 
@@ -161,8 +157,7 @@ private extension ComposableContainer {
             .asTransient()
             .with { resolver in
                 SubmitVaultedPaymentInteractorImpl(
-                    repository: try await resolver.resolve(HeadlessRepository.self),
-                    loggingInteractor: try? await resolver.resolve(LoggingInteractor.self)
+                    repository: try await resolver.resolve(HeadlessRepository.self)
                 )
             }
     }
@@ -210,14 +205,6 @@ private extension ComposableContainer {
                     networkClient: try await resolver.resolve(LogNetworkClient.self),
                     payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self),
                     masker: try await resolver.resolve(SensitiveDataMasker.self)
-                )
-            }
-
-        try? await container.register(LoggingInteractor.self)
-            .asSingleton()
-            .with { resolver in
-                DefaultLoggingInteractor(
-                    loggingService: try await resolver.resolve(LoggingService.self)
                 )
             }
     }

@@ -331,15 +331,16 @@ final class SensitiveDataMaskerTests: XCTestCase {
         XCTAssertTrue(masked.contains("[REDACTED_PHONE]"))
     }
 
-    func test_mask_masksPhoneNumberWithoutFormatting() async {
-        // Given: Phone number without formatting
+    func test_mask_preservesUnformattedPhoneNumber() async {
+        // Given: Phone number without formatting (ambiguous - could be any numeric ID)
         let text = "Contact: 5551234567"
 
         // When: Masking
         let masked = await masker.mask(text: text)
 
-        // Then: Should mask unformatted phone
-        XCTAssertTrue(masked.contains("[REDACTED_PHONE]"))
+        // Then: Should NOT mask - stricter pattern requires formatting to avoid false positives
+        XCTAssertEqual(masked, text)
+        XCTAssertFalse(masked.contains("[REDACTED_PHONE]"))
     }
 
     func test_mask_preservesDiagnosticsId() async {
@@ -364,6 +365,70 @@ final class SensitiveDataMaskerTests: XCTestCase {
         // Then: Long numeric IDs should NOT be masked
         XCTAssertEqual(masked, text)
         XCTAssertFalse(masked.contains("[REDACTED_PHONE]"))
+    }
+
+    // MARK: - UUID Protection Tests
+
+    func test_mask_preservesStandardUUID() async {
+        // Given: Text with standard UUID format
+        let text = "diagnosticsId: 698FDE96-1234-5678-B4A3-D2BC52339BC1"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: UUID should NOT be masked
+        XCTAssertEqual(masked, text)
+        XCTAssertTrue(masked.contains("698FDE96-1234-5678-B4A3-D2BC52339BC1"))
+        XCTAssertFalse(masked.contains("[REDACTED"))
+    }
+
+    func test_mask_preservesMultipleUUIDs() async {
+        // Given: Text with multiple UUIDs (common in error messages)
+        let text = "Error (diagnosticsId: 698FDE96-1234-5678-B4A3-D2BC52339BC1) (sessionId: BEBAF66C-A533-435C-97BE-AA902E113957)"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: Both UUIDs should be preserved
+        XCTAssertTrue(masked.contains("698FDE96-1234-5678-B4A3-D2BC52339BC1"))
+        XCTAssertTrue(masked.contains("BEBAF66C-A533-435C-97BE-AA902E113957"))
+        XCTAssertFalse(masked.contains("[REDACTED"))
+    }
+
+    func test_mask_preservesUUIDWithLowercaseHex() async {
+        // Given: UUID with lowercase hex characters
+        let text = "id: a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: Lowercase UUID should be preserved
+        XCTAssertEqual(masked, text)
+    }
+
+    func test_mask_preservesUUIDWhileMaskingOtherData() async {
+        // Given: Text with UUID and actual phone number
+        let text = "diagnosticsId: 698FDE96-1234-5678-B4A3-D2BC52339BC1, phone: (555) 123-4567"
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: UUID preserved, phone masked
+        XCTAssertTrue(masked.contains("698FDE96-1234-5678-B4A3-D2BC52339BC1"))
+        XCTAssertTrue(masked.contains("[REDACTED_PHONE]"))
+    }
+
+    func test_mask_preservesUUIDInJSONContext() async {
+        // Given: UUID embedded in JSON-like structure (mimics actual log format)
+        let text = """
+        {"diagnostics_id":"BEBAF66C-A533-435C-97BE-AA902E113957","error_message":"Payment failed"}
+        """
+
+        // When: Masking
+        let masked = await masker.mask(text: text)
+
+        // Then: UUID should be preserved in JSON context
+        XCTAssertTrue(masked.contains("BEBAF66C-A533-435C-97BE-AA902E113957"))
     }
 
     // MARK: - Combined Masking Tests
