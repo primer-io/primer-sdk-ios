@@ -7,72 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-// MARK: - Track Analytics Tests
-
-@available(iOS 15.0, *)
-final class TrackAnalyticsTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testTrackThreeDSChallenge_WithNilAuthentication_DoesNotCrash() {
-        // Given - Token data without 3DS authentication
-        // Note: We can't easily create a PrimerPaymentMethodTokenData with nil authentication
-        // but this test verifies the code path doesn't crash when called
-        // The actual tracking is tested through integration tests
-    }
-
-    func testTrackRedirectToThirdParty_WithNilInfo_DoesNotCrash() {
-        // Given
-        let nilInfo: PrimerCheckoutAdditionalInfo? = nil
-
-        // When - Should not crash
-        repository.trackRedirectToThirdPartyIfNeeded(from: nilInfo)
-
-        // Then - No crash means success
-    }
-}
-
-// MARK: - Redirect Deduplication Tests
-
-@available(iOS 15.0, *)
-final class RedirectDeduplicationTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testTrackRedirect_SameURL_TracksOnlyOnce() {
-        // Given
-        // Note: We need to create a mock PrimerCheckoutAdditionalInfo with a redirect URL
-        // For now, we verify nil handling works
-        let nilInfo: PrimerCheckoutAdditionalInfo? = nil
-
-        // When - Call twice with nil
-        repository.trackRedirectToThirdPartyIfNeeded(from: nilInfo)
-        repository.trackRedirectToThirdPartyIfNeeded(from: nilInfo)
-
-        // Then - Should not crash and handle nil gracefully
-    }
-}
-
 // MARK: - URL Extraction Tests
 
 @available(iOS 15.0, *)
@@ -317,62 +251,6 @@ final class IsLikelyURLTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result)
-    }
-}
-
-// MARK: - Track Redirect Deduplication Tests
-
-@available(iOS 15.0, *)
-final class TrackRedirectDeduplicationExtendedTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testTrackRedirect_WithNilInfo_DoesNotCrash() {
-        // When/Then - Should not crash
-        repository.trackRedirectToThirdPartyIfNeeded(from: nil)
-    }
-
-    func testTrackRedirect_CalledMultipleTimes_WithNil_DoesNotCrash() {
-        // When - Multiple calls with nil
-        for _ in 0..<10 {
-            repository.trackRedirectToThirdPartyIfNeeded(from: nil)
-        }
-
-        // Then - No crash
-    }
-}
-
-// MARK: - Track 3DS Challenge Tests
-
-@available(iOS 15.0, *)
-final class TrackThreeDSChallengeExtendedTests: XCTestCase {
-
-    private var repository: HeadlessRepositoryImpl!
-
-    override func setUp() {
-        super.setUp()
-        repository = HeadlessRepositoryImpl()
-    }
-
-    override func tearDown() {
-        repository = nil
-        super.tearDown()
-    }
-
-    func testTrackThreeDSChallenge_WithTokenDataWithoutAuth_DoesNotTrack() {
-        // Given - Token data without 3DS auth is hard to construct without mocking
-        // This test verifies the method doesn't crash when called
-        // Actual tracking behavior requires integration testing
     }
 }
 

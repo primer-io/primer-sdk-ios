@@ -125,16 +125,22 @@ final class MockRawDataManager: RawDataManagerProtocol {
 @available(iOS 15.0, *)
 final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
 
-    // MARK: - Call Tracking
-
-    private(set) var createCallCount = 0
-    private(set) var createCalls: [(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?)] = []
-
     // MARK: - Configuration
 
     var mockRawDataManager: MockRawDataManager?
     var createError: Error?
     var createMockHandler: ((String, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?) -> MockRawDataManager)?
+
+    // MARK: - Call Tracking
+
+    private(set) var createCallCount = 0
+    private(set) var createCalls: [(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?)] = []
+
+    // MARK: - Computed Properties
+
+    var lastCreateCall: (paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?)? {
+        createCalls.last
+    }
 
     // MARK: - Protocol Implementation
 
@@ -173,9 +179,5 @@ final class MockRawDataManagerFactory: RawDataManagerFactoryProtocol {
         mockRawDataManager = nil
         createError = nil
         createMockHandler = nil
-    }
-
-    var lastCreateCall: (paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?)? {
-        createCalls.last
     }
 }
