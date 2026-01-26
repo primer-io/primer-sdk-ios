@@ -20,7 +20,7 @@ jobs:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
 
       - name: Install Phrase CLI
-        uses: phrase/setup-cli@d1c415d0ff01efc1bb21287d60a547669d9331c5
+        uses: phrase/setup-cli@884b5c75c4f61b8888a3ff30d34eb7111d20fa86
         with:
           version: '2.35.5'
 
