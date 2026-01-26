@@ -1,7 +1,7 @@
 //
 //  ErrorHandler.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -30,7 +30,8 @@ final class ErrorHandler: LogReporter {
 
         // Check if error should be filtered from server reporting
         if shouldFilterError(error) {
-            logger.info(message: "Filtered error from server reporting: \(error.localizedDescription)")
+            logger.warn(message: "Integration issue: \(error.localizedDescription)")
+            return
         }
 
         var event: Analytics.Event!
@@ -86,10 +87,11 @@ final class ErrorHandler: LogReporter {
             return false
         }
 
-        // Filter out non-actionable Apple Pay errors
+        // Filter out non-actionable errors (merchant integration issues, not SDK bugs)
         switch primerError {
         case .applePayNoCardsInWallet,
-                .applePayDeviceNotSupported:
+             .applePayDeviceNotSupported,
+             .unableToPresentPaymentMethod:
             return true
         default:
             return false
