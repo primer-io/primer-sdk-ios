@@ -26,6 +26,7 @@ extension PaymentMethodTokenizationViewModel {
                 if let primerErr = error as? PrimerError,
                    case .cancelled = primerErr,
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                   PrimerInternal.shared.selectedPaymentMethodType == nil,
                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
