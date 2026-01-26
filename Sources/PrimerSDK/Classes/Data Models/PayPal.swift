@@ -1,8 +1,10 @@
 //
 //  PayPal.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import PrimerFoundation
 
 extension Request.Body {
     public final class PayPal {}
@@ -135,21 +137,21 @@ extension Response.Body.Tokenization {
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase)
 
                 // This logic ensures we mirror externalPayerId to external_payer_id and vice versa
-                if self.externalPayerId == nil && self.externalPayerIdSnakeCase != nil {
+                if self.externalPayerId == nil, self.externalPayerIdSnakeCase != nil {
                     self.externalPayerId = self.externalPayerIdSnakeCase
-                } else if self.externalPayerIdSnakeCase == nil && self.externalPayerId != nil {
+                } else if self.externalPayerIdSnakeCase == nil, self.externalPayerId != nil {
                     self.externalPayerIdSnakeCase = self.externalPayerId
                 }
 
-                if firstName == nil && firstNameSnakeCase != nil {
+                if firstName == nil, firstNameSnakeCase != nil {
                     firstName = firstNameSnakeCase
-                } else if firstNameSnakeCase == nil && firstName != nil {
+                } else if firstNameSnakeCase == nil, firstName != nil {
                     firstNameSnakeCase = firstName
                 }
 
-                if lastName == nil && lastNameSnakeCase != nil {
+                if lastName == nil, lastNameSnakeCase != nil {
                     lastName = lastNameSnakeCase
-                } else if lastNameSnakeCase == nil && lastName != nil {
+                } else if lastNameSnakeCase == nil, lastName != nil {
                     lastNameSnakeCase = lastName
                 }
             }
