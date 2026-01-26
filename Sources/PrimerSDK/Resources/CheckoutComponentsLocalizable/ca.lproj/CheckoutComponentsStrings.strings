@@ -10,7 +10,7 @@
 "accessibility_card_form_billing_address_last_name_label" = "Cognom, obligatori";
 "accessibility_card_form_billing_address_postal_code_hint" = "Introduïu el codi postal";
 "accessibility_card_form_billing_address_postal_code_label" = "Codi postal, obligatori";
-"accessibility_card_form_billing_address_state_label" = "Estat, obligatori";
+"accessibility_card_form_billing_address_state_label" = "Estat, regió o comarca, obligatori";
 "accessibility_card_form_billing_section" = "Adreça de facturació";
 "accessibility_card_form_card_number_error_empty" = "El número de targeta és obligatori.";
 "accessibility_card_form_card_number_error_invalid" = "Número de targeta no vàlid. Si us plau, comproveu-lo i torneu-ho a intentar.";
