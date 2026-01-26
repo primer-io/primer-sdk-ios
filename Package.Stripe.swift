@@ -16,14 +16,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0"),
-        .package(path: "Packages/PrimerFoundation")
+        .package(path: "Packages/PrimerFoundation"),
+        .package(path: "Packages/PrimerCore")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
                 .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios"),
-                .product(name: "PrimerFoundation", package: "PrimerFoundation")
+                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+                .product(name: "PrimerCore", package: "PrimerCore")
             ],
             path: "Sources/PrimerSDK",
             resources: [
