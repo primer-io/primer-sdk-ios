@@ -20,9 +20,9 @@ protocol ProcessPayPalPaymentInteractor {
 final class ProcessPayPalPaymentInteractorImpl: ProcessPayPalPaymentInteractor, LogReporter {
 
     private let repository: PayPalRepository
-    private let loggingInteractor: DefaultLoggingInteractor?
+    private let loggingInteractor: (any LoggingInteractor)?
 
-    init(repository: PayPalRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
+    init(repository: PayPalRepository, loggingInteractor: (any LoggingInteractor)? = nil) {
         self.repository = repository
         self.loggingInteractor = loggingInteractor
     }

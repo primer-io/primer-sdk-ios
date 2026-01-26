@@ -4,8 +4,46 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
+
+// MARK: - Mock LogPayloadBuilding
+
+final class MockLogPayloadBuilder: LogPayloadBuilding {
+    var buildInfoPayloadCalls: [(message: String, event: String, initDurationMs: Int?)] = []
+    var buildErrorPayloadCalls: [(message: String, errorMessage: String?, errorStack: String?)] = []
+    var shouldThrow = false
+
+    func buildInfoPayload(
+        message: String,
+        event: String,
+        initDurationMs: Int?,
+        sessionData: LoggingSessionContext.SessionData
+    ) throws -> LogPayload {
+        if shouldThrow { throw LoggingError.encodingFailed }
+        buildInfoPayloadCalls.append((message: message, event: event, initDurationMs: initDurationMs))
+        return LogPayload(message: message, hostname: "test-host", ddtags: "env:test")
+    }
+
+    func buildErrorPayload(
+        message: String,
+        errorMessage: String?,
+        errorStack: String?,
+        sessionData: LoggingSessionContext.SessionData
+    ) throws -> LogPayload {
+        if shouldThrow { throw LoggingError.encodingFailed }
+        buildErrorPayloadCalls.append((message: message, errorMessage: errorMessage, errorStack: errorStack))
+        return LogPayload(message: message, hostname: "test-host", ddtags: "env:test")
+    }
+
+    func reset() {
+        buildInfoPayloadCalls = []
+        buildErrorPayloadCalls = []
+        shouldThrow = false
+    }
+}
+
+// MARK: - Tests
 
 final class LogPayloadBuilderTests: XCTestCase {
 
@@ -94,6 +132,59 @@ final class LogPayloadBuilderTests: XCTestCase {
 
         XCTAssertTrue(payload.message.contains("error"))
         XCTAssertTrue(payload.message.contains("Invalid card"))
+    }
+
+    // MARK: - Protocol Mockability Tests
+
+    func test_logPayloadBuildingProtocol_canBeMocked() throws {
+        // Given
+        let mock = MockLogPayloadBuilder()
+
+        // When
+        _ = try mock.buildInfoPayload(
+            message: "test",
+            event: "SDK_INIT",
+            initDurationMs: 100,
+            sessionData: mockSessionData
+        )
+
+        // Then
+        XCTAssertEqual(mock.buildInfoPayloadCalls.count, 1)
+        XCTAssertEqual(mock.buildInfoPayloadCalls.first?.event, "SDK_INIT")
+        XCTAssertEqual(mock.buildInfoPayloadCalls.first?.initDurationMs, 100)
+    }
+
+    func test_logPayloadBuildingProtocol_mockCanBeUsedAsProtocolType() throws {
+        // Given
+        let mock = MockLogPayloadBuilder()
+        let builder: LogPayloadBuilding = mock
+
+        // When
+        _ = try builder.buildErrorPayload(
+            message: "Payment failed",
+            errorMessage: "Card declined",
+            errorStack: nil,
+            sessionData: mockSessionData
+        )
+
+        // Then
+        XCTAssertEqual(mock.buildErrorPayloadCalls.count, 1)
+        XCTAssertEqual(mock.buildErrorPayloadCalls.first?.message, "Payment failed")
+        XCTAssertEqual(mock.buildErrorPayloadCalls.first?.errorMessage, "Card declined")
+    }
+
+    func test_logPayloadBuildingProtocol_mockCanThrowErrors() {
+        // Given
+        let mock = MockLogPayloadBuilder()
+        mock.shouldThrow = true
+
+        // When/Then
+        XCTAssertThrowsError(try mock.buildInfoPayload(
+            message: "test",
+            event: "TEST",
+            initDurationMs: nil,
+            sessionData: mockSessionData
+        ))
     }
 
     // MARK: - Helper

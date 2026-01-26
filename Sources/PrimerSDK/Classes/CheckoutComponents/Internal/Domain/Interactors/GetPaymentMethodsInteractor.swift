@@ -13,9 +13,9 @@ protocol GetPaymentMethodsInteractor {
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
     private let repository: HeadlessRepository
-    private let loggingInteractor: DefaultLoggingInteractor?
+    private let loggingInteractor: (any LoggingInteractor)?
 
-    init(repository: HeadlessRepository, loggingInteractor: DefaultLoggingInteractor? = nil) {
+    init(repository: HeadlessRepository, loggingInteractor: (any LoggingInteractor)? = nil) {
         self.repository = repository
         self.loggingInteractor = loggingInteractor
     }

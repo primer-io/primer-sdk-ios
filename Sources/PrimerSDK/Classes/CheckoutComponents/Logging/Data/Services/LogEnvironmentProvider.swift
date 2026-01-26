@@ -22,6 +22,9 @@ enum LogEnvironmentProvider {
         case .sandbox: Constants.sandboxBaseURL
         case .production: Constants.productionBaseURL
         }
-        return URL(string: "\(baseURL)\(Constants.logsPath)")!
+        guard let url = URL(string: "\(baseURL)\(Constants.logsPath)") else {
+            preconditionFailure("Invalid hardcoded URL for environment: \(environment)")
+        }
+        return url
     }
 }

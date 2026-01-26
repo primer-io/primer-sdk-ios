@@ -124,7 +124,7 @@ public actor LoggingSessionContext {
         )
     }
 
-    // MARK: - Internal Methods
+    // MARK: - Internal Methods (for testing)
 
     func resetInitStartTime() {
         sdkInitStartTime = nil

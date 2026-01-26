@@ -7,7 +7,27 @@
 import Foundation
 import UIKit
 
-struct LogPayloadBuilder {
+// MARK: - Protocol
+
+protocol LogPayloadBuilding {
+    func buildInfoPayload(
+        message: String,
+        event: String,
+        initDurationMs: Int?,
+        sessionData: LoggingSessionContext.SessionData
+    ) throws -> LogPayload
+
+    func buildErrorPayload(
+        message: String,
+        errorMessage: String?,
+        errorStack: String?,
+        sessionData: LoggingSessionContext.SessionData
+    ) throws -> LogPayload
+}
+
+// MARK: - Implementation
+
+struct LogPayloadBuilder: LogPayloadBuilding {
     // MARK: - Constants
 
     private enum Constants {
@@ -155,4 +175,5 @@ struct LogPayloadBuilder {
 
 enum LoggingError: Error {
     case encodingFailed
+    case networkError
 }

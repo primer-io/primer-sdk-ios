@@ -1,7 +1,7 @@
 //
 //  PrimerInternalError.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -37,14 +37,14 @@ enum InternalError: PrimerErrorProtocol {
 
     var diagnosticsId: String {
         switch self {
-        case .failedToDecode(_, let diagnosticsId),
-                .invalidUrl(_, let diagnosticsId),
-                .invalidValue(_, _, let diagnosticsId),
-                .invalidResponse(let diagnosticsId),
-                .noData(let diagnosticsId),
-                .serverError(_, _, let diagnosticsId),
-                .unauthorized(_, let diagnosticsId),
-                .underlyingErrors(_, let diagnosticsId):
+        case let .failedToDecode(_, diagnosticsId),
+                let .invalidUrl(_, diagnosticsId),
+                let .invalidValue(_, _, diagnosticsId),
+                let .invalidResponse(diagnosticsId),
+                let .noData(diagnosticsId),
+                let .serverError(_, _, diagnosticsId),
+                let .unauthorized(_, diagnosticsId),
+                let .underlyingErrors(_, diagnosticsId):
             diagnosticsId
         case .failedToPerform3dsButShouldContinue,
                 .failedToPerform3dsAndShouldBreak,
@@ -55,17 +55,17 @@ enum InternalError: PrimerErrorProtocol {
 
     var errorDescription: String? {
         switch self {
-        case .failedToDecode(let message, _):
+        case let .failedToDecode(message, _):
             return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidUrl(let url, _):
+        case let .invalidUrl(url, _):
             return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidValue(let key, let value, _):
+        case let .invalidValue(key, value, _):
             return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
         case .invalidResponse:
             return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
         case .noData:
             return "[\(errorId)] No data"
-        case .serverError(let status, let response, _):
+        case let .serverError(status, response, _):
             var resStr: String = "nil"
             if let response = response,
                let resData = try? JSONEncoder().encode(response),
@@ -73,26 +73,37 @@ enum InternalError: PrimerErrorProtocol {
                 resStr = str
             }
             return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
-        case .unauthorized(let url, _):
+        case let .unauthorized(url, _):
             return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(self.diagnosticsId))"
-        case .underlyingErrors(let errors, _):
+        case let .underlyingErrors(errors, _):
             return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
         case .failedToPerform3dsButShouldContinue:
             return "[\(errorId)] Failed to perform 3DS but should continue"
-        case .failedToPerform3dsAndShouldBreak(let error):
+        case let .failedToPerform3dsAndShouldBreak(error):
             return "[\(errorId)] Failed to perform 3DS with error \(error.localizedDescription), and should break"
-        case .noNeedToPerform3ds(let status):
+        case let .noNeedToPerform3ds(status):
             return "[\(errorId)] No need to perform 3DS because status is \(status)"
         }
     }
 
     var exposedError: Error {
         switch self {
-        case .failedToPerform3dsButShouldContinue(let error): error.normalizedForSDK
-        case .failedToPerform3dsAndShouldBreak(let error): error.normalizedForSDK
-        default: PrimerError.unknown(diagnosticsId: self.diagnosticsId)
+        case let .failedToPerform3dsButShouldContinue(error): error.normalizedForSDK
+        case let .failedToPerform3dsAndShouldBreak(error): error.normalizedForSDK
+        case .serverError: shouldExposeServerError ? self : PrimerError.unknown(diagnosticsId: diagnosticsId)
+        default: PrimerError.unknown(diagnosticsId: diagnosticsId)
         }
     }
 
     var analyticsContext: [String: Any] { [AnalyticsContextKeys.errorId: errorId] }
+}
+
+private extension InternalError {
+    var shouldExposeServerError: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
 }
