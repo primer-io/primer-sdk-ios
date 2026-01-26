@@ -26,7 +26,7 @@
 "accessibility_card_form_expiry_hint" = "Introduzca la fecha de caducidad en formato MM/AA";
 "accessibility_card_form_expiry_icon" = "Fecha de caducidad de la tarjeta";
 "accessibility_card_form_expiry_label" = "Fecha de caducidad, obligatorio";
-"accessibility_card_form_network_selector" = "Seleccionar red";
+"accessibility_card_form_network_selector" = "Seleccionar red de pago";
 "accessibility_card_form_network_selector_hint" = "Toque dos veces para seleccionar otra red de tarjeta";
 "accessibility_card_form_network_selector_inline_hint" = "Toque dos veces para seleccionar esta red";
 "accessibility_card_form_network_selector_label" = "Selector de red de tarjeta";
