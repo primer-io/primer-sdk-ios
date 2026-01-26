@@ -1,7 +1,7 @@
 //
 //  PrimerUIManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -76,7 +76,7 @@ final class PrimerUIManager: PrimerUIManaging {
         guard let paymentMethodTokenizationViewModel else {
             let error = PrimerError.unableToPresentPaymentMethod(
                 paymentMethodType: type,
-                reason: "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod"
+                reason: "Payment method is not available for this session. Only present payment methods that are included in availablePaymentMethods"
             )
             ErrorHandler.handle(error: error)
             return
@@ -136,11 +136,13 @@ final class PrimerUIManager: PrimerUIManaging {
     func validatePaymentUIPresentation() throws {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType))
+                let reason = "Payment method type is not recognized by the SDK"
+                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, reason: reason))
             }
 
             guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
-                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType))
+                let reason = "Payment method is not in availablePaymentMethods. Only show payment methods returned by start() or listAvailablePaymentMethodsForCheckout()"
+                throw handled(primerError: .unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, reason: reason))
             }
 
             if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
@@ -198,9 +200,9 @@ final class PrimerUIManager: PrimerUIManaging {
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String? = nil) {
-        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
+        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled, type == .success {
             showResultScreenForResultType(type: .success, message: message)
-        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
+        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled, type == .failure {
             showResultScreenForResultType(type: .failure, message: message)
         } else {
             PrimerInternal.shared.dismiss(
@@ -212,7 +214,7 @@ final class PrimerUIManager: PrimerUIManaging {
     func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
-            case .fail(let message):
+            case let .fail(message):
                 PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                           paymentMethodManagerCategories: [],
                                                           withMessage: message)
@@ -280,7 +282,7 @@ extension PrimerUIManager {
         shared.showResultScreen(for: paymentMethodType, error: error)
     }
 
-    static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
+    fileprivate static func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
                                                           message: String? = nil) {
         shared.showResultScreenForResultType(type: type, message: message)
     }

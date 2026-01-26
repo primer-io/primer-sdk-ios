@@ -441,11 +441,15 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
-        case .unableToPresentPaymentMethod:
-            let message = """
-            Check if all necessary values have been provided on your client session.\
-             You can find the necessary values on our documentation (website).
+        case let .unableToPresentPaymentMethod(paymentMethodType, reason, _):
+            var message = """
+            The payment method '\(paymentMethodType)' is not available for this session. \
+            In HEADLESS mode, only render payment methods that are returned in the 'availablePaymentMethods' \
+            from the start() completion handler or 'listAvailablePaymentMethodsForCheckout()'.
             """
+            if let reason = reason {
+                message += " Reason: \(reason)."
+            }
             return message
         case let .unsupportedIntent(intent, _):
             if intent == .checkout {

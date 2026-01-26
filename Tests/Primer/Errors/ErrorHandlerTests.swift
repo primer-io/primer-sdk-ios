@@ -1,11 +1,11 @@
 //
 //  ErrorHandlerTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class ErrorHandlerTests: XCTestCase {
     
@@ -33,7 +33,7 @@ final class ErrorHandlerTests: XCTestCase {
     
     func testHandleError_WithApplePayDeviceNotSupported() {
         let error = PrimerError.applePayDeviceNotSupported(diagnosticsId: "test-456")
-        
+
         // This error should be filtered (based on ErrorHandler implementation)
         XCTAssertNoThrow(sut.handle(error: error))
     }

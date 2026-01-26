@@ -14,13 +14,13 @@ jobs:
     name: "Download latest translations from Phrase.com and make a PR."
     steps:
       - name: Check out repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
 
       - name: Install Phrase CLI
-        uses: phrase/setup-cli@d1c415d0ff01efc1bb21287d60a547669d9331c5
+        uses: phrase/setup-cli@884b5c75c4f61b8888a3ff30d34eb7111d20fa86
         with:
           version: '2.35.5'
 
@@ -51,7 +51,7 @@ jobs:
           fi
           
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: ${{ github.event.inputs.branch }}
