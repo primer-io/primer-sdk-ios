@@ -1,10 +1,11 @@
 //
 //  Klarna.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 extension Request.Body {
     public final class Klarna {}
@@ -77,7 +78,7 @@ extension Response.Body.Klarna {
     }
     struct PaymentSession: Codable {
         var sessionType: KlarnaSessionType {
-            return hppSessionId == nil ? .recurringPayment : .oneOffPayment
+            hppSessionId == nil ? .recurringPayment : .oneOffPayment
         }
         let clientToken: String
         let sessionId: String

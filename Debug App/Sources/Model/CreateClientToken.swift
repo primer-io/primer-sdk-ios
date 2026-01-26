@@ -1,10 +1,11 @@
 //
 //  CreateClientToken.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 import PrimerSDK
 
 enum Environment: String, Codable {
@@ -183,7 +184,7 @@ struct ClientSessionRequestBody: Encodable {
             var amount: Int?
 
             var dictionaryValue: [String: Any] {
-                return ["amount": amount ?? 0]
+                ["amount": amount ?? 0]
             }
 
         }
@@ -216,7 +217,7 @@ struct ClientSessionRequestBody: Encodable {
             var surcharge: SurchargeOption
 
             var dictionaryValue: [String: Any] {
-                return ["surcharge": surcharge.dictionaryValue]
+                ["surcharge": surcharge.dictionaryValue]
             }
         }
     }
@@ -257,8 +258,6 @@ struct ExtraMerchantData: Codable {
         }
     }
 }
-
-
 
 extension String {
 
@@ -362,6 +361,6 @@ public struct Address: Codable {
             dic["countryCode"] = countryCode
         }
 
-        return dic.keys.count == 0 ? nil : dic
+        return dic.keys.isEmpty ? nil : dic
     }
 }

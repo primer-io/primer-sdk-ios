@@ -1,9 +1,10 @@
 //
 //  PrimerTextFieldView+Analytics.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import UIKit
 
 extension PrimerTextFieldView {
@@ -19,7 +20,7 @@ extension PrimerTextFieldView {
 
 extension PrimerTextFieldView {
 
-    internal func sendTextFieldDidBeginEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
+    func sendTextFieldDidBeginEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
 
         guard isEditingAnalyticsEnabled else {
             return
@@ -28,7 +29,7 @@ extension PrimerTextFieldView {
         Analytics.Service.fire(event: event)
     }
 
-    internal func sendTextFieldDidEndEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
+    func sendTextFieldDidEndEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
 
         guard isEditingAnalyticsEnabled else {
             return

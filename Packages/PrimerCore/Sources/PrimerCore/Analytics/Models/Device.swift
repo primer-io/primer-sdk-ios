@@ -8,24 +8,24 @@ import Foundation
 import PrimerFoundation
 import UIKit
 
-struct Device: Codable {
+public struct Device: Codable {
 
-    var batteryLevel: Int
-    var batteryStatus: String
-    var locale: String?
-    var memoryFootprint: Int?
-    var modelIdentifier: String?
-    var modelName: String
-    var platformVersion: String
-    var screen: Device.Screen
-    var uniqueDeviceIdentifier: String
-    var userAgent: String?
+    public let batteryLevel: Int
+    public let batteryStatus: String
+    public var locale: String?
+    public var memoryFootprint: Int?
+    public let modelIdentifier: String?
+    public let modelName: String
+    public let platformVersion: String
+    public let screen: Device.Screen
+    public let uniqueDeviceIdentifier: String
+    public var userAgent: String?
 
     private enum CodingKeys: String, CodingKey {
         case batteryLevel, batteryStatus, memoryFootprint, modelIdentifier, modelName, platformVersion, screen, uniqueDeviceIdentifier, userAgent
     }
 
-    init() {
+    public init() {
         UIDevice.current.isBatteryMonitoringEnabled = true
         batteryLevel = Int((UIDevice.current.batteryLevel * 100).rounded())
         batteryStatus = batteryLevel == -100 ? "CHARGING" : "NOT_CHARGING"
@@ -51,7 +51,7 @@ struct Device: Codable {
 
     }
 
-    struct Screen: Codable {
+    public struct Screen: Codable {
         let width: CGFloat
         let height: CGFloat
 
@@ -88,7 +88,7 @@ struct Device: Codable {
         if let udid = UIDevice.current.identifierForVendor?.uuidString {
             return udid
         }
-        let userDefaults = UserDefaults.primerFramework
+        let userDefaults = UserDefaults.standard
         let udidKey = "Primer.uniqueDeviceIdentifier"
         // If we have a previous UDID, use it
         if let udid = userDefaults.string(forKey: udidKey) {
