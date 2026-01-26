@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
-import UIKit
 import SwiftUI
+import UIKit
 
 var environment: Environment = .sandbox
 var apiVersion: PrimerApiVersion = .V2_4
