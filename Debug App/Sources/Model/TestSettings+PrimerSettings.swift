@@ -1,10 +1,11 @@
 //
 //  TestSettings+PrimerSettings.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import PrimerSDK
 
 import Foundation
@@ -12,7 +13,7 @@ import Foundation
 struct RNPrimerSettingsMapper {
 
     static func map(from settings: RNPrimerSettings) -> PrimerSettings {
-        return PrimerSettings(
+        PrimerSettings(
             paymentHandling: PrimerPaymentHandling(rawValue: settings.paymentHandling ?? "AUTO") ?? .auto,
             localeData: PrimerLocaleData(
                 languageCode: settings.localeData?.languageCode,
@@ -27,7 +28,7 @@ struct RNPrimerSettingsMapper {
     }
 
     static func mapPaymentMethodOptions(_ options: RNPrimerPaymentMethodOptions?) -> PrimerPaymentMethodOptions {
-        return PrimerPaymentMethodOptions(
+        PrimerPaymentMethodOptions(
             urlScheme: options?.iOS?.urlScheme,
             applePayOptions: mapApplePayOptions(options?.applePayOptions),
             klarnaOptions: mapKlarnaOptions(options?.klarnaOptions),
@@ -79,9 +80,9 @@ struct RNPrimerSettingsMapper {
         var mandate: PrimerStripeOptions.MandateData?
 
         switch options?.mandateData {
-        case .template(let data):
+        case let .template(data):
             mandate = .templateMandate(merchantName: data.merchantName)
-        case .full(let data):
+        case let .full(data):
             mandate = .fullMandate(text: data.fullMandateText)
         case .none:
             mandate = nil
@@ -91,7 +92,7 @@ struct RNPrimerSettingsMapper {
     }
 
     static func mapUIOptions(_ options: RNPrimerUIOptions?) -> PrimerUIOptions {
-        return PrimerUIOptions(
+        PrimerUIOptions(
             isInitScreenEnabled: options?.isInitScreenEnabled,
             isSuccessScreenEnabled: options?.isSuccessScreenEnabled,
             isErrorScreenEnabled: options?.isErrorScreenEnabled,

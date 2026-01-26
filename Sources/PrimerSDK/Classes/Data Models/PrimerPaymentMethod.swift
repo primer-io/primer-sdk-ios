@@ -1,10 +1,11 @@
 //
 //  PrimerPaymentMethod.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 import UIKit
 
 extension PrimerTheme {
@@ -17,7 +18,7 @@ extension PrimerTheme {
 final class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
+        PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
     }
 
     let id: String? // Will be nil for cards
@@ -31,7 +32,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     var baseLogoImage: PrimerTheme.BaseImage?
 
     lazy var internalPaymentMethodType: PrimerPaymentMethodType? = {
-        return PrimerPaymentMethodType(rawValue: self.type)
+        PrimerPaymentMethodType(rawValue: self.type)
     }()
 
     var logo: UIImage? {
@@ -329,7 +330,7 @@ extension PrimerPaymentMethod {
         case formWithRedirect = "FORM_WITH_REDIRECT"
 
         var isEnabled: Bool {
-            return true
+            true
         }
     }
 }
