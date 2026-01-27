@@ -1,7 +1,7 @@
 //
 //  IPay88TokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -175,7 +175,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
             guard let callbackRaw = decodedJWTToken.backendCallbackUrl,
                   let callbackStr = callbackRaw.addingPercentEncoding(
-                      withAllowedCharacters: .urlPasswordAllowed
+                    withAllowedCharacters: .urlPasswordAllowed
                   )?.replacingOccurrences(of: "=", with: "%3D"),
                   let callbackUrl = URL(string: callbackStr),
                   let statusUrlRaw = decodedJWTToken.statusUrl,
@@ -218,7 +218,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let iPay88ActionType = decodedJWTToken.iPay88ActionType ?? ""
 
-        if iPay88ActionType == "BT" && PrimerAPIConfiguration.current?.clientSession?.customer?.id == nil {
+        if iPay88ActionType == "BT", PrimerAPIConfiguration.current?.clientSession?.customer?.id == nil {
             throw handled(primerError: .invalidClientSessionValue(name: "customer.id"))
         }
 
@@ -238,7 +238,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             refNo: primerTransactionId,
             amount: amountStr,
             currency: supportedCurrency,
-            prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap { $0.description }.joined(separator: ", "),
+            prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap(\.description).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
             userContact: "",

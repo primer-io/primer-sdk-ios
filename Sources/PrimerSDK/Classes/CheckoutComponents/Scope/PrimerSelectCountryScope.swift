@@ -11,30 +11,35 @@ import SwiftUI
 @available(iOS 15.0, *)
 public protocol PrimerSelectCountryScope: AnyObject {
 
-    /// The current state of the country selection as an async stream.
-    var state: AsyncStream<PrimerSelectCountryState> { get }
+  /// The current state of the country selection as an async stream.
+  var state: AsyncStream<PrimerSelectCountryState> { get }
 
-    // MARK: - Navigation Methods
+  // MARK: - Navigation Methods
 
-    /// Called when a country is selected by the user.
-    /// - Parameters:
-    ///   - countryCode: The ISO country code (e.g., "US", "GB").
-    ///   - countryName: The localized country name.
-    func onCountrySelected(countryCode: String, countryName: String)
+  /// Called when a country is selected by the user.
+  /// - Parameters:
+  ///   - countryCode: The ISO country code (e.g., "US", "GB").
+  ///   - countryName: The localized country name.
+  func onCountrySelected(countryCode: String, countryName: String)
 
-    func onCancel()
+  func onCancel()
 
-    /// Updates the search query to filter countries.
-    /// - Parameter query: The search text entered by the user.
-    func onSearch(query: String)
+  /// Updates the search query to filter countries.
+  /// - Parameter query: The search text entered by the user.
+  func onSearch(query: String)
 
-    // MARK: - Customizable UI Components
+  // MARK: - Customizable UI Components
 
-    var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
-    var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? { get set }
+  var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
+  var searchBar:
+    (
+      (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) ->
+        AnyView
+    )?
+  { get set }
 
-    @available(iOS 15.0, *)
-    var countryItem: CountryItemComponent? { get set }
+  @available(iOS 15.0, *)
+  var countryItem: CountryItemComponent? { get set }
 
 }
 
@@ -42,23 +47,23 @@ public protocol PrimerSelectCountryScope: AnyObject {
 
 @available(iOS 15.0, *)
 public struct PrimerSelectCountryState: Equatable {
-    public var countries: [PrimerCountry] = []
-    public var filteredCountries: [PrimerCountry] = []
-    public var searchQuery: String = ""
-    public var isLoading: Bool = false
-    public var selectedCountry: PrimerCountry?
+  public var countries: [PrimerCountry] = []
+  public var filteredCountries: [PrimerCountry] = []
+  public var searchQuery: String = ""
+  public var isLoading: Bool = false
+  public var selectedCountry: PrimerCountry?
 
-    public init(
-        countries: [PrimerCountry] = [],
-        filteredCountries: [PrimerCountry] = [],
-        searchQuery: String = "",
-        isLoading: Bool = false,
-        selectedCountry: PrimerCountry? = nil
-    ) {
-        self.countries = countries
-        self.filteredCountries = filteredCountries
-        self.searchQuery = searchQuery
-        self.isLoading = isLoading
-        self.selectedCountry = selectedCountry
-    }
+  public init(
+    countries: [PrimerCountry] = [],
+    filteredCountries: [PrimerCountry] = [],
+    searchQuery: String = "",
+    isLoading: Bool = false,
+    selectedCountry: PrimerCountry? = nil
+  ) {
+    self.countries = countries
+    self.filteredCountries = filteredCountries
+    self.searchQuery = searchQuery
+    self.isLoading = isLoading
+    self.selectedCountry = selectedCountry
+  }
 }

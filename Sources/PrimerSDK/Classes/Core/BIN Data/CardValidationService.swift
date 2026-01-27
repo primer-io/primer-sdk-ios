@@ -1,7 +1,7 @@
 //
 //  CardValidationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -50,8 +50,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35))
-    {
+         debouncer: Debouncer = .init(delay: 0.35)) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -67,8 +66,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
 
         if let mostRecent = mostRecentCardNumber,
-           mostRecent.prefix(Self.maximumBinLength) == bin
-        {
+           mostRecent.prefix(Self.maximumBinLength) == bin {
             if let cached = getCachedMetadata(for: bin) {
                 handle(cardMetadata: cached, forCardState: cardState)
             }
@@ -173,8 +171,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     // MARK: Model generation
 
     func createValidationMetadata(networks: [CardNetwork],
-                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata
-    {
+                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
         let selectable = allowedCardNetworks
             .filter { networks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
@@ -198,8 +195,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         // Throttle analytics events to prevent queue backup during rapid validation
         let now = Date()
         if let lastEventTime = lastAnalyticsEventTime,
-           now.timeIntervalSince(lastEventTime) < 1.0
-        {
+           now.timeIntervalSince(lastEventTime) < 1.0 {
             return
         }
         lastAnalyticsEventTime = now

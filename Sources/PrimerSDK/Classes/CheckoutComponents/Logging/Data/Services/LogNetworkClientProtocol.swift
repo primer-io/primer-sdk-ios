@@ -7,7 +7,7 @@
 import Foundation
 
 protocol LogNetworkClientProtocol: Actor {
-    func send(payload: LogPayload, to endpoint: URL, token: String?) async throws
+  func send(payload: LogPayload, to endpoint: URL, token: String?) async throws
 }
 
 extension LogNetworkClient: LogNetworkClientProtocol {}

@@ -8,11 +8,11 @@ import Foundation
 
 @available(iOS 15.0, *)
 enum RTLIcon {
-    static var backChevron: String {
-        RTLSupport.isRightToLeft ? "chevron.right" : "chevron.left"
-    }
+  static var backChevron: String {
+    RTLSupport.isRightToLeft ? "chevron.right" : "chevron.left"
+  }
 
-    static var forwardChevron: String {
-        RTLSupport.isRightToLeft ? "chevron.left" : "chevron.right"
-    }
+  static var forwardChevron: String {
+    RTLSupport.isRightToLeft ? "chevron.left" : "chevron.right"
+  }
 }

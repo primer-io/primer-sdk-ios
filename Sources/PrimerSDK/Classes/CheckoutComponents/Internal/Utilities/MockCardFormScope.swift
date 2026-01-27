@@ -6,12 +6,12 @@
 
 // swiftlint:disable all
 #if DEBUG
-import SwiftUI
+  import SwiftUI
 
-/// Mock implementation of PrimerCardFormScope for SwiftUI previews
-/// Provides configurable behavior and debug logging to help test different UI states
-@available(iOS 15.0, *)
-public class MockCardFormScope: PrimerCardFormScope {
+  /// Mock implementation of PrimerCardFormScope for SwiftUI previews
+  /// Provides configurable behavior and debug logging to help test different UI states
+  @available(iOS 15.0, *)
+  public class MockCardFormScope: PrimerCardFormScope {
 
     // MARK: - Configuration Properties
 
@@ -32,16 +32,17 @@ public class MockCardFormScope: PrimerCardFormScope {
     public var dismissalMechanism: [DismissalMechanism]
 
     public var state: AsyncStream<StructuredCardFormState> {
-        AsyncStream { continuation in
-            continuation.yield(StructuredCardFormState(
-                data: FormData(),
-                isLoading: self.initialIsLoading,
-                isValid: self.initialIsValid,
-                selectedNetwork: self.initialSelectedNetwork.map { PrimerCardNetwork(network: $0) },
-                availableNetworks: self.initialAvailableNetworks.map { PrimerCardNetwork(network: $0) },
-                surchargeAmount: self.initialSurchargeAmount
-            ))
-        }
+      AsyncStream { continuation in
+        continuation.yield(
+          StructuredCardFormState(
+            data: FormData(),
+            isLoading: self.initialIsLoading,
+            isValid: self.initialIsValid,
+            selectedNetwork: self.initialSelectedNetwork.map { PrimerCardNetwork(network: $0) },
+            availableNetworks: self.initialAvailableNetworks.map { PrimerCardNetwork(network: $0) },
+            surchargeAmount: self.initialSurchargeAmount
+          ))
+      }
     }
 
     // MARK: - Screen-Level Customization
@@ -82,7 +83,7 @@ public class MockCardFormScope: PrimerCardFormScope {
     public var submitButtonSection: Component?
 
     public var selectCountry: PrimerSelectCountryScope {
-        fatalError("Not implemented for preview")
+      fatalError("Not implemented for preview")
     }
 
     // MARK: - Initialization
@@ -100,252 +101,258 @@ public class MockCardFormScope: PrimerCardFormScope {
     ///   - dismissalMechanism: Available dismissal mechanisms
     ///   - enableLogging: Whether to print debug logs for method calls
     public init(
-        isLoading: Bool = false,
-        isValid: Bool = false,
-        selectedNetwork: CardNetwork? = nil,
-        availableNetworks: [CardNetwork] = [],
-        surchargeAmount: String? = nil,
-        presentationContext: PresentationContext = .fromPaymentSelection,
-        formConfiguration: CardFormConfiguration = .default,
-        cardFormUIOptions: PrimerCardFormUIOptions? = nil,
-        dismissalMechanism: [DismissalMechanism] = [],
-        enableLogging: Bool = true
+      isLoading: Bool = false,
+      isValid: Bool = false,
+      selectedNetwork: CardNetwork? = nil,
+      availableNetworks: [CardNetwork] = [],
+      surchargeAmount: String? = nil,
+      presentationContext: PresentationContext = .fromPaymentSelection,
+      formConfiguration: CardFormConfiguration = .default,
+      cardFormUIOptions: PrimerCardFormUIOptions? = nil,
+      dismissalMechanism: [DismissalMechanism] = [],
+      enableLogging: Bool = true
     ) {
-        self.initialIsLoading = isLoading
-        self.initialIsValid = isValid
-        self.initialSelectedNetwork = selectedNetwork
-        self.initialAvailableNetworks = availableNetworks
-        self.initialSurchargeAmount = surchargeAmount
-        self.presentationContext = presentationContext
-        self.configuration = formConfiguration
-        self.cardFormUIOptions = cardFormUIOptions
-        self.dismissalMechanism = dismissalMechanism
-        self.enableLogging = enableLogging
+      self.initialIsLoading = isLoading
+      self.initialIsValid = isValid
+      self.initialSelectedNetwork = selectedNetwork
+      self.initialAvailableNetworks = availableNetworks
+      self.initialSurchargeAmount = surchargeAmount
+      self.presentationContext = presentationContext
+      self.configuration = formConfiguration
+      self.cardFormUIOptions = cardFormUIOptions
+      self.dismissalMechanism = dismissalMechanism
+      self.enableLogging = enableLogging
     }
 
     // MARK: - Logging Helper
 
     private func log(_ message: String) {
-        if enableLogging {
-            print("🎭 [MockCardFormScope] \(message)")
-        }
+      if enableLogging {
+        print("🎭 [MockCardFormScope] \(message)")
+      }
     }
 
     // MARK: - Lifecycle Methods
 
     public func start() {
-        log("start() called")
+      log("start() called")
     }
 
     public func submit() {
-        log("submit() called")
+      log("submit() called")
     }
 
     public func cancel() {
-        log("cancel() called")
+      log("cancel() called")
     }
 
     // MARK: - Navigation Methods
 
     public func onSubmit() {
-        log("onSubmit() called")
+      log("onSubmit() called")
     }
 
     public func onBack() {
-        log("onBack() called")
+      log("onBack() called")
     }
 
     public func onCancel() {
-        log("onCancel() called")
+      log("onCancel() called")
     }
 
     public func onDismiss() {
-        log("onDismiss() called")
+      log("onDismiss() called")
     }
 
     // MARK: - Update Methods
 
     public func updateCardNumber(_ cardNumber: String) {
-        log("updateCardNumber: \(cardNumber)")
+      log("updateCardNumber: \(cardNumber)")
     }
 
     public func updateCvv(_ cvv: String) {
-        log("updateCvv: \(cvv)")
+      log("updateCvv: \(cvv)")
     }
 
     public func updateExpiryDate(_ expiryDate: String) {
-        log("updateExpiryDate: \(expiryDate)")
+      log("updateExpiryDate: \(expiryDate)")
     }
 
     public func updateCardholderName(_ cardholderName: String) {
-        log("updateCardholderName: \(cardholderName)")
+      log("updateCardholderName: \(cardholderName)")
     }
 
     public func updatePostalCode(_ postalCode: String) {
-        log("updatePostalCode: \(postalCode)")
+      log("updatePostalCode: \(postalCode)")
     }
 
     public func updateCity(_ city: String) {
-        log("updateCity: \(city)")
+      log("updateCity: \(city)")
     }
 
     public func updateState(_ state: String) {
-        log("updateState: \(state)")
+      log("updateState: \(state)")
     }
 
     public func updateAddressLine1(_ addressLine1: String) {
-        log("updateAddressLine1: \(addressLine1)")
+      log("updateAddressLine1: \(addressLine1)")
     }
 
     public func updateAddressLine2(_ addressLine2: String) {
-        log("updateAddressLine2: \(addressLine2)")
+      log("updateAddressLine2: \(addressLine2)")
     }
 
     public func updatePhoneNumber(_ phoneNumber: String) {
-        log("updatePhoneNumber: \(phoneNumber)")
+      log("updatePhoneNumber: \(phoneNumber)")
     }
 
     public func updateFirstName(_ firstName: String) {
-        log("updateFirstName: \(firstName)")
+      log("updateFirstName: \(firstName)")
     }
 
     public func updateLastName(_ lastName: String) {
-        log("updateLastName: \(lastName)")
+      log("updateLastName: \(lastName)")
     }
 
     public func updateRetailOutlet(_ retailOutlet: String) {
-        log("updateRetailOutlet: \(retailOutlet)")
+      log("updateRetailOutlet: \(retailOutlet)")
     }
 
     public func updateOtpCode(_ otpCode: String) {
-        log("updateOtpCode: \(otpCode)")
+      log("updateOtpCode: \(otpCode)")
     }
 
     public func updateEmail(_ email: String) {
-        log("updateEmail: \(email)")
+      log("updateEmail: \(email)")
     }
 
     public func updateExpiryMonth(_ month: String) {
-        log("updateExpiryMonth: \(month)")
+      log("updateExpiryMonth: \(month)")
     }
 
     public func updateExpiryYear(_ year: String) {
-        log("updateExpiryYear: \(year)")
+      log("updateExpiryYear: \(year)")
     }
 
     public func updateSelectedCardNetwork(_ network: String) {
-        log("updateSelectedCardNetwork: \(network)")
+      log("updateSelectedCardNetwork: \(network)")
     }
 
     public func updateCountryCode(_ countryCode: String) {
-        log("updateCountryCode: \(countryCode)")
+      log("updateCountryCode: \(countryCode)")
     }
 
-    public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
-        log("updateValidationState - cardNumber: \(cardNumber), cvv: \(cvv), expiry: \(expiry), cardholderName: \(cardholderName)")
+    public func updateValidationState(
+      cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool
+    ) {
+      log(
+        "updateValidationState - cardNumber: \(cardNumber), cvv: \(cvv), expiry: \(expiry), cardholderName: \(cardholderName)"
+      )
     }
 
     // MARK: - Structured State Support
 
     public func updateField(_ fieldType: PrimerInputElementType, value: String) {
-        log("updateField(\(fieldType)): \(value)")
+      log("updateField(\(fieldType)): \(value)")
     }
 
     public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
-        log("getFieldValue(\(fieldType))")
-        return ""
+      log("getFieldValue(\(fieldType))")
+      return ""
     }
 
-    public func setFieldError(_ fieldType: PrimerInputElementType, message: String, errorCode: String?) {
-        log("setFieldError(\(fieldType)): \(message) [code: \(errorCode ?? "nil")]")
+    public func setFieldError(
+      _ fieldType: PrimerInputElementType, message: String, errorCode: String?
+    ) {
+      log("setFieldError(\(fieldType)): \(message) [code: \(errorCode ?? "nil")]")
     }
 
     public func clearFieldError(_ fieldType: PrimerInputElementType) {
-        log("clearFieldError(\(fieldType))")
+      log("clearFieldError(\(fieldType))")
     }
 
     public func getFieldError(_ fieldType: PrimerInputElementType) -> String? {
-        log("getFieldError(\(fieldType))")
-        return nil
+      log("getFieldError(\(fieldType))")
+      return nil
     }
 
     // MARK: - ViewBuilder Methods
 
     public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     public func DefaultCardFormView(styling _: PrimerFieldStyling?) -> AnyView {
-        AnyView(EmptyView())
+      AnyView(EmptyView())
     }
 
     // MARK: - Form Configuration
 
     public func getFormConfiguration() -> CardFormConfiguration {
-        log("getFormConfiguration() -> \(configuration)")
-        return configuration
+      log("getFormConfiguration() -> \(configuration)")
+      return configuration
     }
-}
+  }
 
-#endif // DEBUG
+#endif  // DEBUG
 // swiftlint:enable all

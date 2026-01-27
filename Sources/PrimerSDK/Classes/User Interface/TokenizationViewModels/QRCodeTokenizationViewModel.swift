@@ -1,7 +1,7 @@
 //
 //  QRCodeTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -14,7 +14,7 @@ import UIKit
 final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     private var statusUrl: URL!
-    internal var qrCode: String?
+    var qrCode: String?
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
     private var isHeadlessCheckoutDelegateImplemented: Bool { PrimerHeadlessUniversalCheckout.current.delegate != nil }
@@ -72,7 +72,7 @@ final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
         didCancel = {
             pollingModule.cancel(withError: handled(primerError:
-                .cancelled(paymentMethodType: self.config.type)))
+                                                        .cancelled(paymentMethodType: self.config.type)))
         }
 
         defer {

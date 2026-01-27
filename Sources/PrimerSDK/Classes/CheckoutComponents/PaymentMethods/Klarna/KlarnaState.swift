@@ -11,37 +11,37 @@ import Foundation
 @available(iOS 15.0, *)
 public struct KlarnaState: Equatable {
 
-    /// The current step of the Klarna payment flow.
-    public enum Step: Equatable {
-        /// Session is being created or payment view is loading
-        case loading
-        /// Categories are available for selection
-        case categorySelection
-        /// Klarna SDK payment view is ready and embedded
-        case viewReady
-        /// Authorization has been initiated
-        case authorizationStarted
-        /// Additional finalization step is required
-        case awaitingFinalization
-    }
+  /// The current step of the Klarna payment flow.
+  public enum Step: Equatable {
+    /// Session is being created or payment view is loading
+    case loading
+    /// Categories are available for selection
+    case categorySelection
+    /// Klarna SDK payment view is ready and embedded
+    case viewReady
+    /// Authorization has been initiated
+    case authorizationStarted
+    /// Additional finalization step is required
+    case awaitingFinalization
+  }
 
-    /// Current step of the Klarna flow
-    public var step: Step
+  /// Current step of the Klarna flow
+  public private(set) var step: Step
 
-    /// Available Klarna payment categories (e.g., "Pay now", "Pay later", "Slice it")
-    public var categories: [KlarnaPaymentCategory]
+  /// Available Klarna payment categories (e.g., "Pay now", "Pay later", "Slice it")
+  public private(set) var categories: [KlarnaPaymentCategory]
 
-    /// The identifier of the currently selected payment category
-    public var selectedCategoryId: String?
+  /// The identifier of the currently selected payment category
+  public private(set) var selectedCategoryId: String?
 
-    /// Default initializer
-    public init(
-        step: Step = .loading,
-        categories: [KlarnaPaymentCategory] = [],
-        selectedCategoryId: String? = nil
-    ) {
-        self.step = step
-        self.categories = categories
-        self.selectedCategoryId = selectedCategoryId
-    }
+  /// Default initializer
+  public init(
+    step: Step = .loading,
+    categories: [KlarnaPaymentCategory] = [],
+    selectedCategoryId: String? = nil
+  ) {
+    self.step = step
+    self.categories = categories
+    self.selectedCategoryId = selectedCategoryId
+  }
 }

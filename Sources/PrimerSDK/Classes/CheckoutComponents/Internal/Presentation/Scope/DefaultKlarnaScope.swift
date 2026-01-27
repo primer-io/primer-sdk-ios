@@ -13,262 +13,290 @@ import UIKit
 @MainActor
 public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
 
-    // MARK: - Public Properties
+  // MARK: - Public Properties
 
-    public private(set) var presentationContext: PresentationContext
+  public private(set) var presentationContext: PresentationContext
 
-    public var dismissalMechanism: [DismissalMechanism] {
-        checkoutScope?.dismissalMechanism ?? []
-    }
+  public var dismissalMechanism: [DismissalMechanism] {
+    checkoutScope?.dismissalMechanism ?? []
+  }
 
-    public private(set) var paymentView: UIView?
+  public private(set) var paymentView: UIView?
 
-    public var state: AsyncStream<KlarnaState> {
-        AsyncStream { continuation in
-            let task = Task { @MainActor in
-                for await _ in $internalState.values {
-                    continuation.yield(internalState)
-                }
-                continuation.finish()
-            }
-
-            continuation.onTermination = { _ in
-                task.cancel()
-            }
+  public var state: AsyncStream<KlarnaState> {
+    AsyncStream { continuation in
+      let task = Task { @MainActor in
+        for await _ in $internalState.values {
+          continuation.yield(internalState)
         }
+        continuation.finish()
+      }
+
+      continuation.onTermination = { _ in
+        task.cancel()
+      }
+    }
+  }
+
+  // MARK: - UI Customization Properties
+
+  public var screen: KlarnaScreenComponent?
+  public var authorizeButton: KlarnaButtonComponent?
+  public var finalizeButton: KlarnaButtonComponent?
+
+  // MARK: - Private Properties
+
+  private weak var checkoutScope: DefaultCheckoutScope?
+  private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
+  private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+
+  @Published private var internalState = KlarnaState()
+
+  /// The Klarna client token from session creation, needed for category configuration
+  private var klarnaClientToken: String?
+
+  /// The auth token from authorization, needed for tokenization
+  private var authorizationToken: String?
+
+  // MARK: - Initialization
+
+  init(
+    checkoutScope: DefaultCheckoutScope,
+    presentationContext: PresentationContext = .fromPaymentSelection,
+    processKlarnaInteractor: ProcessKlarnaPaymentInteractor,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
+  ) {
+    self.checkoutScope = checkoutScope
+    self.presentationContext = presentationContext
+    self.processKlarnaInteractor = processKlarnaInteractor
+    self.analyticsInteractor = analyticsInteractor
+  }
+
+  // MARK: - PrimerPaymentMethodScope Methods
+
+  public func start() {
+    logger.debug(message: "Klarna scope started")
+    Task {
+      await createSession()
+    }
+  }
+
+  public func submit() {
+    authorizePayment()
+  }
+
+  public func cancel() {
+    logger.debug(message: "Klarna payment cancelled")
+    checkoutScope?.onDismiss()
+  }
+
+  // MARK: - Klarna Flow Actions
+
+  public func selectPaymentCategory(_ categoryId: String) {
+    guard internalState.categories.contains(where: { $0.id == categoryId }) else {
+      logger.warn(message: "Invalid category ID: \(categoryId)")
+      return
     }
 
-    // MARK: - UI Customization Properties
+    internalState = KlarnaState(
+      step: .categorySelection,
+      categories: internalState.categories,
+      selectedCategoryId: categoryId
+    )
+    paymentView = nil
 
-    public var screen: KlarnaScreenComponent?
-    public var authorizeButton: KlarnaButtonComponent?
-    public var finalizeButton: KlarnaButtonComponent?
-    public var categoryItem: KlarnaCategoryItemComponent?
+    Task {
+      await loadPaymentView(for: categoryId)
+    }
+  }
 
-    // MARK: - Private Properties
-
-    private weak var checkoutScope: DefaultCheckoutScope?
-    private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
-    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
-
-    @Published private var internalState = KlarnaState()
-
-    /// The Klarna client token from session creation, needed for category configuration
-    private var klarnaClientToken: String?
-
-    /// The auth token from authorization, needed for tokenization
-    private var authorizationToken: String?
-
-    // MARK: - Initialization
-
-    init(
-        checkoutScope: DefaultCheckoutScope,
-        presentationContext: PresentationContext = .fromPaymentSelection,
-        processKlarnaInteractor: ProcessKlarnaPaymentInteractor,
-        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
-    ) {
-        self.checkoutScope = checkoutScope
-        self.presentationContext = presentationContext
-        self.processKlarnaInteractor = processKlarnaInteractor
-        self.analyticsInteractor = analyticsInteractor
+  public func authorizePayment() {
+    guard internalState.step == .viewReady || internalState.step == .categorySelection else {
+      logger.warn(message: "Cannot authorize in current step: \(internalState.step)")
+      return
     }
 
-    // MARK: - PrimerPaymentMethodScope Methods
+    internalState = KlarnaState(
+      step: .authorizationStarted,
+      categories: internalState.categories,
+      selectedCategoryId: internalState.selectedCategoryId
+    )
 
-    public func start() {
-        logger.debug(message: "Klarna scope started")
-        Task {
-            await createSession()
-        }
+    Task {
+      await performAuthorization()
+    }
+  }
+
+  public func finalizePayment() {
+    guard internalState.step == .awaitingFinalization else {
+      logger.warn(message: "Cannot finalize in current step: \(internalState.step)")
+      return
     }
 
-    public func submit() {
-        authorizePayment()
+    Task {
+      await performFinalization()
+    }
+  }
+
+  // MARK: - Navigation Methods
+
+  public func onBack() {
+    if presentationContext.shouldShowBackButton {
+      checkoutScope?.checkoutNavigator.navigateBack()
+    }
+  }
+
+  public func onCancel() {
+    checkoutScope?.onDismiss()
+  }
+
+  // MARK: - Private Flow Methods
+
+  private func handleError(_ error: Error, context: String) {
+    logger.error(message: "Klarna \(context) failed: \(error.localizedDescription)")
+    let primerError =
+      error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+    checkoutScope?.handlePaymentError(primerError)
+  }
+
+  private func createSession() async {
+    internalState = KlarnaState(step: .loading)
+
+    do {
+      let sessionResult = try await processKlarnaInteractor.createSession()
+      klarnaClientToken = sessionResult.clientToken
+
+      internalState = KlarnaState(
+        step: .categorySelection,
+        categories: sessionResult.categories
+      )
+
+      logger.debug(
+        message: "Klarna session created with \(sessionResult.categories.count) categories")
+    } catch {
+      handleError(error, context: "session creation")
+    }
+  }
+
+  private func loadPaymentView(for categoryId: String) async {
+    guard let clientToken = klarnaClientToken else {
+      logger.error(message: "Klarna client token not available")
+      handleError(
+        PrimerError.klarnaError(
+          message: "Payment session not properly initialized",
+          diagnosticsId: UUID().uuidString
+        ),
+        context: "view loading"
+      )
+      return
     }
 
-    public func cancel() {
-        logger.debug(message: "Klarna payment cancelled")
-        checkoutScope?.onDismiss()
+    do {
+      let view = try await processKlarnaInteractor.configureForCategory(
+        clientToken: clientToken,
+        categoryId: categoryId
+      )
+
+      // Guard against race condition: user may have switched categories while loading
+      guard internalState.selectedCategoryId == categoryId else { return }
+
+      paymentView = view
+      internalState = KlarnaState(
+        step: .viewReady,
+        categories: internalState.categories,
+        selectedCategoryId: internalState.selectedCategoryId
+      )
+    } catch {
+      logger.error(message: "Failed to load Klarna payment view: \(error.localizedDescription)")
+      guard internalState.selectedCategoryId == categoryId else { return }
+      handleError(error, context: "view loading")
     }
+  }
 
-    // MARK: - Klarna Flow Actions
+  private func performAuthorization() async {
+    checkoutScope?.startProcessing()
 
-    public func selectPaymentCategory(_ categoryId: String) {
-        guard internalState.categories.contains(where: { $0.id == categoryId }) else {
-            logger.warn(message: "Invalid category ID: \(categoryId)")
-            return
-        }
+    await analyticsInteractor?.trackEvent(
+      .paymentSubmitted,
+      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
+    )
 
-        internalState.selectedCategoryId = categoryId
-        internalState.step = .categorySelection
-        paymentView = nil
+    await analyticsInteractor?.trackEvent(
+      .paymentProcessingStarted,
+      metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
+    )
 
-        Task {
-            await loadPaymentView(for: categoryId)
-        }
-    }
+    do {
+      let result = try await processKlarnaInteractor.authorize()
 
-    public func authorizePayment() {
-        guard internalState.step == .viewReady || internalState.step == .categorySelection else {
-            logger.warn(message: "Cannot authorize in current step: \(internalState.step)")
-            return
-        }
+      switch result {
+      case let .approved(authToken):
+        authorizationToken = authToken
+        await processPayment(authToken: authToken)
 
-        internalState.step = .authorizationStarted
-
-        Task {
-            await performAuthorization()
-        }
-    }
-
-    public func finalizePayment() {
-        guard internalState.step == .awaitingFinalization else {
-            logger.warn(message: "Cannot finalize in current step: \(internalState.step)")
-            return
-        }
-
-        Task {
-            await performFinalization()
-        }
-    }
-
-    // MARK: - Navigation Methods
-
-    public func onBack() {
-        if presentationContext.shouldShowBackButton {
-            checkoutScope?.checkoutNavigator.navigateBack()
-        }
-    }
-
-    public func onCancel() {
-        checkoutScope?.onDismiss()
-    }
-
-    // MARK: - Private Flow Methods
-
-    private func createSession() async {
-        internalState.step = .loading
-
-        await analyticsInteractor?.trackEvent(
-            .paymentSubmitted,
-            metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
+      case let .finalizationRequired(authToken):
+        authorizationToken = authToken
+        internalState = KlarnaState(
+          step: .awaitingFinalization,
+          categories: internalState.categories,
+          selectedCategoryId: internalState.selectedCategoryId
         )
 
-        do {
-            let sessionResult = try await processKlarnaInteractor.createSession()
-            klarnaClientToken = sessionResult.clientToken
-
-            internalState.categories = sessionResult.categories
-            internalState.step = .categorySelection
-
-            logger.debug(message: "Klarna session created with \(sessionResult.categories.count) categories")
-        } catch {
-            logger.error(message: "Klarna session creation failed: \(error.localizedDescription)")
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-            checkoutScope?.handlePaymentError(primerError)
-        }
-    }
-
-    private func loadPaymentView(for categoryId: String) async {
-        guard let clientToken = klarnaClientToken else {
-            logger.error(message: "Klarna client token not available")
-            return
-        }
-
-        do {
-            let view = try await processKlarnaInteractor.configureForCategory(
-                clientToken: clientToken,
-                categoryId: categoryId
-            )
-
-            // Guard against race condition: user may have switched categories while loading
-            guard internalState.selectedCategoryId == categoryId else { return }
-
-            paymentView = view
-            internalState.step = .viewReady
-        } catch {
-            logger.error(message: "Failed to load Klarna payment view: \(error.localizedDescription)")
-
-            guard internalState.selectedCategoryId == categoryId else { return }
-
-            // Revert to category selection on failure
-            paymentView = nil
-            internalState.step = .categorySelection
-        }
-    }
-
-    private func performAuthorization() async {
-        checkoutScope?.startProcessing()
-
-        await analyticsInteractor?.trackEvent(
-            .paymentProcessingStarted,
-            metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.klarna.rawValue))
+      case .declined:
+        let primerError = PrimerError.klarnaError(
+          message: "Klarna payment was declined",
+          diagnosticsId: UUID().uuidString
         )
-
-        do {
-            let result = try await processKlarnaInteractor.authorize()
-
-            switch result {
-            case let .approved(authToken):
-                authorizationToken = authToken
-                await processPayment(authToken: authToken)
-
-            case let .finalizationRequired(authToken):
-                authorizationToken = authToken
-                internalState.step = .awaitingFinalization
-
-            case .declined:
-                let primerError = PrimerError.klarnaError(
-                    message: "Klarna payment was declined",
-                    diagnosticsId: UUID().uuidString
-                )
-                checkoutScope?.handlePaymentError(primerError)
-            }
-        } catch {
-            logger.error(message: "Klarna authorization failed: \(error.localizedDescription)")
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-            checkoutScope?.handlePaymentError(primerError)
-        }
+        checkoutScope?.handlePaymentError(primerError)
+      }
+    } catch {
+      handleError(error, context: "authorization")
     }
+  }
 
-    private func performFinalization() async {
-        checkoutScope?.startProcessing()
+  private func performFinalization() async {
+    checkoutScope?.startProcessing()
 
-        do {
-            let result = try await processKlarnaInteractor.finalize()
+    do {
+      let result = try await processKlarnaInteractor.finalize()
 
-            switch result {
-            case let .approved(authToken):
-                authorizationToken = authToken
-                await processPayment(authToken: authToken)
+      switch result {
+      case let .approved(authToken):
+        authorizationToken = authToken
+        await processPayment(authToken: authToken)
 
-            case .finalizationRequired:
-                // Unexpected - finalization should not require further finalization
-                logger.warn(message: "Unexpected finalizationRequired after finalize()")
-                await processPayment(authToken: authorizationToken ?? "")
-
-            case .declined:
-                let primerError = PrimerError.klarnaError(
-                    message: "Klarna finalization was declined",
-                    diagnosticsId: UUID().uuidString
-                )
-                checkoutScope?.handlePaymentError(primerError)
-            }
-        } catch {
-            logger.error(message: "Klarna finalization failed: \(error.localizedDescription)")
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-            checkoutScope?.handlePaymentError(primerError)
+      case .finalizationRequired:
+        logger.error(message: "Unexpected finalizationRequired after finalize()")
+        guard let authToken = authorizationToken else {
+          handleError(
+            PrimerError.klarnaError(
+              message: "Authorization token not available after finalization",
+              diagnosticsId: UUID().uuidString
+            ),
+            context: "finalization"
+          )
+          return
         }
-    }
+        await processPayment(authToken: authToken)
 
-    private func processPayment(authToken: String) async {
-        do {
-            let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
-            checkoutScope?.handlePaymentSuccess(result)
-        } catch {
-            logger.error(message: "Klarna payment processing failed: \(error.localizedDescription)")
-            let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-            checkoutScope?.handlePaymentError(primerError)
-        }
+      case .declined:
+        let primerError = PrimerError.klarnaError(
+          message: "Klarna finalization was declined",
+          diagnosticsId: UUID().uuidString
+        )
+        checkoutScope?.handlePaymentError(primerError)
+      }
+    } catch {
+      handleError(error, context: "finalization")
     }
+  }
+
+  private func processPayment(authToken: String) async {
+    do {
+      let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
+      checkoutScope?.handlePaymentSuccess(result)
+    } catch {
+      handleError(error, context: "payment processing")
+    }
+  }
 }

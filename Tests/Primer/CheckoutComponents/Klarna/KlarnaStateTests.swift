@@ -114,23 +114,20 @@ final class KlarnaStateTests: XCTestCase {
         XCTAssertNotEqual(state1, state2)
     }
 
-    // MARK: - Mutability Tests
+    // MARK: - Initialization Overwrite Tests
 
-    func test_state_stepCanBeMutated() {
-        var state = KlarnaState()
-        state.step = .viewReady
+    func test_state_canBeCreatedWithNewStep() {
+        let state = KlarnaState(step: .viewReady)
         XCTAssertEqual(state.step, .viewReady)
     }
 
-    func test_state_categoriesCanBeMutated() {
-        var state = KlarnaState()
-        state.categories = KlarnaTestData.allCategories
+    func test_state_canBeCreatedWithNewCategories() {
+        let state = KlarnaState(categories: KlarnaTestData.allCategories)
         XCTAssertEqual(state.categories.count, 3)
     }
 
-    func test_state_selectedCategoryIdCanBeMutated() {
-        var state = KlarnaState()
-        state.selectedCategoryId = KlarnaTestData.Constants.categoryPayNow
+    func test_state_canBeCreatedWithNewSelectedCategoryId() {
+        let state = KlarnaState(selectedCategoryId: KlarnaTestData.Constants.categoryPayNow)
         XCTAssertEqual(state.selectedCategoryId, KlarnaTestData.Constants.categoryPayNow)
     }
 }

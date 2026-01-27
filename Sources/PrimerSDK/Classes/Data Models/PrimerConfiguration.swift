@@ -89,14 +89,14 @@ extension Response.Body {
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
-                .first(where: { $0["surcharge"] as? Int != nil })
+                .first(where: { $0["surcharge"] is Int })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
                 .first(where: {
                     (($0["networks"] as? [[String: Any]])?
                         .first(where: {
-                            $0["surcharge"] as? Int != nil
+                            $0["surcharge"] is Int
                         })) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
@@ -431,14 +431,14 @@ extension Response.Body.Configuration {
                 self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
                 if self.firstName == nil,
-                    self.lastName == nil,
-                    self.city == nil,
-                    self.postalCode == nil,
-                    self.addressLine1 == nil,
-                    self.addressLine2 == nil,
-                    self.countryCode == nil,
-                    self.phoneNumber == nil,
-                    self.state == nil {
+                   self.lastName == nil,
+                   self.city == nil,
+                   self.postalCode == nil,
+                   self.addressLine1 == nil,
+                   self.addressLine2 == nil,
+                   self.countryCode == nil,
+                   self.phoneNumber == nil,
+                   self.state == nil {
                     throw handled(error: InternalError.failedToDecode(message: "All fields are nil"))
                 }
             }

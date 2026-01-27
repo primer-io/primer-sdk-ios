@@ -9,163 +9,168 @@ import SwiftUI
 /// A SwiftUI component for selecting between co-badged card networks using a segmented control
 @available(iOS 15.0, *)
 struct InlineCardNetworkSelector: View {
-    // MARK: - Properties
+  // MARK: - Properties
 
-    let availableNetworks: [CardNetwork]
-    @Binding var selectedNetwork: CardNetwork
-    let onNetworkSelected: ((CardNetwork) -> Void)?
+  let availableNetworks: [CardNetwork]
+  @Binding var selectedNetwork: CardNetwork
+  let onNetworkSelected: ((CardNetwork) -> Void)?
 
-    // MARK: - Private Properties
+  // MARK: - Private Properties
 
-    @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokens) private var tokens
 
-    // MARK: - Body
+  // MARK: - Body
 
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
-                InlineCardNetworkButton(
-                    network: network,
-                    isSelected: selectedNetwork == network,
-                    tokens: tokens
-                ) {
-                    selectedNetwork = network
-                    onNetworkSelected?(network)
-                }
-                .id(network.rawValue)
-
-                if index < availableNetworks.count - 1 {
-                    Rectangle()
-                        .fill(baseBorderColor)
-                        .frame(width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight)
-                }
-            }
+  var body: some View {
+    HStack(spacing: 0) {
+      ForEach(Array(availableNetworks.enumerated()), id: \.element.rawValue) { index, network in
+        InlineCardNetworkButton(
+          network: network,
+          isSelected: selectedNetwork == network,
+          tokens: tokens
+        ) {
+          selectedNetwork = network
+          onNetworkSelected?(network)
         }
+        .id(network.rawValue)
 
-        .padding(PrimerBorderWidth.standard)
-        .overlay(
-            RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
-                .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard)
-        )
-        .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorContainer)
-        .overlay(
-            GeometryReader { _ in
-                if let selectedIndex = availableNetworks.firstIndex(of: selectedNetwork) {
-                    let xOffset = getOffset(selectedIndex: selectedIndex)
-
-                    RoundedCorners(
-                        topLeft: selectedIndex == 0 ? PrimerRadius.small(tokens: tokens) : 0,
-                        topRight: selectedIndex == availableNetworks.count - 1 ? PrimerRadius.small(tokens: tokens) : 0,
-                        bottomLeft: selectedIndex == 0 ? PrimerRadius.small(tokens: tokens) : 0,
-                        bottomRight: selectedIndex == availableNetworks.count - 1 ? PrimerRadius.small(tokens: tokens) : 0
-                    )
-                    .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard)
-                    .frame(width: buttonWidth, height: PrimerCardNetworkSelector.selectedBorderHeight)
-                    .offset(x: xOffset)
-                }
-            }
-        )
+        if index < availableNetworks.count - 1 {
+          Rectangle()
+            .fill(baseBorderColor)
+            .frame(
+              width: PrimerBorderWidth.standard, height: PrimerCardNetworkSelector.buttonFrameHeight
+            )
+        }
+      }
     }
 
-    private func getOffset(selectedIndex: Int) -> CGFloat {
-        guard selectedIndex > 0 else { return 0 }
-        let xOffset = CGFloat(selectedIndex) * (PrimerCardNetworkSelector.buttonFrameWidth + borderWidth)
-        return RTLSupport.isRightToLeft ? -xOffset : xOffset
-    }
+    .padding(PrimerBorderWidth.standard)
+    .overlay(
+      RoundedRectangle(cornerRadius: PrimerRadius.small(tokens: tokens))
+        .strokeBorder(baseBorderColor, lineWidth: PrimerBorderWidth.standard)
+    )
+    .accessibilityIdentifier(AccessibilityIdentifiers.CardForm.inlineNetworkSelectorContainer)
+    .overlay(
+      GeometryReader { _ in
+        if let selectedIndex = availableNetworks.firstIndex(of: selectedNetwork) {
+          let xOffset = getOffset(selectedIndex: selectedIndex)
 
-    private var borderWidth: CGFloat {
-        PrimerBorderWidth.standard
-    }
+          RoundedCorners(
+            topLeft: selectedIndex == 0 ? PrimerRadius.small(tokens: tokens) : 0,
+            topRight: selectedIndex == availableNetworks.count - 1
+              ? PrimerRadius.small(tokens: tokens) : 0,
+            bottomLeft: selectedIndex == 0 ? PrimerRadius.small(tokens: tokens) : 0,
+            bottomRight: selectedIndex == availableNetworks.count - 1
+              ? PrimerRadius.small(tokens: tokens) : 0
+          )
+          .strokeBorder(selectedBorderColor, lineWidth: PrimerBorderWidth.standard)
+          .frame(width: buttonWidth, height: PrimerCardNetworkSelector.selectedBorderHeight)
+          .offset(x: xOffset)
+        }
+      }
+    )
+  }
 
-    private var buttonWidth: CGFloat {
-        PrimerCardNetworkSelector.buttonTotalWidth
-    }
+  private func getOffset(selectedIndex: Int) -> CGFloat {
+    guard selectedIndex > 0 else { return 0 }
+    let xOffset =
+      CGFloat(selectedIndex) * (PrimerCardNetworkSelector.buttonFrameWidth + borderWidth)
+    return RTLSupport.isRightToLeft ? -xOffset : xOffset
+  }
 
-    private var selectedBorderColor: Color {
-        CheckoutColors.gray700(tokens: tokens)
-    }
+  private var borderWidth: CGFloat {
+    PrimerBorderWidth.standard
+  }
 
-    private var baseBorderColor: Color {
-        CheckoutColors.gray300(tokens: tokens)
-    }
+  private var buttonWidth: CGFloat {
+    PrimerCardNetworkSelector.buttonTotalWidth
+  }
+
+  private var selectedBorderColor: Color {
+    CheckoutColors.gray700(tokens: tokens)
+  }
+
+  private var baseBorderColor: Color {
+    CheckoutColors.gray300(tokens: tokens)
+  }
 }
 
 #if DEBUG
 
-// MARK: - Preview
+  // MARK: - Preview
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 2 Networks") {
+  @available(iOS 15.0, *)
+  #Preview("Light Mode - 2 Networks") {
     VStack(spacing: 20) {
-        Text("Co-badged Card Networks")
-            .font(.headline)
+      Text("Co-badged Card Networks")
+        .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .cartesBancaires],
-            selectedNetwork: .constant(.visa),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+      InlineCardNetworkSelector(
+        availableNetworks: [.visa, .cartesBancaires],
+        selectedNetwork: .constant(.visa),
+        onNetworkSelected: { network in
+          print("Selected: \(network.displayName)")
+        }
+      )
+      .padding()
     }
     .environment(\.designTokens, MockDesignTokens.light)
-}
+  }
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode - 2 Networks") {
+  @available(iOS 15.0, *)
+  #Preview("Dark Mode - 2 Networks") {
     VStack(spacing: 20) {
-        Text("Co-badged Card Networks")
-            .font(.headline)
-            .foregroundColor(.white)
+      Text("Co-badged Card Networks")
+        .font(.headline)
+        .foregroundColor(.white)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .cartesBancaires],
-            selectedNetwork: .constant(.cartesBancaires),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+      InlineCardNetworkSelector(
+        availableNetworks: [.visa, .cartesBancaires],
+        selectedNetwork: .constant(.cartesBancaires),
+        onNetworkSelected: { network in
+          print("Selected: \(network.displayName)")
+        }
+      )
+      .padding()
     }
     .background(Color.black)
     .environment(\.designTokens, MockDesignTokens.dark)
     .preferredColorScheme(.dark)
-}
+  }
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 3 Networks") {
+  @available(iOS 15.0, *)
+  #Preview("Light Mode - 3 Networks") {
     VStack(spacing: 20) {
-        Text("Multiple Networks")
-            .font(.headline)
+      Text("Multiple Networks")
+        .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .masterCard, .cartesBancaires],
-            selectedNetwork: .constant(.masterCard),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+      InlineCardNetworkSelector(
+        availableNetworks: [.visa, .masterCard, .cartesBancaires],
+        selectedNetwork: .constant(.masterCard),
+        onNetworkSelected: { network in
+          print("Selected: \(network.displayName)")
+        }
+      )
+      .padding()
     }
     .environment(\.designTokens, MockDesignTokens.light)
-}
+  }
 
-@available(iOS 15.0, *)
-#Preview("Light Mode - 5 Networks") {
+  @available(iOS 15.0, *)
+  #Preview("Light Mode - 5 Networks") {
     VStack(spacing: 20) {
-        Text("Five Networks")
-            .font(.headline)
+      Text("Five Networks")
+        .font(.headline)
 
-        InlineCardNetworkSelector(
-            availableNetworks: [.visa, .masterCard, .cartesBancaires, .amex, .discover],
-            selectedNetwork: .constant(.cartesBancaires),
-            onNetworkSelected: { network in
-                print("Selected: \(network.displayName)")
-            }
-        )
-        .padding()
+      InlineCardNetworkSelector(
+        availableNetworks: [.visa, .masterCard, .cartesBancaires, .amex, .discover],
+        selectedNetwork: .constant(.cartesBancaires),
+        onNetworkSelected: { network in
+          print("Selected: \(network.displayName)")
+        }
+      )
+      .padding()
     }
     .environment(\.designTokens, MockDesignTokens.light)
-}
+  }
 #endif

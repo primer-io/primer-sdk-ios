@@ -561,7 +561,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
         let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type)
         let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
-            .first { $0.key == paymentMethodType } != nil) == true
+                                                            .first { $0.key == paymentMethodType } != nil) == true
 
         defer {
             didCancel = nil
@@ -619,7 +619,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     private func evaluatePaymentMethodNeedingFurtherUserActions() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }
@@ -630,7 +630,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func presentPaymentMethodUserInterface() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }

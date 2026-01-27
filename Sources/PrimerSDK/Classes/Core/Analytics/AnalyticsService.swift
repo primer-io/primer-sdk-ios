@@ -194,7 +194,7 @@ extension Analytics {
                 completion(nil)
                 return
             }
-            
+
             if url.absoluteString != self.sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Skip sending events that require client token when no token is available
@@ -203,11 +203,11 @@ extension Analytics {
                 completion(nil)
                 return
             }
-            
+
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
-            
+
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
-            
+
             self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,

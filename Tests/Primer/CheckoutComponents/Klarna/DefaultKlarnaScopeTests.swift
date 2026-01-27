@@ -53,7 +53,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         XCTAssertNil(scope.screen)
         XCTAssertNil(scope.authorizeButton)
         XCTAssertNil(scope.finalizeButton)
-        XCTAssertNil(scope.categoryItem)
     }
 
     // MARK: - UI Customization Tests
@@ -77,13 +76,6 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         let scope = createScope()
         scope.finalizeButton = { _ in EmptyView() }
         XCTAssertNotNil(scope.finalizeButton)
-    }
-
-    @MainActor
-    func test_categoryItem_canBeSet() {
-        let scope = createScope()
-        scope.categoryItem = { _, _, _ in EmptyView() }
-        XCTAssertNotNil(scope.categoryItem)
     }
 
     // MARK: - Start Tests
