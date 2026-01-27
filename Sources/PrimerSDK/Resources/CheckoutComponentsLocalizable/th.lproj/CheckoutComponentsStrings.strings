@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "วิธีการชำระเงินที่บันทึกทั้งหมด";
 "primer_vault_section_title" = "วิธีการชำระเงินที่บันทึกไว้";
 "primer_vault_selected_button_other" = "แสดงวิธีการชำระเงินอื่น";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "ดำเนินการต่อ";
+"primer_klarna_button_finalize" = "ชำระเงิน";
+"primer_klarna_select_category_description" = "เลือกวิธีที่คุณต้องการชำระเงิน";
+"primer_klarna_loading_title" = "กำลังโหลด";
+"primer_klarna_loading_subtitle" = "อาจใช้เวลาสักครู่";
+"accessibility_klarna_category" = "ตัวเลือกการชำระเงิน %@";
+"accessibility_klarna_category_selected" = "ตัวเลือกการชำระเงิน %@, เลือกแล้ว";
+"accessibility_klarna_payment_view" = "แบบฟอร์มชำระเงิน Klarna";
+"accessibility_klarna_authorize_hint" = "แตะสองครั้งเพื่อดำเนินการต่อด้วย Klarna";
+"accessibility_klarna_finalize_hint" = "แตะสองครั้งเพื่อชำระเงินให้เสร็จสิ้น";

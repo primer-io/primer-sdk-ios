@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Tots els mètodes de pagament desats";
 "primer_vault_section_title" = "Mètodes de pagament desats";
 "primer_vault_selected_button_other" = "Mostra altres formes de pagament";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Continuar";
+"primer_klarna_button_finalize" = "Pagar";
+"primer_klarna_select_category_description" = "Trieu com voleu pagar";
+"primer_klarna_loading_title" = "S'està carregant";
+"primer_klarna_loading_subtitle" = "Això pot trigar uns segons.";
+"accessibility_klarna_category" = "Opció de pagament %@";
+"accessibility_klarna_category_selected" = "Opció de pagament %@, seleccionat";
+"accessibility_klarna_payment_view" = "Formulari de pagament Klarna";
+"accessibility_klarna_authorize_hint" = "Toqueu dues vegades per continuar amb Klarna";
+"accessibility_klarna_finalize_hint" = "Toqueu dues vegades per completar el pagament";

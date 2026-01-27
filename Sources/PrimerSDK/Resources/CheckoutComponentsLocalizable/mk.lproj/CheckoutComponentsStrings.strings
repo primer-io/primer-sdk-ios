@@ -197,3 +197,16 @@
 "accessibility_vaulted_payment_method" = "Зачуван начин на плаќање: %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Продолжи";
+"primer_klarna_button_finalize" = "Плати";
+"primer_klarna_select_category_description" = "Изберете како сакате да платите";
+"primer_klarna_loading_title" = "Се вчитува";
+"primer_klarna_loading_subtitle" = "Ова може да потрае неколку секунди.";
+"accessibility_klarna_category" = "Опција за плаќање %@";
+"accessibility_klarna_category_selected" = "Опција за плаќање %@, избрано";
+"accessibility_klarna_payment_view" = "Формулар за плаќање Klarna";
+"accessibility_klarna_authorize_hint" = "Допрете двапати за да продолжите со Klarna";
+"accessibility_klarna_finalize_hint" = "Допрете двапати за да го завршите плаќањето";

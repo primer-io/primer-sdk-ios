@@ -3,8 +3,8 @@
 "accessibility_action_set_default" = "Instellen als standaard betaalmethode";
 "accessibility_card_form_billing_address_address_line_1_label" = "Adresregel 1, verplicht";
 "accessibility_card_form_billing_address_address_line_2_label" = "Adresregel 2, optioneel";
-"accessibility_card_form_billing_address_city_hint" = "Voer plaatsnaam in";
-"accessibility_card_form_billing_address_city_label" = "Plaats, verplicht";
+"accessibility_card_form_billing_address_city_hint" = "Voer woonplaats in";
+"accessibility_card_form_billing_address_city_label" = "Woonplaats, verplicht";
 "accessibility_card_form_billing_address_country_label" = "Land, verplicht";
 "accessibility_card_form_billing_address_first_name_label" = "Voornaam, verplicht";
 "accessibility_card_form_billing_address_last_name_label" = "Achternaam, verplicht";
@@ -53,7 +53,7 @@
 "accessibility_error_generic" = "Er is een fout opgetreden. Probeer het opnieuw.";
 "accessibility_error_multiple_errors" = "%d fouten gevonden";
 "accessibility_payment_selection_card_full" = "%1$@ kaart eindigend op %2$@, verloopt %3$@";
-"accessibility_payment_selection_card_masked" = "kaart eindigend op gemaskeerde cijfers";
+"accessibility_payment_selection_card_masked" = "kaart eindigend op afgeschermde nummers";
 "accessibility_payment_selection_coming_soon" = "Betaalmethode binnenkort beschikbaar";
 "accessibility_payment_selection_pay_with_card" = "Betaal met kaart";
 "accessibility_payment_selection_pay_with_ideal" = "Betaal met iDEAL";
@@ -84,8 +84,8 @@
 "primer_card_form_error_address2_required" = "Adresregel 2 is verplicht";
 "primer_card_form_error_card_expired" = "Kaart is verlopen";
 "primer_card_form_error_card_type_unsupported" = "Kaarttype wordt niet ondersteund";
-"primer_card_form_error_city_invalid" = "Ongeldige plaats";
-"primer_card_form_error_city_required" = "Plaats is verplicht";
+"primer_card_form_error_city_invalid" = "Ongeldige woonplaats";
+"primer_card_form_error_city_required" = "Woonplaats is verplicht";
 "primer_card_form_error_country_invalid" = "Ongeldig land";
 "primer_card_form_error_country_required" = "Land is verplicht";
 "primer_card_form_error_cvv_invalid" = "Ongeldige CVV";
@@ -141,9 +141,9 @@
 "primer_card_form_placeholder_postal" = "1012 AB";
 "primer_card_form_placeholder_retail" = "Selecteer verkooppunt";
 "primer_card_form_placeholder_state" = "Noord-Holland";
-"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd";
+"primer_card_form_retail_not_implemented" = "Selectie verkooppunt nog niet geïmplementeerd.";
 "primer_card_form_title" = "Betaal met kaart";
-"primer_checkout_auto_dismiss_message" = "Dit scherm sluit automatisch over 3 seconden";
+"primer_checkout_auto_dismiss_message" = "Dit scherm sluit automatisch over 3 seconden.";
 "primer_checkout_dismissing" = "Bezig met sluiten...";
 "primer_checkout_error_button_other_methods" = "Kies andere betaalmethoden";
 "primer_checkout_error_subtitle" = "Er was een netwerkprobleem.";
@@ -152,7 +152,7 @@
 "primer_checkout_processing_subtitle" = "Even geduld alstublieft...";
 "primer_checkout_processing_title" = "Uw betaling wordt verwerkt";
 "primer_checkout_scope_unavailable" = "Checkout scope niet beschikbaar";
-"primer_checkout_splash_subtitle" = "Dit duurt niet lang";
+"primer_checkout_splash_subtitle" = "Nog even geduld";
 "primer_checkout_splash_title" = "Uw beveiligde checkout wordt geladen";
 "primer_checkout_success_subtitle" = "U wordt binnenkort doorgestuurd naar de orderbevestigingspagina.";
 "primer_checkout_success_title" = "Betaling geslaagd";
@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Alle opgeslagen betaalmethoden";
 "primer_vault_section_title" = "Opgeslagen betaalmethoden";
 "primer_vault_selected_button_other" = "Toon andere betaalmogelijkheden";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Doorgaan";
+"primer_klarna_button_finalize" = "Betalen";
+"primer_klarna_select_category_description" = "Kies hoe u wilt betalen";
+"primer_klarna_loading_title" = "Laden";
+"primer_klarna_loading_subtitle" = "Dit kan enkele seconden duren.";
+"accessibility_klarna_category" = "%@ betaaloptie";
+"accessibility_klarna_category_selected" = "%@ betaaloptie, geselecteerd";
+"accessibility_klarna_payment_view" = "Klarna-betaalformulier";
+"accessibility_klarna_authorize_hint" = "Dubbeltik om door te gaan met Klarna";
+"accessibility_klarna_finalize_hint" = "Dubbeltik om de betaling te voltooien";

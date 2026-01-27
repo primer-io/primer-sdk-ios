@@ -1,7 +1,7 @@
 //
 //  FormPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable identifier_name
@@ -445,6 +445,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
+    private var userInputContinuation: CheckedContinuation<Void, Error>?
 
     // MARK: - Payment Flow
 
@@ -639,7 +640,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
-            self.userInputCompletion = {
+            self.userInputContinuation = continuation
+            self.userInputCompletion = { [weak self] in
+                guard let continuation = self?.userInputContinuation else { return }
+                self?.userInputContinuation = nil
                 continuation.resume()
             }
 
@@ -785,6 +789,11 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }
 
     override func cancel() {
+        if let continuation = userInputContinuation {
+            userInputContinuation = nil
+            userInputCompletion = nil
+            continuation.resume(throwing: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
         didCancel?()
         inputs = []
 

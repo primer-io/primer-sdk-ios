@@ -197,3 +197,16 @@
 "accessibility_error_generic" = "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.";
 "accessibility_error_multiple_errors" = "%d ta xato topildi";
 "accessibility_screen_payment_method" = "%@ to'lov usuli";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Davom etish";
+"primer_klarna_button_finalize" = "Toʻlash";
+"primer_klarna_select_category_description" = "Qanday toʻlashni xohlaysiz, tanlang";
+"primer_klarna_loading_title" = "Yuklanmoqda";
+"primer_klarna_loading_subtitle" = "Bu bir necha soniya vaqt olishi mumkin.";
+"accessibility_klarna_category" = "%@ toʻlov varianti";
+"accessibility_klarna_category_selected" = "%@ toʻlov varianti, tanlangan";
+"accessibility_klarna_payment_view" = "Klarna toʻlov formasi";
+"accessibility_klarna_authorize_hint" = "Klarna bilan davom etish uchun ikki marta bosing";
+"accessibility_klarna_finalize_hint" = "Toʻlovni yakunlash uchun ikki marta bosing";

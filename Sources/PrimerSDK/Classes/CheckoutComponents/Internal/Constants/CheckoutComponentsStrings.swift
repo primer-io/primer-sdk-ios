@@ -888,15 +888,15 @@ enum CheckoutComponentsStrings {
         comment: "Default placeholder text when cardholder name is not available"
     )
 
-    static func expiresDate(_ date: String) -> String {
+    static func expiresDate(month: String, year: String) -> String {
         let format = NSLocalizedString(
             "primer_vault_format_expires",
             tableName: tableName,
-        bundle: .primerResources,
-            value: "Expires %@",
-            comment: "Expiry date text for saved card. Parameter is the date (e.g., '12/26')"
+            bundle: .primerResources,
+            value: "Expires %1$@/%2$@",
+            comment: "Expiry date text for saved card. First parameter is month, second is year (e.g., '12/26')"
         )
-        return String(format: format, date)
+        return String(format: format, month, year)
     }
 
     // MARK: - Vaulted Payment Method Brand Names
@@ -908,15 +908,7 @@ enum CheckoutComponentsStrings {
         value: "PayPal account",
         comment: "PayPal brand name for vaulted payment methods"
     )
-
-    static let klarnaBrandName = NSLocalizedString(
-        "primer_vault_default_klarna",
-        tableName: tableName,
-        bundle: .primerResources,
-        value: "Klarna",
-        comment: "Klarna brand name for vaulted payment methods"
-    )
-
+    
     static let achSuffix = NSLocalizedString(
         "primer_vault_default_bank",
         tableName: tableName,
@@ -1141,6 +1133,104 @@ enum CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "You will be redirected to PayPal to complete your payment securely.",
         comment: "PayPal redirect description text"
+    )
+
+    // MARK: - Klarna Strings
+
+    static let klarnaBrandName = NSLocalizedString(
+        "primer_vault_default_klarna",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Klarna",
+        comment: "Klarna brand name"
+    )
+
+    static let klarnaAuthorizeButton = NSLocalizedString(
+        "primer_klarna_button_authorize",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Continue",
+        comment: "Klarna authorize button text"
+    )
+
+    static let klarnaFinalizeButton = NSLocalizedString(
+        "primer_klarna_button_finalize",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Pay",
+        comment: "Klarna finalize button text"
+    )
+
+    static let klarnaSelectCategoryDescription = NSLocalizedString(
+        "primer_klarna_select_category_description",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Choose how you'd like to pay",
+        comment: "Klarna category selection hint text"
+    )
+
+    static let klarnaLoadingTitle = NSLocalizedString(
+        "primer_klarna_loading_title",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Loading",
+        comment: "Klarna loading spinner title"
+    )
+
+    static let klarnaLoadingSubtitle = NSLocalizedString(
+        "primer_klarna_loading_subtitle",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "This may take a few seconds.",
+        comment: "Klarna loading subtitle text"
+    )
+
+    // MARK: Klarna Accessibility Strings
+
+    static func a11yKlarnaCategory(_ categoryName: String) -> String {
+        let format = NSLocalizedString(
+            "accessibility_klarna_category",
+            tableName: tableName,
+            bundle: Bundle.primerResources,
+            value: "%@ payment option",
+            comment: "VoiceOver label for Klarna payment category. Parameter is category name."
+        )
+        return String(format: format, categoryName)
+    }
+
+    static func a11yKlarnaCategorySelected(_ categoryName: String) -> String {
+        let format = NSLocalizedString(
+            "accessibility_klarna_category_selected",
+            tableName: tableName,
+            bundle: Bundle.primerResources,
+            value: "%@ payment option, selected",
+            comment: "VoiceOver label for selected Klarna payment category. Parameter is category name."
+        )
+        return String(format: format, categoryName)
+    }
+
+    static let a11yKlarnaPaymentView = NSLocalizedString(
+        "accessibility_klarna_payment_view",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Klarna payment form",
+        comment: "VoiceOver label for Klarna SDK payment view"
+    )
+
+    static let a11yKlarnaAuthorizeHint = NSLocalizedString(
+        "accessibility_klarna_authorize_hint",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Double tap to continue with Klarna",
+        comment: "VoiceOver hint for Klarna authorize button"
+    )
+
+    static let a11yKlarnaFinalizeHint = NSLocalizedString(
+        "accessibility_klarna_finalize_hint",
+        tableName: tableName,
+        bundle: Bundle.primerResources,
+        value: "Double tap to complete payment",
+        comment: "VoiceOver hint for Klarna finalize button"
     )
 
     // MARK: - Accessibility Strings

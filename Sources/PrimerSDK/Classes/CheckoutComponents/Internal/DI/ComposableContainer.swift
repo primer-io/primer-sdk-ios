@@ -144,6 +144,14 @@ private extension ComposableContainer {
                 )
             }
 
+        try? await container.register(ProcessKlarnaPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ProcessKlarnaPaymentInteractorImpl(
+                    repository: try await resolver.resolve(KlarnaRepository.self)
+                )
+            }
+
         try? await container.register(ProcessApplePayPaymentInteractor.self)
             .asTransient()
             .with { _ in
@@ -182,6 +190,12 @@ private extension ComposableContainer {
             .asTransient()
             .with { _ in
                 PayPalRepositoryImpl()
+            }
+
+        try? await container.register(KlarnaRepository.self)
+            .asTransient()
+            .with { _ in
+                KlarnaRepositoryImpl()
             }
     }
 

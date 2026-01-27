@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Tüm kayıtlı ödeme yöntemleri";
 "primer_vault_section_title" = "Kayıtlı ödeme yöntemleri";
 "primer_vault_selected_button_other" = "Diğer ödeme yöntemlerini göster";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Devam et";
+"primer_klarna_button_finalize" = "Öde";
+"primer_klarna_select_category_description" = "Nasıl ödeme yapmak istediğinizi seçin";
+"primer_klarna_loading_title" = "Yükleniyor";
+"primer_klarna_loading_subtitle" = "Bu birkaç saniye sürebilir.";
+"accessibility_klarna_category" = "%@ ödeme seçeneği";
+"accessibility_klarna_category_selected" = "%@ ödeme seçeneği, seçili";
+"accessibility_klarna_payment_view" = "Klarna ödeme formu";
+"accessibility_klarna_authorize_hint" = "Klarna ile devam etmek için çift dokunun";
+"accessibility_klarna_finalize_hint" = "Ödemeyi tamamlamak için çift dokunun";

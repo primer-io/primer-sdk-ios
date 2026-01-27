@@ -197,3 +197,16 @@
 "accessibility_error_multiple_errors" = "%d ката табылды";
 "accessibility_action_edit" = "Карта маалыматтарын түзөтүү";
 "accessibility_action_set_default" = "Негизги төлөм ыкмасы катары коюу";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Улантуу";
+"primer_klarna_button_finalize" = "Төлөө";
+"primer_klarna_select_category_description" = "Кантип төлөгүңүз келет, тандаңыз";
+"primer_klarna_loading_title" = "Жүктөлүүдө";
+"primer_klarna_loading_subtitle" = "Бул бир нече секунд алышы мүмкүн.";
+"accessibility_klarna_category" = "%@ төлөм варианты";
+"accessibility_klarna_category_selected" = "%@ төлөм варианты, тандалган";
+"accessibility_klarna_payment_view" = "Klarna төлөм формасы";
+"accessibility_klarna_authorize_hint" = "Klarna менен улантуу үчүн эки жолу басыңыз";
+"accessibility_klarna_finalize_hint" = "Төлөмдү аяктоо үчүн эки жолу басыңыз";

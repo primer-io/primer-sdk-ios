@@ -197,3 +197,16 @@
 "accessibility_vaulted_payment_method" = "Metoda e pagesës e ruajtur: %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Vazhdo";
+"primer_klarna_button_finalize" = "Paguaj";
+"primer_klarna_select_category_description" = "Zgjidhni si dëshironi të paguani";
+"primer_klarna_loading_title" = "Po ngarkohet";
+"primer_klarna_loading_subtitle" = "Kjo mund të zgjasë disa sekonda.";
+"accessibility_klarna_category" = "Opsion pagese %@";
+"accessibility_klarna_category_selected" = "Opsion pagese %@, i zgjedhur";
+"accessibility_klarna_payment_view" = "Formulari i pagesës Klarna";
+"accessibility_klarna_authorize_hint" = "Prekni dy herë për të vazhduar me Klarna";
+"accessibility_klarna_finalize_hint" = "Prekni dy herë për të përfunduar pagesën";

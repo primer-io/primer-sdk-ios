@@ -1,7 +1,7 @@
 //
 //  CardFormPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -51,6 +51,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     var userInputCompletion: (() -> Void)?
+    private var userInputContinuation: CheckedContinuation<Void, Error>?
     // swiftlint:disable:next identifier_name
     private var cardComponentsManagerTokenizationCompletion: ((Result<PrimerPaymentMethodTokenData, Error>) -> Void)?
     private var webViewController: SFSafariViewController?
@@ -459,7 +460,10 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
-            self.userInputCompletion = {
+            self.userInputContinuation = continuation
+            self.userInputCompletion = { [weak self] in
+                guard let continuation = self?.userInputContinuation else { return }
+                self?.userInputContinuation = nil
                 continuation.resume()
             }
 
@@ -632,6 +636,11 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func cancel() {
+        if let continuation = userInputContinuation {
+            userInputContinuation = nil
+            userInputCompletion = nil
+            continuation.resume(throwing: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
         didCancel?()
         didCancel = nil
         super.cancel()

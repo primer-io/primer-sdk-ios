@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Visi išsaugoti mokėjimo būdai";
 "primer_vault_section_title" = "Išsaugoti mokėjimo būdai";
 "primer_vault_selected_button_other" = "Rodyti kitus mokėjimo būdus";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Tęsti";
+"primer_klarna_button_finalize" = "Mokėti";
+"primer_klarna_select_category_description" = "Pasirinkite, kaip norite mokėti";
+"primer_klarna_loading_title" = "Įkeliama";
+"primer_klarna_loading_subtitle" = "Tai gali užtrukti kelias sekundes.";
+"accessibility_klarna_category" = "%@ mokėjimo parinktis";
+"accessibility_klarna_category_selected" = "%@ mokėjimo parinktis, pasirinkta";
+"accessibility_klarna_payment_view" = "Klarna mokėjimo forma";
+"accessibility_klarna_authorize_hint" = "Bakstelėkite du kartus, kad tęstumėte su Klarna";
+"accessibility_klarna_finalize_hint" = "Bakstelėkite du kartus, kad užbaigtumėte mokėjimą";

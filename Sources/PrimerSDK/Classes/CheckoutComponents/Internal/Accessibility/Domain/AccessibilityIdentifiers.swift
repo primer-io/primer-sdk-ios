@@ -85,4 +85,18 @@ enum AccessibilityIdentifiers {
         static let logo = "checkout_components_paypal_logo"
         static let submitButton = "checkout_components_paypal_submit_button"
     }
+
+    enum Klarna {
+        static let container = "checkout_components_klarna_container"
+        static let logo = "checkout_components_klarna_logo"
+        static let authorizeButton = "checkout_components_klarna_authorize_button"
+        static let finalizeButton = "checkout_components_klarna_finalize_button"
+        static let paymentViewContainer = "checkout_components_klarna_payment_view_container"
+        static let categoriesContainer = "checkout_components_klarna_categories_container"
+        static let loadingIndicator = "checkout_components_klarna_loading_indicator"
+
+        static func categoryButton(_ categoryId: String) -> String {
+            "checkout_components_klarna_category_\(categoryId.lowercased())_button"
+        }
+    }
 }

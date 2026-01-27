@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Tất cả phương thức thanh toán đã lưu";
 "primer_vault_section_title" = "Phương thức thanh toán đã lưu";
 "primer_vault_selected_button_other" = "Hiển thị các cách thanh toán khác";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Tiếp tục";
+"primer_klarna_button_finalize" = "Thanh toán";
+"primer_klarna_select_category_description" = "Chọn cách bạn muốn thanh toán";
+"primer_klarna_loading_title" = "Đang tải";
+"primer_klarna_loading_subtitle" = "Quá trình này có thể mất vài giây.";
+"accessibility_klarna_category" = "Tùy chọn thanh toán %@";
+"accessibility_klarna_category_selected" = "Tùy chọn thanh toán %@, đã chọn";
+"accessibility_klarna_payment_view" = "Biểu mẫu thanh toán Klarna";
+"accessibility_klarna_authorize_hint" = "Nhấn đúp để tiếp tục với Klarna";
+"accessibility_klarna_finalize_hint" = "Nhấn đúp để hoàn tất thanh toán";

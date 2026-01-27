@@ -48,7 +48,7 @@ extension PrimerHeadlessUniversalCheckout.VaultedPaymentMethod {
         var secondaryValue: String?
         if let month = data.expirationMonth, let year = data.expirationYear {
             let shortYear = year.count > 2 ? String(year.suffix(2)) : year
-            secondaryValue = CheckoutComponentsStrings.expiresDate("\(month)/\(shortYear)")
+            secondaryValue = CheckoutComponentsStrings.expiresDate(month: month, year: shortYear)
         }
 
         let accessibilityLabel = CheckoutComponentsStrings.a11yVaultedCard(

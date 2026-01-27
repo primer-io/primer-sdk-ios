@@ -15,6 +15,7 @@ struct DemoConfiguration {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     let clientSession: ClientSessionRequestBody?
+    let clientToken: String?
 }
 
 // MARK: - Demo Metadata

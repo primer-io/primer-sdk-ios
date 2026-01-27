@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "כל אמצעי התשלום השמורים";
 "primer_vault_section_title" = "אמצעי תשלום שמורים";
 "primer_vault_selected_button_other" = "הצג דרכים אחרות לתשלום";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "המשך";
+"primer_klarna_button_finalize" = "שלם";
+"primer_klarna_select_category_description" = "בחרו כיצד תרצו לשלם";
+"primer_klarna_loading_title" = "טוען";
+"primer_klarna_loading_subtitle" = "פעולה זו עשויה להימשך מספר שניות.";
+"accessibility_klarna_category" = "אפשרות תשלום %@";
+"accessibility_klarna_category_selected" = "אפשרות תשלום %@, נבחר";
+"accessibility_klarna_payment_view" = "טופס תשלום Klarna";
+"accessibility_klarna_authorize_hint" = "הקש פעמיים כדי להמשיך עם Klarna";
+"accessibility_klarna_finalize_hint" = "הקש פעמיים כדי להשלים את התשלום";

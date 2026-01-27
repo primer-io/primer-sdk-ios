@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "सभी सहेजे गए भुगतान विधियाँ";
 "primer_vault_section_title" = "सहेजे गए भुगतान विधियाँ";
 "primer_vault_selected_button_other" = "भुगतान के अन्य तरीके दिखाएं";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "जारी रखें";
+"primer_klarna_button_finalize" = "भुगतान करें";
+"primer_klarna_select_category_description" = "चुनें कि आप कैसे भुगतान करना चाहते हैं";
+"primer_klarna_loading_title" = "लोड हो रहा है";
+"primer_klarna_loading_subtitle" = "इसमें कुछ सेकंड लग सकते हैं।";
+"accessibility_klarna_category" = "%@ भुगतान विकल्प";
+"accessibility_klarna_category_selected" = "%@ भुगतान विकल्प, चयनित";
+"accessibility_klarna_payment_view" = "Klarna भुगतान फ़ॉर्म";
+"accessibility_klarna_authorize_hint" = "Klarna के साथ जारी रखने के लिए डबल टैप करें";
+"accessibility_klarna_finalize_hint" = "भुगतान पूरा करने के लिए डबल टैप करें";
