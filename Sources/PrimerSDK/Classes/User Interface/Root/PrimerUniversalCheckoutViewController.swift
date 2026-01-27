@@ -176,7 +176,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
 
-            payButton.layer.cornerRadius = 4
+          payButton.layer.cornerRadius = theme.mainButton.cornerRadius
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
             payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)

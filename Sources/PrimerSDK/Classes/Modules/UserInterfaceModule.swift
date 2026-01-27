@@ -1034,7 +1034,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let colorState: ColorState = isEnabled ? .enabled : .disabled
         submitButton.backgroundColor = theme.mainButton.color(for: colorState)
         submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.layer.cornerRadius = 4
+        submitButton.layer.cornerRadius = theme.mainButton.cornerRadius
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton

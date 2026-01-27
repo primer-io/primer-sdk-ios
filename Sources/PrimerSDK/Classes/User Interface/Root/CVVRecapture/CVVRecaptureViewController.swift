@@ -119,7 +119,7 @@ final class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupContinueButton(with title: String) {
-        continueButton.layer.cornerRadius = 4
+        continueButton.layer.cornerRadius = theme.mainButton.cornerRadius
         continueButton.setTitle(title, for: .normal)
         continueButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         continueButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
