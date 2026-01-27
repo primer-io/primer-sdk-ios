@@ -1,14 +1,14 @@
 //
 //  PrimerAPIConfigurationModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal typealias JWTToken = String
+typealias JWTToken = String
 
-internal protocol PrimerAPIConfigurationModuleProtocol {
+protocol PrimerAPIConfigurationModuleProtocol {
 
     static var apiClient: PrimerAPIClientProtocol? { get set }
     static var clientToken: JWTToken? { get }
@@ -34,7 +34,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
-    private static var pendingTasks: [String: CancellableTask<PrimerAPIConfiguration>] = [:]
 
     static var clientToken: JWTToken? {
         get {
@@ -56,7 +55,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
     static var apiConfiguration: PrimerAPIConfiguration? {
         get {
-            return AppState.current.apiConfiguration
+            AppState.current.apiConfiguration
         }
         set {
             if PrimerAPIConfigurationModule.clientToken != nil {
@@ -247,18 +246,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
                 }
 
-                if let pendingTask = PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] {
-                    Task {
-                        do {
-                            let config = try await pendingTask.wait()
-                            continuation.resume(returning: config)
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                    return
-                }
-
                 let task = CancellableTask<PrimerAPIConfiguration> {
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
@@ -283,18 +270,12 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     return configuration
                 }
 
-                PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] = task
-
                 Task {
                     do {
                         let config = try await task.wait()
                         continuation.resume(returning: config)
                     } catch {
                         continuation.resume(throwing: error)
-                    }
-
-                    PrimerAPIConfigurationModule.queue.async {
-                        PrimerAPIConfigurationModule.pendingTasks.removeValue(forKey: cacheKey as String)
                     }
                 }
             }
@@ -322,7 +303,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     private func reportAllowedCardNetworks() {
-        let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
+        let networksDescription = [CardNetwork].allowedCardNetworks.map(\.rawValue).joined(separator: ", ")
         let event = Analytics.Event.message(
             message: "Merchant supported networks: \(networksDescription)",
             messageType: .other,
