@@ -1,3 +1,11 @@
+## 2.44.1 (2026-01-27)
+
+### Fix
+
+- Remove `pendingTask` flow in PrimerAPIConfigurationModule (#1512)
+- Improve unable-to-present-payment-method error handling for HEADLESS integrations (#1510)
+- App becoming unresponsive after dismissing Apple Pay via showPaymentMethod() (#1509)
+
 ## 2.44.0 (2026-01-08)
 
 ### Feat
