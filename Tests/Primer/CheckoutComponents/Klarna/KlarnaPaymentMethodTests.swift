@@ -54,7 +54,7 @@ final class KlarnaPaymentMethodTests: XCTestCase {
     func test_createView_withNonKlarnaScope_returnsNil() {
         // Given
         let checkoutScope = DefaultCheckoutScope(
-            clientToken: "mock_token",
+            clientToken: KlarnaTestData.Constants.mockToken,
             settings: PrimerSettings(),
             diContainer: DIContainer.shared,
             navigator: CheckoutNavigator()

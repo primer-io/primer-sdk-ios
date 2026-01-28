@@ -8,9 +8,6 @@
 import UIKit
 import XCTest
 
-/// Tests for KlarnaRepository protocol contract via MockKlarnaRepository.
-/// KlarnaRepositoryImpl requires actual Klarna SDK and network connectivity,
-/// so these tests verify the repository interface contract and mock behavior.
 @available(iOS 15.0, *)
 final class KlarnaRepositoryTests: XCTestCase {
 
@@ -286,36 +283,6 @@ final class KlarnaRepositoryTests: XCTestCase {
         XCTAssertNotNil(view)
         XCTAssertEqual(authResult, .approved(authToken: KlarnaTestData.Constants.authToken))
         XCTAssertEqual(paymentResult.status, .success)
-    }
-
-    // MARK: - Reset Tests
-
-    func test_reset_clearsAllState() async throws {
-        // Given
-        sut.sessionResultToReturn = KlarnaTestData.defaultSessionResult
-        sut.paymentViewToReturn = UIView()
-        sut.authorizationResultToReturn = .approved(authToken: KlarnaTestData.Constants.authToken)
-        sut.paymentResultToReturn = KlarnaTestData.successPaymentResult
-
-        _ = try await sut.createSession()
-        _ = try await sut.configureForCategory(
-            clientToken: KlarnaTestData.Constants.clientToken,
-            categoryId: KlarnaTestData.Constants.categoryPayNow
-        )
-        _ = try await sut.authorize()
-        _ = try await sut.tokenize(authToken: KlarnaTestData.Constants.authToken)
-
-        // When
-        sut.reset()
-
-        // Then
-        XCTAssertEqual(sut.createSessionCallCount, 0)
-        XCTAssertEqual(sut.configureForCategoryCallCount, 0)
-        XCTAssertEqual(sut.authorizeCallCount, 0)
-        XCTAssertEqual(sut.tokenizeCallCount, 0)
-        XCTAssertNil(sut.lastClientToken)
-        XCTAssertNil(sut.lastCategoryId)
-        XCTAssertNil(sut.lastAuthToken)
     }
 
     // MARK: - KlarnaAuthorizationResult Equatable Tests

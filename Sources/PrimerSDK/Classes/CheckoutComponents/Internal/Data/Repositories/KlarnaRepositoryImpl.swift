@@ -6,10 +6,13 @@
 
 import UIKit
 
-/// Implementation of KlarnaRepository that wraps the existing Klarna headless APIs
-/// and bridges delegate callbacks to async/await using CheckedContinuation.
 @available(iOS 15.0, *)
 final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
+
+  private enum Timing {
+    static let mockAuthorizationDelay: UInt64 = 2_000_000_000
+    static let operationTimeout: UInt64 = 30_000_000_000
+  }
 
   private let apiClient: PrimerAPIClientProtocol
   private let tokenizationService: TokenizationServiceProtocol
@@ -45,7 +48,6 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     }
   #endif
 
-  /// Whether this is a test flow (PRIMER_TEST_KLARNA)
   private var isTestFlow: Bool {
     PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.testId != nil
   }
@@ -139,7 +141,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       // Create and load the payment view using continuation.
       // Klarna SDK creates WKWebView internally, which must be initialized on the main thread.
       let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: 30_000_000_000)
+        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
         guard let self, let cont = self.viewLoadedContinuation else { return }
         self.viewLoadedContinuation = nil
         cont.resume(
@@ -181,7 +183,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     // Test flow: return mock approval after delay
     if isTestFlow {
       logger.debug(message: "Klarna test flow: returning mock authorization")
-      try await Task.sleep(nanoseconds: 2_000_000_000)  // 2s delay
+      try await Task.sleep(nanoseconds: Timing.mockAuthorizationDelay)
       return .approved(authToken: UUID().uuidString)
     }
 
@@ -191,7 +193,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       }
 
       let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: 30_000_000_000)
+        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
         guard let self, let cont = self.authorizationContinuation else { return }
         self.authorizationContinuation = nil
         cont.resume(
@@ -222,7 +224,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       }
 
       let timeoutTask = Task { [weak self] in
-        try? await Task.sleep(nanoseconds: 30_000_000_000)
+        try? await Task.sleep(nanoseconds: Timing.operationTimeout)
         guard let self, let cont = self.finalizationContinuation else { return }
         self.finalizationContinuation = nil
         cont.resume(

@@ -135,23 +135,4 @@ final class MockProcessKlarnaPaymentInteractor: ProcessKlarnaPaymentInteractor {
         return result
     }
 
-    // MARK: - Test Helpers
-
-    func reset() {
-        createSessionCallCount = 0
-        configureForCategoryCallCount = 0
-        authorizeCallCount = 0
-        finalizeCallCount = 0
-        tokenizeCallCount = 0
-
-        lastClientToken = nil
-        lastCategoryId = nil
-        lastAuthToken = nil
-
-        createSessionError = nil
-        configureForCategoryError = nil
-        authorizeError = nil
-        finalizeError = nil
-        tokenizeError = nil
-    }
 }

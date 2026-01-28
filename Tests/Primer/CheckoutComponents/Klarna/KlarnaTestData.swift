@@ -13,6 +13,7 @@ enum KlarnaTestData {
     // MARK: - Constants
 
     enum Constants {
+        static let mockToken = "mock_token"
         static let clientToken = "mock_klarna_client_token"
         static let sessionId = "mock_klarna_session_id"
         static let hppSessionId = "mock_hpp_session_id"

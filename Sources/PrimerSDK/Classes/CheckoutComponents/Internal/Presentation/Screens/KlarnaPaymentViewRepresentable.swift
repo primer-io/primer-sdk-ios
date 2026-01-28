@@ -7,7 +7,6 @@
 import SwiftUI
 import UIKit
 
-/// UIViewRepresentable wrapper for the Klarna SDK's native UIView.
 @available(iOS 15.0, *)
 struct KlarnaPaymentViewRepresentable: UIViewRepresentable {
 

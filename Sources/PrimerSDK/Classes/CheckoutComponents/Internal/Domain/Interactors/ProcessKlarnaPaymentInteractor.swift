@@ -6,40 +6,15 @@
 
 import UIKit
 
-/// Interactor protocol for processing Klarna payments.
 @available(iOS 15.0, *)
 protocol ProcessKlarnaPaymentInteractor {
-  /// Creates a Klarna payment session and returns available categories.
-  /// - Returns: The session result with categories.
-  /// - Throws: Error if session creation fails.
   func createSession() async throws -> KlarnaSessionResult
-
-  /// Configures the Klarna SDK for a selected category and loads the payment view.
-  /// - Parameters:
-  ///   - clientToken: The Klarna client token.
-  ///   - categoryId: The selected category identifier.
-  /// - Returns: The Klarna SDK payment view, or nil for test flows.
-  /// - Throws: Error if configuration fails.
   func configureForCategory(clientToken: String, categoryId: String) async throws -> UIView?
-
-  /// Authorizes the Klarna payment.
-  /// - Returns: The authorization result.
-  /// - Throws: Error if authorization fails.
   func authorize() async throws -> KlarnaAuthorizationResult
-
-  /// Finalizes the Klarna payment after authorization requires finalization.
-  /// - Returns: The finalization result.
-  /// - Throws: Error if finalization fails.
   func finalize() async throws -> KlarnaAuthorizationResult
-
-  /// Tokenizes and processes the Klarna payment.
-  /// - Parameter authToken: The authorization token.
-  /// - Returns: The payment result.
-  /// - Throws: Error if tokenization or payment fails.
   func tokenize(authToken: String) async throws -> PaymentResult
 }
 
-/// Implementation of ProcessKlarnaPaymentInteractor that delegates to KlarnaRepository.
 @available(iOS 15.0, *)
 final class ProcessKlarnaPaymentInteractorImpl: ProcessKlarnaPaymentInteractor, LogReporter {
 

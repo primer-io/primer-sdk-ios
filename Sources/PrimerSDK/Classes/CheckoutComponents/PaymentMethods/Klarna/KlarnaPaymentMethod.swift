@@ -13,11 +13,6 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
 
   static let paymentMethodType: String = PrimerPaymentMethodType.klarna.rawValue
 
-  /// Creates a Klarna scope for this payment method
-  /// - Parameters:
-  ///   - checkoutScope: The parent checkout scope for navigation coordination
-  ///   - diContainer: The dependency injection container used to resolve Klarna dependencies
-  /// - Returns: A configured DefaultKlarnaScope instance
   @MainActor
   static func createScope(
     checkoutScope: PrimerCheckoutScope,
@@ -65,12 +60,6 @@ struct KlarnaPaymentMethod: PaymentMethodProtocol {
     }
   }
 
-  /// Creates the view for Klarna payments by retrieving the Klarna scope and rendering the appropriate UI.
-  /// Priority order:
-  /// 1. klarnaScope.screen (scope-based customization)
-  /// 2. Default KlarnaView
-  /// - Parameter checkoutScope: The parent checkout scope that manages this payment method
-  /// - Returns: The Klarna view, or nil if the scope cannot be retrieved
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
     guard let klarnaScope = checkoutScope.getPaymentMethodScope(DefaultKlarnaScope.self) else {

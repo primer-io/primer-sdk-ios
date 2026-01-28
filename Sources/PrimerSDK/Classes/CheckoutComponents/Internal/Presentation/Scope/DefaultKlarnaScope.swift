@@ -8,7 +8,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-/// Default implementation of PrimerKlarnaScope that handles the multi-step Klarna payment flow.
 @available(iOS 15.0, *)
 @MainActor
 public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogReporter {
@@ -52,10 +51,8 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
   @Published private var internalState = KlarnaState()
 
-  /// The Klarna client token from session creation, needed for category configuration
   private var klarnaClientToken: String?
 
-  /// The auth token from authorization, needed for tokenization
   private var authorizationToken: String?
 
   // MARK: - Initialization
@@ -76,7 +73,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
   public func start() {
     logger.debug(message: "Klarna scope started")
-    Task {
+    Task { [self] in
       await createSession()
     }
   }
@@ -105,7 +102,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     )
     paymentView = nil
 
-    Task {
+    Task { [self] in
       await loadPaymentView(for: categoryId)
     }
   }
@@ -122,7 +119,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       selectedCategoryId: internalState.selectedCategoryId
     )
 
-    Task {
+    Task { [self] in
       await performAuthorization()
     }
   }
@@ -133,7 +130,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       return
     }
 
-    Task {
+    Task { [self] in
       await performFinalization()
     }
   }
@@ -156,7 +153,11 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     logger.error(message: "Klarna \(context) failed: \(error.localizedDescription)")
     let primerError =
       error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
-    checkoutScope?.handlePaymentError(primerError)
+    guard let checkoutScope else {
+      logger.error(message: "Klarna checkout scope was deallocated during \(context)")
+      return
+    }
+    checkoutScope.handlePaymentError(primerError)
   }
 
   private func createSession() async {
@@ -179,7 +180,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   }
 
   private func loadPaymentView(for categoryId: String) async {
-    guard let clientToken = klarnaClientToken else {
+    guard let klarnaClientToken else {
       logger.error(message: "Klarna client token not available")
       handleError(
         PrimerError.klarnaError(
@@ -193,7 +194,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
     do {
       let view = try await processKlarnaInteractor.configureForCategory(
-        clientToken: clientToken,
+        clientToken: klarnaClientToken,
         categoryId: categoryId
       )
 
@@ -294,7 +295,11 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   private func processPayment(authToken: String) async {
     do {
       let result = try await processKlarnaInteractor.tokenize(authToken: authToken)
-      checkoutScope?.handlePaymentSuccess(result)
+      guard let checkoutScope else {
+        logger.error(message: "Klarna checkout scope was deallocated during payment processing")
+        return
+      }
+      checkoutScope.handlePaymentSuccess(result)
     } catch {
       handleError(error, context: "payment processing")
     }
