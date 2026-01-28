@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Svi sačuvani načini plaćanja";
 "primer_vault_section_title" = "Sačuvani načini plaćanja";
 "primer_vault_selected_button_other" = "Prikažite druge načine plaćanja";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Настави";
+"primer_klarna_button_finalize" = "Плати";
+"primer_klarna_select_category_description" = "Изаберите како желите да платите";
+"primer_klarna_loading_title" = "Учитавање";
+"primer_klarna_loading_subtitle" = "Ово може потрајати неколико секунди.";
+"accessibility_klarna_category" = "Опција плаћања %@";
+"accessibility_klarna_category_selected" = "Опција плаћања %@, изабрано";
+"accessibility_klarna_payment_view" = "Образац за плаћање Klarna";
+"accessibility_klarna_authorize_hint" = "Двапут додирните да наставите са Klarna";
+"accessibility_klarna_finalize_hint" = "Двапут додирните да завршите плаћање";

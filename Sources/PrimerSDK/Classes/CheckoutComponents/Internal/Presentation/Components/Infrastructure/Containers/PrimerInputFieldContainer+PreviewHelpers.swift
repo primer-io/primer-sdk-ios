@@ -7,8 +7,8 @@
 import SwiftUI
 
 #if DEBUG
-@available(iOS 15.0, *)
-struct PreviewContainer: View {
+  @available(iOS 15.0, *)
+  struct PreviewContainer: View {
     let label: String?
     let text: String
     let errorMessage: String?
@@ -19,32 +19,35 @@ struct PreviewContainer: View {
     @State private var isFocused = false
 
     init(label: String?, text: String, errorMessage: String?) {
-        self.label = label
-        self.text = text
-        self.errorMessage = errorMessage
-        self._currentText = State(initialValue: text)
-        self._currentErrorMessage = State(initialValue: errorMessage)
+      self.label = label
+      self.text = text
+      self.errorMessage = errorMessage
+      self._currentText = State(initialValue: text)
+      self._currentErrorMessage = State(initialValue: errorMessage)
     }
 
     var body: some View {
-        PrimerInputFieldContainer(
-            label: label,
-            styling: nil,
-            text: $currentText,
-            isValid: $isValid,
-            errorMessage: $currentErrorMessage,
-            isFocused: $isFocused
-        ) {
-            TextField("Placeholder", text: $currentText, onEditingChanged: { focused in
-                isFocused = focused
-            })
-            .textFieldStyle(.plain)
-        }
+      PrimerInputFieldContainer(
+        label: label,
+        styling: nil,
+        text: $currentText,
+        isValid: $isValid,
+        errorMessage: $currentErrorMessage,
+        isFocused: $isFocused
+      ) {
+        TextField(
+          "Placeholder", text: $currentText,
+          onEditingChanged: { focused in
+            isFocused = focused
+          }
+        )
+        .textFieldStyle(.plain)
+      }
     }
-}
+  }
 
-@available(iOS 15.0, *)
-struct PreviewContainerWithRightComponent: View {
+  @available(iOS 15.0, *)
+  struct PreviewContainerWithRightComponent: View {
     let label: String?
     let text: String
 
@@ -55,34 +58,37 @@ struct PreviewContainerWithRightComponent: View {
     @Environment(\.designTokens) private var tokens
 
     init(label: String?, text: String) {
-        self.label = label
-        self.text = text
-        self._currentText = State(initialValue: text)
+      self.label = label
+      self.text = text
+      self._currentText = State(initialValue: text)
     }
 
     var body: some View {
-        PrimerInputFieldContainer(
-            label: label,
-            styling: nil,
-            text: $currentText,
-            isValid: $isValid,
-            errorMessage: $errorMessage,
-            isFocused: $isFocused,
-            textFieldBuilder: {
-                TextField("Placeholder", text: $currentText, onEditingChanged: { focused in
-                    isFocused = focused
-                })
-                .textFieldStyle(.plain)
-            },
-            rightComponent: {
-                let iconSize = PrimerSize.medium(tokens: tokens)
-                Image(systemName: "info.circle")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: iconSize, height: iconSize)
-                    .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+      PrimerInputFieldContainer(
+        label: label,
+        styling: nil,
+        text: $currentText,
+        isValid: $isValid,
+        errorMessage: $errorMessage,
+        isFocused: $isFocused,
+        textFieldBuilder: {
+          TextField(
+            "Placeholder", text: $currentText,
+            onEditingChanged: { focused in
+              isFocused = focused
             }
-        )
+          )
+          .textFieldStyle(.plain)
+        },
+        rightComponent: {
+          let iconSize = PrimerSize.medium(tokens: tokens)
+          Image(systemName: "info.circle")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: iconSize, height: iconSize)
+            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+        }
+      )
     }
-}
+  }
 #endif

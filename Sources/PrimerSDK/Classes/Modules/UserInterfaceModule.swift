@@ -45,9 +45,9 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         }
 
         return switch internaPaymentMethodType {
-            case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
-            case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
-            default: logo
+        case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
+        case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
+        default: logo
         }
     }
 

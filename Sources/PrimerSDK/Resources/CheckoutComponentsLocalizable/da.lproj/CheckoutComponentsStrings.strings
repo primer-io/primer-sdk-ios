@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Alle gemte betalingsmetoder";
 "primer_vault_section_title" = "Gemte betalingsmetoder";
 "primer_vault_selected_button_other" = "Vis andre måder at betale på";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Fortsæt";
+"primer_klarna_button_finalize" = "Betal";
+"primer_klarna_select_category_description" = "Vælg, hvordan du vil betale";
+"primer_klarna_loading_title" = "Indlæser";
+"primer_klarna_loading_subtitle" = "Dette kan tage et par sekunder.";
+"accessibility_klarna_category" = "%@ betalingsmulighed";
+"accessibility_klarna_category_selected" = "%@ betalingsmulighed, valgt";
+"accessibility_klarna_payment_view" = "Klarna-betalingsformular";
+"accessibility_klarna_authorize_hint" = "Dobbelttryk for at fortsætte med Klarna";
+"accessibility_klarna_finalize_hint" = "Dobbelttryk for at gennemføre betalingen";

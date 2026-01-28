@@ -38,17 +38,17 @@ enum InternalError: PrimerErrorProtocol {
     var diagnosticsId: String {
         switch self {
         case let .failedToDecode(_, diagnosticsId),
-                let .invalidUrl(_, diagnosticsId),
-                let .invalidValue(_, _, diagnosticsId),
-                let .invalidResponse(diagnosticsId),
-                let .noData(diagnosticsId),
-                let .serverError(_, _, diagnosticsId),
-                let .unauthorized(_, diagnosticsId),
-                let .underlyingErrors(_, diagnosticsId):
+             let .invalidUrl(_, diagnosticsId),
+             let .invalidValue(_, _, diagnosticsId),
+             let .invalidResponse(diagnosticsId),
+             let .noData(diagnosticsId),
+             let .serverError(_, _, diagnosticsId),
+             let .unauthorized(_, diagnosticsId),
+             let .underlyingErrors(_, diagnosticsId):
             diagnosticsId
         case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
+             .failedToPerform3dsAndShouldBreak,
+             .noNeedToPerform3ds:
             UUID().uuidString
         }
     }

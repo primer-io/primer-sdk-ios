@@ -1,7 +1,7 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -151,7 +151,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         guard redirectUrl.hasWebBasedScheme else {
             return try await openURL(url: redirectUrl)
         }
-        
+
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
         webViewController = safariViewController
@@ -207,7 +207,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         handleWebViewControllerPresentedCompletion()
     }
-    
+
     @MainActor
     private func openURL(url: URL) async throws {
         try await withCheckedThrowingContinuation { continuation in

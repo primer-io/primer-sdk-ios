@@ -197,3 +197,16 @@
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔";
 "accessibility_error_multiple_errors" = "%d خرابیاں ملیں";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "جاری رکھیں";
+"primer_klarna_button_finalize" = "ادائیگی کریں";
+"primer_klarna_select_category_description" = "منتخب کریں کہ آپ کیسے ادائیگی کرنا چاہتے ہیں";
+"primer_klarna_loading_title" = "لوڈ ہو رہا ہے";
+"primer_klarna_loading_subtitle" = "اس میں چند سیکنڈ لگ سکتے ہیں۔";
+"accessibility_klarna_category" = "%@ ادائیگی کا آپشن";
+"accessibility_klarna_category_selected" = "%@ ادائیگی کا آپشن، منتخب";
+"accessibility_klarna_payment_view" = "Klarna ادائیگی فارم";
+"accessibility_klarna_authorize_hint" = "Klarna کے ساتھ جاری رکھنے کے لیے ڈبل ٹیپ کریں";
+"accessibility_klarna_finalize_hint" = "ادائیگی مکمل کرنے کے لیے ڈبل ٹیپ کریں";

@@ -7,34 +7,35 @@
 import Foundation
 
 actor LogNetworkClient {
-    // MARK: - JSON Encoder
+  // MARK: - JSON Encoder
 
-    private let encoder: JSONEncoder = {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
-        return encoder
-    }()
+  private let encoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    encoder.keyEncodingStrategy = .convertToSnakeCase
+    encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+    return encoder
+  }()
 
-    // MARK: - Public Methods
+  // MARK: - Public Methods
 
-    func send(payload: LogPayload, to endpoint: URL, token: String?) async throws {
-        var request = URLRequest(url: endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+  func send(payload: LogPayload, to endpoint: URL, token: String?) async throws {
+    var request = URLRequest(url: endpoint)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if let token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let jsonData = try encoder.encode(payload)
-        request.httpBody = jsonData
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-            throw LoggingError.networkError
-        }
+    if let token {
+      request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     }
+
+    let jsonData = try encoder.encode(payload)
+    request.httpBody = jsonData
+
+    let (_, response) = try await URLSession.shared.data(for: request)
+
+    guard let httpResponse = response as? HTTPURLResponse,
+      (200...299).contains(httpResponse.statusCode)
+    else {
+      throw LoggingError.networkError
+    }
+  }
 }

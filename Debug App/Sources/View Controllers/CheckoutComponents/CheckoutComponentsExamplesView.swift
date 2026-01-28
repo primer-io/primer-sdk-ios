@@ -13,11 +13,12 @@ struct CheckoutComponentsExamplesView: View {
 
     @State private var selectedDemoId: UUID?
 
-    init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil) {
+    init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil, clientToken: String? = nil) {
         self.configuration = DemoConfiguration(
             settings: settings,
             apiVersion: apiVersion,
-            clientSession: clientSession
+            clientSession: clientSession,
+            clientToken: clientToken
         )
     }
 

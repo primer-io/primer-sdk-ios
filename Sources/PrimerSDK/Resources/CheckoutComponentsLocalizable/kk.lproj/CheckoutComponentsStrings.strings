@@ -197,3 +197,16 @@
 "accessibility_vaulted_payment_method" = "Сақталған төлем әдісі: %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Жалғастыру";
+"primer_klarna_button_finalize" = "Төлеу";
+"primer_klarna_select_category_description" = "Қалай төлегіңіз келетінін таңдаңыз";
+"primer_klarna_loading_title" = "Жүктелуде";
+"primer_klarna_loading_subtitle" = "Бұл бірнеше секунд алуы мүмкін.";
+"accessibility_klarna_category" = "%@ төлем опциясы";
+"accessibility_klarna_category_selected" = "%@ төлем опциясы, таңдалған";
+"accessibility_klarna_payment_view" = "Klarna төлем формасы";
+"accessibility_klarna_authorize_hint" = "Klarna арқылы жалғастыру үшін екі рет түртіңіз";
+"accessibility_klarna_finalize_hint" = "Төлемді аяқтау үшін екі рет түртіңіз";

@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Все сохраненные способы оплаты";
 "primer_vault_section_title" = "Сохраненные способы оплаты";
 "primer_vault_selected_button_other" = "Показать другие способы оплаты";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Продолжить";
+"primer_klarna_button_finalize" = "Оплатить";
+"primer_klarna_select_category_description" = "Выберите способ оплаты";
+"primer_klarna_loading_title" = "Загрузка";
+"primer_klarna_loading_subtitle" = "Это может занять несколько секунд.";
+"accessibility_klarna_category" = "Вариант оплаты %@";
+"accessibility_klarna_category_selected" = "Вариант оплаты %@, выбран";
+"accessibility_klarna_payment_view" = "Форма оплаты Klarna";
+"accessibility_klarna_authorize_hint" = "Нажмите дважды, чтобы продолжить с Klarna";
+"accessibility_klarna_finalize_hint" = "Нажмите дважды, чтобы завершить оплату";

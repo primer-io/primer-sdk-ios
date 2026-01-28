@@ -8,18 +8,18 @@ import Foundation
 
 /// Defines how the container should retain registered dependencies
 public enum ContainerRetainPolicy: String, Equatable, Sendable, Codable {
-    case transient    // new instance every time
-    case singleton    // strong cache
-    case weak         // weak cache
+  case transient  // new instance every time
+  case singleton  // strong cache
+  case weak  // weak cache
 
-    func makeStrategy() -> RetentionStrategy {
-        switch self {
-        case .transient:
-            return TransientStrategy()
-        case .singleton:
-            return SingletonStrategy()
-        case .weak:
-            return WeakStrategy()
-        }
+  func makeStrategy() -> RetentionStrategy {
+    switch self {
+    case .transient:
+      return TransientStrategy()
+    case .singleton:
+      return SingletonStrategy()
+    case .weak:
+      return WeakStrategy()
     }
+  }
 }

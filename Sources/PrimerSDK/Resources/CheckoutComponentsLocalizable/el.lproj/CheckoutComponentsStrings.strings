@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Όλες οι αποθηκευμένες μέθοδοι πληρωμής";
 "primer_vault_section_title" = "Αποθηκευμένες μέθοδοι πληρωμής";
 "primer_vault_selected_button_other" = "Εμφάνιση άλλων τρόπων πληρωμής";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Συνέχεια";
+"primer_klarna_button_finalize" = "Πληρωμή";
+"primer_klarna_select_category_description" = "Επιλέξτε πώς θέλετε να πληρώσετε";
+"primer_klarna_loading_title" = "Φόρτωση";
+"primer_klarna_loading_subtitle" = "Αυτό μπορεί να διαρκέσει μερικά δευτερόλεπτα.";
+"accessibility_klarna_category" = "Επιλογή πληρωμής %@";
+"accessibility_klarna_category_selected" = "Επιλογή πληρωμής %@, επιλεγμένο";
+"accessibility_klarna_payment_view" = "Φόρμα πληρωμής Klarna";
+"accessibility_klarna_authorize_hint" = "Πατήστε δύο φορές για να συνεχίσετε με Klarna";
+"accessibility_klarna_finalize_hint" = "Πατήστε δύο φορές για να ολοκληρώσετε την πληρωμή";

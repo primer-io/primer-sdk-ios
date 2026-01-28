@@ -11,140 +11,138 @@ import SwiftUI
 @MainActor
 public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
-    /// The current state of the payment method selection as an async stream.
-    var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
+  /// The current state of the payment method selection as an async stream.
+  var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
 
-    /// Controls how users can dismiss the checkout modal.
-    var dismissalMechanism: [DismissalMechanism] { get }
+  /// Controls how users can dismiss the checkout modal.
+  var dismissalMechanism: [DismissalMechanism] { get }
 
-    /// The currently selected vaulted payment method, if any.
-    var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
+  /// The currently selected vaulted payment method, if any.
+  var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
 
-    // MARK: - Navigation Methods
+  // MARK: - Navigation Methods
 
-    /// Called when a payment method is selected by the user.
-    /// - Parameter paymentMethod: The selected payment method.
-    func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
+  /// Called when a payment method is selected by the user.
+  /// - Parameter paymentMethod: The selected payment method.
+  func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
 
-    func onCancel()
+  func onCancel()
 
-    // MARK: - Vault Payment Methods
+  // MARK: - Vault Payment Methods
 
-    /// Initiates payment with the currently selected vaulted payment method.
-    func payWithVaultedPaymentMethod() async
+  /// Initiates payment with the currently selected vaulted payment method.
+  func payWithVaultedPaymentMethod() async
 
-    /// Initiates payment with the currently selected vaulted payment method and CVV.
-    /// - Parameter cvv: The CVV entered by the user
-    func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async
+  /// Initiates payment with the currently selected vaulted payment method and CVV.
+  /// - Parameter cvv: The CVV entered by the user
+  func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async
 
-    /// Updates the CVV input value and validates it.
-    /// - Parameter cvv: The CVV value to update
-    func updateCvvInput(_ cvv: String)
+  /// Updates the CVV input value and validates it.
+  /// - Parameter cvv: The CVV value to update
+  func updateCvvInput(_ cvv: String)
 
-    /// Navigates to the screen showing all vaulted payment methods.
-    func showAllVaultedPaymentMethods()
+  /// Navigates to the screen showing all vaulted payment methods.
+  func showAllVaultedPaymentMethods()
 
-    /// Expands the payment methods section to show all available payment methods.
-    /// Called when user taps "Show other ways to pay" button.
-    func showOtherWaysToPay()
+  /// Expands the payment methods section to show all available payment methods.
+  /// Called when user taps "Show other ways to pay" button.
+  func showOtherWaysToPay()
 
-    // MARK: - Customizable UI Components
+  // MARK: - Customizable UI Components
 
-    /// Default implementation provides standard payment method grid/list.
-    /// The closure receives the scope for full access to payment methods and navigation actions.
-    var screen: PaymentMethodSelectionScreenComponent? { get set }
+  /// Default implementation provides standard payment method grid/list.
+  /// The closure receives the scope for full access to payment methods and navigation actions.
+  var screen: PaymentMethodSelectionScreenComponent? { get set }
 
-    /// Default implementation shows payment method with selection state.
-    var paymentMethodItem: PaymentMethodItemComponent? { get set }
+  /// Default implementation shows payment method with selection state.
+  var paymentMethodItem: PaymentMethodItemComponent? { get set }
 
-    /// Category header component for grouping payment methods.
-    /// Default implementation shows category name in uppercase.
-    var categoryHeader: CategoryHeaderComponent? { get set }
+  /// Category header component for grouping payment methods.
+  /// Default implementation shows category name in uppercase.
+  var categoryHeader: CategoryHeaderComponent? { get set }
 
-    /// Empty state view when no payment methods are available.
-    /// Default implementation shows icon and message.
-    var emptyStateView: Component? { get set }
+  /// Empty state view when no payment methods are available.
+  /// Default implementation shows icon and message.
+  var emptyStateView: Component? { get set }
 
-    // MARK: - State Definition
+  // MARK: - State Definition
 
 }
 
 /// Represents the current state of available payment methods and loading status.
 public struct PrimerPaymentMethodSelectionState: Equatable {
-    public var paymentMethods: [CheckoutPaymentMethod] = []
-    public var isLoading: Bool = false
-    public var selectedPaymentMethod: CheckoutPaymentMethod?
-    public var searchQuery: String = ""
-    public var filteredPaymentMethods: [CheckoutPaymentMethod] = []
-    public var error: String?
-    public var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-    public var isVaultPaymentLoading: Bool = false
+  public var paymentMethods: [CheckoutPaymentMethod] = []
+  public var isLoading: Bool = false
+  public var selectedPaymentMethod: CheckoutPaymentMethod?
+  public var searchQuery: String = ""
+  public var filteredPaymentMethods: [CheckoutPaymentMethod] = []
+  public var error: String?
+  public var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+  public var isVaultPaymentLoading: Bool = false
 
-    // MARK: - CVV Recapture State
+  // MARK: - CVV Recapture State
 
-    /// Indicates whether CVV input is required for the selected vaulted card
-    public var requiresCvvInput: Bool = false
+  /// Indicates whether CVV input is required for the selected vaulted card
+  public var requiresCvvInput: Bool = false
 
-    /// The CVV value entered by the user
-    public var cvvInput: String = ""
+  /// The CVV value entered by the user
+  public var cvvInput: String = ""
 
-    /// CVV validation state
-    public var isCvvValid: Bool = false
+  /// CVV validation state
+  public var isCvvValid: Bool = false
 
-    /// CVV validation error message
-    public var cvvError: String?
+  /// CVV validation error message
+  public var cvvError: String?
 
-    // MARK: - Payment Methods Expansion State
+  // MARK: - Payment Methods Expansion State
 
-    /// Whether the payment methods section is expanded (showing all methods).
-    /// Default is true. Set to false when user selects vaulted method or CVV input opens.
-    public var isPaymentMethodsExpanded: Bool = true
+  /// Whether the payment methods section is expanded (showing all methods).
+  /// Default is true. Set to false when user selects vaulted method or CVV input opens.
+  public var isPaymentMethodsExpanded: Bool = true
 
-    public init(
-        paymentMethods: [CheckoutPaymentMethod] = [],
-        isLoading: Bool = false,
-        selectedPaymentMethod: CheckoutPaymentMethod? = nil,
-        searchQuery: String = "",
-        filteredPaymentMethods: [CheckoutPaymentMethod] = [],
-        error: String? = nil,
-        selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? = nil,
-        isVaultPaymentLoading: Bool = false,
-        requiresCvvInput: Bool = false,
-        cvvInput: String = "",
-        isCvvValid: Bool = false,
-        cvvError: String? = nil,
-        isPaymentMethodsExpanded: Bool = true
-    ) {
-        self.paymentMethods = paymentMethods
-        self.isLoading = isLoading
-        self.selectedPaymentMethod = selectedPaymentMethod
-        self.searchQuery = searchQuery
-        self.filteredPaymentMethods = filteredPaymentMethods
-        self.error = error
-        self.selectedVaultedPaymentMethod = selectedVaultedPaymentMethod
-        self.isVaultPaymentLoading = isVaultPaymentLoading
-        self.requiresCvvInput = requiresCvvInput
-        self.cvvInput = cvvInput
-        self.isCvvValid = isCvvValid
-        self.cvvError = cvvError
-        self.isPaymentMethodsExpanded = isPaymentMethodsExpanded
-    }
+  public init(
+    paymentMethods: [CheckoutPaymentMethod] = [],
+    isLoading: Bool = false,
+    selectedPaymentMethod: CheckoutPaymentMethod? = nil,
+    searchQuery: String = "",
+    filteredPaymentMethods: [CheckoutPaymentMethod] = [],
+    error: String? = nil,
+    selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? = nil,
+    isVaultPaymentLoading: Bool = false,
+    requiresCvvInput: Bool = false,
+    cvvInput: String = "",
+    isCvvValid: Bool = false,
+    cvvError: String? = nil,
+    isPaymentMethodsExpanded: Bool = true
+  ) {
+    self.paymentMethods = paymentMethods
+    self.isLoading = isLoading
+    self.selectedPaymentMethod = selectedPaymentMethod
+    self.searchQuery = searchQuery
+    self.filteredPaymentMethods = filteredPaymentMethods
+    self.error = error
+    self.selectedVaultedPaymentMethod = selectedVaultedPaymentMethod
+    self.isVaultPaymentLoading = isVaultPaymentLoading
+    self.requiresCvvInput = requiresCvvInput
+    self.cvvInput = cvvInput
+    self.isCvvValid = isCvvValid
+    self.cvvError = cvvError
+    self.isPaymentMethodsExpanded = isPaymentMethodsExpanded
+  }
 
-    public static func == (lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState) -> Bool {
-        lhs.paymentMethods == rhs.paymentMethods &&
-            lhs.isLoading == rhs.isLoading &&
-            lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
-            lhs.searchQuery == rhs.searchQuery &&
-            lhs.filteredPaymentMethods == rhs.filteredPaymentMethods &&
-            lhs.error == rhs.error &&
-            lhs.selectedVaultedPaymentMethod?.id == rhs.selectedVaultedPaymentMethod?.id &&
-            lhs.isVaultPaymentLoading == rhs.isVaultPaymentLoading &&
-            lhs.requiresCvvInput == rhs.requiresCvvInput &&
-            lhs.cvvInput == rhs.cvvInput &&
-            lhs.isCvvValid == rhs.isCvvValid &&
-            lhs.cvvError == rhs.cvvError &&
-            lhs.isPaymentMethodsExpanded == rhs.isPaymentMethodsExpanded
-    }
+  public static func == (
+    lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState
+  ) -> Bool {
+    lhs.paymentMethods == rhs.paymentMethods && lhs.isLoading == rhs.isLoading
+      && lhs.selectedPaymentMethod == rhs.selectedPaymentMethod
+      && lhs.searchQuery == rhs.searchQuery
+      && lhs.filteredPaymentMethods == rhs.filteredPaymentMethods && lhs.error == rhs.error
+      && lhs.selectedVaultedPaymentMethod?.id == rhs.selectedVaultedPaymentMethod?.id
+      && lhs.isVaultPaymentLoading == rhs.isVaultPaymentLoading
+      && lhs.requiresCvvInput == rhs.requiresCvvInput && lhs.cvvInput == rhs.cvvInput
+      && lhs.isCvvValid == rhs.isCvvValid && lhs.cvvError == rhs.cvvError
+      && lhs.isPaymentMethodsExpanded == rhs.isPaymentMethodsExpanded
+  }
 }
 
 // MARK: - Payment Method Model
@@ -167,62 +165,59 @@ public struct PrimerPaymentMethodSelectionState: Equatable {
 /// }
 /// ```
 public struct CheckoutPaymentMethod: Equatable, Identifiable {
-    /// Unique identifier for this payment method instance.
-    public let id: String
+  /// Unique identifier for this payment method instance.
+  public let id: String
 
-    /// The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL", "APPLE_PAY").
-    public let type: String
+  /// The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL", "APPLE_PAY").
+  public let type: String
 
-    /// Human-readable display name for the payment method.
-    public let name: String
+  /// Human-readable display name for the payment method.
+  public let name: String
 
-    /// Icon image to display for this payment method.
-    public let icon: UIImage?
+  /// Icon image to display for this payment method.
+  public let icon: UIImage?
 
-    /// Additional metadata associated with this payment method.
-    public let metadata: [String: Any]?
+  /// Additional metadata associated with this payment method.
+  public let metadata: [String: Any]?
 
-    /// Surcharge amount in minor currency units (e.g., cents), if applicable.
-    public let surcharge: Int?
+  /// Surcharge amount in minor currency units (e.g., cents), if applicable.
+  public let surcharge: Int?
 
-    /// Indicates whether the surcharge amount is unknown (e.g., varies by card network).
-    public let hasUnknownSurcharge: Bool
+  /// Indicates whether the surcharge amount is unknown (e.g., varies by card network).
+  public let hasUnknownSurcharge: Bool
 
-    /// Pre-formatted surcharge string for display (e.g., "+ $0.50").
-    public let formattedSurcharge: String?
+  /// Pre-formatted surcharge string for display (e.g., "+ $0.50").
+  public let formattedSurcharge: String?
 
-    /// Custom background color for the payment method button, if specified.
-    public let backgroundColor: UIColor?
+  /// Custom background color for the payment method button, if specified.
+  public let backgroundColor: UIColor?
 
-    public init(
-        id: String,
-        type: String,
-        name: String,
-        icon: UIImage? = nil,
-        metadata: [String: Any]? = nil,
-        surcharge: Int? = nil,
-        hasUnknownSurcharge: Bool = false,
-        formattedSurcharge: String? = nil,
-        backgroundColor: UIColor? = nil
-    ) {
-        self.id = id
-        self.type = type
-        self.name = name
-        self.icon = icon
-        self.metadata = metadata
-        self.surcharge = surcharge
-        self.hasUnknownSurcharge = hasUnknownSurcharge
-        self.formattedSurcharge = formattedSurcharge
-        self.backgroundColor = backgroundColor
-    }
+  public init(
+    id: String,
+    type: String,
+    name: String,
+    icon: UIImage? = nil,
+    metadata: [String: Any]? = nil,
+    surcharge: Int? = nil,
+    hasUnknownSurcharge: Bool = false,
+    formattedSurcharge: String? = nil,
+    backgroundColor: UIColor? = nil
+  ) {
+    self.id = id
+    self.type = type
+    self.name = name
+    self.icon = icon
+    self.metadata = metadata
+    self.surcharge = surcharge
+    self.hasUnknownSurcharge = hasUnknownSurcharge
+    self.formattedSurcharge = formattedSurcharge
+    self.backgroundColor = backgroundColor
+  }
 
-    public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {
-        lhs.id == rhs.id &&
-            lhs.type == rhs.type &&
-            lhs.name == rhs.name &&
-            lhs.surcharge == rhs.surcharge &&
-            lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge &&
-            lhs.formattedSurcharge == rhs.formattedSurcharge &&
-            lhs.backgroundColor == rhs.backgroundColor
-    }
+  public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {
+    lhs.id == rhs.id && lhs.type == rhs.type && lhs.name == rhs.name
+      && lhs.surcharge == rhs.surcharge && lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge
+      && lhs.formattedSurcharge == rhs.formattedSurcharge
+      && lhs.backgroundColor == rhs.backgroundColor
+  }
 }

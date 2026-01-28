@@ -197,3 +197,16 @@
 "accessibility_vaulted_payment_method" = "შენახული გადახდის მეთოდი: %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "გაგრძელება";
+"primer_klarna_button_finalize" = "გადახდა";
+"primer_klarna_select_category_description" = "აირჩიეთ როგორ გსურთ გადახდა";
+"primer_klarna_loading_title" = "იტვირთება";
+"primer_klarna_loading_subtitle" = "შეიძლება რამდენიმე წამი დასჭირდეს.";
+"accessibility_klarna_category" = "%@ გადახდის ვარიანტი";
+"accessibility_klarna_category_selected" = "%@ გადახდის ვარიანტი, არჩეული";
+"accessibility_klarna_payment_view" = "Klarna გადახდის ფორმა";
+"accessibility_klarna_authorize_hint" = "ორჯერ შეეხეთ Klarna-ით გასაგრძელებლად";
+"accessibility_klarna_finalize_hint" = "ორჯერ შეეხეთ გადახდის დასასრულებლად";

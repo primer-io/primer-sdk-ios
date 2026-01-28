@@ -7,9 +7,9 @@
 import Foundation
 
 protocol AnalyticsSessionConfigProviding {
-    func makeAnalyticsSessionConfig(
-        checkoutSessionId: String,
-        clientToken: String,
-        sdkVersion: String
-    ) -> AnalyticsSessionConfig?
+  func makeAnalyticsSessionConfig(
+    checkoutSessionId: String,
+    clientToken: String,
+    sdkVersion: String
+  ) -> AnalyticsSessionConfig?
 }

@@ -8,5 +8,5 @@ import Foundation
 
 /// Fire-and-forget analytics tracking via detached tasks
 protocol CheckoutComponentsAnalyticsInteractorProtocol: Actor {
-    func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
+  func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
 }

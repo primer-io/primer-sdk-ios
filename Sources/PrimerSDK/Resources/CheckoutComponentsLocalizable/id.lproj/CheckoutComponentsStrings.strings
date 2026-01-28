@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Semua metode pembayaran yang tersimpan";
 "primer_vault_section_title" = "Metode pembayaran yang tersimpan";
 "primer_vault_selected_button_other" = "Tampilkan cara pembayaran lain";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Lanjutkan";
+"primer_klarna_button_finalize" = "Bayar";
+"primer_klarna_select_category_description" = "Pilih cara pembayaran Anda";
+"primer_klarna_loading_title" = "Memuat";
+"primer_klarna_loading_subtitle" = "Ini mungkin memerlukan beberapa detik.";
+"accessibility_klarna_category" = "Opsi pembayaran %@";
+"accessibility_klarna_category_selected" = "Opsi pembayaran %@, dipilih";
+"accessibility_klarna_payment_view" = "Formulir pembayaran Klarna";
+"accessibility_klarna_authorize_hint" = "Ketuk dua kali untuk melanjutkan dengan Klarna";
+"accessibility_klarna_finalize_hint" = "Ketuk dua kali untuk menyelesaikan pembayaran";

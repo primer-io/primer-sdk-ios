@@ -150,12 +150,12 @@ public enum PrimerError: PrimerErrorProtocol {
 
     /// The payment was created but failed or ended in an unexpected status.
     case paymentFailed(
-        paymentMethodType: String?,
-        paymentId: String,
-        orderId: String?,
-        status: String,
-        diagnosticsId: String = .uuid
-    )
+            paymentMethodType: String?,
+            paymentId: String,
+            orderId: String?,
+            status: String,
+            diagnosticsId: String = .uuid
+         )
 
     /// Failed to redirect to the required URL.
     case failedToRedirect(url: String, diagnosticsId: String = .uuid)

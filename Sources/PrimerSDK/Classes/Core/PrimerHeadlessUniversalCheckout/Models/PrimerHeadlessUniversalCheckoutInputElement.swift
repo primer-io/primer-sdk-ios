@@ -253,9 +253,9 @@ public enum PrimerInputElementType: Int {
             return UIKeyboardType.default
         }
     }
-    
+
     // MARK: - Structured State Support
-    
+
     /// Indicates if this field is a card-related field
     var isCardField: Bool {
         switch self {
@@ -265,7 +265,7 @@ public enum PrimerInputElementType: Int {
             return false
         }
     }
-    
+
     /// Indicates if this field is a billing address field
     var isBillingField: Bool {
         switch self {
@@ -275,7 +275,7 @@ public enum PrimerInputElementType: Int {
             return false
         }
     }
-    
+
     /// Indicates if this field is required for basic card form validation
     var isRequired: Bool {
         switch self {
@@ -287,7 +287,7 @@ public enum PrimerInputElementType: Int {
             return false
         }
     }
-    
+
     /// Field display order for UI layout
     var displayOrder: Int {
         switch self {
@@ -296,7 +296,7 @@ public enum PrimerInputElementType: Int {
         case .expiryDate: return 2
         case .cvv: return 3
         case .cardholderName: return 4
-        
+
         // Billing address fields (matching Drop-in order)
         case .countryCode: return 10
         case .addressLine1: return 11
@@ -308,14 +308,14 @@ public enum PrimerInputElementType: Int {
         case .lastName: return 17
         case .email: return 18
         case .phoneNumber: return 19
-        
+
         // Other fields
         case .otp: return 20
         case .retailer: return 21
         case .unknown, .all: return 999
         }
     }
-    
+
     /// Human-readable field name for display
     var displayName: String {
         switch self {

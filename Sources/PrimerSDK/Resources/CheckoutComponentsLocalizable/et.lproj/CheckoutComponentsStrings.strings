@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Kõik salvestatud makseviisid";
 "primer_vault_section_title" = "Salvestatud makseviisid";
 "primer_vault_selected_button_other" = "Näita teisi makseviise";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Jätka";
+"primer_klarna_button_finalize" = "Maksa";
+"primer_klarna_select_category_description" = "Valige, kuidas soovite maksta";
+"primer_klarna_loading_title" = "Laadimine";
+"primer_klarna_loading_subtitle" = "See võib võtta mõne sekundi.";
+"accessibility_klarna_category" = "%@ maksevalik";
+"accessibility_klarna_category_selected" = "%@ maksevalik, valitud";
+"accessibility_klarna_payment_view" = "Klarna maksevorm";
+"accessibility_klarna_authorize_hint" = "Topeltpuudutage, et jätkata Klarnaga";
+"accessibility_klarna_finalize_hint" = "Topeltpuudutage, et makse lõpule viia";

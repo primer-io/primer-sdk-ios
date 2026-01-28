@@ -9,6 +9,6 @@ import Foundation
 /// Protocol for entities that provide their accessibility identifier
 protocol AccessibilityIdentifierProviding {
 
-    /// Unique accessibility identifier for automated testing
-    var accessibilityIdentifier: String { get }
+  /// Unique accessibility identifier for automated testing
+  var accessibilityIdentifier: String { get }
 }

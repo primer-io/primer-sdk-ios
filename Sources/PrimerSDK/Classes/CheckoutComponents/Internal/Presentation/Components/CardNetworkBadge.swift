@@ -22,81 +22,85 @@ import SwiftUI
 /// ```
 @available(iOS 15.0, *)
 struct CardNetworkBadge: View, LogReporter {
-    // MARK: - Properties
+  // MARK: - Properties
 
-    let network: CardNetwork
+  let network: CardNetwork
 
-    // MARK: - Private Properties
+  // MARK: - Private Properties
 
-    @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokens) private var tokens
 
-    // MARK: - Body
+  // MARK: - Body
 
-    @ViewBuilder
-    var body: some View {
-        if let icon = network.icon {
-            Image(uiImage: icon)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight)
-                .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
-        } else {
-            Text(network.displayName.prefix(2).uppercased())
-                .font(PrimerFont.smallBadge(tokens: tokens))
-                .foregroundColor(CheckoutColors.primary(tokens: tokens))
-                .frame(width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight)
-                .overlay(
-                    RoundedRectangle(cornerRadius: PrimerRadius.xsmall(tokens: tokens))
-                        .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
-                )
-        }
+  @ViewBuilder
+  var body: some View {
+    if let icon = network.icon {
+      Image(uiImage: icon)
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(
+          width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight
+        )
+        .cornerRadius(PrimerRadius.xsmall(tokens: tokens))
+    } else {
+      Text(network.displayName.prefix(2).uppercased())
+        .font(PrimerFont.smallBadge(tokens: tokens))
+        .foregroundColor(CheckoutColors.primary(tokens: tokens))
+        .frame(
+          width: PrimerCardNetworkSelector.badgeWidth, height: PrimerCardNetworkSelector.badgeHeight
+        )
+        .overlay(
+          RoundedRectangle(cornerRadius: PrimerRadius.xsmall(tokens: tokens))
+            .stroke(CheckoutColors.borderDefault(tokens: tokens), lineWidth: PrimerBorderWidth.thin)
+        )
     }
+  }
 }
 
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
+  @available(iOS 15.0, *)
+  #Preview("Light Mode") {
     VStack(spacing: 16) {
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .visa)
-            CardNetworkBadge(network: .masterCard)
-            CardNetworkBadge(network: .amex)
-            CardNetworkBadge(network: .discover)
-        }
+      HStack(spacing: 8) {
+        CardNetworkBadge(network: .visa)
+        CardNetworkBadge(network: .masterCard)
+        CardNetworkBadge(network: .amex)
+        CardNetworkBadge(network: .discover)
+      }
 
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .cartesBancaires)
-            CardNetworkBadge(network: .diners)
-            CardNetworkBadge(network: .jcb)
-            CardNetworkBadge(network: .unknown)
-        }
+      HStack(spacing: 8) {
+        CardNetworkBadge(network: .cartesBancaires)
+        CardNetworkBadge(network: .diners)
+        CardNetworkBadge(network: .jcb)
+        CardNetworkBadge(network: .unknown)
+      }
     }
     .padding()
     .environment(\.designTokens, MockDesignTokens.light)
-}
+  }
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
+  @available(iOS 15.0, *)
+  #Preview("Dark Mode") {
     VStack(spacing: 16) {
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .visa)
-            CardNetworkBadge(network: .masterCard)
-            CardNetworkBadge(network: .amex)
-            CardNetworkBadge(network: .discover)
-        }
+      HStack(spacing: 8) {
+        CardNetworkBadge(network: .visa)
+        CardNetworkBadge(network: .masterCard)
+        CardNetworkBadge(network: .amex)
+        CardNetworkBadge(network: .discover)
+      }
 
-        HStack(spacing: 8) {
-            CardNetworkBadge(network: .cartesBancaires)
-            CardNetworkBadge(network: .diners)
-            CardNetworkBadge(network: .jcb)
-            CardNetworkBadge(network: .unknown)
-        }
+      HStack(spacing: 8) {
+        CardNetworkBadge(network: .cartesBancaires)
+        CardNetworkBadge(network: .diners)
+        CardNetworkBadge(network: .jcb)
+        CardNetworkBadge(network: .unknown)
+      }
     }
     .padding()
     .background(Color.black)
     .environment(\.designTokens, MockDesignTokens.dark)
     .preferredColorScheme(.dark)
-}
+  }
 #endif

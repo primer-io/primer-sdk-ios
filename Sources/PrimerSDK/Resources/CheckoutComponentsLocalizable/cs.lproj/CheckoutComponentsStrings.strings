@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Všechny uložené platební metody";
 "primer_vault_section_title" = "Uložené platební metody";
 "primer_vault_selected_button_other" = "Zobrazit další způsoby platby";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Pokračovat";
+"primer_klarna_button_finalize" = "Zaplatit";
+"primer_klarna_select_category_description" = "Vyberte, jak chcete zaplatit";
+"primer_klarna_loading_title" = "Načítání";
+"primer_klarna_loading_subtitle" = "Může to trvat několik sekund.";
+"accessibility_klarna_category" = "Platební možnost %@";
+"accessibility_klarna_category_selected" = "Platební možnost %@, vybráno";
+"accessibility_klarna_payment_view" = "Platební formulář Klarna";
+"accessibility_klarna_authorize_hint" = "Dvojitým klepnutím pokračujte s Klarna";
+"accessibility_klarna_finalize_hint" = "Dvojitým klepnutím dokončete platbu";

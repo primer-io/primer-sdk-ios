@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Todas as formas de pagamento salvas";
 "primer_vault_section_title" = "Formas de pagamento salvas";
 "primer_vault_selected_button_other" = "Mostrar outras formas de pagamento";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Continuar";
+"primer_klarna_button_finalize" = "Pagar";
+"primer_klarna_select_category_description" = "Escolha como você quer pagar";
+"primer_klarna_loading_title" = "Carregando";
+"primer_klarna_loading_subtitle" = "Isso pode levar alguns segundos.";
+"accessibility_klarna_category" = "Opção de pagamento %@";
+"accessibility_klarna_category_selected" = "Opção de pagamento %@, selecionado";
+"accessibility_klarna_payment_view" = "Formulário de pagamento Klarna";
+"accessibility_klarna_authorize_hint" = "Toque duas vezes para continuar com Klarna";
+"accessibility_klarna_finalize_hint" = "Toque duas vezes para concluir o pagamento";

@@ -10,56 +10,60 @@ import UIKit
 /// Utility for registering custom fonts bundled with the SDK
 enum FontRegistration: LogReporter {
 
-    private static var isRegistered = false
-    private static let lock = NSLock()
+  private static var isRegistered = false
+  private static let lock = NSLock()
 
-    /// Register all custom fonts used by the SDK
-    /// This method is idempotent and safe to call multiple times
-    static func registerFonts() {
-        lock.lock()
-        defer { lock.unlock() }
+  /// Register all custom fonts used by the SDK
+  /// This method is idempotent and safe to call multiple times
+  static func registerFonts() {
+    lock.lock()
+    defer { lock.unlock() }
 
-        // Only register once
-        guard !isRegistered else { return }
+    // Only register once
+    guard !isRegistered else { return }
 
-        let fontNames = [
-            "InterVariable.ttf"
-        ]
+    let fontNames = [
+      "InterVariable.ttf"
+    ]
 
-        for fontName in fontNames {
-            registerFont(named: fontName)
-        }
-
-        isRegistered = true
+    for fontName in fontNames {
+      registerFont(named: fontName)
     }
 
-    private static func registerFont(named fontFileName: String) {
-        let fontNameWithoutExt = fontFileName.replacingOccurrences(of: ".ttf", with: "")
+    isRegistered = true
+  }
 
-        // Load font from root level (works for both SPM and CocoaPods)
-        guard let fontURL = Bundle.primerResources.url(
-            forResource: fontNameWithoutExt,
-            withExtension: "ttf"
-        ) else {
-            logger.error(message: "⚠️ [FontRegistration] Failed to locate font file: \(fontFileName)")
-            return
-        }
+  private static func registerFont(named fontFileName: String) {
+    let fontNameWithoutExt = fontFileName.replacingOccurrences(of: ".ttf", with: "")
 
-        guard let fontDataProvider = CGDataProvider(url: fontURL as CFURL) else {
-            logger.error(message: "⚠️ [FontRegistration] Failed to create data provider for: \(fontFileName)")
-            return
-        }
-
-        guard let font = CGFont(fontDataProvider) else {
-            logger.error(message: "⚠️ [FontRegistration] Failed to create CGFont from: \(fontFileName)")
-            return
-        }
-
-        var error: Unmanaged<CFError>?
-        let success = CTFontManagerRegisterGraphicsFont(font, &error)
-
-        if !success, let error = error?.takeRetainedValue() {
-            logger.error(message: "⚠️ [FontRegistration] Failed to register font \(fontFileName): \(error)")
-        }
+    // Load font from root level (works for both SPM and CocoaPods)
+    guard
+      let fontURL = Bundle.primerResources.url(
+        forResource: fontNameWithoutExt,
+        withExtension: "ttf"
+      )
+    else {
+      logger.error(message: "⚠️ [FontRegistration] Failed to locate font file: \(fontFileName)")
+      return
     }
+
+    guard let fontDataProvider = CGDataProvider(url: fontURL as CFURL) else {
+      logger.error(
+        message: "⚠️ [FontRegistration] Failed to create data provider for: \(fontFileName)")
+      return
+    }
+
+    guard let font = CGFont(fontDataProvider) else {
+      logger.error(message: "⚠️ [FontRegistration] Failed to create CGFont from: \(fontFileName)")
+      return
+    }
+
+    var error: Unmanaged<CFError>?
+    let success = CTFontManagerRegisterGraphicsFont(font, &error)
+
+    if !success, let error = error?.takeRetainedValue() {
+      logger.error(
+        message: "⚠️ [FontRegistration] Failed to register font \(fontFileName): \(error)")
+    }
+  }
 }

@@ -87,19 +87,19 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     public var errorDescription: String? {
         switch self {
         case let .invalidCardholderName(message, _),
-                let .invalidCardnumber(message, _),
-                let .invalidCvv(message, _),
-                let .invalidExpiryDate(message, _),
-                let .invalidPostalCode(message, _),
-                let .invalidFirstName(message, _),
-                let .invalidLastName(message, _),
-                let .invalidAddress(message, _),
-                let .invalidCity(message, _),
-                let .invalidState(message, _),
-                let .invalidCountry(message, _),
-                let .invalidPhoneNumber(message, _),
-                let .invalidOTPCode(message, _),
-                let .invalidCardType(message, _): "[\(errorId)] \(message)"
+             let .invalidCardnumber(message, _),
+             let .invalidCvv(message, _),
+             let .invalidExpiryDate(message, _),
+             let .invalidPostalCode(message, _),
+             let .invalidFirstName(message, _),
+             let .invalidLastName(message, _),
+             let .invalidAddress(message, _),
+             let .invalidCity(message, _),
+             let .invalidState(message, _),
+             let .invalidCountry(message, _),
+             let .invalidPhoneNumber(message, _),
+             let .invalidOTPCode(message, _),
+             let .invalidCardType(message, _): "[\(errorId)] \(message)"
         case .invalidRawData: "[\(errorId)] Raw data is not valid."
         case .invalidBankId: "Please provide a valid bank id"
         case .banksNotLoaded: "Banks need to be loaded before bank id can be collected."

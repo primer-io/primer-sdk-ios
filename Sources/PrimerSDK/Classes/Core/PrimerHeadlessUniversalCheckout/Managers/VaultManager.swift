@@ -106,7 +106,7 @@ extension PrimerHeadlessUniversalCheckout {
                 do {
                     try await vaultService.fetchVaultedPaymentMethods()
                     self.vaultedPaymentMethods = AppState.current.paymentMethods.compactMap(\.vaultedPaymentMethod)
-                        completion(self.vaultedPaymentMethods, nil)
+                    completion(self.vaultedPaymentMethods, nil)
                 } catch {
                     DispatchQueue.main.async {
                         completion(nil, error)

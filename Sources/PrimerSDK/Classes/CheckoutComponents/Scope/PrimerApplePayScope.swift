@@ -13,51 +13,51 @@ import SwiftUI
 @MainActor
 public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == ApplePayFormState {
 
-    // MARK: - State
+  // MARK: - State
 
-    /// The current state of the Apple Pay scope as an async stream.
-    var state: AsyncStream<ApplePayFormState> { get }
+  /// The current state of the Apple Pay scope as an async stream.
+  var state: AsyncStream<ApplePayFormState> { get }
 
-    // MARK: - Availability
+  // MARK: - Availability
 
-    /// Whether Apple Pay is available on this device
-    var isAvailable: Bool { get }
+  /// Whether Apple Pay is available on this device
+  var isAvailable: Bool { get }
 
-    /// Error message if Apple Pay is not available
-    var availabilityError: String? { get }
+  /// Error message if Apple Pay is not available
+  var availabilityError: String? { get }
 
-    // MARK: - Button Customization
+  // MARK: - Button Customization
 
-    /// The style of the Apple Pay button
-    var buttonStyle: PKPaymentButtonStyle { get set }
+  /// The style of the Apple Pay button
+  var buttonStyle: PKPaymentButtonStyle { get set }
 
-    /// The type of the Apple Pay button
-    var buttonType: PKPaymentButtonType { get set }
+  /// The type of the Apple Pay button
+  var buttonType: PKPaymentButtonType { get set }
 
-    /// The corner radius of the Apple Pay button
-    var cornerRadius: CGFloat { get set }
+  /// The corner radius of the Apple Pay button
+  var cornerRadius: CGFloat { get set }
 
-    // MARK: - UI Customization
+  // MARK: - UI Customization
 
-    /// Custom Apple Pay screen override
-    var screen: ((_ scope: any PrimerApplePayScope) -> any View)? { get set }
+  /// Custom Apple Pay screen override
+  var screen: ((_ scope: any PrimerApplePayScope) -> any View)? { get set }
 
-    /// Custom Apple Pay button override
-    var applePayButton: ((_ action: @escaping () -> Void) -> any View)? { get set }
+  /// Custom Apple Pay button override
+  var applePayButton: ((_ action: @escaping () -> Void) -> any View)? { get set }
 
-    // MARK: - Actions
+  // MARK: - Actions
 
-    /// Initiates the Apple Pay payment flow.
-    /// This presents the Apple Pay sheet and handles the authorization.
-    func pay()
+  /// Initiates the Apple Pay payment flow.
+  /// This presents the Apple Pay sheet and handles the authorization.
+  func pay()
 
-    // MARK: - ViewBuilder Components
-    // swiftlint:disable identifier_name
-    /// Returns the default Apple Pay button view
-    /// - Parameter action: The action to perform when the button is tapped
-    /// - Returns: A SwiftUI view containing the Apple Pay button
-    func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView
-    // swiftlint:enable identifier_name
+  // MARK: - ViewBuilder Components
+  // swiftlint:disable identifier_name
+  /// Returns the default Apple Pay button view
+  /// - Parameter action: The action to perform when the button is tapped
+  /// - Returns: A SwiftUI view containing the Apple Pay button
+  func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView
+  // swiftlint:enable identifier_name
 }
 
 // MARK: - Default Implementations
@@ -65,8 +65,8 @@ public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == App
 @available(iOS 15.0, *)
 extension PrimerApplePayScope {
 
-    /// Default implementation triggers payment on submit
-    public func submit() {
-        pay()
-    }
+  /// Default implementation triggers payment on submit
+  public func submit() {
+    pay()
+  }
 }

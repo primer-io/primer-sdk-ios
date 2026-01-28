@@ -197,3 +197,16 @@
 "accessibility_error_generic" = "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.";
 "accessibility_error_multiple_errors" = "%d xəta tapıldı";
 "accessibility_screen_payment_method" = "%@ ödəniş metodu";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Davam et";
+"primer_klarna_button_finalize" = "Ödə";
+"primer_klarna_select_category_description" = "Necə ödəmək istədiyinizi seçin";
+"primer_klarna_loading_title" = "Yüklənir";
+"primer_klarna_loading_subtitle" = "Bu bir neçə saniyə çəkə bilər.";
+"accessibility_klarna_category" = "%@ ödəniş seçimi";
+"accessibility_klarna_category_selected" = "%@ ödəniş seçimi, seçilmiş";
+"accessibility_klarna_payment_view" = "Klarna ödəniş forması";
+"accessibility_klarna_authorize_hint" = "Klarna ilə davam etmək üçün iki dəfə toxunun";
+"accessibility_klarna_finalize_hint" = "Ödənişi tamamlamaq üçün iki dəfə toxunun";

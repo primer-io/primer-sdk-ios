@@ -9,32 +9,33 @@ import Foundation
 /// Abstracts the PrimerHeadlessUniversalCheckout SDK.
 protocol HeadlessRepository {
 
-    func getPaymentMethods() async throws -> [InternalPaymentMethod]
+  func getPaymentMethods() async throws -> [InternalPaymentMethod]
 
-    func processCardPayment(
-        cardNumber: String,
-        cvv: String,
-        expiryMonth: String,
-        expiryYear: String,
-        cardholderName: String,
-        selectedNetwork: CardNetwork?
-    ) async throws -> PaymentResult
+  func processCardPayment(
+    cardNumber: String,
+    cvv: String,
+    expiryMonth: String,
+    expiryYear: String,
+    cardholderName: String,
+    selectedNetwork: CardNetwork?
+  ) async throws -> PaymentResult
 
-    func setBillingAddress(_ billingAddress: BillingAddress) async throws
+  func setBillingAddress(_ billingAddress: BillingAddress) async throws
 
-    func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
+  func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
 
-    func updateCardNumberInRawDataManager(_ cardNumber: String) async
-    
-    func selectCardNetwork(_ cardNetwork: CardNetwork) async
+  func updateCardNumberInRawDataManager(_ cardNumber: String) async
 
-    func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]
+  func selectCardNetwork(_ cardNetwork: CardNetwork) async
 
-    func processVaultedPayment(
-        vaultedPaymentMethodId: String,
-        paymentMethodType: String,
-        additionalData: PrimerVaultedPaymentMethodAdditionalData?
-    ) async throws -> PaymentResult
+  func fetchVaultedPaymentMethods() async throws -> [PrimerHeadlessUniversalCheckout
+    .VaultedPaymentMethod]
 
-    func deleteVaultedPaymentMethod(_ id: String) async throws
+  func processVaultedPayment(
+    vaultedPaymentMethodId: String,
+    paymentMethodType: String,
+    additionalData: PrimerVaultedPaymentMethodAdditionalData?
+  ) async throws -> PaymentResult
+
+  func deleteVaultedPaymentMethod(_ id: String) async throws
 }

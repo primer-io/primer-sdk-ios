@@ -7,32 +7,35 @@
 import Foundation
 
 protocol GetPaymentMethodsInteractor {
-    func execute() async throws -> [InternalPaymentMethod]
+  func execute() async throws -> [InternalPaymentMethod]
 }
 
 final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
 
-    private let repository: HeadlessRepository
+  private let repository: HeadlessRepository
 
-    init(repository: HeadlessRepository) {
-        self.repository = repository
+  init(repository: HeadlessRepository) {
+    self.repository = repository
+  }
+
+  func execute() async throws -> [InternalPaymentMethod] {
+    logger.info(message: "Fetching available payment methods")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    do {
+      let paymentMethods = try await repository.getPaymentMethods()
+      let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      logger.info(
+        message:
+          "[PERF] Retrieved \(paymentMethods.count) payment methods in \(String(format: "%.0f", duration))ms"
+      )
+      return paymentMethods
+    } catch {
+      logger.error(
+        message: "Failed to fetch payment methods: \(error)",
+        error: error
+      )
+      throw error
     }
-
-    func execute() async throws -> [InternalPaymentMethod] {
-        logger.info(message: "Fetching available payment methods")
-        let startTime = CFAbsoluteTimeGetCurrent()
-
-        do {
-            let paymentMethods = try await repository.getPaymentMethods()
-            let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-            logger.info(message: "[PERF] Retrieved \(paymentMethods.count) payment methods in \(String(format: "%.0f", duration))ms")
-            return paymentMethods
-        } catch {
-            logger.error(
-                message: "Failed to fetch payment methods: \(error)",
-                error: error
-            )
-            throw error
-        }
-    }
+  }
 }

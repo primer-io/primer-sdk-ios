@@ -416,7 +416,7 @@ extension UIDevice {
         }
         return nil
     }
-    
+
     static var userAgent: String {
         let osVersion = UIDevice.current.systemVersion
         let modelIdentifier = UIDevice.modelIdentifier ?? "Unknown"

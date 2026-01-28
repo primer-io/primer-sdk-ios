@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "所有已保存的支付方式";
 "primer_vault_section_title" = "已保存的支付方式";
 "primer_vault_selected_button_other" = "显示其他支付方式";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "继续";
+"primer_klarna_button_finalize" = "支付";
+"primer_klarna_select_category_description" = "选择您的付款方式";
+"primer_klarna_loading_title" = "加载中";
+"primer_klarna_loading_subtitle" = "这可能需要几秒钟。";
+"accessibility_klarna_category" = "%@ 付款选项";
+"accessibility_klarna_category_selected" = "%@ 付款选项，已选择";
+"accessibility_klarna_payment_view" = "Klarna付款表单";
+"accessibility_klarna_authorize_hint" = "双击以继续使用Klarna";
+"accessibility_klarna_finalize_hint" = "双击以完成付款";

@@ -9,20 +9,20 @@ import SwiftUI
 /// A wrapper view that properly observes the DefaultCardFormScope and ensures UI updates
 @available(iOS 15.0, *)
 struct CountryInputFieldWrapper: View, LogReporter {
-    @ObservedObject var scope: DefaultCardFormScope
+  @ObservedObject var scope: DefaultCardFormScope
 
-    let label: String?
-    let placeholder: String
-    let styling: PrimerFieldStyling?
-    let onValidationChange: ((Bool) -> Void)?
-    let onOpenCountrySelector: (() -> Void)?
+  let label: String?
+  let placeholder: String
+  let styling: PrimerFieldStyling?
+  let onValidationChange: ((Bool) -> Void)?
+  let onOpenCountrySelector: (() -> Void)?
 
-    var body: some View {
-        CountryInputField(
-            label: label,
-            placeholder: placeholder,
-            scope: scope,
-            styling: styling
-        )
-    }
+  var body: some View {
+    CountryInputField(
+      label: label,
+      placeholder: placeholder,
+      scope: scope,
+      styling: styling
+    )
+  }
 }

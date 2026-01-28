@@ -8,5 +8,5 @@ import UIKit
 
 @available(iOS 15.0, *)
 protocol UIAccessibilityNotificationPublisher {
-    func post(notification: UIAccessibility.Notification, argument: Any?)
+  func post(notification: UIAccessibility.Notification, argument: Any?)
 }

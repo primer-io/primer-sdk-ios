@@ -13,22 +13,23 @@ public protocol CheckoutComponentsDelegate: AnyObject {
     /// Called when payment is successful
     /// - Parameter result: The payment result containing payment ID, status, and other details
     func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult)
-
+    
     /// Called when payment fails
     func checkoutComponentsDidFailWithError(_ error: PrimerError)
-
+    
     /// Called when checkout is dismissed without completion
     func checkoutComponentsDidDismiss()
-
+    
     // MARK: - 3DS Delegate Methods (Optional with default implementations)
-
+    
     /// Called when 3DS challenge is about to be presented
     /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData)
-
+    func checkoutComponentsWillPresent3DSChallenge(
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
+    
     /// Called when 3DS challenge UI is dismissed
     func checkoutComponentsDidDismiss3DSChallenge()
-
+    
     /// Called when 3DS challenge completes (success or failure)
     /// - Parameters:
     ///   - success: Whether 3DS challenge was successful
@@ -40,17 +41,21 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 // MARK: - Optional 3DS Delegate Methods
 
 @available(iOS 15.0, *)
-public extension CheckoutComponentsDelegate {
+extension CheckoutComponentsDelegate {
     /// Override if you need 3DS challenge presentation callbacks
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    public func checkoutComponentsWillPresent3DSChallenge(
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) {
     }
-
+    
     /// Override if you need 3DS challenge dismissal callbacks
-    func checkoutComponentsDidDismiss3DSChallenge() {
+    public func checkoutComponentsDidDismiss3DSChallenge() {
     }
-
+    
     /// Override if you need 3DS challenge completion callbacks
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+    public func checkoutComponentsDidComplete3DSChallenge(
+        success: Bool, resumeToken: String?, error: Error?
+    ) {
     }
 }
 
@@ -61,32 +66,32 @@ public extension CheckoutComponentsDelegate {
 /// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
 @objc public final class CheckoutComponentsPrimer: NSObject {
-
+    
     // MARK: - Singleton
-
+    
     @objc public static let shared = CheckoutComponentsPrimer()
-
+    
     // MARK: - Properties
-
+    
     /// The currently active UIViewController hosting the SwiftUI checkout view
     /// This will always be a PrimerSwiftUIBridgeViewController that wraps the PrimerCheckout SwiftUI view
     private weak var activeCheckoutController: UIViewController?
-
+    
     /// Flag to prevent multiple simultaneous presentations
     private var isPresentingCheckout = false
-
+    
     private let logger = PrimerLogging.shared.logger
-
+    
     public weak var delegate: CheckoutComponentsDelegate?
-
+    
     // MARK: - Private Init
-
+    
     override private init() {
         super.init()
     }
-
+    
     // MARK: - Public API
-
+    
     /// Present the CheckoutComponents UI
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -104,7 +109,7 @@ public extension CheckoutComponentsDelegate {
             completion: completion
         )
     }
-
+    
     /// Present the CheckoutComponents UI
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -126,7 +131,7 @@ public extension CheckoutComponentsDelegate {
             completion: completion
         )
     }
-
+    
     /// Present the CheckoutComponents UI with full configuration
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -152,7 +157,7 @@ public extension CheckoutComponentsDelegate {
             completion: completion
         )
     }
-
+    
     /// Dismiss the CheckoutComponents UI
     /// - Parameters:
     ///   - animated: Whether to animate the dismissal
@@ -163,43 +168,46 @@ public extension CheckoutComponentsDelegate {
     ) {
         shared.dismiss(animated: animated, completion: completion)
     }
-
+    
     // MARK: - Instance Methods
-
+    
     // MARK: - Sheet Configuration
-
+    
     private enum SheetSizing {
         static let minimumHeight: CGFloat = 200
         static let maximumScreenRatio: CGFloat = 0.9
     }
-
+    
     /// Configure sheet presentation for the bridge controller
     /// - Parameters:
     ///   - controller: The view controller to configure
     ///   - settings: The settings to use for configuration
-    private func configureSheetPresentation(for controller: UIViewController, settings: PrimerSettings) {
+    private func configureSheetPresentation(
+        for controller: UIViewController, settings: PrimerSettings
+    ) {
         controller.modalPresentationStyle = .pageSheet
-
+        
         let dismissalMechanism = settings.uiOptions.dismissalMechanism
-
+        
         // isModalInPresentation = true DISABLES gestures (prevents accidental dismissal)
         // isModalInPresentation = false ENABLES gestures (allows dismissal)
         let gesturesEnabled = dismissalMechanism.contains(.gestures)
         controller.isModalInPresentation = !gesturesEnabled
-
+        
         guard let sheet = controller.sheetPresentationController else { return }
-
+        
         if let primerBridge = controller as? PrimerSwiftUIBridgeViewController {
             primerBridge.customSheetPresentationController = sheet
         }
-
+        
         if #available(iOS 16.0, *) {
             let customDetent = UISheetPresentationController.Detent.custom { [weak controller] context in
                 guard let controller else { return context.maximumDetentValue }
                 let contentHeight = controller.preferredContentSize.height
                 let maxHeight = context.maximumDetentValue
                 // Allow content to determine height, but cap at maximum
-                return min(max(contentHeight, SheetSizing.minimumHeight), maxHeight * SheetSizing.maximumScreenRatio)
+                return min(
+                    max(contentHeight, SheetSizing.minimumHeight), maxHeight * SheetSizing.maximumScreenRatio)
             }
             sheet.detents = [customDetent, .large()]
             sheet.selectedDetentIdentifier = customDetent.identifier
@@ -212,15 +220,15 @@ public extension CheckoutComponentsDelegate {
         sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         sheet.largestUndimmedDetentIdentifier = .medium
     }
-
+    
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     func dismissCheckout() {
         dismissDirectly()
     }
-
+    
     func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment completed: \(result.paymentId)")
-
+        
         // Dismiss CheckoutComponents first, then call delegate after dismissal completes
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
@@ -230,10 +238,10 @@ public extension CheckoutComponentsDelegate {
             }
         }
     }
-
+    
     func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "Payment failed: \(error)")
-
+        
         // Dismiss CheckoutComponents first, then call delegate after dismissal completes
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
@@ -243,11 +251,11 @@ public extension CheckoutComponentsDelegate {
             }
         }
     }
-
+    
     func handleCheckoutDismiss() {
         delegate?.checkoutComponentsDidDismiss()
     }
-
+    
     private func presentCheckout(
         clientToken: String,
         from viewController: UIViewController,
@@ -261,9 +269,9 @@ public extension CheckoutComponentsDelegate {
             completion?()
             return
         }
-
+        
         isPresentingCheckout = true
-
+        
         Task { @MainActor in
             // SDK initialization is now handled automatically by PrimerCheckout
             let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
@@ -287,20 +295,20 @@ public extension CheckoutComponentsDelegate {
                     }
                 }
             )
-
+            
             activeCheckoutController = bridgeController
-
+            
             configureSheetPresentation(for: bridgeController, settings: primerSettings)
-
+            
             viewController.present(bridgeController, animated: true) { [weak self] in
                 self?.isPresentingCheckout = false
                 completion?()
             }
         }
     }
-
+    
     // MARK: - Direct Dismissal
-
+    
     func dismissDirectly(completion: (() -> Void)? = nil) {
         if let controller = activeCheckoutController {
             controller.dismiss(animated: true) { [weak self] in
@@ -312,32 +320,32 @@ public extension CheckoutComponentsDelegate {
             completion?()
         }
     }
-
+    
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
         guard activeCheckoutController != nil else {
             logger.debug(message: "No active checkout to dismiss")
             completion?()
             return
         }
-
+        
         isPresentingCheckout = false
-
+        
         dismissDirectly()
-
+        
         activeCheckoutController = nil
-
+        
         handleCheckoutDismiss()
-
+        
         completion?()
     }
-
+    
 }
 
 // MARK: - Convenience Methods
 
 @available(iOS 15.0, *)
 extension CheckoutComponentsPrimer {
-
+    
     /// Present checkout with automatic view controller detection
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -352,7 +360,7 @@ extension CheckoutComponentsPrimer {
             completion: completion
         )
     }
-
+    
     /// Present checkout with automatic view controller detection and custom settings
     /// - Parameters:
     ///   - clientToken: The client token for the session
@@ -369,12 +377,12 @@ extension CheckoutComponentsPrimer {
                 paymentMethodType: "CheckoutComponents",
                 reason: "No presenting view controller found"
             )
-
+            
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
             }
             return
         }
-
+        
         presentCheckout(
             clientToken: clientToken,
             from: viewController,
@@ -382,47 +390,52 @@ extension CheckoutComponentsPrimer {
             completion: completion
         )
     }
-
+    
 }
 
 // MARK: - Integration Helpers
 
 @available(iOS 15.0, *)
 extension CheckoutComponentsPrimer {
-
+    
     @objc public static var isAvailable: Bool {
-        true // Since we're already in an @available(iOS 15.0, *) context
+        true  // Since we're already in an @available(iOS 15.0, *) context
     }
-
+    
     @objc public static var isPresenting: Bool {
         shared.isPresentingCheckout || shared.activeCheckoutController != nil
     }
-
+    
     private func findPresentingViewController() -> UIViewController? {
-        guard let windowScene = UIApplication.shared.connectedScenes
+        guard
+            let windowScene = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
                 .first(where: { $0.activationState == .foregroundActive }),
-              let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+            let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?
+                .rootViewController
+        else {
             return nil
         }
-
+        
         return findTopViewController(from: rootViewController)
     }
-
+    
     private func findTopViewController(from viewController: UIViewController) -> UIViewController {
         if let presented = viewController.presentedViewController {
             return findTopViewController(from: presented)
         }
-
+        
         if let navigation = viewController as? UINavigationController,
-           let top = navigation.topViewController {
+           let top = navigation.topViewController
+        {
             return findTopViewController(from: top)
         }
         if let tab = viewController as? UITabBarController,
-           let selected = tab.selectedViewController {
+           let selected = tab.selectedViewController
+        {
             return findTopViewController(from: selected)
         }
-
+        
         return viewController
     }
 }
@@ -431,7 +444,7 @@ extension CheckoutComponentsPrimer {
 
 @available(iOS 15.0, *)
 extension CheckoutComponentsPrimer {
-
+    
     /// Set the Primer delegate (uses the shared Primer.delegate)
     @objc public static var delegate: PrimerDelegate? {
         get { Primer.shared.delegate }

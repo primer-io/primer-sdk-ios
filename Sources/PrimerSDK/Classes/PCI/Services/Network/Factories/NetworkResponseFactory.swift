@@ -80,7 +80,7 @@ final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
         let body = String(data: data, encoding: .utf8) ?? "N/A"
 
         logger.debug(message: """
-         
+
          🌎 [Response] 👉 \(url)
          Headers:
          \(headersDescription.joined(separator: "\n"))

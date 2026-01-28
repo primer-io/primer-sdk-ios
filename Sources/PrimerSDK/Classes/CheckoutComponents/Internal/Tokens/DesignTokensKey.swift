@@ -20,12 +20,12 @@ import SwiftUI
 
 /// Environment key for injecting design tokens into SwiftUI views.
 struct DesignTokensKey: EnvironmentKey {
-    static let defaultValue: DesignTokens? = nil
+  static let defaultValue: DesignTokens? = nil
 }
 
 extension EnvironmentValues {
-    var designTokens: DesignTokens? {
-        get { self[DesignTokensKey.self] }
-        set { self[DesignTokensKey.self] = newValue }
-    }
+  var designTokens: DesignTokens? {
+    get { self[DesignTokensKey.self] }
+    set { self[DesignTokensKey.self] = newValue }
+  }
 }

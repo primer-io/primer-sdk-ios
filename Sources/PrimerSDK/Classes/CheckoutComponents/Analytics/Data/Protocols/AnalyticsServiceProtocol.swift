@@ -7,6 +7,6 @@
 import Foundation
 
 protocol CheckoutComponentsAnalyticsServiceProtocol: Actor {
-    func initialize(config: AnalyticsSessionConfig) async
-    func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
+  func initialize(config: AnalyticsSessionConfig) async
+  func sendEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async
 }

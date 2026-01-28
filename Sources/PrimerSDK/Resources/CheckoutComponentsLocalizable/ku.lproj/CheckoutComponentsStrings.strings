@@ -197,3 +197,16 @@
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_error_generic" = "Xeletîyek çêbû. Ji kerema xwe dîsa biceribîne.";
 "accessibility_error_multiple_errors" = "%d xeletî hatin dîtin";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Bidomîne";
+"primer_klarna_button_finalize" = "Bide";
+"primer_klarna_select_category_description" = "Hilbijêre ka tu çawa dixwazî bidî";
+"primer_klarna_loading_title" = "Tê barkirin";
+"primer_klarna_loading_subtitle" = "Ev dibe ku çend çirkeyan bigire.";
+"accessibility_klarna_category" = "Vebijarka daynê %@";
+"accessibility_klarna_category_selected" = "Vebijarka daynê %@, hatiye hilbijartin";
+"accessibility_klarna_payment_view" = "Forma daynê ya Klarna";
+"accessibility_klarna_authorize_hint" = "Du car bikin ji bo domandina bi Klarna";
+"accessibility_klarna_finalize_hint" = "Du car bikin ji bo temamkirina daynê";

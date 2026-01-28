@@ -8,23 +8,23 @@ import Foundation
 
 actor DefaultAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
 
-    // MARK: - Dependencies
+  // MARK: - Dependencies
 
-    private let eventService: CheckoutComponentsAnalyticsServiceProtocol
+  private let eventService: CheckoutComponentsAnalyticsServiceProtocol
 
-    // MARK: - Initialization
+  // MARK: - Initialization
 
-    init(eventService: CheckoutComponentsAnalyticsServiceProtocol) {
-        self.eventService = eventService
+  init(eventService: CheckoutComponentsAnalyticsServiceProtocol) {
+    self.eventService = eventService
+  }
+
+  // MARK: - CheckoutComponentsAnalyticsInteractorProtocol
+
+  func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
+    // Launch a child task to keep fire-and-forget behavior without leaving structured concurrency
+    // This prevents blocking the caller even if the service is busy
+    _ = Task { [eventService] in
+      await eventService.sendEvent(eventType, metadata: metadata)
     }
-
-    // MARK: - CheckoutComponentsAnalyticsInteractorProtocol
-
-    func trackEvent(_ eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?) async {
-        // Launch a child task to keep fire-and-forget behavior without leaving structured concurrency
-        // This prevents blocking the caller even if the service is busy
-        _ = Task { [eventService] in
-            await eventService.sendEvent(eventType, metadata: metadata)
-        }
-    }
+  }
 }

@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Visas saglabātās maksājuma metodes";
 "primer_vault_section_title" = "Saglabātās maksājuma metodes";
 "primer_vault_selected_button_other" = "Rādīt citus maksājuma veidus";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Turpināt";
+"primer_klarna_button_finalize" = "Maksāt";
+"primer_klarna_select_category_description" = "Izvēlieties, kā vēlaties maksāt";
+"primer_klarna_loading_title" = "Ielādē";
+"primer_klarna_loading_subtitle" = "Tas var aizņemt dažas sekundes.";
+"accessibility_klarna_category" = "%@ maksājuma iespēja";
+"accessibility_klarna_category_selected" = "%@ maksājuma iespēja, atlasīts";
+"accessibility_klarna_payment_view" = "Klarna maksājuma veidlapa";
+"accessibility_klarna_authorize_hint" = "Veiciet dubultskārienu, lai turpinātu ar Klarna";
+"accessibility_klarna_finalize_hint" = "Veiciet dubultskārienu, lai pabeigtu maksājumu";

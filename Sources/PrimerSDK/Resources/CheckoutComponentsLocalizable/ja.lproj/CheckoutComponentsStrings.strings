@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "保存済みのすべてのお支払い方法";
 "primer_vault_section_title" = "保存済みのお支払い方法";
 "primer_vault_selected_button_other" = "他のお支払い方法を表示";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "続行";
+"primer_klarna_button_finalize" = "支払う";
+"primer_klarna_select_category_description" = "お支払い方法を選択してください";
+"primer_klarna_loading_title" = "読み込み中";
+"primer_klarna_loading_subtitle" = "数秒かかる場合があります。";
+"accessibility_klarna_category" = "%@ 支払いオプション";
+"accessibility_klarna_category_selected" = "%@ 支払いオプション、選択済み";
+"accessibility_klarna_payment_view" = "Klarna支払いフォーム";
+"accessibility_klarna_authorize_hint" = "ダブルタップしてKlarnaで続行";
+"accessibility_klarna_finalize_hint" = "ダブルタップして支払いを完了";

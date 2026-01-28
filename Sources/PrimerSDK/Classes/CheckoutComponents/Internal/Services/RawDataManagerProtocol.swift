@@ -8,33 +8,33 @@ import Foundation
 
 @available(iOS 15.0, *)
 protocol RawDataManagerProtocol: AnyObject {
-    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? { get set }
-    var rawData: PrimerRawData? { get set }
-    var isDataValid: Bool { get }
-    var requiredInputElementTypes: [PrimerInputElementType] { get }
-    func configure(completion: @escaping (PrimerInitializationData?, Error?) -> Void)
-    func submit()
+  var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? { get set }
+  var rawData: PrimerRawData? { get set }
+  var isDataValid: Bool { get }
+  var requiredInputElementTypes: [PrimerInputElementType] { get }
+  func configure(completion: @escaping (PrimerInitializationData?, Error?) -> Void)
+  func submit()
 }
 
 @available(iOS 15.0, *)
 protocol RawDataManagerFactoryProtocol {
-    func createRawDataManager(
-        paymentMethodType: String,
-        delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
-    ) throws -> RawDataManagerProtocol
+  func createRawDataManager(
+    paymentMethodType: String,
+    delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+  ) throws -> RawDataManagerProtocol
 }
 
 @available(iOS 15.0, *)
 final class DefaultRawDataManagerFactory: RawDataManagerFactoryProtocol {
-    func createRawDataManager(
-        paymentMethodType: String,
-        delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
-    ) throws -> RawDataManagerProtocol {
-        try PrimerHeadlessUniversalCheckout.RawDataManager(
-            paymentMethodType: paymentMethodType,
-            delegate: delegate
-        )
-    }
+  func createRawDataManager(
+    paymentMethodType: String,
+    delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+  ) throws -> RawDataManagerProtocol {
+    try PrimerHeadlessUniversalCheckout.RawDataManager(
+      paymentMethodType: paymentMethodType,
+      delegate: delegate
+    )
+  }
 }
 
 // MARK: - RawDataManager Conformance
