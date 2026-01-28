@@ -9,6 +9,7 @@ import UIKit
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class KlarnaRepositoryTests: XCTestCase {
 
     // MARK: - Properties
