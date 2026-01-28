@@ -1,7 +1,7 @@
 //
 //  MerchantHeadlessCheckoutRawDataViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -111,17 +111,31 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                                                                    withPlaceholderText: "John Smith")
                 case .otp:
                     break
-
                 case .postalCode:
                     break
-
                 case .phoneNumber:
                     break
-
                 case .retailer:
                     break
-
                 case .unknown:
+                    break
+                case .countryCode:
+                    break
+                case .firstName:
+                    break
+                case .lastName:
+                    break
+                case .addressLine1:
+                    break
+                case .addressLine2:
+                    break
+                case .city:
+                    break
+                case .state:
+                    break
+                case .all:
+                    break
+                case .email:
                     break
                 }
             }
@@ -248,7 +262,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: newText.count == 0 ? nil : newText,
+                cardholderName: newText.isEmpty ? nil : newText,
                 cardNetwork: self.rawCardData.cardNetwork)
         }
 
@@ -294,7 +308,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             return
         }
 
-        let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
+        let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
         DispatchQueue.main.async {

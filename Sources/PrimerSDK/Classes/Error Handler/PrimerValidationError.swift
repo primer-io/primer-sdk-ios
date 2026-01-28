@@ -1,7 +1,7 @@
 //
 //  PrimerValidationError.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -80,34 +80,34 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .sessionNotCreated: "session-not-created"
         case .invalidPaymentCategory: "invalid-payment-category"
         case .paymentAlreadyFinalized: "payment-already-finalized"
-        case .invalidUserDetails(let field, _): "invalid-customer-\(field)"
+        case let .invalidUserDetails(field, _): "invalid-customer-\(field)"
         }
     }
 
     public var errorDescription: String? {
         switch self {
-        case .invalidCardholderName(let message, _),
-                .invalidCardnumber(let message, _),
-                .invalidCvv(let message, _),
-                .invalidExpiryDate(let message, _),
-                .invalidPostalCode(let message, _),
-                .invalidFirstName(let message, _),
-                .invalidLastName(let message, _),
-                .invalidAddress(let message, _),
-                .invalidCity(let message, _),
-                .invalidState(let message, _),
-                .invalidCountry(let message, _),
-                .invalidPhoneNumber(let message, _),
-                .invalidOTPCode(let message, _),
-                .invalidCardType(let message, _): "[\(errorId)] \(message)"
+        case let .invalidCardholderName(message, _),
+                let .invalidCardnumber(message, _),
+                let .invalidCvv(message, _),
+                let .invalidExpiryDate(message, _),
+                let .invalidPostalCode(message, _),
+                let .invalidFirstName(message, _),
+                let .invalidLastName(message, _),
+                let .invalidAddress(message, _),
+                let .invalidCity(message, _),
+                let .invalidState(message, _),
+                let .invalidCountry(message, _),
+                let .invalidPhoneNumber(message, _),
+                let .invalidOTPCode(message, _),
+                let .invalidCardType(message, _): "[\(errorId)] \(message)"
         case .invalidRawData: "[\(errorId)] Raw data is not valid."
         case .invalidBankId: "Please provide a valid bank id"
         case .banksNotLoaded: "Banks need to be loaded before bank id can be collected."
         case .sessionNotCreated: "Session needs to be created before payment category can be collected."
         case .invalidPaymentCategory: "Payment category is invalid."
         case .paymentAlreadyFinalized: "This payment was configured to be finalized automatically."
-        case .invalidUserDetails(let field, _): "The \(field) is not valid."
-        case .vaultedPaymentDataMismatch(let methodType, let dataType, _):
+        case let .invalidUserDetails(field, _): "The \(field) is not valid."
+        case let .vaultedPaymentDataMismatch(methodType, dataType, _):
             "[\(errorId)] Vaulted payment method \(methodType) needs additional data of type \(dataType)"
         }
     }
@@ -148,9 +148,11 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         return context
     }
 
+    var isReportable: Bool { false }
+
     private var paymentMethodType: String? {
         switch self {
-        case .vaultedPaymentDataMismatch(let paymentMethodType, _, _): paymentMethodType
+        case let .vaultedPaymentDataMismatch(paymentMethodType, _, _): paymentMethodType
         default: nil
         }
     }

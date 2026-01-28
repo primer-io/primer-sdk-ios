@@ -96,6 +96,15 @@ enum InternalError: PrimerErrorProtocol {
     }
 
     var analyticsContext: [String: Any] { [AnalyticsContextKeys.errorId: errorId] }
+
+    var isReportable: Bool {
+        switch self {
+        case .serverError, .failedToPerform3dsAndShouldBreak:
+            true
+        default:
+            false
+        }
+    }
 }
 
 private extension InternalError {
