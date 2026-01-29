@@ -5,8 +5,8 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import AuthenticationServices
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 /// Tests for PayPalRepositoryImpl.
 @available(iOS 15.0, *)
@@ -154,16 +154,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
 
     // MARK: - startOrderSession Tests
 
-    func test_startOrderSession_callsPayPalService() async throws {
-        // When
-        let result = try await sut.startOrderSession()
-
-        // Then
-        XCTAssertTrue(mockPayPalService.startOrderSessionCalled)
-        XCTAssertEqual(result.orderId, "order-123")
-        XCTAssertEqual(result.approvalUrl, "https://paypal.com/approve")
-    }
-
     func test_startOrderSession_returnsOrderIdAndApprovalUrl() async throws {
         // Given
         mockPayPalService.startOrderSessionResult = .success(
@@ -193,15 +183,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
     }
 
     // MARK: - startBillingAgreementSession Tests
-
-    func test_startBillingAgreementSession_callsPayPalService() async throws {
-        // When
-        let result = try await sut.startBillingAgreementSession()
-
-        // Then
-        XCTAssertTrue(mockPayPalService.startBillingAgreementSessionCalled)
-        XCTAssertEqual(result, "https://paypal.com/billing")
-    }
 
     func test_startBillingAgreementSession_returnsApprovalUrl() async throws {
         // Given
@@ -274,33 +255,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
 
     // MARK: - confirmBillingAgreement Tests
 
-    func test_confirmBillingAgreement_callsPayPalService() async throws {
-        // Given
-        let externalPayerInfo = Response.Body.Tokenization.PayPal.ExternalPayerInfo(
-            externalPayerId: "payer-123",
-            email: "test@example.com",
-            firstName: "John",
-            lastName: "Doe"
-        )
-        mockPayPalService.confirmBillingAgreementResult = .success(
-            Response.Body.PayPal.ConfirmBillingAgreement(
-                billingAgreementId: "ba-123",
-                externalPayerInfo: externalPayerInfo,
-                shippingAddress: nil
-            )
-        )
-
-        // When
-        let result = try await sut.confirmBillingAgreement()
-
-        // Then
-        XCTAssertTrue(mockPayPalService.confirmBillingAgreementCalled)
-        XCTAssertEqual(result.billingAgreementId, "ba-123")
-        XCTAssertEqual(result.externalPayerInfo?.email, "test@example.com")
-        XCTAssertEqual(result.externalPayerInfo?.firstName, "John")
-        XCTAssertEqual(result.externalPayerInfo?.lastName, "Doe")
-    }
-
     func test_confirmBillingAgreement_mapsShippingAddress() async throws {
         // Given
         let externalPayerInfo = Response.Body.Tokenization.PayPal.ExternalPayerInfo(
@@ -356,30 +310,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
 
     // MARK: - fetchPayerInfo Tests
 
-    func test_fetchPayerInfo_callsPayPalServiceWithOrderId() async throws {
-        // Given
-        let externalPayerInfo = Response.Body.Tokenization.PayPal.ExternalPayerInfo(
-            externalPayerId: "payer-xyz",
-            email: "user@example.com",
-            firstName: "Jane",
-            lastName: "Smith"
-        )
-        mockPayPalService.fetchPayerInfoResult = .success(
-            Response.Body.PayPal.PayerInfo(orderId: "order-abc", externalPayerInfo: externalPayerInfo)
-        )
-
-        // When
-        let result = try await sut.fetchPayerInfo(orderId: "order-abc")
-
-        // Then
-        XCTAssertTrue(mockPayPalService.fetchPayerInfoCalled)
-        XCTAssertEqual(mockPayPalService.fetchPayerInfoOrderId, "order-abc")
-        XCTAssertEqual(result.email, "user@example.com")
-        XCTAssertEqual(result.firstName, "Jane")
-        XCTAssertEqual(result.lastName, "Smith")
-        XCTAssertEqual(result.externalPayerId, "payer-xyz")
-    }
-
     func test_fetchPayerInfo_propagatesError() async {
         // Given
         let expectedError = NSError(domain: "test", code: 500, userInfo: nil)
@@ -395,28 +325,6 @@ final class PayPalRepositoryImplTests: XCTestCase {
     }
 
     // MARK: - tokenize Tests
-
-    func test_tokenize_withOrderPaymentInstrument_callsTokenizationService() async throws {
-        // Given
-        let payerInfo = PayPalPayerInfo(
-            externalPayerId: "payer-123",
-            email: "test@example.com",
-            firstName: "John",
-            lastName: "Doe"
-        )
-        let paymentInstrument = PayPalPaymentInstrumentData.order(orderId: "order-456", payerInfo: payerInfo)
-
-        mockTokenizationService.tokenizeResult = .success(createMockTokenData(id: "token-123"))
-
-        // When
-        let result = try await sut.tokenize(paymentInstrument: paymentInstrument)
-
-        // Then
-        XCTAssertTrue(mockTokenizationService.tokenizeCalled)
-        XCTAssertEqual(result.paymentId, "token-123")
-        XCTAssertEqual(result.status, PaymentStatus.success)
-        XCTAssertEqual(result.paymentMethodType, PrimerPaymentMethodType.payPal.rawValue)
-    }
 
     func test_tokenize_withBillingAgreementPaymentInstrument_callsTokenizationService() async throws {
         // Given

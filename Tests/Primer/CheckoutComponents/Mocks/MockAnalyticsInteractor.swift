@@ -33,7 +33,7 @@ actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
         trackedEvents = []
     }
 
-    func getLastTrackedEvent() -> (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)?
+    func getLastTrackedEvent() -> (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)? {
         trackedEvents.last
     }
 

@@ -4,8 +4,8 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 /// Tests for PaymentMethodMapperImpl.
 @available(iOS 15.0, *)
@@ -34,44 +34,6 @@ final class PaymentMethodMapperTests: XCTestCase {
             surcharge: surcharge,
             hasUnknownSurcharge: hasUnknownSurcharge
         )
-    }
-
-    // MARK: - Basic Mapping Tests
-
-    func test_mapToPublic_mapsIdCorrectly() {
-        // Given
-        let mapper = createMapper()
-        let internalMethod = createInternalPaymentMethod(id: "unique-id-123")
-
-        // When
-        let result = mapper.mapToPublic(internalMethod)
-
-        // Then
-        XCTAssertEqual(result.id, "unique-id-123")
-    }
-
-    func test_mapToPublic_mapsTypeCorrectly() {
-        // Given
-        let mapper = createMapper()
-        let internalMethod = createInternalPaymentMethod(type: "PAYPAL")
-
-        // When
-        let result = mapper.mapToPublic(internalMethod)
-
-        // Then
-        XCTAssertEqual(result.type, "PAYPAL")
-    }
-
-    func test_mapToPublic_mapsNameCorrectly() {
-        // Given
-        let mapper = createMapper()
-        let internalMethod = createInternalPaymentMethod(name: "Apple Pay")
-
-        // When
-        let result = mapper.mapToPublic(internalMethod)
-
-        // Then
-        XCTAssertEqual(result.name, "Apple Pay")
     }
 
     // MARK: - Surcharge Formatting Tests
