@@ -8,7 +8,6 @@ import AuthenticationServices
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for PayPalRepositoryImpl.
 @available(iOS 15.0, *)
 final class PayPalRepositoryImplTests: XCTestCase {
 

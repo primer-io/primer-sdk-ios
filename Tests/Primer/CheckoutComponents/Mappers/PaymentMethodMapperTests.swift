@@ -7,7 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for PaymentMethodMapperImpl.
 @available(iOS 15.0, *)
 final class PaymentMethodMapperTests: XCTestCase {
 

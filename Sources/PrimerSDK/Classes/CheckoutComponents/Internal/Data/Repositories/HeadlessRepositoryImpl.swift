@@ -207,7 +207,6 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private func injectConfigurationService() async {
         guard configurationService == nil else { return }
 
-        // Use factory if provided (for testing)
         if let factory = configurationServiceFactory {
             configurationService = factory()
             return
