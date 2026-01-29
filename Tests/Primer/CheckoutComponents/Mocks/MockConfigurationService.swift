@@ -7,7 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of ConfigurationService for testing
 @available(iOS 15.0, *)
 final class MockConfigurationService: ConfigurationService {
 
