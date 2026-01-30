@@ -1,12 +1,13 @@
 //
 //  UniversalCheckoutViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
-internal protocol UniversalCheckoutViewModelProtocol {
+protocol UniversalCheckoutViewModelProtocol {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
     var amountStr: String? { get }
@@ -22,10 +23,10 @@ final class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogR
     }
 
     var paymentMethods: [PrimerPaymentMethodTokenData] {
-        return AppState.current.paymentMethods
+        AppState.current.paymentMethods
     }
 
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
-        return AppState.current.selectedPaymentMethod
+        AppState.current.selectedPaymentMethod
     }
 }
