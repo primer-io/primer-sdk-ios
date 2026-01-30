@@ -6,6 +6,7 @@
 
 import Foundation
 import PassKit
+import PrimerCore
 import PrimerFoundation
 
 protocol ApplePayPresenting {

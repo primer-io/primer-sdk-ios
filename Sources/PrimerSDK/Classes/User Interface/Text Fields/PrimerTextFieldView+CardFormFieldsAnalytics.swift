@@ -1,14 +1,15 @@
 //
 //  PrimerTextFieldView+CardFormFieldsAnalytics.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import UIKit
 
 extension PrimerTextFieldView {
 
-    internal func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
+    func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
         Analytics.Event.ui(
             action: .focus,
             context: Analytics.Event.Property.Context(
@@ -23,7 +24,7 @@ extension PrimerTextFieldView {
         )
     }
 
-    internal func cardFormFieldDidEndEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
+    func cardFormFieldDidEndEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
         Analytics.Event.ui(
             action: .blur,
             context: Analytics.Event.Property.Context(

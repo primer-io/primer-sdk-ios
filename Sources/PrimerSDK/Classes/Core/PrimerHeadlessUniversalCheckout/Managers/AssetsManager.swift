@@ -1,9 +1,10 @@
 //
 //  AssetsManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
@@ -76,7 +77,7 @@ extension PrimerHeadlessUniversalCheckout {
             try verifyAPIConfig()
 
             let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-                .compactMap({ $0.paymentMethodType })
+                .compactMap(\.paymentMethodType)
 
             var paymentMethodAssets: [PrimerPaymentMethodAsset] = []
 
@@ -130,7 +131,7 @@ public final class PrimerCardNetworkAsset {
     public let cardImage: UIImage?
 
     var displayName: String {
-        return cardNetwork.displayName
+        cardNetwork.displayName
     }
 
     init(cardNetwork: CardNetwork, cardImage: UIImage?) {
