@@ -1,7 +1,7 @@
 //
 //  KlarnaTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable cyclomatic_complexity
@@ -10,6 +10,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerCore
 import UIKit
 
 #if canImport(PrimerKlarnaSDK)
@@ -141,10 +142,10 @@ final class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.klarnaPaymentSessionCompletion = { result in
                 switch result {
-                case .success(let authorizationToken):
+                case let .success(authorizationToken):
                     self.authorizationToken = authorizationToken
                     continuation.resume()
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }

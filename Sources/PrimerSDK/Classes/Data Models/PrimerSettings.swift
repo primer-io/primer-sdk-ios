@@ -1,15 +1,16 @@
 //
 //  PrimerSettings.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PassKit
+import PrimerCore
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -62,7 +63,7 @@ public enum PrimerPaymentHandling: String, Codable {
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }

@@ -1,9 +1,10 @@
 //
 //  ACHMandateViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import SwiftUI
 
 final class ACHMandateViewModel: ObservableObject {
@@ -18,9 +19,9 @@ final class ACHMandateViewModel: ObservableObject {
 
     var mandateText: String {
         switch mandateData {
-        case .fullMandate(let text):
+        case let .fullMandate(text):
             return text
-        case .templateMandate(let merchantName):
+        case let .templateMandate(merchantName):
             let arguments = getArgumentsList(argument: merchantName, template: Strings.Mandate.templateText)
             return String(format: Strings.Mandate.templateText, arguments: arguments)
         }

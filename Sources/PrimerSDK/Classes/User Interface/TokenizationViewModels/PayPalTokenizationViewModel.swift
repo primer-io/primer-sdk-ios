@@ -9,6 +9,7 @@
 // swiftlint:disable function_body_length
 
 import AuthenticationServices
+import PrimerCore
 import SafariServices
 import UIKit
 
