@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
 
 private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
                                                              in: .userDomainMask)[0].appendingPathComponent("analytics")
