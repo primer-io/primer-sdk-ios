@@ -7,6 +7,7 @@
 // swiftlint:disable file_length
 
 import Foundation
+import PrimerCore
 
 enum PrimerAPI: Endpoint, Equatable {
     // MARK: - Pull ApiVersion from PrimerSettings

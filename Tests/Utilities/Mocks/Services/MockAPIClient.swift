@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
@@ -527,8 +528,8 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     func continue3DSAuth(
         clientToken: PrimerSDK.DecodedJWTToken,
         threeDSTokenId: String,
-        continueInfo: PrimerSDK.ThreeDS.ContinueInfo,
-        completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void
+        continueInfo: ThreeDS.ContinueInfo,
+        completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void
     ) {
         guard let result = continue3DSAuthResult,
               result.0 != nil || result.1 != nil
@@ -775,7 +776,7 @@ final class MockPrimerAPIClient: PrimerAPIClientProtocol, @unchecked Sendable {
     }
 
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?,
-                             url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
+                             url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let result = sendAnalyticsEventsResult,
               result.0 != nil || result.1 != nil
         else {

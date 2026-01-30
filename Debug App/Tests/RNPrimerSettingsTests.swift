@@ -1,12 +1,13 @@
 //
 //  RNPrimerSettingsTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import Debug_App
+import PrimerCore
 @testable import PrimerSDK
+import XCTest
 
 final class RNPrimerSettingsTests: XCTestCase {
 
@@ -70,7 +71,7 @@ final class RNPrimerSettingsTests: XCTestCase {
         let stripe = try JSONDecoder().decode(RNPrimerStripeOptions.self, from: json)
 
         switch stripe.mandateData {
-        case .template(let data):
+        case let .template(data):
             XCTAssertEqual(data.merchantName, "Example Store")
         default:
             XCTFail("Expected template mandate data")
@@ -91,7 +92,7 @@ final class RNPrimerSettingsTests: XCTestCase {
         let stripe = try JSONDecoder().decode(RNPrimerStripeOptions.self, from: json)
 
         switch stripe.mandateData {
-        case .full(let data):
+        case let .full(data):
             XCTAssertEqual(data.fullMandateText, "You authorize payment...")
             XCTAssertEqual(data.fullMandateStringResourceName, "mandate_string")
         default:
@@ -188,7 +189,7 @@ final class RNPrimerSettingsTests: XCTestCase {
 
             XCTAssertEqual(pmOptions.stripeOptions?.publishableKey, "pk_test_123")
 
-            if case .templateMandate(let merchantName) = pmOptions.stripeOptions?.mandateData {
+            if case let .templateMandate(merchantName) = pmOptions.stripeOptions?.mandateData {
                 XCTAssertEqual(merchantName, "My Merchant")
             } else {
                 XCTFail("Expected .templateMandate")

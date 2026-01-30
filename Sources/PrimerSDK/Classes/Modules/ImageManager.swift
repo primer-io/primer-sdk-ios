@@ -1,11 +1,12 @@
 //
 //  ImageManager.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
+import PrimerCore
 import UIKit
 
 // MARK: MISSING_TESTS
@@ -19,7 +20,7 @@ final class ImageFile: File {
         tmpFileName = tmpFileName.replacingOccurrences(of: "-light", with: "")
         tmpFileName = tmpFileName.uppercased().replacingOccurrences(of: "-", with: "_")
 
-        let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue })
+        let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap(\.rawValue)
         let results = paymentMethodTypeRawValues.filter({ $0 == tmpFileName })
 
         if results.isEmpty {
@@ -101,7 +102,7 @@ final class ImageFile: File {
     }
 
     var image: UIImage? {
-        return cachedImage ?? bundledImage
+        cachedImage ?? bundledImage
     }
 }
 
