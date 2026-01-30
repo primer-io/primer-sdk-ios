@@ -143,7 +143,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - selectPaymentCategory Tests
 
     @MainActor
-    func test_selectPaymentCategory_withValidCategory_setsSelectedCategoryId() async {
+    func test_selectPaymentCategory_withValidCategory_setsSelectedCategoryId() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         mockInteractor.paymentViewToReturn = UIView()
@@ -151,13 +151,13 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         scope.start()
 
         // Wait for session creation
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .categorySelection })
 
         // When
         scope.selectPaymentCategory(KlarnaTestData.Constants.categoryPayNow)
 
         // Wait for payment view load
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        _ = try await awaitValue(scope.state, matching: { $0.step == .viewReady })
 
         // Then
         XCTAssertEqual(mockInteractor.configureForCategoryCallCount, 1)
