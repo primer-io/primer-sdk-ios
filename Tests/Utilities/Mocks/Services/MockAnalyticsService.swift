@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 @testable import PrimerSDK
 
 final actor MockAnalyticsService: AnalyticsServiceProtocol {
@@ -25,7 +26,7 @@ final actor MockAnalyticsService: AnalyticsServiceProtocol {
         onRecord?([event])
     }
 
-    func fire(event: PrimerSDK.Analytics.Event) {
+    func fire(event: Analytics.Event) {
         eventsStorage.append(contentsOf: [event])
         onRecord?([event])
     }

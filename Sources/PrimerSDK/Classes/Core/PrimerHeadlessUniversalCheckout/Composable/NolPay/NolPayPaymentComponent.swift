@@ -7,6 +7,7 @@
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
+import PrimerCore
 import PrimerFoundation
 import UIKit
 

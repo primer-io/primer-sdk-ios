@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
+import PrimerCore
 import UIKit
 
 // MARK: MISSING_TESTS

@@ -1,10 +1,12 @@
 //
 //  PrimerHeadlessRedirectComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerCore
+
 protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
 final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     let paymentMethodType: PrimerPaymentMethodType
@@ -52,9 +54,7 @@ extension WebRedirectComponent: LogReporter {
     func logStep() {
         let logMessage = step.logMessage(paymentMethodType: paymentMethodType.rawValue)
         logger.info(message: logMessage)
-        let stepEvent = Analytics.Event.message(message: logMessage,
-                                                messageType: .info,
-                                                severity: .info)
+        let stepEvent = Analytics.Event.message(message: logMessage, messageType: .info, severity: .info)
         Analytics.Service.fire(events: [stepEvent])
     }
 }
