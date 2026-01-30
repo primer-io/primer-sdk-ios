@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerCore
 import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
@@ -12,7 +13,7 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
 
     var shouldSucceed: Bool = true
 
-    var onSendAnalyticsEvent: (([PrimerSDK.Analytics.Event]?) -> Void)?
+    var onSendAnalyticsEvent: (([Analytics.Event]?) -> Void)?
 
     var batches: [[Analytics.Event]] = []
 
@@ -29,7 +30,7 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
         self.onSendAnalyticsEvent?(body)
     }
 
-    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
+    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let body = body else {
             XCTFail();
             throw PrimerError.unknown()

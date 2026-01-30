@@ -1,12 +1,13 @@
 //
 //  ApplePayTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PassKit
-import XCTest
+import PrimerCore
 @testable import PrimerSDK
+import XCTest
 
 class ApplePayTests: XCTestCase {
 
@@ -301,7 +302,7 @@ class ApplePayTests: XCTestCase {
             DependencyContainer.register(mockAppState as AppStateProtocol)
 
             var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: nil)
-            var applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap({ $0.applePayItem })
+            var applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap(\.applePayItem)
             XCTAssert(applePayItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
             XCTAssert(applePayItems[0].amount.doubleValue == NSDecimalNumber(floatLiteral: 8.99).doubleValue)
@@ -321,7 +322,7 @@ class ApplePayTests: XCTestCase {
 
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
-            applePayItems = orderItems.compactMap({ $0.applePayItem })
+            applePayItems = orderItems.compactMap(\.applePayItem)
             XCTAssert(applePayItems.last!.label == configurationApplePayOptions.merchantName)
         } catch {
             XCTAssert(false, "Failed with error \(error.localizedDescription)")
