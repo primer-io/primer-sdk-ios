@@ -12,20 +12,14 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    private var savedContainer: ContainerProtocol?
-
     override func setUp() async throws {
         try await super.setUp()
-        savedContainer = await DIContainer.current
+        // Ensure clean state
         await DIContainer.clearContainer()
     }
 
     override func tearDown() async throws {
-        if let savedContainer {
-            await DIContainer.setContainer(savedContainer)
-        } else {
-            await DIContainer.clearContainer()
-        }
+        await DIContainer.clearContainer()
         try await super.tearDown()
     }
 
@@ -110,7 +104,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings with URL scheme
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: TestData.PaymentMethodOptions.myAppUrlScheme
+                urlScheme: "myapp://payment"
             )
         )
         let composableContainer = ComposableContainer(settings: settings)
@@ -126,7 +120,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Then: URL scheme should be accessible via validation methods
         XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
-        XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.myAppScheme)
+        XCTAssertEqual(urlScheme, "myapp")
     }
 
     // MARK: - Settings Isolation Tests

@@ -7,6 +7,7 @@
 import Foundation
 @testable import PrimerSDK
 
+/// Mock implementation of CheckoutComponentsAnalyticsInteractorProtocol for testing
 @available(iOS 15.0, *)
 typealias TrackedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)
 
