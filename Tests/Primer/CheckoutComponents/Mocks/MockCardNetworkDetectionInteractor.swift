@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of CardNetworkDetectionInteractor for testing.
-/// Provides configurable network detection results and call tracking.
 @available(iOS 15.0, *)
 final class MockCardNetworkDetectionInteractor: CardNetworkDetectionInteractor {
 

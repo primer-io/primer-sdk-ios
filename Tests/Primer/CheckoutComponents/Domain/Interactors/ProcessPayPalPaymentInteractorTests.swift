@@ -7,7 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for ProcessPayPalPaymentInteractor.
 @available(iOS 15.0, *)
 final class ProcessPayPalPaymentInteractorTests: XCTestCase {
 

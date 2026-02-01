@@ -7,8 +7,6 @@
 import Foundation
 @testable import PrimerSDK
 
-/// Mock implementation of ProcessCardPaymentInteractor for testing.
-/// Provides configurable return values and call tracking.
 @available(iOS 15.0, *)
 final class MockProcessCardPaymentInteractor: ProcessCardPaymentInteractor {
 

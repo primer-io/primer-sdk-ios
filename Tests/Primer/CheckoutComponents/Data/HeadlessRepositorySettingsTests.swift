@@ -104,7 +104,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Given: Settings with URL scheme
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "myapp://payment"
+                urlScheme: TestData.PaymentMethodOptions.myAppUrlScheme
             )
         )
         let composableContainer = ComposableContainer(settings: settings)
@@ -120,7 +120,7 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
         // Then: URL scheme should be accessible via validation methods
         XCTAssertNoThrow(try resolved.paymentMethodOptions.validUrlForUrlScheme())
         let urlScheme = try? resolved.paymentMethodOptions.validSchemeForUrlScheme()
-        XCTAssertEqual(urlScheme, "myapp")
+        XCTAssertEqual(urlScheme, TestData.PaymentMethodOptions.myAppScheme)
     }
 
     // MARK: - Settings Isolation Tests

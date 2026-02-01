@@ -7,7 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for ProcessCardPaymentInteractorImpl that handles card payment processing.
 @available(iOS 15.0, *)
 final class ProcessCardPaymentInteractorTests: XCTestCase {
 

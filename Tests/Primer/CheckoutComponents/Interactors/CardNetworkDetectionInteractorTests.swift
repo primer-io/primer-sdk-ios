@@ -7,7 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for CardNetworkDetectionInteractorImpl that detects card networks and handles co-badged cards.
 @available(iOS 15.0, *)
 final class CardNetworkDetectionInteractorTests: XCTestCase {
 

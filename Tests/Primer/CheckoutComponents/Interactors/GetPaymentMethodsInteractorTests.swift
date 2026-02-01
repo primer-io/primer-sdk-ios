@@ -7,7 +7,6 @@
 @testable import PrimerSDK
 import XCTest
 
-/// Tests for GetPaymentMethodsInteractorImpl that fetches available payment methods.
 @available(iOS 15.0, *)
 final class GetPaymentMethodsInteractorTests: XCTestCase {
 
