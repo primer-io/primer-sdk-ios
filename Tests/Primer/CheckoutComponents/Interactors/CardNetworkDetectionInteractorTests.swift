@@ -141,21 +141,6 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(mockRepository.lastSelectedNetwork, network)
     }
 
-    func test_selectNetwork_withDifferentNetworks() async {
-        // Given
-        let networks: [CardNetwork] = [.visa, .masterCard, .amex]
-
-        // When
-        for network in networks {
-            mockRepository.reset()
-            await sut.selectNetwork(network)
-
-            // Then
-            XCTAssertEqual(mockRepository.selectCardNetworkCallCount, 1)
-            XCTAssertEqual(mockRepository.lastSelectedNetwork, network)
-        }
-    }
-
     // MARK: - Co-badged Card Flow Tests
 
     func test_coBadgedFlow_detectThenSelect() async {

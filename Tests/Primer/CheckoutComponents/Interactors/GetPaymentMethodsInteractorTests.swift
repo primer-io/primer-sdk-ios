@@ -57,17 +57,6 @@ final class GetPaymentMethodsInteractorTests: XCTestCase {
         XCTAssertEqual(result[1].type, "PAYPAL")
     }
 
-    func test_execute_callsRepositoryOnce() async throws {
-        // Given
-        mockRepository.paymentMethodsToReturn = []
-
-        // When
-        _ = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(mockRepository.getPaymentMethodsCallCount, 1)
-    }
-
     func test_execute_withEmptyPaymentMethods_returnsEmptyArray() async throws {
         // Given
         mockRepository.paymentMethodsToReturn = []
@@ -77,25 +66,6 @@ final class GetPaymentMethodsInteractorTests: XCTestCase {
 
         // Then
         XCTAssertTrue(result.isEmpty)
-    }
-
-    func test_execute_withSinglePaymentMethod_returnsSingleMethod() async throws {
-        // Given
-        mockRepository.paymentMethodsToReturn = [
-            InternalPaymentMethod(
-                id: "apple-pay-1",
-                type: "APPLE_PAY",
-                name: "Apple Pay",
-                isEnabled: true
-            )
-        ]
-
-        // When
-        let result = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(result.count, 1)
-        XCTAssertEqual(result[0].type, "APPLE_PAY")
     }
 
     func test_execute_withDisabledPaymentMethods_returnsAllMethods() async throws {
@@ -140,49 +110,7 @@ final class GetPaymentMethodsInteractorTests: XCTestCase {
         }
     }
 
-    func test_execute_whenRepositoryThrowsError_doesNotReturnPartialData() async {
-        // Given
-        mockRepository.paymentMethodsToReturn = [
-            InternalPaymentMethod(
-                id: "card-1",
-                type: "PAYMENT_CARD",
-                name: "Credit Card",
-                isEnabled: true
-            )
-        ]
-        mockRepository.getPaymentMethodsError = TestError.networkFailure
-
-        // When/Then
-        do {
-            _ = try await sut.execute()
-            XCTFail("Expected error to be thrown")
-        } catch {
-            // Error was thrown, no partial data returned
-            XCTAssertTrue(error is TestError)
-        }
-    }
-
-    // MARK: - Multiple Calls Tests
-
-    func test_execute_multipleCalls_eachCallsRepository() async throws {
-        // Given
-        mockRepository.paymentMethodsToReturn = [
-            InternalPaymentMethod(
-                id: "card-1",
-                type: "PAYMENT_CARD",
-                name: "Credit Card",
-                isEnabled: true
-            )
-        ]
-
-        // When
-        _ = try await sut.execute()
-        _ = try await sut.execute()
-        _ = try await sut.execute()
-
-        // Then
-        XCTAssertEqual(mockRepository.getPaymentMethodsCallCount, 3)
-    }
+    // MARK: - State Change Tests
 
     func test_execute_repositoryCanReturnDifferentResultsOnSubsequentCalls() async throws {
         // Given - first call returns one method

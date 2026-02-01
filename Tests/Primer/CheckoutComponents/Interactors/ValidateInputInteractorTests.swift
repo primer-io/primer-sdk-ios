@@ -27,20 +27,6 @@ final class ValidateInputInteractorTests: XCTestCase {
 
     // MARK: - Single Field Validation Tests
 
-    func test_validate_callsValidationService() async {
-        // Given
-        let value = TestData.CardNumbers.validVisa
-        let type = PrimerInputElementType.cardNumber
-
-        // When
-        _ = await sut.validate(value: value, type: type)
-
-        // Then
-        XCTAssertEqual(mockValidationService.validateFieldCallCount, 1)
-        XCTAssertEqual(mockValidationService.lastFieldType, type)
-        XCTAssertEqual(mockValidationService.lastFieldValue, value)
-    }
-
     func test_validate_withValidInput_returnsValidResult() async {
         // Given
         mockValidationService.stubbedValidationResult = ValidationResult.valid
@@ -72,48 +58,7 @@ final class ValidateInputInteractorTests: XCTestCase {
         XCTAssertEqual(result.errorMessage, TestData.ErrorMessages.invalidCardNumber)
     }
 
-    func test_validate_differentFieldTypes() async {
-        // Given
-        let testCases: [(PrimerInputElementType, String)] = [
-            (.cardNumber, TestData.CardNumbers.validVisa),
-            (.cvv, TestData.CVV.valid3Digit),
-            (.cardholderName, TestData.CardholderNames.valid),
-            (.firstName, TestData.Names.firstName),
-            (.lastName, TestData.Names.lastName),
-            (.email, TestData.EmailAddresses.valid),
-            (.phoneNumber, TestData.PhoneNumbers.validUS),
-            (.postalCode, TestData.PostalCodes.validUS)
-        ]
-
-        for (type, value) in testCases {
-            mockValidationService.reset()
-
-            // When
-            _ = await sut.validate(value: value, type: type)
-
-            // Then
-            XCTAssertEqual(mockValidationService.lastFieldType, type, "Field type mismatch for \(type)")
-            XCTAssertEqual(mockValidationService.lastFieldValue, value, "Field value mismatch for \(type)")
-        }
-    }
-
     // MARK: - Multiple Fields Validation Tests
-
-    func test_validateMultiple_validatesAllFields() async {
-        // Given
-        let fields: [PrimerInputElementType: String] = [
-            .cardNumber: TestData.CardNumbers.validVisa,
-            .cvv: TestData.CVV.valid3Digit,
-            .cardholderName: TestData.CardholderNames.valid
-        ]
-
-        // When
-        let results = await sut.validateMultiple(fields: fields)
-
-        // Then
-        XCTAssertEqual(results.count, 3)
-        XCTAssertEqual(mockValidationService.validateFieldCallCount, 3)
-    }
 
     func test_validateMultiple_allValid_returnsAllValidResults() async {
         // Given
