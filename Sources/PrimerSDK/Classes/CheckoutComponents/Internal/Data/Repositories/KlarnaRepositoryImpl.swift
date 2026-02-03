@@ -369,11 +369,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         authorizationContinuation = nil
 
         guard approved else {
-          continuation.resume(
-            throwing: PrimerError.klarnaError(
-              message: "User did not approve Klarna payment",
-              diagnosticsId: UUID().uuidString
-            ))
+          continuation.resume(returning: .declined)
           return
         }
 
@@ -402,12 +398,13 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
         guard let continuation = finalizationContinuation else { return }
         finalizationContinuation = nil
 
-        guard approved, let authToken else {
-          continuation.resume(
-            throwing: PrimerError.klarnaError(
-              message: "Klarna finalization not approved",
-              diagnosticsId: UUID().uuidString
-            ))
+        guard approved else {
+          continuation.resume(returning: .declined)
+          return
+        }
+
+        guard let authToken else {
+          continuation.resume(throwing: KlarnaHelpers.getInvalidValueError(key: "authToken"))
           return
         }
 
