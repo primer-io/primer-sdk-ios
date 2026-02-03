@@ -8,6 +8,7 @@
 import UIKit
 
 @available(iOS 15.0, *)
+@MainActor
 final class MockKlarnaRepository: KlarnaRepository {
 
     // MARK: - Configurable Return Values

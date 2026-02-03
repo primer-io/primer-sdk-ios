@@ -7,6 +7,7 @@
 import UIKit
 
 @available(iOS 15.0, *)
+@MainActor
 final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
   private enum Timing {
@@ -52,7 +53,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
     PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.testId != nil
   }
 
-  init(
+  nonisolated init(
     apiClient: PrimerAPIClientProtocol? = nil,
     tokenizationService: TokenizationServiceProtocol = TokenizationService(),
     createResumePaymentService: CreateResumePaymentServiceProtocol? = nil
@@ -154,22 +155,21 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.viewLoadedContinuation)
         self.viewLoadedContinuation = continuation
-        DispatchQueue.main.async {
-          let provider = PrimerKlarnaProvider(
-            clientToken: clientToken,
-            paymentCategory: categoryId,
-            urlScheme: urlScheme
-          )
-          self.klarnaProvider = provider
 
-          provider.authorizationDelegate = self
-          provider.finalizationDelegate = self
-          provider.paymentViewDelegate = self
-          provider.errorDelegate = self
+        let provider = PrimerKlarnaProvider(
+          clientToken: clientToken,
+          paymentCategory: categoryId,
+          urlScheme: urlScheme
+        )
+        self.klarnaProvider = provider
 
-          provider.createPaymentView()
-          provider.initializePaymentView()
-        }
+        provider.authorizationDelegate = self
+        provider.finalizationDelegate = self
+        provider.paymentViewDelegate = self
+        provider.errorDelegate = self
+
+        provider.createPaymentView()
+        provider.initializePaymentView()
       }
     #else
       logger.warn(message: "PrimerKlarnaSDK not available. Klarna payment view cannot be loaded.")
@@ -206,9 +206,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.authorizationContinuation)
         self.authorizationContinuation = continuation
-        DispatchQueue.main.async {
-          provider.authorize(autoFinalize: true, jsonData: nil)
-        }
+        provider.authorize(autoFinalize: true, jsonData: nil)
       }
     #else
       throw KlarnaHelpers.getMissingSDKError()
@@ -237,9 +235,7 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
       return try await withCheckedThrowingContinuation { continuation in
         self.cancelPendingContinuation(&self.finalizationContinuation)
         self.finalizationContinuation = continuation
-        DispatchQueue.main.async {
-          provider.finalise(jsonData: nil)
-        }
+        provider.finalise(jsonData: nil)
       }
     #else
       throw KlarnaHelpers.getMissingSDKError()
@@ -367,96 +363,106 @@ final class KlarnaRepositoryImpl: KlarnaRepository, LogReporter {
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderAuthorizationDelegate {
-    func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
-      guard let continuation = authorizationContinuation else { return }
-      authorizationContinuation = nil
+    nonisolated func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
+      Task { @MainActor in
+        guard let continuation = authorizationContinuation else { return }
+        authorizationContinuation = nil
 
-      guard approved else {
-        continuation.resume(
-          throwing: PrimerError.klarnaError(
-            message: "User did not approve Klarna payment",
-            diagnosticsId: UUID().uuidString
-          ))
-        return
-      }
+        guard approved else {
+          continuation.resume(
+            throwing: PrimerError.klarnaError(
+              message: "User did not approve Klarna payment",
+              diagnosticsId: UUID().uuidString
+            ))
+          return
+        }
 
-      guard let authToken else {
-        continuation.resume(throwing: KlarnaHelpers.getInvalidValueError(key: "authToken"))
-        return
-      }
+        guard let authToken else {
+          continuation.resume(throwing: KlarnaHelpers.getInvalidValueError(key: "authToken"))
+          return
+        }
 
-      if finalizeRequired {
-        continuation.resume(returning: .finalizationRequired(authToken: authToken))
-      } else {
-        continuation.resume(returning: .approved(authToken: authToken))
+        if finalizeRequired {
+          continuation.resume(returning: .finalizationRequired(authToken: authToken))
+        } else {
+          continuation.resume(returning: .approved(authToken: authToken))
+        }
       }
     }
 
-    func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
+    nonisolated func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
       // Not used in CheckoutComponents flow
     }
   }
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderFinalizationDelegate {
-    func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
-      guard let continuation = finalizationContinuation else { return }
-      finalizationContinuation = nil
+    nonisolated func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
+      Task { @MainActor in
+        guard let continuation = finalizationContinuation else { return }
+        finalizationContinuation = nil
 
-      guard approved, let authToken else {
-        continuation.resume(
-          throwing: PrimerError.klarnaError(
-            message: "Klarna finalization not approved",
-            diagnosticsId: UUID().uuidString
-          ))
-        return
+        guard approved, let authToken else {
+          continuation.resume(
+            throwing: PrimerError.klarnaError(
+              message: "Klarna finalization not approved",
+              diagnosticsId: UUID().uuidString
+            ))
+          return
+        }
+
+        continuation.resume(returning: .approved(authToken: authToken))
       }
-
-      continuation.resume(returning: .approved(authToken: authToken))
     }
   }
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderPaymentViewDelegate {
-    func primerKlarnaWrapperInitialized() {
-      klarnaProvider?.loadPaymentView(jsonData: nil)
+    nonisolated func primerKlarnaWrapperInitialized() {
+      Task { @MainActor in
+        klarnaProvider?.loadPaymentView(jsonData: nil)
+      }
     }
 
-    func primerKlarnaWrapperResized(to newHeight: CGFloat) {
+    nonisolated func primerKlarnaWrapperResized(to newHeight: CGFloat) {
       // View resized - no action needed, SwiftUI handles layout
     }
 
-    func primerKlarnaWrapperLoaded() {
-      guard let continuation = viewLoadedContinuation else { return }
-      viewLoadedContinuation = nil
-      continuation.resume(returning: klarnaProvider?.paymentView)
+    nonisolated func primerKlarnaWrapperLoaded() {
+      Task { @MainActor in
+        guard let continuation = viewLoadedContinuation else { return }
+        viewLoadedContinuation = nil
+        continuation.resume(returning: klarnaProvider?.paymentView)
+      }
     }
 
-    func primerKlarnaWrapperReviewLoaded() {
+    nonisolated func primerKlarnaWrapperReviewLoaded() {
       // Review loaded - no action needed in CheckoutComponents
     }
   }
 
   @available(iOS 15.0, *)
   extension KlarnaRepositoryImpl: PrimerKlarnaProviderErrorDelegate {
-    func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
-      let primerError = PrimerError.klarnaError(
-        message: error.errorDescription,
-        diagnosticsId: error.diagnosticsId
-      )
+    nonisolated func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
+      Task { @MainActor in
+        let primerError = PrimerError.klarnaError(
+          message: error.errorDescription,
+          diagnosticsId: error.diagnosticsId
+        )
 
-      // Resume any pending continuation with the error
-      if let continuation = authorizationContinuation {
-        authorizationContinuation = nil
-        continuation.resume(throwing: primerError)
-      }
-      if let continuation = finalizationContinuation {
-        finalizationContinuation = nil
-        continuation.resume(throwing: primerError)
-      }
-      if let continuation = viewLoadedContinuation {
-        viewLoadedContinuation = nil
-        continuation.resume(throwing: primerError)
+        // Resume any pending continuation with the error
+        if let continuation = authorizationContinuation {
+          authorizationContinuation = nil
+          continuation.resume(throwing: primerError)
+        }
+        if let continuation = finalizationContinuation {
+          finalizationContinuation = nil
+          continuation.resume(throwing: primerError)
+        }
+        if let continuation = viewLoadedContinuation {
+          viewLoadedContinuation = nil
+          continuation.resume(throwing: primerError)
+        }
       }
     }
   }
