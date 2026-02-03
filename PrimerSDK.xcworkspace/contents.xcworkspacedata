@@ -23,106 +23,17 @@
                location = "group:CheckoutComponents"
                name = "CheckoutComponents">
                <FileRef
-                  location = "group:CLAUDE.md">
-               </FileRef>
-               <FileRef
-                  location = "group:README.md">
-               </FileRef>
-               <FileRef
                   location = "group:CheckoutComponentsPrimer.swift">
                </FileRef>
-               <FileRef
-                  location = "group:PrimerCheckout.swift">
-               </FileRef>
-               <Group
-                  location = "group:Accessibility"
-                  name = "Accessibility">
-                  <Group
-                     location = "group:Builders"
-                     name = "Builders">
-                  </Group>
-               </Group>
-               <Group
-                  location = "group:Analytics"
-                  name = "Analytics">
-                  <Group
-                     location = "group:Utils"
-                     name = "Utils">
-                  </Group>
-                  <Group
-                     location = "group:Data"
-                     name = "Data">
-                     <Group
-                        location = "group:Models"
-                        name = "Models">
-                        <FileRef
-                           location = "group:AnalyticsPayload.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventMetadata.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEnvironment.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsSessionConfig.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventType.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Protocols"
-                        name = "Protocols">
-                        <FileRef
-                           location = "group:AnalyticsServiceProtocol.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Services"
-                        name = "Services">
-                        <FileRef
-                           location = "group:AnalyticsPayloadBuilder.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsNetworkClient.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventService.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEnvironmentProvider.swift">
-                        </FileRef>
-                        <FileRef
-                           location = "group:AnalyticsEventBuffer.swift">
-                        </FileRef>
-                     </Group>
-                  </Group>
-                  <Group
-                     location = "group:Domain"
-                     name = "Domain">
-                     <Group
-                        location = "group:Interactors"
-                        name = "Interactors">
-                        <FileRef
-                           location = "group:DefaultAnalyticsInteractor.swift">
-                        </FileRef>
-                     </Group>
-                     <Group
-                        location = "group:Protocols"
-                        name = "Protocols">
-                        <FileRef
-                           location = "group:AnalyticsInteractorProtocol.swift">
-                        </FileRef>
-                     </Group>
-                  </Group>
-               </Group>
                <Group
                   location = "group:Core"
                   name = "Core">
                   <Group
                      location = "group:Data"
                      name = "Data">
+                     <FileRef
+                        location = "group:ApplePayFormState.swift">
+                     </FileRef>
                      <FileRef
                         location = "group:StructuredCardFormState.swift">
                      </FileRef>
@@ -268,6 +179,9 @@
                         location = "group:NAVIGATION_ARCHITECTURE_DECISION.md">
                      </FileRef>
                      <FileRef
+                        location = "group:BackportedNavigationStack.swift">
+                     </FileRef>
+                     <FileRef
                         location = "group:CheckoutRoute.swift">
                      </FileRef>
                      <FileRef
@@ -284,14 +198,24 @@
                         location = "group:MockCardFormScope.swift">
                      </FileRef>
                      <FileRef
+                        location = "group:RTLIcon.swift">
+                     </FileRef>
+                     <FileRef
                         location = "group:MockDIContainer.swift">
                      </FileRef>
                      <FileRef
                         location = "group:MockDesignTokens.swift">
                      </FileRef>
                      <FileRef
+                        location = "group:RTLSupport.swift">
+                     </FileRef>
+                     <FileRef
                         location = "group:MockValidationService.swift">
                      </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Environment"
+                     name = "Environment">
                   </Group>
                   <Group
                      location = "group:Accessibility"
@@ -331,7 +255,13 @@
                         location = "group:Services"
                         name = "Services">
                         <FileRef
+                           location = "group:UIAccessibilityNotificationPublisher.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:AccessibilityAnnouncementService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultUIAccessibilityNotificationPublisher.swift">
                         </FileRef>
                         <FileRef
                            location = "group:DefaultAccessibilityAnnouncementService.swift">
@@ -345,7 +275,13 @@
                         location = "group:Repositories"
                         name = "Repositories">
                         <FileRef
+                           location = "group:KlarnaRepositoryImpl.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:HeadlessRepositoryImpl.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PayPalRepositoryImpl.swift">
                         </FileRef>
                      </Group>
                      <Group
@@ -365,6 +301,12 @@
                         <FileRef
                            location = "group:HeadlessRepository.swift">
                         </FileRef>
+                        <FileRef
+                           location = "group:PayPalRepository.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaRepository.swift">
+                        </FileRef>
                      </Group>
                      <Group
                         location = "group:Models"
@@ -383,13 +325,32 @@
                            location = "group:ProcessCardPaymentInteractor.swift">
                         </FileRef>
                         <FileRef
+                           location = "group:SubmitVaultedPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessPayPalPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:CardNetworkDetectionInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessKlarnaPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessApplePayPaymentInteractor.swift">
                         </FileRef>
                         <FileRef
                            location = "group:GetPaymentMethodsInteractor.swift">
                         </FileRef>
                         <FileRef
                            location = "group:ValidateInputInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Helpers"
+                        name = "Helpers">
+                        <FileRef
+                           location = "group:ApplePayRequestBuilder.swift">
                         </FileRef>
                      </Group>
                   </Group>
@@ -434,6 +395,15 @@
                            location = "group:DefaultPaymentMethodSelectionScope.swift">
                         </FileRef>
                         <FileRef
+                           location = "group:DefaultPayPalScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultKlarnaScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultApplePayScope.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:DefaultCheckoutScope.swift">
                         </FileRef>
                      </Group>
@@ -451,7 +421,25 @@
                            location = "group:ErrorScreen.swift">
                         </FileRef>
                         <FileRef
+                           location = "group:DeleteVaultedPaymentMethodConfirmationScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PayPalView.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:SelectCountryScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultLoadingScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ApplePayScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaPaymentViewRepresentable.swift">
                         </FileRef>
                         <FileRef
                            location = "group:SplashScreen.swift">
@@ -465,15 +453,34 @@
                         <FileRef
                            location = "group:CardFormScreen.swift">
                         </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodsListScreen.swift">
+                        </FileRef>
                      </Group>
                      <Group
                         location = "group:Components"
                         name = "Components">
+                        <Group
+                           location = "group:DropdownCardNetworkSelector"
+                           name = "DropdownCardNetworkSelector">
+                           <FileRef
+                              location = "group:DropdownCardNetworkSelector.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodCard.swift">
+                        </FileRef>
                         <FileRef
                            location = "group:CheckoutScopeObserver.swift">
                         </FileRef>
                         <FileRef
                            location = "group:CardNetworkBadge.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethod+DisplayData.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodsSection.swift">
                         </FileRef>
                         <Group
                            location = "group:Composite"
@@ -486,10 +493,22 @@
                            </FileRef>
                         </Group>
                         <FileRef
+                           location = "group:ApplePayButtonView.swift">
+                        </FileRef>
+                        <FileRef
                            location = "group:PaymentMethodComponents.swift">
                         </FileRef>
                         <FileRef
                            location = "group:SDKInitializationViews.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodButton.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedCardCVVInput.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodDisplayData.swift">
                         </FileRef>
                         <Group
                            location = "group:Infrastructure"
@@ -518,8 +537,24 @@
                               </FileRef>
                            </Group>
                         </Group>
+                        <Group
+                           location = "group:InlineCardNetworkSelector"
+                           name = "InlineCardNetworkSelector">
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector+Border.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector+Button.swift">
+                           </FileRef>
+                        </Group>
                         <FileRef
-                           location = "group:AllowedCardNetworksView.swift">
+                           location = "group:CheckoutHeaderView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultSection.swift">
                         </FileRef>
                         <Group
                            location = "group:Inputs"
@@ -575,6 +610,9 @@
                               </FileRef>
                               <FileRef
                                  location = "group:CardNumberInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:DualBadgeDisplay.swift">
                               </FileRef>
                            </Group>
                            <Group
@@ -646,12 +684,25 @@
                            </Group>
                         </Group>
                      </Group>
+                     <Group
+                        location = "group:Views"
+                        name = "Views">
+                        <FileRef
+                           location = "group:CardFormFieldsView.swift">
+                        </FileRef>
+                     </Group>
                   </Group>
                   <Group
                      location = "group:Services"
                      name = "Services">
                      <FileRef
+                        location = "group:RawDataManagerProtocol.swift">
+                     </FileRef>
+                     <FileRef
                         location = "group:CheckoutSDKInitializer.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ConfigurationService.swift">
                      </FileRef>
                      <FileRef
                         location = "group:AnalyticsSessionConfigProviding.swift">
@@ -659,30 +710,44 @@
                   </Group>
                </Group>
                <Group
-                  location = "group:PaymentMethods"
-                  name = "PaymentMethods">
-                  <Group
-                     location = "group:Card"
-                     name = "Card">
-                     <FileRef
-                        location = "group:CardPaymentMethod.swift">
-                     </FileRef>
-                  </Group>
-               </Group>
-               <Group
                   location = "group:Scope"
                   name = "Scope">
                   <FileRef
-                     location = "group:PrimerSelectCountryScope.swift">
+                     location = "group:InputFieldConfig.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:PrimerSelectCountryScope.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Providers"
+                     name = "Providers">
+                     <FileRef
+                        location = "group:SelectCountryProvider.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PaymentMethodSelectionProvider.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CardFormProvider.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
                      location = "group:PrimerFieldStyling.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerApplePayScope.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerCheckoutScope.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:PrimerPayPalScope.swift">
+                  </FileRef>
+                  <FileRef
                      location = "group:PrimerPaymentMethodScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerKlarnaScope.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerCardFormScope.swift">
@@ -690,6 +755,191 @@
                   <FileRef
                      location = "group:PrimerPaymentMethodSelectionScope.swift">
                   </FileRef>
+                  <FileRef
+                     location = "group:ComponentTypeAliases.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerEnvironment.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CheckoutComponentsTheme.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:PaymentMethods"
+                  name = "PaymentMethods">
+                  <Group
+                     location = "group:Klarna"
+                     name = "Klarna">
+                     <FileRef
+                        location = "group:KlarnaPaymentMethod.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:KlarnaState.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Card"
+                     name = "Card">
+                     <FileRef
+                        location = "group:CardPaymentMethod.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:PayPal"
+                     name = "PayPal">
+                     <FileRef
+                        location = "group:PayPalPaymentMethod.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PayPalState.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:ApplePay"
+                     name = "ApplePay">
+                     <FileRef
+                        location = "group:ApplePayPaymentMethod.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:README.md">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckout.swift">
+               </FileRef>
+               <Group
+                  location = "group:Accessibility"
+                  name = "Accessibility">
+                  <Group
+                     location = "group:Builders"
+                     name = "Builders">
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Logging"
+                  name = "Logging">
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:LogPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LoggingSessionContext.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogMessageObject.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DatadogLogStatus.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:LogNetworkClient.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LoggingService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogNetworkClientProtocol.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogPayloadBuilder.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SensitiveDataMasker.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogEnvironmentProvider.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:CLAUDE.md">
+               </FileRef>
+               <Group
+                  location = "group:Analytics"
+                  name = "Analytics">
+                  <Group
+                     location = "group:Utils"
+                     name = "Utils">
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:AnalyticsPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventMetadata.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironment.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsSessionConfig.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventType.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsServiceProtocol.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:AnalyticsPayloadBuilder.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsNetworkClient.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironmentProvider.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventBuffer.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:DefaultAnalyticsInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsInteractorProtocol.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
                </Group>
             </Group>
             <Group
