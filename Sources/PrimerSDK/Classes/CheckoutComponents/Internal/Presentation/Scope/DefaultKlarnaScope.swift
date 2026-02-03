@@ -84,7 +84,11 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
   public func cancel() {
     logger.debug(message: "Klarna payment cancelled")
-    checkoutScope?.onDismiss()
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated during cancel")
+      return
+    }
+    checkoutScope.onDismiss()
   }
 
   // MARK: - Klarna Flow Actions
@@ -138,13 +142,20 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   // MARK: - Navigation Methods
 
   public func onBack() {
-    if presentationContext.shouldShowBackButton {
-      checkoutScope?.checkoutNavigator.navigateBack()
+    guard presentationContext.shouldShowBackButton else { return }
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated during navigation back")
+      return
     }
+    checkoutScope.checkoutNavigator.navigateBack()
   }
 
   public func onCancel() {
-    checkoutScope?.onDismiss()
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated during cancel")
+      return
+    }
+    checkoutScope.onDismiss()
   }
 
   // MARK: - Private Flow Methods
@@ -215,7 +226,11 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   }
 
   private func performAuthorization() async {
-    checkoutScope?.startProcessing()
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated before authorization")
+      return
+    }
+    checkoutScope.startProcessing()
 
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
@@ -248,7 +263,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
           message: "Klarna payment was declined",
           diagnosticsId: UUID().uuidString
         )
-        checkoutScope?.handlePaymentError(primerError)
+        checkoutScope.handlePaymentError(primerError)
       }
     } catch {
       handleError(error, context: "authorization")
@@ -256,7 +271,11 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   }
 
   private func performFinalization() async {
-    checkoutScope?.startProcessing()
+    guard let checkoutScope else {
+      logger.warn(message: "Klarna checkout scope was deallocated before finalization")
+      return
+    }
+    checkoutScope.startProcessing()
 
     do {
       let result = try await processKlarnaInteractor.finalize()
@@ -285,7 +304,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
           message: "Klarna finalization was declined",
           diagnosticsId: UUID().uuidString
         )
-        checkoutScope?.handlePaymentError(primerError)
+        checkoutScope.handlePaymentError(primerError)
       }
     } catch {
       handleError(error, context: "finalization")
