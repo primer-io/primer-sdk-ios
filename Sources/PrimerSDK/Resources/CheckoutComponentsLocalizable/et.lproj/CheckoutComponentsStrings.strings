@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Topeltpuudutage, et makse lõpule viia";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Pangakonto";
+"primer_ach_user_details_title" = "Sisestage oma andmed pangakonto ühendamiseks";
+"primer_ach_button_continue" = "Jätka";
+"primer_ach_mandate_title" = "Volitus";
+"primer_ach_mandate_button_accept" = "Nõustun";
+"primer_ach_mandate_button_decline" = "Tühista";
+"primer_ach_mandate_template" = "Klõpsates \"Nõustun\", volitate %1$@ debiteerima ülaltoodud pangakontot mis tahes võlgnetava summa ulatuses tasude eest, mis tulenevad %1$@ teenuste kasutamisest ja/või %1$@ toodete ostmisest, vastavalt %1$@ veebisaidile ja tingimustele, kuni see volitus tühistatakse. Võite seda volitust igal ajal muuta või tühistada, teatades sellest %1$@-le 30 (kolmkümmend) päeva ette.";
+"accessibility_ach_continue_hint" = "Topeltpuudutage, et jätkata pangakonto valikuga";
+"accessibility_ach_mandate_accept_hint" = "Topeltpuudutage, et nõustuda volitusega ja lõpetada makse";
+"accessibility_ach_mandate_decline_hint" = "Topeltpuudutage, et keelduda ja tühistada makse";

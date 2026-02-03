@@ -161,7 +161,7 @@
 "accessibility_common_back" = "Վերադառնալ";
 "accessibility_common_dismiss" = "Հեռացնել";
 "accessibility_common_selected" = "Ընտրված";
-"accessibility_common_show_all" = " Delays";
+"accessibility_common_show_all" = "Ձույց տալ բոլոր պահպանված վճարման եղանակները";
 "accessibility_screen_success" = "Վճարումն իրականացվել է";
 "accessibility_screen_error" = "Վճարման սխալ է տեղի ունեցել";
 "accessibility_screen_country_selection" = "Ընտրեք երկիր";
@@ -183,14 +183,14 @@
 "accessibility_action_set_default" = "Սահմանել որպես կանխադրված վճարման եղանակ";
 "accessibility_checkout_success_icon" = "Վճարումն իրականացվել է";
 "accessibility_checkout_error_icon" = "Սխալ";
-"accessibility_vault_delete_payment_method" = "Ջdelays";
-"accessibility_vaulted_ach" = "%@ delays";
-"accessibility_vaulted_ach_full" = "%@ delays %@-delays";
-"accessibility_vaulted_card_full" = "%@ delays %@-delays, delays %@, %@";
-"accessibility_vaulted_card_no_name" = "%@ delays %@-delays, delays %@";
+"accessibility_vault_delete_payment_method" = "Ջնջել այս վճարման եղանակը";
+"accessibility_vaulted_ach" = "%@ բանկային հաշիվ";
+"accessibility_vaulted_ach_full" = "%@ բանկային հաշիվ, վերջանում է %@-ով";
+"accessibility_vaulted_card_full" = "%@ քարտ, վերջանում է %@-ով, ժամկետ %@, %@";
+"accessibility_vaulted_card_no_name" = "%@ քարտ, վերջանում է %@-ով, ժամկետ %@";
 "accessibility_vaulted_klarna" = "Klarna";
 "accessibility_vaulted_klarna_email" = "Klarna, %@";
-"accessibility_vaulted_payment_method" = "delays: %@";
+"accessibility_vaulted_payment_method" = "Պահպանված վճարման եղանակ։ %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal, %@";
 "accessibility_screen_payment_method" = "%@ վճարման եղանակ";
@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Կրկնակի հպեք՝ վճարումն ավարտելու համար";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Բանկային հաշիվ";
+"primer_ach_user_details_title" = "Մուտքագրեք ձեր տվյալները՝ ձեր բանկային հաշիվը կապելու համար";
+"primer_ach_button_continue" = "Շարունակել";
+"primer_ach_mandate_title" = "Թույլատվություն";
+"primer_ach_mandate_button_accept" = "Համաձայն եմ";
+"primer_ach_mandate_button_decline" = "Չեղարկել";
+"primer_ach_mandate_template" = "«Համաձայն եմ» կոճակին սեղմելով՝ դուք թույլատրում եք %1$@-ին գումարներ դուրս գրել վերը նշված բանկային հաշվից՝ %1$@-ի ծառայությունների օգտագործման և/կամ %1$@-ից ապրանքներ գնելու համար ծագած պարտավորությունների ցանկացած գումարները՝ %1$@-ի կայքի և պայմանների համաձայն՝ մինչև այս թույլատվությունը չեղարկվի։ Դուք կարող եք փոփոխել կամ չեղարկել այս թույլատվությունը ցանկացած պահին՝ %1$@-ին 30 (երեսուն) օր առաջ ծանուցելով։";
+"accessibility_ach_continue_hint" = "Կրկնակի հպեք՝ բանկային հաշվի ընտրությանը շարունակելու համար";
+"accessibility_ach_mandate_accept_hint" = "Կրկնակի հպեք՝ թույլատվությունն ընդունելու և վճարումն ավարտելու համար";
+"accessibility_ach_mandate_decline_hint" = "Կրկնակի հպեք՝ մերժելու և վճարումը չեղարկելու համար";

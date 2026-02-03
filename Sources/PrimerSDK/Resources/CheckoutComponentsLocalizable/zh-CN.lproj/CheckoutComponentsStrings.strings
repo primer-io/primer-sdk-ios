@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "双击以完成付款";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "银行账户";
+"primer_ach_user_details_title" = "输入您的信息以连接银行账户";
+"primer_ach_button_continue" = "继续";
+"primer_ach_mandate_title" = "授权";
+"primer_ach_mandate_button_accept" = "我同意";
+"primer_ach_mandate_button_decline" = "取消";
+"primer_ach_mandate_template" = "点击\"我同意\"，即表示您授权 %1$@ 根据 %1$@ 的网站和条款，从上述指定的银行账户中扣除因使用 %1$@ 服务和/或从 %1$@ 购买产品而产生的任何应付费用金额，直至该授权被撤销。您可以随时通过提前 30（三十）天通知 %1$@ 来修改或取消此授权。";
+"accessibility_ach_continue_hint" = "双击以继续选择银行账户";
+"accessibility_ach_mandate_accept_hint" = "双击以接受授权并完成付款";
+"accessibility_ach_mandate_decline_hint" = "双击以拒绝并取消付款";

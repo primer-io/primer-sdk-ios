@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Prekni dy herë për të përfunduar pagesën";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Llogari bankare";
+"primer_ach_user_details_title" = "Fut të dhënat e tua për të lidhur llogarinë bankare";
+"primer_ach_button_continue" = "Vazhdo";
+"primer_ach_mandate_title" = "Autorizim";
+"primer_ach_mandate_button_accept" = "Pranoj";
+"primer_ach_mandate_button_decline" = "Anulo";
+"primer_ach_mandate_template" = "Duke klikuar \"Pranoj\", ju autorizoni %1$@ të debitojë llogarinë bankare të specifikuar më sipër për çdo shumë të detyruar për tarifa që rrjedhin nga përdorimi juaj i shërbimeve të %1$@ dhe/ose blerja e produkteve nga %1$@, sipas faqes së internetit dhe kushteve të %1$@, derisa ky autorizim të revokohet. Ju mund ta ndryshoni ose anuloni këtë autorizim në çdo kohë duke njoftuar %1$@ me 30 (tridhjetë) ditë njoftim paraprak.";
+"accessibility_ach_continue_hint" = "Prekni dy herë për të vazhduar me zgjedhjen e llogarisë bankare";
+"accessibility_ach_mandate_accept_hint" = "Prekni dy herë për të pranuar autorizimin dhe përfunduar pagesën";
+"accessibility_ach_mandate_decline_hint" = "Prekni dy herë për të refuzuar dhe anuluar pagesën";

@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Dobbelttrykk for å fullføre betalingen";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Bankkonto";
+"primer_ach_user_details_title" = "Skriv inn opplysningene dine for å koble til bankkontoen din";
+"primer_ach_button_continue" = "Fortsett";
+"primer_ach_mandate_title" = "Autorisasjon";
+"primer_ach_mandate_button_accept" = "Jeg godtar";
+"primer_ach_mandate_button_decline" = "Avbryt";
+"primer_ach_mandate_template" = "Ved å klikke på \"Jeg godtar\" autoriserer du %1$@ til å belaste bankkontoen som er angitt ovenfor for ethvert skyldig beløp for gebyrer som oppstår fra din bruk av %1$@s tjenester og/eller kjøp av produkter fra %1$@, i henhold til %1$@s nettsted og vilkår, inntil denne autorisasjonen tilbakekalles. Du kan endre eller kansellere denne autorisasjonen når som helst ved å gi %1$@ beskjed med 30 (tretti) dagers varsel.";
+"accessibility_ach_continue_hint" = "Dobbelttrykk for å fortsette til valg av bankkonto";
+"accessibility_ach_mandate_accept_hint" = "Dobbelttrykk for å godta autorisasjonen og fullføre betalingen";
+"accessibility_ach_mandate_decline_hint" = "Dobbelttrykk for å avvise og avbryte betalingen";

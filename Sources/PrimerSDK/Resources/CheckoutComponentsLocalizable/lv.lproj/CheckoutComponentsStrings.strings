@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Veiciet dubultskārienu, lai pabeigtu maksājumu";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Bankas konts";
+"primer_ach_user_details_title" = "Ievadiet savus datus, lai pievienotu bankas kontu";
+"primer_ach_button_continue" = "Turpināt";
+"primer_ach_mandate_title" = "Autorizācija";
+"primer_ach_mandate_button_accept" = "Es piekrītu";
+"primer_ach_mandate_button_decline" = "Atcelt";
+"primer_ach_mandate_template" = "Noklikšķinot uz \"Es piekrītu\", jūs pilnvarojat %1$@ norakstīt no iepriekš norādītā bankas konta jebkuru parāda summu par maksājumiem, kas rodas, izmantojot %1$@ pakalpojumus un/vai iegādājoties produktus no %1$@, saskaņā ar %1$@ vietni un noteikumiem, līdz šī pilnvara tiek atsaukta. Jūs varat mainīt vai atcelt šo pilnvaru jebkurā laikā, paziņojot %1$@ 30 (trīsdesmit) dienas iepriekš.";
+"accessibility_ach_continue_hint" = "Veiciet dubultskārienu, lai turpinātu bankas konta izvēli";
+"accessibility_ach_mandate_accept_hint" = "Veiciet dubultskārienu, lai pieņemtu autorizāciju un pabeigtu maksājumu";
+"accessibility_ach_mandate_decline_hint" = "Veiciet dubultskārienu, lai noraidītu un atceltu maksājumu";

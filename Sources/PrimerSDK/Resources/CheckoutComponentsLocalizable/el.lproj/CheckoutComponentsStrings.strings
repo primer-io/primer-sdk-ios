@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Πατήστε δύο φορές για να ολοκληρώσετε την πληρωμή";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Τραπεζικός λογαριασμός";
+"primer_ach_user_details_title" = "Εισάγετε τα στοιχεία σας για να συνδέσετε τον τραπεζικό σας λογαριασμό";
+"primer_ach_button_continue" = "Συνέχεια";
+"primer_ach_mandate_title" = "Εξουσιοδότηση";
+"primer_ach_mandate_button_accept" = "Συμφωνώ";
+"primer_ach_mandate_button_decline" = "Ακύρωση";
+"primer_ach_mandate_template" = "Κάνοντας κλικ στο \"Συμφωνώ\", εξουσιοδοτείτε την %1$@ να χρεώσει τον τραπεζικό λογαριασμό που αναφέρεται παραπάνω για οποιοδήποτε οφειλόμενο ποσό για χρεώσεις που προκύπτουν από τη χρήση των υπηρεσιών της %1$@ και/ή την αγορά προϊόντων από την %1$@, σύμφωνα με τον ιστότοπο και τους όρους της %1$@, μέχρι να ανακληθεί αυτή η εξουσιοδότηση. Μπορείτε να τροποποιήσετε ή να ακυρώσετε αυτήν την εξουσιοδότηση ανά πάσα στιγμή ειδοποιώντας την %1$@ με 30 (τριάντα) ημέρες προειδοποίηση.";
+"accessibility_ach_continue_hint" = "Πατήστε δύο φορές για να συνεχίσετε στην επιλογή τραπεζικού λογαριασμού";
+"accessibility_ach_mandate_accept_hint" = "Πατήστε δύο φορές για να αποδεχτείτε την εξουσιοδότηση και να ολοκληρώσετε την πληρωμή";
+"accessibility_ach_mandate_decline_hint" = "Πατήστε δύο φορές για να απορρίψετε και να ακυρώσετε την πληρωμή";

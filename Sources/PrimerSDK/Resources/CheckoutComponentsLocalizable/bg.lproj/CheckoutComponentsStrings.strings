@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Докоснете двукратно, за да завършите плащането";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Банкова сметка";
+"primer_ach_user_details_title" = "Въведете данните си, за да свържете банковата си сметка";
+"primer_ach_button_continue" = "Продължи";
+"primer_ach_mandate_title" = "Упълномощаване";
+"primer_ach_mandate_button_accept" = "Съгласен съм";
+"primer_ach_mandate_button_decline" = "Отказ";
+"primer_ach_mandate_template" = "С натискане на \"Съгласен съм\" вие упълномощавате %1$@ да дебитира посочената по-горе банкова сметка за всяка дължима сума за такси, произтичащи от използването на услугите на %1$@ и/или закупуването на продукти от %1$@, съгласно уебсайта и условията на %1$@, докато това упълномощаване не бъде отменено. Можете да промените или отмените това упълномощаване по всяко време, като уведомите %1$@ с 30 (тридесет) дни предизвестие.";
+"accessibility_ach_continue_hint" = "Докоснете два пъти, за да продължите към избор на банкова сметка";
+"accessibility_ach_mandate_accept_hint" = "Докоснете два пъти, за да приемете упълномощаването и да завършите плащането";
+"accessibility_ach_mandate_decline_hint" = "Докоснете два пъти, за да откажете и отмените плащането";

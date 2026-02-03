@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Двапут додирните да завршите плаћање";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Банковни рачун";
+"primer_ach_user_details_title" = "Унесите своје податке да повежете банковни рачун";
+"primer_ach_button_continue" = "Настави";
+"primer_ach_mandate_title" = "Ауторизација";
+"primer_ach_mandate_button_accept" = "Слажем се";
+"primer_ach_mandate_button_decline" = "Откажи";
+"primer_ach_mandate_template" = "Кликом на \"Слажем се\", овлашћујете %1$@ да задужи горе наведени банковни рачун за било који дуговани износ за трошкове који произилазе из вашег коришћења услуга %1$@ и/или куповине производа од %1$@, у складу са веб-сајтом и условима %1$@, док се ова ауторизација не опозове. Можете изменити или отказати ову ауторизацију у било ком тренутку обавештавајући %1$@ са 30 (тридесет) дана унапред.";
+"accessibility_ach_continue_hint" = "Двапут додирните да наставите са избором банковног рачуна";
+"accessibility_ach_mandate_accept_hint" = "Двапут додирните да прихватите ауторизацију и завршите плаћање";
+"accessibility_ach_mandate_decline_hint" = "Двапут додирните да одбијете и откажете плаћање";

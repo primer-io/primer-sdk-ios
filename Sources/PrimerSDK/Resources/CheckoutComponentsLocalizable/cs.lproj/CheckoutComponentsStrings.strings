@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Dvojitým klepnutím dokončete platbu";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Bankovní účet";
+"primer_ach_user_details_title" = "Zadejte své údaje pro připojení bankovního účtu";
+"primer_ach_button_continue" = "Pokračovat";
+"primer_ach_mandate_title" = "Autorizace";
+"primer_ach_mandate_button_accept" = "Souhlasím";
+"primer_ach_mandate_button_decline" = "Zrušit";
+"primer_ach_mandate_template" = "Kliknutím na \"Souhlasím\" opravňujete %1$@ k inkasu z výše uvedeného bankovního účtu jakékoli dlužné částky za poplatky vzniklé v souvislosti s používáním služeb %1$@ a/nebo nákupem produktů od %1$@, v souladu s webovými stránkami a podmínkami %1$@, dokud nebude toto oprávnění odvoláno. Toto oprávnění můžete kdykoli změnit nebo zrušit oznámením %1$@ s 30 (třiceti) denní výpovědní lhůtou.";
+"accessibility_ach_continue_hint" = "Dvojitým klepnutím pokračujte k výběru bankovního účtu";
+"accessibility_ach_mandate_accept_hint" = "Dvojitým klepnutím přijměte autorizaci a dokončete platbu";
+"accessibility_ach_mandate_decline_hint" = "Dvojitým klepnutím odmítněte a zrušte platbu";

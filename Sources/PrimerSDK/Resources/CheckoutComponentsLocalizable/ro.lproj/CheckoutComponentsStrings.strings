@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Atingeți de două ori pentru a finaliza plata";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Cont bancar";
+"primer_ach_user_details_title" = "Introduceți datele dvs. pentru a conecta contul bancar";
+"primer_ach_button_continue" = "Continuă";
+"primer_ach_mandate_title" = "Autorizare";
+"primer_ach_mandate_button_accept" = "Sunt de acord";
+"primer_ach_mandate_button_decline" = "Anulează";
+"primer_ach_mandate_template" = "Făcând clic pe \"Sunt de acord\", autorizați %1$@ să debiteze contul bancar specificat mai sus pentru orice sumă datorată pentru taxele rezultate din utilizarea serviciilor %1$@ și/sau achiziționarea de produse de la %1$@, conform site-ului web și termenilor %1$@, până când această autorizare este revocată. Puteți modifica sau anula această autorizare în orice moment, notificând %1$@ cu 30 (treizeci) de zile în avans.";
+"accessibility_ach_continue_hint" = "Atingeți de două ori pentru a continua la selectarea contului bancar";
+"accessibility_ach_mandate_accept_hint" = "Atingeți de două ori pentru a accepta autorizarea și a finaliza plata";
+"accessibility_ach_mandate_decline_hint" = "Atingeți de două ori pentru a refuza și a anula plata";

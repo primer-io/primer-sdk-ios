@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Ödemeyi tamamlamak için çift dokunun";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Banka Hesabı";
+"primer_ach_user_details_title" = "Banka hesabınızı bağlamak için bilgilerinizi girin";
+"primer_ach_button_continue" = "Devam Et";
+"primer_ach_mandate_title" = "Yetkilendirme";
+"primer_ach_mandate_button_accept" = "Kabul Ediyorum";
+"primer_ach_mandate_button_decline" = "İptal";
+"primer_ach_mandate_template" = "\"Kabul Ediyorum\"a tıklayarak, %1$@ hizmetlerini kullanımınızdan ve/veya %1$@'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, %1$@'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekme yetkisi verirsiniz. Bu yetkiyi istediğiniz zaman %1$@'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.";
+"accessibility_ach_continue_hint" = "Banka hesabı seçimine devam etmek için çift dokunun";
+"accessibility_ach_mandate_accept_hint" = "Yetkilendirmeyi kabul etmek ve ödemeyi tamamlamak için çift dokunun";
+"accessibility_ach_mandate_decline_hint" = "Reddetmek ve ödemeyi iptal etmek için çift dokunun";

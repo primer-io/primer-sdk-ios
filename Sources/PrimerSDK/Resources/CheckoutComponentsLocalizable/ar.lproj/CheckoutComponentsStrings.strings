@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "انقر مرتين لإتمام الدفع";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "حساب بنكي";
+"primer_ach_user_details_title" = "أدخل بياناتك لربط حسابك البنكي";
+"primer_ach_button_continue" = "متابعة";
+"primer_ach_mandate_title" = "تفويض";
+"primer_ach_mandate_button_accept" = "أوافق";
+"primer_ach_mandate_button_decline" = "إلغاء";
+"primer_ach_mandate_template" = "بالنقر على \"أوافق\"، فإنك تفوّض %1$@ بخصم أي مبلغ مستحق من الحساب البنكي المحدد أعلاه مقابل الرسوم الناتجة عن استخدامك لخدمات %1$@ و/أو شراء منتجات من %1$@، وفقاً لموقع %1$@ وشروطه، حتى يتم إلغاء هذا التفويض. يمكنك تعديل أو إلغاء هذا التفويض في أي وقت بإخطار %1$@ قبل 30 (ثلاثين) يوماً.";
+"accessibility_ach_continue_hint" = "انقر مرتين للمتابعة إلى اختيار الحساب البنكي";
+"accessibility_ach_mandate_accept_hint" = "انقر مرتين لقبول التفويض وإتمام الدفع";
+"accessibility_ach_mandate_decline_hint" = "انقر مرتين للرفض وإلغاء الدفع";

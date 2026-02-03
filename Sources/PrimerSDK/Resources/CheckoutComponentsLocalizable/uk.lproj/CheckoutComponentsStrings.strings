@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Торкніться двічі, щоб завершити оплату";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Банківський рахунок";
+"primer_ach_user_details_title" = "Введіть свої дані для підключення банківського рахунку";
+"primer_ach_button_continue" = "Продовжити";
+"primer_ach_mandate_title" = "Авторизація";
+"primer_ach_mandate_button_accept" = "Я погоджуюся";
+"primer_ach_mandate_button_decline" = "Скасувати";
+"primer_ach_mandate_template" = "Натискаючи \"Я погоджуюся\", ви дозволяєте %1$@ списувати з вказаного вище банківського рахунку будь-яку суму заборгованості за платежі, що виникають у зв'язку з використанням послуг %1$@ та/або придбанням продуктів у %1$@, відповідно до веб-сайту та умов %1$@, до скасування цього дозволу. Ви можете змінити або скасувати цей дозвіл у будь-який час, повідомивши %1$@ за 30 (тридцять) днів.";
+"accessibility_ach_continue_hint" = "Торкніться двічі, щоб продовжити до вибору банківського рахунку";
+"accessibility_ach_mandate_accept_hint" = "Торкніться двічі, щоб прийняти авторизацію та завершити оплату";
+"accessibility_ach_mandate_decline_hint" = "Торкніться двічі, щоб відхилити та скасувати оплату";

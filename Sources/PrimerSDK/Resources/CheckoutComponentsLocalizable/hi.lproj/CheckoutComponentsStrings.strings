@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "भुगतान पूरा करने के लिए डबल टैप करें";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "बैंक खाता";
+"primer_ach_user_details_title" = "अपना बैंक खाता जोड़ने के लिए अपना विवरण दर्ज करें";
+"primer_ach_button_continue" = "जारी रखें";
+"primer_ach_mandate_title" = "प्राधिकरण";
+"primer_ach_mandate_button_accept" = "मैं सहमत हूं";
+"primer_ach_mandate_button_decline" = "रद्द करें";
+"primer_ach_mandate_template" = "\"मैं सहमत हूं\" पर क्लिक करके, आप %1$@ को ऊपर निर्दिष्ट बैंक खाते से %1$@ की सेवाओं के आपके उपयोग और/या %1$@ से उत्पादों की खरीद से उत्पन्न शुल्कों के लिए बकाया किसी भी राशि को, %1$@ की वेबसाइट और शर्तों के अनुसार, इस प्राधिकरण के रद्द होने तक डेबिट करने के लिए अधिकृत करते हैं। आप %1$@ को 30 (तीस) दिन की पूर्व सूचना देकर किसी भी समय इस प्राधिकरण को संशोधित या रद्द कर सकते हैं।";
+"accessibility_ach_continue_hint" = "बैंक खाता चयन पर जारी रखने के लिए डबल टैप करें";
+"accessibility_ach_mandate_accept_hint" = "प्राधिकरण स्वीकार करने और भुगतान पूरा करने के लिए डबल टैप करें";
+"accessibility_ach_mandate_decline_hint" = "अस्वीकार करने और भुगतान रद्द करने के लिए डबल टैप करें";

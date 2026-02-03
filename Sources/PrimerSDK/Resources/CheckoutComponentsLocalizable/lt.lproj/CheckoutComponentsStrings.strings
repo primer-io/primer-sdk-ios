@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Bakstelėkite du kartus, kad užbaigtumėte mokėjimą";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Banko sąskaita";
+"primer_ach_user_details_title" = "Įveskite savo duomenis, kad prijungtumėte banko sąskaitą";
+"primer_ach_button_continue" = "Tęsti";
+"primer_ach_mandate_title" = "Autorizacija";
+"primer_ach_mandate_button_accept" = "Sutinku";
+"primer_ach_mandate_button_decline" = "Atšaukti";
+"primer_ach_mandate_template" = "Spustelėdami \"Sutinku\", jūs įgaliojate %1$@ nurašyti iš aukščiau nurodytos banko sąskaitos bet kokią sumą, skirtą mokesčiams, atsirandantiems dėl %1$@ paslaugų naudojimo ir/ar produktų įsigijimo iš %1$@, pagal %1$@ svetainę ir sąlygas, kol šis įgaliojimas bus atšauktas. Šį įgaliojimą galite pakeisti arba atšaukti bet kuriuo metu, pranešdami %1$@ prieš 30 (trisdešimt) dienų.";
+"accessibility_ach_continue_hint" = "Bakstelėkite du kartus, kad tęstumėte banko sąskaitos pasirinkimą";
+"accessibility_ach_mandate_accept_hint" = "Bakstelėkite du kartus, kad priimtumėte autorizaciją ir užbaigtumėte mokėjimą";
+"accessibility_ach_mandate_decline_hint" = "Bakstelėkite du kartus, kad atmestumėte ir atšauktumėte mokėjimą";

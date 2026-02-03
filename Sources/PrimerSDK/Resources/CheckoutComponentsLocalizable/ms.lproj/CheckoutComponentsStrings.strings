@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Ketik dua kali untuk menyelesaikan pembayaran";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Akaun Bank";
+"primer_ach_user_details_title" = "Masukkan butiran anda untuk menghubungkan akaun bank anda";
+"primer_ach_button_continue" = "Teruskan";
+"primer_ach_mandate_title" = "Kebenaran";
+"primer_ach_mandate_button_accept" = "Saya Setuju";
+"primer_ach_mandate_button_decline" = "Batal";
+"primer_ach_mandate_template" = "Dengan mengklik \"Saya Setuju\", anda membenarkan %1$@ untuk mendebit akaun bank yang dinyatakan di atas untuk sebarang jumlah yang terhutang bagi caj yang timbul daripada penggunaan perkhidmatan %1$@ dan/atau pembelian produk daripada %1$@, menurut laman web dan terma %1$@, sehingga kebenaran ini dibatalkan. Anda boleh meminda atau membatalkan kebenaran ini pada bila-bila masa dengan memberikan notis kepada %1$@ dengan 30 (tiga puluh) hari notis.";
+"accessibility_ach_continue_hint" = "Ketik dua kali untuk meneruskan pemilihan akaun bank";
+"accessibility_ach_mandate_accept_hint" = "Ketik dua kali untuk menerima kebenaran dan menyelesaikan pembayaran";
+"accessibility_ach_mandate_decline_hint" = "Ketik dua kali untuk menolak dan membatalkan pembayaran";

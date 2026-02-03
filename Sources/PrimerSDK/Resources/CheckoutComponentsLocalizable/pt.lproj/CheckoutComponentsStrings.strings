@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "Toque duas vezes para concluir o pagamento";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "Conta bancária";
+"primer_ach_user_details_title" = "Introduza os seus dados para ligar a sua conta bancária";
+"primer_ach_button_continue" = "Continuar";
+"primer_ach_mandate_title" = "Autorização";
+"primer_ach_mandate_button_accept" = "Concordo";
+"primer_ach_mandate_button_decline" = "Cancelar";
+"primer_ach_mandate_template" = "Ao clicar em \"Concordo\", autoriza %1$@ a debitar a conta bancária especificada acima por qualquer montante devido por encargos decorrentes da utilização dos serviços de %1$@ e/ou compra de produtos de %1$@, de acordo com o website e os termos de %1$@, até que esta autorização seja revogada. Pode alterar ou cancelar esta autorização a qualquer momento, notificando %1$@ com 30 (trinta) dias de antecedência.";
+"accessibility_ach_continue_hint" = "Toque duas vezes para continuar para a seleção da conta bancária";
+"accessibility_ach_mandate_accept_hint" = "Toque duas vezes para aceitar a autorização e concluir o pagamento";
+"accessibility_ach_mandate_decline_hint" = "Toque duas vezes para recusar e cancelar o pagamento";

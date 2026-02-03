@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "결제를 완료하려면 두 번 탭하세요";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "은행 계좌";
+"primer_ach_user_details_title" = "은행 계좌를 연결하려면 정보를 입력하세요";
+"primer_ach_button_continue" = "계속";
+"primer_ach_mandate_title" = "승인";
+"primer_ach_mandate_button_accept" = "동의합니다";
+"primer_ach_mandate_button_decline" = "취소";
+"primer_ach_mandate_template" = "\"동의합니다\"를 클릭하면 %1$@의 서비스 이용 및/또는 %1$@의 제품 구매로 인해 발생하는 요금에 대해 위에 명시된 은행 계좌에서 %1$@의 웹사이트 및 약관에 따라 이 승인이 취소될 때까지 모든 미지급 금액을 인출할 수 있도록 %1$@에 승인합니다. 30(삼십)일 전에 %1$@에 통지하여 언제든지 이 승인을 수정하거나 취소할 수 있습니다.";
+"accessibility_ach_continue_hint" = "은행 계좌 선택으로 계속하려면 두 번 탭하세요";
+"accessibility_ach_mandate_accept_hint" = "승인을 수락하고 결제를 완료하려면 두 번 탭하세요";
+"accessibility_ach_mandate_decline_hint" = "거절하고 결제를 취소하려면 두 번 탭하세요";

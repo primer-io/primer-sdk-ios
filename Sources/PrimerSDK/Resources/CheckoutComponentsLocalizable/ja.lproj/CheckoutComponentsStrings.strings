@@ -212,13 +212,13 @@
 "accessibility_klarna_finalize_hint" = "ダブルタップして支払いを完了";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_title" = "銀行口座";
+"primer_ach_user_details_title" = "銀行口座を接続するために詳細を入力してください";
+"primer_ach_button_continue" = "続行";
+"primer_ach_mandate_title" = "承認";
+"primer_ach_mandate_button_accept" = "同意する";
+"primer_ach_mandate_button_decline" = "キャンセル";
+"primer_ach_mandate_template" = "「同意する」をクリックすることにより、%1$@のサービスの利用および/または%1$@からの製品購入に伴う料金のために発生した債務について、%1$@のウェブサイトおよび規約に従い、この承認が取り消されるまで、上記の銀行口座から引き落とすことを%1$@に承認します。30（三十）日前に%1$@に通知することで、いつでもこの承認を変更または取り消すことができます。";
+"accessibility_ach_continue_hint" = "ダブルタップして銀行口座の選択に進む";
+"accessibility_ach_mandate_accept_hint" = "ダブルタップして承認を受け入れ、支払いを完了する";
+"accessibility_ach_mandate_decline_hint" = "ダブルタップして拒否し、支払いをキャンセルする";
