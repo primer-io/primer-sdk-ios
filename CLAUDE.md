@@ -129,6 +129,39 @@ Located in `Debug App/` directory:
 - Two Xcode projects: `Primer.io Debug App.xcodeproj` (CocoaPods) and `Primer.io Debug App SPM.xcodeproj` (SPM)
 - Use for manual testing of SDK features
 
+## Building and Testing
+
+### Workspace
+The project uses `PrimerSDK.xcworkspace` which contains multiple schemes:
+- **Debug App**: Main app for manual SDK testing (CocoaPods)
+- **Debug App SPM**: Debug app using Swift Package Manager
+- **PrimerSDKTests**: SDK unit tests
+- **DebugAppTests**: Debug app tests
+- **PrimerSDK**: The SDK framework itself
+
+### Build Commands
+
+**Build Debug App** (for manual testing):
+```bash
+xcodebuild -workspace PrimerSDK.xcworkspace \
+  -scheme "Debug App" \
+  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  build
+```
+
+**Run SDK Unit Tests**:
+```bash
+xcodebuild -workspace PrimerSDK.xcworkspace \
+  -scheme "PrimerSDKTests" \
+  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
+  test
+```
+
+### Notes
+- Use `xcrun simctl list devices available` to find available simulators
+- iOS version may vary depending on installed Xcode version (check available simulators)
+- The workspace resolves SPM dependencies automatically (Primer3DS)
+
 ## Distribution
 
 ### CocoaPods
