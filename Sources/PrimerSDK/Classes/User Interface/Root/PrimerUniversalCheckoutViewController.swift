@@ -1,7 +1,7 @@
 //
 //  PrimerUniversalCheckoutViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -205,20 +205,20 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
-	
-	private func removeSavedCardsView() {
-		if savedCardView != nil {
-			verticalStackView.removeArrangedSubview(savedCardView)
-			savedCardView.removeFromSuperview()
-			savedCardView = nil
-		}
 
-		if savedPaymentMethodStackView != nil {
-			verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
-			savedPaymentMethodStackView.removeFromSuperview()
-			savedPaymentMethodStackView = nil
-		}
-	}
+    private func removeSavedCardsView() {
+        if savedCardView != nil {
+            verticalStackView.removeArrangedSubview(savedCardView)
+            savedCardView.removeFromSuperview()
+            savedCardView = nil
+        }
+
+        if savedPaymentMethodStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+            savedPaymentMethodStackView.removeFromSuperview()
+            savedPaymentMethodStackView = nil
+        }
+    }
 
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)

@@ -39,11 +39,11 @@ public typealias CategoryHeaderComponent = (String) -> any View
 /// payment methods list and navigation actions.
 @available(iOS 15.0, *)
 public typealias PaymentMethodSelectionScreenComponent =
-    (PrimerPaymentMethodSelectionScope) -> any View
+  (PrimerPaymentMethodSelectionScope) -> any View
 
 /// Screen component receiving CardFormScope for full customization.
 /// Enables merchants to build completely custom card forms with access to
 /// form state, validation, and submit actions.
 @available(iOS 15.0, *)
 public typealias CardFormScreenComponent =
-    (any PrimerCardFormScope) -> any View
+  (any PrimerCardFormScope) -> any View

@@ -197,3 +197,16 @@
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_error_generic" = "Սխալ է տեղի ունեցել։ Խնդրում ենք կրկին փորձել։";
 "accessibility_error_multiple_errors" = "%d սխալներ հայտնաբերվել են";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Շարունակել";
+"primer_klarna_button_finalize" = "Վճարել";
+"primer_klarna_select_category_description" = "Ընտրեք, թե ինչպես եք ուզում վճարել";
+"primer_klarna_loading_title" = "Ներբեռնվում է";
+"primer_klarna_loading_subtitle" = "Սա կարող է տևել մի քանի վայրկյան։";
+"accessibility_klarna_category" = "%@ վճարման տարբերակ";
+"accessibility_klarna_category_selected" = "%@ վճարման տարբերակ, ընտրված";
+"accessibility_klarna_payment_view" = "Klarna վճարման ձև";
+"accessibility_klarna_authorize_hint" = "Կրկնակի հպեք՝ շարունակելու Klarna-ով";
+"accessibility_klarna_finalize_hint" = "Կրկնակի հպեք՝ վճարումն ավարտելու համար";

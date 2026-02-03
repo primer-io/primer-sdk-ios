@@ -197,3 +197,16 @@
 "accessibility_error_multiple_errors" = "%d na mga error ang natagpuan";
 "accessibility_paypal_logo" = "PayPal";
 "accessibility_screen_payment_method" = "%@ na paraan ng pagbabayad";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Magpatuloy";
+"primer_klarna_button_finalize" = "Magbayad";
+"primer_klarna_select_category_description" = "Piliin kung paano mo gustong magbayad";
+"primer_klarna_loading_title" = "Naglo-load";
+"primer_klarna_loading_subtitle" = "Maaari itong tumagal ng ilang segundo.";
+"accessibility_klarna_category" = "%@ opsyon sa pagbabayad";
+"accessibility_klarna_category_selected" = "%@ opsyon sa pagbabayad, napili";
+"accessibility_klarna_payment_view" = "Klarna form sa pagbabayad";
+"accessibility_klarna_authorize_hint" = "I-double tap para magpatuloy sa Klarna";
+"accessibility_klarna_finalize_hint" = "I-double tap para makumpleto ang pagbabayad";

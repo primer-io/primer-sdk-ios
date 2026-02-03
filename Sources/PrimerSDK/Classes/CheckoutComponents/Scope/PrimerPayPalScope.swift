@@ -20,42 +20,42 @@ public typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
 @MainActor
 public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PayPalState {
 
-    /// The current state of the PayPal payment flow as an async stream.
-    var state: AsyncStream<PayPalState> { get }
+  /// The current state of the PayPal payment flow as an async stream.
+  var state: AsyncStream<PayPalState> { get }
 
-    /// The presentation context determining navigation behavior (back button vs cancel button).
-    var presentationContext: PresentationContext { get }
+  /// The presentation context determining navigation behavior (back button vs cancel button).
+  var presentationContext: PresentationContext { get }
 
-    /// The dismissal mechanisms available for this scope.
-    var dismissalMechanism: [DismissalMechanism] { get }
+  /// The dismissal mechanisms available for this scope.
+  var dismissalMechanism: [DismissalMechanism] { get }
 
-    // MARK: - Payment Method Lifecycle
+  // MARK: - Payment Method Lifecycle
 
-    /// Called when the payment method is selected and the scope becomes active.
-    func start()
+  /// Called when the payment method is selected and the scope becomes active.
+  func start()
 
-    /// Initiates the PayPal payment flow, opening web authentication.
-    func submit()
+  /// Initiates the PayPal payment flow, opening web authentication.
+  func submit()
 
-    /// Cancels the PayPal payment flow.
-    func cancel()
+  /// Cancels the PayPal payment flow.
+  func cancel()
 
-    // MARK: - Navigation Methods
+  // MARK: - Navigation Methods
 
-    /// Called when user taps back button.
-    func onBack()
+  /// Called when user taps back button.
+  func onBack()
 
-    /// Called when user taps cancel/dismiss button.
-    func onCancel()
+  /// Called when user taps cancel/dismiss button.
+  func onCancel()
 
-    // MARK: - Screen-Level Customization
+  // MARK: - Screen-Level Customization
 
-    /// Custom screen component to replace the entire PayPal screen.
-    var screen: PayPalScreenComponent? { get set }
+  /// Custom screen component to replace the entire PayPal screen.
+  var screen: PayPalScreenComponent? { get set }
 
-    /// Custom button component to replace the PayPal submit button.
-    var payButton: PayPalButtonComponent? { get set }
+  /// Custom button component to replace the PayPal submit button.
+  var payButton: PayPalButtonComponent? { get set }
 
-    /// Custom text for the submit button (default: "Continue with PayPal").
-    var submitButtonText: String? { get set }
+  /// Custom text for the submit button (default: "Continue with PayPal").
+  var submitButtonText: String? { get set }
 }

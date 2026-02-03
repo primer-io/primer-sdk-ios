@@ -112,6 +112,12 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
         isLoading = true
         error = nil
 
+        if let existingToken = configuration.clientToken, !existingToken.isEmpty {
+            clientToken = existingToken
+            isLoading = false
+            return
+        }
+
         guard let clientSession = configuration.clientSession else {
             error = "No session configuration provided - please configure session in main settings"
             isLoading = false

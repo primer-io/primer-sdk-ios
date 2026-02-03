@@ -7,5 +7,5 @@
 import Foundation
 
 protocol AccessibilityConfigurable {
-    func applyAccessibility(_ config: AccessibilityConfiguration)
+  func applyAccessibility(_ config: AccessibilityConfiguration)
 }

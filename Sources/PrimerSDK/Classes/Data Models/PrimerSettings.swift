@@ -275,7 +275,7 @@ public final class PrimerStripeOptions: Codable, Equatable {
 
     public static func == (lhs: PrimerStripeOptions, rhs: PrimerStripeOptions) -> Bool {
         lhs.publishableKey == rhs.publishableKey &&
-               lhs.mandateData == rhs.mandateData
+            lhs.mandateData == rhs.mandateData
     }
 }
 

@@ -101,7 +101,7 @@ final class ErrorHandler: LogReporter {
     private func determineErrorSeverity(_ error: PrimerError) -> Analytics.Event.Property.Severity {
         switch error {
         case .applePayNoCardsInWallet,
-                .applePayDeviceNotSupported:
+             .applePayDeviceNotSupported:
             return .warning
         default:
             return .error

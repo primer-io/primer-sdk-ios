@@ -9,11 +9,11 @@ import UIKit
 
 @available(iOS 15.0, *)
 enum RTLSupport {
-    static var isRightToLeft: Bool {
-        UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
-    }
+  static var isRightToLeft: Bool {
+    UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+  }
 
-    static var layoutDirection: LayoutDirection {
-        isRightToLeft ? .rightToLeft : .leftToRight
-    }
+  static var layoutDirection: LayoutDirection {
+    isRightToLeft ? .rightToLeft : .leftToRight
+  }
 }

@@ -1,7 +1,7 @@
 //
 //  FormPaymentMethodTokenizationViewModel+FormViews.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -358,8 +358,8 @@ extension FormPaymentMethodTokenizationViewModel {
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
-                  .first(where: { $0.key == paymentMethodType })?
-                  .value
+                    .first(where: { $0.key == paymentMethodType })?
+                    .value
             else { return }
 
             let infoView = makePaymentPendingInfoView(message: message)

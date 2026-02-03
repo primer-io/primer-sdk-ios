@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Összes mentett fizetési mód";
 "primer_vault_section_title" = "Mentett fizetési módok";
 "primer_vault_selected_button_other" = "Más fizetési módok megjelenítése";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Folytatás";
+"primer_klarna_button_finalize" = "Fizetés";
+"primer_klarna_select_category_description" = "Válassza ki a fizetési módot";
+"primer_klarna_loading_title" = "Betöltés";
+"primer_klarna_loading_subtitle" = "Ez eltarthat néhány másodpercig.";
+"accessibility_klarna_category" = "%@ fizetési lehetőség";
+"accessibility_klarna_category_selected" = "%@ fizetési lehetőség, kiválasztva";
+"accessibility_klarna_payment_view" = "Klarna fizetési űrlap";
+"accessibility_klarna_authorize_hint" = "Koppintson duplán a Klarnával való folytatáshoz";
+"accessibility_klarna_finalize_hint" = "Koppintson duplán a fizetés befejezéséhez";

@@ -20,48 +20,48 @@ import SwiftUI
 /// ```
 @available(iOS 15.0, *)
 struct DualBadgeDisplay: View {
-    // MARK: - Properties
+  // MARK: - Properties
 
-    let networks: [CardNetwork]
+  let networks: [CardNetwork]
 
-    // MARK: - Private Properties
+  // MARK: - Private Properties
 
-    @Environment(\.designTokens) private var tokens
+  @Environment(\.designTokens) private var tokens
 
-    // MARK: - Body
+  // MARK: - Body
 
-    var body: some View {
-        HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-            ForEach(networks, id: \.self) { network in
-                CardNetworkBadge(network: network)
-            }
-        }
-        .allowsHitTesting(false)
+  var body: some View {
+    HStack(spacing: PrimerSpacing.small(tokens: tokens)) {
+      ForEach(networks, id: \.self) { network in
+        CardNetworkBadge(network: network)
+      }
     }
+    .allowsHitTesting(false)
+  }
 }
 
 // MARK: - Previews
 
 #if DEBUG
-@available(iOS 15.0, *)
-#Preview("Light Mode") {
+  @available(iOS 15.0, *)
+  #Preview("Light Mode") {
     VStack(spacing: 16) {
-        DualBadgeDisplay(networks: [.visa, .eftpos])
-        DualBadgeDisplay(networks: [.masterCard, .eftpos])
+      DualBadgeDisplay(networks: [.visa, .eftpos])
+      DualBadgeDisplay(networks: [.masterCard, .eftpos])
     }
     .padding()
     .environment(\.designTokens, MockDesignTokens.light)
-}
+  }
 
-@available(iOS 15.0, *)
-#Preview("Dark Mode") {
+  @available(iOS 15.0, *)
+  #Preview("Dark Mode") {
     VStack(spacing: 16) {
-        DualBadgeDisplay(networks: [.visa, .eftpos])
-        DualBadgeDisplay(networks: [.masterCard, .eftpos])
+      DualBadgeDisplay(networks: [.visa, .eftpos])
+      DualBadgeDisplay(networks: [.masterCard, .eftpos])
     }
     .padding()
     .background(Color.black)
     .environment(\.designTokens, MockDesignTokens.dark)
     .preferredColorScheme(.dark)
-}
+  }
 #endif

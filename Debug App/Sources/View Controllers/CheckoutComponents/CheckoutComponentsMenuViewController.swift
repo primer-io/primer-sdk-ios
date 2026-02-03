@@ -161,19 +161,28 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     }
     
     @objc private func swiftUIExamplesTapped() {
-        // Present CheckoutComponentsExamplesView
         if #available(iOS 15.0, *) {
-            // iOS 15+ available, creating examples view
-            // Client session provided with configured surcharge settings
-            
-            let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: self.apiVersion, clientSession: clientSession)
-            // CheckoutComponentsExamplesView created with clientSession
-            
+            let resolvedClientToken: String?
+            switch renderMode {
+            case .clientToken:
+                resolvedClientToken = clientToken
+            case .deepLink:
+                resolvedClientToken = deepLinkClientToken
+            case .createClientSession, .testScenario:
+                resolvedClientToken = nil
+            }
+
+            let examplesView = CheckoutComponentsExamplesView(
+                settings: settings,
+                apiVersion: self.apiVersion,
+                clientSession: clientSession,
+                clientToken: resolvedClientToken
+            )
+
             let hostingController = UIHostingController(rootView: examplesView)
             hostingController.title = "CheckoutComponents Examples"
             hostingController.view.backgroundColor = .clear
-            // UIHostingController created
-            
+
             if let navController = navigationController {
                 navController.pushViewController(hostingController, animated: true)
             } else {

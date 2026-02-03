@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "저장된 모든 결제 수단";
 "primer_vault_section_title" = "저장된 결제 수단";
 "primer_vault_selected_button_other" = "다른 결제 방법 보기";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "계속";
+"primer_klarna_button_finalize" = "결제";
+"primer_klarna_select_category_description" = "결제 방법을 선택하세요";
+"primer_klarna_loading_title" = "로딩 중";
+"primer_klarna_loading_subtitle" = "몇 초 정도 걸릴 수 있습니다.";
+"accessibility_klarna_category" = "%@ 결제 옵션";
+"accessibility_klarna_category_selected" = "%@ 결제 옵션, 선택됨";
+"accessibility_klarna_payment_view" = "Klarna 결제 양식";
+"accessibility_klarna_authorize_hint" = "Klarna로 계속하려면 두 번 탭하세요";
+"accessibility_klarna_finalize_hint" = "결제를 완료하려면 두 번 탭하세요";

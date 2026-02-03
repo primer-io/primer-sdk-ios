@@ -26,11 +26,11 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     case invalid3DSSdkVersion(diagnosticsId: String = .uuid, invalidVersion: String?, validVersion: String)
     case missing3DSConfiguration(diagnosticsId: String = .uuid, missingKey: String)
     case primer3DSSdkError(
-        paymentMethodType: String?,
-        diagnosticsId: String = .uuid,
-        initProtocolVersion: String?,
-        errorInfo: Primer3DSErrorInfo
-    )
+            paymentMethodType: String?,
+            diagnosticsId: String = .uuid,
+            initProtocolVersion: String?,
+            errorInfo: Primer3DSErrorInfo
+         )
     case underlyingError(diagnosticsId: String = .uuid, error: Error)
 
     public var errorId: String {

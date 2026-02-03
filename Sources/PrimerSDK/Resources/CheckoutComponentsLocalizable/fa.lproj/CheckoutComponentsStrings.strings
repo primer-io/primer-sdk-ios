@@ -197,3 +197,16 @@
 "accessibility_vaulted_payment_method" = "روش پرداخت ذخیره‌شده: %@";
 "accessibility_vaulted_paypal" = "PayPal";
 "accessibility_vaulted_paypal_email" = "PayPal، %@";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "ادامه";
+"primer_klarna_button_finalize" = "پرداخت";
+"primer_klarna_select_category_description" = "نحوه پرداخت را انتخاب کنید";
+"primer_klarna_loading_title" = "بارگذاری";
+"primer_klarna_loading_subtitle" = "این ممکن است چند ثانیه طول بکشد.";
+"accessibility_klarna_category" = "گزینه پرداخت %@";
+"accessibility_klarna_category_selected" = "گزینه پرداخت %@، انتخاب شده";
+"accessibility_klarna_payment_view" = "فرم پرداخت Klarna";
+"accessibility_klarna_authorize_hint" = "برای ادامه با Klarna دوبار ضربه بزنید";
+"accessibility_klarna_finalize_hint" = "برای تکمیل پرداخت دوبار ضربه بزنید";

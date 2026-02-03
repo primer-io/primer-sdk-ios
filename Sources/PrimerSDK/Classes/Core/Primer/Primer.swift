@@ -69,8 +69,8 @@ public final class Primer {
                             continue userActivity: NSUserActivity,
                             restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         PrimerInternal.shared.application(application,
-                                                 continue: userActivity,
-                                                 restorationHandler: restorationHandler)
+                                          continue: userActivity,
+                                          restorationHandler: restorationHandler)
     }
 
     // MARK: - CONFIGURATION

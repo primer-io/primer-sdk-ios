@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "جميع طرق الدفع المحفوظة";
 "primer_vault_section_title" = "طرق الدفع المحفوظة";
 "primer_vault_selected_button_other" = "عرض طرق الدفع الأخرى";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "متابعة";
+"primer_klarna_button_finalize" = "ادفع";
+"primer_klarna_select_category_description" = "اختر طريقة الدفع المفضلة";
+"primer_klarna_loading_title" = "جارٍ التحميل";
+"primer_klarna_loading_subtitle" = "قد يستغرق هذا بضع ثوانٍ.";
+"accessibility_klarna_category" = "خيار الدفع %@";
+"accessibility_klarna_category_selected" = "خيار الدفع %@، محدد";
+"accessibility_klarna_payment_view" = "نموذج الدفع Klarna";
+"accessibility_klarna_authorize_hint" = "انقر مرتين للمتابعة مع Klarna";
+"accessibility_klarna_finalize_hint" = "انقر مرتين لإتمام الدفع";

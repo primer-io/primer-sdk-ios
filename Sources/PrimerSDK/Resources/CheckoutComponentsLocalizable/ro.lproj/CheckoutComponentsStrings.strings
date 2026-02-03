@@ -197,3 +197,16 @@
 "primer_vault_manage_title" = "Toate metodele de plată salvate";
 "primer_vault_section_title" = "Metode de plată salvate";
 "primer_vault_selected_button_other" = "Afișați alte modalități de plată";
+
+/* Klarna */
+"primer_vault_default_klarna" = "Klarna";
+"primer_klarna_button_authorize" = "Continuă";
+"primer_klarna_button_finalize" = "Plătește";
+"primer_klarna_select_category_description" = "Alegeți cum doriți să plătiți";
+"primer_klarna_loading_title" = "Se încarcă";
+"primer_klarna_loading_subtitle" = "Aceasta poate dura câteva secunde.";
+"accessibility_klarna_category" = "Opțiune de plată %@";
+"accessibility_klarna_category_selected" = "Opțiune de plată %@, selectat";
+"accessibility_klarna_payment_view" = "Formular de plată Klarna";
+"accessibility_klarna_authorize_hint" = "Atingeți de două ori pentru a continua cu Klarna";
+"accessibility_klarna_finalize_hint" = "Atingeți de două ori pentru a finaliza plata";
