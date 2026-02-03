@@ -1674,6 +1674,93 @@ enum CheckoutComponentsStrings {
     value: "An error occurred. Please try again.",
     comment: "VoiceOver generic error announcement"
   )
+
+  // MARK: - ACH Strings
+
+  static let achTitle = NSLocalizedString(
+    "primer_ach_title",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Bank Account",
+    comment: "ACH payment screen title"
+  )
+
+  static let achUserDetailsTitle = NSLocalizedString(
+    "primer_ach_user_details_title",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Enter your details to connect your bank account",
+    comment: "ACH user details collection description"
+  )
+
+  static let achContinueButton = NSLocalizedString(
+    "primer_ach_button_continue",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Continue",
+    comment: "ACH continue button text"
+  )
+
+  static let achMandateTitle = NSLocalizedString(
+    "primer_ach_mandate_title",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Authorization",
+    comment: "ACH mandate screen title"
+  )
+
+  static let achMandateAcceptButton = NSLocalizedString(
+    "primer_ach_mandate_button_accept",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "I Agree",
+    comment: "ACH mandate accept button text"
+  )
+
+  static let achMandateDeclineButton = NSLocalizedString(
+    "primer_ach_mandate_button_decline",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Cancel",
+    comment: "ACH mandate decline button text"
+  )
+
+  static func achMandateTemplate(merchantName: String) -> String {
+    let format = NSLocalizedString(
+      "primer_ach_mandate_template",
+      tableName: tableName,
+      bundle: Bundle.primerResources,
+      value: "By clicking \"I Agree\", you authorize %@ to debit the bank account specified above for any amount owed for charges arising from your use of %@'s services and/or purchase of products from %@, pursuant to %@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %@ with 30 (thirty) days notice.",
+      comment: "ACH mandate template text. Parameter is merchant name."
+    )
+    return String(format: format, merchantName, merchantName, merchantName, merchantName, merchantName)
+  }
+
+  // MARK: ACH Accessibility Strings
+
+  static let a11yAchContinueHint = NSLocalizedString(
+    "accessibility_ach_continue_hint",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Double tap to continue to bank account selection",
+    comment: "VoiceOver hint for ACH continue button"
+  )
+
+  static let a11yAchMandateAcceptHint = NSLocalizedString(
+    "accessibility_ach_mandate_accept_hint",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Double tap to accept the authorization and complete payment",
+    comment: "VoiceOver hint for ACH mandate accept button"
+  )
+
+  static let a11yAchMandateDeclineHint = NSLocalizedString(
+    "accessibility_ach_mandate_decline_hint",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Double tap to decline and cancel the payment",
+    comment: "VoiceOver hint for ACH mandate decline button"
+  )
 }
 
 // swiftlint:enable file_length
