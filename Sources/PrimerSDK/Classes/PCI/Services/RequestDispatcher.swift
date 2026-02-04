@@ -43,6 +43,8 @@ extension URLSession: URLSessionProtocol {}
 final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
 
     let urlSession: URLSessionProtocol
+    
+    private var retryHandler: RetryHandler?
 
     init(urlSession: URLSessionProtocol = URLSession.shared) {
         self.urlSession = urlSession
@@ -81,9 +83,9 @@ final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
 
     @discardableResult
     func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
-        let retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
-        retryHandler.attempt()
-        return retryHandler.currentTask
+        retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
+        retryHandler?.attempt()
+        return retryHandler?.currentTask
     }
 }
 
