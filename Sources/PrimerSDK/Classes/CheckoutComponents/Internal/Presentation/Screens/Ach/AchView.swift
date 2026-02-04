@@ -26,7 +26,7 @@ final class AchStateObserver: ObservableObject {
     guard observationTask == nil else { return }
 
     observationTask = Task { @MainActor [weak self] in
-      guard let self = self else { return }
+      guard let self else { return }
 
       for await state in self.scope.state {
         if Task.isCancelled { break }
@@ -68,7 +68,6 @@ struct AchView: View, LogReporter {
 
   init(scope: any PrimerAchScope) {
     self.scope = scope
-    // Create the observer with the scope
     self._observer = StateObject(wrappedValue: AchStateObserver(scope: scope))
   }
 
@@ -80,7 +79,6 @@ struct AchView: View, LogReporter {
       }
       .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
       .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-      .frame(maxWidth: UIScreen.main.bounds.width)
     }
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
@@ -99,7 +97,6 @@ struct AchView: View, LogReporter {
 
   // MARK: - Header Section
 
-  @MainActor
   private func makeHeaderSection() -> some View {
     HStack {
       if scope.presentationContext.shouldShowBackButton {
@@ -151,7 +148,6 @@ struct AchView: View, LogReporter {
 
   // MARK: - Content Section
 
-  @MainActor
   @ViewBuilder
   private func makeContentSection() -> some View {
     switch observer.achState.step {
@@ -179,7 +175,6 @@ struct AchView: View, LogReporter {
 
   // MARK: - Loading Content
 
-  @MainActor
   private func makeLoadingContent() -> some View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
       Spacer()

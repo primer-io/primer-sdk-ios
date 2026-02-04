@@ -51,7 +51,6 @@ struct AchMandateView: View, LogReporter {
 
   // MARK: - Accept Button
 
-  @MainActor
   private func makeAcceptButton() -> some View {
     Button(action: scope.acceptMandate) {
       Text(CheckoutComponentsStrings.achMandateAcceptButton)
@@ -69,7 +68,6 @@ struct AchMandateView: View, LogReporter {
 
   // MARK: - Decline Button
 
-  @MainActor
   private func makeDeclineButton() -> some View {
     Button(action: scope.declineMandate) {
       Text(CheckoutComponentsStrings.achMandateDeclineButton)

@@ -212,16 +212,16 @@
 "accessibility_klarna_finalize_hint" = "Doppeltippen, um die Zahlung abzuschließen";
 
 /* ACH */
-"primer_ach_title" = "Bank Account";
+"primer_ach_title" = "Bankkonto";
 "primer_ach_pay_with_title" = "Mit ACH bezahlen";
-"primer_ach_user_details_title" = "Enter your details to connect your bank account";
+"primer_ach_user_details_title" = "Geben Sie Ihre Daten ein, um Ihr Bankkonto zu verbinden";
 "primer_ach_personal_details_subtitle" = "Ihre persönlichen Daten";
 "primer_ach_email_disclaimer" = "Wir verwenden dies nur, um Sie über Ihre Zahlung auf dem Laufenden zu halten";
-"primer_ach_button_continue" = "Continue";
-"primer_ach_mandate_title" = "Authorization";
-"primer_ach_mandate_button_accept" = "I Agree";
-"primer_ach_mandate_button_decline" = "Cancel";
-"primer_ach_mandate_template" = "By clicking \"I Agree\", you authorize %1$@ to debit the bank account specified above for any amount owed for charges arising from your use of %1$@'s services and/or purchase of products from %1$@, pursuant to %1$@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %1$@ with 30 (thirty) days notice.";
-"accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
-"accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
-"accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+"primer_ach_button_continue" = "Weiter";
+"primer_ach_mandate_title" = "Autorisierung";
+"primer_ach_mandate_button_accept" = "Ich stimme zu";
+"primer_ach_mandate_button_decline" = "Abbrechen";
+"primer_ach_mandate_template" = "Mit Klick auf \"Ich stimme zu\" autorisieren Sie %1$@, das oben angegebene Bankkonto für alle geschuldeten Beträge zu belasten, die aus Ihrer Nutzung der Dienste von %1$@ und/oder dem Kauf von Produkten von %1$@ entstehen, gemäß der Website und den Bedingungen von %1$@, bis diese Autorisierung widerrufen wird. Sie können diese Autorisierung jederzeit ändern oder widerrufen, indem Sie %1$@ mit einer Frist von 30 (dreißig) Tagen benachrichtigen.";
+"accessibility_ach_continue_hint" = "Doppeltippen, um zur Bankkontoauswahl fortzufahren";
+"accessibility_ach_mandate_accept_hint" = "Doppeltippen, um die Autorisierung zu akzeptieren und die Zahlung abzuschließen";
+"accessibility_ach_mandate_decline_hint" = "Doppeltippen, um abzulehnen und die Zahlung abzubrechen";

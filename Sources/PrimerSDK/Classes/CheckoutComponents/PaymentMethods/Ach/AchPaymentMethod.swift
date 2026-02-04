@@ -26,14 +26,8 @@ struct AchPaymentMethod: PaymentMethodProtocol {
       )
     }
 
-    let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
-
-    let paymentMethodContext: PresentationContext
-    if availableMethodsCount > 1 {
-      paymentMethodContext = .fromPaymentSelection
-    } else {
-      paymentMethodContext = .direct
-    }
+    let paymentMethodContext: PresentationContext =
+      defaultCheckoutScope.availablePaymentMethods.count > 1 ? .fromPaymentSelection : .direct
 
     do {
       let processAchInteractor: ProcessAchPaymentInteractor = try diContainer.resolveSync(

@@ -36,7 +36,6 @@ struct AchUserDetailsView: View, LogReporter {
 
   // MARK: - First Name Field
 
-  @MainActor
   private func makeFirstNameField() -> some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
@@ -50,7 +49,6 @@ struct AchUserDetailsView: View, LogReporter {
 
   // MARK: - Last Name Field
 
-  @MainActor
   private func makeLastNameField() -> some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
@@ -64,7 +62,6 @@ struct AchUserDetailsView: View, LogReporter {
 
   // MARK: - Email Field
 
-  @MainActor
   private func makeEmailField() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       EmailInputField(
@@ -84,7 +81,6 @@ struct AchUserDetailsView: View, LogReporter {
 
   // MARK: - Submit Button
 
-  @MainActor
   @ViewBuilder
   private func makeSubmitButton() -> some View {
     if let customButton = scope.submitButton {
