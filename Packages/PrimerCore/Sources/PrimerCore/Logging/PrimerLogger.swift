@@ -1,10 +1,11 @@
 //
 //  PrimerLogger.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerFoundation
 #if canImport(OSLog)
 import OSLog
 #endif
@@ -90,7 +91,7 @@ extension PrimerLogger {
 
     private func logUserInfo(level: LogLevel,
                              userInfo: Encodable?, metadata: PrimerLogMetadata) {
-        guard let userInfo = userInfo, let dictionary = try? userInfo.asDictionary() else {
+        guard let userInfo, let dictionary = try? userInfo.asDictionary() else {
             return
         }
         logProxy(level: level, message: dictionary.debugDescription, userInfo: nil, metadata: metadata)
@@ -118,7 +119,7 @@ public final class DefaultLogger: PrimerLogger {
         self.logLevel = logLevel
     }
 
-    public func log(level: PrimerSDK.LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
+    public func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
 
         let message = format(level: level, message: message, metadata: metadata)
 
