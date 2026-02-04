@@ -1,21 +1,21 @@
 //
 //  LogReporter.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 private let silentLogger = DefaultLogger(logLevel: .none)
 
-protocol LogReporter {}
+public protocol LogReporter {}
 extension LogReporter {
 
-    var logger: PrimerLogger {
-        return PrimerLogging.shared.logger
+    public var logger: PrimerLogger {
+        PrimerLogging.shared.logger
     }
 
-    static var logger: PrimerLogger {
-        return PrimerLogging.shared.logger
+    public static var logger: PrimerLogger {
+        PrimerLogging.shared.logger
     }
 }
