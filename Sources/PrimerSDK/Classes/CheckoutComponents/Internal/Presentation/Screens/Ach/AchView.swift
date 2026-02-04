@@ -6,12 +6,71 @@
 
 import SwiftUI
 
+// MARK: - State Observer
+
+@available(iOS 15.0, *)
+@MainActor
+final class AchStateObserver: ObservableObject {
+  @Published var achState: AchState = .init()
+  @Published var showBankCollector: Bool = false
+
+  private var stripeFlowCompleted: Bool = false
+  private let scope: any PrimerAchScope
+  private var observationTask: Task<Void, Never>?
+
+  init(scope: any PrimerAchScope) {
+    self.scope = scope
+  }
+
+  func startObserving() {
+    guard observationTask == nil else { return }
+
+    observationTask = Task { @MainActor [weak self] in
+      guard let self = self else { return }
+
+      for await state in self.scope.state {
+        if Task.isCancelled { break }
+
+        self.achState = state
+
+        if state.step == .bankAccountCollection, self.scope.bankCollectorViewController != nil, !self.stripeFlowCompleted {
+          self.showBankCollector = true
+        } else if state.step == .mandateAcceptance {
+          if !self.stripeFlowCompleted {
+            self.stripeFlowCompleted = true
+          }
+        } else if state.step != .bankAccountCollection, state.step != .processing {
+          self.showBankCollector = false
+        }
+      }
+    }
+  }
+
+  func stopObserving() {
+    observationTask?.cancel()
+    observationTask = nil
+  }
+
+  deinit {
+    observationTask?.cancel()
+  }
+}
+
+// MARK: - AchView
+
 @available(iOS 15.0, *)
 struct AchView: View, LogReporter {
   let scope: any PrimerAchScope
 
+  @StateObject private var observer: AchStateObserver
+
   @Environment(\.designTokens) private var tokens
-  @State private var achState: AchState = .init()
+
+  init(scope: any PrimerAchScope) {
+    self.scope = scope
+    // Create the observer with the scope
+    self._observer = StateObject(wrappedValue: AchStateObserver(scope: scope))
+  }
 
   var body: some View {
     ScrollView {
@@ -26,9 +85,14 @@ struct AchView: View, LogReporter {
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.container)
-    .task {
-      for await state in scope.state {
-        achState = state
+    .onAppear {
+      observer.startObserving()
+    }
+    .fullScreenCover(isPresented: $observer.showBankCollector) {
+      if let bankCollectorVC = scope.bankCollectorViewController {
+        StripeBankCollectorRepresentable(viewController: bankCollectorVC)
+          .ignoresSafeArea()
+          .accessibilityIdentifier(AccessibilityIdentifiers.Ach.bankCollectorContainer)
       }
     }
   }
@@ -90,22 +154,23 @@ struct AchView: View, LogReporter {
   @MainActor
   @ViewBuilder
   private func makeContentSection() -> some View {
-    switch achState.step {
+    switch observer.achState.step {
     case .loading:
       makeLoadingContent()
     case .userDetailsCollection:
       if let customScreen = scope.userDetailsScreen {
         AnyView(customScreen(scope))
       } else {
-        AchUserDetailsView(scope: scope, achState: achState)
+        AchUserDetailsView(scope: scope, achState: observer.achState)
       }
     case .bankAccountCollection:
-      makeBankCollectorContent()
+      // Bank collector is shown as fullScreenCover, show loading while it's presented
+      makeLoadingContent()
     case .mandateAcceptance:
       if let customScreen = scope.mandateScreen {
         AnyView(customScreen(scope))
       } else {
-        AchMandateView(scope: scope, achState: achState)
+        AchMandateView(scope: scope, achState: observer.achState)
       }
     case .processing:
       makeLoadingContent()
@@ -142,25 +207,10 @@ struct AchView: View, LogReporter {
     .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
   }
 
-  // MARK: - Bank Collector Content
-
-  @MainActor
-  @ViewBuilder
-  private func makeBankCollectorContent() -> some View {
-    if let bankCollectorVC = scope.bankCollectorViewController {
-      StripeBankCollectorRepresentable(viewController: bankCollectorVC)
-        .frame(minHeight: Layout.bankCollectorMinHeight)
-        .accessibilityIdentifier(AccessibilityIdentifiers.Ach.bankCollectorContainer)
-    } else {
-      makeLoadingContent()
-    }
-  }
-
   // MARK: - Layout Constants
 
   private enum Layout {
     static let spinnerSize: CGFloat = 56
-    static let bankCollectorMinHeight: CGFloat = 400
   }
 }
 

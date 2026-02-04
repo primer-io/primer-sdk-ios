@@ -276,23 +276,22 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return
     }
 
-    checkoutScope.startProcessing()
+    internalState = AchState(
+      step: .loading,
+      userDetails: internalState.userDetails,
+      isSubmitEnabled: false
+    )
 
     do {
-      // Step 1: Patch user details
       try await processAchInteractor.patchUserDetails(
         firstName: currentFirstName,
         lastName: currentLastName,
         emailAddress: currentEmailAddress
       )
 
-      // Step 2: Tokenize and create payment to get Stripe data
-      // This is the key change - we tokenize and create payment BEFORE creating the bank collector
-      // The payment response contains requiredAction with a new client token that has stripeClientSecret
       let stripeData = try await processAchInteractor.startPaymentAndGetStripeData()
       self.stripeData = stripeData
 
-      // Step 3: Create bank collector with the stripeClientSecret from the new token
       let collectorVC = try await processAchInteractor.createBankCollector(
         firstName: currentFirstName,
         lastName: currentLastName,
@@ -361,8 +360,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return
     }
 
-    checkoutScope.startProcessing()
-
     await analyticsInteractor?.trackEvent(
       .paymentSubmitted,
       metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.stripeAch.rawValue))
@@ -374,8 +371,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     )
 
     do {
-      // Complete the payment by calling the sdkCompleteUrl with the mandate timestamp
-      // Payment was already created in patchUserDetailsAndCreateBankCollector()
       let result = try await processAchInteractor.completePayment(stripeData: stripeData)
       checkoutScope.handlePaymentSuccess(result)
     } catch {
@@ -403,7 +398,6 @@ extension DefaultAchScope: AchBankCollectorDelegate {
   func achBankCollectorDidSucceed(paymentId: String) {
     logger.debug(message: "ACH bank collector succeeded with paymentId: \(paymentId)")
     stripePaymentId = paymentId
-    bankCollectorViewController = nil
     Task { @MainActor in
       await transitionToMandateAcceptance()
     }
