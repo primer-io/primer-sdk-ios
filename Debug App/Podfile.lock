@@ -45,7 +45,9 @@ PODS:
   - PrimerNolPaySDK (1.0.1)
   - PrimerSDK (2.44.1):
     - PrimerSDK/Core (= 2.44.1)
-  - PrimerSDK/Core (2.44.1)
+  - PrimerSDK/Core (2.44.1):
+    - PrimerCore
+    - PrimerFoundation
   - PrimerStripeSDK (1.0.1)
 
 DEPENDENCIES:
