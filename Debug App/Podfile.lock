@@ -45,9 +45,9 @@ PODS:
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.3.1)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (2.44.0):
-    - PrimerSDK/Core (= 2.44.0)
-  - PrimerSDK/Core (2.44.0):
+  - PrimerSDK (2.44.1):
+    - PrimerSDK/Core (= 2.44.1)
+  - PrimerSDK/Core (2.44.1):
     - PrimerCore
     - PrimerFoundation
   - PrimerStripeSDK (1.0.1)
@@ -102,7 +102,7 @@ SPEC CHECKSUMS:
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: 11c3bf969d3d4874d27f1a990ade80668d567a26
+  PrimerSDK: 4462c6bf2aa996bded85ce4ffec3c1f4beb39831
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
 PODFILE CHECKSUM: afd2c63caf5f619efdc368a4528a9ad9c95bc50b
