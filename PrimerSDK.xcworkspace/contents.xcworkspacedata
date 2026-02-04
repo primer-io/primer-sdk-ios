@@ -411,6 +411,9 @@
                   location = "group:PaymentMethodTypeProviding.swift">
                </FileRef>
                <FileRef
+                  location = "group:Device.swift">
+               </FileRef>
+               <FileRef
                   location = "group:CardNetworkParser.swift">
                </FileRef>
                <FileRef
