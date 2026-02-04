@@ -1,12 +1,10 @@
 //
-//  Analytics.swift
+//  PrimerPaymentHandling.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
-import PrimerCore
-
-extension Analytics {
-    static var apiClient: PrimerAPIClientProtocol?
+public enum PrimerPaymentHandling: String, Codable {
+    case auto   = "AUTO"
+    case manual = "MANUAL"
 }
