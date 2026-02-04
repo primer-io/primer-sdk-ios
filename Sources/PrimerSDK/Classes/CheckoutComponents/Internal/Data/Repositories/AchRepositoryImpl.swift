@@ -125,13 +125,13 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController {
     #if canImport(PrimerStripeSDK)
-    guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey,
+    guard let publishableKey = settings.paymentMethodOptions.stripeOptions?.publishableKey,
       !publishableKey.isEmpty
     else {
       throw ACHHelpers.getInvalidValueError(key: "stripeOptions.publishableKey")
     }
 
-    let urlScheme = try PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme().absoluteString
+    let urlScheme = try settings.paymentMethodOptions.validUrlForUrlScheme().absoluteString
 
     self.bankCollectorDelegate = delegate
 
@@ -156,9 +156,9 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
   }
 
   func getMandateData() async throws -> AchMandateResult {
-    guard let mandateData = PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData else {
+    guard let mandateData = settings.paymentMethodOptions.stripeOptions?.mandateData else {
       throw PrimerError.merchantError(
-        message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData was nil or empty."
+        message: "Required value for settings.paymentMethodOptions.stripeOptions?.mandateData was nil or empty."
       )
     }
 
@@ -251,21 +251,25 @@ extension AchRepositoryImpl: PrimerStripeCollectorViewControllerDelegate {
 
   nonisolated func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
     Task { @MainActor in
+      guard let delegate = bankCollectorDelegate else {
+        logger.warn(message: "ACH bank collector delegate was deallocated, Stripe event dropped: \(stripeStatus)")
+        return
+      }
       switch stripeStatus {
       case let .succeeded(paymentId):
-        bankCollectorDelegate?.achBankCollectorDidSucceed(paymentId: paymentId)
+        delegate.achBankCollectorDidSucceed(paymentId: paymentId)
       case .canceled:
-        bankCollectorDelegate?.achBankCollectorDidCancel()
+        delegate.achBankCollectorDidCancel()
       case let .failed(error):
         let primerError = PrimerError.stripeError(
           key: error.errorId,
           message: error.errorDescription,
           diagnosticsId: error.diagnosticsId
         )
-        bankCollectorDelegate?.achBankCollectorDidFail(error: primerError)
+        delegate.achBankCollectorDidFail(error: primerError)
       @unknown default:
         let primerError = PrimerError.unknown(message: "Unknown Stripe status received")
-        bankCollectorDelegate?.achBankCollectorDidFail(error: primerError)
+        delegate.achBankCollectorDidFail(error: primerError)
       }
     }
   }

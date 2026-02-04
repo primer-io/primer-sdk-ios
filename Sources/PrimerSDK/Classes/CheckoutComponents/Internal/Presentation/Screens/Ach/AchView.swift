@@ -86,6 +86,9 @@ struct AchView: View, LogReporter {
     .onAppear {
       observer.startObserving()
     }
+    .onDisappear {
+      observer.stopObserving()
+    }
     .fullScreenCover(isPresented: $observer.showBankCollector) {
       if let bankCollectorVC = scope.bankCollectorViewController {
         StripeBankCollectorRepresentable(viewController: bankCollectorVC)

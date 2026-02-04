@@ -56,7 +56,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   private var currentLastName: String = ""
   private var currentEmailAddress: String = ""
 
-  private var stripePaymentId: String?
   private var stripeData: AchStripeData?
 
   // MARK: - Initialization
@@ -397,7 +396,7 @@ extension DefaultAchScope: AchBankCollectorDelegate {
 
   func achBankCollectorDidSucceed(paymentId: String) {
     logger.debug(message: "ACH bank collector succeeded with paymentId: \(paymentId)")
-    stripePaymentId = paymentId
+    bankCollectorViewController = nil
     Task { @MainActor in
       await transitionToMandateAcceptance()
     }
@@ -407,12 +406,20 @@ extension DefaultAchScope: AchBankCollectorDelegate {
     logger.debug(message: "ACH bank collector cancelled")
     bankCollectorViewController = nil
     let error = ACHHelpers.getCancelledError(paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue)
-    checkoutScope?.handlePaymentError(error)
+    guard let checkoutScope else {
+      logger.error(message: "ACH checkout scope was deallocated during bank collector cancellation")
+      return
+    }
+    checkoutScope.handlePaymentError(error)
   }
 
   func achBankCollectorDidFail(error: PrimerError) {
     logger.error(message: "ACH bank collector failed: \(error.localizedDescription)")
     bankCollectorViewController = nil
-    checkoutScope?.handlePaymentError(error)
+    guard let checkoutScope else {
+      logger.error(message: "ACH checkout scope was deallocated during bank collector failure")
+      return
+    }
+    checkoutScope.handlePaymentError(error)
   }
 }
