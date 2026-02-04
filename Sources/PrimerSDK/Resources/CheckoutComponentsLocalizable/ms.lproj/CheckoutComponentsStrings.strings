@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Akaun Bank";
+"primer_ach_pay_with_title" = "Bayar dengan ACH";
 "primer_ach_user_details_title" = "Masukkan butiran anda untuk menghubungkan akaun bank anda";
+"primer_ach_personal_details_subtitle" = "Butiran peribadi anda";
+"primer_ach_email_disclaimer" = "Kami hanya akan menggunakan ini untuk memaklumkan anda tentang pembayaran anda";
 "primer_ach_button_continue" = "Teruskan";
 "primer_ach_mandate_title" = "Kebenaran";
 "primer_ach_mandate_button_accept" = "Saya Setuju";

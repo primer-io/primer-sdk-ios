@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bank Account";
+"primer_ach_pay_with_title" = "Magbayad gamit ang ACH";
 "primer_ach_user_details_title" = "Ilagay ang iyong mga detalye para ikonekta ang iyong bank account";
+"primer_ach_personal_details_subtitle" = "Ang iyong personal na mga detalye";
+"primer_ach_email_disclaimer" = "Gagamitin lang namin ito para ipaalam sa iyo ang tungkol sa iyong bayad";
 "primer_ach_button_continue" = "Magpatuloy";
 "primer_ach_mandate_title" = "Awtorisasyon";
 "primer_ach_mandate_button_accept" = "Sumasang-ayon Ako";

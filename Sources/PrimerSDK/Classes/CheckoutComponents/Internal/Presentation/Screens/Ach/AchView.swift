@@ -14,16 +14,15 @@ struct AchView: View, LogReporter {
   @State private var achState: AchState = .init()
 
   var body: some View {
-    VStack(spacing: 0) {
-      makeHeaderSection()
-        .padding(.bottom, PrimerSpacing.xlarge(tokens: tokens))
-
-      ScrollView {
+    ScrollView {
+      VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
+        makeHeaderSection()
         makeContentSection()
       }
+      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
+      .padding(.vertical, PrimerSpacing.large(tokens: tokens))
+      .frame(maxWidth: UIScreen.main.bounds.width)
     }
-    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-    .padding(.vertical, PrimerSpacing.large(tokens: tokens))
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.container)
@@ -61,7 +60,7 @@ struct AchView: View, LogReporter {
 
       Spacer()
 
-      Text(CheckoutComponentsStrings.achTitle)
+      Text(CheckoutComponentsStrings.achPayWithTitle)
         .font(PrimerFont.titleLarge(tokens: tokens))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
 

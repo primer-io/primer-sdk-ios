@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bank Account";
+"primer_ach_pay_with_title" = "Mit ACH bezahlen";
 "primer_ach_user_details_title" = "Enter your details to connect your bank account";
+"primer_ach_personal_details_subtitle" = "Ihre persönlichen Daten";
+"primer_ach_email_disclaimer" = "Wir verwenden dies nur, um Sie über Ihre Zahlung auf dem Laufenden zu halten";
 "primer_ach_button_continue" = "Continue";
 "primer_ach_mandate_title" = "Authorization";
 "primer_ach_mandate_button_accept" = "I Agree";

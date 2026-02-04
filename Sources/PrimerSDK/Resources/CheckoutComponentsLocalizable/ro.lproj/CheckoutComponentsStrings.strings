@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Cont bancar";
+"primer_ach_pay_with_title" = "Plătește cu ACH";
 "primer_ach_user_details_title" = "Introduceți datele dvs. pentru a conecta contul bancar";
+"primer_ach_personal_details_subtitle" = "Datele tale personale";
+"primer_ach_email_disclaimer" = "Vom folosi aceasta doar pentru a te ține la curent cu plata ta";
 "primer_ach_button_continue" = "Continuă";
 "primer_ach_mandate_title" = "Autorizare";
 "primer_ach_mandate_button_accept" = "Sunt de acord";

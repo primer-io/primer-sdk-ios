@@ -57,6 +57,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   private var currentEmailAddress: String = ""
 
   private var stripePaymentId: String?
+  private var stripeData: AchStripeData?
 
   // MARK: - Initialization
 
@@ -278,16 +279,25 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope.startProcessing()
 
     do {
+      // Step 1: Patch user details
       try await processAchInteractor.patchUserDetails(
         firstName: currentFirstName,
         lastName: currentLastName,
         emailAddress: currentEmailAddress
       )
 
+      // Step 2: Tokenize and create payment to get Stripe data
+      // This is the key change - we tokenize and create payment BEFORE creating the bank collector
+      // The payment response contains requiredAction with a new client token that has stripeClientSecret
+      let stripeData = try await processAchInteractor.startPaymentAndGetStripeData()
+      self.stripeData = stripeData
+
+      // Step 3: Create bank collector with the stripeClientSecret from the new token
       let collectorVC = try await processAchInteractor.createBankCollector(
         firstName: currentFirstName,
         lastName: currentLastName,
         emailAddress: currentEmailAddress,
+        clientSecret: stripeData.stripeClientSecret,
         delegate: self
       )
 
@@ -307,7 +317,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
       logger.debug(message: "ACH bank collector created, transitioning to bank account collection")
     } catch {
-      handleError(error, context: "bank collector creation")
+      handleError(error, context: "payment creation and bank collector setup")
     }
   }
 
@@ -343,6 +353,14 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return
     }
 
+    guard let stripeData = self.stripeData else {
+      handleError(
+        PrimerError.invalidClientToken(reason: "Stripe data not available for payment completion"),
+        context: "payment completion"
+      )
+      return
+    }
+
     checkoutScope.startProcessing()
 
     await analyticsInteractor?.trackEvent(
@@ -356,11 +374,12 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     )
 
     do {
-      let tokenData = try await processAchInteractor.tokenize()
-      let result = try await processAchInteractor.createPayment(tokenData: tokenData)
+      // Complete the payment by calling the sdkCompleteUrl with the mandate timestamp
+      // Payment was already created in patchUserDetailsAndCreateBankCollector()
+      let result = try await processAchInteractor.completePayment(stripeData: stripeData)
       checkoutScope.handlePaymentSuccess(result)
     } catch {
-      handleError(error, context: "payment processing")
+      handleError(error, context: "payment completion")
     }
   }
 

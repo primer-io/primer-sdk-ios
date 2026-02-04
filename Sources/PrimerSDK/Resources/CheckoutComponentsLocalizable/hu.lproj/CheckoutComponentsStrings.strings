@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankszámla";
+"primer_ach_pay_with_title" = "Fizetés ACH-val";
 "primer_ach_user_details_title" = "Adja meg adatait a bankszámla összekapcsolásához";
+"primer_ach_personal_details_subtitle" = "Személyes adatai";
+"primer_ach_email_disclaimer" = "Ezt csak arra használjuk, hogy tájékoztassuk a fizetéséről";
 "primer_ach_button_continue" = "Folytatás";
 "primer_ach_mandate_title" = "Felhatalmazás";
 "primer_ach_mandate_button_accept" = "Elfogadom";

@@ -12,6 +12,7 @@ struct EmailInputField: View, LogReporter {
 
   let label: String?
   let placeholder: String
+  let initialValue: String
   let scope: (any PrimerCardFormScope)?
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
@@ -37,6 +38,7 @@ struct EmailInputField: View, LogReporter {
   ) {
     self.label = label
     self.placeholder = placeholder
+    self.initialValue = ""
     self.scope = scope
     self.styling = styling
     self.onEmailChange = nil
@@ -46,12 +48,14 @@ struct EmailInputField: View, LogReporter {
   init(
     label: String?,
     placeholder: String,
+    initialValue: String = "",
     styling: PrimerFieldStyling? = nil,
     onEmailChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
     self.label = label
     self.placeholder = placeholder
+    self.initialValue = initialValue
     self.scope = nil
     self.styling = styling
     self.onEmailChange = onEmailChange
@@ -95,6 +99,10 @@ struct EmailInputField: View, LogReporter {
     }
     .onAppear {
       setupValidationService()
+      if !initialValue.isEmpty, email.isEmpty {
+        email = initialValue
+        onEmailChange?(initialValue)
+      }
     }
   }
 

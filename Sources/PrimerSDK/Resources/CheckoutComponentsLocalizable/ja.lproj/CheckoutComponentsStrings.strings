@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "銀行口座";
+"primer_ach_pay_with_title" = "ACHで支払う";
 "primer_ach_user_details_title" = "銀行口座を接続するために詳細を入力してください";
+"primer_ach_personal_details_subtitle" = "お客様の個人情報";
+"primer_ach_email_disclaimer" = "お支払いに関する最新情報をお届けするためにのみ使用します";
 "primer_ach_button_continue" = "続行";
 "primer_ach_mandate_title" = "承認";
 "primer_ach_mandate_button_accept" = "同意する";

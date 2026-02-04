@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Банкарска сметка";
+"primer_ach_pay_with_title" = "Плати со ACH";
 "primer_ach_user_details_title" = "Внесете ги вашите податоци за да ја поврзете вашата банкарска сметка";
+"primer_ach_personal_details_subtitle" = "Вашите лични податоци";
+"primer_ach_email_disclaimer" = "Ова ќе го користиме само за да ве информираме за вашето плаќање";
 "primer_ach_button_continue" = "Продолжи";
 "primer_ach_mandate_title" = "Овластување";
 "primer_ach_mandate_button_accept" = "Се согласувам";

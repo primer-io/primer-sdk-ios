@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Банковский счёт";
+"primer_ach_pay_with_title" = "Оплата через ACH";
 "primer_ach_user_details_title" = "Введите свои данные для подключения банковского счёта";
+"primer_ach_personal_details_subtitle" = "Ваши личные данные";
+"primer_ach_email_disclaimer" = "Мы будем использовать это только для информирования вас о вашем платеже";
 "primer_ach_button_continue" = "Продолжить";
 "primer_ach_mandate_title" = "Авторизация";
 "primer_ach_mandate_button_accept" = "Я согласен";

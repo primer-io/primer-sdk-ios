@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Banko sąskaita";
+"primer_ach_pay_with_title" = "Mokėti per ACH";
 "primer_ach_user_details_title" = "Įveskite savo duomenis, kad prijungtumėte banko sąskaitą";
+"primer_ach_personal_details_subtitle" = "Jūsų asmeniniai duomenys";
+"primer_ach_email_disclaimer" = "Tai naudosime tik tam, kad informuotume jus apie jūsų mokėjimą";
 "primer_ach_button_continue" = "Tęsti";
 "primer_ach_mandate_title" = "Autorizacija";
 "primer_ach_mandate_button_accept" = "Sutinku";

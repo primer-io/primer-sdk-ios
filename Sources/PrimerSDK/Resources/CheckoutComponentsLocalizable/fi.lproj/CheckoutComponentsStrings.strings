@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Pankkitili";
+"primer_ach_pay_with_title" = "Maksa ACH:lla";
 "primer_ach_user_details_title" = "Syötä tietosi yhdistääksesi pankkitilisi";
+"primer_ach_personal_details_subtitle" = "Henkilötietosi";
+"primer_ach_email_disclaimer" = "Käytämme tätä vain pitääksemme sinut ajan tasalla maksustasi";
 "primer_ach_button_continue" = "Jatka";
 "primer_ach_mandate_title" = "Valtuutus";
 "primer_ach_mandate_button_accept" = "Hyväksyn";

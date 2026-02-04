@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "銀行帳戶";
+"primer_ach_pay_with_title" = "使用 ACH 付款";
 "primer_ach_user_details_title" = "輸入您的資料以連接銀行帳戶";
+"primer_ach_personal_details_subtitle" = "您的個人資料";
+"primer_ach_email_disclaimer" = "我們只會使用此資訊向您更新付款狀態";
 "primer_ach_button_continue" = "繼續";
 "primer_ach_mandate_title" = "授權";
 "primer_ach_mandate_button_accept" = "我同意";

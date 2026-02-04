@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bank Hesabı";
+"primer_ach_pay_with_title" = "ACH ilə ödəyin";
 "primer_ach_user_details_title" = "Bank hesabınızı bağlamaq üçün məlumatlarınızı daxil edin";
+"primer_ach_personal_details_subtitle" = "Şəxsi məlumatlarınız";
+"primer_ach_email_disclaimer" = "Bunu yalnız ödənişiniz haqqında sizi məlumatlandırmaq üçün istifadə edəcəyik";
 "primer_ach_button_continue" = "Davam et";
 "primer_ach_mandate_title" = "Səlahiyyət";
 "primer_ach_mandate_button_accept" = "Razıyam";

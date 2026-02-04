@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankrekening";
+"primer_ach_pay_with_title" = "Betalen met ACH";
 "primer_ach_user_details_title" = "Voer uw gegevens in om uw bankrekening te koppelen";
+"primer_ach_personal_details_subtitle" = "Uw persoonlijke gegevens";
+"primer_ach_email_disclaimer" = "We gebruiken dit alleen om u op de hoogte te houden van uw betaling";
 "primer_ach_button_continue" = "Doorgaan";
 "primer_ach_mandate_title" = "Autorisatie";
 "primer_ach_mandate_button_accept" = "Ik ga akkoord";

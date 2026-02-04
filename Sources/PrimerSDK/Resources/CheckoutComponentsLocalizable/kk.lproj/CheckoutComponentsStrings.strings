@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Банк шоты";
+"primer_ach_pay_with_title" = "ACH арқылы төлеу";
 "primer_ach_user_details_title" = "Банк шотын қосу үшін мәліметтеріңізді енгізіңіз";
+"primer_ach_personal_details_subtitle" = "Сіздің жеке мәліметтеріңіз";
+"primer_ach_email_disclaimer" = "Біз мұны тек сіздің төлеміңіз туралы хабардар ету үшін қолданамыз";
 "primer_ach_button_continue" = "Жалғастыру";
 "primer_ach_mandate_title" = "Авторизация";
 "primer_ach_mandate_button_accept" = "Келісемін";

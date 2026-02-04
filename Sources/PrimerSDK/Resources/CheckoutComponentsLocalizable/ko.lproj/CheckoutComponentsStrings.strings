@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "은행 계좌";
+"primer_ach_pay_with_title" = "ACH로 결제";
 "primer_ach_user_details_title" = "은행 계좌를 연결하려면 정보를 입력하세요";
+"primer_ach_personal_details_subtitle" = "개인 정보";
+"primer_ach_email_disclaimer" = "결제에 대한 업데이트를 알려드리는 용도로만 사용됩니다";
 "primer_ach_button_continue" = "계속";
 "primer_ach_mandate_title" = "승인";
 "primer_ach_mandate_button_accept" = "동의합니다";

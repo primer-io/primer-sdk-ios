@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "საბანკო ანგარიში";
+"primer_ach_pay_with_title" = "გადაიხადეთ ACH-ით";
 "primer_ach_user_details_title" = "შეიყვანეთ თქვენი მონაცემები საბანკო ანგარიშის დასაკავშირებლად";
+"primer_ach_personal_details_subtitle" = "თქვენი პირადი მონაცემები";
+"primer_ach_email_disclaimer" = "ამას გამოვიყენებთ მხოლოდ თქვენი გადახდის შესახებ ინფორმაციის მისაწოდებლად";
 "primer_ach_button_continue" = "გაგრძელება";
 "primer_ach_mandate_title" = "ავტორიზაცია";
 "primer_ach_mandate_button_accept" = "ვეთანხმები";

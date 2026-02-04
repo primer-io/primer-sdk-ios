@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Compte bancari";
+"primer_ach_pay_with_title" = "Pagar amb ACH";
 "primer_ach_user_details_title" = "Introduïu les vostres dades per connectar el vostre compte bancari";
+"primer_ach_personal_details_subtitle" = "Les teves dades personals";
+"primer_ach_email_disclaimer" = "Només farem servir això per mantenir-te informat sobre el teu pagament";
 "primer_ach_button_continue" = "Continua";
 "primer_ach_mandate_title" = "Autorització";
 "primer_ach_mandate_button_accept" = "Accepto";

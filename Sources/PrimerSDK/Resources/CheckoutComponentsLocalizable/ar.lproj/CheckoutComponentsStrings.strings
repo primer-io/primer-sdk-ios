@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "حساب بنكي";
+"primer_ach_pay_with_title" = "الدفع عبر ACH";
 "primer_ach_user_details_title" = "أدخل بياناتك لربط حسابك البنكي";
+"primer_ach_personal_details_subtitle" = "بياناتك الشخصية";
+"primer_ach_email_disclaimer" = "سنستخدم هذا فقط لإبقائك على اطلاع بشأن دفعتك";
 "primer_ach_button_continue" = "متابعة";
 "primer_ach_mandate_title" = "تفويض";
 "primer_ach_mandate_button_accept" = "أوافق";

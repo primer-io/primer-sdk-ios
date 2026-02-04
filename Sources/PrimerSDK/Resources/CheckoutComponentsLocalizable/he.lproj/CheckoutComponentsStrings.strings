@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "חשבון בנק";
+"primer_ach_pay_with_title" = "שלם באמצעות ACH";
 "primer_ach_user_details_title" = "הזן את פרטיך כדי לחבר את חשבון הבנק שלך";
+"primer_ach_personal_details_subtitle" = "הפרטים האישיים שלך";
+"primer_ach_email_disclaimer" = "נשתמש בזה רק כדי לעדכן אותך לגבי התשלום שלך";
 "primer_ach_button_continue" = "המשך";
 "primer_ach_mandate_title" = "הרשאה";
 "primer_ach_mandate_button_accept" = "אני מסכים";

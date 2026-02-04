@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Llogari bankare";
+"primer_ach_pay_with_title" = "Paguaj me ACH";
 "primer_ach_user_details_title" = "Fut të dhënat e tua për të lidhur llogarinë bankare";
+"primer_ach_personal_details_subtitle" = "Të dhënat tuaja personale";
+"primer_ach_email_disclaimer" = "Ne do ta përdorim këtë vetëm për t'ju mbajtur të informuar për pagesën tuaj";
 "primer_ach_button_continue" = "Vazhdo";
 "primer_ach_mandate_title" = "Autorizim";
 "primer_ach_mandate_button_accept" = "Pranoj";

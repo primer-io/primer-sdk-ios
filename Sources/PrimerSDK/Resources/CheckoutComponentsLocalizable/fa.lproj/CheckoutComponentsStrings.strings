@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "حساب بانکی";
+"primer_ach_pay_with_title" = "پرداخت با ACH";
 "primer_ach_user_details_title" = "اطلاعات خود را برای اتصال حساب بانکی وارد کنید";
+"primer_ach_personal_details_subtitle" = "اطلاعات شخصی شما";
+"primer_ach_email_disclaimer" = "ما فقط از این برای اطلاع‌رسانی درباره پرداخت شما استفاده می‌کنیم";
 "primer_ach_button_continue" = "ادامه";
 "primer_ach_mandate_title" = "مجوز";
 "primer_ach_mandate_button_accept" = "موافقم";

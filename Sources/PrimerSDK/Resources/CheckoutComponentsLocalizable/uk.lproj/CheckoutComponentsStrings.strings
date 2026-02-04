@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Банківський рахунок";
+"primer_ach_pay_with_title" = "Оплата через ACH";
 "primer_ach_user_details_title" = "Введіть свої дані для підключення банківського рахунку";
+"primer_ach_personal_details_subtitle" = "Ваші персональні дані";
+"primer_ach_email_disclaimer" = "Ми використовуватимемо це лише для інформування вас про ваш платіж";
 "primer_ach_button_continue" = "Продовжити";
 "primer_ach_mandate_title" = "Авторизація";
 "primer_ach_mandate_button_accept" = "Я погоджуюся";

@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Conta bancária";
+"primer_ach_pay_with_title" = "Pagar com ACH";
 "primer_ach_user_details_title" = "Introduza os seus dados para ligar a sua conta bancária";
+"primer_ach_personal_details_subtitle" = "Os seus dados pessoais";
+"primer_ach_email_disclaimer" = "Usaremos isto apenas para mantê-lo atualizado sobre o seu pagamento";
 "primer_ach_button_continue" = "Continuar";
 "primer_ach_mandate_title" = "Autorização";
 "primer_ach_mandate_button_accept" = "Concordo";

@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Τραπεζικός λογαριασμός";
+"primer_ach_pay_with_title" = "Πληρωμή με ACH";
 "primer_ach_user_details_title" = "Εισάγετε τα στοιχεία σας για να συνδέσετε τον τραπεζικό σας λογαριασμό";
+"primer_ach_personal_details_subtitle" = "Τα προσωπικά σας στοιχεία";
+"primer_ach_email_disclaimer" = "Θα το χρησιμοποιήσουμε μόνο για να σας ενημερώνουμε για την πληρωμή σας";
 "primer_ach_button_continue" = "Συνέχεια";
 "primer_ach_mandate_title" = "Εξουσιοδότηση";
 "primer_ach_mandate_button_accept" = "Συμφωνώ";

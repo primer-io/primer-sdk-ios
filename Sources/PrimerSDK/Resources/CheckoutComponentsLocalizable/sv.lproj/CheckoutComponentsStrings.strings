@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankkonto";
+"primer_ach_pay_with_title" = "Betala med ACH";
 "primer_ach_user_details_title" = "Ange dina uppgifter för att ansluta ditt bankkonto";
+"primer_ach_personal_details_subtitle" = "Dina personuppgifter";
+"primer_ach_email_disclaimer" = "Vi kommer endast använda detta för att hålla dig uppdaterad om din betalning";
 "primer_ach_button_continue" = "Fortsätt";
 "primer_ach_mandate_title" = "Auktorisering";
 "primer_ach_mandate_button_accept" = "Jag godkänner";

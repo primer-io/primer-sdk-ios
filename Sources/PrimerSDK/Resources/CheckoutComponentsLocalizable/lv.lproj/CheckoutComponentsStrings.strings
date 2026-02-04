@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankas konts";
+"primer_ach_pay_with_title" = "Maksāt ar ACH";
 "primer_ach_user_details_title" = "Ievadiet savus datus, lai pievienotu bankas kontu";
+"primer_ach_personal_details_subtitle" = "Jūsu personīgie dati";
+"primer_ach_email_disclaimer" = "Mēs to izmantosim tikai, lai informētu jūs par jūsu maksājumu";
 "primer_ach_button_continue" = "Turpināt";
 "primer_ach_mandate_title" = "Autorizācija";
 "primer_ach_mandate_button_accept" = "Es piekrītu";

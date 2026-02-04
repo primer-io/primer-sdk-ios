@@ -112,6 +112,7 @@ enum AccessibilityIdentifiers {
     static let firstNameField = "checkout_components_ach_user_details_first_name_field"
     static let lastNameField = "checkout_components_ach_user_details_last_name_field"
     static let emailField = "checkout_components_ach_user_details_email_field"
+    static let emailDisclaimer = "checkout_components_ach_user_details_email_disclaimer"
     static let submitButton = "checkout_components_ach_submit_button"
 
     // Bank Collector

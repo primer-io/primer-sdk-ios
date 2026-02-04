@@ -65,10 +65,63 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     try tokenizationService.validate()
   }
 
+  func startPaymentAndGetStripeData() async throws -> AchStripeData {
+    // Step 1: Tokenize
+    let tokenizationService = try getOrCreateTokenizationService()
+    let tokenData = try await tokenizationService.tokenize()
+
+    guard let token = tokenData.token else {
+      throw ACHHelpers.getInvalidTokenError()
+    }
+
+    // Step 2: Create payment
+    let createResumePaymentService = CreateResumePaymentService(
+      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
+    )
+
+    let paymentRequest = Request.Body.Payment.Create(token: token)
+    let paymentResponse = try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+
+    // Step 3: Extract requiredAction with new client token
+    guard let requiredAction = paymentResponse.requiredAction else {
+      throw PrimerError.invalidClientToken(reason: "Payment response missing requiredAction for ACH")
+    }
+
+    // Step 4: Store and decode the new client token
+    let apiConfigurationModule = PrimerAPIConfigurationModule()
+    try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
+
+    guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+      throw ACHHelpers.getInvalidTokenError()
+    }
+
+    // Step 5: Extract Stripe-specific data from the new token
+    guard let stripeClientSecret = decodedJWTToken.stripeClientSecret else {
+      throw PrimerError.invalidClientToken(reason: "stripeClientSecret not found in requiredAction client token")
+    }
+
+    guard let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
+          let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
+      throw PrimerError.invalidClientToken(reason: "sdkCompleteUrl not found in requiredAction client token")
+    }
+
+    guard let paymentId = paymentResponse.id else {
+      throw PrimerError.invalidClientToken(reason: "Payment ID not found in payment response")
+    }
+
+    return AchStripeData(
+      stripeClientSecret: stripeClientSecret,
+      sdkCompleteUrl: sdkCompleteUrl,
+      paymentId: paymentId,
+      decodedJWTToken: decodedJWTToken
+    )
+  }
+
   func createBankCollector(
     firstName: String,
     lastName: String,
     emailAddress: String,
+    clientSecret: String,
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController {
     #if canImport(PrimerStripeSDK)
@@ -76,12 +129,6 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
       !publishableKey.isEmpty
     else {
       throw ACHHelpers.getInvalidValueError(key: "stripeOptions.publishableKey")
-    }
-
-    guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
-      let clientSecret = decodedJWTToken.stripeClientSecret
-    else {
-      throw ACHHelpers.getInvalidTokenError()
     }
 
     let urlScheme = try PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme().absoluteString
@@ -145,6 +192,31 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
       status: .success,
       token: tokenData.token,
       amount: paymentResponse.amount,
+      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
+    )
+  }
+
+  func completePayment(stripeData: AchStripeData) async throws -> PaymentResult {
+    let createResumePaymentService = CreateResumePaymentService(
+      paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
+    )
+
+    // Create mandate timestamp in UTC format
+    let timeZone = TimeZone(abbreviation: "UTC")
+    let timeStamp = Date().toString(timeZone: timeZone)
+    let completeBody = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
+
+    try await createResumePaymentService.completePayment(
+      clientToken: stripeData.decodedJWTToken,
+      completeUrl: stripeData.sdkCompleteUrl,
+      body: completeBody
+    )
+
+    return PaymentResult(
+      paymentId: stripeData.paymentId,
+      status: .success,
+      token: nil,
+      amount: nil,
       paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
     )
   }

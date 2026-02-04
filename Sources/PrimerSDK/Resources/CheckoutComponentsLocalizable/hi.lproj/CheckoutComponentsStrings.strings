@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "बैंक खाता";
+"primer_ach_pay_with_title" = "ACH से भुगतान करें";
 "primer_ach_user_details_title" = "अपना बैंक खाता जोड़ने के लिए अपना विवरण दर्ज करें";
+"primer_ach_personal_details_subtitle" = "आपका व्यक्तिगत विवरण";
+"primer_ach_email_disclaimer" = "हम इसका उपयोग केवल आपको आपके भुगतान के बारे में अपडेट रखने के लिए करेंगे";
 "primer_ach_button_continue" = "जारी रखें";
 "primer_ach_mandate_title" = "प्राधिकरण";
 "primer_ach_mandate_button_accept" = "मैं सहमत हूं";

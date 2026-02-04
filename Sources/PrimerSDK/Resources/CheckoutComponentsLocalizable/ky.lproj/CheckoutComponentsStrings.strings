@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Банк эсеби";
+"primer_ach_pay_with_title" = "ACH менен төлөө";
 "primer_ach_user_details_title" = "Банк эсебиңизди туташтыруу үчүн маалыматыңызды киргизиңиз";
+"primer_ach_personal_details_subtitle" = "Сиздин жеке маалыматыңыз";
+"primer_ach_email_disclaimer" = "Биз муну сиздин төлөмүңүз жөнүндө кабарлоо үчүн гана колдонобуз";
 "primer_ach_button_continue" = "Улантуу";
 "primer_ach_mandate_title" = "Авторизация";
 "primer_ach_mandate_button_accept" = "Макулмун";

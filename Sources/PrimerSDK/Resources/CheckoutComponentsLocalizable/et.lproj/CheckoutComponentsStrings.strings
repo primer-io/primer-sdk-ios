@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Pangakonto";
+"primer_ach_pay_with_title" = "Maksa ACH kaudu";
 "primer_ach_user_details_title" = "Sisestage oma andmed pangakonto ühendamiseks";
+"primer_ach_personal_details_subtitle" = "Teie isikuandmed";
+"primer_ach_email_disclaimer" = "Kasutame seda ainult selleks, et teid oma makse kohta kursis hoida";
 "primer_ach_button_continue" = "Jätka";
 "primer_ach_mandate_title" = "Volitus";
 "primer_ach_mandate_button_accept" = "Nõustun";

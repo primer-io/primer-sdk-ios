@@ -11,15 +11,18 @@ protocol ProcessAchPaymentInteractor {
   func loadUserDetails() async throws -> AchUserDetailsResult
   func patchUserDetails(firstName: String, lastName: String, emailAddress: String) async throws
   func validate() async throws
+  func startPaymentAndGetStripeData() async throws -> AchStripeData
   func createBankCollector(
     firstName: String,
     lastName: String,
     emailAddress: String,
+    clientSecret: String,
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController
   func getMandateData() async throws -> AchMandateResult
   func tokenize() async throws -> PrimerPaymentMethodTokenData
   func createPayment(tokenData: PrimerPaymentMethodTokenData) async throws -> PaymentResult
+  func completePayment(stripeData: AchStripeData) async throws -> PaymentResult
 }
 
 @available(iOS 15.0, *)
@@ -72,10 +75,24 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
     }
   }
 
+  func startPaymentAndGetStripeData() async throws -> AchStripeData {
+    logger.debug(message: "Starting ACH payment and getting Stripe data")
+
+    do {
+      let stripeData = try await repository.startPaymentAndGetStripeData()
+      logger.debug(message: "ACH payment created successfully, obtained Stripe data")
+      return stripeData
+    } catch {
+      logger.error(message: "ACH payment creation and Stripe data retrieval failed: \(error)", error: error)
+      throw error
+    }
+  }
+
   func createBankCollector(
     firstName: String,
     lastName: String,
     emailAddress: String,
+    clientSecret: String,
     delegate: AchBankCollectorDelegate
   ) async throws -> UIViewController {
     logger.debug(message: "Creating ACH bank collector")
@@ -85,6 +102,7 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
         firstName: firstName,
         lastName: lastName,
         emailAddress: emailAddress,
+        clientSecret: clientSecret,
         delegate: delegate
       )
       logger.debug(message: "ACH bank collector created successfully")
@@ -130,6 +148,19 @@ final class ProcessAchPaymentInteractorImpl: ProcessAchPaymentInteractor, LogRep
       return result
     } catch {
       logger.error(message: "ACH payment creation failed: \(error)", error: error)
+      throw error
+    }
+  }
+
+  func completePayment(stripeData: AchStripeData) async throws -> PaymentResult {
+    logger.debug(message: "Completing ACH payment after mandate acceptance")
+
+    do {
+      let result = try await repository.completePayment(stripeData: stripeData)
+      logger.debug(message: "ACH payment completed successfully")
+      return result
+    } catch {
+      logger.error(message: "ACH payment completion failed: \(error)", error: error)
       throw error
     }
   }

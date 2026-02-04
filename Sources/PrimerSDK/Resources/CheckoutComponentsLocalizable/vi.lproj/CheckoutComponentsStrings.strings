@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Tài khoản ngân hàng";
+"primer_ach_pay_with_title" = "Thanh toán bằng ACH";
 "primer_ach_user_details_title" = "Nhập thông tin của bạn để kết nối tài khoản ngân hàng";
+"primer_ach_personal_details_subtitle" = "Thông tin cá nhân của bạn";
+"primer_ach_email_disclaimer" = "Chúng tôi chỉ sử dụng thông tin này để cập nhật cho bạn về thanh toán của bạn";
 "primer_ach_button_continue" = "Tiếp tục";
 "primer_ach_mandate_title" = "Ủy quyền";
 "primer_ach_mandate_button_accept" = "Tôi đồng ý";

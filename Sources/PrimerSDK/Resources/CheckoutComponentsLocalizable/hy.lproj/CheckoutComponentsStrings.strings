@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Բանկային հաշիվ";
+"primer_ach_pay_with_title" = "Վճարել ACH-ի միջոցով";
 "primer_ach_user_details_title" = "Մուտքագրեք ձեր տվյալները՝ ձեր բանկային հաշիվը կապելու համար";
+"primer_ach_personal_details_subtitle" = "Ձեր անձնական տվյալները";
+"primer_ach_email_disclaimer" = "Մենք դա կօգտագործելու ենք միայն ձեզ տեղյակ պահելու ձեր վճարման մասին";
 "primer_ach_button_continue" = "Շարունակել";
 "primer_ach_mandate_title" = "Թույլատվություն";
 "primer_ach_mandate_button_accept" = "Համաձայն եմ";

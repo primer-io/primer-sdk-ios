@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankovni račun";
+"primer_ach_pay_with_title" = "Platite putem ACH";
 "primer_ach_user_details_title" = "Unesite svoje podatke da povežete svoj bankovni račun";
+"primer_ach_personal_details_subtitle" = "Vaši lični podaci";
+"primer_ach_email_disclaimer" = "Koristit ćemo ovo samo da vas obavještavamo o vašem plaćanju";
 "primer_ach_button_continue" = "Nastavi";
 "primer_ach_mandate_title" = "Autorizacija";
 "primer_ach_mandate_button_accept" = "Slažem se";

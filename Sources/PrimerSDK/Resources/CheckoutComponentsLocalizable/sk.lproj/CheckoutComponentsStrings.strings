@@ -213,7 +213,10 @@
 
 /* ACH */
 "primer_ach_title" = "Bankový účet";
+"primer_ach_pay_with_title" = "Platiť cez ACH";
 "primer_ach_user_details_title" = "Zadajte svoje údaje na pripojenie bankového účtu";
+"primer_ach_personal_details_subtitle" = "Vaše osobné údaje";
+"primer_ach_email_disclaimer" = "Toto použijeme len na to, aby sme vás informovali o vašej platbe";
 "primer_ach_button_continue" = "Pokračovať";
 "primer_ach_mandate_title" = "Autorizácia";
 "primer_ach_mandate_button_accept" = "Súhlasím";

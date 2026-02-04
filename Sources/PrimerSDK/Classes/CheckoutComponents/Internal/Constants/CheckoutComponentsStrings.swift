@@ -1685,12 +1685,36 @@ enum CheckoutComponentsStrings {
     comment: "ACH payment screen title"
   )
 
+  static let achPayWithTitle = NSLocalizedString(
+    "primer_ach_pay_with_title",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Pay with ACH",
+    comment: "ACH payment screen title matching Web/Drop-In"
+  )
+
   static let achUserDetailsTitle = NSLocalizedString(
     "primer_ach_user_details_title",
     tableName: tableName,
     bundle: Bundle.primerResources,
     value: "Enter your details to connect your bank account",
     comment: "ACH user details collection description"
+  )
+
+  static let achPersonalDetailsSubtitle = NSLocalizedString(
+    "primer_ach_personal_details_subtitle",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Your personal details",
+    comment: "ACH user details section header matching Web/Drop-In"
+  )
+
+  static let achEmailDisclaimer = NSLocalizedString(
+    "primer_ach_email_disclaimer",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "We'll only use this to keep you updated about your payment",
+    comment: "ACH email field disclaimer text"
   )
 
   static let achContinueButton = NSLocalizedString(
