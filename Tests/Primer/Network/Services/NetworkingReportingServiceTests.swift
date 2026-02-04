@@ -88,7 +88,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
             XCTAssertTrue(events.first?.properties is NetworkConnectivityEventProperties)
 
             let properties = events.first?.properties as! NetworkConnectivityEventProperties
-            XCTAssertEqual(properties.networkType, .wifi)
+            XCTAssertEqual(properties.networkType, "WIFI")
             expectation.fulfill()
         }
 
