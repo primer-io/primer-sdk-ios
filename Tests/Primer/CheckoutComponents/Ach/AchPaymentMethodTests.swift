@@ -103,14 +103,14 @@ final class AchPaymentMethodTests: XCTestCase {
 @MainActor
 private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
 
-    var state: AsyncStream<PrimerCheckoutState> {
-        AsyncStream { _ in }
-    }
-
     var container: ContainerComponent?
     var splashScreen: Component?
     var loading: Component?
     var errorScreen: ErrorComponent?
+
+    var state: AsyncStream<PrimerCheckoutState> {
+        AsyncStream { _ in }
+    }
 
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented for testing")

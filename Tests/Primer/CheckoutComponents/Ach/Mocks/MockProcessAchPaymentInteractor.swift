@@ -31,6 +31,18 @@ final class MockProcessAchPaymentInteractor: ProcessAchPaymentInteractor {
     var createPaymentError: Error?
     var completePaymentError: Error?
 
+    // MARK: - Closures for Custom Behavior
+
+    var onLoadUserDetails: (() async throws -> AchUserDetailsResult)?
+    var onPatchUserDetails: ((String, String, String) async throws -> Void)?
+    var onValidate: (() async throws -> Void)?
+    var onStartPaymentAndGetStripeData: (() async throws -> AchStripeData)?
+    var onCreateBankCollector: ((String, String, String, String, AchBankCollectorDelegate) async throws -> UIViewController)?
+    var onGetMandateData: (() async throws -> AchMandateResult)?
+    var onTokenize: (() async throws -> PrimerPaymentMethodTokenData)?
+    var onCreatePayment: ((PrimerPaymentMethodTokenData) async throws -> PaymentResult)?
+    var onCompletePayment: ((AchStripeData) async throws -> PaymentResult)?
+
     // MARK: - Call Tracking
 
     private(set) var loadUserDetailsCallCount = 0
@@ -55,18 +67,6 @@ final class MockProcessAchPaymentInteractor: ProcessAchPaymentInteractor {
     private(set) var lastBankCollectorDelegate: AchBankCollectorDelegate?
     private(set) var lastTokenData: PrimerPaymentMethodTokenData?
     private(set) var lastStripeData: AchStripeData?
-
-    // MARK: - Closures for Custom Behavior
-
-    var onLoadUserDetails: (() async throws -> AchUserDetailsResult)?
-    var onPatchUserDetails: ((String, String, String) async throws -> Void)?
-    var onValidate: (() async throws -> Void)?
-    var onStartPaymentAndGetStripeData: (() async throws -> AchStripeData)?
-    var onCreateBankCollector: ((String, String, String, String, AchBankCollectorDelegate) async throws -> UIViewController)?
-    var onGetMandateData: (() async throws -> AchMandateResult)?
-    var onTokenize: (() async throws -> PrimerPaymentMethodTokenData)?
-    var onCreatePayment: ((PrimerPaymentMethodTokenData) async throws -> PaymentResult)?
-    var onCompletePayment: ((AchStripeData) async throws -> PaymentResult)?
 
     // MARK: - ProcessAchPaymentInteractor Protocol
 

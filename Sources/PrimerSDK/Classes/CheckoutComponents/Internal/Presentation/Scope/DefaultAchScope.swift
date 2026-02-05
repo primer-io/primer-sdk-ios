@@ -15,12 +15,18 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   // MARK: - Public Properties
 
   public private(set) var presentationContext: PresentationContext
+  public private(set) var bankCollectorViewController: UIViewController?
+
+  // MARK: - UI Customization Properties
+
+  public var screen: AchScreenComponent?
+  public var userDetailsScreen: AchScreenComponent?
+  public var mandateScreen: AchScreenComponent?
+  public var submitButton: AchButtonComponent?
 
   public var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
   }
-
-  public private(set) var bankCollectorViewController: UIViewController?
 
   public var state: AsyncStream<AchState> {
     AsyncStream { continuation in
@@ -36,13 +42,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       }
     }
   }
-
-  // MARK: - UI Customization Properties
-
-  public var screen: AchScreenComponent?
-  public var userDetailsScreen: AchScreenComponent?
-  public var mandateScreen: AchScreenComponent?
-  public var submitButton: AchButtonComponent?
 
   // MARK: - Private Properties
 

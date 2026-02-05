@@ -66,7 +66,6 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
   }
 
   func startPaymentAndGetStripeData() async throws -> AchStripeData {
-    // Step 1: Tokenize
     let tokenizationService = try getOrCreateTokenizationService()
     let tokenData = try await tokenizationService.tokenize()
 
@@ -74,7 +73,6 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
       throw ACHHelpers.getInvalidTokenError()
     }
 
-    // Step 2: Create payment
     let createResumePaymentService = CreateResumePaymentService(
       paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
     )
@@ -82,12 +80,10 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     let paymentRequest = Request.Body.Payment.Create(token: token)
     let paymentResponse = try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
 
-    // Step 3: Extract requiredAction with new client token
     guard let requiredAction = paymentResponse.requiredAction else {
       throw PrimerError.invalidClientToken(reason: "Payment response missing requiredAction for ACH")
     }
 
-    // Step 4: Store and decode the new client token
     let apiConfigurationModule = PrimerAPIConfigurationModule()
     try await apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
 
@@ -95,7 +91,6 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
       throw ACHHelpers.getInvalidTokenError()
     }
 
-    // Step 5: Extract Stripe-specific data from the new token
     guard let stripeClientSecret = decodedJWTToken.stripeClientSecret else {
       throw PrimerError.invalidClientToken(reason: "stripeClientSecret not found in requiredAction client token")
     }
@@ -224,11 +219,9 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
   // MARK: - Private Helpers
 
   private func getOrCreateTokenizationService() throws -> ACHTokenizationService {
-    if let existingService = achTokenizationService {
-      return existingService
-    }
+    if let achTokenizationService { return achTokenizationService }
 
-    guard let paymentMethod = findAchPaymentMethod() else {
+    guard let paymentMethod = achPaymentMethod else {
       throw ACHHelpers.getInvalidValueError(key: "paymentMethod", value: nil)
     }
 
@@ -237,7 +230,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     return service
   }
 
-  private func findAchPaymentMethod() -> PrimerPaymentMethod? {
+  private var achPaymentMethod: PrimerPaymentMethod? {
     PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?
       .first(where: { $0.type == PrimerPaymentMethodType.stripeAch.rawValue })
   }

@@ -16,24 +16,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
 
     @Published private var internalState: AchState
 
-    var state: AsyncStream<AchState> {
-        AsyncStream { continuation in
-            // Emit current state immediately
-            continuation.yield(internalState)
-
-            // Store continuation for controlled emission
-            self.continuation = continuation
-
-            continuation.onTermination = { @Sendable [weak self] _ in
-                Task { @MainActor in
-                    self?.continuation = nil
-                }
-            }
-        }
-    }
-
-    private var continuation: AsyncStream<AchState>.Continuation?
-
     // MARK: - Configurable Properties
 
     var presentationContext: PresentationContext
@@ -67,6 +49,31 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     private(set) var lastLastName: String?
     private(set) var lastEmailAddress: String?
 
+    private var continuation: AsyncStream<AchState>.Continuation?
+
+    // MARK: - Computed Properties
+
+    var state: AsyncStream<AchState> {
+        AsyncStream { continuation in
+            // Emit current state immediately
+            continuation.yield(internalState)
+
+            // Store continuation for controlled emission
+            self.continuation = continuation
+
+            continuation.onTermination = { @Sendable [weak self] _ in
+                Task { @MainActor in
+                    self?.continuation = nil
+                }
+            }
+        }
+    }
+
+    /// Returns the current internal state
+    var currentState: AchState {
+        internalState
+    }
+
     // MARK: - Initialization
 
     init(
@@ -87,11 +94,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     func emit(_ state: AchState) {
         internalState = state
         continuation?.yield(state)
-    }
-
-    /// Returns the current internal state
-    var currentState: AchState {
-        internalState
     }
 
     // MARK: - PrimerPaymentMethodScope Methods
