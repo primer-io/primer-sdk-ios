@@ -51,16 +51,14 @@ struct CardFormFieldsView: View {
 
         if fieldType == .expiryDate,
           index + 1 < formConfiguration.cardFields.count,
-          formConfiguration.cardFields[index + 1] == .cvv
-        {
+          formConfiguration.cardFields[index + 1] == .cvv {
           HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
             renderField(.expiryDate)
             renderField(.cvv)
           }
         } else if index > 0,
           formConfiguration.cardFields[index - 1] == .expiryDate,
-          fieldType == .cvv
-        {
+          fieldType == .cvv {
           EmptyView()
         } else {
           renderField(fieldType)
@@ -86,16 +84,14 @@ struct CardFormFieldsView: View {
 
             if fieldType == .firstName,
               index + 1 < formConfiguration.billingFields.count,
-              formConfiguration.billingFields[index + 1] == .lastName
-            {
+              formConfiguration.billingFields[index + 1] == .lastName {
               HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
                 renderField(.firstName)
                 renderField(.lastName)
               }
             } else if index > 0,
               formConfiguration.billingFields[index - 1] == .firstName,
-              fieldType == .lastName
-            {
+              fieldType == .lastName {
               EmptyView()
             } else {
               renderField(fieldType)

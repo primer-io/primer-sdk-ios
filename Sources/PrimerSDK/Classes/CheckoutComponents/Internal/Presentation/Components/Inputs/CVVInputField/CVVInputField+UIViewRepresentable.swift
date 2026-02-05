@@ -21,8 +21,8 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
   let scope: any PrimerCardFormScope
   let tokens: DesignTokens?
 
-  func makeUIView(context: Context) -> UITextField {
-    let textField = UITextField()
+  func makeUIView(context: Context) -> SecureTextField {
+    let textField = SecureTextField()
     textField.delegate = context.coordinator
 
     textField.configurePrimerStyle(
@@ -37,9 +37,9 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     return textField
   }
 
-  func updateUIView(_ textField: UITextField, context: Context) {
-    if textField.text != cvv {
-      textField.text = cvv
+  func updateUIView(_ textField: SecureTextField, context: Context) {
+    if textField.internalText != cvv {
+      textField.internalText = cvv
     }
   }
 
