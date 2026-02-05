@@ -44,6 +44,8 @@ PODS:
   - PrimerFoundation (1.0.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.3.1)
+  - PrimerNetworking (1.0.0):
+    - PrimerFoundation
   - PrimerNolPaySDK (1.0.1)
   - PrimerSDK (2.44.1):
     - PrimerSDK/Core (= 2.44.1)
@@ -59,6 +61,7 @@ DEPENDENCIES:
   - PrimerFoundation (from `../`)
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
+  - PrimerNetworking (from `../`)
   - PrimerNolPaySDK
   - PrimerSDK (from `../`)
   - PrimerStripeSDK
@@ -84,6 +87,8 @@ EXTERNAL SOURCES:
     :path: "../"
   PrimerFoundation:
     :path: "../"
+  PrimerNetworking:
+    :path: "../"
   PrimerSDK:
     :path: "../"
 
@@ -101,10 +106,11 @@ SPEC CHECKSUMS:
   PrimerFoundation: 5ee89daecf767497877d86c1f60a424683782235
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
+  PrimerNetworking: c124f9f57af1a38f513c5bf989384891a74b6208
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
   PrimerSDK: 4462c6bf2aa996bded85ce4ffec3c1f4beb39831
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
-PODFILE CHECKSUM: afd2c63caf5f619efdc368a4528a9ad9c95bc50b
+PODFILE CHECKSUM: ddbef2588beae13b55919e5b046d984930e5e6a5
 
 COCOAPODS: 1.16.2
