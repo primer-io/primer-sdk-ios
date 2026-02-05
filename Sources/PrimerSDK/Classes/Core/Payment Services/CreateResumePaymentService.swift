@@ -1,12 +1,12 @@
 //
 //  CreateResumePaymentService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal protocol CreateResumePaymentServiceProtocol {
+protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
@@ -31,6 +31,8 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        defer { PrimerInternal.shared.currentIdempotencyKey = nil }
+
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             throw handled(primerError: .invalidClientToken())
         }
