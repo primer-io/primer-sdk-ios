@@ -12,20 +12,14 @@ final class HeadlessRepositorySettingsTests: XCTestCase {
 
     // MARK: - Setup & Teardown
 
-    private var savedContainer: ContainerProtocol?
-
     override func setUp() async throws {
         try await super.setUp()
-        savedContainer = await DIContainer.current
+        // Ensure clean state
         await DIContainer.clearContainer()
     }
 
     override func tearDown() async throws {
-        if let savedContainer {
-            await DIContainer.setContainer(savedContainer)
-        } else {
-            await DIContainer.clearContainer()
-        }
+        await DIContainer.clearContainer()
         try await super.tearDown()
     }
 

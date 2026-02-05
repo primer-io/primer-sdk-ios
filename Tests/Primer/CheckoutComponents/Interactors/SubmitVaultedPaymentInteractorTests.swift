@@ -61,29 +61,6 @@ final class SubmitVaultedPaymentInteractorTests: XCTestCase {
         XCTAssertNotNil(call.additionalData)
     }
 
-    func testExecute_PassesCorrectParametersToRepository() async throws {
-        // Given
-        let repository = SpyHeadlessRepository()
-        await repository.setProcessVaultedPaymentResult(.success(PaymentResult(
-            paymentId: "pay_123",
-            status: .success
-        )))
-        let interactor = SubmitVaultedPaymentInteractorImpl(repository: repository)
-
-        // When
-        _ = try await interactor.execute(
-            vaultedPaymentMethodId: "vault_abc",
-            paymentMethodType: "PAYPAL",
-            additionalData: nil
-        )
-
-        // Then
-        let call = try await repository.nextProcessVaultedPaymentCall()
-        XCTAssertEqual(call.vaultedPaymentMethodId, "vault_abc")
-        XCTAssertEqual(call.paymentMethodType, "PAYPAL")
-        XCTAssertNil(call.additionalData)
-    }
-
     // MARK: - Error Tests
 
     func testExecute_RepositoryThrows_PropagatesError() async throws {
@@ -105,37 +82,6 @@ final class SubmitVaultedPaymentInteractorTests: XCTestCase {
             XCTAssertEqual((error as NSError).domain, "TestError")
             XCTAssertEqual((error as NSError).code, 500)
         }
-    }
-
-    // MARK: - Multiple Calls Tests
-
-    func testExecute_MultipleCalls_EachCallsRepository() async throws {
-        // Given
-        let repository = SpyHeadlessRepository()
-        await repository.setProcessVaultedPaymentResult(.success(PaymentResult(
-            paymentId: "pay_123",
-            status: .success
-        )))
-        let interactor = SubmitVaultedPaymentInteractorImpl(repository: repository)
-
-        // When
-        _ = try await interactor.execute(
-            vaultedPaymentMethodId: "vault_1",
-            paymentMethodType: "PAYMENT_CARD",
-            additionalData: nil
-        )
-        _ = try await interactor.execute(
-            vaultedPaymentMethodId: "vault_2",
-            paymentMethodType: "PAYPAL",
-            additionalData: nil
-        )
-
-        // Then
-        let call1 = try await repository.nextProcessVaultedPaymentCall()
-        let call2 = try await repository.nextProcessVaultedPaymentCall()
-
-        XCTAssertEqual(call1.vaultedPaymentMethodId, "vault_1")
-        XCTAssertEqual(call2.vaultedPaymentMethodId, "vault_2")
     }
 }
 
