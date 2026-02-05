@@ -1,7 +1,7 @@
 //
 //  Decisions.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -99,7 +99,7 @@ public extension PrimerHeadlessUniversalCheckoutResumeDecision {
 
     public enum DecisionType {
         case abort(errorMessage: String?)
-        case `continue`
+        case `continue`(idempotencyKey: String?)
     }
 
     var type: DecisionType
@@ -115,7 +115,9 @@ public extension PrimerPaymentCreationDecision {
         PrimerPaymentCreationDecision(type: .abort(errorMessage: message))
     }
 
-    static func continuePaymentCreation() -> PrimerPaymentCreationDecision {
-        PrimerPaymentCreationDecision(type: .continue)
+    static func continuePaymentCreation(
+        withIdempotencyKey idempotencyKey: String? = nil
+    ) -> PrimerPaymentCreationDecision {
+        PrimerPaymentCreationDecision(type: .continue(idempotencyKey: idempotencyKey))
     }
 }

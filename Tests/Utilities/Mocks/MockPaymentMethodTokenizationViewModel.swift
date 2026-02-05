@@ -1,11 +1,11 @@
 //
 //  MockPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
@@ -144,7 +144,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
-        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
+        try await handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 
     func presentPaymentMethodUserInterface() async throws {
@@ -159,7 +159,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         _ decodedJWTToken: DecodedJWTToken,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
-        return "mock_resume_token"
+        "mock_resume_token"
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
@@ -201,10 +201,11 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         return try await withCheckedThrowingContinuation { continuation in
             Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                 switch paymentCreationDecision.type {
-                case .abort(let errorMessage):
+                case let .abort(errorMessage):
                     let error = PrimerError.merchantError(message: errorMessage ?? "")
                     continuation.resume(throwing: error)
-                case .continue:
+                case let .continue(idempotencyKey):
+                    PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
                     continuation.resume()
                 }
             }

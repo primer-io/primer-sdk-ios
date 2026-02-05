@@ -8,9 +8,6 @@ import Foundation
 @testable import PrimerSDK
 
 @available(iOS 15.0, *)
-typealias TrackedEvent = (eventType: AnalyticsEventType, metadata: AnalyticsEventMetadata?)
-
-@available(iOS 15.0, *)
 actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
 
     // MARK: - Call Tracking
@@ -30,13 +27,5 @@ actor MockAnalyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol {
     func reset() {
         trackEventCallCount = 0
         trackedEvents = []
-    }
-
-    func getLastTrackedEvent() -> TrackedEvent? {
-        trackedEvents.last
-    }
-
-    func hasTrackedEvent(_ eventType: AnalyticsEventType) -> Bool {
-        trackedEvents.contains { $0.eventType == eventType }
     }
 }

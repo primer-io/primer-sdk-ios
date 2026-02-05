@@ -142,7 +142,8 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         switch paymentCreationDecision.type {
         case let .abort(errorMessage):
             throw PrimerError.merchantError(message: errorMessage ?? "")
-        case .continue:
+        case let .continue(idempotencyKey):
+            PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
             return
         }
     }

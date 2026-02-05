@@ -21,8 +21,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
   let validationService: ValidationService
   let tokens: DesignTokens?
 
-  func makeUIView(context: Context) -> UITextField {
-    let textField = UITextField()
+  func makeUIView(context: Context) -> SecureTextField {
+    let textField = SecureTextField()
     textField.delegate = context.coordinator
 
     textField.configurePrimerStyle(
@@ -37,9 +37,9 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     return textField
   }
 
-  func updateUIView(_ textField: UITextField, context: Context) {
-    if textField.text != formatCardNumber(cardNumber, for: cardNetwork) {
-      textField.text = formatCardNumber(cardNumber, for: cardNetwork)
+  func updateUIView(_ textField: SecureTextField, context: Context) {
+    if textField.internalText != formatCardNumber(cardNumber, for: cardNetwork) {
+      textField.internalText = formatCardNumber(cardNumber, for: cardNetwork)
     }
   }
 
@@ -125,6 +125,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       _ textField: UITextField, shouldChangeCharactersIn range: NSRange,
       replacementString string: String
     ) -> Bool {
+      let secureTextField = textField as? SecureTextField
       saveCursorPosition(textField)
       let currentText = cardNumber
       let isDeletion = string.isEmpty
@@ -132,7 +133,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         currentText: currentText,
         range: range,
         replacementString: string,
-        formattedText: textField.text ?? "",
+        formattedText: secureTextField?.internalText ?? "",
         isDeletion: isDeletion
       )
       guard newCardNumber != currentText || isDeletion else {
@@ -142,7 +143,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       scope.updateCardNumber(newCardNumber)
       updateCardNetworkIfNeeded(newCardNumber)
       let formattedText = formatCardNumber(newCardNumber, for: cardNetwork)
-      textField.text = formattedText
+      secureTextField?.internalText = formattedText
       restoreCursorPosition(
         textField: textField,
         formattedText: formattedText,

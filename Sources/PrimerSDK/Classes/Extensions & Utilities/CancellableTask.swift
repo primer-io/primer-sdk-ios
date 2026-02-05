@@ -1,7 +1,7 @@
 //
 //  CancellableTask.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 actor CancellableTask<Success> {
@@ -29,7 +29,7 @@ actor CancellableTask<Success> {
             throw cancellationError
         }
 
-        precondition(continuation == nil && !finished, "wait() called more than once")
+        assert(continuation == nil && !finished, "wait() called more than once")
 
         return try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
