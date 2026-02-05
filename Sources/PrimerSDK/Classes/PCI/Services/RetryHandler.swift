@@ -1,136 +1,146 @@
 //
 //  RetryHandler.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
 final class RetryHandler: LogReporter {
-    let request: URLRequest
-    let retryConfig: RetryConfig
-    let completion: DispatcherCompletion
-    let urlSession: URLSessionProtocol
+    
+    private(set) var currentTask: URLSessionDataTask?
 
-    var retries = 0
-    var currentTask: URLSessionDataTask?
+    private let request: URLRequest
+    private let retryConfig: RetryConfig
+    private let completion: DispatcherCompletion
+    private let urlSession: URLSessionProtocol
 
-    init(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion, urlSession: URLSessionProtocol) {
+    private var retries = 0
+    
+    private var backoffWithJitter: TimeInterval {
+        let exponentialPart = retryConfig.initialBackoff * pow(2.0, Double(retries - 1))
+        let jitterPart = Double.random(in: 0...retryConfig.maxJitter)
+        return exponentialPart + jitterPart
+    }
+
+    init(
+        request: URLRequest,
+        retryConfig: RetryConfig,
+        completion: @escaping DispatcherCompletion,
+        urlSession: URLSessionProtocol
+    ) {
         self.request = request
         self.retryConfig = retryConfig
         self.completion = completion
         self.urlSession = urlSession
     }
-
-    func calculateBackoffWithJitter(baseDelay: TimeInterval, retryCount: Int, maxJitter: TimeInterval) -> TimeInterval {
-        let exponentialPart = baseDelay * pow(2.0, Double(retryCount - 1))
-        let jitterPart = Double.random(in: 0...maxJitter)
-        return exponentialPart + jitterPart
-    }
-
-    func handleRetry(responseModel: DispatcherResponseModel, error: Error?) {
-        if self.shouldRetry(response: responseModel, error: error) {
-            self.retries += 1
-            let backoffTime = self.calculateBackoffWithJitter(baseDelay: self.retryConfig.initialBackoff,
-                                                              retryCount: self.retries,
-                                                              maxJitter: self.retryConfig.maxJitter)
-
-            let retryReason = error?.isNetworkError == true ? "Network error" : "HTTP \(responseModel.metadata.statusCode) error)"
-            let message = "Retry attempt \(self.retries)/\(self.retryConfig.maxRetries) due to: \(retryReason). Waiting for \(backoffTime)s before next attempt."
-            self.logger.debug(message: message)
-
-            let retryEvent = Analytics.Event.message(message: message, messageType: .retry, severity: .warning)
-            Analytics.Service.fire(event: retryEvent)
-
-            DispatchQueue.global().asyncAfter(deadline: .now() + backoffTime) {
-                self.attempt()
-            }
-        } else {
-            self.handleFinalFailure(responseModel: responseModel, error: error)
-        }
-    }
-
-    func handleFinalFailure(responseModel: DispatcherResponseModel, error: Error?) {
-        var errorMessage = "Failed after \(self.retries) retries.\n"
-
-        if self.retries >= self.retryConfig.maxRetries {
-            errorMessage += "Reached maximum retries (\(self.retryConfig.maxRetries)).\nLast error object: \(error?.localizedDescription ?? "nil")"
-        } else if responseModel.metadata.statusCode >= 500 {
-            errorMessage += "Server error: \(responseModel.metadata.statusCode)"
-        } else if let error = error {
-            errorMessage += "Last error object: \(error.localizedDescription)"
-        } else {
-            errorMessage += "Status code: \(responseModel.metadata.statusCode)"
-        }
-        self.logger.error(message: errorMessage)
-        let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .retryFailed, severity: .error)
-        Analytics.Service.fire(event: retryEvent)
-
-        self.completion(.failure(PrimerError.missingPrimerConfiguration()))
-    }
-
+    
     func attempt() {
         let startTime = DispatchTime.now()
-        currentTask = urlSession.dataTask(with: request) { data, urlResponse, error in
-
-            let endTime = DispatchTime.now()
-            let requestDuration = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
-
-            guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                return self.completion(.failure(InternalError.invalidResponse()))
-            }
-
-            let metadata = ResponseMetadataModel(responseUrl: httpResponse.url?.absoluteString,
-                                                 statusCode: httpResponse.statusCode,
-                                                 headers: httpResponse.allHeaderFields as? [String: String])
+        currentTask = urlSession.dataTask(with: request) { [weak self] data, urlResponse, error in
+            guard let self else { return }
+            guard let httpResponse = urlResponse as? HTTPURLResponse else { return handleNoResponseReceived(error: error) }
+            
+            let requestDuration = Double(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
+            let statusCode = httpResponse.statusCode
+            
+            let metadata = ResponseMetadataModel(responseUrl: httpResponse.url?.absoluteString, statusCode: statusCode, headers: httpResponse.headers)
             let responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: requestDuration, data: data, error: error)
-
-            // Check if the response is successful
-            if (200...299).contains(responseModel.metadata.statusCode) {
-                let successMessage = "Request succeeded after \(self.retries) retries. Status code: \(responseModel.metadata.statusCode)"
-                self.logger.debug(message: successMessage)
-
-                // Record event only if we have one or more retries
-                if self.retries > 0 {
-                    let retryEvent = Analytics.Event.message(message: successMessage, messageType: .retrySuccess, severity: .info)
-                    Analytics.Service.fire(event: retryEvent)
-                }
-                self.completion(.success(responseModel))
+            
+            if (200...299).contains(statusCode) {
+                handleSuccessfulResponseReceived(model: responseModel)
             } else {
-                self.handleRetry(responseModel: responseModel, error: error)
+                attemptRetry(statusCode: statusCode, error: error)
             }
         }
-
         currentTask?.resume()
     }
-
-    func shouldRetry(response: DispatcherResponse, error: Error?) -> Bool {
-        let isLastAttempt = retries >= retryConfig.maxRetries
-        let isNetworkError = error != nil && error?.isNetworkError == true
-        let is500Error = response.metadata.statusCode >= 500
-        let isSomeOtherError = !isNetworkError && !is500Error
-
-        if isLastAttempt || isNetworkError || is500Error || isSomeOtherError {
-            var finalErrorMessage = ""
-            if isLastAttempt {
-                finalErrorMessage += "Reached maximum retries (\(retryConfig.maxRetries))."
-            } else if isNetworkError {
-                finalErrorMessage += "Network error encountered and RetryConfig.retryNetworkErrors is \(retryConfig.retryNetworkErrors ? "enabled" : "disabled")."
-            } else if is500Error {
-                finalErrorMessage += "HTTP \(response.metadata.statusCode) error encountered and RetryConfig.retry500Errors is \(retryConfig.retry500Errors ? "enabled" : "disabled")."
-            } else if isSomeOtherError {
-                finalErrorMessage += "HTTP \(response.metadata.statusCode) error encountered."
-            }
-
-            finalErrorMessage += "Last error: \(error?.localizedDescription ?? "Unknown error")"
-            let retryEvent = Analytics.Event.message(message: finalErrorMessage, messageType: .retry, severity: .warning)
-            Analytics.Service.fire(event: retryEvent)
-            self.logger.warn(message: finalErrorMessage)
+    
+    private func handleSuccessfulResponseReceived(model: DispatcherResponseModel) {
+        let successMessage = "Request succeeded after \(retries) retries. Status code: \(model.metadata.statusCode)"
+        logger.debug(message: successMessage)
+        if retries > 0 {
+            Analytics.Service.fire(event: .message(message: successMessage, messageType: .retrySuccess, severity: .info))
         }
-
-        let shouldRetry = !isLastAttempt && ((isNetworkError && retryConfig.retryNetworkErrors) ||
-                                                (is500Error && retryConfig.retry500Errors) ||
-                                                isSomeOtherError)
-        return shouldRetry
+        completion(.success(model))
     }
+
+    private func handleNoResponseReceived(error: Error?) {
+        if let error, retryConfig.retryNetworkErrors, error.isNetworkError {
+            attemptRetry(statusCode: error.nsErrorCode, error: error)
+        } else {
+            completion(.failure(InternalError.invalidResponse()))
+        }
+    }
+
+    private func attemptRetry(statusCode: Int, error: Error?) {
+        if shouldRetry(statusCode: statusCode, error: error) {
+            retry(statusCode: statusCode, error: error)
+        } else {
+            handleFinalFailure(statusCode: statusCode, error: error)
+        }
+    }
+    
+    private func retry(statusCode: Int, error: Error?) {
+        retries += 1
+        let retryReason = error?.isNetworkError == true ? "Network error" : "HTTP \(statusCode) error"
+        let attemptCount = "\(retries)/\(retryConfig.maxRetries)"
+        let backoff = backoffWithJitter
+        let message = "Retry attempt \(attemptCount) due to: \(retryReason). \(backoff)s before next attempt."
+        logger.debug(message: message)
+        Analytics.Service.fire(event: .message(message: message, messageType: .retry, severity: .warning))
+        DispatchQueue.global().asyncAfter(deadline: .now() + backoff) { self.attempt() }
+    }
+    
+    private func shouldRetry(statusCode: Int, error: Error?) -> Bool {
+        let isLastAttempt = retries >= retryConfig.maxRetries
+        let isNetworkError = error?.isNetworkError == true
+        let is500Error = statusCode.isServerErrorCode
+        let isSomeOtherError = !isNetworkError && !is500Error
+        
+        let lastAttemptMessage = "Reached maximum retries (\(retryConfig.maxRetries))."
+        let networkErrorMessage = "Network error encountered and retryNetworkErrors is \(retryConfig.retryNetworkErrors)."
+        let received500ErrorMessage = "HTTP \(statusCode) error encountered and RetryConfig.retry500Errors is \(retryConfig.retry500Errors)."
+    
+        var message = ""
+        if isLastAttempt {
+            message += lastAttemptMessage
+        } else if isNetworkError {
+            message += networkErrorMessage
+        } else if is500Error {
+            message += received500ErrorMessage
+        } else if isSomeOtherError {
+            message += "HTTP \(statusCode) error encountered."
+        }
+        
+        message += "\nLast error: \(error?.localizedDescription ?? "Unknown error")"
+        Analytics.Service.fire(event: .message(message: message, messageType: .retry, severity: .warning))
+        logger.warn(message: message)
+        
+        guard !isLastAttempt else { return false }
+        let shouldRetryNetworkError = isNetworkError && retryConfig.retryNetworkErrors
+        let shouldRetry500Error = is500Error && retryConfig.retry500Errors
+        return shouldRetry500Error || shouldRetryNetworkError || isSomeOtherError
+    }
+
+    private func handleFinalFailure(statusCode: Int, error: Error?) {
+        var errorMessage = "Failed after \(retries) retries.\n"
+        if retries >= retryConfig.maxRetries {
+            errorMessage += "Reached maximum retries (\(retryConfig.maxRetries))."
+        } else {
+            errorMessage += "\(statusCode.isServerErrorCode ? "Server error" : "Status") code: \(statusCode)"
+        }
+        
+        if let error {
+            errorMessage += "\nLast error object: \(error.localizedDescription)"
+        }
+        
+        logger.error(message: errorMessage)
+        Analytics.Service.fire(event: .message(message: errorMessage, messageType: .retryFailed, severity: .error))
+        completion(.failure(InternalError.networkFailedAfterRetries(lastError: error)))
+    }
+}
+
+private extension Int {
+    var isServerErrorCode: Bool { 500..<600 ~= self }
 }

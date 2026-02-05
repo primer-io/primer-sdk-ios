@@ -34,7 +34,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
-    private static var pendingTasks: [String: CancellableTask<PrimerAPIConfiguration>] = [:]
 
     static var clientToken: JWTToken? {
         get {
@@ -247,18 +246,6 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
 
                 }
 
-                if let pendingTask = PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] {
-                    Task {
-                        do {
-                            let config = try await pendingTask.wait()
-                            continuation.resume(returning: config)
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                    return
-                }
-
                 let task = CancellableTask<PrimerAPIConfiguration> {
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
@@ -283,18 +270,12 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     return configuration
                 }
 
-                PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] = task
-
                 Task {
                     do {
                         let config = try await task.wait()
                         continuation.resume(returning: config)
                     } catch {
                         continuation.resume(throwing: error)
-                    }
-
-                    PrimerAPIConfigurationModule.queue.async {
-                        PrimerAPIConfigurationModule.pendingTasks.removeValue(forKey: cacheKey as String)
                     }
                 }
             }
