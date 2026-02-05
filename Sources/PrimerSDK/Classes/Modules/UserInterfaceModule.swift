@@ -1,7 +1,7 @@
 //
 //  UserInterfaceModule.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -31,11 +31,11 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     var logo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.logo
+        paymentMethodTokenizationViewModel.config.logo
     }
 
     var invertedLogo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.invertedLogo
+        paymentMethodTokenizationViewModel.config.invertedLogo
     }
 
     var navigationBarLogo: UIImage? {
@@ -809,11 +809,11 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonImage: UIImage? {
-        return self.logo
+        self.logo
     }
 
     lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+        UIFont.systemFont(ofSize: 17.0, weight: .medium)
     }()
 
     var buttonCornerRadius: CGFloat? {
@@ -918,7 +918,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var buttonTintColor: UIColor? {
-        return nil
+        nil
     }
 
     var paymentMethodButton: PrimerButton {
@@ -1034,7 +1034,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let colorState: ColorState = isEnabled ? .enabled : .disabled
         submitButton.backgroundColor = theme.mainButton.color(for: colorState)
         submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.layer.cornerRadius = 4
+        submitButton.layer.cornerRadius = theme.mainButton.cornerRadius
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton

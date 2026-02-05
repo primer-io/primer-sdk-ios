@@ -1,7 +1,7 @@
 //
 //  CVVRecaptureViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -119,7 +119,7 @@ final class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupContinueButton(with title: String) {
-        continueButton.layer.cornerRadius = 4
+        continueButton.layer.cornerRadius = theme.mainButton.cornerRadius
         continueButton.setTitle(title, for: .normal)
         continueButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         continueButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
