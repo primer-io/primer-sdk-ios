@@ -347,7 +347,9 @@ extension PaymentMethodTokenizationViewModel {
 
         switch paymentCreationDecision.type {
         case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
-        case .continue: return
+        case let .continue(idempotencyKey):
+            PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
+            return
         }
     }
 

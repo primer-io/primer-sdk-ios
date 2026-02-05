@@ -124,7 +124,8 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                     case let .abort(errorMessage):
                         let error = PrimerError.merchantError(message: errorMessage ?? "")
                         continuation.resume(throwing: error)
-                    case .continue:
+                    case let .continue(idempotencyKey):
+                        PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
                         continuation.resume()
                     }
                 }
