@@ -77,6 +77,11 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
+  // MARK: - Payment Callbacks
+
+  public var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
+                                      _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
+
   // MARK: - UI Customization Properties
 
   public var container: ContainerComponent?
@@ -625,6 +630,28 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
               "Failed to initialize payment method \\(method.type): \\(error.localizedDescription)",
             recoverSuggestion: "Check payment method implementation"
           )))
+    }
+  }
+
+  /// Invokes the onBeforePaymentCreate callback if set, stores the idempotency key, and returns.
+  /// Throws if the merchant aborts payment creation.
+  func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
+    guard let callback = onBeforePaymentCreate else { return }
+
+    let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
+      let data = PrimerCheckoutPaymentMethodData(
+        type: PrimerCheckoutPaymentMethodType(type: paymentMethodType)
+      )
+      callback(data) { decision in
+        continuation.resume(returning: decision)
+      }
+    }
+
+    switch decision.type {
+    case let .abort(errorMessage):
+      throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
+    case let .continue(idempotencyKey):
+      PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
     }
   }
 

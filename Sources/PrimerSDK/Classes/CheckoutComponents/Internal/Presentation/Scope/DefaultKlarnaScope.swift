@@ -230,6 +230,16 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       logger.warn(message: "Klarna checkout scope was deallocated before authorization")
       return
     }
+
+    do {
+      try await checkoutScope.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.klarna.rawValue
+      )
+    } catch {
+      handleError(error, context: "before payment create")
+      return
+    }
+
     checkoutScope.startProcessing()
 
     await analyticsInteractor?.trackEvent(

@@ -77,6 +77,13 @@ public protocol PrimerCheckoutScope: AnyObject {
   // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
   // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
 
+  // MARK: - Payment Callbacks
+
+  /// Called before a payment is created. Use the decision handler to provide an idempotency key
+  /// or abort payment creation. If not set, payments proceed without an idempotency key.
+  var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
+                               _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)? { get set }
+
   // MARK: - Payment Settings
 
   /// Payment handling mode (auto vs manual).
