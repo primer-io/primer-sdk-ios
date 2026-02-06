@@ -1,7 +1,7 @@
 //
 //  MerchantHeadlessCheckoutRawDataViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -248,7 +248,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: newText.count == 0 ? nil : newText,
+                cardholderName: newText.isEmpty ? nil : newText,
                 cardNetwork: self.rawCardData.cardNetwork)
         }
 
@@ -294,7 +294,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             return
         }
 
-        let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
+        let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
         DispatchQueue.main.async {
@@ -337,6 +337,18 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             self.updateCardImages()
 
 			self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[safe: self.selectedCardIndex]?.network
+        }
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveBinData binData: PrimerBinData) {
+        let statusStr = binData.status == .complete ? "complete" : "partial"
+        let preferredStr = binData.preferred?.displayName ?? "none"
+        let alternativesStr = binData.alternatives.map(\.displayName).joined(separator: ", ")
+        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveBinData - status: \(statusStr), preferred: \(preferredStr), alternatives: [\(alternativesStr)], firstDigits: \(binData.firstDigits ?? "nil")")
+
+        if let preferred = binData.preferred {
+            print("  Issuer: \(preferred.issuerName ?? "unknown"), Country: \(preferred.issuerCountryCode ?? "unknown"), Funding: \(preferred.accountFundingType ?? "unknown")")
         }
     }
 
