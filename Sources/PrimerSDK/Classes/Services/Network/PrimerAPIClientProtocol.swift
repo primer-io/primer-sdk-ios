@@ -1,7 +1,7 @@
 //
 //  PrimerAPIClientProtocol.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -132,9 +132,12 @@ protocol PrimerAPIClientProtocol:
 
     // MARK: General
 
-    func poll(clientToken: DecodedJWTToken?,
-              url: String,
-              completion: @escaping APICompletion<PollingResponse>)
+    func poll(
+        clientToken: DecodedJWTToken?,
+        url: String,
+        retryConfig: RetryConfig?,
+        completion: @escaping APICompletion<PollingResponse>
+    )
 
     func poll(
         clientToken: DecodedJWTToken?,

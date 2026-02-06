@@ -1,7 +1,7 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
@@ -253,7 +253,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
             self.didDismissPaymentMethodUI?()
         }, operation: {
-            let resumeToken = try await pollingModule.start()
+            let resumeToken = try await pollingModule.start(retryConfig: RetryConfig(enabled: true, retry500Errors: true))
             self.resumeToken = resumeToken
         })
         awaitUserInputTask = task

@@ -1,7 +1,7 @@
 //
 //  PrimerAPIClient.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -79,7 +79,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         vaultedPaymentMethodId: String,
         vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
     ) async throws -> PrimerPaymentMethodTokenData {
-        return try await networkService.request(
+        try await networkService.request(
             .exchangePaymentMethodToken(
                 clientToken: clientToken,
                 vaultedPaymentMethodId: vaultedPaymentMethodId,
@@ -157,7 +157,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder
     ) async throws -> Response.Body.PayPal.CreateOrder {
-        return try await networkService.request(
+        try await networkService.request(
             .createPayPalOrderSession(
                 clientToken: clientToken,
                 payPalCreateOrderRequest: payPalCreateOrderRequest
@@ -177,7 +177,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement
     ) async throws -> Response.Body.PayPal.CreateBillingAgreement {
-        return try await networkService.request(
+        try await networkService.request(
             .createPayPalBillingAgreementSession(
                 clientToken: clientToken,
                 payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest
@@ -197,7 +197,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement
     ) async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        return try await networkService.request(
+        try await networkService.request(
             .confirmPayPalBillingAgreement(
                 clientToken: clientToken,
                 payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest
@@ -218,7 +218,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession
     ) async throws -> Response.Body.Klarna.PaymentSession {
-        return try await networkService.request(
+        try await networkService.request(
             .createKlarnaPaymentSession(
                 clientToken: clientToken,
                 klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest
@@ -238,7 +238,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken
     ) async throws -> Response.Body.Klarna.CustomerToken {
-        return try await networkService.request(
+        try await networkService.request(
             .createKlarnaCustomerToken(
                 clientToken: clientToken,
                 klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest
@@ -258,7 +258,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession
     ) async throws -> Response.Body.Klarna.CustomerToken {
-        return try await networkService.request(
+        try await networkService.request(
             .finalizeKlarnaPaymentSession(
                 clientToken: clientToken,
                 klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest
@@ -278,7 +278,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList
     ) async throws -> BanksListSessionResponse {
-        return try await networkService.request(
+        try await networkService.request(
             .listAdyenBanks(
                 clientToken: clientToken,
                 request: request
@@ -297,7 +297,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentMethodId: String
     ) async throws -> RetailOutletsList {
-        return try await networkService.request(
+        try await networkService.request(
             .listRetailOutlets(
                 clientToken: clientToken,
                 paymentMethodId: paymentMethodId
@@ -305,18 +305,27 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         )
     }
 
-    func poll(clientToken: DecodedJWTToken?,
-              url: String,
-              completion: @escaping APICompletion<PollingResponse>) {
-        let endpoint = PrimerAPI.poll(clientToken: clientToken, url: url)
-        execute(endpoint, completion: completion)
+    func poll(
+        clientToken: DecodedJWTToken?,
+        url: String,
+        retryConfig: RetryConfig? = nil,
+        completion: @escaping APICompletion<PollingResponse>
+    ) {
+        networkService.request(
+            PrimerAPI.poll(clientToken: clientToken, url: url),
+            retryConfig: retryConfig) { (result: Result<PollingResponse, Error>, _) in
+                switch result {
+                case let .success(response): completion(.success(response))
+                case let .failure(error): completion(.failure(handled(error: error)))
+                }
+            }
     }
 
     func poll(
         clientToken: DecodedJWTToken?,
         url: String
     ) async throws -> PollingResponse {
-        return try await networkService.request(
+        try await networkService.request(
             .poll(
                 clientToken: clientToken,
                 url: url
@@ -369,7 +378,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         url: URL,
         body: [Analytics.Event]?
     ) async throws -> Analytics.Service.Response {
-        return try await networkService.request(
+        try await networkService.request(
             .sendAnalyticsEvents(
                 clientToken: clientToken,
                 url: url,
@@ -390,7 +399,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo
     ) async throws -> Response.Body.PayPal.PayerInfo {
-        return try await networkService.request(
+        try await networkService.request(
             .fetchPayPalExternalPayerInfo(
                 clientToken: clientToken,
                 payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody
@@ -405,7 +414,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func validateClientToken(request: Request.Body.ClientTokenValidation) async throws -> SuccessResponse {
-        return try await networkService.request(
+        try await networkService.request(
             .validateClientToken(
                 request: request
             )
@@ -423,7 +432,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.Payment.Create
     ) async throws -> Response.Body.Payment {
-        return try await networkService.request(
+        try await networkService.request(
             .createPayment(
                 clientToken: clientToken,
                 paymentRequest: paymentRequestBody
@@ -444,7 +453,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         paymentId: String,
         paymentResumeRequest: Request.Body.Payment.Resume
     ) async throws -> Response.Body.Payment {
-        return try await networkService.request(
+        try await networkService.request(
             .resumePayment(
                 clientToken: clientToken,
                 paymentId: paymentId,
@@ -466,7 +475,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         url: URL,
         paymentRequest: Request.Body.Payment.Complete
     ) async throws -> Response.Body.Complete {
-        return try await networkService.request(
+        try await networkService.request(
             .completePayment(
                 clientToken: clientToken,
                 url: url,
@@ -510,7 +519,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         bin: String
     ) async throws -> Response.Body.Bin.Networks {
-        return try await networkService.request(
+        try await networkService.request(
             .listCardNetworks(
                 clientToken: clientToken,
                 bin: bin
@@ -529,7 +538,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest
     ) async throws -> Response.Body.NolPay.NolPaySecretDataResponse {
-        return try await networkService.request(
+        try await networkService.request(
             .getNolSdkSecret(
                 clientToken: clientToken,
                 request: paymentRequestBody
@@ -549,7 +558,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
     ) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse {
-        return try await networkService.request(
+        try await networkService.request(
             .getPhoneMetadata(
                 clientToken: clientToken,
                 request: paymentRequestBody
@@ -560,15 +569,15 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
 
 private extension NetworkServiceProtocol {
     func request<T: Decodable>(_ primerAPI: PrimerAPI) async throws -> T {
-        return try await request(primerAPI)
+        try await request(primerAPI)
     }
 
     func request<T: Decodable>(_ primerAPI: PrimerAPI) async throws -> (T, [String: String]?) {
-        return try await request(primerAPI)
+        try await request(primerAPI)
     }
 
     func request<T: Decodable>(_ primerAPI: PrimerAPI, retryConfig: RetryConfig) async throws -> (T, [String: String]?) {
-        return try await request(primerAPI as Endpoint, retryConfig: retryConfig)
+        try await request(primerAPI as Endpoint, retryConfig: retryConfig)
     }
 }
 
