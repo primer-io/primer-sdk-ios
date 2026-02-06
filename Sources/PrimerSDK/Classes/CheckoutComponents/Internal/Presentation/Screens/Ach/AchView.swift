@@ -6,56 +6,6 @@
 
 import SwiftUI
 
-// MARK: - State Observer
-
-@available(iOS 15.0, *)
-@MainActor
-final class AchStateObserver: ObservableObject {
-  @Published var achState: AchState = .init()
-  @Published var showBankCollector: Bool = false
-
-  private var stripeFlowCompleted: Bool = false
-  private let scope: any PrimerAchScope
-  private var observationTask: Task<Void, Never>?
-
-  init(scope: any PrimerAchScope) {
-    self.scope = scope
-  }
-
-  func startObserving() {
-    guard observationTask == nil else { return }
-
-    observationTask = Task { @MainActor [weak self] in
-      guard let self else { return }
-
-      for await state in self.scope.state {
-        if Task.isCancelled { break }
-
-        self.achState = state
-
-        if state.step == .bankAccountCollection, self.scope.bankCollectorViewController != nil, !self.stripeFlowCompleted {
-          self.showBankCollector = true
-        } else if state.step == .mandateAcceptance {
-          if !self.stripeFlowCompleted {
-            self.stripeFlowCompleted = true
-          }
-        } else if state.step != .bankAccountCollection, state.step != .processing {
-          self.showBankCollector = false
-        }
-      }
-    }
-  }
-
-  func stopObserving() {
-    observationTask?.cancel()
-    observationTask = nil
-  }
-
-  deinit {
-    observationTask?.cancel()
-  }
-}
-
 // MARK: - AchView
 
 @available(iOS 15.0, *)
@@ -77,8 +27,7 @@ struct AchView: View, LogReporter {
         makeHeaderSection()
         makeContentSection()
       }
-      .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-      .padding(.vertical, PrimerSpacing.large(tokens: tokens))
+      .padding(PrimerSpacing.large(tokens: tokens))
     }
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))

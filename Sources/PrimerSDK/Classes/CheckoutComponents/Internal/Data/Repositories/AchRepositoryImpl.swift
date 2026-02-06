@@ -18,6 +18,11 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
   private var achTokenizationService: ACHTokenizationService?
   private let settings: PrimerSettingsProtocol
 
+  private var achPaymentMethod: PrimerPaymentMethod? {
+    PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?
+      .first(where: { $0.type == PrimerPaymentMethodType.stripeAch.rawValue })
+  }
+
   private weak var bankCollectorDelegate: AchBankCollectorDelegate?
 
   nonisolated init(
@@ -230,10 +235,6 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
     return service
   }
 
-  private var achPaymentMethod: PrimerPaymentMethod? {
-    PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?
-      .first(where: { $0.type == PrimerPaymentMethodType.stripeAch.rawValue })
-  }
 }
 
 // MARK: - PrimerStripeCollectorViewControllerDelegate
