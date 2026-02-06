@@ -49,10 +49,7 @@ public enum InternalError: Error {
                 let .unauthorized(_, diagnosticsId),
                 let .underlyingErrors(_, diagnosticsId):
             diagnosticsId
-        case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
-            UUID().uuidString
+        default: UUID().uuidString
         }
     }
 
