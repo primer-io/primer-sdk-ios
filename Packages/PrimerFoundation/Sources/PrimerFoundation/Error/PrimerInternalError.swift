@@ -11,6 +11,7 @@ public enum InternalError: Error {
     case invalidUrl(url: String?, diagnosticsId: String = .uuid)
     case invalidValue(key: String, value: Any? = nil, diagnosticsId: String = .uuid)
     case invalidResponse(diagnosticsId: String = .uuid)
+    case networkFailedAfterRetries(diagnosticsId: String = .uuid, lastError: Error?)
     case noData(diagnosticsId: String = .uuid)
     case serverError(status: Int, response: PrimerServerError? = nil, diagnosticsId: String = .uuid)
     case unauthorized(url: String, diagnosticsId: String = .uuid)
@@ -25,6 +26,7 @@ public enum InternalError: Error {
         case .invalidUrl: "invalid-url"
         case .invalidValue: "invalid-value"
         case .invalidResponse: "invalid-response"
+        case .networkFailedAfterRetries: "network-failed-after-retries"
         case .noData: "no-data"
         case .serverError: "server-error"
         case .unauthorized: "unauthorized"
@@ -37,19 +39,18 @@ public enum InternalError: Error {
 
     public var diagnosticsId: String {
         switch self {
-        case let .failedToDecode(_, diagnosticsId),
-                let .invalidUrl(_, diagnosticsId),
-                let .invalidValue(_, _, diagnosticsId),
-                let .invalidResponse(diagnosticsId),
-                let .noData(diagnosticsId),
-                let .serverError(_, _, diagnosticsId),
-                let .unauthorized(_, diagnosticsId),
-                let .underlyingErrors(_, diagnosticsId):
+        case
+            let .failedToDecode(_, diagnosticsId),
+            let .invalidUrl(_, diagnosticsId),
+            let .invalidValue(_, _, diagnosticsId),
+            let .invalidResponse(diagnosticsId),
+            let .networkFailedAfterRetries(diagnosticsId, _),
+            let .noData(diagnosticsId),
+            let .serverError(_, _, diagnosticsId),
+            let .unauthorized(_, diagnosticsId),
+            let .underlyingErrors(_, diagnosticsId):
             diagnosticsId
-        case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
-            UUID().uuidString
+        default: UUID().uuidString
         }
     }
 
@@ -63,6 +64,9 @@ public enum InternalError: Error {
             return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
         case .invalidResponse:
             return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
+        case let .networkFailedAfterRetries(_, lastError):
+            let error = lastError?.localizedDescription ?? "UNKNOWN"
+            return "[\(errorId)] Network failed after retries. Last error: \(error) (diagnosticsId: \(self.diagnosticsId))"
         case .noData:
             return "[\(errorId)] No data"
         case let .serverError(status, response, _):
