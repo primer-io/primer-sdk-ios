@@ -51,6 +51,16 @@ public final class PrimerCardNetwork: NSObject {
 
     /// The underlying card network identifier.
     public let network: CardNetwork
+    public let issuerCountryCode: String?
+    public let issuerName: String?
+    public let accountFundingType: String?
+    public let prepaidReloadableIndicator: String?
+    public let productUsageType: String?
+    public let productCode: String?
+    public let productName: String?
+    public let issuerCurrencyCode: String?
+    public let regionalRestriction: String?
+    public let accountNumberType: String?
 
     /// Indicates whether the merchant accepts this card network.
     /// Returns `true` if the network is in the merchant's allowed networks list.
@@ -58,9 +68,30 @@ public final class PrimerCardNetwork: NSObject {
         [CardNetwork].allowedCardNetworks.contains(network)
     }
 
-    init(displayName: String, network: CardNetwork) {
+    init(displayName: String,
+         network: CardNetwork,
+         issuerCountryCode: String? = nil,
+         issuerName: String? = nil,
+         accountFundingType: String? = nil,
+         prepaidReloadableIndicator: String? = nil,
+         productUsageType: String? = nil,
+         productCode: String? = nil,
+         productName: String? = nil,
+         issuerCurrencyCode: String? = nil,
+         regionalRestriction: String? = nil,
+         accountNumberType: String? = nil) {
         self.displayName = displayName
         self.network = network
+        self.issuerCountryCode = issuerCountryCode
+        self.issuerName = issuerName
+        self.accountFundingType = accountFundingType
+        self.prepaidReloadableIndicator = prepaidReloadableIndicator
+        self.productUsageType = productUsageType
+        self.productCode = productCode
+        self.productName = productName
+        self.issuerCurrencyCode = issuerCurrencyCode
+        self.regionalRestriction = regionalRestriction
+        self.accountNumberType = accountNumberType
     }
 
     convenience init(network: CardNetwork) {
