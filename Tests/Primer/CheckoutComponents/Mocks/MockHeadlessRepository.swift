@@ -54,6 +54,8 @@ final class MockHeadlessRepository: HeadlessRepository {
     // MARK: - Network Detection Stream Support
 
     private var networkDetectionContinuation: AsyncStream<[CardNetwork]>.Continuation?
+    private var binDataContinuation: AsyncStream<PrimerBinData>.Continuation?
+    var binDataToReturn: PrimerBinData?
 
     // MARK: - HeadlessRepository Protocol
 
@@ -106,6 +108,15 @@ final class MockHeadlessRepository: HeadlessRepository {
         AsyncStream { [self] continuation in
             networkDetectionContinuation = continuation
             continuation.yield(networkDetectionToReturn)
+        }
+    }
+
+    func getBinDataStream() -> AsyncStream<PrimerBinData> {
+        AsyncStream { [self] continuation in
+            binDataContinuation = continuation
+            if let binData = binDataToReturn {
+                continuation.yield(binData)
+            }
         }
     }
 
@@ -164,6 +175,10 @@ final class MockHeadlessRepository: HeadlessRepository {
         networkDetectionContinuation?.yield(networks)
     }
 
+    func emitBinData(_ binData: PrimerBinData) {
+        binDataContinuation?.yield(binData)
+    }
+
     func reset() {
         getPaymentMethodsCallCount = 0
         processCardPaymentCallCount = 0
@@ -185,6 +200,9 @@ final class MockHeadlessRepository: HeadlessRepository {
         lastVaultedPaymentMethodType = nil
         lastVaultedPaymentAdditionalData = nil
         lastDeletedVaultedPaymentMethodId = nil
+
+        binDataToReturn = nil
+        binDataContinuation = nil
 
         getPaymentMethodsError = nil
         processCardPaymentError = nil

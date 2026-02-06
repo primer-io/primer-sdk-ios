@@ -175,6 +175,8 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
   private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>
     .makeStream()
+  private let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>
+    .makeStream()
   // Last detected networks to avoid duplicate notifications
   private var lastDetectedNetworks: [CardNetwork] = []
   private var lastTrackedRedirectDestination: String?
@@ -555,6 +557,10 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     self.networkDetectionStream
   }
 
+  func getBinDataStream() -> AsyncStream<PrimerBinData> {
+    self.binDataStream
+  }
+
   @MainActor
   func updateCardNumberInRawDataManager(_ cardNumber: String) async {
     rawDataManager?.configure { _, _ in
@@ -889,5 +895,12 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
       // Emit networks via AsyncStream for SwiftUI consumption
       networkDetectionContinuation.yield(cardNetworks)
     }
+  }
+
+  func primerRawDataManager(
+    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    didReceiveBinData binData: PrimerBinData
+  ) {
+    binDataContinuation.yield(binData)
   }
 }

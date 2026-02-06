@@ -217,6 +217,11 @@ public struct StructuredCardFormState: Equatable {
   /// Surcharge amount to display (formatted string)
   public var surchargeAmount: String?
 
+  // MARK: - BIN Data
+
+  /// Enriched BIN data including issuer info, first digits, and status
+  public var binData: PrimerBinData?
+
   // MARK: - Initialization
 
   public init(
@@ -229,7 +234,8 @@ public struct StructuredCardFormState: Equatable {
     selectedNetwork: PrimerCardNetwork? = nil,
     availableNetworks: [PrimerCardNetwork] = [],
     surchargeAmountRaw: Int? = nil,
-    surchargeAmount: String? = nil
+    surchargeAmount: String? = nil,
+    binData: PrimerBinData? = nil
   ) {
     self.configuration = configuration
     self.data = data
@@ -241,6 +247,7 @@ public struct StructuredCardFormState: Equatable {
     self.availableNetworks = availableNetworks
     self.surchargeAmountRaw = surchargeAmountRaw
     self.surchargeAmount = surchargeAmount
+    self.binData = binData
   }
 
   // MARK: - Convenience Properties
