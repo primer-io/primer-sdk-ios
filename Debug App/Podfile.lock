@@ -41,7 +41,9 @@ PODS:
     - IQKeyboardToolbar/Placeholderable
   - Primer3DS (2.8.0)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.1.2)
+  - PrimerKlarnaSDK (1.3.1)
+  - PrimerNetworking (1.0.0):
+    - PrimerFoundation
   - PrimerNolPaySDK (1.0.1)
   - PrimerSDK (2.44.1):
     - PrimerSDK/Core (= 2.44.1)
@@ -55,6 +57,7 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
+  - PrimerNetworking (from `../`)
   - PrimerNolPaySDK
   - PrimerSDK (from `../`)
   - PrimerStripeSDK
@@ -76,6 +79,12 @@ SPEC REPOS:
     - PrimerStripeSDK
 
 EXTERNAL SOURCES:
+  PrimerCore:
+    :path: "../"
+  PrimerFoundation:
+    :path: "../"
+  PrimerNetworking:
+    :path: "../"
   PrimerSDK:
     :path: "../"
 
@@ -90,11 +99,12 @@ SPEC CHECKSUMS:
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: c39536a4eb070da5b43ec99a4edbede241e91d25
+  PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
+  PrimerNetworking: c124f9f57af1a38f513c5bf989384891a74b6208
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
   PrimerSDK: fde30db8ff5cf09d8186caeaf4d17beb4fedbe16
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
-PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406
+PODFILE CHECKSUM: ddbef2588beae13b55919e5b046d984930e5e6a5
 
 COCOAPODS: 1.16.2
