@@ -17,7 +17,9 @@ protocol UserInterfaceModuleProtocol {
     var submitButton: PrimerButton? { get }
 
     init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol)
+    @MainActor
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
+    @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
 }
 
@@ -1040,6 +1042,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return submitButton
     }
 
+    @MainActor
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
         guard let logo = self.logo else { return nil }
 
@@ -1057,6 +1060,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return imgView
     }
 
+    @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
         guard let squareLogo = self.icon else { return nil }
         let imgView = UIImageView()

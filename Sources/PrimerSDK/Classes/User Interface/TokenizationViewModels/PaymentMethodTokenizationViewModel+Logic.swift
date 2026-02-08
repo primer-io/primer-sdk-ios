@@ -66,8 +66,9 @@ extension PaymentMethodTokenizationViewModel {
         didStartPayment = nil
 
         if config.internalPaymentMethodType != .klarna {
+            let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
             await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-                imageView: uiModule.makeIconImageView(withDimension: 24.0),
+                imageView: imageView,
                 message: nil
             )
         }
