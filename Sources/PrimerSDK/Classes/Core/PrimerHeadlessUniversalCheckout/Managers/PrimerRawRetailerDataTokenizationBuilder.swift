@@ -8,6 +8,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 // MARK: MISSING_TESTS
 final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {

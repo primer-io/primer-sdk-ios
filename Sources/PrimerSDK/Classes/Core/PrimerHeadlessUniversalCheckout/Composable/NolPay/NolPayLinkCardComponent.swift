@@ -14,6 +14,7 @@ import UIKit
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 #endif
+import PrimerNetworking
 
 public enum NolPayLinkCollectableData: PrimerCollectableData {
     case phoneData(mobileNumber: String)

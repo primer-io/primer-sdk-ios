@@ -8,6 +8,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 enum PrimerAPI: Endpoint, Equatable {
     // MARK: - Pull ApiVersion from PrimerSettings
