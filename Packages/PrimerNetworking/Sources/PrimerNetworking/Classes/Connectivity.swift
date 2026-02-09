@@ -4,18 +4,17 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import Foundation
 import SystemConfiguration
 
-final class Connectivity {
+public final class Connectivity {
 
-    enum NetworkType: String, Codable {
+    public enum NetworkType: String, Codable {
         case wifi = "WIFI"
         case cellular = "CELLULAR"
         case none = "NONE"
     }
 
-    static var networkType: Connectivity.NetworkType {
+    public static var networkType: Connectivity.NetworkType {
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
         zeroAddress.sin_family = sa_family_t(AF_INET)

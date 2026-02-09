@@ -35,12 +35,6 @@ extension String {
         return isValid
     }
 
-    var isHttpOrHttpsURL: Bool {
-        let canCreateURL = URL(string: self) != nil
-        let startsWithHttpOrHttps = hasPrefix("http") || hasPrefix("https")
-        return canCreateURL && startsWithHttpOrHttps
-    }
-
     var isValidExpiryDate: Bool {
         // swiftlint:disable identifier_name
         let _self = self.replacingOccurrences(of: "/", with: "")

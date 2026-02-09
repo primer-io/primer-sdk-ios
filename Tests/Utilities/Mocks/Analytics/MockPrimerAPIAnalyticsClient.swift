@@ -12,11 +12,11 @@ import XCTest
 
 final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unchecked Sendable {
 
-    var shouldSucceed: Bool = true
+    nonisolated(unsafe) var shouldSucceed: Bool = true
+    
+    nonisolated(unsafe) var onSendAnalyticsEvent: (([Analytics.Event]?) -> Void)?
 
-    var onSendAnalyticsEvent: (([Analytics.Event]?) -> Void)?
-
-    var batches: [[Analytics.Event]] = []
+    nonisolated(unsafe) var batches: [[Analytics.Event]] = []
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping ResponseHandler) {
         guard let body = body else {
@@ -31,7 +31,7 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
         self.onSendAnalyticsEvent?(body)
     }
 
-    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let body = body else {
             XCTFail();
             throw PrimerError.unknown()
