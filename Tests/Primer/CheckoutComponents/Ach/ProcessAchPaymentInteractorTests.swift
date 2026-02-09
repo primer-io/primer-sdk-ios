@@ -14,8 +14,8 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
 
     // MARK: - Properties
 
-    var sut: ProcessAchPaymentInteractorImpl!
-    var mockRepository: MockAchRepository!
+    private var sut: ProcessAchPaymentInteractorImpl!
+    private var mockRepository: MockAchRepository!
 
     // MARK: - Setup & Teardown
 
@@ -414,9 +414,9 @@ final class ProcessAchPaymentInteractorTests: XCTestCase {
 
 @available(iOS 15.0, *)
 private class MockBankCollectorDelegate: AchBankCollectorDelegate {
-    private(set) var didSucceedPaymentId: String?
-    private(set) var didCancelCalled = false
-    private(set) var didFailError: PrimerError?
+    var didSucceedPaymentId: String?
+    var didCancelCalled = false
+    var didFailError: PrimerError?
 
     func achBankCollectorDidSucceed(paymentId: String) {
         didSucceedPaymentId = paymentId

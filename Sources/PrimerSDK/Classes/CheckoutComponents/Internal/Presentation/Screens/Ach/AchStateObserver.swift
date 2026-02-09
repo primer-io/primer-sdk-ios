@@ -41,7 +41,7 @@ final class AchStateObserver: ObservableObject {
           if !stripeFlowCompleted {
             stripeFlowCompleted = true
           }
-        } else if state.step != .bankAccountCollection, state.step != .processing {
+        } else if shouldHideBankCollector {
           showBankCollector = false
         }
       }
@@ -57,5 +57,9 @@ final class AchStateObserver: ObservableObject {
 
   private var shouldShowBankCollector: Bool {
     achState.step == .bankAccountCollection && scope.bankCollectorViewController != nil && !stripeFlowCompleted
+  }
+
+  private var shouldHideBankCollector: Bool {
+    achState.step != .bankAccountCollection && achState.step != .processing
   }
 }

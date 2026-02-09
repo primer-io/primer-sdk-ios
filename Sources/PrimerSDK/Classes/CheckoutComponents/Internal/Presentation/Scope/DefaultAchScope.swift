@@ -14,15 +14,13 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   // MARK: - Public Properties
 
-  public private(set) var presentationContext: PresentationContext
-  public private(set) var bankCollectorViewController: UIViewController?
-
-  // MARK: - UI Customization Properties
-
   public var screen: AchScreenComponent?
   public var userDetailsScreen: AchScreenComponent?
   public var mandateScreen: AchScreenComponent?
   public var submitButton: AchButtonComponent?
+
+  public private(set) var presentationContext: PresentationContext
+  public private(set) var bankCollectorViewController: UIViewController?
 
   public var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []

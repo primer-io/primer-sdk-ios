@@ -23,20 +23,18 @@ struct AchUserDetailsView: View, LogReporter {
 
       VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
         HStack(alignment: .top, spacing: PrimerSpacing.medium(tokens: tokens)) {
-          makeFirstNameField()
-          makeLastNameField()
+          firstNameField
+          lastNameField
         }
-        makeEmailField()
+        emailField
       }
 
-      makeSubmitButton()
+      submitButton
     }
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.userDetailsContainer)
   }
 
-  // MARK: - First Name Field
-
-  private func makeFirstNameField() -> some View {
+  @ViewBuilder private var firstNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.firstNameLabel,
       placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
@@ -47,9 +45,7 @@ struct AchUserDetailsView: View, LogReporter {
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.firstNameField)
   }
 
-  // MARK: - Last Name Field
-
-  private func makeLastNameField() -> some View {
+  @ViewBuilder private var lastNameField: some View {
     NameInputField(
       label: CheckoutComponentsStrings.lastNameLabel,
       placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
@@ -60,9 +56,7 @@ struct AchUserDetailsView: View, LogReporter {
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.lastNameField)
   }
 
-  // MARK: - Email Field
-
-  private func makeEmailField() -> some View {
+  @ViewBuilder private var emailField: some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.xsmall(tokens: tokens)) {
       EmailInputField(
         label: CheckoutComponentsStrings.emailLabel,
@@ -79,10 +73,7 @@ struct AchUserDetailsView: View, LogReporter {
     }
   }
 
-  // MARK: - Submit Button
-
-  @ViewBuilder
-  private func makeSubmitButton() -> some View {
+  @ViewBuilder private var submitButton: some View {
     if let customButton = scope.submitButton {
       AnyView(customButton(scope))
     } else {

@@ -16,6 +16,10 @@ struct AchView: View, LogReporter {
 
   @Environment(\.designTokens) private var tokens
 
+  private enum Layout {
+    static let spinnerSize: CGFloat = 56
+  }
+
   init(scope: any PrimerAchScope) {
     self.scope = scope
     self._observer = StateObject(wrappedValue: AchStateObserver(scope: scope))
@@ -24,8 +28,8 @@ struct AchView: View, LogReporter {
   var body: some View {
     ScrollView {
       VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
-        makeHeaderSection()
-        makeContentSection()
+        headerSection
+        contentSection
       }
       .padding(PrimerSpacing.large(tokens: tokens))
     }
@@ -49,7 +53,7 @@ struct AchView: View, LogReporter {
 
   // MARK: - Header Section
 
-  private func makeHeaderSection() -> some View {
+  @ViewBuilder private var headerSection: some View {
     HStack {
       if scope.presentationContext.shouldShowBackButton {
         Button(
@@ -100,11 +104,10 @@ struct AchView: View, LogReporter {
 
   // MARK: - Content Section
 
-  @ViewBuilder
-  private func makeContentSection() -> some View {
+  @ViewBuilder private var contentSection: some View {
     switch observer.achState.step {
     case .loading:
-      makeLoadingContent()
+      loadingContent
     case .userDetailsCollection:
       if let customScreen = scope.userDetailsScreen {
         AnyView(customScreen(scope))
@@ -113,7 +116,7 @@ struct AchView: View, LogReporter {
       }
     case .bankAccountCollection:
       // Bank collector is shown as fullScreenCover, show loading while it's presented
-      makeLoadingContent()
+      loadingContent
     case .mandateAcceptance:
       if let customScreen = scope.mandateScreen {
         AnyView(customScreen(scope))
@@ -121,13 +124,13 @@ struct AchView: View, LogReporter {
         AchMandateView(scope: scope, achState: observer.achState)
       }
     case .processing:
-      makeLoadingContent()
+      loadingContent
     }
   }
 
   // MARK: - Loading Content
 
-  private func makeLoadingContent() -> some View {
+  @ViewBuilder private var loadingContent: some View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
       Spacer()
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)
@@ -154,11 +157,6 @@ struct AchView: View, LogReporter {
     .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
   }
 
-  // MARK: - Layout Constants
-
-  private enum Layout {
-    static let spinnerSize: CGFloat = 56
-  }
 }
 
 // MARK: - Preview

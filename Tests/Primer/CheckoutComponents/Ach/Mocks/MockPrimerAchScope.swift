@@ -15,6 +15,7 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     // MARK: - State Properties
 
     @Published private var internalState: AchState
+    private var continuation: AsyncStream<AchState>.Continuation?
 
     // MARK: - Configurable Properties
 
@@ -48,8 +49,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     private(set) var lastFirstName: String?
     private(set) var lastLastName: String?
     private(set) var lastEmailAddress: String?
-
-    private var continuation: AsyncStream<AchState>.Continuation?
 
     // MARK: - Computed Properties
 
