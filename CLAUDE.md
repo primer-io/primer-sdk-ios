@@ -16,6 +16,41 @@ Configuration in `Debug App/.swiftlint.yml`:
 - Cyclomatic complexity: 12 (warning), 20 (error)
 - Excluded: `Sources/PrimerSDK/Classes/Third Party/PromiseKit`
 
+### SwiftFormat (CI-enforced, auto-fixes on commit)
+Configuration in `BuildTools/.swiftformat` (`--swift-version 5.9`) — these rules run in CI and auto-fix via pre-commit hook:
+`isEmpty`, `preferCountWhere`, `redundantExtensionACL`, `modifierOrder`, `consecutiveBlankLines`, `blankLineAfterImports`, `andOperator`, `elseOnSameLine`, `fileHeader`, `hoistPatternLet`, `leadingDelimiters`, `modifiersOnSameLine`, `preferKeyPath`, `redundantInternal`, `redundantReturn`, `sortImports`, `redundantOptionalBinding`, `redundantSelf`, `duplicateImports`, `conditionalAssignment`
+
+### SwiftLint opt-in rules (CI warnings via Danger)
+These opt-in rules are enabled in `Debug App/.swiftlint.yml` and surface as PR warnings:
+`shorthand_optional_binding`, `implicit_return`, `empty_count`, `direct_return`, `redundant_type_annotation`, `final_test_case`, `contains_over_filter_count`, `first_where`, `redundant_self_in_closure`
+
+### Running before commit
+**Always run both tools on modified files before committing and fix all issues found.**
+
+Auto-fix formatting (SwiftFormat) on specific files:
+```bash
+swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
+```
+
+Auto-fix formatting on all sources:
+```bash
+swiftformat Sources/ --config BuildTools/.swiftformat
+```
+
+Lint with SwiftLint (reports warnings/errors to fix manually):
+```bash
+swiftlint lint --config "Debug App/.swiftlint.yml"
+```
+
+Auto-fix SwiftLint autocorrectable violations:
+```bash
+swiftlint lint --fix --config "Debug App/.swiftlint.yml"
+```
+
+## Swift Coding Style
+
+Coding style rules are in `.claude/rules/coding-style.md` — automatically loaded when working with `*.swift` files.
+
 ## Architecture
 
 ### Entry Points
@@ -199,6 +234,3 @@ GitHub Actions workflows in `.github/workflows/`:
 ## Active Technologies
 - Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework (001-checkout-components-accessibility)
 - N/A (accessibility metadata stored in memory only) (001-checkout-components-accessibility)
-
-## Recent Changes
-- 001-checkout-components-accessibility: Added Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework
