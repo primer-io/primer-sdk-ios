@@ -1,7 +1,7 @@
 //
 //  FormPaymentMethodTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable identifier_name
@@ -512,8 +512,9 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             place: .cardForm
         ))
 
+        let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
         await uiManager.primerRootViewController?.showLoadingScreenIfNeeded(
-            imageView: uiModule.makeIconImageView(withDimension: 24.0),
+            imageView: imageView,
             message: nil
         )
 

@@ -1,7 +1,7 @@
 //
 //  ApplePayTokenizationViewModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -12,7 +12,7 @@ import Foundation
 import PassKit
 import UIKit
 
-internal extension PKPaymentMethodType {
+extension PKPaymentMethodType {
     var primerValue: String? {
         switch self {
         case .credit:
@@ -96,9 +96,11 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             place: .paymentMethodPopup
         ))
 
-        let imageView = uiModule.makeIconImageView(withDimension: 24.0)
-        await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
-                                                                                  message: nil)
+        let imageView = await uiModule.makeIconImageView(withDimension: 24.0)
+        await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
+            imageView: imageView,
+            message: nil
+        )
 
         try validate()
 
@@ -183,10 +185,10 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         try await withCheckedThrowingContinuation { continuation in
             self.applePayReceiveDataCompletion = { result in
                 switch result {
-                case .success(let applePayPaymentResponse):
+                case let .success(applePayPaymentResponse):
                     self.applePayPaymentResponse = applePayPaymentResponse
                     continuation.resume()
-                case .failure(let err):
+                case let .failure(err):
                     continuation.resume(throwing: err)
                 }
             }
@@ -291,7 +293,7 @@ extension ApplePayTokenizationViewModel {
                                      countryCode: CountryCode(rawValue: address.isoCountryCode))
     }
 
-    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
+    func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
                                                     applePayOptions: ApplePayOptions?,
                                                     selectedShippingItem: ApplePayOrderItem? = nil) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
@@ -512,7 +514,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
             let shippingContactUpdate = PKPaymentRequestShippingContactUpdate(
                 errors: nil,
-                paymentSummaryItems: orderItems.map { $0.applePayItem },
+                paymentSummaryItems: orderItems.map(\.applePayItem),
                 shippingMethods: shippingMethodsInfo.shippingMethods ?? []
             )
 
@@ -552,7 +554,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 clientSession,
                 applePayOptions: getApplePayOptions(),
                 selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
-            ).map { $0.applePayItem }
+            ).map(\.applePayItem)
 
             let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: summaryItems)
 
