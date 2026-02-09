@@ -1654,6 +1654,109 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver screen change announcement for loading payment methods"
   )
 
+  // MARK: - Bank Selector
+
+  static let bankSelectorTitle = NSLocalizedString(
+    "primer_bank_selector_title",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Choose your bank",
+    comment: "Bank selector screen title"
+  )
+
+  static let bankSelectorSearchPlaceholder = NSLocalizedString(
+    "primer_bank_selector_search_placeholder",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Search banks",
+    comment: "Bank selector search bar placeholder text"
+  )
+
+  static let bankSelectorEmptyState = NSLocalizedString(
+    "primer_bank_selector_empty_state",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "No banks found",
+    comment: "Bank selector empty state when search has no results"
+  )
+
+  static let bankSelectorNoBanksAvailable = NSLocalizedString(
+    "primer_bank_selector_no_banks_available",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "No banks available",
+    comment: "Bank selector empty state when API returns no banks"
+  )
+
+  static let bankSelectorBankUnavailable = NSLocalizedString(
+    "primer_bank_selector_bank_unavailable",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Unavailable",
+    comment: "Label for disabled/unavailable bank in bank selector"
+  )
+
+  // MARK: Bank Selector Accessibility
+
+  static let a11yBankSelectorSearchLabel = NSLocalizedString(
+    "accessibility_bank_selector_search_label",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Search banks",
+    comment: "VoiceOver label for bank selector search bar"
+  )
+
+  static let a11yBankSelectorSearchHint = NSLocalizedString(
+    "accessibility_bank_selector_search_hint",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Enter bank name to filter the list",
+    comment: "VoiceOver hint for bank selector search bar"
+  )
+
+  static let a11yBankSelectorBankItemHint = NSLocalizedString(
+    "accessibility_bank_selector_bank_item_hint",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Double-tap to select this bank",
+    comment: "VoiceOver hint for selectable bank item"
+  )
+
+  static func a11yBankSelectorBankItemDisabled(_ bankName: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_bank_selector_bank_item_disabled",
+      tableName: tableName,
+      bundle: Bundle.primerResources,
+      value: "%@, unavailable",
+      comment: "VoiceOver label for disabled bank item"
+    )
+    return String(format: format, bankName)
+  }
+
+  static let a11yBankSelectorLoading = NSLocalizedString(
+    "accessibility_bank_selector_loading",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Loading banks, please wait",
+    comment: "VoiceOver announcement while bank list is loading"
+  )
+
+  static let a11yBankSelectorEmptyState = NSLocalizedString(
+    "accessibility_bank_selector_empty_state",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "No banks match your search",
+    comment: "VoiceOver announcement when search returns no results"
+  )
+
+  static let a11yScreenBankSelector = NSLocalizedString(
+    "accessibility_screen_bank_selector",
+    tableName: tableName,
+    bundle: Bundle.primerResources,
+    value: "Choose your bank",
+    comment: "VoiceOver screen change announcement for bank selector"
+  )
+
   // MARK: Error Announcements
 
   static func a11yMultipleErrors(_ count: Int) -> String {

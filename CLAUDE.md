@@ -199,6 +199,8 @@ GitHub Actions workflows in `.github/workflows/`:
 ## Active Technologies
 - Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework (001-checkout-components-accessibility)
 - N/A (accessibility metadata stored in memory only) (001-checkout-components-accessibility)
+- Swift 6.0+ with strict concurrency + SwiftUI (iOS 15+), existing CheckoutComponents DI framework, existing `PrimerAPIClient` bank list API, existing tokenization/redirect/polling infrastructure (003-bank-selector)
+- N/A (no local persistence; bank list fetched per session) (003-bank-selector)
 
 ## Recent Changes
 - 001-checkout-components-accessibility: Added Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework

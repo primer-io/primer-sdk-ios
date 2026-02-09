@@ -88,6 +88,17 @@ enum AccessibilityIdentifiers {
     static let submitButton = "checkout_components_paypal_submit_button"
   }
 
+  enum BankSelector {
+    static let container = "checkout_components_bank_selector_container"
+    static let searchBar = "checkout_components_bank_selector_search_bar"
+    static let loadingIndicator = "checkout_components_bank_selector_loading"
+    static let emptyState = "checkout_components_bank_selector_empty_state"
+
+    static func bankItem(_ bankId: String) -> String {
+      "checkout_components_bank_selector_\(bankId)_item"
+    }
+  }
+
   enum Klarna {
     static let container = "checkout_components_klarna_container"
     static let logo = "checkout_components_klarna_logo"

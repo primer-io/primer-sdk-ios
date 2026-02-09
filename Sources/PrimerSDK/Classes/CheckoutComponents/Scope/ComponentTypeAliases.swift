@@ -47,3 +47,14 @@ public typealias PaymentMethodSelectionScreenComponent =
 @available(iOS 15.0, *)
 public typealias CardFormScreenComponent =
   (any PrimerCardFormScope) -> any View
+
+/// Screen component receiving BankSelectorScope for full customization.
+/// Enables merchants to build completely custom bank selector screens with access to
+/// bank list, search, and selection actions.
+@available(iOS 15.0, *)
+public typealias BankSelectorScreenComponent =
+  (any PrimerBankSelectorScope) -> any View
+
+/// Bank item customization component receiving Bank model for rendering.
+@available(iOS 15.0, *)
+public typealias BankItemComponent = (Bank) -> any View

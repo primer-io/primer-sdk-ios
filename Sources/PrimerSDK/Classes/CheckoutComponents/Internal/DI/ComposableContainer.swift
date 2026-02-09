@@ -162,6 +162,14 @@ extension ComposableContainer {
         )
       }
 
+    try? await container.register(ProcessBankSelectorPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessBankSelectorPaymentInteractorImpl(
+          repository: try await resolver.resolve(BankSelectorRepository.self)
+        )
+      }
+
     try? await container.register(SubmitVaultedPaymentInteractor.self)
       .asTransient()
       .with { resolver in
@@ -197,6 +205,12 @@ extension ComposableContainer {
       .asTransient()
       .with { _ in
         KlarnaRepositoryImpl()
+      }
+
+    try? await container.register(BankSelectorRepository.self)
+      .asTransient()
+      .with { _ in
+        BankSelectorRepositoryImpl()
       }
   }
 
