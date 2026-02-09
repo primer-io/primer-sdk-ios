@@ -23,9 +23,11 @@ Pod::Spec.new do |s|
                 "Sources/PrimerSDK/Resources/*.xcassets",
                 "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
                 "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
+                "Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/**/*.strings",
                 "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
                 "Sources/PrimerSDK/Resources/Nibs/*",
-                "Sources/PrimerSDK/Resources/JSONs/**/*.json"
+                "Sources/PrimerSDK/Resources/JSONs/**/*.json",
+                "Sources/PrimerSDK/Resources/Fonts/*.ttf"
             ]
         }
         ss.ios.pod_target_xcconfig = {

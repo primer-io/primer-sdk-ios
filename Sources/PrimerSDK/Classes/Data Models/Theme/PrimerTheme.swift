@@ -1,7 +1,7 @@
 //
 //  PrimerTheme.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -46,15 +46,15 @@ public final class PrimerTheme: PrimerThemeProtocol {
 
     private let data: PrimerThemeData
 
-    internal lazy var colors: ColorSwatch = ColorSwatch(
+    lazy var colors: ColorSwatch = ColorSwatch(
         primary: data.colors.primary,
         error: data.colors.error
     )
 
-    internal lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
-    internal lazy var view = data.view.theme(for: .main, with: data)
+    lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
+    lazy var view = data.view.theme(for: .main, with: data)
 
-    internal lazy var text = TextStyle(
+    lazy var text = TextStyle(
         body: data.text.theme(for: .body, with: data),
         title: data.text.theme(for: .title, with: data),
         subtitle: data.text.theme(for: .subtitle, with: data),
@@ -63,13 +63,24 @@ public final class PrimerTheme: PrimerThemeProtocol {
         error: data.text.theme(for: .error, with: data)
     )
 
-    internal lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
+    lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
 
-    internal lazy var mainButton = data.buttons.theme(for: .main, with: data)
+    lazy var mainButton = data.buttons.theme(for: .main, with: data)
 
-    internal lazy var input = data.input.theme(with: data)
+    lazy var input = data.input.theme(with: data)
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
         self.data = data
+    }
+}
+
+// MARK: - Equatable Conformance
+
+extension PrimerTheme: Equatable {
+    /// Compare themes for equality
+    /// - Note: Uses identity comparison since PrimerTheme is a reference type.
+    ///         Two themes are considered equal if they reference the same instance.
+    public static func == (lhs: PrimerTheme, rhs: PrimerTheme) -> Bool {
+        lhs === rhs
     }
 }

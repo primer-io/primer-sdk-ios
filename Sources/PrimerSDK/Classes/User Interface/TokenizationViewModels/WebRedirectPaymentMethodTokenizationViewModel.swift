@@ -152,7 +152,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         guard redirectUrl.hasWebBasedScheme else {
             return try await openURL(url: redirectUrl)
         }
-        
+
         let safariViewController = SFSafariViewController(url: redirectUrl)
         safariViewController.delegate = self
         webViewController = safariViewController
@@ -208,7 +208,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         handleWebViewControllerPresentedCompletion()
     }
-    
+
     @MainActor
     private func openURL(url: URL) async throws {
         try await withCheckedThrowingContinuation { continuation in

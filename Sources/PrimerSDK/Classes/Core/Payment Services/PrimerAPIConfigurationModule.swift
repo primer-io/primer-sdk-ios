@@ -316,5 +316,78 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         PrimerSettings.current.clientSessionCachingEnabled
     }
 }
+
+extension PrimerAPIConfigurationModule: AnalyticsSessionConfigProviding {
+
+    func makeAnalyticsSessionConfig(
+        checkoutSessionId: String,
+        clientToken: String,
+        sdkVersion: String
+    ) -> AnalyticsSessionConfig? {
+        guard let tokenPayload = decodeAnalyticsPayload(from: clientToken) else {
+            logger.debug(message: "⚠️ Failed to decode client token for analytics")
+            return nil
+        }
+
+        let environmentSource = PrimerAPIConfigurationModule.decodedJWTToken?.env
+            ?? (tokenPayload["env"] as? String)
+            ?? AnalyticsEnvironment.production.rawValue
+        let environment = AnalyticsEnvironment(rawValue: environmentSource.uppercased()) ?? .production
+
+        let configClientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let payloadClientSessionId = (tokenPayload["clientSessionId"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let clientSessionId = configClientSessionId?.isEmpty == false
+            ? configClientSessionId!
+            : (payloadClientSessionId ?? "")
+
+        let configPrimerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let payloadPrimerAccountId = (tokenPayload["primerAccountId"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let primerAccountId = configPrimerAccountId?.isEmpty == false
+            ? configPrimerAccountId!
+            : (payloadPrimerAccountId ?? "")
+
+        guard !clientSessionId.isEmpty, !primerAccountId.isEmpty else {
+            logger.debug(message: "Missing analytics identifiers: clientSessionId=\(clientSessionId.isEmpty), primerAccountId=\(primerAccountId.isEmpty)")
+            return nil
+        }
+
+        let resolvedSDKVersion = sdkVersion.isEmpty ? "unknown" : sdkVersion
+
+        return AnalyticsSessionConfig(
+            environment: environment,
+            checkoutSessionId: checkoutSessionId,
+            clientSessionId: clientSessionId,
+            primerAccountId: primerAccountId,
+            sdkVersion: resolvedSDKVersion,
+            clientSessionToken: clientToken
+        )
+    }
+
+    private func decodeAnalyticsPayload(from token: String) -> [String: Any]? {
+        let components = token.components(separatedBy: ".")
+        guard components.count == 3 else { return nil }
+
+        let payloadSegment = components[1]
+        let paddedPayload = payloadSegment
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+            .padding(
+                toLength: ((payloadSegment.count + 3) / 4) * 4,
+                withPad: "=",
+                startingAt: 0
+            )
+
+        guard let payloadData = Data(base64Encoded: paddedPayload),
+              let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] else {
+            return nil
+        }
+
+        return json
+    }
+}
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length

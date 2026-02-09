@@ -28,8 +28,8 @@ extension PaymentMethodTokenizationViewModel {
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    PrimerInternal.shared.selectedPaymentMethodType == nil,
                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                     do {
                         try await clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
@@ -108,9 +108,9 @@ extension PaymentMethodTokenizationViewModel {
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
                self.config.implementationType == .webRedirect ||
-               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-               self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-               self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
                 let primerErr = error.asPrimerError
@@ -336,7 +336,7 @@ extension PaymentMethodTokenizationViewModel {
             try? await Task.sleep(nanoseconds: 5_000_000_000)
             guard let self else { return }
             logger.warn(message:
-                """
+                            """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
                 hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.
                 """
@@ -348,7 +348,9 @@ extension PaymentMethodTokenizationViewModel {
 
         switch paymentCreationDecision.type {
         case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
-        case .continue: return
+        case let .continue(idempotencyKey):
+            PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
+            return
         }
     }
 

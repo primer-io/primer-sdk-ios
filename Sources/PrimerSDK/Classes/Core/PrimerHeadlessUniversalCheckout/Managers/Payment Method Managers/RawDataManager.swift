@@ -18,18 +18,18 @@ public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     @available(*, deprecated, message: "Use _:didReceiveCardMetadata:forState: instead")
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              metadataDidChange metadata: [String: Any]?)
+                                             metadataDidChange metadata: [String: Any]?)
 
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Error]?)
+                                             dataIsValid isValid: Bool,
+                                             errors: [Error]?)
 
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState state: PrimerValidationState)
+                                             willFetchMetadataForState state: PrimerValidationState)
 
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState state: PrimerValidationState)
+                                             didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                                             forState state: PrimerValidationState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {
@@ -300,7 +300,7 @@ extension PrimerHeadlessUniversalCheckout {
                 guard let self else { return }
                 self.logger.warn(
                     message:
-                    """
+                        """
                     The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
                     Make sure you call the decision handler otherwise the SDK will hang.
                     """
@@ -312,7 +312,9 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentCreationDecision.type {
             case let .abort(errorMessage): throw PrimerError.merchantError(message: errorMessage ?? "")
-            case .continue: return
+            case let .continue(idempotencyKey):
+                PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
+                return
             }
         }
 
@@ -561,9 +563,9 @@ extension PrimerHeadlessUniversalCheckout {
 
                 guard let selectedRetailer = rawData as? PrimerRetailerData,
                       let selectedRetailerName = (initializationData as? RetailOutletsList)?
-                      .result
-                      .first(where: { $0.id == selectedRetailer.id })?
-                      .name
+                        .result
+                        .first(where: { $0.id == selectedRetailer.id })?
+                        .name
                 else {
                     throw handled(primerError: .invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier"))
                 }

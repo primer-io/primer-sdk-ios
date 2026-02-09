@@ -139,16 +139,16 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     override func performTokenizationStep() async throws {
         defer {
             Task { @MainActor in
-                    self.willDismissPaymentMethodUI?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissPaymentMethodUI?()
-                    })
-                }
+                self.willDismissPaymentMethodUI?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissPaymentMethodUI?()
+                })
+            }
 
-                self.bankSelectionCompletion = nil
-                self.selectedBank = nil
-                self.webViewController = nil
-                self.webViewCompletion = nil
+            self.bankSelectionCompletion = nil
+            self.selectedBank = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
         }
 
         try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -297,7 +297,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             $0.name.lowercased()
                 .folding(options: .diacriticInsensitive, locale: nil)
                 .contains(query.lowercased()
-                    .folding(options: .diacriticInsensitive, locale: nil))
+                            .folding(options: .diacriticInsensitive, locale: nil))
         }
     }
 

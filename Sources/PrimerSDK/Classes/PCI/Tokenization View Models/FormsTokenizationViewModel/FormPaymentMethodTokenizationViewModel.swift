@@ -445,6 +445,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
+    private var userInputContinuation: CheckedContinuation<Void, Error>?
 
     // MARK: - Payment Flow
 
@@ -561,7 +562,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
         let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type)
         let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
-            .first { $0.key == paymentMethodType } != nil) == true
+                                                            .first { $0.key == paymentMethodType } != nil) == true
 
         defer {
             didCancel = nil
@@ -619,7 +620,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     private func evaluatePaymentMethodNeedingFurtherUserActions() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }
@@ -630,7 +631,7 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func presentPaymentMethodUserInterface() async throws {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) ||
-              voucherPaymentMethodTypes.contains(paymentMethodType)
+                voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return
         }
@@ -640,7 +641,10 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func awaitUserInput() async throws {
         try await withCheckedThrowingContinuation { continuation in
-            self.userInputCompletion = {
+            self.userInputContinuation = continuation
+            self.userInputCompletion = { [weak self] in
+                guard let continuation = self?.userInputContinuation else { return }
+                self?.userInputContinuation = nil
                 continuation.resume()
             }
 
@@ -786,6 +790,11 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }
 
     override func cancel() {
+        if let continuation = userInputContinuation {
+            userInputContinuation = nil
+            userInputCompletion = nil
+            continuation.resume(throwing: handled(primerError: .cancelled(paymentMethodType: config.type)))
+        }
         didCancel?()
         inputs = []
 

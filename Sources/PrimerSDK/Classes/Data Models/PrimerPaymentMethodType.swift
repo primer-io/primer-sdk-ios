@@ -1,12 +1,39 @@
 //
 //  PrimerPaymentMethodType.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
+/// Identifies the type of payment method used for a transaction.
+///
+/// `PrimerPaymentMethodType` enumerates all payment methods supported by the Primer SDK.
+/// Each case corresponds to a specific payment provider and method combination.
+///
+/// Payment methods are organized by provider:
+/// - **Card payments**: `paymentCard`
+/// - **Digital wallets**: `applePay`, `googlePay`, `payPal`
+/// - **Buy now, pay later**: `klarna`, `atome`, `hoolah`
+/// - **Bank transfers**: `goCardless`, `stripeAch`
+/// - **Regional methods**: Various provider-specific implementations for iDEAL, BLIK, etc.
+///
+/// Use this enum when:
+/// - Accessing payment method scopes: `checkoutScope.getPaymentMethodScope(for: .paymentCard)`
+/// - Filtering or identifying payment methods
+/// - Handling payment method-specific logic
+///
+/// Example usage:
+/// ```swift
+/// // Get card form scope using enum
+/// let cardFormScope: PrimerCardFormScope? = checkoutScope.getPaymentMethodScope(for: .paymentCard)
+///
+/// // Check payment method type in results
+/// if paymentResult.paymentMethodType == PrimerPaymentMethodType.applePay.rawValue {
+///     // Handle Apple Pay specific logic
+/// }
+/// ```
+public enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
     case adyenAlipay                    = "ADYEN_ALIPAY"
     case adyenBlik                      = "ADYEN_BLIK"
     case adyenBancontactCard            = "ADYEN_BANCONTACT_CARD"

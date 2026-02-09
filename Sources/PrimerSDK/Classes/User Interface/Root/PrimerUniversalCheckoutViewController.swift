@@ -205,20 +205,20 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
-	
-	private func removeSavedCardsView() {
-		if savedCardView != nil {
-			verticalStackView.removeArrangedSubview(savedCardView)
-			savedCardView.removeFromSuperview()
-			savedCardView = nil
-		}
 
-		if savedPaymentMethodStackView != nil {
-			verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
-			savedPaymentMethodStackView.removeFromSuperview()
-			savedPaymentMethodStackView = nil
-		}
-	}
+    private func removeSavedCardsView() {
+        if savedCardView != nil {
+            verticalStackView.removeArrangedSubview(savedCardView)
+            savedCardView.removeFromSuperview()
+            savedCardView = nil
+        }
+
+        if savedPaymentMethodStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+            savedPaymentMethodStackView.removeFromSuperview()
+            savedPaymentMethodStackView = nil
+        }
+    }
 
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)

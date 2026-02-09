@@ -1,7 +1,7 @@
 //
 //  NetworkResponseFactory.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -81,11 +81,11 @@ final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
 
         logger.debug(message: """
 
-🌎 [Response] 👉 \(url)
-Headers:
-\(headersDescription.joined(separator: "\n"))
-Body:
-\(body)
-""")
+         🌎 [Response] 👉 \(url)
+         Headers:
+         \(headersDescription.joined(separator: "\n"))
+         Body:
+         \(body)
+         """)
     }
 }

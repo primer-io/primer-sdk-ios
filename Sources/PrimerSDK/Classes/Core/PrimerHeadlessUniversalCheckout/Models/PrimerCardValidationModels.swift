@@ -1,7 +1,7 @@
 //
 //  PrimerCardValidationModels.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -28,11 +28,32 @@ public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
     }
 }
 
+/// Represents a detected card network with display information and merchant allowance status.
+///
+/// `PrimerCardNetwork` wraps a `CardNetwork` enum value with additional context useful
+/// for UI display, including the human-readable name and whether the merchant supports
+/// this network for payments.
+///
+/// This class is used in co-badged card scenarios where multiple networks are detected
+/// and the user may need to select which network to use.
+///
+/// Example usage:
+/// ```swift
+/// let networks = metadata.selectableCardNetworks?.items ?? []
+/// for network in networks {
+///     print("\(network.displayName) - Allowed: \(network.allowed)")
+/// }
+/// ```
 @objc
 public final class PrimerCardNetwork: NSObject {
+    /// Human-readable name for the card network (e.g., "Visa", "Mastercard").
     public let displayName: String
+
+    /// The underlying card network identifier.
     public let network: CardNetwork
 
+    /// Indicates whether the merchant accepts this card network.
+    /// Returns `true` if the network is in the merchant's allowed networks list.
     public var allowed: Bool {
         [CardNetwork].allowedCardNetworks.contains(network)
     }

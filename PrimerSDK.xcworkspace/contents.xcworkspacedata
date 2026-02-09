@@ -20,6 +20,929 @@
             location = "group:Classes"
             name = "Classes">
             <Group
+               location = "group:CheckoutComponents"
+               name = "CheckoutComponents">
+               <FileRef
+                  location = "group:CheckoutComponentsPrimer.swift">
+               </FileRef>
+               <Group
+                  location = "group:Core"
+                  name = "Core">
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <FileRef
+                        location = "group:ApplePayFormState.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:StructuredCardFormState.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Internal"
+                  name = "Internal">
+                  <Group
+                     location = "group:UI"
+                     name = "UI">
+                     <Group
+                        location = "group:Design"
+                        name = "Design">
+                        <FileRef
+                           location = "group:AnimationConstants.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SlideInModifier.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CheckoutColors.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerLayout.swift">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:PrimerSwiftUIBridgeViewController.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:DI"
+                     name = "DI">
+                     <Group
+                        location = "group:Framework"
+                        name = "Framework">
+                        <FileRef
+                           location = "group:TypeKey.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerError.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:RetentionStrategy.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DIContainter+SwiftUI.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SwiftUI+DI.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Container.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerRetainPolicy.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:README.md">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerProtocol.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DependencyScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DIContainer.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerDiagnostics.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Factory.swift">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:ComposableContainer.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Core"
+                     name = "Core">
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:ErrorMessageResolver.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Validation"
+                        name = "Validation">
+                        <FileRef
+                           location = "group:ExpiryDateInput.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:RulesFactory.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationService.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Rules"
+                           name = "Rules">
+                           <FileRef
+                              location = "group:CommonValidationRules.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CardValidationRules.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:ValidationError.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationRule.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationResult.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Bridge"
+                     name = "Bridge">
+                     <FileRef
+                        location = "group:CheckoutComponentsPaymentMethodsBridge.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Constants"
+                     name = "Constants">
+                     <FileRef
+                        location = "group:CheckoutComponentsStrings.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Navigation"
+                     name = "Navigation">
+                     <FileRef
+                        location = "group:NAVIGATION_ARCHITECTURE_DECISION.md">
+                     </FileRef>
+                     <FileRef
+                        location = "group:BackportedNavigationStack.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CheckoutRoute.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CheckoutNavigator.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CheckoutCoordinator.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Utilities"
+                     name = "Utilities">
+                     <FileRef
+                        location = "group:MockCardFormScope.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:RTLIcon.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:MockDIContainer.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:MockDesignTokens.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:RTLSupport.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:MockValidationService.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Environment"
+                     name = "Environment">
+                  </Group>
+                  <Group
+                     location = "group:Accessibility"
+                     name = "Accessibility">
+                     <Group
+                        location = "group:Core"
+                        name = "Core">
+                        <FileRef
+                           location = "group:AccessibilityConfiguration.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AccessibilityConfigurable.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AccessibilityIdentifierProviding.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Domain"
+                        name = "Domain">
+                        <FileRef
+                           location = "group:AccessibilityIdentifiers.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Presentation"
+                        name = "Presentation">
+                        <Group
+                           location = "group:SwiftUI"
+                           name = "SwiftUI">
+                           <FileRef
+                              location = "group:View+Accessibility.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:UIAccessibilityNotificationPublisher.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AccessibilityAnnouncementService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultUIAccessibilityNotificationPublisher.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultAccessibilityAnnouncementService.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Repositories"
+                        name = "Repositories">
+                        <FileRef
+                           location = "group:KlarnaRepositoryImpl.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:HeadlessRepositoryImpl.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PayPalRepositoryImpl.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Mappers"
+                        name = "Mappers">
+                        <FileRef
+                           location = "group:PaymentMethodMapper.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Repositories"
+                        name = "Repositories">
+                        <FileRef
+                           location = "group:HeadlessRepository.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PayPalRepository.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaRepository.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:PaymentResult.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:InternalPaymentMethod.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:ProcessCardPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SubmitVaultedPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessPayPalPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardNetworkDetectionInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessKlarnaPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ProcessApplePayPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:GetPaymentMethodsInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidateInputInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Helpers"
+                        name = "Helpers">
+                        <FileRef
+                           location = "group:ApplePayRequestBuilder.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Tokens"
+                     name = "Tokens">
+                     <FileRef
+                        location = "group:DesignTokensDark.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokensProcessor.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:FontRegistration.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokensKey.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokensManager.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerFont.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokens.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Presentation"
+                     name = "Presentation">
+                     <Group
+                        location = "group:Scope"
+                        name = "Scope">
+                        <FileRef
+                           location = "group:DefaultSelectCountryScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultCardFormScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultPaymentMethodSelectionScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultPayPalScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultKlarnaScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultApplePayScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultCheckoutScope.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Extensions"
+                        name = "Extensions">
+                        <FileRef
+                           location = "group:PrimerPaymentMethodType+ImageName.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Screens"
+                        name = "Screens">
+                        <FileRef
+                           location = "group:ErrorScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DeleteVaultedPaymentMethodConfirmationScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PayPalView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SelectCountryScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultLoadingScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ApplePayScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:KlarnaPaymentViewRepresentable.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SplashScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodSelectionScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SuccessScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardFormScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodsListScreen.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Components"
+                        name = "Components">
+                        <Group
+                           location = "group:DropdownCardNetworkSelector"
+                           name = "DropdownCardNetworkSelector">
+                           <FileRef
+                              location = "group:DropdownCardNetworkSelector.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodCard.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CheckoutScopeObserver.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardNetworkBadge.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethod+DisplayData.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodsSection.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Composite"
+                           name = "Composite">
+                           <FileRef
+                              location = "group:CardDetailsView.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:BillingAddressView.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:ApplePayButtonView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodComponents.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SDKInitializationViews.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodButton.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedCardCVVInput.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultedPaymentMethodDisplayData.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Infrastructure"
+                           name = "Infrastructure">
+                           <Group
+                              location = "group:Utilities"
+                              name = "Utilities">
+                              <FileRef
+                                 location = "group:PrimerTextFieldExtension.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:Containers"
+                              name = "Containers">
+                              <FileRef
+                                 location = "group:PrimerInputFieldContainer+PreviewHelpers.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:PrimerInputFieldContainer+Styling.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:PrimerInputFieldContainer.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:PrimerInputFieldContainer+Rendering.swift">
+                              </FileRef>
+                           </Group>
+                        </Group>
+                        <Group
+                           location = "group:InlineCardNetworkSelector"
+                           name = "InlineCardNetworkSelector">
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector+Border.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:InlineCardNetworkSelector+Button.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:CheckoutHeaderView.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:VaultSection.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Inputs"
+                           name = "Inputs">
+                           <Group
+                              location = "group:CountryInputField"
+                              name = "CountryInputField">
+                              <FileRef
+                                 location = "group:CountryInputFieldWrapper.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CountryInputField+SelectionButton.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CountryInputField.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:ExpiryDateInputField"
+                              name = "ExpiryDateInputField">
+                              <FileRef
+                                 location = "group:ExpiryDateInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:ExpiryDateInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:NameInputField"
+                              name = "NameInputField">
+                              <FileRef
+                                 location = "group:NameInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:NameInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:PostalCodeInputField"
+                              name = "PostalCodeInputField">
+                              <FileRef
+                                 location = "group:PostalCodeInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:PostalCodeInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:CardNumberInputField"
+                              name = "CardNumberInputField">
+                              <FileRef
+                                 location = "group:CardNumberInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CardNumberInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:DualBadgeDisplay.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:CityInputField"
+                              name = "CityInputField">
+                              <FileRef
+                                 location = "group:CityInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CityInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:CardholderNameInputField"
+                              name = "CardholderNameInputField">
+                              <FileRef
+                                 location = "group:CardholderNameInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CardholderNameInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:StateInputField"
+                              name = "StateInputField">
+                              <FileRef
+                                 location = "group:StateInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:StateInputField.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:AddressLineInputField"
+                              name = "AddressLineInputField">
+                              <FileRef
+                                 location = "group:AddressLineInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:AddressLineInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:CVVInputField"
+                              name = "CVVInputField">
+                              <FileRef
+                                 location = "group:CVVInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:CVVInputField.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:OTPCodeInputField"
+                              name = "OTPCodeInputField">
+                              <FileRef
+                                 location = "group:OTPCodeInputField.swift">
+                              </FileRef>
+                           </Group>
+                           <Group
+                              location = "group:EmailInputField"
+                              name = "EmailInputField">
+                              <FileRef
+                                 location = "group:EmailInputField.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:EmailInputField+UIViewRepresentable.swift">
+                              </FileRef>
+                           </Group>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Views"
+                        name = "Views">
+                        <FileRef
+                           location = "group:CardFormFieldsView.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Services"
+                     name = "Services">
+                     <FileRef
+                        location = "group:RawDataManagerProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CheckoutSDKInitializer.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ConfigurationService.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:AnalyticsSessionConfigProviding.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Scope"
+                  name = "Scope">
+                  <FileRef
+                     location = "group:InputFieldConfig.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerSelectCountryScope.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Providers"
+                     name = "Providers">
+                     <FileRef
+                        location = "group:SelectCountryProvider.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PaymentMethodSelectionProvider.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CardFormProvider.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerFieldStyling.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerApplePayScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCheckoutScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPayPalScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPaymentMethodScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerKlarnaScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCardFormScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPaymentMethodSelectionScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ComponentTypeAliases.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerEnvironment.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CheckoutComponentsTheme.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:PaymentMethods"
+                  name = "PaymentMethods">
+                  <Group
+                     location = "group:Klarna"
+                     name = "Klarna">
+                     <FileRef
+                        location = "group:KlarnaPaymentMethod.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:KlarnaState.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Card"
+                     name = "Card">
+                     <FileRef
+                        location = "group:CardPaymentMethod.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:PayPal"
+                     name = "PayPal">
+                     <FileRef
+                        location = "group:PayPalPaymentMethod.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PayPalState.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:ApplePay"
+                     name = "ApplePay">
+                     <FileRef
+                        location = "group:ApplePayPaymentMethod.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:README.md">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckout.swift">
+               </FileRef>
+               <Group
+                  location = "group:Accessibility"
+                  name = "Accessibility">
+                  <Group
+                     location = "group:Builders"
+                     name = "Builders">
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Logging"
+                  name = "Logging">
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:LogPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LoggingSessionContext.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogMessageObject.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DatadogLogStatus.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:LogNetworkClient.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LoggingService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogNetworkClientProtocol.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogPayloadBuilder.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SensitiveDataMasker.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LogEnvironmentProvider.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:CLAUDE.md">
+               </FileRef>
+               <Group
+                  location = "group:Analytics"
+                  name = "Analytics">
+                  <Group
+                     location = "group:Utils"
+                     name = "Utils">
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:AnalyticsPayload.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventMetadata.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironment.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsSessionConfig.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventType.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsServiceProtocol.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Services"
+                        name = "Services">
+                        <FileRef
+                           location = "group:AnalyticsPayloadBuilder.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsNetworkClient.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEnvironmentProvider.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AnalyticsEventBuffer.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:DefaultAnalyticsInteractor.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Protocols"
+                        name = "Protocols">
+                        <FileRef
+                           location = "group:AnalyticsInteractorProtocol.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+               </Group>
+            </Group>
+            <Group
                location = "group:PCI"
                name = "PCI">
                <Group
@@ -215,9 +1138,6 @@
                      location = "group:FormType.swift">
                   </FileRef>
                </Group>
-               <FileRef
-                  location = "group:_PaymentAPIModel.swift">
-               </FileRef>
                <FileRef
                   location = "group:VoucherValue.swift">
                </FileRef>
@@ -505,9 +1425,6 @@
                </FileRef>
                <FileRef
                   location = "group:UIDeviceExtension.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerImage.swift">
                </FileRef>
                <FileRef
                   location = "group:ApplePayUtils.swift">
@@ -1361,6 +2278,9 @@
                      location = "group:PrimerRootViewController.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:PrimerSwiftUIBridgeViewController.swift">
+                  </FileRef>
+                  <FileRef
                      location = "group:PrimerInputViewController.swift">
                   </FileRef>
                   <Group
@@ -1380,9 +2300,6 @@
                      location = "group:PrimerNavigationController.swift">
                   </FileRef>
                </Group>
-               <FileRef
-                  location = "group:Identifiable.swift">
-               </FileRef>
                <Group
                   location = "group:TestPaymentMethods"
                   name = "TestPaymentMethods">
@@ -1441,6 +2358,409 @@
          <Group
             location = "group:Resources"
             name = "Resources">
+            <Group
+               location = "group:Localizable"
+               name = "Localizable">
+               <Group
+                  location = "group:ar.lproj"
+                  name = "ar.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:az.lproj"
+                  name = "az.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:bg.lproj"
+                  name = "bg.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:bs.lproj"
+                  name = "bs.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ca.lproj"
+                  name = "ca.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:cs.lproj"
+                  name = "cs.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:da.lproj"
+                  name = "da.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:de.lproj"
+                  name = "de.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:el.lproj"
+                  name = "el.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:en.lproj"
+                  name = "en.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es.lproj"
+                  name = "es.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es-AR.lproj"
+                  name = "es-AR.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es-MX.lproj"
+                  name = "es-MX.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:et.lproj"
+                  name = "et.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fa.lproj"
+                  name = "fa.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fi-FI.lproj"
+                  name = "fi-FI.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fil.lproj"
+                  name = "fil.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fr.lproj"
+                  name = "fr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:he.lproj"
+                  name = "he.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hi.lproj"
+                  name = "hi.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hr.lproj"
+                  name = "hr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hu.lproj"
+                  name = "hu.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:hy.lproj"
+                  name = "hy.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:id.lproj"
+                  name = "id.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:it.lproj"
+                  name = "it.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ja.lproj"
+                  name = "ja.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ka.lproj"
+                  name = "ka.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:kk.lproj"
+                  name = "kk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ko.lproj"
+                  name = "ko.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ku.lproj"
+                  name = "ku.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ky.lproj"
+                  name = "ky.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:lt-LT.lproj"
+                  name = "lt-LT.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:lv.lproj"
+                  name = "lv.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:mk.lproj"
+                  name = "mk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ms.lproj"
+                  name = "ms.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nb.lproj"
+                  name = "nb.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nl.lproj"
+                  name = "nl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nl-BE.lproj"
+                  name = "nl-BE.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pl.lproj"
+                  name = "pl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pt.lproj"
+                  name = "pt.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pt-BR.lproj"
+                  name = "pt-BR.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ro.lproj"
+                  name = "ro.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ru.lproj"
+                  name = "ru.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sk.lproj"
+                  name = "sk.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sl.lproj"
+                  name = "sl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sq.lproj"
+                  name = "sq.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sr-RS.lproj"
+                  name = "sr-RS.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sv.lproj"
+                  name = "sv.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:th.lproj"
+                  name = "th.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:tr.lproj"
+                  name = "tr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:uk-UA.lproj"
+                  name = "uk-UA.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ur-PK.lproj"
+                  name = "ur-PK.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:uz.lproj"
+                  name = "uz.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:vi.lproj"
+                  name = "vi.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-CN.lproj"
+                  name = "zh-CN.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-HK.lproj"
+                  name = "zh-HK.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-TW.lproj"
+                  name = "zh-TW.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+            </Group>
             <Group
                location = "group:JSONs"
                name = "JSONs">
@@ -1677,6 +2997,12 @@
                   location = "group:phone_number_country_codes.json">
                </FileRef>
                <FileRef
+                  location = "group:base.json">
+               </FileRef>
+               <FileRef
+                  location = "group:dark.json">
+               </FileRef>
+               <FileRef
                   location = "group:currencies.json">
                </FileRef>
             </Group>
@@ -1690,213 +3016,6 @@
             <FileRef
                location = "group:Icons.xcassets">
             </FileRef>
-            <Group
-               location = "group:Localizable"
-               name = "Localizable">
-               <Group
-                  location = "group:cs.lproj"
-                  name = "cs.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:de.lproj"
-                  name = "de.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:lt-LT.lproj"
-                  name = "lt-LT.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:he.lproj"
-                  name = "he.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ar.lproj"
-                  name = "ar.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:el.lproj"
-                  name = "el.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-TW.lproj"
-                  name = "zh-TW.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:uk-UA.lproj"
-                  name = "uk-UA.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:en.lproj"
-                  name = "en.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-HK.lproj"
-                  name = "zh-HK.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:nb.lproj"
-                  name = "nb.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:es.lproj"
-                  name = "es.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sl.lproj"
-                  name = "sl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sr-RS.lproj"
-                  name = "sr-RS.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:da.lproj"
-                  name = "da.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:it.lproj"
-                  name = "it.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ms.lproj"
-                  name = "ms.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:sv.lproj"
-                  name = "sv.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ko.lproj"
-                  name = "ko.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:fi-FI.lproj"
-                  name = "fi-FI.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:tr.lproj"
-                  name = "tr.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:pl.lproj"
-                  name = "pl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:zh-CN.lproj"
-                  name = "zh-CN.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:fr.lproj"
-                  name = "fr.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:id.lproj"
-                  name = "id.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:nl.lproj"
-                  name = "nl.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:th.lproj"
-                  name = "th.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:pt.lproj"
-                  name = "pt.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:ca.lproj"
-                  name = "ca.lproj">
-                  <FileRef
-                     location = "group:Localizable.strings">
-                  </FileRef>
-               </Group>
-            </Group>
          </Group>
       </Group>
    </Group>
@@ -2154,6 +3273,9 @@
          </Group>
          <FileRef
             location = "group:DependencyContainerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:DependencyInjectionTests.swift">
          </FileRef>
          <Group
             location = "group:Utils"

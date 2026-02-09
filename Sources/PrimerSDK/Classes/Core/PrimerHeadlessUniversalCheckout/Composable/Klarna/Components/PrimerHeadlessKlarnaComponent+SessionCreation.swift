@@ -103,13 +103,13 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
             let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-            
+
             let task = Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: 5_000_000_000)
                 guard let self else { return }
                 self.logger.warn(
                     message:
-                    """
+                        """
                     The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
                     Make sure you call the decision handler otherwise the SDK will hang.
                     """
@@ -124,7 +124,8 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                     case let .abort(errorMessage):
                         let error = PrimerError.merchantError(message: errorMessage ?? "")
                         continuation.resume(throwing: error)
-                    case .continue:
+                    case let .continue(idempotencyKey):
+                        PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
                         continuation.resume()
                     }
                 }

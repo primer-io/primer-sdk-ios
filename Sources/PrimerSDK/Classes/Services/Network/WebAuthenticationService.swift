@@ -62,8 +62,10 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 
             self.session = webAuthSession
 
-            webAuthSession.presentationContextProvider = self
-            webAuthSession.start()
+            DispatchQueue.main.async {
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
+            }
         }
     }
 }

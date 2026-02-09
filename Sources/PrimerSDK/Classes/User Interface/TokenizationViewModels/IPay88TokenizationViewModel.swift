@@ -176,7 +176,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
             guard let callbackRaw = decodedJWTToken.backendCallbackUrl,
                   let callbackStr = callbackRaw.addingPercentEncoding(
-                      withAllowedCharacters: .urlPasswordAllowed
+                    withAllowedCharacters: .urlPasswordAllowed
                   )?.replacingOccurrences(of: "=", with: "%3D"),
                   let callbackUrl = URL(string: callbackStr),
                   let statusUrlRaw = decodedJWTToken.statusUrl,

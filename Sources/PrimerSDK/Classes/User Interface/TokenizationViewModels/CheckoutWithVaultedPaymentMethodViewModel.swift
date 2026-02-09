@@ -129,7 +129,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             guard let self else { return }
             self.logger.warn(
                 message:
-                """
+                    """
                 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
                 Make sure you call the decision handler otherwise the SDK will hang.
                 """
@@ -142,7 +142,8 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         switch paymentCreationDecision.type {
         case let .abort(errorMessage):
             throw PrimerError.merchantError(message: errorMessage ?? "")
-        case .continue:
+        case let .continue(idempotencyKey):
+            PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
             return
         }
     }
@@ -221,7 +222,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     }
 
     private func startManualPaymentFlowAndFetchToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws
-        -> DecodedJWTToken? {
+    -> DecodedJWTToken? {
         let resumeDecision = await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
         if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
             switch resumeDecisionType {

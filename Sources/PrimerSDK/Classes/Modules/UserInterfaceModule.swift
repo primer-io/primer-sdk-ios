@@ -47,9 +47,9 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         }
 
         return switch internaPaymentMethodType {
-            case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
-            case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
-            default: logo
+        case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
+        case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
+        default: logo
         }
     }
 
@@ -1063,13 +1063,22 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
         guard let squareLogo = self.icon else { return nil }
-        let imgView = UIImageView()
-        imgView.image = squareLogo
-        imgView.contentMode = .scaleAspectFit
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
-        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
-        return imgView
+
+        let createImageView: () -> UIImageView = {
+            let imgView = UIImageView()
+            imgView.image = squareLogo
+            imgView.contentMode = .scaleAspectFit
+            imgView.translatesAutoresizingMaskIntoConstraints = false
+            imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+            imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+            return imgView
+        }
+
+        if Thread.isMainThread {
+            return createImageView()
+        } else {
+            return DispatchQueue.main.sync { createImageView() }
+        }
     }
 
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {

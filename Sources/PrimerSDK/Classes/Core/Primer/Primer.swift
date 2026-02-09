@@ -1,7 +1,7 @@
 //
 //  Primer.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -39,33 +39,38 @@ public final class Primer {
         }
     }
     public var intent: PrimerSessionIntent? {
-        return PrimerInternal.shared.intent
+        PrimerInternal.shared.intent
     }
     public var selectedPaymentMethodType: String? {
-        return PrimerInternal.shared.selectedPaymentMethodType
+        PrimerInternal.shared.selectedPaymentMethodType
     }
     public var integrationOptions: PrimerIntegrationOptions?
 
     // MARK: - INITIALIZATION
 
     public static var shared: Primer {
-        return _Primer
+        _Primer
     }
 
-    fileprivate init() {}
+    fileprivate init() {
+        // Register custom fonts for CheckoutComponents
+        if #available(iOS 15.0, *) {
+            FontRegistration.registerFonts()
+        }
+    }
 
     public func application(_ app: UIApplication,
                             open url: URL,
                             options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return PrimerInternal.shared.application(app, open: url, options: options)
+        PrimerInternal.shared.application(app, open: url, options: options)
     }
 
     public func application(_ application: UIApplication,
                             continue userActivity: NSUserActivity,
                             restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return PrimerInternal.shared.application(application,
-                                                 continue: userActivity,
-                                                 restorationHandler: restorationHandler)
+        PrimerInternal.shared.application(application,
+                                          continue: userActivity,
+                                          restorationHandler: restorationHandler)
     }
 
     // MARK: - CONFIGURATION
