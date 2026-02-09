@@ -1,13 +1,12 @@
 //
 //  Endpoint.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 
-internal protocol Endpoint {
-
+public protocol Endpoint {
     var baseURL: String? { get }
     var path: String { get }
     var method: HTTPMethod { get }
@@ -17,7 +16,7 @@ internal protocol Endpoint {
     var timeout: TimeInterval? { get }
 }
 
-enum HTTPMethod: String, Codable {
+public enum HTTPMethod: String, Codable {
     case get = "GET"
     case post = "POST"
     case put = "PUT"
