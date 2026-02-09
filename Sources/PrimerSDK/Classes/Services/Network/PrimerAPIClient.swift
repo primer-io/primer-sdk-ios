@@ -513,12 +513,7 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
                           completion: @escaping APICompletion<Response.Body.Bin.Networks>) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
         let wrappedCompletion: APICompletion<Response.Body.Bin.Data> = { result in
-            switch result {
-            case let .success(binData):
-                completion(.success(Response.Body.Bin.Networks(from: binData)))
-            case let .failure(error):
-                completion(.failure(error))
-            }
+            completion(result.map { Response.Body.Bin.Networks(from: $0) })
         }
         return execute(endpoint, completion: wrappedCompletion)
     }

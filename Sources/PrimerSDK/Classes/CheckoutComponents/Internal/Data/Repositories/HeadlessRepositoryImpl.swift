@@ -558,7 +558,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   }
 
   func getBinDataStream() -> AsyncStream<PrimerBinData> {
-    self.binDataStream
+    binDataStream
   }
 
   @MainActor

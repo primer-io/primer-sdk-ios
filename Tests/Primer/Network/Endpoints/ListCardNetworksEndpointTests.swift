@@ -106,7 +106,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)")
         }
 
-        let expectedBinData = Response.Body.Bin.Data(
+        networkService.mockedResult = Response.Body.Bin.Data(
             firstDigits: "123456",
             binData: [.init(displayName: "Visa",
                             network: "VISA",
@@ -121,7 +121,6 @@ final class ListCardNetworksEndpointTests: XCTestCase {
                             regionalRestriction: nil,
                             accountNumberType: nil)]
         )
-        networkService.mockedResult = expectedBinData
 
         let result = try await apiClient.fetchBinData(clientToken: mockClientToken, bin: bin)
         XCTAssertEqual(result.firstDigits, "123456")

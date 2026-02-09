@@ -74,12 +74,11 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
     func fetchBinData(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Data {
         try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
 
-        if let error = error {
+        if let error {
             throw error
         } else if let result = binDataResults[bin] {
             return result
         } else if let networks = results[bin] {
-            // Convert legacy results to bin data format
             return Response.Body.Bin.Data(
                 firstDigits: String(bin.prefix(6)),
                 binData: networks.networks.map {

@@ -48,9 +48,6 @@ extension Response.Body.Bin.Data {
 
 extension Response.Body.Bin.Networks {
     init(from binData: Response.Body.Bin.Data) {
-        self.networks = binData.binData.compactMap { item in
-            guard let network = item.network else { return nil }
-            return Network(value: network)
-        }
+        self.networks = binData.binData.compactMap(\.network).map(Network.init(value:))
     }
 }

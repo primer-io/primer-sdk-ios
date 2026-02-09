@@ -30,8 +30,12 @@ public final class PrimerBinData: NSObject {
     }
 
     override public var description: String {
-        let preferredStr = preferred?.displayName ?? "nil"
-        let altStr = alternatives.map(\.displayName).joined(separator: ", ")
-        return "PrimerBinData(preferred: \(preferredStr), alternatives: [\(altStr)], status: \(status == .complete ? "complete" : "partial"), firstDigits: \(firstDigits ?? "nil"))"
+        """
+        PrimerBinData(\
+        preferred: \(preferred?.displayName ?? "nil"), \
+        alternatives: [\(alternatives.map(\.displayName).joined(separator: ", "))], \
+        status: \(status == .complete ? "complete" : "partial"), \
+        firstDigits: \(firstDigits ?? "nil"))
+        """
     }
 }

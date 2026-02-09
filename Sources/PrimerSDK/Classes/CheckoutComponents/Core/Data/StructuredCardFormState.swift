@@ -219,7 +219,6 @@ public struct StructuredCardFormState: Equatable {
 
   // MARK: - BIN Data
 
-  /// Enriched BIN data including issuer info, first digits, and status
   public var binData: PrimerBinData?
 
   // MARK: - Initialization

@@ -244,16 +244,15 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  /// Setup bin data stream for enriched BIN data (issuer info, firstDigits)
   private func setupBinDataStream() {
     guard let interactor = cardNetworkDetectionInteractor else {
       return
     }
 
-    Task {
+    Task { [self] in
       for await binData in interactor.binDataStream {
         await MainActor.run {
-          self.structuredState.binData = binData
+          structuredState.binData = binData
         }
       }
     }

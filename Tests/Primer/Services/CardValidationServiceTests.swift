@@ -519,7 +519,6 @@ final class CardValidationServiceTests: XCTestCase {
         // When
         delegate.onBinDataReceived = { _, binData in
             guard binData.status == .complete else { return }
-            XCTAssertEqual(binData.status, .complete, "Remote validation should deliver complete status")
             XCTAssertEqual(binData.firstDigits, "552266", "Should have correct firstDigits from API")
             XCTAssertNotNil(binData.preferred, "Should have a preferred network")
             binDataExpectation.fulfill()
@@ -572,9 +571,7 @@ final class CardValidationServiceTests: XCTestCase {
             guard binData.status == .complete else { return }
             XCTAssertNotNil(binData.preferred, "Should have a preferred network")
             XCTAssertFalse(binData.alternatives.isEmpty, "Should have alternatives")
-            // preferred + alternatives should cover all networks
-            let totalCount = 1 + binData.alternatives.count
-            XCTAssertEqual(totalCount, 2, "Should have 2 total networks")
+            XCTAssertEqual(1 + binData.alternatives.count, 2, "Should have 2 total networks")
             binDataExpectation.fulfill()
         }
 

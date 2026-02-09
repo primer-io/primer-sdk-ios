@@ -46,10 +46,7 @@ public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 /// ```
 @objc
 public final class PrimerCardNetwork: NSObject {
-    /// Human-readable name for the card network (e.g., "Visa", "Mastercard").
     public let displayName: String
-
-    /// The underlying card network identifier.
     public let network: CardNetwork
     public let issuerCountryCode: String?
     public let issuerName: String?
@@ -62,8 +59,6 @@ public final class PrimerCardNetwork: NSObject {
     public let regionalRestriction: String?
     public let accountNumberType: String?
 
-    /// Indicates whether the merchant accepts this card network.
-    /// Returns `true` if the network is in the merchant's allowed networks list.
     public var allowed: Bool {
         [CardNetwork].allowedCardNetworks.contains(network)
     }

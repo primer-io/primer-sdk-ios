@@ -47,8 +47,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
 
-    // MARK: Thread-safe bin data cache
-
     private var binDataCacheBacking: [String: PrimerBinData] = [:]
 
     private func getCachedBinData(for key: String) -> PrimerBinData? {
@@ -151,8 +149,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                 handle(cardMetadata: metadata, forCardState: cardState)
 
                 let binData = buildBinData(from: enrichedNetworks, firstDigits: result.firstDigits, status: .complete)
-                let binCacheKey = cardState.cardNumber
-                setCachedBinData(binData, for: binCacheKey)
+                setCachedBinData(binData, for: cardState.cardNumber)
                 delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
             } catch {
                 sendEvent(forError: error)
@@ -188,7 +185,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
 
-        // Deliver partial bin data for local validation
         let localNetworks = networks.map { PrimerCardNetwork(network: $0) }
         let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
         delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
@@ -220,8 +216,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             try? await self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
     }
-
-    // MARK: BinData builder
 
     private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
         let preferred = networks.first { $0.allowed }
