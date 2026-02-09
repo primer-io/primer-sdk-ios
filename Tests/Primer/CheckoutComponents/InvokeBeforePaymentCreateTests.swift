@@ -8,6 +8,7 @@
 import XCTest
 
 @available(iOS 15.0, *)
+@MainActor
 final class InvokeBeforePaymentCreateTests: XCTestCase {
 
     override func setUp() {
@@ -24,7 +25,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
 
     // MARK: - onBeforePaymentCreate Property Tests
 
-    @MainActor
     func test_onBeforePaymentCreate_isNilByDefault() {
         // Given
         let scope = createScope()
@@ -33,7 +33,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertNil(scope.onBeforePaymentCreate)
     }
 
-    @MainActor
     func test_onBeforePaymentCreate_canBeSet() {
         // Given
         let scope = createScope()
@@ -47,7 +46,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertNotNil(scope.onBeforePaymentCreate)
     }
 
-    @MainActor
     func test_onBeforePaymentCreate_canBeSetToNil() {
         // Given
         let scope = createScope()
@@ -64,7 +62,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
 
     // MARK: - invokeBeforePaymentCreate Tests
 
-    @MainActor
     func test_invokeBeforePaymentCreate_whenCallbackIsNil_shouldNotThrow() async throws {
         // Given
         let scope = createScope()
@@ -74,7 +71,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         try await scope.invokeBeforePaymentCreate(paymentMethodType: "PAYMENT_CARD")
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_whenCallbackIsNil_shouldNotSetIdempotencyKey() async throws {
         // Given
         let scope = createScope()
@@ -87,7 +83,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertNil(PrimerInternal.shared.currentIdempotencyKey)
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_withContinueAndKey_shouldStoreIdempotencyKey() async throws {
         // Given
         let expectedKey = "cc-test-key-123"
@@ -103,7 +98,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, expectedKey)
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_withContinueWithoutKey_shouldStoreNilIdempotencyKey() async throws {
         // Given
         let scope = createScope()
@@ -118,7 +112,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertNil(PrimerInternal.shared.currentIdempotencyKey)
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_withAbort_shouldThrowMerchantError() async {
         // Given
         let scope = createScope()
@@ -143,7 +136,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         }
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_withAbortNilMessage_shouldThrowDefaultMessage() async {
         // Given
         let scope = createScope()
@@ -168,7 +160,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         }
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_shouldPassCorrectPaymentMethodType() async throws {
         // Given
         var receivedType: String?
@@ -185,7 +176,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertEqual(receivedType, "APPLE_PAY")
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_shouldPassCorrectPaymentMethodType_forKlarna() async throws {
         // Given
         var receivedType: String?
@@ -202,7 +192,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertEqual(receivedType, "KLARNA")
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_withAbort_shouldNotStoreIdempotencyKey() async {
         // Given
         let scope = createScope()
@@ -221,7 +210,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertNil(PrimerInternal.shared.currentIdempotencyKey)
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_calledTwice_shouldOverwriteKey() async throws {
         // Given
         let scope = createScope()
@@ -241,7 +229,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
         XCTAssertEqual(PrimerInternal.shared.currentIdempotencyKey, "second-key")
     }
 
-    @MainActor
     func test_invokeBeforePaymentCreate_continueWithKey_thenContinueWithoutKey_shouldClearKey() async throws {
         // Given
         let scope = createScope()
@@ -263,7 +250,6 @@ final class InvokeBeforePaymentCreateTests: XCTestCase {
 
     // MARK: - Helper
 
-    @MainActor
     private func createScope() -> DefaultCheckoutScope {
         DefaultCheckoutScope(
             clientToken: "mock_token",

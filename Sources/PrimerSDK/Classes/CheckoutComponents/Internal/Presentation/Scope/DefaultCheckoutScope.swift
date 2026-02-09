@@ -79,8 +79,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   // MARK: - Payment Callbacks
 
-  public var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
-                                      _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
+  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
 
   // MARK: - UI Customization Properties
 

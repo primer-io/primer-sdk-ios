@@ -228,8 +228,7 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
         }
     }
 
-    var onBeforePaymentCreate: ((_ data: PrimerCheckoutPaymentMethodData,
-                                    _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
+    var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var container: ContainerComponent?
     var splashScreen: Component?
     var loading: Component?
