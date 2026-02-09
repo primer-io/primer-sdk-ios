@@ -16,6 +16,14 @@ final class AchStateObserver: ObservableObject {
   private let scope: any PrimerAchScope
   private var observationTask: Task<Void, Never>?
 
+  private var shouldShowBankCollector: Bool {
+    achState.step == .bankAccountCollection && scope.bankCollectorViewController != nil && !stripeFlowCompleted
+  }
+
+  private var shouldHideBankCollector: Bool {
+    achState.step != .bankAccountCollection && achState.step != .processing
+  }
+
   init(scope: any PrimerAchScope) {
     self.scope = scope
   }
@@ -51,15 +59,5 @@ final class AchStateObserver: ObservableObject {
   func stopObserving() {
     observationTask?.cancel()
     observationTask = nil
-  }
-
-  // MARK: - Private
-
-  private var shouldShowBankCollector: Bool {
-    achState.step == .bankAccountCollection && scope.bankCollectorViewController != nil && !stripeFlowCompleted
-  }
-
-  private var shouldHideBankCollector: Bool {
-    achState.step != .bankAccountCollection && achState.step != .processing
   }
 }

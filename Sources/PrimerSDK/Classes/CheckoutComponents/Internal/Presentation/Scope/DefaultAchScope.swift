@@ -209,7 +209,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   private func validateAndUpdateState() {
     let isSubmitEnabled = validateCurrentFields()
-    let fieldValidation = getFieldValidation()
+    let fieldValidation = getFieldErrors()
 
     let userDetails = AchState.UserDetails(
       firstName: currentFirstName,
@@ -238,7 +238,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     return firstNameValid && lastNameValid && emailValid
   }
 
-  private func getFieldValidation() -> AchState.FieldValidation? {
+  private func getFieldErrors() -> AchState.FieldValidation? {
     var firstNameError: String?
     var lastNameError: String?
     var emailError: String?
@@ -376,8 +376,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
   private func handleError(_ error: Error, context: String) {
     logger.error(message: "ACH \(context) failed: \(error.localizedDescription)")
-    let primerError =
-      error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
+    let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
     guard let checkoutScope else {
       logger.error(message: "ACH checkout scope was deallocated during \(context)")
       return

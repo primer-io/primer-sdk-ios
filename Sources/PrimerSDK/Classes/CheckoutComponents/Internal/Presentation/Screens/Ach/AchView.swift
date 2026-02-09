@@ -107,7 +107,7 @@ struct AchView: View, LogReporter {
   @ViewBuilder private var contentSection: some View {
     switch observer.achState.step {
     case .loading:
-      loadingContent
+      makeLoadingContent()
     case .userDetailsCollection:
       if let customScreen = scope.userDetailsScreen {
         AnyView(customScreen(scope))
@@ -116,7 +116,7 @@ struct AchView: View, LogReporter {
       }
     case .bankAccountCollection:
       // Bank collector is shown as fullScreenCover, show loading while it's presented
-      loadingContent
+      makeLoadingContent()
     case .mandateAcceptance:
       if let customScreen = scope.mandateScreen {
         AnyView(customScreen(scope))
@@ -124,13 +124,13 @@ struct AchView: View, LogReporter {
         AchMandateView(scope: scope, achState: observer.achState)
       }
     case .processing:
-      loadingContent
+      makeLoadingContent()
     }
   }
 
   // MARK: - Loading Content
 
-  @ViewBuilder private var loadingContent: some View {
+  private func makeLoadingContent() -> some View {
     VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
       Spacer()
         .frame(height: PrimerSpacing.xxlarge(tokens: tokens) * 2)

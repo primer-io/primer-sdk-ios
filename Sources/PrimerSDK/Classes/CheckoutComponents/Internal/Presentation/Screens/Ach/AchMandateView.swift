@@ -41,15 +41,15 @@ struct AchMandateView: View, LogReporter {
         .frame(height: PrimerSpacing.medium(tokens: tokens))
 
       VStack(spacing: PrimerSpacing.small(tokens: tokens)) {
-        acceptButton
-        declineButton
+        makeAcceptButton()
+        makeDeclineButton()
       }
     }
     .padding(.top, PrimerSpacing.large(tokens: tokens))
     .accessibilityIdentifier(AccessibilityIdentifiers.Ach.mandateContainer)
   }
 
-  @ViewBuilder private var acceptButton: some View {
+  private func makeAcceptButton() -> some View {
     Button(action: scope.acceptMandate) {
       Text(CheckoutComponentsStrings.achMandateAcceptButton)
         .font(PrimerFont.body(tokens: tokens))
@@ -64,7 +64,7 @@ struct AchMandateView: View, LogReporter {
     .accessibilityHint(CheckoutComponentsStrings.a11yAchMandateAcceptHint)
   }
 
-  @ViewBuilder private var declineButton: some View {
+  private func makeDeclineButton() -> some View {
     Button(action: scope.declineMandate) {
       Text(CheckoutComponentsStrings.achMandateDeclineButton)
         .font(PrimerFont.body(tokens: tokens))
