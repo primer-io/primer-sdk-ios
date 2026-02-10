@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 
 import Foundation
+import PrimerNetworking
 
 protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)

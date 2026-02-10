@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 public enum TokenType: String, Codable {
     case multiUse = "MULTI_USE"

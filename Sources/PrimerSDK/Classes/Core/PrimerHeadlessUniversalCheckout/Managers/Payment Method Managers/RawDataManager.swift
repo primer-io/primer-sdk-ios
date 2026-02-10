@@ -12,6 +12,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import SafariServices
 
 // swiftlint:disable type_name
