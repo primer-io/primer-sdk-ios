@@ -12,6 +12,7 @@ import UIKit
 import PrimerNolPaySDK
 #endif
 import PrimerFoundation
+import PrimerNetworking
 
 public final class NolPayLinkedCardsComponent {
     #if canImport(PrimerNolPaySDK)

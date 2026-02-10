@@ -1,10 +1,11 @@
 //
 //  KlarnaTokenizationComponent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 protocol KlarnaTokenizationComponentProtocol: KlarnaTokenizationManagerProtocol {
     /// - Validates the necessary conditions for proceeding with a payment operation.
@@ -205,7 +206,7 @@ private extension KlarnaTokenizationComponent {
 extension KlarnaTokenizationComponent {
     /// - Helper method to prepare Klarna Finalize Payment Session body
     private func prepareKlarnaFinalizePaymentSessionBody(paymentMethodConfigId: String, sessionId: String) -> Request.Body.Klarna.FinalizePaymentSession {
-        return KlarnaHelpers.getKlarnaFinalizePaymentBody(
+        KlarnaHelpers.getKlarnaFinalizePaymentBody(
             with: paymentMethodConfigId,
             sessionId: sessionId
         )
@@ -224,7 +225,7 @@ extension KlarnaTokenizationComponent {
 
     /// - Helper method to prepare Klarna Customer Token body
     private func prepareKlarnaCustomerTokenBody(paymentMethodConfigId: String, sessionId: String, authorizationToken: String) -> Request.Body.Klarna.CreateCustomerToken {
-        return KlarnaHelpers.getKlarnaCustomerTokenBody(
+        KlarnaHelpers.getKlarnaCustomerTokenBody(
             with: paymentMethodConfigId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
