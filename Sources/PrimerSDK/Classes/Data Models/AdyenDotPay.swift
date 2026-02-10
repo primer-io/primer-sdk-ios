@@ -1,10 +1,11 @@
 //
 //  AdyenDotPay.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 typealias AdyenBank = Response.Body.Adyen.Bank
 
@@ -26,7 +27,7 @@ extension Request.Body.Adyen {
     }
 }
 
-internal struct BankTokenizationSessionRequestParameters: Encodable {
+struct BankTokenizationSessionRequestParameters: Encodable {
     let paymentMethod: String
 }
 
@@ -52,6 +53,6 @@ extension Response.Body.Adyen {
     }
 }
 
-internal struct BanksListSessionResponse: Decodable {
+struct BanksListSessionResponse: Decodable {
     let result: [Response.Body.Adyen.Bank]
 }

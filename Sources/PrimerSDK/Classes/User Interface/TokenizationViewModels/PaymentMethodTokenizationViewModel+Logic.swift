@@ -10,6 +10,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 extension PaymentMethodTokenizationViewModel {

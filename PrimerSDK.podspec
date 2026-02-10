@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
     s.subspec "Core" do |ss|
         ss.dependency 'PrimerFoundation'
 		ss.dependency 'PrimerCore'
+		ss.dependency 'PrimerNetworking'
         ss.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
         ss.ios.resource_bundles = {
             "PrimerResources" => [

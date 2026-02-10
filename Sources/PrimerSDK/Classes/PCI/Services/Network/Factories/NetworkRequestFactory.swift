@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 protocol NetworkRequestFactory: Sendable {
     func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest
