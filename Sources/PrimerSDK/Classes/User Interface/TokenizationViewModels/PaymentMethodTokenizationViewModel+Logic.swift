@@ -16,7 +16,11 @@ extension PaymentMethodTokenizationViewModel {
     func start() {
         Task {
             do {
-                paymentMethodTokenData = try await startTokenizationFlow()
+				if config.type == "ADYEN_IDEAL" {
+					try await callPay()
+				} else {
+					paymentMethodTokenData = try await startTokenizationFlow()
+				}
                 await processPaymentMethodTokenData()
                 await uiManager.primerRootViewController?.enableUserInteraction(true)
             } catch {
@@ -395,6 +399,76 @@ extension PrimerError {
             return nil
         }
     }
+}
+
+import PrimerBDCCore
+import PrimerFoundation
+
+extension PaymentMethodTokenizationViewModel {
+	func callPay() async throws {
+        let client = defaultNetworkService
+        print("[SDK] Executing call to /pay")
+        let response: PayResponse = try await client.request(BackendDrivenCheckout.pay)
+        try await Task.sleep(nanoseconds: 200_000_000)
+		try await callActions(response)
+	}
+	
+    @MainActor
+    private func callActions(
+        _ payResponse: PayResponse,
+        orchestrator: PrimerStepOrchestrator? = nil
+    ) async throws {
+        print("[SDK] Executing call to \(payResponse.actionsUrl.prefix(80))")
+        do {
+            let actionResponse: ActionResponse = try await defaultNetworkService.request(BackendDrivenCheckout.actions(path: payResponse.actionsUrl))
+            let rawSchema = try actionResponse.data.schema.jsonString
+            let orchestrator = orchestrator ?? PrimerStepOrchestrator()
+            try await orchestrator.start(rawSchema: rawSchema)
+            try await callActions(payResponse, orchestrator: orchestrator)
+        } catch {
+            switch error as? APIError {
+            case .emptyResponse: try await callActions(payResponse, orchestrator: orchestrator)
+            default: print("[SDK] Received checkout completed from /actions")
+            }
+        }
+	}
+}
+
+private enum BackendDrivenCheckout: Endpoint {
+    case pay
+    case actions(path: String)
+    
+    var baseURL: String? { "http://localhost:3000" }
+    var path: String {
+        switch self {
+        case .pay: "pay"
+        case let .actions(path): path
+        }
+    }
+    
+    var method: HTTPMethod { .post }
+    var headers: [String : String]? {
+        [
+            "Primer-Client-Token": PrimerAPIConfigurationModule.decodedJWTToken!.accessToken!,
+            "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.checkoutSessionId!,
+            "Primer-SDK-Client": "IOS_NATIVE",
+            "Primer-SDK-Version": VersionUtils.releaseVersionNumber!
+        ]
+    }
+    
+    var queryParameters: [String : String]? { nil }
+    var body: Data? {
+        switch self {
+        case .actions: nil
+        case .pay: try? PayContext().data()
+        }
+    }
+    var timeout: TimeInterval? { 30 }
+    
+}
+
+enum APIError: Error {
+    case emptyResponse
 }
 
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}

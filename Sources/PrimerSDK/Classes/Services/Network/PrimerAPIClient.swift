@@ -604,3 +604,7 @@ private extension PrimerAPIClient {
         }
     }
 }
+
+extension PrimerAPIClient {
+    
+}
