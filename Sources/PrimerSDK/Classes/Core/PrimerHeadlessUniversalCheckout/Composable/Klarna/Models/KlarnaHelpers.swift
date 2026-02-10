@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {

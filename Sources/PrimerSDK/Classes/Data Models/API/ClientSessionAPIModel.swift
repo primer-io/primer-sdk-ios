@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 extension Request.Body {
 

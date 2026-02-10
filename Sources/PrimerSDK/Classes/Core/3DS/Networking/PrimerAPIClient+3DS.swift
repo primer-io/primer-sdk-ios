@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 extension PrimerAPIClient {
 
