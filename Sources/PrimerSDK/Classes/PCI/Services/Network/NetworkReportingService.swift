@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)

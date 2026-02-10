@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void

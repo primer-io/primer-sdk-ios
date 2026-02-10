@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 

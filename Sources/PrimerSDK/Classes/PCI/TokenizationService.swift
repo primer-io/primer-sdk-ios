@@ -8,6 +8,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
