@@ -9,6 +9,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
 
