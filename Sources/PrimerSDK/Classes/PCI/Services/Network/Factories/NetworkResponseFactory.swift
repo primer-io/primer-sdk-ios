@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 protocol NetworkResponseFactory: AnyObject {
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable

@@ -1,11 +1,12 @@
 //
 //  PaymentAPIModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 import Foundation
+import PrimerNetworking
 
 public struct PaymentAPIModelAddress: Codable {
     let firstName: String?
@@ -84,7 +85,7 @@ extension Response.Body {
         public var customerId: String?
         public var dateStr: String?
         public var date: Date? {
-            return dateStr?.toDate()
+            dateStr?.toDate()
         }
         public var order: Request.Body.ClientSession.Order?
         public var orderId: String?
@@ -141,7 +142,7 @@ public struct Payment {
 
 }
 
-internal struct PrimerPaymentMethodData {
+struct PrimerPaymentMethodData {
     let type: String
 }
 

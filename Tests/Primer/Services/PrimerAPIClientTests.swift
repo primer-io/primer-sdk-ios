@@ -9,6 +9,7 @@
 // swiftlint:disable type_body_length
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
