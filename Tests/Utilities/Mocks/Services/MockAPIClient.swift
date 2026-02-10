@@ -1400,6 +1400,21 @@ extension MockPrimerAPIClient {
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
         static let mockSdkCompleteUrl = Response.Body.Complete()
         static let mockBinNetworks = Response.Body.Bin.Networks(networks: [.init(value: "MOCK_NETWORK")])
+        static let mockBinData = Response.Body.Bin.Data(
+            firstDigits: "123456",
+            binData: [.init(displayName: "Mock Network",
+                            network: "MOCK_NETWORK",
+                            issuerCountryCode: nil,
+                            issuerName: nil,
+                            accountFundingType: nil,
+                            prepaidReloadableIndicator: nil,
+                            productUsageType: nil,
+                            productCode: nil,
+                            productName: nil,
+                            issuerCurrencyCode: nil,
+                            regionalRestriction: nil,
+                            accountNumberType: nil)]
+        )
         static let mockPhoneMetadataResponse = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(
             isValid: true,
             countryCode: "+1",
