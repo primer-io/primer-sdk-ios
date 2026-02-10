@@ -14,6 +14,7 @@ import UIKit
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 #endif
+import PrimerNetworking
 
 public enum NolPayLinkCollectableData: PrimerCollectableData {
     case phoneData(mobileNumber: String)
@@ -87,14 +88,14 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     case .valid:
                         self.countryCode = countryCode
                         self.mobileNumber = mobileNumber
-                        self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                        validationDelegate?.didUpdate(validationStatus: .valid, for: data)
                     case let .invalid(errors: validationErrors):
                         errors += validationErrors
-                        self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                     default: break
                     }
                 case let .failure(error):
-                    self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                    validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 }
             }
         case let .otpData(otpCode: otpCode):
@@ -141,10 +142,10 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 switch result {
                 case let .success(success):
                     if success {
-                        self.nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
-                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                        nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
+                        stepDelegate?.didReceiveStep(step: nextDataStep)
                     } else {
-                        self.errorDelegate?.didReceiveError(
+                        errorDelegate?.didReceiveError(
                             error: handled(
                                 primerError: .nolError(
                                     code: "unknown",
@@ -154,7 +155,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         )
                     }
                 case let .failure(error):
-                    self.errorDelegate?.didReceiveError(
+                    errorDelegate?.didReceiveError(
                         error: handled(
                             primerError: .nolError(
                                 code: error.errorCode,
@@ -186,10 +187,10 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 switch result {
                 case let .success(success):
                     if success {
-                        self.nextDataStep = .cardLinked
-                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
+                        nextDataStep = .cardLinked
+                        stepDelegate?.didReceiveStep(step: nextDataStep)
                     } else {
-                        self.errorDelegate?.didReceiveError(
+                        errorDelegate?.didReceiveError(
                             error: handled(
                                 primerError: .nolError(
                                     code: "unknown",
@@ -199,7 +200,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         )
                     }
                 case let .failure(error):
-                    self.errorDelegate?.didReceiveError(
+                    errorDelegate?.didReceiveError(
                         error: handled(
                             error: .nolError(
                                 code: error.errorCode,
@@ -242,7 +243,7 @@ public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     }
 
                 case let .failure(error):
-                    self.errorDelegate?.didReceiveError(
+                    errorDelegate?.didReceiveError(
                         error: handled(
                             primerError: .nolError(
                                 code: error.errorCode,

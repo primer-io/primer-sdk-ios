@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -76,7 +77,7 @@ final class MockNetworkService: NetworkServiceProtocol {
         if let error = mockedError {
             throw error
         } else if let result = mockedResult as? T {
-            return (result, self.mockedHeaders)
+            return (result, mockedHeaders)
         } else {
             XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             throw NSError(domain: "MockNetworkService", code: -1, userInfo: nil)
@@ -113,7 +114,7 @@ final class MockNetworkService: NetworkServiceProtocol {
         if let error = mockedError {
             throw error
         } else if let result = mockedResult as? T {
-            return (result, self.mockedHeaders)
+            return (result, mockedHeaders)
         } else {
             XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             throw NSError(domain: "MockNetworkService", code: -1, userInfo: nil)

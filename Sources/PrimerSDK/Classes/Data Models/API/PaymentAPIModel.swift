@@ -1,11 +1,12 @@
 //
 //  PaymentAPIModel.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
 import Foundation
+import PrimerNetworking
 
 public struct PaymentAPIModelAddress: Codable {
     let firstName: String?
@@ -49,7 +50,7 @@ extension Request.Body.Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -57,7 +58,7 @@ extension Request.Body.Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 
@@ -84,7 +85,7 @@ extension Response.Body {
         public var customerId: String?
         public var dateStr: String?
         public var date: Date? {
-            return dateStr?.toDate()
+            dateStr?.toDate()
         }
         public var order: Request.Body.ClientSession.Order?
         public var orderId: String?
@@ -141,7 +142,7 @@ public struct Payment {
 
 }
 
-internal struct PrimerPaymentMethodData {
+struct PrimerPaymentMethodData {
     let type: String
 }
 
@@ -187,7 +188,7 @@ extension PrimerCheckoutDataPayment {
     public let paymentMethodType: PrimerCheckoutPaymentMethodType
 
     public init(type: PrimerCheckoutPaymentMethodType) {
-        self.paymentMethodType = type
+        paymentMethodType = type
     }
 }
 
@@ -211,9 +212,9 @@ extension PrimerCheckoutDataPayment {
     public var rawValue: RawValue {
         switch self {
         case .failed:
-            return "payment-failed"
+            "payment-failed"
         case .cancelledByCustomer:
-            return "cancelled-by-customer"
+            "cancelled-by-customer"
         }
     }
 

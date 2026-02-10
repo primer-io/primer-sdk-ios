@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -42,24 +43,24 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testFullPaymentFlow() throws {
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
-        let expectOnTokenize = self.expectation(description: "On tokenization complete")
+        let expectOnTokenize = expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -90,30 +91,30 @@ final class RawDataManagerTests: XCTestCase {
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
 
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
-        let expectOnTokenize = self.expectation(description: "On tokenization complete")
+        let expectOnTokenize = expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Result.success(self.tokenizationResponseBody)
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBodyWithRedirectAction
         }
 
-        let expectResumePayment = self.expectation(description: "On resume payment")
+        let expectResumePayment = expectation(description: "On resume payment")
         createResumePaymentService.onResumePayment = { paymentId, request in
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
@@ -136,13 +137,13 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testAbortPaymentFlow() throws {
-        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        let expectWillCreatePaymentWithData = expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.abortPaymentCreation())
         }
 
-        let expectDidFail = self.expectation(description: "Did fail with merchant error")
+        let expectDidFail = expectation(description: "Did fail with merchant error")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError: break
@@ -163,7 +164,7 @@ final class RawDataManagerTests: XCTestCase {
     
     func testNoRawDataSubmit() {
 
-        let expectDidFail = self.expectation(description: "Did fail")
+        let expectDidFail = expectation(description: "Did fail")
         headlessCheckoutDelegate.onDidFail = { error in
             switch error {
             case let PrimerError.invalidValue(key, value, _, _):
@@ -176,7 +177,7 @@ final class RawDataManagerTests: XCTestCase {
             expectDidFail.fulfill()
         }
 
-        let expectDidValidate = self.expectation(description: "Did validate")
+        let expectDidValidate = expectation(description: "Did validate")
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
@@ -192,7 +193,7 @@ final class RawDataManagerTests: XCTestCase {
 
     func testDelegateNotifiedOnValidation() {
         // Arrange
-        let expectDidValidate = self.expectation(description: "Delegate was notified")
+        let expectDidValidate = expectation(description: "Delegate was notified")
         var didCallDelegate = false
 
         rawDataManagerDelegate.onDataIsValid = { _, _, _ in
@@ -216,8 +217,8 @@ final class RawDataManagerTests: XCTestCase {
     
     func testDelegateNotifiedOnConsecutiveValidations() {
         // Arrange
-        let expectFirstValidation = self.expectation(description: "First validation notification")
-        let expectSecondValidation = self.expectation(description: "Second validation notification")
+        let expectFirstValidation = expectation(description: "First validation notification")
+        let expectSecondValidation = expectation(description: "Second validation notification")
         var validationCount = 0
         var fulfilledFirst = false
         var fulfilledSecond = false

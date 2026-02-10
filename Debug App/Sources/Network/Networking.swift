@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import PrimerSDK
 
 enum APIVersion: String {
@@ -42,9 +43,9 @@ final class Networking {
 
     var endpoint: String {
         if environment == .local {
-            return "https://primer-mock-back-end.herokuapp.com"
+            "https://primer-mock-back-end.herokuapp.com"
         } else {
-            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+            "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         }
     }
 
@@ -59,7 +60,7 @@ final class Networking {
     ) {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
 
-        if let queryParameters = queryParameters {
+        if let queryParameters {
             components.queryItems = queryParameters.map { (key, value) in
                 URLQueryItem(name: key, value: value)
             }
@@ -77,11 +78,11 @@ final class Networking {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
 
-        if let customDefinedApiKey = customDefinedApiKey {
+        if let customDefinedApiKey {
             request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
         }
 
-        if let headers = headers {
+        if let headers {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
             // so in case this array contains the same key, it won't be added
@@ -90,7 +91,7 @@ final class Networking {
             }
         }
 
-        if let apiVersion = apiVersion {
+        if let apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
@@ -101,7 +102,7 @@ final class Networking {
             } ?? []
         logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 
-        if let body = body {
+        if let body {
             request.httpBody = body
             if let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
                 logger.debug(message: "Request Body (json):\n\(bodyJson)")
@@ -128,14 +129,14 @@ final class Networking {
 
                     if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
                         logger.debug(message: "Status Code: \(httpResponse.statusCode)")
-                        if let data = data,
+                        if let data,
                            let resJson =
                             (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
                             as? [String: Any] {
                             logger.debug(message: "Response Body (json):\n\(resJson)")
                         }
 
-                        guard let data = data else {
+                        guard let data else {
                             logger.error(message: "No data")
                             completion(.failure(NetworkError.invalidResponse))
                             return
@@ -151,7 +152,7 @@ final class Networking {
                         return
                     }
 
-                    guard let data = data else {
+                    guard let data else {
                         logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                         logger.debug(message: "Response Body: No data")
                         completion(.failure(NetworkError.invalidResponse))
@@ -381,7 +382,7 @@ public struct Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -389,7 +390,7 @@ public struct Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 

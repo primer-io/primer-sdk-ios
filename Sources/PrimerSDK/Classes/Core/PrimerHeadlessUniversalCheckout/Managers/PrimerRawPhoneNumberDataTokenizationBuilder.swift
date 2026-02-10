@@ -9,20 +9,21 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 // MARK: MISSING_TESTS
 final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawPhoneNumberInput = self.rawData as? PrimerPhoneNumberData {
+            if let rawPhoneNumberInput = rawData as? PrimerPhoneNumberData {
                 rawPhoneNumberInput.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawPhoneNumberInput) }
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }

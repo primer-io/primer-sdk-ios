@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
@@ -38,7 +39,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             throw handled(primerError: .invalidClientToken())
         }
 
-        let paymentResponse = try await self.apiClient.createPayment(
+        let paymentResponse = try await apiClient.createPayment(
             clientToken: clientToken,
             paymentRequestBody: paymentRequest
         )
@@ -94,7 +95,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
 
         do {
-            let paymentResponse = try await self.apiClient.resumePayment(
+            let paymentResponse = try await apiClient.resumePayment(
                 clientToken: clientToken,
                 paymentId: paymentId,
                 paymentResumeRequest: paymentResumeRequest
@@ -104,7 +105,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return paymentResponse
         } catch {
             throw handled(primerError: .failedToResumePayment(
-                paymentMethodType: self.paymentMethodType,
+                paymentMethodType: paymentMethodType,
                 description: error.localizedDescription
             ))
         }

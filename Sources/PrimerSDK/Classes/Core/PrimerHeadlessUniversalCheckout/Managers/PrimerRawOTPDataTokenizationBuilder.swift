@@ -8,19 +8,20 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawOTPInput = self.rawData as? PrimerOTPData {
+            if let rawOTPInput = rawData as? PrimerOTPData {
                 rawOTPInput.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task { try? await self.validateRawData(rawOTPInput) }
                 }
             }
 
-            if let rawData = self.rawData {
+            if let rawData {
                 Task { try? await self.validateRawData(rawData) }
             }
         }

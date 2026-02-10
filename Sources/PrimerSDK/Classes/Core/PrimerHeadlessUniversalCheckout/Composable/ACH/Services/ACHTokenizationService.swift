@@ -1,10 +1,11 @@
 //
 //  ACHTokenizationService.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 /**
  * Protocol for tokenization process regarding an ACH payment.
@@ -32,7 +33,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     init(paymentMethod: PrimerPaymentMethod, tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
         self.paymentMethod = paymentMethod
         self.tokenizationService = tokenizationService
-        self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
     }
 
     // MARK: - Tokenize

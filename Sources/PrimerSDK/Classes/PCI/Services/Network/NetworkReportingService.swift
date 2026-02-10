@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)
@@ -17,7 +18,7 @@ enum NetworkEventType {
         case let .requestStart(_, endpoint, _),
              let .requestEnd(_, endpoint, _, _),
              let .networkConnectivity(endpoint):
-            return endpoint
+            endpoint
         }
     }
 }

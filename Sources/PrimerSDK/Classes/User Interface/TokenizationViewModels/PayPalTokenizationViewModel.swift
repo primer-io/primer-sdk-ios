@@ -10,6 +10,7 @@
 
 import AuthenticationServices
 import PrimerCore
+import PrimerNetworking
 import SafariServices
 import UIKit
 

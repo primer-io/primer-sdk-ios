@@ -4,6 +4,7 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -155,7 +156,7 @@ extension HeadlessUniversalCheckoutAutoTests {
 
         uiDelegate.onUIDidDismissPaymentMethod = {}
 
-        let expectPreparationDidStart = self.expectation(description: "Expected UI delegate method: preparationDidStart")
+        let expectPreparationDidStart = expectation(description: "Expected UI delegate method: preparationDidStart")
         uiDelegate.onUIDidStartPreparation = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectPreparationDidStart.fulfill()
@@ -163,13 +164,13 @@ extension HeadlessUniversalCheckoutAutoTests {
         orderedExpectations.append(expectPreparationDidStart)
 
         if let surchargeAmount {
-            let expectClientSessionWillUpdate = self.expectation(description: "Expected delegate method: willUpdateClientSession")
+            let expectClientSessionWillUpdate = expectation(description: "Expected delegate method: willUpdateClientSession")
             delegate.onWillUpdateClientSession = {
                 expectClientSessionWillUpdate.fulfill()
             }
             orderedExpectations.append(expectClientSessionWillUpdate)
 
-            let expectClientSessionDidUpdate = self.expectation(description: "Expected delegate method: didUpdateClientSession")
+            let expectClientSessionDidUpdate = expectation(description: "Expected delegate method: didUpdateClientSession")
             delegate.onDidUpdateClientSession = { _ in
                 guard let _surchargeAmount = self.clientSession?.paymentMethod?.options?[0]["surcharge"] as? Int else {
                     XCTFail(); return
@@ -180,7 +181,7 @@ extension HeadlessUniversalCheckoutAutoTests {
             orderedExpectations.append(expectClientSessionDidUpdate)
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Expected delegate method: willCreatePaymentWithData")
+        let expectWillCreatePaymentWithData = expectation(description: "Expected delegate method: willCreatePaymentWithData")
         delegate.onWillCreatePaymentWithData = { data, decisionHandler in
             XCTAssertEqual(data.paymentMethodType.type, paymentMethod.type)
             decisionHandler(shouldAbort ? .abortPaymentCreation() : .continuePaymentCreation())
@@ -189,7 +190,7 @@ extension HeadlessUniversalCheckoutAutoTests {
         orderedExpectations.append(expectWillCreatePaymentWithData)
 
         if shouldAbort {
-            let expectDidFail = self.expectation(description: "Expected delegate method: didFail")
+            let expectDidFail = expectation(description: "Expected delegate method: didFail")
             delegate.onDidFail = { err in
                 XCTAssertNotNil(err)
                 expectDidFail.fulfill()
@@ -199,14 +200,14 @@ extension HeadlessUniversalCheckoutAutoTests {
             return orderedExpectations
         }
 
-        let expectDidStartTokenization = self.expectation(description: "Expected delegate method: didStartTokenization")
+        let expectDidStartTokenization = expectation(description: "Expected delegate method: didStartTokenization")
         delegate.onDidStartTokenization = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectDidStartTokenization.fulfill()
         }
         orderedExpectations.append(expectDidStartTokenization)
 
-        let expectDidCompleteCheckoutWithData = self.expectation(description: "Expected delegate method: didCompleteCheckoutWithData")
+        let expectDidCompleteCheckoutWithData = expectation(description: "Expected delegate method: didCompleteCheckoutWithData")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertNotNil(data.payment)
             XCTAssertNil(data.payment!.paymentFailureReason)
@@ -240,7 +241,7 @@ extension HeadlessUniversalCheckoutAutoTests {
 
         wait(for: orderedExpectations, timeout: timeout, enforceOrder: true)
 
-        let expectUIDidDismissPaymentMethod = self.expectation(description: "Expected UI delegate method: UIDidDismissPaymentMethod")
+        let expectUIDidDismissPaymentMethod = expectation(description: "Expected UI delegate method: UIDidDismissPaymentMethod")
         uiDelegate.onUIDidDismissPaymentMethod = {
             expectUIDidDismissPaymentMethod.fulfill()
         }

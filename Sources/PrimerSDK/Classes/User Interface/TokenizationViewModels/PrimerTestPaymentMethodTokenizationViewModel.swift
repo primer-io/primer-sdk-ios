@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerCore
+import PrimerNetworking
 import UIKit
 
 // swiftlint:disable:next type_name
@@ -52,15 +53,15 @@ final class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizat
             self.enableUserInteraction(false)
         }
 
-        self.checkoutEventsNotifierModule.didFinishTokenization = {
+        checkoutEventsNotifierModule.didFinishTokenization = {
             self.enableUserInteraction(true)
         }
 
-        self.didStartPayment = {
+        didStartPayment = {
             self.enableUserInteraction(false)
         }
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             self.enableUserInteraction(true)
         }
 
@@ -180,7 +181,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
     func updateButtonUI() {
         if let amount = AppState.current.amount {
-            self.configurePayButton(amount: amount)
+            configurePayButton(amount: amount)
         }
     }
 
@@ -190,17 +191,17 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
             if let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
-            self.uiModule.submitButton?.setTitle(title, for: .normal)
+            uiModule.submitButton?.setTitle(title, for: .normal)
         }
     }
 
     private func enableSubmitButtonIfNeeded() {
         if lastSelectedIndexPath != nil {
-            self.uiModule.submitButton?.isEnabled = true
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+            uiModule.submitButton?.isEnabled = true
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
-            self.uiModule.submitButton?.isEnabled = false
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+            uiModule.submitButton?.isEnabled = false
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
 }
@@ -277,7 +278,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let lastSelectedIndexPath = lastSelectedIndexPath {
+        if let lastSelectedIndexPath {
             tableView.deselectRow(at: lastSelectedIndexPath, animated: true)
         }
         lastSelectedIndexPath = indexPath

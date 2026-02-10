@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -174,9 +175,9 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.postalCodeField = postalCodeField
-        self.delegate = MockCardComponentsManagerDelegate()
+        delegate = MockCardComponentsManagerDelegate()
     }
 
     convenience init(

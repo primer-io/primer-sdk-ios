@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 // ACHHelpers: A utility structure to facilitate various operations related to ACH payment sessions.
@@ -14,10 +15,10 @@ struct ACHHelpers {
     static func constructLocaleData(paymentMethod: PrimerPaymentMethod) -> Request.Body.StripeAch.SessionData {
         switch paymentMethod.internalPaymentMethodType {
         case .stripeAch:
-            return Request.Body.StripeAch.SessionData(locale: PrimerSettings.current.localeData.localeCode,
+            Request.Body.StripeAch.SessionData(locale: PrimerSettings.current.localeData.localeCode,
                                                       platform: "IOS")
         default:
-            return Request.Body.StripeAch.SessionData(locale: nil, platform: nil)
+            Request.Body.StripeAch.SessionData(locale: nil, platform: nil)
         }
 
     }

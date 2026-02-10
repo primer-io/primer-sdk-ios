@@ -11,6 +11,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import SafariServices
 import UIKit
 
@@ -68,7 +69,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
         self.apiClient = apiClient
-        self.paymentMethodType = config.internalPaymentMethodType!
+        paymentMethodType = config.internalPaymentMethodType!
     }
 
     private func fetchBanks() async throws -> [AdyenBank] {
@@ -133,10 +134,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                case .cancelled = primerErr,
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
-               self.config.implementationType == .webRedirect ||
-                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+               config.implementationType == .webRedirect ||
+                config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                config.type == PrimerPaymentMethodType.payPal.rawValue {
                 await uiManager.primerRootViewController?.popToMainScreen(completion: nil)
             } else {
                 let primerErr = error.asPrimerError
@@ -524,13 +525,13 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     func setupNotificationObservers() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.receivedNotification(_:)),
+            selector: #selector(receivedNotification(_:)),
             name: Notification.Name.receivedUrlSchemeRedirect,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.receivedNotification(_:)),
+            selector: #selector(receivedNotification(_:)),
             name: Notification.Name.receivedUrlSchemeCancellation,
             object: nil
         )
@@ -573,16 +574,16 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         )
         Analytics.Service.fire(events: [messageEvent])
 
-        self.cancel()
+        cancel()
     }
 
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
-            self.didPresentPaymentMethodUI?()
+            didPresentPaymentMethodUI?()
         }
 
-        if let redirectUrlRequestId = self.redirectUrlRequestId,
-           let redirectUrlComponents = self.redirectUrlComponents {
+        if let redirectUrlRequestId,
+           let redirectUrlComponents {
             let networkEvent = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: redirectUrlRequestId,
@@ -608,7 +609,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.webViewController?.dismiss(animated: true)
+            webViewController?.dismiss(animated: true)
             uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
@@ -617,8 +618,8 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
 extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
     func start() {
-        self.didFinishPayment = { [weak self] _ in
-            guard let self = self else { return }
+        didFinishPayment = { [weak self] _ in
+            guard let self else { return }
             Task { await self.cleanup() }
         }
 
@@ -719,9 +720,9 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             })
         }
 
-        self.bankSelectionCompletion = nil
-        self.webViewController = nil
-        self.webViewCompletion = nil
+        bankSelectionCompletion = nil
+        webViewController = nil
+        webViewCompletion = nil
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
@@ -752,7 +753,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
             return paymentMethodTokenData
         } catch is CancellationError {
-            throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
+            throw handled(primerError: .cancelled(paymentMethodType: config.type))
         } catch {
             throw error
         }
@@ -781,7 +782,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
             self.resumeToken = resumeToken
         } catch is CancellationError {
-            throw handled(primerError: .cancelled(paymentMethodType: self.config.type))
+            throw handled(primerError: .cancelled(paymentMethodType: config.type))
         } catch {
             throw error
         }

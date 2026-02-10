@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 
 final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
@@ -29,7 +30,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
+        if let onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
             completion(.success(()))
         } else {
@@ -38,7 +39,7 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String) async throws {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
+        if let onDeleteVaultedPaymentMethods {
             onDeleteVaultedPaymentMethods(clientToken, id)
         } else {
             throw PrimerError.unknown()

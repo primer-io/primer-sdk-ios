@@ -7,6 +7,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 typealias JWTToken = String
 
@@ -207,9 +208,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             tmpSecondSegment = dataStr
         }
 
-        if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
+        if segments.count > 1, let tmpSecondSegment {
             segments[1] = tmpSecondSegment
-        } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
+        } else if segments.count == 1, let tmpSecondSegment {
             segments.append(tmpSecondSegment)
         }
 

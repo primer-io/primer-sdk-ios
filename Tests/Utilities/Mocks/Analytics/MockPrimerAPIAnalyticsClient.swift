@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 import XCTest
 
@@ -18,7 +19,7 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
     var batches: [[Analytics.Event]] = []
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping ResponseHandler) {
-        guard let body = body else {
+        guard let body else {
             XCTFail(); return
         }
         batches.append(body)
@@ -27,16 +28,16 @@ final class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol, @unc
         } else {
             completion(.failure(PrimerError.unknown()))
         }
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
     }
 
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
-        guard let body = body else {
+        guard let body else {
             XCTFail();
             throw PrimerError.unknown()
         }
         batches.append(body)
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
         if shouldSucceed {
             return .init(id: nil, result: nil)
         } else {
