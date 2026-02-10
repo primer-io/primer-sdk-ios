@@ -926,5 +926,19 @@ extension Analytics.Event {
             )
         )
     }
+    
+    static func bdcEvent(event: String, data: Data) -> Self {
+        Analytics.Event(
+            eventType: EventType(rawValue: event)!,
+            properties:
+                (try? JSONDecoder().decode(MessageEventProperties.self, from: data)) ??
+                (try? JSONDecoder().decode(NetworkCallEventProperties.self, from: data)) ??
+                (try? JSONDecoder().decode(NetworkConnectivityEventProperties.self, from: data)) ??
+                (try? JSONDecoder().decode(SDKEventProperties.self, from: data)) ??
+                (try? JSONDecoder().decode(TimerEventProperties.self, from: data)) ??
+                (try? JSONDecoder().decode(UIEventProperties.self, from: data))
+            
+        )
+    }
 }
 // swiftlint:enable all
