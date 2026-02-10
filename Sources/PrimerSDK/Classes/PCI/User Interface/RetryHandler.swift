@@ -9,34 +9,7 @@ import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
 
-final class RetryHandler: LogReporter {
-    
-    private(set) var currentTask: URLSessionDataTask?
-
-    private let request: URLRequest
-    private let retryConfig: RetryConfig
-    private let completion: DispatcherCompletion
-    private let urlSession: URLSessionProtocol
-
-    private var retries = 0
-    
-    private var backoffWithJitter: TimeInterval {
-        let exponentialPart = retryConfig.initialBackoff * pow(2.0, Double(retries - 1))
-        let jitterPart = Double.random(in: 0...retryConfig.maxJitter)
-        return exponentialPart + jitterPart
-    }
-
-    init(
-        request: URLRequest,
-        retryConfig: RetryConfig,
-        completion: @escaping DispatcherCompletion,
-        urlSession: URLSessionProtocol
-    ) {
-        self.request = request
-        self.retryConfig = retryConfig
-        self.completion = completion
-        self.urlSession = urlSession
-    }
+extension RetryHandler: @retroactive LogReporter {
     
     func attempt() {
         let startTime = DispatchTime.now()
