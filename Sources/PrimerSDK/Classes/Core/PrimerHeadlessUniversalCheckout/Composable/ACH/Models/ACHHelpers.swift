@@ -5,6 +5,7 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 // ACHHelpers: A utility structure to facilitate various operations related to ACH payment sessions.

@@ -6,6 +6,7 @@
 
 @testable @preconcurrency import PrimerSDK
 import PrimerFoundation
+import PrimerNetworking
 import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
