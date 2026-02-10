@@ -13,6 +13,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 class Input {

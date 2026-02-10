@@ -12,6 +12,7 @@
 import Foundation
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 #if canImport(PrimerIPay88MYSDK)

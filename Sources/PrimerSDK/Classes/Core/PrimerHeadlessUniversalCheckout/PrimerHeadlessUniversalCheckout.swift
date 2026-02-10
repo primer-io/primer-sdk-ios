@@ -9,6 +9,7 @@
 // swiftlint:disable file_length
 
 import PrimerCore
+import PrimerNetworking
 import UIKit
 
 // MARK: MISSING_TESTS
