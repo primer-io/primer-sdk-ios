@@ -15,13 +15,19 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0")
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.7.0"),
+        .package(path: "Packages/PrimerBDCCore"),
+        .package(path: "Packages/PrimerFoundation"),
+        .package(path: "Packages/PrimerStepResolver")
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios")
+                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
+                .product(name: "PrimerBDCCore", package: "PrimerBDCCore"),
+                .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+                .product(name: "PrimerStepResolver", package: "PrimerStepResolver")
             ],
             path: "Sources/PrimerSDK",
             resources: [
