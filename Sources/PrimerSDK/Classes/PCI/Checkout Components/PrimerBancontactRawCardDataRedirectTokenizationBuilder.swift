@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 
 // swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity

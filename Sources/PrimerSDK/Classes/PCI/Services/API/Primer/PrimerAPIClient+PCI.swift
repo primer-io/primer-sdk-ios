@@ -1,10 +1,11 @@
 //
 //  PrimerAPIClient+PCI.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
+import PrimerNetworking
 
 extension PrimerAPIClient {
 
@@ -16,9 +17,9 @@ extension PrimerAPIClient {
                                                        tokenizationRequestBody: tokenizationRequestBody)
         networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
             switch result {
-            case .success(let paymentMethodToken):
+            case let .success(paymentMethodToken):
                 completion(.success(paymentMethodToken))
-            case .failure(let err):
+            case let .failure(err):
                 completion(.failure(err))
             }
         }

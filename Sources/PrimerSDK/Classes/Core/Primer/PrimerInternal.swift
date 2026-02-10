@@ -6,8 +6,8 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
-
 #if canImport(Primer3DS)
 import Primer3DS
 #endif

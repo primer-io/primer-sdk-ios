@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerNetworking
 @testable import PrimerSDK
 
 final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
