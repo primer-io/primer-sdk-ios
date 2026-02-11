@@ -97,4 +97,40 @@ enum CheckoutColors {
   static func clear(tokens _: DesignTokens?) -> Color {
     .clear
   }
+
+  // MARK: - Screen & Input Colors
+
+  static func screenBackground(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBackground ?? Color(.systemBackground)
+  }
+
+  static func inputBackground(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorGray100 ?? Color(.systemGray6)
+  }
+
+  static func inputBorder(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+  }
+
+  static func inputBorderFocused(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBorderOutlinedFocus ?? .blue
+  }
+
+  static func error(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorTextNegative ?? .red
+  }
+
+  // MARK: - Button Colors
+
+  static func buttonPrimary(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorBrand ?? .blue
+  }
+
+  static func buttonDisabled(tokens: DesignTokens?) -> Color {
+    tokens?.primerColorGray300 ?? Color(.systemGray4)
+  }
+
+  static func buttonTextPrimary(tokens _: DesignTokens?) -> Color {
+    .white
+  }
 }
