@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna-Zahlungsformular";
 "accessibility_klarna_authorize_hint" = "Doppeltippen, um mit Klarna fortzufahren";
 "accessibility_klarna_finalize_hint" = "Doppeltippen, um die Zahlung abzuschließen";
+
+/* ACH */
+"primer_ach_title" = "Bankkonto";
+"primer_ach_pay_with_title" = "Mit ACH bezahlen";
+"primer_ach_user_details_title" = "Geben Sie Ihre Daten ein, um Ihr Bankkonto zu verbinden";
+"primer_ach_personal_details_subtitle" = "Ihre persönlichen Daten";
+"primer_ach_email_disclaimer" = "Wir verwenden dies nur, um Sie über Ihre Zahlung auf dem Laufenden zu halten";
+"primer_ach_button_continue" = "Weiter";
+"primer_ach_mandate_title" = "Autorisierung";
+"primer_ach_mandate_button_accept" = "Ich stimme zu";
+"primer_ach_mandate_button_decline" = "Abbrechen";
+"primer_ach_mandate_template" = "Mit Klick auf \"Ich stimme zu\" autorisieren Sie %1$@, das oben angegebene Bankkonto für alle geschuldeten Beträge zu belasten, die aus Ihrer Nutzung der Dienste von %1$@ und/oder dem Kauf von Produkten von %1$@ entstehen, gemäß der Website und den Bedingungen von %1$@, bis diese Autorisierung widerrufen wird. Sie können diese Autorisierung jederzeit ändern oder widerrufen, indem Sie %1$@ mit einer Frist von 30 (dreißig) Tagen benachrichtigen.";
+"accessibility_ach_continue_hint" = "Doppeltippen, um zur Bankkontoauswahl fortzufahren";
+"accessibility_ach_mandate_accept_hint" = "Doppeltippen, um die Autorisierung zu akzeptieren und die Zahlung abzuschließen";
+"accessibility_ach_mandate_decline_hint" = "Doppeltippen, um abzulehnen und die Zahlung abzubrechen";

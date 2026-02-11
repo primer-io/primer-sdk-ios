@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna 결제 양식";
 "accessibility_klarna_authorize_hint" = "Klarna로 계속하려면 두 번 탭하세요";
 "accessibility_klarna_finalize_hint" = "결제를 완료하려면 두 번 탭하세요";
+
+/* ACH */
+"primer_ach_title" = "은행 계좌";
+"primer_ach_pay_with_title" = "ACH로 결제";
+"primer_ach_user_details_title" = "은행 계좌를 연결하려면 정보를 입력하세요";
+"primer_ach_personal_details_subtitle" = "개인 정보";
+"primer_ach_email_disclaimer" = "결제에 대한 업데이트를 알려드리는 용도로만 사용됩니다";
+"primer_ach_button_continue" = "계속";
+"primer_ach_mandate_title" = "승인";
+"primer_ach_mandate_button_accept" = "동의합니다";
+"primer_ach_mandate_button_decline" = "취소";
+"primer_ach_mandate_template" = "\"동의합니다\"를 클릭하면 %1$@의 서비스 이용 및/또는 %1$@의 제품 구매로 인해 발생하는 요금에 대해 위에 명시된 은행 계좌에서 %1$@의 웹사이트 및 약관에 따라 이 승인이 취소될 때까지 모든 미지급 금액을 인출할 수 있도록 %1$@에 승인합니다. 30(삼십)일 전에 %1$@에 통지하여 언제든지 이 승인을 수정하거나 취소할 수 있습니다.";
+"accessibility_ach_continue_hint" = "은행 계좌 선택으로 계속하려면 두 번 탭하세요";
+"accessibility_ach_mandate_accept_hint" = "승인을 수락하고 결제를 완료하려면 두 번 탭하세요";
+"accessibility_ach_mandate_decline_hint" = "거절하고 결제를 취소하려면 두 번 탭하세요";

@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "فرم پرداخت Klarna";
 "accessibility_klarna_authorize_hint" = "برای ادامه با Klarna دوبار ضربه بزنید";
 "accessibility_klarna_finalize_hint" = "برای تکمیل پرداخت دوبار ضربه بزنید";
+
+/* ACH */
+"primer_ach_title" = "حساب بانکی";
+"primer_ach_pay_with_title" = "پرداخت با ACH";
+"primer_ach_user_details_title" = "اطلاعات خود را برای اتصال حساب بانکی وارد کنید";
+"primer_ach_personal_details_subtitle" = "اطلاعات شخصی شما";
+"primer_ach_email_disclaimer" = "ما فقط از این برای اطلاع‌رسانی درباره پرداخت شما استفاده می‌کنیم";
+"primer_ach_button_continue" = "ادامه";
+"primer_ach_mandate_title" = "مجوز";
+"primer_ach_mandate_button_accept" = "موافقم";
+"primer_ach_mandate_button_decline" = "لغو";
+"primer_ach_mandate_template" = "با کلیک بر روی \"موافقم\"، شما به %1$@ اجازه می‌دهید هر مبلغ بدهی بابت هزینه‌های ناشی از استفاده شما از خدمات %1$@ و/یا خرید محصولات از %1$@ را طبق وب‌سایت و شرایط %1$@، از حساب بانکی مشخص شده در بالا برداشت کند، تا زمانی که این مجوز لغو شود. شما می‌توانید این مجوز را در هر زمان با اطلاع‌رسانی به %1$@ با ۳۰ (سی) روز اخطار قبلی تغییر دهید یا لغو کنید.";
+"accessibility_ach_continue_hint" = "برای ادامه به انتخاب حساب بانکی دوبار ضربه بزنید";
+"accessibility_ach_mandate_accept_hint" = "برای پذیرش مجوز و تکمیل پرداخت دوبار ضربه بزنید";
+"accessibility_ach_mandate_decline_hint" = "برای رد کردن و لغو پرداخت دوبار ضربه بزنید";

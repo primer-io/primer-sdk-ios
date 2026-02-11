@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna-betalningsformulär";
 "accessibility_klarna_authorize_hint" = "Dubbeltryck för att fortsätta med Klarna";
 "accessibility_klarna_finalize_hint" = "Dubbeltryck för att slutföra betalningen";
+
+/* ACH */
+"primer_ach_title" = "Bankkonto";
+"primer_ach_pay_with_title" = "Betala med ACH";
+"primer_ach_user_details_title" = "Ange dina uppgifter för att ansluta ditt bankkonto";
+"primer_ach_personal_details_subtitle" = "Dina personuppgifter";
+"primer_ach_email_disclaimer" = "Vi kommer endast använda detta för att hålla dig uppdaterad om din betalning";
+"primer_ach_button_continue" = "Fortsätt";
+"primer_ach_mandate_title" = "Auktorisering";
+"primer_ach_mandate_button_accept" = "Jag godkänner";
+"primer_ach_mandate_button_decline" = "Avbryt";
+"primer_ach_mandate_template" = "Genom att klicka på \"Jag godkänner\" auktoriserar du %1$@ att debitera det ovan angivna bankkontot för eventuellt belopp som är skyldigt för avgifter som uppstår från din användning av %1$@s tjänster och/eller köp av produkter från %1$@, i enlighet med %1$@s webbplats och villkor, tills denna auktorisering återkallas. Du kan ändra eller avbryta denna auktorisering när som helst genom att meddela %1$@ med 30 (trettio) dagars varsel.";
+"accessibility_ach_continue_hint" = "Dubbeltryck för att fortsätta till val av bankkonto";
+"accessibility_ach_mandate_accept_hint" = "Dubbeltryck för att godkänna auktoriseringen och slutföra betalningen";
+"accessibility_ach_mandate_decline_hint" = "Dubbeltryck för att avvisa och avbryta betalningen";
