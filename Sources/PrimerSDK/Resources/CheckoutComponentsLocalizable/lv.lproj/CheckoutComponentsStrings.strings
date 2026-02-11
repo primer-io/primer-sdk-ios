@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna maksājuma veidlapa";
 "accessibility_klarna_authorize_hint" = "Veiciet dubultskārienu, lai turpinātu ar Klarna";
 "accessibility_klarna_finalize_hint" = "Veiciet dubultskārienu, lai pabeigtu maksājumu";
+
+/* ACH */
+"primer_ach_title" = "Bankas konts";
+"primer_ach_pay_with_title" = "Maksāt ar ACH";
+"primer_ach_user_details_title" = "Ievadiet savus datus, lai pievienotu bankas kontu";
+"primer_ach_personal_details_subtitle" = "Jūsu personīgie dati";
+"primer_ach_email_disclaimer" = "Mēs to izmantosim tikai, lai informētu jūs par jūsu maksājumu";
+"primer_ach_button_continue" = "Turpināt";
+"primer_ach_mandate_title" = "Autorizācija";
+"primer_ach_mandate_button_accept" = "Es piekrītu";
+"primer_ach_mandate_button_decline" = "Atcelt";
+"primer_ach_mandate_template" = "Noklikšķinot uz \"Es piekrītu\", jūs pilnvarojat %1$@ norakstīt no iepriekš norādītā bankas konta jebkuru parāda summu par maksājumiem, kas rodas, izmantojot %1$@ pakalpojumus un/vai iegādājoties produktus no %1$@, saskaņā ar %1$@ vietni un noteikumiem, līdz šī pilnvara tiek atsaukta. Jūs varat mainīt vai atcelt šo pilnvaru jebkurā laikā, paziņojot %1$@ 30 (trīsdesmit) dienas iepriekš.";
+"accessibility_ach_continue_hint" = "Veiciet dubultskārienu, lai turpinātu bankas konta izvēli";
+"accessibility_ach_mandate_accept_hint" = "Veiciet dubultskārienu, lai pieņemtu autorizāciju un pabeigtu maksājumu";
+"accessibility_ach_mandate_decline_hint" = "Veiciet dubultskārienu, lai noraidītu un atceltu maksājumu";

@@ -538,6 +538,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
       metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
+      )
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
 

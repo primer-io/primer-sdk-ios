@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna ödeme formu";
 "accessibility_klarna_authorize_hint" = "Klarna ile devam etmek için çift dokunun";
 "accessibility_klarna_finalize_hint" = "Ödemeyi tamamlamak için çift dokunun";
+
+/* ACH */
+"primer_ach_title" = "Banka Hesabı";
+"primer_ach_pay_with_title" = "ACH ile öde";
+"primer_ach_user_details_title" = "Banka hesabınızı bağlamak için bilgilerinizi girin";
+"primer_ach_personal_details_subtitle" = "Kişisel bilgileriniz";
+"primer_ach_email_disclaimer" = "Bunu yalnızca ödemeniz hakkında sizi bilgilendirmek için kullanacağız";
+"primer_ach_button_continue" = "Devam Et";
+"primer_ach_mandate_title" = "Yetkilendirme";
+"primer_ach_mandate_button_accept" = "Kabul Ediyorum";
+"primer_ach_mandate_button_decline" = "İptal";
+"primer_ach_mandate_template" = "\"Kabul Ediyorum\"a tıklayarak, %1$@ hizmetlerini kullanımınızdan ve/veya %1$@'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, %1$@'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekme yetkisi verirsiniz. Bu yetkiyi istediğiniz zaman %1$@'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.";
+"accessibility_ach_continue_hint" = "Banka hesabı seçimine devam etmek için çift dokunun";
+"accessibility_ach_mandate_accept_hint" = "Yetkilendirmeyi kabul etmek ve ödemeyi tamamlamak için çift dokunun";
+"accessibility_ach_mandate_decline_hint" = "Reddetmek ve ödemeyi iptal etmek için çift dokunun";

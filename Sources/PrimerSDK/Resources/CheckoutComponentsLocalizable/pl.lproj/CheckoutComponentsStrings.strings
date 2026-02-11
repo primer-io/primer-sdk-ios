@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formularz płatności Klarna";
 "accessibility_klarna_authorize_hint" = "Stuknij dwukrotnie, aby kontynuować z Klarna";
 "accessibility_klarna_finalize_hint" = "Stuknij dwukrotnie, aby sfinalizować płatność";
+
+/* ACH */
+"primer_ach_title" = "Konto bankowe";
+"primer_ach_pay_with_title" = "Zapłać przez ACH";
+"primer_ach_user_details_title" = "Wprowadź swoje dane, aby połączyć konto bankowe";
+"primer_ach_personal_details_subtitle" = "Twoje dane osobowe";
+"primer_ach_email_disclaimer" = "Użyjemy tego tylko po to, aby informować Cię o Twojej płatności";
+"primer_ach_button_continue" = "Kontynuuj";
+"primer_ach_mandate_title" = "Autoryzacja";
+"primer_ach_mandate_button_accept" = "Zgadzam się";
+"primer_ach_mandate_button_decline" = "Anuluj";
+"primer_ach_mandate_template" = "Klikając \"Zgadzam się\", upoważniasz %1$@ do obciążania wskazanego powyżej konta bankowego dowolną kwotą należną za opłaty wynikające z korzystania z usług %1$@ i/lub zakupu produktów od %1$@, zgodnie ze stroną internetową i warunkami %1$@, do czasu odwołania tego upoważnienia. Możesz zmienić lub anulować to upoważnienie w dowolnym momencie, powiadamiając %1$@ z 30 (trzydziesto) dniowym wyprzedzeniem.";
+"accessibility_ach_continue_hint" = "Stuknij dwukrotnie, aby przejść do wyboru konta bankowego";
+"accessibility_ach_mandate_accept_hint" = "Stuknij dwukrotnie, aby zaakceptować autoryzację i zakończyć płatność";
+"accessibility_ach_mandate_decline_hint" = "Stuknij dwukrotnie, aby odrzucić i anulować płatność";

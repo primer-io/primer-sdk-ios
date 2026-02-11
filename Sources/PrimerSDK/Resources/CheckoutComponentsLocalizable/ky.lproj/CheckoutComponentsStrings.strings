@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna төлөм формасы";
 "accessibility_klarna_authorize_hint" = "Klarna менен улантуу үчүн эки жолу басыңыз";
 "accessibility_klarna_finalize_hint" = "Төлөмдү аяктоо үчүн эки жолу басыңыз";
+
+/* ACH */
+"primer_ach_title" = "Банк эсеби";
+"primer_ach_pay_with_title" = "ACH менен төлөө";
+"primer_ach_user_details_title" = "Банк эсебиңизди туташтыруу үчүн маалыматыңызды киргизиңиз";
+"primer_ach_personal_details_subtitle" = "Сиздин жеке маалыматыңыз";
+"primer_ach_email_disclaimer" = "Биз муну сиздин төлөмүңүз жөнүндө кабарлоо үчүн гана колдонобуз";
+"primer_ach_button_continue" = "Улантуу";
+"primer_ach_mandate_title" = "Авторизация";
+"primer_ach_mandate_button_accept" = "Макулмун";
+"primer_ach_mandate_button_decline" = "Жокко чыгаруу";
+"primer_ach_mandate_template" = "\"Макулмун\" баскычын басуу менен, сиз %1$@ компаниясына %1$@ кызматтарын колдонуудан жана/же %1$@ продуктуларын сатып алуудан келип чыккан төлөмдөр үчүн жогоруда көрсөтүлгөн банк эсебинен ар кандай карыз суммасын %1$@ веб-сайты жана шарттарына ылайык, бул авторизация жокко чыгарылганга чейин алуу укугун бересиз. Бул авторизацияны каалаган убакта %1$@ компаниясына 30 (отуз) күн мурда билдирүү менен өзгөртө же жокко чыгара аласыз.";
+"accessibility_ach_continue_hint" = "Банк эсебин тандоого улантуу үчүн эки жолу басыңыз";
+"accessibility_ach_mandate_accept_hint" = "Авторизацияны кабыл алуу жана төлөмдү аяктоо үчүн эки жолу басыңыз";
+"accessibility_ach_mandate_decline_hint" = "Баш тартуу жана төлөмдү жокко чыгаруу үчүн эки жолу басыңыз";

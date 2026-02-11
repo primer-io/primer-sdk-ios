@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formulir pembayaran Klarna";
 "accessibility_klarna_authorize_hint" = "Ketuk dua kali untuk melanjutkan dengan Klarna";
 "accessibility_klarna_finalize_hint" = "Ketuk dua kali untuk menyelesaikan pembayaran";
+
+/* ACH */
+"primer_ach_title" = "Rekening Bank";
+"primer_ach_pay_with_title" = "Bayar dengan ACH";
+"primer_ach_user_details_title" = "Masukkan detail Anda untuk menghubungkan rekening bank Anda";
+"primer_ach_personal_details_subtitle" = "Detail pribadi Anda";
+"primer_ach_email_disclaimer" = "Kami hanya akan menggunakan ini untuk memberi Anda informasi terbaru tentang pembayaran Anda";
+"primer_ach_button_continue" = "Lanjutkan";
+"primer_ach_mandate_title" = "Otorisasi";
+"primer_ach_mandate_button_accept" = "Saya Setuju";
+"primer_ach_mandate_button_decline" = "Batal";
+"primer_ach_mandate_template" = "Dengan mengklik \"Saya Setuju\", Anda memberikan otorisasi kepada %1$@ untuk mendebit rekening bank yang ditentukan di atas untuk jumlah yang terutang atas biaya yang timbul dari penggunaan layanan %1$@ dan/atau pembelian produk dari %1$@, sesuai dengan situs web dan ketentuan %1$@, hingga otorisasi ini dicabut. Anda dapat mengubah atau membatalkan otorisasi ini kapan saja dengan memberikan pemberitahuan kepada %1$@ dengan waktu 30 (tiga puluh) hari.";
+"accessibility_ach_continue_hint" = "Ketuk dua kali untuk melanjutkan ke pemilihan rekening bank";
+"accessibility_ach_mandate_accept_hint" = "Ketuk dua kali untuk menerima otorisasi dan menyelesaikan pembayaran";
+"accessibility_ach_mandate_decline_hint" = "Ketuk dua kali untuk menolak dan membatalkan pembayaran";
