@@ -226,6 +226,21 @@ extension ComposableContainer {
       .with { _ in
         WebRedirectRepositoryImpl()
       }
+
+    // Form Redirect (BLIK, MBWay) dependencies
+    try? await container.register(FormRedirectRepository.self)
+      .asTransient()
+      .with { _ in
+        FormRedirectRepositoryImpl()
+      }
+
+    try? await container.register(ProcessFormRedirectPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessFormRedirectPaymentInteractorImpl(
+          formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
+        )
+      }
   }
 
   fileprivate func registerLogging() async {
