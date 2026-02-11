@@ -56,11 +56,13 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processPaymentInteractor: ProcessFormRedirectPaymentInteractor
     private let validationService: ValidationService
+    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
     @Published private var internalState = FormRedirectState()
 
     private var paymentTask: Task<Void, Never>?
     private var hasStarted = false
+    private var hasTrackedDetailsEntered = false
 
     // MARK: - Initialization
 
@@ -69,13 +71,15 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         checkoutScope: DefaultCheckoutScope,
         presentationContext: PresentationContext = .fromPaymentSelection,
         processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
-        validationService: ValidationService
+        validationService: ValidationService,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.paymentMethodType = paymentMethodType
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
         self.processPaymentInteractor = processPaymentInteractor
         self.validationService = validationService
+        self.analyticsInteractor = analyticsInteractor
         configureFieldsForPaymentMethod()
     }
 
@@ -83,13 +87,15 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         paymentMethodType: String,
         presentationContext: PresentationContext = .fromPaymentSelection,
         processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
-        validationService: ValidationService = DefaultValidationService()
+        validationService: ValidationService = DefaultValidationService(),
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.paymentMethodType = paymentMethodType
         self.checkoutScope = nil
         self.presentationContext = presentationContext
         self.processPaymentInteractor = processPaymentInteractor
         self.validationService = validationService
+        self.analyticsInteractor = analyticsInteractor
         configureFieldsForPaymentMethod()
     }
 
@@ -137,6 +143,16 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         internalState.fields[index].value = filteredValue
         internalState.fields[index].isValid = validationResult.isValid
         internalState.fields[index].errorMessage = validationResult.error
+
+        if internalState.isSubmitEnabled, !hasTrackedDetailsEntered {
+            hasTrackedDetailsEntered = true
+            Task {
+                await analyticsInteractor?.trackEvent(
+                    .paymentDetailsEntered,
+                    metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+                )
+            }
+        }
     }
 
     // MARK: - Navigation Methods
@@ -227,8 +243,18 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         internalState.status = .submitting
         checkoutScope?.startProcessing()
 
+        await analyticsInteractor?.trackEvent(
+            .paymentSubmitted,
+            metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+        )
+
         do {
             let sessionInfo = try buildSessionInfo()
+
+            await analyticsInteractor?.trackEvent(
+                .paymentProcessingStarted,
+                metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+            )
 
             let result = try await processPaymentInteractor.execute(
                 paymentMethodType: paymentMethodType,
@@ -236,6 +262,10 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
                 onPollingStarted: { [self] in
                     Task { @MainActor in
                         internalState.status = .awaitingExternalCompletion
+                        await analyticsInteractor?.trackEvent(
+                            .paymentRedirectToThirdParty,
+                            metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+                        )
                     }
                 }
             )
