@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna付款表单";
 "accessibility_klarna_authorize_hint" = "双击以继续使用Klarna";
 "accessibility_klarna_finalize_hint" = "双击以完成付款";
+
+/* ACH */
+"primer_ach_title" = "银行账户";
+"primer_ach_pay_with_title" = "使用 ACH 支付";
+"primer_ach_user_details_title" = "输入您的信息以连接银行账户";
+"primer_ach_personal_details_subtitle" = "您的个人信息";
+"primer_ach_email_disclaimer" = "我们仅使用此信息向您更新付款状态";
+"primer_ach_button_continue" = "继续";
+"primer_ach_mandate_title" = "授权";
+"primer_ach_mandate_button_accept" = "我同意";
+"primer_ach_mandate_button_decline" = "取消";
+"primer_ach_mandate_template" = "点击\"我同意\"，即表示您授权 %1$@ 根据 %1$@ 的网站和条款，从上述指定的银行账户中扣除因使用 %1$@ 服务和/或从 %1$@ 购买产品而产生的任何应付费用金额，直至该授权被撤销。您可以随时通过提前 30（三十）天通知 %1$@ 来修改或取消此授权。";
+"accessibility_ach_continue_hint" = "双击以继续选择银行账户";
+"accessibility_ach_mandate_accept_hint" = "双击以接受授权并完成付款";
+"accessibility_ach_mandate_decline_hint" = "双击以拒绝并取消付款";

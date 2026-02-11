@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formular de plată Klarna";
 "accessibility_klarna_authorize_hint" = "Atingeți de două ori pentru a continua cu Klarna";
 "accessibility_klarna_finalize_hint" = "Atingeți de două ori pentru a finaliza plata";
+
+/* ACH */
+"primer_ach_title" = "Cont bancar";
+"primer_ach_pay_with_title" = "Plătește cu ACH";
+"primer_ach_user_details_title" = "Introduceți datele dvs. pentru a conecta contul bancar";
+"primer_ach_personal_details_subtitle" = "Datele tale personale";
+"primer_ach_email_disclaimer" = "Vom folosi aceasta doar pentru a te ține la curent cu plata ta";
+"primer_ach_button_continue" = "Continuă";
+"primer_ach_mandate_title" = "Autorizare";
+"primer_ach_mandate_button_accept" = "Sunt de acord";
+"primer_ach_mandate_button_decline" = "Anulează";
+"primer_ach_mandate_template" = "Făcând clic pe \"Sunt de acord\", autorizați %1$@ să debiteze contul bancar specificat mai sus pentru orice sumă datorată pentru taxele rezultate din utilizarea serviciilor %1$@ și/sau achiziționarea de produse de la %1$@, conform site-ului web și termenilor %1$@, până când această autorizare este revocată. Puteți modifica sau anula această autorizare în orice moment, notificând %1$@ cu 30 (treizeci) de zile în avans.";
+"accessibility_ach_continue_hint" = "Atingeți de două ori pentru a continua la selectarea contului bancar";
+"accessibility_ach_mandate_accept_hint" = "Atingeți de două ori pentru a accepta autorizarea și a finaliza plata";
+"accessibility_ach_mandate_decline_hint" = "Atingeți de două ori pentru a refuza și a anula plata";

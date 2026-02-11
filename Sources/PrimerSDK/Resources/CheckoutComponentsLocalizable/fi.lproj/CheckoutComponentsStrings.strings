@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna-maksulomake";
 "accessibility_klarna_authorize_hint" = "Kaksoisnapauta jatkaaksesi Klarnalla";
 "accessibility_klarna_finalize_hint" = "Kaksoisnapauta suorittaaksesi maksun";
+
+/* ACH */
+"primer_ach_title" = "Pankkitili";
+"primer_ach_pay_with_title" = "Maksa ACH:lla";
+"primer_ach_user_details_title" = "Syötä tietosi yhdistääksesi pankkitilisi";
+"primer_ach_personal_details_subtitle" = "Henkilötietosi";
+"primer_ach_email_disclaimer" = "Käytämme tätä vain pitääksemme sinut ajan tasalla maksustasi";
+"primer_ach_button_continue" = "Jatka";
+"primer_ach_mandate_title" = "Valtuutus";
+"primer_ach_mandate_button_accept" = "Hyväksyn";
+"primer_ach_mandate_button_decline" = "Peruuta";
+"primer_ach_mandate_template" = "Klikkaamalla \"Hyväksyn\" valtuutat %1$@:n veloittamaan yllä määritettyä pankkitiliä kaikista velkasummista, jotka johtuvat %1$@:n palveluiden käytöstäsi ja/tai %1$@:n tuotteiden ostamisesta, %1$@:n verkkosivuston ja ehtojen mukaisesti, kunnes tämä valtuutus peruutetaan. Voit muuttaa tai peruuttaa tämän valtuutuksen milloin tahansa ilmoittamalla siitä %1$@:lle 30 (kolmekymmentä) päivää etukäteen.";
+"accessibility_ach_continue_hint" = "Kaksoisnapauta jatkaaksesi pankkitilin valintaan";
+"accessibility_ach_mandate_accept_hint" = "Kaksoisnapauta hyväksyäksesi valtuutuksen ja suorittaaksesi maksun";
+"accessibility_ach_mandate_decline_hint" = "Kaksoisnapauta hylätäksesi ja peruuttaaksesi maksun";

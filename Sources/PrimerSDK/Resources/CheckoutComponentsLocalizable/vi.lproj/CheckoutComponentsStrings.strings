@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Biểu mẫu thanh toán Klarna";
 "accessibility_klarna_authorize_hint" = "Nhấn đúp để tiếp tục với Klarna";
 "accessibility_klarna_finalize_hint" = "Nhấn đúp để hoàn tất thanh toán";
+
+/* ACH */
+"primer_ach_title" = "Tài khoản ngân hàng";
+"primer_ach_pay_with_title" = "Thanh toán bằng ACH";
+"primer_ach_user_details_title" = "Nhập thông tin của bạn để kết nối tài khoản ngân hàng";
+"primer_ach_personal_details_subtitle" = "Thông tin cá nhân của bạn";
+"primer_ach_email_disclaimer" = "Chúng tôi chỉ sử dụng thông tin này để cập nhật cho bạn về thanh toán của bạn";
+"primer_ach_button_continue" = "Tiếp tục";
+"primer_ach_mandate_title" = "Ủy quyền";
+"primer_ach_mandate_button_accept" = "Tôi đồng ý";
+"primer_ach_mandate_button_decline" = "Hủy";
+"primer_ach_mandate_template" = "Bằng cách nhấp vào \"Tôi đồng ý\", bạn cho phép %1$@ ghi nợ tài khoản ngân hàng được chỉ định ở trên cho bất kỳ khoản tiền nào phải trả cho các khoản phí phát sinh từ việc sử dụng dịch vụ của %1$@ và/hoặc mua sản phẩm từ %1$@, theo trang web và điều khoản của %1$@, cho đến khi ủy quyền này bị thu hồi. Bạn có thể sửa đổi hoặc hủy ủy quyền này bất cứ lúc nào bằng cách thông báo cho %1$@ trước 30 (ba mươi) ngày.";
+"accessibility_ach_continue_hint" = "Nhấn đúp để tiếp tục chọn tài khoản ngân hàng";
+"accessibility_ach_mandate_accept_hint" = "Nhấn đúp để chấp nhận ủy quyền và hoàn tất thanh toán";
+"accessibility_ach_mandate_decline_hint" = "Nhấn đúp để từ chối và hủy thanh toán";

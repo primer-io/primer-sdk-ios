@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formulário de pagamento Klarna";
 "accessibility_klarna_authorize_hint" = "Toque duas vezes para continuar com Klarna";
 "accessibility_klarna_finalize_hint" = "Toque duas vezes para concluir o pagamento";
+
+/* ACH */
+"primer_ach_title" = "Conta bancária";
+"primer_ach_pay_with_title" = "Pagar com ACH";
+"primer_ach_user_details_title" = "Insira seus dados para conectar sua conta bancária";
+"primer_ach_personal_details_subtitle" = "Seus dados pessoais";
+"primer_ach_email_disclaimer" = "Usaremos isso apenas para manter você atualizado sobre seu pagamento";
+"primer_ach_button_continue" = "Continuar";
+"primer_ach_mandate_title" = "Autorização";
+"primer_ach_mandate_button_accept" = "Eu concordo";
+"primer_ach_mandate_button_decline" = "Cancelar";
+"primer_ach_mandate_template" = "Ao clicar em \"Eu concordo\", você autoriza %1$@ a debitar a conta bancária especificada acima por qualquer valor devido por cobranças decorrentes do uso dos serviços de %1$@ e/ou compra de produtos de %1$@, de acordo com o site e os termos de %1$@, até que esta autorização seja revogada. Você pode alterar ou cancelar esta autorização a qualquer momento, notificando %1$@ com 30 (trinta) dias de antecedência.";
+"accessibility_ach_continue_hint" = "Toque duas vezes para continuar para a seleção da conta bancária";
+"accessibility_ach_mandate_accept_hint" = "Toque duas vezes para aceitar a autorização e concluir o pagamento";
+"accessibility_ach_mandate_decline_hint" = "Toque duas vezes para recusar e cancelar o pagamento";

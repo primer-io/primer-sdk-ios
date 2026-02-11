@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Obrazec za plačilo Klarna";
 "accessibility_klarna_authorize_hint" = "Dvakrat tapnite za nadaljevanje s Klarna";
 "accessibility_klarna_finalize_hint" = "Dvakrat tapnite za dokončanje plačila";
+
+/* ACH */
+"primer_ach_title" = "Bančni račun";
+"primer_ach_pay_with_title" = "Plačajte z ACH";
+"primer_ach_user_details_title" = "Vnesite svoje podatke za povezavo bančnega računa";
+"primer_ach_personal_details_subtitle" = "Vaši osebni podatki";
+"primer_ach_email_disclaimer" = "To bomo uporabili samo za obveščanje o vašem plačilu";
+"primer_ach_button_continue" = "Nadaljuj";
+"primer_ach_mandate_title" = "Pooblastilo";
+"primer_ach_mandate_button_accept" = "Strinjam se";
+"primer_ach_mandate_button_decline" = "Prekliči";
+"primer_ach_mandate_template" = "S klikom na \"Strinjam se\" pooblaščate %1$@ za bremenitev zgoraj navedenega bančnega računa za kakršenkoli dolgovani znesek za stroške, ki izhajajo iz vaše uporabe storitev %1$@ in/ali nakupa izdelkov od %1$@, v skladu s spletno stranjo in pogoji %1$@, dokler to pooblastilo ni preklicano. To pooblastilo lahko kadarkoli spremenite ali prekličete z obvestilom %1$@ z 30 (tridesetdnevnim) odpovednim rokom.";
+"accessibility_ach_continue_hint" = "Dvakrat tapnite za nadaljevanje z izbiro bančnega računa";
+"accessibility_ach_mandate_accept_hint" = "Dvakrat tapnite za sprejetje pooblastila in dokončanje plačila";
+"accessibility_ach_mandate_decline_hint" = "Dvakrat tapnite za zavrnitev in preklic plačila";

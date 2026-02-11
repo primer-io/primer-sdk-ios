@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna ödəniş forması";
 "accessibility_klarna_authorize_hint" = "Klarna ilə davam etmək üçün iki dəfə toxunun";
 "accessibility_klarna_finalize_hint" = "Ödənişi tamamlamaq üçün iki dəfə toxunun";
+
+/* ACH */
+"primer_ach_title" = "Bank Hesabı";
+"primer_ach_pay_with_title" = "ACH ilə ödəyin";
+"primer_ach_user_details_title" = "Bank hesabınızı bağlamaq üçün məlumatlarınızı daxil edin";
+"primer_ach_personal_details_subtitle" = "Şəxsi məlumatlarınız";
+"primer_ach_email_disclaimer" = "Bunu yalnız ödənişiniz haqqında sizi məlumatlandırmaq üçün istifadə edəcəyik";
+"primer_ach_button_continue" = "Davam et";
+"primer_ach_mandate_title" = "Səlahiyyət";
+"primer_ach_mandate_button_accept" = "Razıyam";
+"primer_ach_mandate_button_decline" = "Ləğv et";
+"primer_ach_mandate_template" = "\"Razıyam\" düyməsinə klikləməklə, siz %1$@ şirkətinə yuxarıda göstərilən bank hesabından %1$@ xidmətlərindən istifadəniz və/və ya %1$@ məhsullarının alışı ilə bağlı yaranan ödənişlər üçün borclu olduğunuz istənilən məbləği, %1$@ veb-saytı və şərtlərinə uyğun olaraq, bu səlahiyyət ləğv edilənədək silinməsinə icazə verirsiniz. Bu səlahiyyəti istənilən vaxt %1$@ şirkətinə 30 (otuz) gün əvvəl bildiriş verməklə dəyişdirə və ya ləğv edə bilərsiniz.";
+"accessibility_ach_continue_hint" = "Bank hesabı seçiminə davam etmək üçün iki dəfə toxunun";
+"accessibility_ach_mandate_accept_hint" = "Səlahiyyəti qəbul etmək və ödənişi tamamlamaq üçün iki dəfə toxunun";
+"accessibility_ach_mandate_decline_hint" = "İmtina etmək və ödənişi ləğv etmək üçün iki dəfə toxunun";

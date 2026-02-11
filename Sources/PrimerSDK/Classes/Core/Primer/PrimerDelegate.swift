@@ -158,6 +158,9 @@ final class PrimerDelegateProxy: LogReporter {
                 } else {
                     continuation.resume(returning: .continuePaymentCreation())
                 }
+            } else if PrimerInternal.shared.sdkIntegrationType == .checkoutComponents {
+                // CheckoutComponents handles payment creation internally
+                continuation.resume(returning: .continuePaymentCreation())
             }
         }
     }
