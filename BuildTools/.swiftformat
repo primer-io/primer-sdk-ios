@@ -1,3 +1,4 @@
---swift-version 5.3
---rules isEmpty, preferCountWhere, redundantExtensionACL, modifierOrder, consecutiveBlankLines, blankLineAfterImports, andOperator, elseOnSameLine, fileHeader, hoistPatternLet, leadingDelimiters, modifiersOnSameLine, preferKeyPath, redundantInternal, redundantReturn, sortImports
+--swift-version 5.9
+--rules isEmpty, preferCountWhere, redundantExtensionACL, modifierOrder, consecutiveBlankLines, blankLineAfterImports, andOperator, elseOnSameLine, fileHeader, hoistPatternLet, leadingDelimiters, modifiersOnSameLine, preferKeyPath, redundantInternal, redundantReturn, sortImports, redundantOptionalBinding, redundantSelf, duplicateImports, conditionalAssignment
+--self remove
 --header "\n {file}\n\n Copyright © {year} Primer API Ltd. All rights reserved. \n Licensed under the MIT License. See LICENSE file in the project root for full license information."
