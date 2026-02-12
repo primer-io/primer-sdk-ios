@@ -209,6 +209,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     KlarnaPaymentMethod.register()
     AchPaymentMethod.register()
     FormRedirectPaymentMethod.register()
+    QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])
 
     // Dynamic: register any WEB_REDIRECT APM from API config
     let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?

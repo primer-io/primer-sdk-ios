@@ -148,6 +148,16 @@ class PaymentMethodRegistry: LogReporter {
 
   private init() {}
 
+  func register(
+    forKey typeKey: String,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
+  ) {
+    creators[typeKey] = scopeCreator
+    viewBuilders[typeKey] = viewCreator
+    logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(typeKey) registered")
+  }
+
   /// Registers a payment method implementation
   /// - Parameter paymentMethodType: The payment method implementation to register
   func register<T: PaymentMethodProtocol>(_ paymentMethodType: T.Type) {
