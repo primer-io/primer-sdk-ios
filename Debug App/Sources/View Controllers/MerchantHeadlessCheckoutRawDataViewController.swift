@@ -354,6 +354,18 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
     }
 
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveBinData binData: PrimerBinData) {
+        let statusStr = binData.status == .complete ? "complete" : "partial"
+        let preferredStr = binData.preferred?.displayName ?? "none"
+        let alternativesStr = binData.alternatives.map(\.displayName).joined(separator: ", ")
+        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveBinData - status: \(statusStr), preferred: \(preferredStr), alternatives: [\(alternativesStr)], firstDigits: \(binData.firstDigits ?? "nil")")
+
+        if let preferred = binData.preferred {
+            print("  Issuer: \(preferred.issuerName ?? "unknown"), Country: \(preferred.issuerCountryCode ?? "unknown"), Funding: \(preferred.accountFundingType ?? "unknown")")
+        }
+    }
+
     private func updateCardImages() {
         cardsStackView.arrangedSubviews.filter { $0 is UIImageView }.enumerated().forEach { (index, imageView) in
             imageView.layer.opacity = (index == self.selectedCardIndex) ? 1 : 0.5

@@ -253,7 +253,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             pollingModule.cancel(withError: handled(primerError: .cancelled(paymentMethodType: self.config.type)))
             self.didDismissPaymentMethodUI?()
         }, operation: {
-            let resumeToken = try await pollingModule.start()
+            let resumeToken = try await pollingModule.start(retryConfig: RetryConfig(enabled: true, retry500Errors: true))
             self.resumeToken = resumeToken
         })
         awaitUserInputTask = task

@@ -157,4 +157,89 @@ final class CardNetworkDetectionInteractorTests: XCTestCase {
         XCTAssertEqual(mockRepository.selectCardNetworkCallCount, 1)
         XCTAssertEqual(mockRepository.lastSelectedNetwork, .visa)
     }
+
+    // MARK: - Bin Data Stream Tests
+
+    func test_binDataStream_emitsCompleteBinData() async {
+        // Given
+        let binData = PrimerBinData(
+            preferred: PrimerCardNetwork(network: .visa),
+            alternatives: [PrimerCardNetwork(network: .masterCard)],
+            status: .complete,
+            firstDigits: "552266"
+        )
+        mockRepository.binDataToReturn = binData
+
+        // When
+        var receivedBinData: PrimerBinData?
+        for await data in sut.binDataStream {
+            receivedBinData = data
+            break
+        }
+
+        // Then
+        XCTAssertEqual(receivedBinData?.status, .complete)
+        XCTAssertEqual(receivedBinData?.firstDigits, "552266")
+        XCTAssertEqual(receivedBinData?.preferred?.network, .visa)
+        XCTAssertEqual(receivedBinData?.alternatives.count, 1)
+        XCTAssertEqual(receivedBinData?.alternatives.first?.network, .masterCard)
+    }
+
+    func test_binDataStream_emitsPartialBinData() async {
+        // Given
+        let binData = PrimerBinData(
+            preferred: PrimerCardNetwork(network: .visa),
+            alternatives: [],
+            status: .partial,
+            firstDigits: nil
+        )
+        mockRepository.binDataToReturn = binData
+
+        // When
+        var receivedBinData: PrimerBinData?
+        for await data in sut.binDataStream {
+            receivedBinData = data
+            break
+        }
+
+        // Then
+        XCTAssertEqual(receivedBinData?.status, .partial)
+        XCTAssertNil(receivedBinData?.firstDigits)
+        XCTAssertEqual(receivedBinData?.preferred?.network, .visa)
+        XCTAssertTrue(receivedBinData?.alternatives.isEmpty ?? false)
+    }
+
+    func test_binDataStream_emitsUpdatedValues() async {
+        // Given
+        let expectation = XCTestExpectation(description: "Receive bin data update")
+        var receivedValues: [PrimerBinData] = []
+
+        let task = Task {
+            for await data in sut.binDataStream {
+                receivedValues.append(data)
+                if receivedValues.count >= 1 {
+                    expectation.fulfill()
+                    break
+                }
+            }
+        }
+
+        // When - emit a new value
+        try? await Task.sleep(nanoseconds: 100_000_000)
+        let binData = PrimerBinData(
+            preferred: PrimerCardNetwork(network: .visa),
+            alternatives: [],
+            status: .complete,
+            firstDigits: "411111"
+        )
+        mockRepository.emitBinData(binData)
+
+        // Then
+        await fulfillment(of: [expectation], timeout: 2.0)
+        task.cancel()
+
+        XCTAssertEqual(receivedValues.count, 1)
+        XCTAssertEqual(receivedValues[0].status, .complete)
+        XCTAssertEqual(receivedValues[0].firstDigits, "411111")
+    }
 }

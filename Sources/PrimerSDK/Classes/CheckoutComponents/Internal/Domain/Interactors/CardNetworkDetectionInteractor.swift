@@ -8,6 +8,7 @@ import Foundation
 
 protocol CardNetworkDetectionInteractor {
   var networkDetectionStream: AsyncStream<[CardNetwork]> { get }
+  var binDataStream: AsyncStream<PrimerBinData> { get }
   func detectNetworks(for cardNumber: String) async
   /// For co-badged cards with multiple networks
   func selectNetwork(_ network: CardNetwork) async
@@ -20,6 +21,10 @@ final class CardNetworkDetectionInteractorImpl: CardNetworkDetectionInteractor, 
 
   var networkDetectionStream: AsyncStream<[CardNetwork]> {
     repository.getNetworkDetectionStream()
+  }
+
+  var binDataStream: AsyncStream<PrimerBinData> {
+    repository.getBinDataStream()
   }
 
   init(repository: HeadlessRepository) {

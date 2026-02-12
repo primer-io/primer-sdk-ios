@@ -196,6 +196,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     if cardNetworkDetectionInteractor != nil {
       setupNetworkDetectionStream()
+      setupBinDataStream()
     }
   }
 
@@ -238,6 +239,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             self.structuredState.selectedNetwork = nil
             self.updateSurchargeAmount(for: nil)
           }
+        }
+      }
+    }
+  }
+
+  private func setupBinDataStream() {
+    guard let cardNetworkDetectionInteractor else { return }
+
+    Task { [self] in
+      for await binData in cardNetworkDetectionInteractor.binDataStream {
+        await MainActor.run {
+          structuredState.binData = binData
         }
       }
     }
