@@ -212,6 +212,12 @@ extension ComposableContainer {
       .with { _ in
         AchRepositoryImpl()
       }
+
+    try? await container.register(QRCodeRepository.self)
+      .asTransient()
+      .with { _ in
+        QRCodeRepositoryImpl()
+      }
   }
 
   fileprivate func registerLogging() async {
