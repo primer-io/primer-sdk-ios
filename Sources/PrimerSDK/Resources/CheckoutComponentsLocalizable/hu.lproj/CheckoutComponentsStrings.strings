@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna fizetési űrlap";
 "accessibility_klarna_authorize_hint" = "Koppintson duplán a Klarnával való folytatáshoz";
 "accessibility_klarna_finalize_hint" = "Koppintson duplán a fizetés befejezéséhez";
+
+/* ACH */
+"primer_ach_title" = "Bankszámla";
+"primer_ach_pay_with_title" = "Fizetés ACH-val";
+"primer_ach_user_details_title" = "Adja meg adatait a bankszámla összekapcsolásához";
+"primer_ach_personal_details_subtitle" = "Személyes adatai";
+"primer_ach_email_disclaimer" = "Ezt csak arra használjuk, hogy tájékoztassuk a fizetéséről";
+"primer_ach_button_continue" = "Folytatás";
+"primer_ach_mandate_title" = "Felhatalmazás";
+"primer_ach_mandate_button_accept" = "Elfogadom";
+"primer_ach_mandate_button_decline" = "Mégse";
+"primer_ach_mandate_template" = "Az \"Elfogadom\" gombra kattintva felhatalmazza a(z) %1$@ céget, hogy a fent megadott bankszámláról bármilyen tartozás összegét levonja a(z) %1$@ szolgáltatásainak használatából és/vagy a(z) %1$@ termékeinek vásárlásából eredő díjakért, a(z) %1$@ weboldalának és feltételeinek megfelelően, amíg ezt a felhatalmazást vissza nem vonják. Ezt a felhatalmazást bármikor módosíthatja vagy visszavonhatja a(z) %1$@ értesítésével 30 (harminc) napos határidővel.";
+"accessibility_ach_continue_hint" = "Koppintson duplán a bankszámla kiválasztásához";
+"accessibility_ach_mandate_accept_hint" = "Koppintson duplán a felhatalmazás elfogadásához és a fizetés befejezéséhez";
+"accessibility_ach_mandate_decline_hint" = "Koppintson duplán az elutasításhoz és a fizetés megszakításához";

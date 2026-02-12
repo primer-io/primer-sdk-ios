@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "نموذج الدفع Klarna";
 "accessibility_klarna_authorize_hint" = "انقر مرتين للمتابعة مع Klarna";
 "accessibility_klarna_finalize_hint" = "انقر مرتين لإتمام الدفع";
+
+/* ACH */
+"primer_ach_title" = "حساب بنكي";
+"primer_ach_pay_with_title" = "الدفع عبر ACH";
+"primer_ach_user_details_title" = "أدخل بياناتك لربط حسابك البنكي";
+"primer_ach_personal_details_subtitle" = "بياناتك الشخصية";
+"primer_ach_email_disclaimer" = "سنستخدم هذا فقط لإبقائك على اطلاع بشأن دفعتك";
+"primer_ach_button_continue" = "متابعة";
+"primer_ach_mandate_title" = "تفويض";
+"primer_ach_mandate_button_accept" = "أوافق";
+"primer_ach_mandate_button_decline" = "إلغاء";
+"primer_ach_mandate_template" = "بالنقر على \"أوافق\"، فإنك تفوّض %1$@ بخصم أي مبلغ مستحق من الحساب البنكي المحدد أعلاه مقابل الرسوم الناتجة عن استخدامك لخدمات %1$@ و/أو شراء منتجات من %1$@، وفقاً لموقع %1$@ وشروطه، حتى يتم إلغاء هذا التفويض. يمكنك تعديل أو إلغاء هذا التفويض في أي وقت بإخطار %1$@ قبل 30 (ثلاثين) يوماً.";
+"accessibility_ach_continue_hint" = "انقر مرتين للمتابعة إلى اختيار الحساب البنكي";
+"accessibility_ach_mandate_accept_hint" = "انقر مرتين لقبول التفويض وإتمام الدفع";
+"accessibility_ach_mandate_decline_hint" = "انقر مرتين للرفض وإلغاء الدفع";

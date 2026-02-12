@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna भुगतान फ़ॉर्म";
 "accessibility_klarna_authorize_hint" = "Klarna के साथ जारी रखने के लिए डबल टैप करें";
 "accessibility_klarna_finalize_hint" = "भुगतान पूरा करने के लिए डबल टैप करें";
+
+/* ACH */
+"primer_ach_title" = "बैंक खाता";
+"primer_ach_pay_with_title" = "ACH से भुगतान करें";
+"primer_ach_user_details_title" = "अपना बैंक खाता जोड़ने के लिए अपना विवरण दर्ज करें";
+"primer_ach_personal_details_subtitle" = "आपका व्यक्तिगत विवरण";
+"primer_ach_email_disclaimer" = "हम इसका उपयोग केवल आपको आपके भुगतान के बारे में अपडेट रखने के लिए करेंगे";
+"primer_ach_button_continue" = "जारी रखें";
+"primer_ach_mandate_title" = "प्राधिकरण";
+"primer_ach_mandate_button_accept" = "मैं सहमत हूं";
+"primer_ach_mandate_button_decline" = "रद्द करें";
+"primer_ach_mandate_template" = "\"मैं सहमत हूं\" पर क्लिक करके, आप %1$@ को ऊपर निर्दिष्ट बैंक खाते से %1$@ की सेवाओं के आपके उपयोग और/या %1$@ से उत्पादों की खरीद से उत्पन्न शुल्कों के लिए बकाया किसी भी राशि को, %1$@ की वेबसाइट और शर्तों के अनुसार, इस प्राधिकरण के रद्द होने तक डेबिट करने के लिए अधिकृत करते हैं। आप %1$@ को 30 (तीस) दिन की पूर्व सूचना देकर किसी भी समय इस प्राधिकरण को संशोधित या रद्द कर सकते हैं।";
+"accessibility_ach_continue_hint" = "बैंक खाता चयन पर जारी रखने के लिए डबल टैप करें";
+"accessibility_ach_mandate_accept_hint" = "प्राधिकरण स्वीकार करने और भुगतान पूरा करने के लिए डबल टैप करें";
+"accessibility_ach_mandate_decline_hint" = "अस्वीकार करने और भुगतान रद्द करने के लिए डबल टैप करें";

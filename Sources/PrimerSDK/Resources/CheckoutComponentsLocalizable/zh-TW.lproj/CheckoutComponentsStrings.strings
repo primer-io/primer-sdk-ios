@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna付款表單";
 "accessibility_klarna_authorize_hint" = "點兩下以繼續使用Klarna";
 "accessibility_klarna_finalize_hint" = "點兩下以完成付款";
+
+/* ACH */
+"primer_ach_title" = "銀行帳戶";
+"primer_ach_pay_with_title" = "使用 ACH 付款";
+"primer_ach_user_details_title" = "輸入您的資料以連接銀行帳戶";
+"primer_ach_personal_details_subtitle" = "您的個人資料";
+"primer_ach_email_disclaimer" = "我們只會使用此資訊向您更新付款狀態";
+"primer_ach_button_continue" = "繼續";
+"primer_ach_mandate_title" = "授權";
+"primer_ach_mandate_button_accept" = "我同意";
+"primer_ach_mandate_button_decline" = "取消";
+"primer_ach_mandate_template" = "點擊「我同意」，即表示您授權 %1$@ 根據 %1$@ 的網站和條款，從上述指定的銀行帳戶中扣除因使用 %1$@ 服務和/或從 %1$@ 購買產品而產生的任何應付費用金額，直至該授權被撤銷。您可以隨時提前 30（三十）天通知 %1$@ 來修改或取消此授權。";
+"accessibility_ach_continue_hint" = "點兩下以繼續選擇銀行帳戶";
+"accessibility_ach_mandate_accept_hint" = "點兩下以接受授權並完成付款";
+"accessibility_ach_mandate_decline_hint" = "點兩下以拒絕並取消付款";

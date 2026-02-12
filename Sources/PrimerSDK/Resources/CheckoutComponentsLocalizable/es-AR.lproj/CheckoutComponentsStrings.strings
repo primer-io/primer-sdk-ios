@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formulario de pago Klarna";
 "accessibility_klarna_authorize_hint" = "Tocá dos veces para continuar con Klarna";
 "accessibility_klarna_finalize_hint" = "Tocá dos veces para completar el pago";
+
+/* ACH */
+"primer_ach_title" = "Cuenta bancaria";
+"primer_ach_pay_with_title" = "Pagar con ACH";
+"primer_ach_user_details_title" = "Ingresá tus datos para conectar tu cuenta bancaria";
+"primer_ach_personal_details_subtitle" = "Tus datos personales";
+"primer_ach_email_disclaimer" = "Solo usaremos esto para mantenerte informado sobre tu pago";
+"primer_ach_button_continue" = "Continuar";
+"primer_ach_mandate_title" = "Autorización";
+"primer_ach_mandate_button_accept" = "Acepto";
+"primer_ach_mandate_button_decline" = "Cancelar";
+"primer_ach_mandate_template" = "Al hacer clic en \"Acepto\", autorizás a %1$@ a debitar de la cuenta bancaria especificada anteriormente cualquier monto adeudado por cargos derivados del uso de los servicios de %1$@ y/o la compra de productos de %1$@, de acuerdo con el sitio web y los términos de %1$@, hasta que se revoque esta autorización. Podés modificar o cancelar esta autorización en cualquier momento notificando a %1$@ con 30 (treinta) días de anticipación.";
+"accessibility_ach_continue_hint" = "Tocá dos veces para continuar a la selección de cuenta bancaria";
+"accessibility_ach_mandate_accept_hint" = "Tocá dos veces para aceptar la autorización y completar el pago";
+"accessibility_ach_mandate_decline_hint" = "Tocá dos veces para rechazar y cancelar el pago";

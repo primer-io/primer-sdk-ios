@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna გადახდის ფორმა";
 "accessibility_klarna_authorize_hint" = "ორჯერ შეეხეთ Klarna-ით გასაგრძელებლად";
 "accessibility_klarna_finalize_hint" = "ორჯერ შეეხეთ გადახდის დასასრულებლად";
+
+/* ACH */
+"primer_ach_title" = "საბანკო ანგარიში";
+"primer_ach_pay_with_title" = "გადაიხადეთ ACH-ით";
+"primer_ach_user_details_title" = "შეიყვანეთ თქვენი მონაცემები საბანკო ანგარიშის დასაკავშირებლად";
+"primer_ach_personal_details_subtitle" = "თქვენი პირადი მონაცემები";
+"primer_ach_email_disclaimer" = "ამას გამოვიყენებთ მხოლოდ თქვენი გადახდის შესახებ ინფორმაციის მისაწოდებლად";
+"primer_ach_button_continue" = "გაგრძელება";
+"primer_ach_mandate_title" = "ავტორიზაცია";
+"primer_ach_mandate_button_accept" = "ვეთანხმები";
+"primer_ach_mandate_button_decline" = "გაუქმება";
+"primer_ach_mandate_template" = "\"ვეთანხმები\"-ზე დაჭერით, თქვენ აძლევთ %1$@-ს უფლებას ჩამოწეროს ზემოთ მითითებული საბანკო ანგარიშიდან ნებისმიერი დავალიანებული თანხა %1$@-ის სერვისების გამოყენებით და/ან %1$@-ისგან პროდუქტების შეძენით წარმოშობილი გადასახადებისთვის, %1$@-ის ვებგვერდისა და პირობების შესაბამისად, სანამ ეს ავტორიზაცია არ გაუქმდება. შეგიძლიათ შეცვალოთ ან გააუქმოთ ეს ავტორიზაცია ნებისმიერ დროს %1$@-ისთვის 30 (ოცდაათი) დღით ადრე შეტყობინებით.";
+"accessibility_ach_continue_hint" = "ორჯერ შეეხეთ საბანკო ანგარიშის არჩევისთვის გასაგრძელებლად";
+"accessibility_ach_mandate_accept_hint" = "ორჯერ შეეხეთ ავტორიზაციის მისაღებად და გადახდის დასასრულებლად";
+"accessibility_ach_mandate_decline_hint" = "ორჯერ შეეხეთ უარსათქმელად და გადახდის გასაუქმებლად";

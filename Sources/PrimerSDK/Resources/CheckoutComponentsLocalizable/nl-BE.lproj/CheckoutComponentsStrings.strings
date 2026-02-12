@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna-betaalformulier";
 "accessibility_klarna_authorize_hint" = "Dubbeltik om door te gaan met Klarna";
 "accessibility_klarna_finalize_hint" = "Dubbeltik om de betaling te voltooien";
+
+/* ACH */
+"primer_ach_title" = "Bankrekening";
+"primer_ach_pay_with_title" = "Betalen met ACH";
+"primer_ach_user_details_title" = "Voer uw gegevens in om uw bankrekening te koppelen";
+"primer_ach_personal_details_subtitle" = "Uw persoonlijke gegevens";
+"primer_ach_email_disclaimer" = "We gebruiken dit alleen om u op de hoogte te houden van uw betaling";
+"primer_ach_button_continue" = "Doorgaan";
+"primer_ach_mandate_title" = "Autorisatie";
+"primer_ach_mandate_button_accept" = "Ik ga akkoord";
+"primer_ach_mandate_button_decline" = "Annuleren";
+"primer_ach_mandate_template" = "Door op \"Ik ga akkoord\" te klikken, machtigt u %1$@ om de hierboven vermelde bankrekening te debiteren voor elk verschuldigd bedrag voor kosten die voortvloeien uit uw gebruik van de diensten van %1$@ en/of aankoop van producten van %1$@, overeenkomstig de website en voorwaarden van %1$@, totdat deze machtiging wordt ingetrokken. U kunt deze machtiging te allen tijde wijzigen of annuleren door %1$@ hiervan op de hoogte te stellen met 30 (dertig) dagen voorafgaande kennisgeving.";
+"accessibility_ach_continue_hint" = "Dubbeltik om door te gaan naar de selectie van de bankrekening";
+"accessibility_ach_mandate_accept_hint" = "Dubbeltik om de autorisatie te accepteren en de betaling te voltooien";
+"accessibility_ach_mandate_decline_hint" = "Dubbeltik om te weigeren en de betaling te annuleren";

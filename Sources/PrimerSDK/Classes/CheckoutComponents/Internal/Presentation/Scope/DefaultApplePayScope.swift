@@ -163,6 +163,10 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     structuredState.isLoading = true
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
+      )
+
       // Select payment method
       let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
       try await clientSessionActionsModule.selectPaymentMethodIfNeeded(

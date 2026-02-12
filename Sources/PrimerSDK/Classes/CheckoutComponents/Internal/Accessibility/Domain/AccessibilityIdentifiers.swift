@@ -101,4 +101,28 @@ enum AccessibilityIdentifiers {
       "checkout_components_klarna_category_\(categoryId.lowercased())_button"
     }
   }
+
+  enum Ach {
+    static let container = "checkout_components_ach_container"
+    static let loadingIndicator = "checkout_components_ach_loading_indicator"
+
+    // User Details
+    static let userDetailsContainer = "checkout_components_ach_user_details_container"
+    static let userDetailsTitle = "checkout_components_ach_user_details_title"
+    static let firstNameField = "checkout_components_ach_user_details_first_name_field"
+    static let lastNameField = "checkout_components_ach_user_details_last_name_field"
+    static let emailField = "checkout_components_ach_user_details_email_field"
+    static let emailDisclaimer = "checkout_components_ach_user_details_email_disclaimer"
+    static let submitButton = "checkout_components_ach_submit_button"
+
+    // Bank Collector
+    static let bankCollectorContainer = "checkout_components_ach_bank_collector_container"
+
+    // Mandate
+    static let mandateContainer = "checkout_components_ach_mandate_container"
+    static let mandateTitle = "checkout_components_ach_mandate_title"
+    static let mandateTextContainer = "checkout_components_ach_mandate_text_container"
+    static let mandateAcceptButton = "checkout_components_ach_mandate_accept_button"
+    static let mandateDeclineButton = "checkout_components_ach_mandate_decline_button"
+  }
 }

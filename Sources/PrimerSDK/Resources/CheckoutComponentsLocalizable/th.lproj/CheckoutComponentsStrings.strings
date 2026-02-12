@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "แบบฟอร์มชำระเงิน Klarna";
 "accessibility_klarna_authorize_hint" = "แตะสองครั้งเพื่อดำเนินการต่อด้วย Klarna";
 "accessibility_klarna_finalize_hint" = "แตะสองครั้งเพื่อชำระเงินให้เสร็จสิ้น";
+
+/* ACH */
+"primer_ach_title" = "บัญชีธนาคาร";
+"primer_ach_pay_with_title" = "ชำระเงินด้วย ACH";
+"primer_ach_user_details_title" = "กรอกข้อมูลของคุณเพื่อเชื่อมต่อบัญชีธนาคาร";
+"primer_ach_personal_details_subtitle" = "ข้อมูลส่วนตัวของคุณ";
+"primer_ach_email_disclaimer" = "เราจะใช้ข้อมูลนี้เพื่อแจ้งให้คุณทราบเกี่ยวกับการชำระเงินของคุณเท่านั้น";
+"primer_ach_button_continue" = "ดำเนินการต่อ";
+"primer_ach_mandate_title" = "การอนุญาต";
+"primer_ach_mandate_button_accept" = "ฉันยินยอม";
+"primer_ach_mandate_button_decline" = "ยกเลิก";
+"primer_ach_mandate_template" = "โดยการคลิก \"ฉันยินยอม\" คุณอนุญาตให้ %1$@ หักเงินจากบัญชีธนาคารที่ระบุไว้ข้างต้นสำหรับจำนวนเงินที่ค้างชำระสำหรับค่าใช้จ่ายที่เกิดจากการใช้บริการของ %1$@ และ/หรือการซื้อผลิตภัณฑ์จาก %1$@ ตามเว็บไซต์และข้อกำหนดของ %1$@ จนกว่าจะมีการยกเลิกการอนุญาตนี้ คุณสามารถแก้ไขหรือยกเลิกการอนุญาตนี้ได้ทุกเมื่อโดยแจ้งให้ %1$@ ทราบล่วงหน้า 30 (สามสิบ) วัน";
+"accessibility_ach_continue_hint" = "แตะสองครั้งเพื่อดำเนินการต่อไปยังการเลือกบัญชีธนาคาร";
+"accessibility_ach_mandate_accept_hint" = "แตะสองครั้งเพื่อยอมรับการอนุญาตและทำการชำระเงินให้เสร็จสิ้น";
+"accessibility_ach_mandate_decline_hint" = "แตะสองครั้งเพื่อปฏิเสธและยกเลิกการชำระเงิน";

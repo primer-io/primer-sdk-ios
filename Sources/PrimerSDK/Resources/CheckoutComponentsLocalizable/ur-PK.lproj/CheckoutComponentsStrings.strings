@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna ادائیگی فارم";
 "accessibility_klarna_authorize_hint" = "Klarna کے ساتھ جاری رکھنے کے لیے ڈبل ٹیپ کریں";
 "accessibility_klarna_finalize_hint" = "ادائیگی مکمل کرنے کے لیے ڈبل ٹیپ کریں";
+
+/* ACH */
+"primer_ach_title" = "بینک اکاؤنٹ";
+"primer_ach_pay_with_title" = "ACH سے ادائیگی کریں";
+"primer_ach_user_details_title" = "اپنا بینک اکاؤنٹ جوڑنے کے لیے اپنی تفصیلات درج کریں";
+"primer_ach_personal_details_subtitle" = "آپ کی ذاتی تفصیلات";
+"primer_ach_email_disclaimer" = "ہم اسے صرف آپ کی ادائیگی کے بارے میں آپ کو آگاہ رکھنے کے لیے استعمال کریں گے";
+"primer_ach_button_continue" = "جاری رکھیں";
+"primer_ach_mandate_title" = "اجازت";
+"primer_ach_mandate_button_accept" = "میں متفق ہوں";
+"primer_ach_mandate_button_decline" = "منسوخ کریں";
+"primer_ach_mandate_template" = "\"میں متفق ہوں\" پر کلک کرکے، آپ %1$@ کو اوپر بیان کردہ بینک اکاؤنٹ سے %1$@ کی خدمات کے استعمال اور/یا %1$@ سے مصنوعات کی خریداری سے پیدا ہونے والے چارجز کے لیے واجب الادا کسی بھی رقم کو، %1$@ کی ویب سائٹ اور شرائط کے مطابق، جب تک یہ اجازت منسوخ نہ ہو، کاٹنے کی اجازت دیتے ہیں۔ آپ %1$@ کو 30 (تیس) دن پہلے نوٹس دے کر کسی بھی وقت اس اجازت میں ترمیم یا منسوخی کر سکتے ہیں۔";
+"accessibility_ach_continue_hint" = "بینک اکاؤنٹ کے انتخاب پر جاری رکھنے کے لیے ڈبل ٹیپ کریں";
+"accessibility_ach_mandate_accept_hint" = "اجازت قبول کرنے اور ادائیگی مکمل کرنے کے لیے ڈبل ٹیپ کریں";
+"accessibility_ach_mandate_decline_hint" = "مسترد کرنے اور ادائیگی منسوخ کرنے کے لیے ڈبل ٹیپ کریں";

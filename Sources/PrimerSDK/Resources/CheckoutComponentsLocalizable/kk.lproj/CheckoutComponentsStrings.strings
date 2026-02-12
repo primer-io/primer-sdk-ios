@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna төлем формасы";
 "accessibility_klarna_authorize_hint" = "Klarna арқылы жалғастыру үшін екі рет түртіңіз";
 "accessibility_klarna_finalize_hint" = "Төлемді аяқтау үшін екі рет түртіңіз";
+
+/* ACH */
+"primer_ach_title" = "Банк шоты";
+"primer_ach_pay_with_title" = "ACH арқылы төлеу";
+"primer_ach_user_details_title" = "Банк шотын қосу үшін мәліметтеріңізді енгізіңіз";
+"primer_ach_personal_details_subtitle" = "Сіздің жеке мәліметтеріңіз";
+"primer_ach_email_disclaimer" = "Біз мұны тек сіздің төлеміңіз туралы хабардар ету үшін қолданамыз";
+"primer_ach_button_continue" = "Жалғастыру";
+"primer_ach_mandate_title" = "Авторизация";
+"primer_ach_mandate_button_accept" = "Келісемін";
+"primer_ach_mandate_button_decline" = "Болдырмау";
+"primer_ach_mandate_template" = "\"Келісемін\" түймесін басу арқылы сіз %1$@ компаниясына %1$@ қызметтерін пайдаланудан және/немесе %1$@ өнімдерін сатып алудан туындаған төлемдер үшін жоғарыда көрсетілген банк шотынан кез келген қарыз сомасын %1$@ веб-сайты мен шарттарына сәйкес, осы авторизация жойылғанша алуға рұқсат бересіз. Бұл авторизацияны кез келген уақытта %1$@ компаниясына 30 (отыз) күн бұрын хабарлау арқылы өзгертуге немесе болдырмауға болады.";
+"accessibility_ach_continue_hint" = "Банк шотын таңдауға жалғастыру үшін екі рет түртіңіз";
+"accessibility_ach_mandate_accept_hint" = "Авторизацияны қабылдау және төлемді аяқтау үшін екі рет түртіңіз";
+"accessibility_ach_mandate_decline_hint" = "Бас тарту және төлемді болдырмау үшін екі рет түртіңіз";

@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna form sa pagbabayad";
 "accessibility_klarna_authorize_hint" = "I-double tap para magpatuloy sa Klarna";
 "accessibility_klarna_finalize_hint" = "I-double tap para makumpleto ang pagbabayad";
+
+/* ACH */
+"primer_ach_title" = "Bank Account";
+"primer_ach_pay_with_title" = "Magbayad gamit ang ACH";
+"primer_ach_user_details_title" = "Ilagay ang iyong mga detalye para ikonekta ang iyong bank account";
+"primer_ach_personal_details_subtitle" = "Ang iyong personal na mga detalye";
+"primer_ach_email_disclaimer" = "Gagamitin lang namin ito para ipaalam sa iyo ang tungkol sa iyong bayad";
+"primer_ach_button_continue" = "Magpatuloy";
+"primer_ach_mandate_title" = "Awtorisasyon";
+"primer_ach_mandate_button_accept" = "Sumasang-ayon Ako";
+"primer_ach_mandate_button_decline" = "Kanselahin";
+"primer_ach_mandate_template" = "Sa pag-click sa \"Sumasang-ayon Ako\", binibigyan mo ng awtorisasyon ang %1$@ na i-debit ang bank account na tinukoy sa itaas para sa anumang halagang utang para sa mga singil na nagmumula sa paggamit mo ng mga serbisyo ng %1$@ at/o pagbili ng mga produkto mula sa %1$@, alinsunod sa website at mga tuntunin ng %1$@, hanggang sa mabawi ang awtorisasyong ito. Maaari mong baguhin o kanselahin ang awtorisasyong ito anumang oras sa pamamagitan ng pagbibigay ng abiso sa %1$@ na may 30 (tatlumpung) araw na paunawa.";
+"accessibility_ach_continue_hint" = "I-double tap para magpatuloy sa pagpili ng bank account";
+"accessibility_ach_mandate_accept_hint" = "I-double tap para tanggapin ang awtorisasyon at kumpletuhin ang pagbabayad";
+"accessibility_ach_mandate_decline_hint" = "I-double tap para tanggihan at kanselahin ang pagbabayad";

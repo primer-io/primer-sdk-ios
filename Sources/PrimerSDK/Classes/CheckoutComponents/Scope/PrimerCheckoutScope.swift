@@ -6,6 +6,12 @@
 
 import SwiftUI
 
+/// Closure type for the `onBeforePaymentCreate` callback.
+/// Provides payment method data and a decision handler to continue or abort payment creation.
+@available(iOS 15.0, *)
+public typealias BeforePaymentCreateHandler = (_ data: PrimerCheckoutPaymentMethodData,
+                                               _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
+
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
 @MainActor
@@ -76,6 +82,12 @@ public protocol PrimerCheckoutScope: AnyObject {
   // MARK: - Payment Method Screen Customization
   // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
   // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
+
+  // MARK: - Payment Callbacks
+
+  /// Called before a payment is created. Use the decision handler to provide an idempotency key
+  /// or abort payment creation. If not set, payments proceed without an idempotency key.
+  var onBeforePaymentCreate: BeforePaymentCreateHandler? { get set }
 
   // MARK: - Payment Settings
 

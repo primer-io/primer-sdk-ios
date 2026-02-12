@@ -71,8 +71,6 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-
-    // Ensure proper sizing when appearing
     updateContentSize()
   }
 

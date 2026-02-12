@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna toʻlov formasi";
 "accessibility_klarna_authorize_hint" = "Klarna bilan davom etish uchun ikki marta bosing";
 "accessibility_klarna_finalize_hint" = "Toʻlovni yakunlash uchun ikki marta bosing";
+
+/* ACH */
+"primer_ach_title" = "Bank hisobi";
+"primer_ach_pay_with_title" = "ACH orqali to'lang";
+"primer_ach_user_details_title" = "Bank hisobingizni ulash uchun maʼlumotlaringizni kiriting";
+"primer_ach_personal_details_subtitle" = "Shaxsiy ma'lumotlaringiz";
+"primer_ach_email_disclaimer" = "Buni faqat to'lovingiz haqida sizni xabardor qilish uchun foydalanamiz";
+"primer_ach_button_continue" = "Davom etish";
+"primer_ach_mandate_title" = "Avtorizatsiya";
+"primer_ach_mandate_button_accept" = "Roziman";
+"primer_ach_mandate_button_decline" = "Bekor qilish";
+"primer_ach_mandate_template" = "\"Roziman\" tugmasini bosish orqali siz %1$@ga yuqorida koʻrsatilgan bank hisobidan %1$@ xizmatlaridan foydalanish va/yoki %1$@dan mahsulotlar sotib olish natijasida yuzaga keladigan toʻlovlar uchun qarzdor boʻlgan har qanday summani, %1$@ veb-sayti va shartlariga muvofiq, ushbu avtorizatsiya bekor qilinmaguncha yechib olish huquqini berasiz. Siz ushbu avtorizatsiyani istalgan vaqtda %1$@ga 30 (oʻttiz) kun oldin xabar berib oʻzgartirishingiz yoki bekor qilishingiz mumkin.";
+"accessibility_ach_continue_hint" = "Bank hisobini tanlashga davom etish uchun ikki marta bosing";
+"accessibility_ach_mandate_accept_hint" = "Avtorizatsiyani qabul qilish va toʻlovni yakunlash uchun ikki marta bosing";
+"accessibility_ach_mandate_decline_hint" = "Rad etish va toʻlovni bekor qilish uchun ikki marta bosing";

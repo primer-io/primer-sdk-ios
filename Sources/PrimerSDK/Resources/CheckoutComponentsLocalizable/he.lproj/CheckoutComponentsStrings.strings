@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "טופס תשלום Klarna";
 "accessibility_klarna_authorize_hint" = "הקש פעמיים כדי להמשיך עם Klarna";
 "accessibility_klarna_finalize_hint" = "הקש פעמיים כדי להשלים את התשלום";
+
+/* ACH */
+"primer_ach_title" = "חשבון בנק";
+"primer_ach_pay_with_title" = "שלם באמצעות ACH";
+"primer_ach_user_details_title" = "הזן את פרטיך כדי לחבר את חשבון הבנק שלך";
+"primer_ach_personal_details_subtitle" = "הפרטים האישיים שלך";
+"primer_ach_email_disclaimer" = "נשתמש בזה רק כדי לעדכן אותך לגבי התשלום שלך";
+"primer_ach_button_continue" = "המשך";
+"primer_ach_mandate_title" = "הרשאה";
+"primer_ach_mandate_button_accept" = "אני מסכים";
+"primer_ach_mandate_button_decline" = "ביטול";
+"primer_ach_mandate_template" = "בלחיצה על \"אני מסכים\", אתה מאשר ל-%1$@ לחייב את חשבון הבנק המצוין לעיל בכל סכום המגיע עבור חיובים הנובעים משימושך בשירותי %1$@ ו/או רכישת מוצרים מ-%1$@, בהתאם לאתר ולתנאים של %1$@, עד לביטול הרשאה זו. תוכל לשנות או לבטל הרשאה זו בכל עת על ידי מתן הודעה ל-%1$@ בהתראה של 30 (שלושים) יום.";
+"accessibility_ach_continue_hint" = "הקש פעמיים כדי להמשיך לבחירת חשבון בנק";
+"accessibility_ach_mandate_accept_hint" = "הקש פעמיים כדי לאשר את ההרשאה ולהשלים את התשלום";
+"accessibility_ach_mandate_decline_hint" = "הקש פעמיים כדי לסרב ולבטל את התשלום";

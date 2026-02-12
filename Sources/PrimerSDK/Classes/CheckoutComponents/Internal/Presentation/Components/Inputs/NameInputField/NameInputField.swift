@@ -13,6 +13,7 @@ struct NameInputField: View, LogReporter {
   let label: String?
   let placeholder: String
   let inputType: PrimerInputElementType
+  let initialValue: String
   let scope: (any PrimerCardFormScope)?
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
@@ -40,6 +41,7 @@ struct NameInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
+    self.initialValue = ""
     self.scope = scope
     self.styling = styling
     self.onNameChange = nil
@@ -50,6 +52,7 @@ struct NameInputField: View, LogReporter {
     label: String?,
     placeholder: String,
     inputType: PrimerInputElementType,
+    initialValue: String = "",
     styling: PrimerFieldStyling? = nil,
     onNameChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
@@ -57,6 +60,7 @@ struct NameInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
+    self.initialValue = initialValue
     self.scope = nil
     self.styling = styling
     self.onNameChange = onNameChange
@@ -99,6 +103,10 @@ struct NameInputField: View, LogReporter {
     }
     .onAppear {
       setupValidationService()
+      if !initialValue.isEmpty, name.isEmpty {
+        name = initialValue
+        onNameChange?(initialValue)
+      }
     }
   }
 

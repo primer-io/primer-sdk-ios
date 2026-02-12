@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Forma daynê ya Klarna";
 "accessibility_klarna_authorize_hint" = "Du car bikin ji bo domandina bi Klarna";
 "accessibility_klarna_finalize_hint" = "Du car bikin ji bo temamkirina daynê";
+
+/* ACH */
+"primer_ach_title" = "Hesabê Bankê";
+"primer_ach_pay_with_title" = "Bi ACH-ê bide";
+"primer_ach_user_details_title" = "Agahdariyên xwe binivîsin ji bo girêdana hesabê bankê";
+"primer_ach_personal_details_subtitle" = "Agahdariyên te yên kesane";
+"primer_ach_email_disclaimer" = "Em ê tenê vê bikar bînin da ku we li ser dravdana we agahdar bikin";
+"primer_ach_button_continue" = "Bidomîne";
+"primer_ach_mandate_title" = "Destûr";
+"primer_ach_mandate_button_accept" = "Ez razî me";
+"primer_ach_mandate_button_decline" = "Betal bike";
+"primer_ach_mandate_template" = "Bi tikandina \"Ez razî me\", hûn destûr didin %1$@ ku ji hesabê bankê yê ku li jor hatiye diyarkirin ji bo her mîqdarê deyndarî ji bo lêçûnên ku ji bikaranîna karûbarên %1$@ û/an kirîna hilberên ji %1$@ derdikevin, li gorî malpera û mercên %1$@, heya ku ev destûr were betalkirin, were derxistin. Hûn dikarin vê destûrê her dem bi agahdarkirina %1$@ bi 30 (sî) roj berê biguherînin an betal bikin.";
+"accessibility_ach_continue_hint" = "Du car bikin ji bo domandina hilbijartina hesabê bankê";
+"accessibility_ach_mandate_accept_hint" = "Du car bikin ji bo qebûlkirina destûrê û temamkirina daynê";
+"accessibility_ach_mandate_decline_hint" = "Du car bikin ji bo redkirin û betalkirina daynê";

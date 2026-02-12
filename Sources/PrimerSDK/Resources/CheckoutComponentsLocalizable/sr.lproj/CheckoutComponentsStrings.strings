@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Образац за плаћање Klarna";
 "accessibility_klarna_authorize_hint" = "Двапут додирните да наставите са Klarna";
 "accessibility_klarna_finalize_hint" = "Двапут додирните да завршите плаћање";
+
+/* ACH */
+"primer_ach_title" = "Банковни рачун";
+"primer_ach_pay_with_title" = "Платите путем ACH";
+"primer_ach_user_details_title" = "Унесите своје податке да повежете банковни рачун";
+"primer_ach_personal_details_subtitle" = "Ваши лични подаци";
+"primer_ach_email_disclaimer" = "Користићемо ово само да вас обавештавамо о вашем плаћању";
+"primer_ach_button_continue" = "Настави";
+"primer_ach_mandate_title" = "Ауторизација";
+"primer_ach_mandate_button_accept" = "Слажем се";
+"primer_ach_mandate_button_decline" = "Откажи";
+"primer_ach_mandate_template" = "Кликом на \"Слажем се\", овлашћујете %1$@ да задужи горе наведени банковни рачун за било који дуговани износ за трошкове који произилазе из вашег коришћења услуга %1$@ и/или куповине производа од %1$@, у складу са веб-сајтом и условима %1$@, док се ова ауторизација не опозове. Можете изменити или отказати ову ауторизацију у било ком тренутку обавештавајући %1$@ са 30 (тридесет) дана унапред.";
+"accessibility_ach_continue_hint" = "Двапут додирните да наставите са избором банковног рачуна";
+"accessibility_ach_mandate_accept_hint" = "Двапут додирните да прихватите ауторизацију и завршите плаћање";
+"accessibility_ach_mandate_decline_hint" = "Двапут додирните да одбијете и откажете плаћање";

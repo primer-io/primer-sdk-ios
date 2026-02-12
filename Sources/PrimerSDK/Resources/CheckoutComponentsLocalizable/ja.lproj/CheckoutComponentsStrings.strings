@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna支払いフォーム";
 "accessibility_klarna_authorize_hint" = "ダブルタップしてKlarnaで続行";
 "accessibility_klarna_finalize_hint" = "ダブルタップして支払いを完了";
+
+/* ACH */
+"primer_ach_title" = "銀行口座";
+"primer_ach_pay_with_title" = "ACHで支払う";
+"primer_ach_user_details_title" = "銀行口座を接続するために詳細を入力してください";
+"primer_ach_personal_details_subtitle" = "お客様の個人情報";
+"primer_ach_email_disclaimer" = "お支払いに関する最新情報をお届けするためにのみ使用します";
+"primer_ach_button_continue" = "続行";
+"primer_ach_mandate_title" = "承認";
+"primer_ach_mandate_button_accept" = "同意する";
+"primer_ach_mandate_button_decline" = "キャンセル";
+"primer_ach_mandate_template" = "「同意する」をクリックすることにより、%1$@のサービスの利用および/または%1$@からの製品購入に伴う料金のために発生した債務について、%1$@のウェブサイトおよび規約に従い、この承認が取り消されるまで、上記の銀行口座から引き落とすことを%1$@に承認します。30（三十）日前に%1$@に通知することで、いつでもこの承認を変更または取り消すことができます。";
+"accessibility_ach_continue_hint" = "ダブルタップして銀行口座の選択に進む";
+"accessibility_ach_mandate_accept_hint" = "ダブルタップして承認を受け入れ、支払いを完了する";
+"accessibility_ach_mandate_decline_hint" = "ダブルタップして拒否し、支払いをキャンセルする";

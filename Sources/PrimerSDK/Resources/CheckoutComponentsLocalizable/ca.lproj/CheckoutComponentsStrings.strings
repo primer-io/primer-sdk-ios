@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formulari de pagament Klarna";
 "accessibility_klarna_authorize_hint" = "Toqueu dues vegades per continuar amb Klarna";
 "accessibility_klarna_finalize_hint" = "Toqueu dues vegades per completar el pagament";
+
+/* ACH */
+"primer_ach_title" = "Compte bancari";
+"primer_ach_pay_with_title" = "Pagar amb ACH";
+"primer_ach_user_details_title" = "Introduïu les vostres dades per connectar el vostre compte bancari";
+"primer_ach_personal_details_subtitle" = "Les teves dades personals";
+"primer_ach_email_disclaimer" = "Només farem servir això per mantenir-te informat sobre el teu pagament";
+"primer_ach_button_continue" = "Continua";
+"primer_ach_mandate_title" = "Autorització";
+"primer_ach_mandate_button_accept" = "Accepto";
+"primer_ach_mandate_button_decline" = "Cancel·la";
+"primer_ach_mandate_template" = "En fer clic a \"Accepto\", autoritzeu %1$@ a carregar al compte bancari especificat més amunt qualsevol import degut per càrrecs derivats del vostre ús dels serveis de %1$@ i/o compra de productes de %1$@, d'acord amb el lloc web i les condicions de %1$@, fins que aquesta autorització sigui revocada. Podeu modificar o cancel·lar aquesta autorització en qualsevol moment notificant-ho a %1$@ amb 30 (trenta) dies d'antelació.";
+"accessibility_ach_continue_hint" = "Toqueu dues vegades per continuar a la selecció del compte bancari";
+"accessibility_ach_mandate_accept_hint" = "Toqueu dues vegades per acceptar l'autorització i completar el pagament";
+"accessibility_ach_mandate_decline_hint" = "Toqueu dues vegades per rebutjar i cancel·lar el pagament";

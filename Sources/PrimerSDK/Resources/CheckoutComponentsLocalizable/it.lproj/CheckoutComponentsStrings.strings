@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Modulo di pagamento Klarna";
 "accessibility_klarna_authorize_hint" = "Tocca due volte per continuare con Klarna";
 "accessibility_klarna_finalize_hint" = "Tocca due volte per completare il pagamento";
+
+/* ACH */
+"primer_ach_title" = "Conto bancario";
+"primer_ach_pay_with_title" = "Paga con ACH";
+"primer_ach_user_details_title" = "Inserisci i tuoi dati per collegare il tuo conto bancario";
+"primer_ach_personal_details_subtitle" = "I tuoi dati personali";
+"primer_ach_email_disclaimer" = "Useremo questo solo per tenerti aggiornato sul tuo pagamento";
+"primer_ach_button_continue" = "Continua";
+"primer_ach_mandate_title" = "Autorizzazione";
+"primer_ach_mandate_button_accept" = "Accetto";
+"primer_ach_mandate_button_decline" = "Annulla";
+"primer_ach_mandate_template" = "Cliccando su \"Accetto\", autorizzi %1$@ ad addebitare sul conto bancario sopra specificato qualsiasi importo dovuto per addebiti derivanti dall'utilizzo dei servizi di %1$@ e/o dall'acquisto di prodotti da %1$@, in conformità al sito web e ai termini di %1$@, fino alla revoca di questa autorizzazione. Puoi modificare o annullare questa autorizzazione in qualsiasi momento notificando %1$@ con un preavviso di 30 (trenta) giorni.";
+"accessibility_ach_continue_hint" = "Tocca due volte per continuare alla selezione del conto bancario";
+"accessibility_ach_mandate_accept_hint" = "Tocca due volte per accettare l'autorizzazione e completare il pagamento";
+"accessibility_ach_mandate_decline_hint" = "Tocca due volte per rifiutare e annullare il pagamento";

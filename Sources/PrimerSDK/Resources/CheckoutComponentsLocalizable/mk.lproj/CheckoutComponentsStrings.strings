@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Формулар за плаќање Klarna";
 "accessibility_klarna_authorize_hint" = "Допрете двапати за да продолжите со Klarna";
 "accessibility_klarna_finalize_hint" = "Допрете двапати за да го завршите плаќањето";
+
+/* ACH */
+"primer_ach_title" = "Банкарска сметка";
+"primer_ach_pay_with_title" = "Плати со ACH";
+"primer_ach_user_details_title" = "Внесете ги вашите податоци за да ја поврзете вашата банкарска сметка";
+"primer_ach_personal_details_subtitle" = "Вашите лични податоци";
+"primer_ach_email_disclaimer" = "Ова ќе го користиме само за да ве информираме за вашето плаќање";
+"primer_ach_button_continue" = "Продолжи";
+"primer_ach_mandate_title" = "Овластување";
+"primer_ach_mandate_button_accept" = "Се согласувам";
+"primer_ach_mandate_button_decline" = "Откажи";
+"primer_ach_mandate_template" = "Со кликнување на \"Се согласувам\", го овластувате %1$@ да ја задолжи горенаведената банкарска сметка за која било должна сума за трошоци што произлегуваат од вашето користење на услугите на %1$@ и/или купување на производи од %1$@, согласно веб-страницата и условите на %1$@, додека ова овластување не биде отповикано. Можете да го измените или откажете ова овластување во секое време со известување на %1$@ со 30 (триесет) дена претходна најава.";
+"accessibility_ach_continue_hint" = "Допрете двапати за да продолжите со избор на банкарска сметка";
+"accessibility_ach_mandate_accept_hint" = "Допрете двапати за да го прифатите овластувањето и да го завршите плаќањето";
+"accessibility_ach_mandate_decline_hint" = "Допрете двапати за да одбиете и да го откажете плаќањето";

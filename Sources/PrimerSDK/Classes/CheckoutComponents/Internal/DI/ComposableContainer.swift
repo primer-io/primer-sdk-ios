@@ -169,6 +169,14 @@ extension ComposableContainer {
           repository: try await resolver.resolve(HeadlessRepository.self)
         )
       }
+
+    try? await container.register(ProcessAchPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessAchPaymentInteractorImpl(
+          repository: try await resolver.resolve(AchRepository.self)
+        )
+      }
   }
 
   fileprivate func registerData() async {
@@ -197,6 +205,12 @@ extension ComposableContainer {
       .asTransient()
       .with { _ in
         KlarnaRepositoryImpl()
+      }
+
+    try? await container.register(AchRepository.self)
+      .asTransient()
+      .with { _ in
+        AchRepositoryImpl()
       }
   }
 
