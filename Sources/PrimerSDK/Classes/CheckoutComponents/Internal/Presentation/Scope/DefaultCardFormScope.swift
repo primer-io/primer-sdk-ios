@@ -245,12 +245,10 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   }
 
   private func setupBinDataStream() {
-    guard let interactor = cardNetworkDetectionInteractor else {
-      return
-    }
+    guard let cardNetworkDetectionInteractor else { return }
 
     Task { [self] in
-      for await binData in interactor.binDataStream {
+      for await binData in cardNetworkDetectionInteractor.binDataStream {
         await MainActor.run {
           structuredState.binData = binData
         }

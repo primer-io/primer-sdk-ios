@@ -173,10 +173,10 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
   private var rawCardData = PrimerCardData(
     cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
-  private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>
-    .makeStream()
-  private let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>
-    .makeStream()
+  // swiftformat:disable:next wrap
+  private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
+  // swiftformat:disable:next wrap
+  private let (binDataStream, binDataContinuation) = AsyncStream<PrimerBinData>.makeStream()
   // Last detected networks to avoid duplicate notifications
   private var lastDetectedNetworks: [CardNetwork] = []
   private var lastTrackedRedirectDestination: String?

@@ -34,6 +34,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     private let metadataCacheQueue = DispatchQueue(label: "com.primer.cardValidationService.metadataCacheQueue", attributes: .concurrent)
     private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
+    private var binDataCacheBacking: [String: PrimerBinData] = [:]
 
     private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
         metadataCacheQueue.sync {
@@ -46,8 +47,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             self.metadataCacheBacking[key] = metadata
         }
     }
-
-    private var binDataCacheBacking: [String: PrimerBinData] = [:]
 
     private func getCachedBinData(for key: String) -> PrimerBinData? {
         metadataCacheQueue.sync {
@@ -185,7 +184,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
 
-        let localNetworks = networks.map { PrimerCardNetwork(network: $0) }
+        let localNetworks = networks.map(PrimerCardNetwork.init(network:))
         let binData = buildBinData(from: localNetworks, firstDigits: nil, status: .partial)
         delegate?.primerRawDataManager?(rawDataManager, didReceiveBinData: binData)
 
@@ -218,7 +217,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func buildBinData(from networks: [PrimerCardNetwork], firstDigits: String?, status: PrimerBinDataStatus) -> PrimerBinData {
-        let preferred = networks.first { $0.allowed }
+        let preferred = networks.first(where: \.allowed)
         let alternatives = networks.filter { $0 !== preferred }
         return PrimerBinData(
             preferred: preferred,
@@ -250,11 +249,11 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             detected = selectable + unallowed
         } else {
             selectable = allowedCardNetworks
-                .filter { networks.contains($0) }
-                .map { PrimerCardNetwork(network: $0) }
+                .filter(networks.contains)
+                .map(PrimerCardNetwork.init(network:))
 
             detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
-                .map { PrimerCardNetwork(network: $0) }
+                .map(PrimerCardNetwork.init(network:))
         }
 
         let containsDisallowedNetwork = networks.contains(where: [CardNetwork].selectionDisallowedCardNetworks.contains)

@@ -114,8 +114,8 @@ final class MockHeadlessRepository: HeadlessRepository {
     func getBinDataStream() -> AsyncStream<PrimerBinData> {
         AsyncStream { [self] continuation in
             binDataContinuation = continuation
-            if let binData = binDataToReturn {
-                continuation.yield(binData)
+            if let binDataToReturn {
+                continuation.yield(binDataToReturn)
             }
         }
     }
