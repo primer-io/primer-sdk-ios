@@ -41,13 +41,13 @@ Within the same access level, protocol conformance properties come first, then o
 ## SwiftUI Views
 - **Use `func make...() -> some View`** for extracted view pieces. Use `@ViewBuilder` only when the function returns multiple views conditionally.
 - **Extract complex booleans**: pull multi-condition `if` expressions into named computed properties for readability.
-- **Pass function references directly**: `Button(action: scope.cancel)` not `Button { scope.cancel() }`.
+- **Pass function references directly**: `Button(action: scope.cancel)` not `Button { scope.cancel() }`. **Caveat**: never pass a method reference when the closure is stored as a property on another object — this creates a retain cycle. Use `[weak self]` closure instead: `C1 { [weak self] in self?.bar() }` not `C1(completion: bar)`.
 
 ## Code Minimalism
 - **No redundant comments**: only comment non-obvious "why", never "what the code does". Doc comments that restate the function/class name are not allowed.
 - **No verbose `// MARK:`** for trivial sections (2-3 simple properties don't need a MARK).
 - **Inline single-use variables**: if a variable is used only once on the next line, inline it.
-- **No hardcoded values**: extract strings/numbers into constants. In tests, use `TestData` as single source of truth (exception: assertion expected values and analytics error messages).
+- **No hardcoded values**: extract strings/numbers into constants.
 - **Use ternaries** for simple conditional assignments.
 - **Combine guards** when they share the same exit action: `guard let a, let b else { return }`. Keep them separate if different conditions need different handling.
 - **No redundant methods** that just return a stored property — let callers access the property directly.
@@ -66,8 +66,7 @@ Within the same access level, protocol conformance properties come first, then o
 
 ## Test Code
 - Test properties (`sut`, mocks) should be **`private`**.
-- Mock classes should be **`final`**.
-- Put **`@MainActor` on the test class**, not on individual test methods.
+- Put **`@MainActor` on the test class** only when needed — not on individual test methods.
 - Every test must **assert something** — no test should just call code without verifying results.
 - Use **`CaseIterable` + `allCases`** for exhaustive enum testing.
 - Use helpers to reduce boilerplate across similar tests.
