@@ -277,6 +277,17 @@ class PaymentMethodRegistry: LogReporter {
     return viewBuilder(checkoutScope)
   }
 
+  /// Internal registration method for direct creator registration.
+  /// Used by payment methods that need parameterized registration (e.g., WebRedirect APMs).
+  func registerInternal(
+    typeKey: String,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
+  ) {
+    creators[typeKey] = scopeCreator
+    viewBuilders[typeKey] = viewCreator
+  }
+
   /// Resets the registry by clearing all registered payment methods.
   /// This method is intended for testing purposes only.
   func reset() {
