@@ -125,4 +125,15 @@ enum AccessibilityIdentifiers {
     static let mandateAcceptButton = "checkout_components_ach_mandate_accept_button"
     static let mandateDeclineButton = "checkout_components_ach_mandate_decline_button"
   }
+
+  enum WebRedirect {
+    static let container = "checkout_components_web_redirect_container"
+    static let logo = "checkout_components_web_redirect_logo"
+    static let title = "checkout_components_web_redirect_title"
+    static let description = "checkout_components_web_redirect_description"
+    static let surcharge = "checkout_components_web_redirect_surcharge"
+    static let submitButton = "checkout_components_web_redirect_submit_button"
+    static let backButton = "checkout_components_web_redirect_back_button"
+    static let cancelButton = "checkout_components_web_redirect_cancel_button"
+  }
 }
