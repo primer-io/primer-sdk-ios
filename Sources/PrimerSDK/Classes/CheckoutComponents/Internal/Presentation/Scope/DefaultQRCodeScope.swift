@@ -39,6 +39,8 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
 
   private weak var checkoutScope: DefaultCheckoutScope?
   private let interactor: ProcessQRCodePaymentInteractor
+  private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
+  private let paymentMethodType: String
 
   @Published private var internalState = QRCodeState()
 
@@ -47,11 +49,15 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
   init(
     checkoutScope: DefaultCheckoutScope,
     presentationContext: PresentationContext = .fromPaymentSelection,
-    interactor: ProcessQRCodePaymentInteractor
+    interactor: ProcessQRCodePaymentInteractor,
+    analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
+    paymentMethodType: String = ""
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext
     self.interactor = interactor
+    self.analyticsInteractor = analyticsInteractor
+    self.paymentMethodType = paymentMethodType
   }
 
   // MARK: - PrimerPaymentMethodScope Methods
@@ -90,6 +96,10 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
 
   private func performPayment() async {
     internalState.status = .loading
+
+    let metadata: AnalyticsEventMetadata = .payment(PaymentEvent(paymentMethod: paymentMethodType))
+    await analyticsInteractor?.trackEvent(.paymentSubmitted, metadata: metadata)
+    await analyticsInteractor?.trackEvent(.paymentProcessingStarted, metadata: metadata)
 
     do {
       let paymentData = try await interactor.startPayment()
