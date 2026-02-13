@@ -102,6 +102,17 @@ enum AccessibilityIdentifiers {
     }
   }
 
+  enum QRCode {
+    static let container = "checkout_components_qr_code_container"
+    static let amountLabel = "checkout_components_qr_code_amount_label"
+    static let instructionTitle = "checkout_components_qr_code_instruction_title"
+    static let instructionSubtitle = "checkout_components_qr_code_instruction_subtitle"
+    static let qrCodeImage = "checkout_components_qr_code_image"
+    static let successIcon = "checkout_components_qr_code_success_icon"
+    static let failureIcon = "checkout_components_qr_code_failure_icon"
+    static let loadingIndicator = "checkout_components_qr_code_loading_indicator"
+  }
+
   enum Ach {
     static let container = "checkout_components_ach_container"
     static let loadingIndicator = "checkout_components_ach_loading_indicator"
