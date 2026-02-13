@@ -32,6 +32,7 @@ struct QRCodeView: View, LogReporter {
     .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
+    .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.container)
     .onAppear(perform: observeState)
   }
 
@@ -47,18 +48,33 @@ struct QRCodeView: View, LogReporter {
               HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                 Image(systemName: RTLIcon.backChevron)
                   .font(PrimerFont.bodyMedium(tokens: tokens))
-                Text("Back")
+                Text(CheckoutComponentsStrings.backButton)
               }
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             }
           )
+          .accessibility(
+            config: AccessibilityConfiguration(
+              identifier: AccessibilityIdentifiers.Common.backButton,
+              label: CheckoutComponentsStrings.a11yBack,
+              traits: [.isButton]
+            ))
         }
 
         Spacer()
 
         if scope.dismissalMechanism.contains(.closeButton) {
-          Button("Cancel", action: scope.onCancel)
-            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          Button(
+            CheckoutComponentsStrings.cancelButton,
+            action: scope.onCancel
+          )
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+          .accessibility(
+            config: AccessibilityConfiguration(
+              identifier: AccessibilityIdentifiers.Common.closeButton,
+              label: CheckoutComponentsStrings.a11yCancel,
+              traits: [.isButton]
+            ))
         }
       }
     }
@@ -74,6 +90,8 @@ struct QRCodeView: View, LogReporter {
         ProgressView()
           .progressViewStyle(CircularProgressViewStyle())
           .scaleEffect(PrimerScale.large)
+          .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.loadingIndicator)
+          .accessibilityLabel(CheckoutComponentsStrings.a11yLoading)
         Spacer()
 
       case .displaying:
@@ -90,6 +108,8 @@ struct QRCodeView: View, LogReporter {
         Image(systemName: "checkmark.circle.fill")
           .font(.system(size: Layout.iconSize))
           .foregroundColor(.green)
+          .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.successIcon)
+          .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeSuccessIcon)
         Spacer()
 
       case .failure:
@@ -97,6 +117,7 @@ struct QRCodeView: View, LogReporter {
         Image(systemName: "xmark.circle.fill")
           .font(.system(size: Layout.iconSize))
           .foregroundColor(.red)
+          .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.failureIcon)
         Spacer()
       }
     }
@@ -111,21 +132,24 @@ struct QRCodeView: View, LogReporter {
           .font(.system(size: Layout.amountFontSize, weight: .bold))
           .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
           .frame(maxWidth: .infinity, alignment: .leading)
+          .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.amountLabel)
       }
     }
   }
 
   private func makeTitleSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
-      Text("Scan to pay or take a screenshot")
+      Text(CheckoutComponentsStrings.qrCodeScanInstruction)
         .font(.system(size: Layout.titleFontSize))
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionTitle)
 
-      Text("Upload the screenshot in your banking app")
+      Text(CheckoutComponentsStrings.qrCodeUploadInstruction)
         .font(.system(size: Layout.subtitleFontSize))
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.instructionSubtitle)
     }
   }
 
@@ -143,6 +167,9 @@ struct QRCodeView: View, LogReporter {
               .stroke(Color.gray.opacity(0.5), lineWidth: PrimerBorderWidth.standard)
           )
           .frame(maxWidth: .infinity)
+          .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.qrCodeImage)
+          .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeImage)
+          .accessibilityHint(CheckoutComponentsStrings.a11yQrCodeScanHint)
       }
     }
   }

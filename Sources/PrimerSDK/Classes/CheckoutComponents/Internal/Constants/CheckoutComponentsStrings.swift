@@ -1986,6 +1986,58 @@ enum CheckoutComponentsStrings {
     )
     return String(format: format, message)
   }
+
+  // MARK: - QR Code Strings
+
+  static let qrCodeScanInstruction = NSLocalizedString(
+    "primer_qr_code_scan_instruction",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Scan to pay or take a screenshot",
+    comment: "QR code scanning instruction text"
+  )
+
+  static let qrCodeUploadInstruction = NSLocalizedString(
+    "primer_qr_code_upload_instruction",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Upload the screenshot in your banking app",
+    comment: "QR code upload instruction text"
+  )
+
+  // MARK: - QR Code Accessibility Strings
+
+  static let a11yQrCodeImage = NSLocalizedString(
+    "accessibility_qr_code_image",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "QR code for payment",
+    comment: "VoiceOver label for QR code image"
+  )
+
+  static let a11yQrCodeScreen = NSLocalizedString(
+    "accessibility_qr_code_screen",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "QR code payment",
+    comment: "VoiceOver screen announcement for QR code payment screen"
+  )
+
+  static let a11yQrCodeScanHint = NSLocalizedString(
+    "accessibility_qr_code_scan_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Take a screenshot to save the QR code",
+    comment: "VoiceOver hint for QR code image"
+  )
+
+  static let a11yQrCodeSuccessIcon = NSLocalizedString(
+    "accessibility_qr_code_success_icon",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment successful",
+    comment: "VoiceOver label for QR code payment success icon"
+  )
 }
 
 // swiftlint:enable file_length
