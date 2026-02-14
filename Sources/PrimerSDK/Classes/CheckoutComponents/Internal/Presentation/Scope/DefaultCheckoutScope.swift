@@ -208,6 +208,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     ApplePayPaymentMethod.register()
     KlarnaPaymentMethod.register()
     AchPaymentMethod.register()
+    FormRedirectPaymentMethod.register()
   }
 
   // MARK: - Setup
