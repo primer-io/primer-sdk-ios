@@ -31,12 +31,16 @@ enum FormRedirectPaymentMethodHelper {
             let processPaymentInteractor: ProcessFormRedirectPaymentInteractor = try diContainer.resolveSync(
                 ProcessFormRedirectPaymentInteractor.self
             )
+            let validationService: ValidationService = try diContainer.resolveSync(
+                ValidationService.self
+            )
 
             return DefaultFormRedirectScope(
                 paymentMethodType: paymentMethodType,
                 checkoutScope: checkoutScope,
                 presentationContext: paymentMethodContext,
-                processPaymentInteractor: processPaymentInteractor
+                processPaymentInteractor: processPaymentInteractor,
+                validationService: validationService
             )
         } catch let primerError as PrimerError {
             throw primerError
