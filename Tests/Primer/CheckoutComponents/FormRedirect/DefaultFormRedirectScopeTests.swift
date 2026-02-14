@@ -119,7 +119,7 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_updateField_blik_invalidCode_setsErrorMessage() async throws {
+    func test_updateField_blik_partialCode_invalidWithNoError() async throws {
         let scope = createScope(paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType)
         scope.start()
         try await Task.sleep(nanoseconds: 50_000_000)
@@ -128,7 +128,7 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
 
         let state = await collectFirstState(from: scope)
         XCTAssertFalse(state?.fields.first?.isValid ?? true)
-        XCTAssertNotNil(state?.fields.first?.errorMessage)
+        XCTAssertNil(state?.fields.first?.errorMessage)
     }
 
     @MainActor
@@ -174,7 +174,7 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         scope.start()
         try await Task.sleep(nanoseconds: 50_000_000)
 
-        scope.updateField(.phoneNumber, value: "1234567")
+        scope.updateField(.phoneNumber, value: "123456")
 
         let state = await collectFirstState(from: scope)
         XCTAssertFalse(state?.fields.first?.isValid ?? true)
@@ -362,7 +362,8 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
             paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
             checkoutScope: checkoutScope,
             presentationContext: .fromPaymentSelection,
-            processPaymentInteractor: mockInteractor
+            processPaymentInteractor: mockInteractor,
+            validationService: DefaultValidationService()
         )
 
         scope.onBack()
