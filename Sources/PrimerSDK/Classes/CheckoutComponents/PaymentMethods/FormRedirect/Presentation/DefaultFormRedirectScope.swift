@@ -15,7 +15,6 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
 
     private enum Constants {
         static let blikOtpLength = 6
-        static let phoneMinLength = 8
         static let defaultDialCode = "+351"
         static let defaultCountryFlag = "🇵🇹"
     }
@@ -56,6 +55,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processPaymentInteractor: ProcessFormRedirectPaymentInteractor
+    private let validationService: ValidationService
 
     @Published private var internalState = FormRedirectState()
 
@@ -68,12 +68,14 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         paymentMethodType: String,
         checkoutScope: DefaultCheckoutScope,
         presentationContext: PresentationContext = .fromPaymentSelection,
-        processPaymentInteractor: ProcessFormRedirectPaymentInteractor
+        processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
+        validationService: ValidationService
     ) {
         self.paymentMethodType = paymentMethodType
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
         self.processPaymentInteractor = processPaymentInteractor
+        self.validationService = validationService
         configureFieldsForPaymentMethod()
     }
 
@@ -81,12 +83,14 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     init(
         paymentMethodType: String,
         presentationContext: PresentationContext = .fromPaymentSelection,
-        processPaymentInteractor: ProcessFormRedirectPaymentInteractor
+        processPaymentInteractor: ProcessFormRedirectPaymentInteractor,
+        validationService: ValidationService = DefaultValidationService()
     ) {
         self.paymentMethodType = paymentMethodType
         self.checkoutScope = nil
         self.presentationContext = presentationContext
         self.processPaymentInteractor = processPaymentInteractor
+        self.validationService = validationService
         configureFieldsForPaymentMethod()
     }
 
@@ -204,31 +208,18 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     }
 
     private func validateField(_ value: String, for fieldType: FormFieldState.FieldType) -> (isValid: Bool, error: String?) {
-        switch fieldType {
-        case .otpCode:
-            validateOtpCode(value)
-
-        case .phoneNumber:
-            validatePhoneNumber(value)
-        }
-    }
-
-    private func validateOtpCode(_ value: String) -> (isValid: Bool, error: String?) {
         guard !value.isEmpty else {
             return (false, nil)
         }
-        let isValid = value.count >= Constants.blikOtpLength
 
-        return (isValid, isValid ? nil : "Please enter a valid 6-digit BLIK code")
-    }
-
-    private func validatePhoneNumber(_ value: String) -> (isValid: Bool, error: String?) {
-        guard !value.isEmpty else {
-            return (false, nil)
+        let inputType: PrimerInputElementType = switch fieldType {
+        case .otpCode: .otp
+        case .phoneNumber: .phoneNumber
         }
-        let isValid = value.count >= Constants.phoneMinLength
 
-        return (isValid, isValid ? nil : CheckoutComponentsStrings.enterValidPhoneNumber)
+        // Submit button is disabled when invalid, so error messages are not needed
+        let result = validationService.validateField(type: inputType, value: value)
+        return (result.isValid, nil)
     }
 
     private func performPayment() async {
