@@ -34,28 +34,40 @@ struct FormRedirectPendingScreen: View {
 
                 makePaymentMethodIcon()
 
-                Text("Complete your payment")
+                Text(CheckoutComponentsStrings.formRedirectPendingTitle)
                     .font(PrimerFont.titleLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     .multilineTextAlignment(.center)
 
-                Text(currentState.pendingMessage ?? "Complete your payment in the app")
+                Text(currentState.pendingMessage ?? CheckoutComponentsStrings.formRedirectPendingMessage)
                     .font(PrimerFont.bodyLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, PrimerSpacing.xlarge(tokens: tokens))
+                    .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.pendingMessage)
 
                 ProgressView()
                     .progressViewStyle(
                         CircularProgressViewStyle(tint: CheckoutColors.borderFocus(tokens: tokens))
                     )
                     .scaleEffect(PrimerScale.large)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.loadingIndicator)
+                    .accessibility(
+                        config: AccessibilityConfiguration(
+                            identifier: AccessibilityIdentifiers.FormRedirect.loadingIndicator,
+                            label: CheckoutComponentsStrings.a11yLoading
+                        )
+                    )
 
                 Spacer()
             }
             .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         }
         .background(CheckoutColors.screenBackground(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.pendingScreen)
+        .onAppear {
+            announceScreenChange()
+        }
     }
 
     // MARK: - Header
@@ -69,6 +81,14 @@ struct FormRedirectPendingScreen: View {
                     .font(PrimerFont.titleLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.cancelButton)
+            .accessibility(
+                config: AccessibilityConfiguration(
+                    identifier: AccessibilityIdentifiers.FormRedirect.cancelButton,
+                    label: CheckoutComponentsStrings.a11yCancel,
+                    traits: [.isButton]
+                )
+            )
         }
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
@@ -86,6 +106,12 @@ struct FormRedirectPendingScreen: View {
         }
     }
 
+    // MARK: - Accessibility
+
+    private func announceScreenChange() {
+        let announcement = "\(CheckoutComponentsStrings.formRedirectPendingTitle). \(currentState.pendingMessage ?? CheckoutComponentsStrings.formRedirectPendingMessage)"
+        UIAccessibility.post(notification: .screenChanged, argument: announcement)
+    }
 }
 
 // MARK: - Preview

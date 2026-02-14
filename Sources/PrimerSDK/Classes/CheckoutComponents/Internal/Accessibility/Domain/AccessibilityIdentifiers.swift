@@ -136,4 +136,17 @@ enum AccessibilityIdentifiers {
     static let backButton = "checkout_components_web_redirect_back_button"
     static let cancelButton = "checkout_components_web_redirect_cancel_button"
   }
+
+  enum FormRedirect {
+    static let screen = "checkout_components_form_redirect_screen"
+    static let otpField = "checkout_components_form_redirect_otp_field"
+    static let phoneField = "checkout_components_form_redirect_phone_field"
+    static let phonePrefix = "checkout_components_form_redirect_phone_prefix"
+    static let submitButton = "checkout_components_form_redirect_submit_button"
+
+    static let cancelButton = "checkout_components_form_redirect_cancel_button"
+    static let pendingScreen = "checkout_components_form_redirect_pending_screen"
+    static let pendingMessage = "checkout_components_form_redirect_pending_message"
+    static let loadingIndicator = "checkout_components_form_redirect_loading_indicator"
+  }
 }

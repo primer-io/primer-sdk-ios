@@ -235,3 +235,20 @@
 "accessibility_web_redirect_polling" = "Waiting for payment confirmation";
 "accessibility_web_redirect_success" = "Payment successful";
 "accessibility_web_redirect_failure" = "Payment failed: %@";
+
+/* Form Redirect */
+"accessibility_form_redirect_otp_hint" = "Enter the 6-digit code from your banking app";
+"accessibility_form_redirect_otp_label" = "6 digit BLIK code, required";
+
+"accessibility_form_redirect_phone_hint" = "Enter your phone number registered with MBWay";
+"accessibility_form_redirect_phone_label" = "Phone number, required";
+
+"primer_form_redirect_blik_otp_helper" = "Open your banking app and generate a BLIK code.";
+"primer_form_redirect_blik_otp_label" = "6 digit code";
+"primer_form_redirect_blik_otp_placeholder" = "000000";
+"primer_form_redirect_blik_pending_message" = "Complete your payment in Blik app";
+"primer_form_redirect_blik_submit_button" = "Pay with BLIK";
+"primer_form_redirect_mbway_pending_message" = "Complete your payment in the MB WAY app";
+"primer_form_redirect_mbway_submit_button" = "Pay with MB WAY";
+"primer_form_redirect_pending_message" = "Complete your payment in the app";
+"primer_form_redirect_pending_title" = "Complete your payment";

@@ -1238,6 +1238,114 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver hint for Klarna finalize button"
   )
 
+  // MARK: - Form Redirect Strings (BLIK, MBWay)
+
+  static let blikOtpLabel = NSLocalizedString(
+    "primer_form_redirect_blik_otp_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "6 digit code",
+    comment: "BLIK OTP field label"
+  )
+
+  static let blikOtpPlaceholder = NSLocalizedString(
+    "primer_form_redirect_blik_otp_placeholder",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "000000",
+    comment: "BLIK OTP field placeholder"
+  )
+
+  static let blikOtpHelper = NSLocalizedString(
+    "primer_form_redirect_blik_otp_helper",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Open your banking app and generate a BLIK code.",
+    comment: "BLIK OTP field helper text"
+  )
+
+  static let formRedirectPendingTitle = NSLocalizedString(
+    "primer_form_redirect_pending_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment",
+    comment: "Form redirect pending screen title"
+  )
+
+  static let formRedirectPendingMessage = NSLocalizedString(
+    "primer_form_redirect_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in the app",
+    comment: "Form redirect pending screen message"
+  )
+
+  static let formRedirectBlikPendingMessage = NSLocalizedString(
+    "primer_form_redirect_blik_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in Blik app",
+    comment: "BLIK pending screen message"
+  )
+
+  static let formRedirectMBWayPendingMessage = NSLocalizedString(
+    "primer_form_redirect_mbway_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in the MB WAY app",
+    comment: "MBWay pending screen message"
+  )
+
+  // MARK: Form Redirect Accessibility Strings
+
+  static let a11yFormRedirectOtpLabel = NSLocalizedString(
+    "accessibility_form_redirect_otp_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "6 digit BLIK code, required",
+    comment: "VoiceOver label for BLIK OTP field"
+  )
+
+  static let a11yFormRedirectOtpHint = NSLocalizedString(
+    "accessibility_form_redirect_otp_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter the 6-digit code from your banking app",
+    comment: "VoiceOver hint for BLIK OTP field"
+  )
+
+  static let a11yFormRedirectPhoneLabel = NSLocalizedString(
+    "accessibility_form_redirect_phone_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Phone number, required",
+    comment: "VoiceOver label for MBWay phone number field"
+  )
+
+  static let a11yFormRedirectPhoneHint = NSLocalizedString(
+    "accessibility_form_redirect_phone_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter your phone number registered with MBWay",
+    comment: "VoiceOver hint for MBWay phone number field"
+  )
+
+  static let payWithBlik = NSLocalizedString(
+    "primer_form_redirect_blik_submit_button",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with BLIK",
+    comment: "BLIK submit button text"
+  )
+
+  static let payWithMBWay = NSLocalizedString(
+    "primer_form_redirect_mbway_submit_button",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with MB WAY",
+    comment: "MBWay submit button text"
+  )
+
   // MARK: - Accessibility Strings
 
   // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support

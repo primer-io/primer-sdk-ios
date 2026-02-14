@@ -81,9 +81,9 @@ extension FormFieldState {
             fieldType: .otpCode,
             value: "",
             isValid: false,
-            placeholder: "000000",
-            label: "6 digit code",
-            helperText: "Open your banking app and generate a BLIK code.",
+            placeholder: CheckoutComponentsStrings.blikOtpPlaceholder,
+            label: CheckoutComponentsStrings.blikOtpLabel,
+            helperText: CheckoutComponentsStrings.blikOtpHelper,
             keyboardType: .numberPad,
             maxLength: 6
         )
