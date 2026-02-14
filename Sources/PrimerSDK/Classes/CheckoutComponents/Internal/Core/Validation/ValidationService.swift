@@ -243,13 +243,8 @@ extension DefaultValidationService {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .otpCode)
         return .invalid(error: error)
       }
-      // Validate OTP is numeric
-      let numericRule = CharacterSetRule(
-        fieldName: "OTP",
-        allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
-        errorCode: "invalid-otp-format"
-      )
-      return numericRule.validate(value)
+      let rule = rulesFactory.createOTPCodeRule()
+      return rule.validate(value)
 
     case .retailer, .all:
       // These types don't need validation

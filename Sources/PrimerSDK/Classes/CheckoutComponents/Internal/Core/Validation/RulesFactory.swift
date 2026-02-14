@@ -17,6 +17,7 @@ protocol RulesFactory {
   func createFirstNameRule() -> FirstNameRule
   func createLastNameRule() -> LastNameRule
   func createEmailValidationRule() -> EmailValidationRule
+  func createOTPCodeRule() -> OTPCodeRule
   func createPhoneNumberValidationRule() -> PhoneNumberValidationRule
   func createAddressFieldRule(inputType: ValidationError.InputElementType, isRequired: Bool)
     -> AddressFieldRule
@@ -56,6 +57,10 @@ final class DefaultRulesFactory: RulesFactory {
 
   func createEmailValidationRule() -> EmailValidationRule {
     EmailValidationRule()
+  }
+
+  func createOTPCodeRule() -> OTPCodeRule {
+    OTPCodeRule()
   }
 
   func createPhoneNumberValidationRule() -> PhoneNumberValidationRule {
