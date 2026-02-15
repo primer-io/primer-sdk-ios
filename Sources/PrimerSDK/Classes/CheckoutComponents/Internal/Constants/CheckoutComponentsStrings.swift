@@ -1296,6 +1296,22 @@ enum CheckoutComponentsStrings {
     comment: "MBWay pending screen message"
   )
 
+  static let otpCodeRequired = NSLocalizedString(
+    "primer_form_redirect_otp_code_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "OTP code is required",
+    comment: "OTP code required error message"
+  )
+
+  static let otpCodeInvalid = NSLocalizedString(
+    "primer_form_redirect_otp_code_invalid",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter a valid 6-digit code",
+    comment: "OTP code invalid error message"
+  )
+
   // MARK: Form Redirect Accessibility Strings
 
   static let a11yFormRedirectOtpLabel = NSLocalizedString(

@@ -250,5 +250,7 @@
 "primer_form_redirect_blik_submit_button" = "Pay with BLIK";
 "primer_form_redirect_mbway_pending_message" = "Complete your payment in the MB WAY app";
 "primer_form_redirect_mbway_submit_button" = "Pay with MB WAY";
+"primer_form_redirect_otp_code_invalid" = "Enter a valid 6-digit code";
+"primer_form_redirect_otp_code_required" = "OTP code is required";
 "primer_form_redirect_pending_message" = "Complete your payment in the app";
 "primer_form_redirect_pending_title" = "Complete your payment";
