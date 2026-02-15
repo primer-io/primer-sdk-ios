@@ -30,6 +30,7 @@ struct WebRedirectScreen: View {
         .frame(maxWidth: UIScreen.main.bounds.width)
         .navigationBarHidden(true)
         .background(CheckoutColors.background(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.container)
         .task {
             for await state in scope.state {
                 webRedirectState = state
@@ -50,19 +51,29 @@ struct WebRedirectScreen: View {
                         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                             Image(systemName: RTLIcon.backChevron)
                                 .font(PrimerFont.bodyMedium(tokens: tokens))
-                            Text("Back")
+                            Text(CheckoutComponentsStrings.backButton)
                         }
                         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
                     })
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.WebRedirect.backButton,
+                        label: CheckoutComponentsStrings.a11yBack,
+                        traits: [.isButton]
+                    ))
                 }
 
                 Spacer()
 
                 if scope.dismissalMechanism.contains(.closeButton) {
-                    Button("Cancel", action: {
+                    Button(CheckoutComponentsStrings.cancelButton, action: {
                         scope.onCancel()
                     })
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibility(config: AccessibilityConfiguration(
+                        identifier: AccessibilityIdentifiers.WebRedirect.cancelButton,
+                        label: CheckoutComponentsStrings.a11yCancel,
+                        traits: [.isButton]
+                    ))
                 }
             }
 
@@ -76,6 +87,8 @@ struct WebRedirectScreen: View {
             .font(PrimerFont.titleXLarge(tokens: tokens))
             .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.title)
     }
 
     // MARK: - Content Section
@@ -87,17 +100,19 @@ struct WebRedirectScreen: View {
             makePaymentMethodLogo()
 
             // Redirect description
-            Text("You will be redirected to complete your payment")
+            Text(CheckoutComponentsStrings.webRedirectDescription)
                 .font(PrimerFont.body(tokens: tokens))
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
+                .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.description)
 
             // Surcharge info if applicable
             if let surcharge = webRedirectState.surchargeAmount {
                 Text(surcharge)
                     .font(PrimerFont.bodySmall(tokens: tokens))
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
+                    .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.surcharge)
             }
         }
         .padding(.vertical, PrimerSpacing.xlarge(tokens: tokens))
@@ -115,6 +130,10 @@ struct WebRedirectScreen: View {
                 makeFallbackLogo()
             }
         }
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.WebRedirect.logo,
+            label: paymentMethodDisplayName
+        ))
     }
 
     @MainActor
@@ -160,10 +179,27 @@ struct WebRedirectScreen: View {
         .padding(.vertical, PrimerSpacing.large(tokens: tokens))
         .background(submitButtonBackground)
         .cornerRadius(PrimerRadius.small(tokens: tokens))
+        .accessibility(config: AccessibilityConfiguration(
+            identifier: AccessibilityIdentifiers.WebRedirect.submitButton,
+            label: submitButtonAccessibilityLabel,
+            hint: isButtonDisabled ? CheckoutComponentsStrings.a11ySubmitButtonDisabled : CheckoutComponentsStrings.a11ySubmitButtonHint,
+            traits: [.isButton]
+        ))
     }
 
     private var submitButtonText: String {
-        scope.submitButtonText ?? "Continue with \(paymentMethodDisplayName)"
+        scope.submitButtonText ?? CheckoutComponentsStrings.webRedirectButtonContinue(paymentMethodDisplayName)
+    }
+
+    private var submitButtonAccessibilityLabel: String {
+        let isLoading = webRedirectState.status == .loading ||
+                        webRedirectState.status == .redirecting ||
+                        webRedirectState.status == .polling
+
+        if isLoading {
+            return CheckoutComponentsStrings.a11ySubmitButtonLoading
+        }
+        return CheckoutComponentsStrings.a11yWebRedirectSubmitButton(paymentMethodDisplayName)
     }
 
     private var submitButtonBackground: Color {
