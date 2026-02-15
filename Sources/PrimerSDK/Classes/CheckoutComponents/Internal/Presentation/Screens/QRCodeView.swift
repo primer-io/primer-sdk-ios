@@ -49,33 +49,18 @@ struct QRCodeView: View, LogReporter {
               HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
                 Image(systemName: RTLIcon.backChevron)
                   .font(PrimerFont.bodyMedium(tokens: tokens))
-                Text(CheckoutComponentsStrings.backButton)
+                Text("Back")
               }
               .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
             }
           )
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.backButton,
-              label: CheckoutComponentsStrings.a11yBack,
-              traits: [.isButton]
-            ))
         }
 
         Spacer()
 
         if scope.dismissalMechanism.contains(.closeButton) {
-          Button(
-            CheckoutComponentsStrings.cancelButton,
-            action: scope.onCancel
-          )
-          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
-          .accessibility(
-            config: AccessibilityConfiguration(
-              identifier: AccessibilityIdentifiers.Common.closeButton,
-              label: CheckoutComponentsStrings.a11yCancel,
-              traits: [.isButton]
-            ))
+          Button("Cancel", action: scope.onCancel)
+            .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         }
       }
     }
