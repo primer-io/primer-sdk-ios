@@ -54,26 +54,7 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
 
     // MARK: - tokenize Tests
 
-    func test_tokenize_withValidConfig_callsTokenizationService() async throws {
-        // Given
-        let expectedTokenData = createMockTokenData()
-        mockTokenizationService.onTokenize = { _ in .success(expectedTokenData) }
-        let sessionInfo = BlikSessionInfo(
-            blikCode: FormRedirectTestData.Constants.validBlikCode,
-            locale: "en-US"
-        )
-
-        // When
-        let response = try await sut.tokenize(
-            paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
-            sessionInfo: sessionInfo
-        )
-
-        // Then
-        XCTAssertEqual(response.tokenData.id, expectedTokenData.id)
-    }
-
-    func test_tokenize_withBlikSessionInfo_buildsCorrectPaymentMethodType() async throws {
+    func test_tokenize_withBlikSessionInfo_returnsTokenDataAndBuildsCorrectRequest() async throws {
         // Given
         let expectedTokenData = createMockTokenData()
         var capturedRequestBody: Request.Body.Tokenization?
@@ -89,16 +70,20 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
         )
 
         // When
-        _ = try await sut.tokenize(
+        let response = try await sut.tokenize(
             paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
             sessionInfo: sessionInfo
         )
 
         // Then
-        XCTAssertNotNil(capturedRequestBody)
+        XCTAssertEqual(response.tokenData.id, expectedTokenData.id)
+        XCTAssertEqual(response.tokenData.token, expectedTokenData.token)
+        XCTAssertEqual(response.tokenData.paymentMethodType, expectedTokenData.paymentMethodType)
+        let instrument = capturedRequestBody?.paymentInstrument as? OffSessionPaymentInstrument
+        XCTAssertEqual(instrument?.paymentMethodType, FormRedirectTestData.Constants.blikPaymentMethodType)
     }
 
-    func test_tokenize_withMBWaySessionInfo_callsTokenizationService() async throws {
+    func test_tokenize_withMBWaySessionInfo_returnsTokenData() async throws {
         // Given
         let expectedTokenData = createMockTokenData()
         mockTokenizationService.onTokenize = { _ in .success(expectedTokenData) }
@@ -113,7 +98,7 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
         )
 
         // Then
-        XCTAssertNotNil(response.tokenData)
+        XCTAssertEqual(response.tokenData.paymentMethodType, expectedTokenData.paymentMethodType)
     }
 
     func test_tokenize_withMissingPaymentMethodConfig_throwsError() async throws {
@@ -162,27 +147,6 @@ final class FormRedirectRepositoryImplTests: XCTestCase {
                 XCTFail("Expected unknown error")
             }
         }
-    }
-
-    func test_tokenize_returnsTokenData() async throws {
-        // Given
-        let expectedTokenData = createMockTokenData()
-        mockTokenizationService.onTokenize = { _ in .success(expectedTokenData) }
-
-        let sessionInfo = BlikSessionInfo(
-            blikCode: FormRedirectTestData.Constants.validBlikCode,
-            locale: "en-US"
-        )
-
-        // When
-        let response = try await sut.tokenize(
-            paymentMethodType: FormRedirectTestData.Constants.blikPaymentMethodType,
-            sessionInfo: sessionInfo
-        )
-
-        // Then
-        XCTAssertEqual(response.tokenData.token, expectedTokenData.token)
-        XCTAssertEqual(response.tokenData.paymentMethodType, expectedTokenData.paymentMethodType)
     }
 
     // MARK: - createPayment Tests

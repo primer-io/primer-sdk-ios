@@ -42,27 +42,19 @@ final class FormRedirectStateTests: XCTestCase {
 
     // MARK: - isTerminal Tests
 
-    func test_isTerminal_ready_returnsFalse() {
-        var state = FormRedirectState()
-        state.status = .ready
-        XCTAssertFalse(state.isTerminal)
-    }
+    func test_isTerminal_allStatuses() {
+        let expectations: [(FormRedirectState.Status, Bool)] = [
+            (.ready, false),
+            (.submitting, false),
+            (.awaitingExternalCompletion, false),
+            (.success, true),
+            (.failure("error"), true)
+        ]
 
-    func test_isTerminal_submitting_returnsFalse() {
-        var state = FormRedirectState()
-        state.status = .submitting
-        XCTAssertFalse(state.isTerminal)
-    }
-
-    func test_isTerminal_success_returnsTrue() {
-        var state = FormRedirectState()
-        state.status = .success
-        XCTAssertTrue(state.isTerminal)
-    }
-
-    func test_isTerminal_failure_returnsTrue() {
-        var state = FormRedirectState()
-        state.status = .failure("error")
-        XCTAssertTrue(state.isTerminal)
+        for (status, expected) in expectations {
+            var state = FormRedirectState()
+            state.status = status
+            XCTAssertEqual(state.isTerminal, expected, "isTerminal for \(status) should be \(expected)")
+        }
     }
 }

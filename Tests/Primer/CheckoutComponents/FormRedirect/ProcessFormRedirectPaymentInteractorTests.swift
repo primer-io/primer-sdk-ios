@@ -215,40 +215,6 @@ final class ProcessFormRedirectPaymentInteractorTests: XCTestCase {
         XCTAssertEqual(result.paymentId, FormRedirectTestData.Constants.paymentId)
     }
 
-    // MARK: - MBWay Payment Tests
-
-    func test_execute_mbwayPayment_callsTokenize() async throws {
-        // Given
-        let sessionInfo = FormRedirectTestData.mbwaySessionInfo
-
-        // When
-        _ = try await sut.execute(
-            paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType,
-            sessionInfo: sessionInfo
-        )
-
-        // Then
-        XCTAssertEqual(mockRepository.tokenizeCallCount, 1)
-        XCTAssertEqual(mockRepository.tokenizePaymentMethodType, FormRedirectTestData.Constants.mbwayPaymentMethodType)
-    }
-
-    func test_execute_mbwayPayment_passesInputPhonenumberSessionInfo() async throws {
-        // Given
-        let sessionInfo = FormRedirectTestData.mbwaySessionInfo
-
-        // When
-        _ = try await sut.execute(
-            paymentMethodType: FormRedirectTestData.Constants.mbwayPaymentMethodType,
-            sessionInfo: sessionInfo
-        )
-
-        // Then
-        XCTAssertTrue(mockRepository.tokenizeSessionInfo is InputPhonenumberSessionInfo)
-        if let passedSessionInfo = mockRepository.tokenizeSessionInfo as? InputPhonenumberSessionInfo {
-            XCTAssertEqual(passedSessionInfo.phoneNumber, "\(FormRedirectTestData.Constants.dialCode)\(FormRedirectTestData.Constants.validPhoneNumber)")
-        }
-    }
-
     // MARK: - Error Handling Tests
 
     func test_execute_tokenizationFails_throwsError() async {

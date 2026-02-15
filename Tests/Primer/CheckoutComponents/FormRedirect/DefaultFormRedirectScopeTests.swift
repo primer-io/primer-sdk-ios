@@ -372,6 +372,26 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
         XCTAssertEqual(coordinator.currentRoute, .paymentMethodSelection)
     }
 
+    // MARK: - Unsupported Payment Method Tests
+
+    @MainActor
+    func test_buildSessionInfo_unsupportedType_throwsError() async throws {
+        let scope = createScope(paymentMethodType: "UNSUPPORTED_TYPE")
+        scope.start()
+        try await Task.sleep(nanoseconds: 50_000_000)
+
+        scope.submit()
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        let state = await collectFirstState(from: scope)
+        if case .failure = state?.status {
+            // Expected
+        } else {
+            XCTFail("Expected failure status for unsupported payment method type")
+        }
+        XCTAssertEqual(mockInteractor.executeCallCount, 0)
+    }
+
     // MARK: - Helper Methods
 
     @MainActor
