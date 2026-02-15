@@ -162,7 +162,6 @@ extension FormRedirectState {
         status == .submitting
     }
 
-    /// Whether the form is in a terminal state (success or failure)
     public var isTerminal: Bool {
         switch status {
         case .success, .failure:
