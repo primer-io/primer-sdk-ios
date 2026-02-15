@@ -47,6 +47,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processWebRedirectInteractor: ProcessWebRedirectPaymentInteractor
     private let accessibilityService: AccessibilityAnnouncementService?
+    private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private let repository: WebRedirectRepository?
 
     @Published private var internalState: WebRedirectState
@@ -59,6 +60,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         presentationContext: PresentationContext = .fromPaymentSelection,
         processWebRedirectInteractor: ProcessWebRedirectPaymentInteractor,
         accessibilityService: AccessibilityAnnouncementService? = nil,
+        analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
         repository: WebRedirectRepository? = nil,
         paymentMethod: CheckoutPaymentMethod? = nil,
         surchargeAmount: String? = nil
@@ -68,6 +70,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         self.presentationContext = presentationContext
         self.processWebRedirectInteractor = processWebRedirectInteractor
         self.accessibilityService = accessibilityService
+        self.analyticsInteractor = analyticsInteractor
         self.repository = repository
         self.internalState = WebRedirectState(
             status: .idle,
@@ -119,7 +122,17 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
 
         accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectLoading)
 
+        await analyticsInteractor?.trackEvent(
+            .paymentSubmitted,
+            metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+        )
+
         do {
+            await analyticsInteractor?.trackEvent(
+                .paymentProcessingStarted,
+                metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+            )
+
             internalState.status = .redirecting
             accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectRedirecting)
 
@@ -130,6 +143,11 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
 
             internalState.status = .polling
             accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectPolling)
+
+            await analyticsInteractor?.trackEvent(
+                .paymentRedirectToThirdParty,
+                metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType))
+            )
 
             internalState.status = .success
             accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectSuccess)
