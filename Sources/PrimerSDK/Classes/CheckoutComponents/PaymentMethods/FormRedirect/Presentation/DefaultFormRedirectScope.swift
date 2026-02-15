@@ -79,7 +79,6 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         configureFieldsForPaymentMethod()
     }
 
-    /// Convenience initializer for testing without a checkout scope
     init(
         paymentMethodType: String,
         presentationContext: PresentationContext = .fromPaymentSelection,
