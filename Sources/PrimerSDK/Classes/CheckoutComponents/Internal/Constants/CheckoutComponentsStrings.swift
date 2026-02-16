@@ -2015,14 +2015,6 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver label for QR code image"
   )
 
-  static let a11yQrCodeScreen = NSLocalizedString(
-    "accessibility_qr_code_screen",
-    tableName: tableName,
-    bundle: .primerResources,
-    value: "QR code payment",
-    comment: "VoiceOver screen announcement for QR code payment screen"
-  )
-
   static let a11yQrCodeScanHint = NSLocalizedString(
     "accessibility_qr_code_scan_hint",
     tableName: tableName,
@@ -2037,6 +2029,14 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "Payment successful",
     comment: "VoiceOver label for QR code payment success icon"
+  )
+
+  static let a11yQrCodeFailureIcon = NSLocalizedString(
+    "accessibility_qr_code_failure_icon",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment failed",
+    comment: "VoiceOver label for QR code payment failure icon"
   )
 }
 

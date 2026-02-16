@@ -118,6 +118,7 @@ struct QRCodeView: View, LogReporter {
           .font(.system(size: Layout.iconSize))
           .foregroundColor(.red)
           .accessibilityIdentifier(AccessibilityIdentifiers.QRCode.failureIcon)
+          .accessibilityLabel(CheckoutComponentsStrings.a11yQrCodeFailureIcon)
         Spacer()
       }
     }

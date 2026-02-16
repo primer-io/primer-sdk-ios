@@ -259,6 +259,6 @@
 "primer_qr_code_scan_instruction" = "Scan to pay or take a screenshot";
 "primer_qr_code_upload_instruction" = "Upload the screenshot in your banking app";
 "accessibility_qr_code_image" = "QR code for payment";
-"accessibility_qr_code_screen" = "QR code payment";
 "accessibility_qr_code_scan_hint" = "Take a screenshot to save the QR code";
 "accessibility_qr_code_success_icon" = "Payment successful";
+"accessibility_qr_code_failure_icon" = "Payment failed";
