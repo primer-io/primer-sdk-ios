@@ -1792,7 +1792,7 @@ enum CheckoutComponentsStrings {
     let format = NSLocalizedString(
       "primer_web_redirect_button_continue",
       tableName: tableName,
-      bundle: Bundle.primerResources,
+      bundle: .primerResources,
       value: "Continue with %@",
       comment: "Web redirect submit button text with payment method name"
     )
@@ -1802,7 +1802,7 @@ enum CheckoutComponentsStrings {
   static let webRedirectDescription = NSLocalizedString(
     "primer_web_redirect_description",
     tableName: tableName,
-    bundle: Bundle.primerResources,
+    bundle: .primerResources,
     value: "You will be redirected to complete your payment",
     comment: "Web redirect screen description text"
   )
@@ -1813,7 +1813,7 @@ enum CheckoutComponentsStrings {
     let format = NSLocalizedString(
       "accessibility_web_redirect_submit_button",
       tableName: tableName,
-      bundle: Bundle.primerResources,
+      bundle: .primerResources,
       value: "Pay with %@",
       comment: "VoiceOver label for web redirect pay button"
     )
@@ -1823,7 +1823,7 @@ enum CheckoutComponentsStrings {
   static let a11yWebRedirectLoading = NSLocalizedString(
     "accessibility_web_redirect_loading",
     tableName: tableName,
-    bundle: Bundle.primerResources,
+    bundle: .primerResources,
     value: "Processing payment",
     comment: "VoiceOver announcement when web redirect payment is processing"
   )
@@ -1831,7 +1831,7 @@ enum CheckoutComponentsStrings {
   static let a11yWebRedirectRedirecting = NSLocalizedString(
     "accessibility_web_redirect_redirecting",
     tableName: tableName,
-    bundle: Bundle.primerResources,
+    bundle: .primerResources,
     value: "Opening payment page",
     comment: "VoiceOver announcement when redirecting to payment provider"
   )
@@ -1839,7 +1839,7 @@ enum CheckoutComponentsStrings {
   static let a11yWebRedirectPolling = NSLocalizedString(
     "accessibility_web_redirect_polling",
     tableName: tableName,
-    bundle: Bundle.primerResources,
+    bundle: .primerResources,
     value: "Waiting for payment confirmation",
     comment: "VoiceOver announcement when polling for payment status"
   )
@@ -1847,7 +1847,7 @@ enum CheckoutComponentsStrings {
   static let a11yWebRedirectSuccess = NSLocalizedString(
     "accessibility_web_redirect_success",
     tableName: tableName,
-    bundle: Bundle.primerResources,
+    bundle: .primerResources,
     value: "Payment successful",
     comment: "VoiceOver announcement when web redirect payment succeeds"
   )
@@ -1856,7 +1856,7 @@ enum CheckoutComponentsStrings {
     let format = NSLocalizedString(
       "accessibility_web_redirect_failure",
       tableName: tableName,
-      bundle: Bundle.primerResources,
+      bundle: .primerResources,
       value: "Payment failed: %@",
       comment: "VoiceOver announcement when web redirect payment fails"
     )

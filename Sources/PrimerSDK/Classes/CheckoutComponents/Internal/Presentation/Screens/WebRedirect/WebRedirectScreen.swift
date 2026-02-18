@@ -160,9 +160,7 @@ struct WebRedirectScreen: View {
     }
 
     private func makeSubmitButtonContent() -> some View {
-        let isLoading = webRedirectState.status == .loading ||
-                        webRedirectState.status == .redirecting ||
-                        webRedirectState.status == .polling
+        let isLoading = [.loading, .redirecting, .polling].contains(webRedirectState.status)
 
         return HStack {
             if isLoading {
@@ -192,14 +190,10 @@ struct WebRedirectScreen: View {
     }
 
     private var submitButtonAccessibilityLabel: String {
-        let isLoading = webRedirectState.status == .loading ||
-                        webRedirectState.status == .redirecting ||
-                        webRedirectState.status == .polling
-
-        if isLoading {
-            return CheckoutComponentsStrings.a11ySubmitButtonLoading
-        }
-        return CheckoutComponentsStrings.a11yWebRedirectSubmitButton(paymentMethodDisplayName)
+        let isLoading = [.loading, .redirecting, .polling].contains(webRedirectState.status)
+        return isLoading
+            ? CheckoutComponentsStrings.a11ySubmitButtonLoading
+            : CheckoutComponentsStrings.a11yWebRedirectSubmitButton(paymentMethodDisplayName)
     }
 
     private var submitButtonBackground: Color {
@@ -209,9 +203,7 @@ struct WebRedirectScreen: View {
     }
 
     private var isButtonDisabled: Bool {
-        webRedirectState.status == .loading ||
-        webRedirectState.status == .redirecting ||
-        webRedirectState.status == .polling
+        [.loading, .redirecting, .polling].contains(webRedirectState.status)
     }
 
     private var paymentMethodDisplayName: String {
