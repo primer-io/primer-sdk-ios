@@ -9,33 +9,6 @@ import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
 
-protocol ResponseMetadata {
-    var responseUrl: String? { get }
-    var statusCode: Int { get }
-    var headers: [String: String]? { get }
-}
-
-extension ResponseMetadata {
-    var description: String {
-        "\(responseUrl ?? "Unknown URL") => \(statusCode)"
-    }
-}
-
-extension HTTPURLResponse: ResponseMetadata {
-
-    var responseUrl: String? {
-        url?.absoluteString
-    }
-
-    var headers: [String: String]? {
-        allHeaderFields.reduce(into: [:]) { result, item in
-            if let key = item.key as? String, let value = item.value as? String {
-                result[key] = value
-            }
-        }
-    }
-}
-
 final class DefaultNetworkService: NetworkServiceProtocol, LogReporter {
 
     let requestFactory: NetworkRequestFactory
