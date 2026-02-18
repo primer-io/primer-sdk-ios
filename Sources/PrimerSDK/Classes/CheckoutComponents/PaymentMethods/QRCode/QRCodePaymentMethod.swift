@@ -22,9 +22,7 @@ enum QRCodePaymentMethod {
             diContainer: diContainer
           )
         },
-        viewCreator: { checkoutScope in
-          createView(checkoutScope: checkoutScope)
-        }
+        viewCreator: createView(checkoutScope:)
       )
     }
   }
@@ -76,11 +74,10 @@ enum QRCodePaymentMethod {
 
   @MainActor
   static func createView(checkoutScope: any PrimerCheckoutScope) -> AnyView? {
-    guard let qrCodeScope = checkoutScope.getPaymentMethodScope(DefaultQRCodeScope.self) else {
-      return nil
-    }
-
-    return qrCodeScope.screen.map { AnyView($0(qrCodeScope)) }
-      ?? AnyView(QRCodeView(scope: qrCodeScope))
+    checkoutScope.getPaymentMethodScope(DefaultQRCodeScope.self)
+      .map { scope in
+        scope.screen.map { AnyView($0(scope)) }
+          ?? AnyView(QRCodeView(scope: scope))
+      }
   }
 }

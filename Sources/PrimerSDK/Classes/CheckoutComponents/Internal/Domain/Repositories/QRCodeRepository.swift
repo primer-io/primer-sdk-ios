@@ -4,11 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import UIKit
+import Foundation
 
 @available(iOS 15.0, *)
 struct QRCodePaymentData {
-  let qrCodeImage: UIImage
+  let qrCodeImageData: Data
   let statusUrl: URL
   let paymentId: String
 }

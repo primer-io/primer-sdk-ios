@@ -14,6 +14,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
   // MARK: - Public Properties
 
   public private(set) var presentationContext: PresentationContext
+  public var screen: QRCodeScreenComponent?
 
   public var dismissalMechanism: [DismissalMechanism] {
     checkoutScope?.dismissalMechanism ?? []
@@ -33,10 +34,6 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
       }
     }
   }
-
-  // MARK: - UI Customization Properties
-
-  public var screen: QRCodeScreenComponent?
 
   // MARK: - Private Properties
 
@@ -66,6 +63,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
     }
   }
 
+  // No-op: QR code payments auto-submit via start()
   public func submit() {}
 
   public func cancel() {
@@ -95,7 +93,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
 
     do {
       let paymentData = try await interactor.startPayment()
-      internalState.qrCodeImage = paymentData.qrCodeImage
+      internalState.qrCodeImageData = paymentData.qrCodeImageData
       internalState.status = .displaying
 
       let result = try await interactor.pollAndComplete(

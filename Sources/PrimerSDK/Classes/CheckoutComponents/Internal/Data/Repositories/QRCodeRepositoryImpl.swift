@@ -87,10 +87,10 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
       )
     }
 
-    let qrCodeImage = try await convertQRCodeToImage(qrCodeString)
+    let qrCodeImageData = try await convertQRCodeToImageData(qrCodeString)
 
     return QRCodePaymentData(
-      qrCodeImage: qrCodeImage,
+      qrCodeImageData: qrCodeImageData,
       statusUrl: statusUrl,
       paymentId: paymentId
     )
@@ -135,29 +135,29 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
       .first(where: { $0.type == paymentMethodType })
   }
 
-  private func convertQRCodeToImage(_ qrCodeString: String) async throws -> UIImage {
+  private func convertQRCodeToImageData(_ qrCodeString: String) async throws -> Data {
     if qrCodeString.isHttpOrHttpsURL, let url = URL(string: qrCodeString) {
-      return try await fetchImageFromURL(url)
+      return try await fetchImageData(from: url)
     } else {
-      return try decodeBase64Image(qrCodeString)
+      return try decodeBase64ImageData(qrCodeString)
     }
   }
 
-  private func fetchImageFromURL(_ url: URL) async throws -> UIImage {
+  private func fetchImageData(from url: URL) async throws -> Data {
     let (data, _) = try await URLSession.shared.data(from: url)
-    guard let image = UIImage(data: data) else {
+    guard UIImage(data: data) != nil else {
       throw PrimerError.invalidValue(
         key: "qrCodeUrl",
         value: url.absoluteString,
         reason: "Failed to create image from URL data"
       )
     }
-    return image
+    return data
   }
 
-  private func decodeBase64Image(_ base64String: String) throws -> UIImage {
+  private func decodeBase64ImageData(_ base64String: String) throws -> Data {
     guard let data = Data(base64Encoded: base64String),
-      let image = UIImage(data: data)
+      UIImage(data: data) != nil
     else {
       throw PrimerError.invalidValue(
         key: "qrCode",
@@ -165,6 +165,6 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
         reason: "Failed to decode Base64 QR code image"
       )
     }
-    return image
+    return data
   }
 }

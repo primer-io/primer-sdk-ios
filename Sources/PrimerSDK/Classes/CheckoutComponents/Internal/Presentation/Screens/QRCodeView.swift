@@ -11,7 +11,7 @@ struct QRCodeView: View, LogReporter {
   let scope: any PrimerQRCodeScope
 
   @Environment(\.designTokens) private var tokens
-  @State private var qrCodeState: QRCodeState = .init()
+  @State private var qrCodeState = QRCodeState()
 
   private enum Layout {
     static let amountFontSize: CGFloat = 34
@@ -26,11 +26,10 @@ struct QRCodeView: View, LogReporter {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       makeHeaderSection()
       makeContentSection()
-      Spacer()
     }
-    .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
-    .padding(.vertical, PrimerSpacing.large(tokens: tokens))
-    .frame(maxWidth: UIScreen.main.bounds.width)
+    .frame(maxHeight: .infinity, alignment: .top)
+    .padding(PrimerSpacing.large(tokens: tokens))
+    .frame(maxWidth: .infinity)
     .navigationBarHidden(true)
     .background(CheckoutColors.background(tokens: tokens))
     .onAppear(perform: observeState)
@@ -38,7 +37,6 @@ struct QRCodeView: View, LogReporter {
 
   // MARK: - Header Section
 
-  @MainActor
   private func makeHeaderSection() -> some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       HStack {
@@ -68,7 +66,6 @@ struct QRCodeView: View, LogReporter {
 
   // MARK: - Content Section
 
-  @MainActor
   private func makeContentSection() -> some View {
     VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
       switch qrCodeState.status {
@@ -105,7 +102,6 @@ struct QRCodeView: View, LogReporter {
     }
   }
 
-  @MainActor
   private func makeAmountLabel() -> some View {
     Group {
       if let amount = AppState.current.amount,
@@ -119,7 +115,6 @@ struct QRCodeView: View, LogReporter {
     }
   }
 
-  @MainActor
   private func makeTitleSection() -> some View {
     VStack(alignment: .leading, spacing: PrimerSpacing.small(tokens: tokens)) {
       Text("Scan to pay or take a screenshot")
@@ -134,11 +129,10 @@ struct QRCodeView: View, LogReporter {
     }
   }
 
-  @MainActor
   private func makeQRCodeImage() -> some View {
     Group {
-      if let image = qrCodeState.qrCodeImage {
-        Image(uiImage: image)
+      if let imageData = qrCodeState.qrCodeImageData, let uiImage = UIImage(data: imageData) {
+        Image(uiImage: uiImage)
           .resizable()
           .interpolation(.none)
           .aspectRatio(contentMode: .fit)

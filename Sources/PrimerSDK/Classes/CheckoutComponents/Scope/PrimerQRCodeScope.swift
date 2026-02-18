@@ -16,6 +16,7 @@ public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == QRCod
   var state: AsyncStream<QRCodeState> { get }
   var presentationContext: PresentationContext { get }
   var dismissalMechanism: [DismissalMechanism] { get }
+  var screen: QRCodeScreenComponent? { get set }
 
   // MARK: - Payment Method Lifecycle
 
@@ -25,8 +26,4 @@ public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == QRCod
 
   func onBack()
   func onCancel()
-
-  // MARK: - Screen-Level Customization
-
-  var screen: QRCodeScreenComponent? { get set }
 }
