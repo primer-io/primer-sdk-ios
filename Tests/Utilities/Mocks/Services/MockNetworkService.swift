@@ -17,8 +17,8 @@ final class MockNetworkService: NetworkServiceProtocol {
     private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 1)
 
     func request<T>(
-        _ endpoint: PrimerSDK.Endpoint,
-        completion: @escaping PrimerSDK.ResponseCompletion<T>
+        _ endpoint: Endpoint,
+        completion: @escaping ResponseCompletion<T>
     ) -> PrimerCancellable? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
@@ -52,8 +52,8 @@ final class MockNetworkService: NetworkServiceProtocol {
     }
 
     func request<T>(
-        _ endpoint: any PrimerSDK.Endpoint,
-        completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
+        _ endpoint: any Endpoint,
+        completion: @escaping ResponseCompletionWithHeaders<T>
     ) -> (any PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
@@ -85,9 +85,9 @@ final class MockNetworkService: NetworkServiceProtocol {
     }
 
     func request<T>(
-        _ endpoint: any PrimerSDK.Endpoint,
-        retryConfig _: PrimerSDK.RetryConfig?,
-        completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>
+        _ endpoint: any Endpoint,
+        retryConfig _: RetryConfig?,
+        completion: @escaping ResponseCompletionWithHeaders<T>
     ) -> (any PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
