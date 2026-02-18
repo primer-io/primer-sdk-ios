@@ -6,6 +6,7 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 import UIKit
 
 #if canImport(PrimerStripeSDK)

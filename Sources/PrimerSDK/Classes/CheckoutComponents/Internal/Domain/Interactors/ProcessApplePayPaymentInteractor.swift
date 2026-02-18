@@ -8,6 +8,7 @@ import Foundation
 import PassKit
 import PrimerCore
 import PrimerFoundation
+import PrimerNetworking
 
 /// Protocol for processing Apple Pay payments.
 @available(iOS 15.0, *)

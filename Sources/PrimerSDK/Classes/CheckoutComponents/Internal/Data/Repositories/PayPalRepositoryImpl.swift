@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerNetworking
 
 /// Implementation of PayPalRepository that wraps the existing PayPalService and WebAuthenticationService.
 @available(iOS 15.0, *)

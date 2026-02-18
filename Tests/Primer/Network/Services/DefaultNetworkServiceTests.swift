@@ -24,7 +24,7 @@ final class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     func dispatch(
         request: URLRequest,
-        completion: @escaping PrimerSDK.DispatcherCompletion
+        completion: @escaping DispatcherCompletion
     ) -> (any PrimerCancellable)? {
         if let error {
             completion(.failure(error))
@@ -36,7 +36,7 @@ final class MockRequestDispatcher: RequestDispatcher, @unchecked Sendable {
 
     func dispatchWithRetry(
         request: URLRequest,
-        retryConfig: PrimerSDK.RetryConfig,
+        retryConfig: RetryConfig,
         completion: @escaping DispatcherCompletion
     ) -> (any PrimerCancellable)? {
         if let error {
