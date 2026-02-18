@@ -9,18 +9,23 @@ import Foundation
 import PrimerFoundation
 import SafariServices
 
-protocol WebAuthenticationService {
+public protocol WebAuthenticationService {
     var session: ASWebAuthenticationSession? { get }
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
     @MainActor
     func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
 // MARK: MISSING_TESTS
-final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
+public final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
-    var session: ASWebAuthenticationSession?
+    public var session: ASWebAuthenticationSession?
 
-    func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void) {
+    public func connect(
+        paymentMethodType: String,
+        url: URL,
+        scheme: String,
+        _ completion: @escaping (Result<URL, Error>) -> Void
+    ) {
         let webAuthSession =  ASWebAuthenticationSession(
             url: url,
             callbackURLScheme: scheme,
@@ -41,7 +46,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
     }
 
     @MainActor
-    func connect(
+    public func connect(
         paymentMethodType: String,
         url: URL,
         scheme: String
@@ -70,7 +75,7 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 }
 
 extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    public func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
 

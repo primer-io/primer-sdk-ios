@@ -7,10 +7,10 @@
 import Foundation
 import PrimerFoundation
 
-typealias ResponseCompletion<T> = (Result<T, Error>) -> Void
-typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]?) -> Void
+public typealias ResponseCompletion<T> = (Result<T, Error>) -> Void
+public typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]?) -> Void
 
-protocol NetworkServiceProtocol: Sendable {
+public protocol NetworkServiceProtocol: Sendable {
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable?
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T

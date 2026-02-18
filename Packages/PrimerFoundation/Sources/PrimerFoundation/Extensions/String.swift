@@ -16,6 +16,12 @@ public extension String {
     var withoutWhiteSpace: String {
         self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
+    
+    var isHttpOrHttpsURL: Bool {
+        let canCreateURL = URL(string: self) != nil
+        let startsWithHttpOrHttps = hasPrefix("http") || hasPrefix("https")
+        return canCreateURL && startsWithHttpOrHttps
+    }
 
     var isNumeric: Bool {
         guard !self.isEmpty else { return false }
