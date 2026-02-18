@@ -51,7 +51,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
     presentationContext: PresentationContext = .fromPaymentSelection,
     interactor: ProcessQRCodePaymentInteractor,
     analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil,
-    paymentMethodType: String = ""
+    paymentMethodType: String
   ) {
     self.checkoutScope = checkoutScope
     self.presentationContext = presentationContext

@@ -49,7 +49,8 @@ enum QRCodePaymentMethod {
     do {
       let repository: QRCodeRepository = try diContainer.resolveSync(QRCodeRepository.self)
       let analyticsInteractor = try? diContainer.resolveSync(
-        CheckoutComponentsAnalyticsInteractorProtocol.self)
+        CheckoutComponentsAnalyticsInteractorProtocol.self
+      )
 
       let interactor = ProcessQRCodePaymentInteractorImpl(
         repository: repository,
