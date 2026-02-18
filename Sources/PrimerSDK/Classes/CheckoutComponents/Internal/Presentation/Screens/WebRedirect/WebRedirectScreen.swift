@@ -16,7 +16,7 @@ struct WebRedirectScreen: View {
     let scope: any PrimerWebRedirectScope
 
     @Environment(\.designTokens) private var tokens
-    @State private var webRedirectState: WebRedirectState = .init()
+    @State private var webRedirectState = WebRedirectState()
 
     var body: some View {
         VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
@@ -40,7 +40,6 @@ struct WebRedirectScreen: View {
 
     // MARK: - Header Section
 
-    @MainActor
     private func makeHeaderSection() -> some View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
             HStack {
@@ -81,7 +80,6 @@ struct WebRedirectScreen: View {
         }
     }
 
-    @MainActor
     private func makeTitleSection() -> some View {
         Text(paymentMethodDisplayName)
             .font(PrimerFont.titleXLarge(tokens: tokens))
@@ -93,13 +91,10 @@ struct WebRedirectScreen: View {
 
     // MARK: - Content Section
 
-    @MainActor
     private func makeContentSection() -> some View {
         VStack(spacing: PrimerSpacing.large(tokens: tokens)) {
-            // Payment method logo
             makePaymentMethodLogo()
 
-            // Redirect description
             Text(CheckoutComponentsStrings.webRedirectDescription)
                 .font(PrimerFont.body(tokens: tokens))
                 .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -107,7 +102,6 @@ struct WebRedirectScreen: View {
                 .frame(maxWidth: .infinity)
                 .accessibilityIdentifier(AccessibilityIdentifiers.WebRedirect.description)
 
-            // Surcharge info if applicable
             if let surcharge = webRedirectState.surchargeAmount {
                 Text(surcharge)
                     .font(PrimerFont.bodySmall(tokens: tokens))
@@ -118,7 +112,6 @@ struct WebRedirectScreen: View {
         .padding(.vertical, PrimerSpacing.xlarge(tokens: tokens))
     }
 
-    @MainActor
     private func makePaymentMethodLogo() -> some View {
         Group {
             if let icon = webRedirectState.paymentMethod?.icon {
@@ -136,7 +129,6 @@ struct WebRedirectScreen: View {
         ))
     }
 
-    @MainActor
     private func makeFallbackLogo() -> some View {
         Text(paymentMethodDisplayName)
             .font(PrimerFont.titleXLarge(tokens: tokens))
@@ -145,10 +137,8 @@ struct WebRedirectScreen: View {
 
     // MARK: - Submit Button Section
 
-    @MainActor
     @ViewBuilder
     private func makeSubmitButtonSection() -> some View {
-        // Check for custom button
         if let customButton = scope.payButton {
             AnyView(customButton(scope))
         } else {
@@ -284,13 +274,13 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
         )
     }
 
-    func start() {}
+    func start() { /* No-op: preview mock */ }
     func submit() {
         mockState.status = .loading
     }
 
-    func cancel() {}
-    func onBack() {}
-    func onCancel() {}
+    func cancel() { /* No-op: preview mock */ }
+    func onBack() { /* No-op: preview mock */ }
+    func onCancel() { /* No-op: preview mock */ }
 }
 #endif

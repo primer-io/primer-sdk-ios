@@ -112,7 +112,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
     private func performPayment() async {
         // Capture strong reference to checkoutScope before Safari opens
         // Safari redirect causes SwiftUI views to go off-screen, releasing weak references
-        guard let checkoutScope = checkoutScope else { return }
+        guard let checkoutScope else { return }
 
         internalState.status = .loading
         checkoutScope.startProcessing()
