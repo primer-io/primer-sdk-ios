@@ -26,7 +26,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<AchState> {
+  public var state: AsyncStream<PrimerAchState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -47,7 +47,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   private let processAchInteractor: ProcessAchPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  @Published private var internalState = AchState()
+  @Published private var internalState = PrimerAchState()
 
   private var currentFirstName: String = ""
   private var currentLastName: String = ""
@@ -131,7 +131,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
     logger.debug(message: "ACH mandate accepted")
 
-    internalState = AchState(
+    internalState = PrimerAchState(
       step: .processing,
       userDetails: internalState.userDetails,
       mandateText: internalState.mandateText,
@@ -176,7 +176,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
   // MARK: - Private Flow Methods
 
   private func loadInitialUserDetails() async {
-    internalState = AchState(step: .loading)
+    internalState = PrimerAchState(step: .loading)
 
     do {
       try await processAchInteractor.validate()
@@ -187,7 +187,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       currentLastName = userDetailsResult.lastName
       currentEmailAddress = userDetailsResult.emailAddress
 
-      let userDetails = AchState.UserDetails(
+      let userDetails = PrimerAchState.UserDetails(
         firstName: userDetailsResult.firstName,
         lastName: userDetailsResult.lastName,
         emailAddress: userDetailsResult.emailAddress
@@ -195,7 +195,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
       let isSubmitEnabled = validateCurrentFields()
 
-      internalState = AchState(
+      internalState = PrimerAchState(
         step: .userDetailsCollection,
         userDetails: userDetails,
         isSubmitEnabled: isSubmitEnabled
@@ -211,13 +211,13 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     let isSubmitEnabled = validateCurrentFields()
     let fieldValidation = getFieldErrors()
 
-    let userDetails = AchState.UserDetails(
+    let userDetails = PrimerAchState.UserDetails(
       firstName: currentFirstName,
       lastName: currentLastName,
       emailAddress: currentEmailAddress
     )
 
-    internalState = AchState(
+    internalState = PrimerAchState(
       step: internalState.step,
       userDetails: userDetails,
       fieldValidation: fieldValidation,
@@ -238,7 +238,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     return firstNameValid && lastNameValid && emailValid
   }
 
-  private func getFieldErrors() -> AchState.FieldValidation? {
+  private func getFieldErrors() -> PrimerAchState.FieldValidation? {
     var firstNameError: String?
     var lastNameError: String?
     var emailError: String?
@@ -259,7 +259,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return nil
     }
 
-    return AchState.FieldValidation(
+    return PrimerAchState.FieldValidation(
       firstNameError: firstNameError,
       lastNameError: lastNameError,
       emailError: emailError
@@ -272,7 +272,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return
     }
 
-    internalState = AchState(
+    internalState = PrimerAchState(
       step: .loading,
       userDetails: internalState.userDetails,
       isSubmitEnabled: false
@@ -298,13 +298,13 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
 
       bankCollectorViewController = collectorVC
 
-      let userDetails = AchState.UserDetails(
+      let userDetails = PrimerAchState.UserDetails(
         firstName: currentFirstName,
         lastName: currentLastName,
         emailAddress: currentEmailAddress
       )
 
-      internalState = AchState(
+      internalState = PrimerAchState(
         step: .bankAccountCollection,
         userDetails: userDetails,
         isSubmitEnabled: false
@@ -329,7 +329,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
         throw PrimerError.merchantError(message: "No mandate data available")
       }
 
-      internalState = AchState(
+      internalState = PrimerAchState(
         step: .mandateAcceptance,
         userDetails: internalState.userDetails,
         mandateText: mandateText,

@@ -698,7 +698,7 @@ final class DefaultAchScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [AchState] = []
+        var receivedStates: [PrimerAchState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)

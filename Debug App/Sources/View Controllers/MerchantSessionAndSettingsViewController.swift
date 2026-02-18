@@ -1112,9 +1112,9 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
 
 /// Debug App delegate for CheckoutComponents that logs results and shows alerts
 @available(iOS 15.0, *)
-class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
     
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         print("✅ [Debug App] CheckoutComponents payment completed successfully! Payment ID: \(result.paymentId)")
         
         DispatchQueue.main.async {
@@ -1151,7 +1151,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 let successData = PrimerCheckoutData(payment: successPayment)
                 
                 // Create realistic logs for CheckoutComponents success
-                var logs = ["checkoutComponentsDidCompleteWithSuccess"]
+                var logs = ["primerCheckoutPresenterDidCompleteWithSuccess"]
                 logs.append("Payment ID: \(result.paymentId)")
                 logs.append("Status: \(result.status)")
                 if let token = result.token {
@@ -1183,7 +1183,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         }
     }
     
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
         
         DispatchQueue.main.async {
@@ -1219,7 +1219,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 let failureData = PrimerCheckoutData(payment: failurePayment)
                 
                 // Create realistic logs for CheckoutComponents failure (matching Drop-in pattern)
-                var logs = ["checkoutComponentsDidFailWithError"]
+                var logs = ["primerCheckoutPresenterDidFailWithError"]
                 logs.append("Error ID: \(error.errorId)")
                 logs.append("Diagnostics ID: \(error.diagnosticsId)")
                 logs.append("Description: \(error.localizedDescription)")
@@ -1246,7 +1246,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         }
     }
     
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         print("🚪 [Debug App] CheckoutComponents was dismissed by user")
         
         DispatchQueue.main.async {
@@ -1268,9 +1268,9 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
     
     // MARK: - 3DS Delegate Methods
 
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
         print("🔐 [Debug App] CheckoutComponents will present 3DS challenge")
-        print("🔐 [Debug App] Payment method type: \(paymentMethodTokenData.paymentMethodType)")
+        print("🔐 [Debug App] Payment method type: \(String(describing: paymentMethodTokenData.paymentMethodType))")
         if let token = paymentMethodTokenData.token {
             print("🔐 [Debug App] Token: \(token)")
         }
@@ -1278,11 +1278,11 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         print("🔐 [Debug App] 3DS will be handled during payment creation if required")
     }
 
-    func checkoutComponentsDidDismiss3DSChallenge() {
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
         print("🔐 [Debug App] CheckoutComponents 3DS challenge was dismissed")
     }
 
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
         if success {
             print("🔐✅ [Debug App] CheckoutComponents 3DS challenge completed successfully")
             if let resumeToken = resumeToken {
@@ -1342,7 +1342,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
 
 /// Inline test delegate for CheckoutComponents results
 @available(iOS 15.0, *)
-private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+private class InlineTestPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
     
     enum TestResult {
         case success(String)
@@ -1355,29 +1355,29 @@ private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         self.onResult = onResult
     }
     
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         onResult(.success("Payment completed successfully! ✅ Payment ID: \(result.paymentId)"))
     }
     
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         onResult(.failure("Payment failed: \(error.errorId) - \(error.localizedDescription)"))
     }
     
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         onResult(.success("Checkout was dismissed by user"))
     }
 
     // MARK: - 3DS Delegate Methods
 
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
         print("🔐 [Inline Test] CheckoutComponents will present 3DS challenge")
     }
 
-    func checkoutComponentsDidDismiss3DSChallenge() {
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
         print("🔐 [Inline Test] CheckoutComponents 3DS challenge was dismissed")
     }
 
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
         if success {
             print("🔐✅ [Inline Test] CheckoutComponents 3DS challenge completed successfully")
         } else {

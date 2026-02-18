@@ -46,7 +46,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<StructuredCardFormState> {
+  public var state: AsyncStream<PrimerCardFormState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $structuredState.values {
@@ -112,7 +112,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private var billingAddressSent = false
   private var currentCardData: PrimerCardData?
   private var fieldValidationStates = FieldValidationStates()
-  @Published var structuredState = StructuredCardFormState()
+  @Published var structuredState = PrimerCardFormState()
   private var formConfiguration: CardFormConfiguration = .default
 
   /// Builds billing address fields array based on API configuration

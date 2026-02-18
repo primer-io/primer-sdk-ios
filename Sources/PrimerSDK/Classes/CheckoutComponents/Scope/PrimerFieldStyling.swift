@@ -8,33 +8,68 @@ import SwiftUI
 
 /// Styling configuration for Primer input fields, enabling deep customization of field appearance
 /// including fonts, colors, borders, and layout properties.
+///
+/// All properties are optional — any `nil` value falls back to the SDK's design token defaults.
+///
+/// ```swift
+/// let styling = PrimerFieldStyling(
+///     fontName: "Helvetica Neue",
+///     fontSize: 16,
+///     textColor: .primary,
+///     backgroundColor: .gray.opacity(0.05),
+///     borderColor: .gray.opacity(0.3),
+///     focusedBorderColor: .blue,
+///     errorBorderColor: .red,
+///     cornerRadius: 8,
+///     borderWidth: 1,
+///     padding: EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16),
+///     fieldHeight: 56
+/// )
+/// ```
 @available(iOS 15.0, *)
 public struct PrimerFieldStyling {
 
   // MARK: - Typography
 
+  /// Custom font family name for field input text (e.g., `"Helvetica Neue"`).
   public let fontName: String?
+  /// Font size in points for field input text.
   public let fontSize: CGFloat?
+  /// Font weight for field input text, specified as a `CGFloat` (e.g., `UIFont.Weight.bold.rawValue`).
   public let fontWeight: CGFloat?
+  /// Custom font family name for field labels.
   public let labelFontName: String?
+  /// Font size in points for field labels.
   public let labelFontSize: CGFloat?
+  /// Font weight for field labels, specified as a `CGFloat`.
   public let labelFontWeight: CGFloat?
 
   // MARK: - Colors
 
+  /// Color for the field's input text.
   public let textColor: Color?
+  /// Color for the field's label text.
   public let labelColor: Color?
+  /// Background color of the field.
   public let backgroundColor: Color?
+  /// Border color in the default (unfocused) state.
   public let borderColor: Color?
+  /// Border color when the field is focused.
   public let focusedBorderColor: Color?
+  /// Border color when the field has a validation error.
   public let errorBorderColor: Color?
+  /// Color for placeholder text.
   public let placeholderColor: Color?
 
   // MARK: - Layout
 
+  /// Corner radius of the field's border.
   public let cornerRadius: CGFloat?
+  /// Width of the field's border stroke.
   public let borderWidth: CGFloat?
+  /// Inner padding of the field content.
   public let padding: EdgeInsets?
+  /// Fixed height for the field.
   public let fieldHeight: CGFloat?
 
   // MARK: - Initialization

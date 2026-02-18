@@ -31,7 +31,7 @@ final class AchMandateViewTests: XCTestCase {
     // MARK: - View Creation Tests
 
     func test_viewCreation_doesNotCrash() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             userDetails: AchTestData.defaultUserDetailsState,
             mandateText: AchTestData.Constants.mandateText,
@@ -42,7 +42,7 @@ final class AchMandateViewTests: XCTestCase {
     }
 
     func test_viewCreation_withNilMandateText_doesNotCrash() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: nil,
             isSubmitEnabled: true
@@ -52,7 +52,7 @@ final class AchMandateViewTests: XCTestCase {
     }
 
     func test_viewCreation_withEmptyMandateText_doesNotCrash() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "",
             isSubmitEnabled: true
@@ -63,7 +63,7 @@ final class AchMandateViewTests: XCTestCase {
 
     func test_viewCreation_withLongMandateText_doesNotCrash() {
         let longText = String(repeating: "This is a test mandate text. ", count: 100)
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: longText,
             isSubmitEnabled: true
@@ -105,7 +105,7 @@ final class AchMandateViewTests: XCTestCase {
 
     func test_mandateText_isDisplayedCorrectly() {
         let mandateText = "By clicking 'I Agree', you authorize Test Merchant to debit your bank account."
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: mandateText,
             isSubmitEnabled: true
@@ -133,7 +133,7 @@ final class AchMandateViewTests: XCTestCase {
     // MARK: - Button State Tests
 
     func test_acceptButton_isEnabledWhenSubmitEnabled() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "Test mandate",
             isSubmitEnabled: true
@@ -145,7 +145,7 @@ final class AchMandateViewTests: XCTestCase {
     }
 
     func test_declineButton_isAlwaysEnabled() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "Test mandate",
             isSubmitEnabled: false
@@ -161,7 +161,7 @@ final class AchMandateViewTests: XCTestCase {
     // MARK: - State Tests
 
     func test_state_mandateAcceptance_isCorrectStep() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "Test",
             isSubmitEnabled: true
@@ -171,12 +171,12 @@ final class AchMandateViewTests: XCTestCase {
     }
 
     func test_state_userDetails_arePreserved() {
-        let userDetails = AchState.UserDetails(
+        let userDetails = PrimerAchState.UserDetails(
             firstName: "John",
             lastName: "Doe",
             emailAddress: "john@example.com"
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             userDetails: userDetails,
             mandateText: "Test mandate",
@@ -211,7 +211,7 @@ final class AchMandateViewTests: XCTestCase {
 
     func test_viewAccessibility_mandateTextIsAccessible() {
         let mandateText = "Test mandate for accessibility"
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: mandateText,
             isSubmitEnabled: true

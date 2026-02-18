@@ -20,7 +20,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PayPalState> {
+  public var state: AsyncStream<PrimerPayPalState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -47,7 +47,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
   private let processPayPalInteractor: ProcessPayPalPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  @Published private var internalState = PayPalState()
+  @Published private var internalState = PrimerPayPalState()
 
   // MARK: - Initialization
 

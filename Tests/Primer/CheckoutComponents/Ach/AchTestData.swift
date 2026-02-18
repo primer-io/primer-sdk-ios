@@ -148,16 +148,16 @@ enum AchTestData {
 
     // MARK: - ACH State
 
-    static var defaultUserDetailsState: AchState.UserDetails {
-        AchState.UserDetails(
+    static var defaultUserDetailsState: PrimerAchState.UserDetails {
+        PrimerAchState.UserDetails(
             firstName: Constants.firstName,
             lastName: Constants.lastName,
             emailAddress: Constants.emailAddress
         )
     }
 
-    static var emptyUserDetailsState: AchState.UserDetails {
-        AchState.UserDetails()
+    static var emptyUserDetailsState: PrimerAchState.UserDetails {
+        PrimerAchState.UserDetails()
     }
 
     // MARK: - Token Data

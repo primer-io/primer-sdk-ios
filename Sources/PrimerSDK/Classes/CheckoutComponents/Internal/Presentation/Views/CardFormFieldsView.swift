@@ -24,7 +24,7 @@ struct CardFormFieldsView: View {
   let styling: PrimerFieldStyling?
 
   @Environment(\.designTokens) private var tokens
-  @State private var cardFormState: StructuredCardFormState = .init()
+  @State private var cardFormState: PrimerCardFormState = .init()
   @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var formConfiguration: CardFormConfiguration = .default
   @FocusState private var focusedField: PrimerInputElementType?

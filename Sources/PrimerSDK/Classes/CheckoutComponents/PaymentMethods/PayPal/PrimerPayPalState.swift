@@ -1,5 +1,5 @@
 //
-//  PayPalState.swift
+//  PrimerPayPalState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -9,7 +9,7 @@ import Foundation
 /// State model for PayPal payment method scope.
 /// Tracks the current status of the PayPal payment flow.
 @available(iOS 15.0, *)
-public struct PayPalState: Equatable {
+public struct PrimerPayPalState: Equatable {
 
   /// The current status of the PayPal payment flow.
   public enum Status: Equatable {

@@ -9,7 +9,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct AchUserDetailsView: View, LogReporter {
   let scope: any PrimerAchScope
-  let achState: AchState
+  let achState: PrimerAchState
 
   @Environment(\.designTokens) private var tokens
 

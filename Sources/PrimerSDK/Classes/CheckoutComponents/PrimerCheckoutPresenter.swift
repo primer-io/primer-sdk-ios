@@ -1,5 +1,5 @@
 //
-//  CheckoutComponentsPrimer.swift
+//  PrimerCheckoutPresenter.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -9,51 +9,51 @@ import UIKit
 
 /// Delegate protocol for CheckoutComponents result handling
 @available(iOS 15.0, *)
-public protocol CheckoutComponentsDelegate: AnyObject {
+public protocol PrimerCheckoutPresenterDelegate: AnyObject {
     /// Called when payment is successful
     /// - Parameter result: The payment result containing payment ID, status, and other details
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult)
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult)
     
     /// Called when payment fails
-    func checkoutComponentsDidFailWithError(_ error: PrimerError)
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError)
     
     /// Called when checkout is dismissed without completion
-    func checkoutComponentsDidDismiss()
+    func primerCheckoutPresenterDidDismiss()
     
     // MARK: - 3DS Delegate Methods (Optional with default implementations)
     
     /// Called when 3DS challenge is about to be presented
     /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
-    func checkoutComponentsWillPresent3DSChallenge(
+    func primerCheckoutPresenterWillPresent3DSChallenge(
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData)
     
     /// Called when 3DS challenge UI is dismissed
-    func checkoutComponentsDidDismiss3DSChallenge()
+    func primerCheckoutPresenterDidDismiss3DSChallenge()
     
     /// Called when 3DS challenge completes (success or failure)
     /// - Parameters:
     ///   - success: Whether 3DS challenge was successful
     ///   - resumeToken: The resume token if successful, nil if failed
     ///   - error: The error if failed, nil if successful
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
 }
 
 // MARK: - Optional 3DS Delegate Methods
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsDelegate {
+extension PrimerCheckoutPresenterDelegate {
     /// Override if you need 3DS challenge presentation callbacks
-    public func checkoutComponentsWillPresent3DSChallenge(
+    public func primerCheckoutPresenterWillPresent3DSChallenge(
         _ paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) {
     }
     
     /// Override if you need 3DS challenge dismissal callbacks
-    public func checkoutComponentsDidDismiss3DSChallenge() {
+    public func primerCheckoutPresenterDidDismiss3DSChallenge() {
     }
     
     /// Override if you need 3DS challenge completion callbacks
-    public func checkoutComponentsDidComplete3DSChallenge(
+    public func primerCheckoutPresenterDidComplete3DSChallenge(
         success: Bool, resumeToken: String?, error: Error?
     ) {
     }
@@ -65,11 +65,11 @@ extension CheckoutComponentsDelegate {
 /// It acts as a bridge between UIKit apps and the underlying SwiftUI implementation (PrimerCheckout).
 /// For pure SwiftUI apps, use PrimerCheckout directly instead of this class.
 @available(iOS 15.0, *)
-@objc public final class CheckoutComponentsPrimer: NSObject {
+@objc public final class PrimerCheckoutPresenter: NSObject {
     
     // MARK: - Singleton
     
-    @objc public static let shared = CheckoutComponentsPrimer()
+    @objc public static let shared = PrimerCheckoutPresenter()
     
     // MARK: - Properties
     
@@ -82,7 +82,7 @@ extension CheckoutComponentsDelegate {
     
     private let logger = PrimerLogging.shared.logger
     
-    public weak var delegate: CheckoutComponentsDelegate?
+    public weak var delegate: PrimerCheckoutPresenterDelegate?
     
     // MARK: - Private Init
     
@@ -232,7 +232,7 @@ extension CheckoutComponentsDelegate {
         // Dismiss CheckoutComponents first, then call delegate after dismissal completes
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
-                delegate.checkoutComponentsDidCompleteWithSuccess(result)
+                delegate.primerCheckoutPresenterDidCompleteWithSuccess(result)
             } else {
                 self?.logger.error(message: "No delegate set for payment success")
             }
@@ -245,7 +245,7 @@ extension CheckoutComponentsDelegate {
         // Dismiss CheckoutComponents first, then call delegate after dismissal completes
         dismissDirectly { [weak self] in
             if let delegate = self?.delegate {
-                delegate.checkoutComponentsDidFailWithError(error)
+                delegate.primerCheckoutPresenterDidFailWithError(error)
             } else {
                 self?.logger.error(message: "No delegate set for payment failure")
             }
@@ -253,7 +253,7 @@ extension CheckoutComponentsDelegate {
     }
     
     func handleCheckoutDismiss() {
-        delegate?.checkoutComponentsDidDismiss()
+        delegate?.primerCheckoutPresenterDidDismiss()
     }
     
     private func presentCheckout(
@@ -344,7 +344,7 @@ extension CheckoutComponentsDelegate {
 // MARK: - Convenience Methods
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsPrimer {
+extension PrimerCheckoutPresenter {
     
     /// Present checkout with automatic view controller detection
     /// - Parameters:
@@ -396,7 +396,7 @@ extension CheckoutComponentsPrimer {
 // MARK: - Integration Helpers
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsPrimer {
+extension PrimerCheckoutPresenter {
     
     @objc public static var isAvailable: Bool {
         true  // Since we're already in an @available(iOS 15.0, *) context
@@ -443,7 +443,7 @@ extension CheckoutComponentsPrimer {
 // MARK: - Delegate Integration
 
 @available(iOS 15.0, *)
-extension CheckoutComponentsPrimer {
+extension PrimerCheckoutPresenter {
     
     /// Set the Primer delegate (uses the shared Primer.delegate)
     @objc public static var delegate: PrimerDelegate? {

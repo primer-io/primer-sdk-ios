@@ -18,10 +18,10 @@ public typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
 /// Provides state observation and UI customization for redirect-based PayPal payments.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PayPalState {
+public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
 
   /// The current state of the PayPal payment flow as an async stream.
-  var state: AsyncStream<PayPalState> { get }
+  var state: AsyncStream<PrimerPayPalState> { get }
 
   /// The presentation context determining navigation behavior (back button vs cancel button).
   var presentationContext: PresentationContext { get }

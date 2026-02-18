@@ -42,11 +42,11 @@ final class AchStateObserverTests: XCTestCase {
     @MainActor
     func test_init_withCustomInitialState() {
         mockScope = MockPrimerAchScope(
-            initialState: AchState(step: .userDetailsCollection, isSubmitEnabled: true)
+            initialState: PrimerAchState(step: .userDetailsCollection, isSubmitEnabled: true)
         )
         let observer = AchStateObserver(scope: mockScope)
 
-        // Initial state is the default AchState until startObserving is called
+        // Initial state is the default PrimerAchState until startObserving is called
         XCTAssertEqual(observer.achState.step, .loading)
     }
 
@@ -55,7 +55,7 @@ final class AchStateObserverTests: XCTestCase {
     @MainActor
     func test_startObserving_subscribesToScopeState() async {
         mockScope = MockPrimerAchScope(
-            initialState: AchState(step: .userDetailsCollection)
+            initialState: PrimerAchState(step: .userDetailsCollection)
         )
         let observerWithState = AchStateObserver(scope: mockScope)
 
@@ -80,7 +80,7 @@ final class AchStateObserverTests: XCTestCase {
 
     @MainActor
     func test_startObserving_receivesInitialState() async {
-        let initialState = AchState(
+        let initialState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: AchTestData.defaultUserDetailsState,
             isSubmitEnabled: true
@@ -105,7 +105,7 @@ final class AchStateObserverTests: XCTestCase {
         observer.startObserving()
         try? await Task.sleep(nanoseconds: 50_000_000)
 
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
 
         try? await Task.sleep(nanoseconds: 100_000_000)
 
@@ -119,7 +119,7 @@ final class AchStateObserverTests: XCTestCase {
         observer.startObserving()
         try? await Task.sleep(nanoseconds: 50_000_000)
 
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
 
         try? await Task.sleep(nanoseconds: 100_000_000)
 
@@ -134,12 +134,12 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // First go to bank collection
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(observer.showBankCollector)
 
         // Then transition to mandate acceptance
-        mockScope.emit(AchState(step: .mandateAcceptance, mandateText: "Test"))
+        mockScope.emit(PrimerAchState(step: .mandateAcceptance, mandateText: "Test"))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Bank collector should still be showing because stripeFlowCompleted is internal
@@ -154,20 +154,20 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // Go through bank collection to mandate acceptance
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(observer.showBankCollector)
 
-        mockScope.emit(AchState(step: .mandateAcceptance, mandateText: "Test"))
+        mockScope.emit(PrimerAchState(step: .mandateAcceptance, mandateText: "Test"))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Go to loading to reset showBankCollector to false
-        mockScope.emit(AchState(step: .loading))
+        mockScope.emit(PrimerAchState(step: .loading))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertFalse(observer.showBankCollector)
 
         // Try to go back to bank collection - should NOT show again because stripeFlowCompleted is true
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Even though we're at bankAccountCollection with a VC, it should NOT show because stripeFlowCompleted is true
@@ -182,12 +182,12 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // First show bank collector
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(observer.showBankCollector)
 
         // Go back to user details
-        mockScope.emit(AchState(step: .userDetailsCollection))
+        mockScope.emit(PrimerAchState(step: .userDetailsCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertFalse(observer.showBankCollector)
@@ -201,12 +201,12 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // First show bank collector
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(observer.showBankCollector)
 
         // Go to loading
-        mockScope.emit(AchState(step: .loading))
+        mockScope.emit(PrimerAchState(step: .loading))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertFalse(observer.showBankCollector)
@@ -220,12 +220,12 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // First show bank collector
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(observer.showBankCollector)
 
         // Go to processing - should not hide (processing and bankAccountCollection don't hide)
-        mockScope.emit(AchState(step: .processing))
+        mockScope.emit(PrimerAchState(step: .processing))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // Per the logic, processing doesn't set showBankCollector to false
@@ -241,12 +241,12 @@ final class AchStateObserverTests: XCTestCase {
         observer.startObserving()
         try? await Task.sleep(nanoseconds: 50_000_000)
 
-        let newUserDetails = AchState.UserDetails(
+        let newUserDetails = PrimerAchState.UserDetails(
             firstName: "Jane",
             lastName: "Smith",
             emailAddress: "jane@example.com"
         )
-        let newState = AchState(
+        let newState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: newUserDetails,
             isSubmitEnabled: true
@@ -266,7 +266,7 @@ final class AchStateObserverTests: XCTestCase {
         observer.startObserving()
         try? await Task.sleep(nanoseconds: 50_000_000)
 
-        let mandateState = AchState(
+        let mandateState = PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "Test mandate text",
             isSubmitEnabled: true
@@ -284,12 +284,12 @@ final class AchStateObserverTests: XCTestCase {
         observer.startObserving()
         try? await Task.sleep(nanoseconds: 50_000_000)
 
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "Invalid first name",
             lastNameError: nil,
             emailError: "Invalid email"
         )
-        let stateWithValidation = AchState(
+        let stateWithValidation = PrimerAchState(
             step: .userDetailsCollection,
             fieldValidation: validation,
             isSubmitEnabled: false
@@ -314,7 +314,7 @@ final class AchStateObserverTests: XCTestCase {
         observer.stopObserving()
 
         // After stopping, state updates should not be processed
-        mockScope.emit(AchState(step: .mandateAcceptance, mandateText: "Should not update"))
+        mockScope.emit(PrimerAchState(step: .mandateAcceptance, mandateText: "Should not update"))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         // State remains at the last observed state before stopping
@@ -331,7 +331,7 @@ final class AchStateObserverTests: XCTestCase {
 
         // Should be able to restart
         observer.startObserving()
-        mockScope.emit(AchState(step: .userDetailsCollection))
+        mockScope.emit(PrimerAchState(step: .userDetailsCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
 
         XCTAssertEqual(observer.achState.step, .userDetailsCollection)
@@ -360,7 +360,7 @@ final class AchStateObserverTests: XCTestCase {
         observer = nil
 
         // Should not crash when scope emits after observer is deallocated
-        mockScope.emit(AchState(step: .mandateAcceptance))
+        mockScope.emit(PrimerAchState(step: .mandateAcceptance))
         try? await Task.sleep(nanoseconds: 50_000_000)
     }
 
@@ -378,7 +378,7 @@ final class AchStateObserverTests: XCTestCase {
         XCTAssertFalse(observer.showBankCollector)
 
         // Transition to user details
-        mockScope.emit(AchState(
+        mockScope.emit(PrimerAchState(
             step: .userDetailsCollection,
             userDetails: AchTestData.defaultUserDetailsState,
             isSubmitEnabled: true
@@ -388,13 +388,13 @@ final class AchStateObserverTests: XCTestCase {
         XCTAssertFalse(observer.showBankCollector)
 
         // Transition to bank account collection
-        mockScope.emit(AchState(step: .bankAccountCollection))
+        mockScope.emit(PrimerAchState(step: .bankAccountCollection))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertEqual(observer.achState.step, .bankAccountCollection)
         XCTAssertTrue(observer.showBankCollector)
 
         // Transition to mandate acceptance
-        mockScope.emit(AchState(
+        mockScope.emit(PrimerAchState(
             step: .mandateAcceptance,
             mandateText: "Test mandate",
             isSubmitEnabled: true
@@ -404,7 +404,7 @@ final class AchStateObserverTests: XCTestCase {
         XCTAssertEqual(observer.achState.mandateText, "Test mandate")
 
         // Transition to processing
-        mockScope.emit(AchState(step: .processing))
+        mockScope.emit(PrimerAchState(step: .processing))
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertEqual(observer.achState.step, .processing)
     }
@@ -416,10 +416,10 @@ final class AchStateObserverTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // Rapid state changes
-        mockScope.emit(AchState(step: .loading))
-        mockScope.emit(AchState(step: .userDetailsCollection))
-        mockScope.emit(AchState(step: .loading))
-        mockScope.emit(AchState(step: .userDetailsCollection, isSubmitEnabled: true))
+        mockScope.emit(PrimerAchState(step: .loading))
+        mockScope.emit(PrimerAchState(step: .userDetailsCollection))
+        mockScope.emit(PrimerAchState(step: .loading))
+        mockScope.emit(PrimerAchState(step: .userDetailsCollection, isSubmitEnabled: true))
 
         try? await Task.sleep(nanoseconds: 200_000_000)
 

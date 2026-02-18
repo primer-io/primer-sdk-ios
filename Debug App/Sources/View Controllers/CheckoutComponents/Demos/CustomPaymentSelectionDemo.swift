@@ -210,7 +210,7 @@ private struct CustomPaymentSelectionContent: View {
     let onDismiss: () -> Void
 
     @State private var selectionState = PrimerPaymentMethodSelectionState()
-    @State private var cardState: StructuredCardFormState?
+    @State private var cardState: PrimerCardFormState?
     @State private var selectedOption: SelectedPaymentOption = .none
     @State private var selectedBillingCountry: String? = "RS" // Default to Serbia for demo
     @State private var showPromoCodeModal = false

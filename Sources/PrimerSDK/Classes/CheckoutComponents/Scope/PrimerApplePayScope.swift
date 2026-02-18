@@ -11,12 +11,12 @@ import SwiftUI
 /// Provides access to Apple Pay state, button customization, and payment flow control.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == ApplePayFormState {
+public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == PrimerApplePayState {
 
   // MARK: - State
 
   /// The current state of the Apple Pay scope as an async stream.
-  var state: AsyncStream<ApplePayFormState> { get }
+  var state: AsyncStream<PrimerApplePayState> { get }
 
   // MARK: - Availability
 
