@@ -148,7 +148,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
         return
       }
 
-      internalState = AchState(
+      internalState = PrimerAchState(
         step: .processing,
         userDetails: internalState.userDetails,
         mandateText: internalState.mandateText,
