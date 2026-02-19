@@ -89,16 +89,16 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
                     // Override the payment method selection screen with custom content
                     // Pass checkoutScope as a parameter to access card form and checkout state
                     checkoutScope.paymentMethodSelection.screen = { selectionScope in
-                        AnyView(CustomPaymentSelectionContent(
+                        CustomPaymentSelectionContent(
                             scope: selectionScope,
                             checkoutScope: checkoutScope,
                             onDismiss: { dismiss() }
-                        ))
+                        )
                     }
 
                     // Custom loading screen during payment processing (matches Android's checkout.loading)
                     checkoutScope.loadingScreen = {
-                        AnyView(CustomProcessingOverlay())
+                        CustomProcessingOverlay()
                     }
                 },
                 onCompletion: { _ in dismiss() }
