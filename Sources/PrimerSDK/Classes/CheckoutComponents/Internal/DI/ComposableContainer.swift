@@ -152,6 +152,14 @@ extension ComposableContainer {
         )
       }
 
+    try? await container.register(ProcessWebRedirectPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessWebRedirectPaymentInteractorImpl(
+          repository: try await resolver.resolve(WebRedirectRepository.self)
+        )
+      }
+
     try? await container.register(ProcessApplePayPaymentInteractor.self)
       .asTransient()
       .with { _ in
@@ -211,6 +219,12 @@ extension ComposableContainer {
       .asTransient()
       .with { _ in
         AchRepositoryImpl()
+      }
+
+    try? await container.register(WebRedirectRepository.self)
+      .asTransient()
+      .with { _ in
+        WebRedirectRepositoryImpl()
       }
   }
 
