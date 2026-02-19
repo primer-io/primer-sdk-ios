@@ -77,6 +77,10 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
+  // MARK: - Payment Callbacks
+
+  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
+
   // MARK: - UI Customization Properties
 
   public var container: ContainerComponent?
@@ -626,6 +630,34 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
               "Failed to initialize payment method \\(method.type): \\(error.localizedDescription)",
             recoverSuggestion: "Check payment method implementation"
           )))
+    }
+  }
+
+  /// Invokes the onBeforePaymentCreate callback if set, stores the idempotency key, and returns.
+  /// Throws if the merchant aborts payment creation.
+  ///
+  /// - Note: Uses `PrimerInternal.shared.currentIdempotencyKey` singleton for storage because the key
+  ///   must flow to `PrimerAPI.headers` (an enum computed property in the core networking layer).
+  ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
+  ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
+  func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
+    guard let callback = onBeforePaymentCreate else { return }
+
+    let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
+      let data = PrimerCheckoutPaymentMethodData(
+        type: PrimerCheckoutPaymentMethodType(type: paymentMethodType)
+      )
+      callback(data) { decision in
+        continuation.resume(returning: decision)
+      }
+    }
+
+    switch decision.type {
+    case let .abort(errorMessage):
+      throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
+    case let .continue(idempotencyKey):
+      // TODO: Refactor to use DI when networking layer is updated to support injected dependencies
+      PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
     }
   }
 

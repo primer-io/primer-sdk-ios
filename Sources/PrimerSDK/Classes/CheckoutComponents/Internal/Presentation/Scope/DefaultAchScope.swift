@@ -139,6 +139,22 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     )
 
     Task { [self] in
+      do {
+        try await checkoutScope?.invokeBeforePaymentCreate(
+          paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue
+        )
+      } catch {
+        handleError(error, context: "before payment create")
+        return
+      }
+
+      internalState = AchState(
+        step: .processing,
+        userDetails: internalState.userDetails,
+        mandateText: internalState.mandateText,
+        isSubmitEnabled: false
+      )
+
       await processPayment()
     }
   }
