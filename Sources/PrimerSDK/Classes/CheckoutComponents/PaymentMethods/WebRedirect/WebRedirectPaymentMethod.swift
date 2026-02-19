@@ -58,6 +58,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
 
         let processWebRedirectInteractor = try container.resolveSync(ProcessWebRedirectPaymentInteractor.self)
         let accessibilityService = try? container.resolveSync(AccessibilityAnnouncementService.self)
+        let analyticsInteractor = try? container.resolveSync(CheckoutComponentsAnalyticsInteractorProtocol.self)
         let repository = try? container.resolveSync(WebRedirectRepository.self)
 
         return DefaultWebRedirectScope(
@@ -66,6 +67,7 @@ struct WebRedirectPaymentMethod: PaymentMethodProtocol {
             presentationContext: paymentMethodContext,
             processWebRedirectInteractor: processWebRedirectInteractor,
             accessibilityService: accessibilityService,
+            analyticsInteractor: analyticsInteractor,
             repository: repository,
             paymentMethod: paymentMethod,
             surchargeAmount: surchargeAmount
