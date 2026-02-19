@@ -105,7 +105,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [KlarnaState] = []
+        var receivedStates: [PrimerKlarnaState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)

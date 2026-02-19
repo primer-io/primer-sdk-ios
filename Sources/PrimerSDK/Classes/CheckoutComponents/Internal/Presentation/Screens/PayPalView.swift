@@ -13,7 +13,7 @@ struct PayPalView: View, LogReporter {
   let scope: any PrimerPayPalScope
 
   @Environment(\.designTokens) private var tokens
-  @State private var payPalState: PayPalState = .init()
+  @State private var payPalState: PrimerPayPalState = .init()
 
   var body: some View {
     VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
@@ -247,16 +247,16 @@ struct PayPalView: View, LogReporter {
     var payButton: PayPalButtonComponent?
     var submitButtonText: String?
 
-    @Published private var mockState: PayPalState
+    @Published private var mockState: PrimerPayPalState
 
-    var state: AsyncStream<PayPalState> {
+    var state: AsyncStream<PrimerPayPalState> {
       AsyncStream { continuation in
         continuation.yield(mockState)
       }
     }
 
-    init(status: PayPalState.Status = .idle) {
-      self.mockState = PayPalState(status: status)
+    init(status: PrimerPayPalState.Status = .idle) {
+      self.mockState = PrimerPayPalState(status: status)
     }
 
     func start() {}

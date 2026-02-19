@@ -18,7 +18,7 @@ struct CardFormScreen: View, LogReporter {
   @Environment(\.bridgeController) private var bridgeController
   @Environment(\.diContainer) private var container
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
-  @State private var cardFormState: StructuredCardFormState = .init()
+  @State private var cardFormState: PrimerCardFormState = .init()
   @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var refreshTrigger = UUID()
   @State private var formConfiguration: CardFormConfiguration = .default

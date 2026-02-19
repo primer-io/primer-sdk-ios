@@ -33,7 +33,7 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_viewCreation_doesNotCrash() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: AchTestData.defaultUserDetailsState,
             isSubmitEnabled: true
@@ -46,9 +46,9 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_viewCreation_withEmptyUserDetails_doesNotCrash() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
-            userDetails: AchState.UserDetails(),
+            userDetails: PrimerAchState.UserDetails(),
             isSubmitEnabled: false
         )
 
@@ -58,12 +58,12 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_viewCreation_withFieldValidation_doesNotCrash() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "Invalid",
             lastNameError: "Invalid",
             emailError: "Invalid"
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: AchTestData.defaultUserDetailsState,
             fieldValidation: validation,
@@ -113,7 +113,7 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_submitButton_enabledWhenIsSubmitEnabledTrue() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: AchTestData.defaultUserDetailsState,
             isSubmitEnabled: true
@@ -127,9 +127,9 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_submitButton_disabledWhenIsSubmitEnabledFalse() {
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
-            userDetails: AchState.UserDetails(),
+            userDetails: PrimerAchState.UserDetails(),
             isSubmitEnabled: false
         )
 
@@ -172,12 +172,12 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_userDetails_displayCorrectInitialValues() {
-        let userDetails = AchState.UserDetails(
+        let userDetails = PrimerAchState.UserDetails(
             firstName: "John",
             lastName: "Doe",
             emailAddress: "john.doe@example.com"
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: userDetails,
             isSubmitEnabled: true
@@ -192,12 +192,12 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_fieldValidation_firstNameError_isAvailable() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "First name is required",
             lastNameError: nil,
             emailError: nil
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             fieldValidation: validation,
             isSubmitEnabled: false
@@ -210,12 +210,12 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_fieldValidation_lastNameError_isAvailable() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: nil,
             lastNameError: "Last name is required",
             emailError: nil
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             fieldValidation: validation,
             isSubmitEnabled: false
@@ -228,12 +228,12 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_fieldValidation_emailError_isAvailable() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: nil,
             lastNameError: nil,
             emailError: "Invalid email address"
         )
-        let achState = AchState(
+        let achState = PrimerAchState(
             step: .userDetailsCollection,
             fieldValidation: validation,
             isSubmitEnabled: false
@@ -246,7 +246,7 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_fieldValidation_hasErrors_returnsTrue() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "Error",
             lastNameError: nil,
             emailError: nil
@@ -257,7 +257,7 @@ final class AchUserDetailsViewTests: XCTestCase {
 
     @MainActor
     func test_fieldValidation_hasErrors_returnsFalse() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: nil,
             lastNameError: nil,
             emailError: nil

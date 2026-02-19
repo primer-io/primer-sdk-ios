@@ -104,9 +104,9 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         // Use existing checkoutComponentsUIKitButton logic
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
-            let delegate = DebugAppCheckoutComponentsDelegate()
+            let delegate = DebugAppPrimerCheckoutPresenterDelegate()
             checkoutComponentsDelegate = delegate
-            CheckoutComponentsPrimer.shared.delegate = delegate
+            PrimerCheckoutPresenter.shared.delegate = delegate
         }
 
         switch renderMode {
@@ -197,7 +197,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
     private func presentUIKitIntegration(with clientToken: String) {
         if #available(iOS 15.0, *) {
-            CheckoutComponentsPrimer.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)
+            PrimerCheckoutPresenter.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)
         } else {
             showErrorMessage("CheckoutComponents requires iOS 15.0 or later")
         }

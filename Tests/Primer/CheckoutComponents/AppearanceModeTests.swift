@@ -13,7 +13,7 @@ final class AppearanceModeTests: XCTestCase {
     // MARK: - Helper Classes
 
     /// Test helper to access private applyAppearanceMode method
-    private class CheckoutComponentsPrimerTestable {
+    private class PrimerCheckoutPresenterTestable {
         static func applyAppearanceMode(_ mode: PrimerAppearanceMode, to controller: UIViewController) {
             switch mode {
             case .system:
@@ -34,7 +34,7 @@ final class AppearanceModeTests: XCTestCase {
         let mode: PrimerAppearanceMode = .system
 
         // When: Apply appearance mode
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(mode, to: viewController)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
 
         // Then: Interface style should be unspecified (follows system)
         XCTAssertEqual(
@@ -50,7 +50,7 @@ final class AppearanceModeTests: XCTestCase {
         let mode: PrimerAppearanceMode = .light
 
         // When: Apply appearance mode
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(mode, to: viewController)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
 
         // Then: Interface style should be light
         XCTAssertEqual(
@@ -66,7 +66,7 @@ final class AppearanceModeTests: XCTestCase {
         let mode: PrimerAppearanceMode = .dark
 
         // When: Apply appearance mode
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(mode, to: viewController)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
 
         // Then: Interface style should be dark
         XCTAssertEqual(
@@ -82,7 +82,7 @@ final class AppearanceModeTests: XCTestCase {
         viewController.overrideUserInterfaceStyle = .dark
 
         // When: Apply light appearance mode
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(.light, to: viewController)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(.light, to: viewController)
 
         // Then: Interface style should be updated to light
         XCTAssertEqual(
@@ -98,7 +98,7 @@ final class AppearanceModeTests: XCTestCase {
         viewController.overrideUserInterfaceStyle = .light
 
         // When: Apply system appearance mode
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(.system, to: viewController)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(.system, to: viewController)
 
         // Then: Interface style should revert to unspecified
         XCTAssertEqual(
@@ -174,7 +174,7 @@ final class AppearanceModeTests: XCTestCase {
         // When/Then: Each mode should apply the correct interface style
         for (mode, expectedStyle) in allCases {
             let viewController = UIViewController()
-            CheckoutComponentsPrimerTestable.applyAppearanceMode(mode, to: viewController)
+            PrimerCheckoutPresenterTestable.applyAppearanceMode(mode, to: viewController)
 
             XCTAssertEqual(
                 viewController.overrideUserInterfaceStyle,
@@ -195,7 +195,7 @@ final class AppearanceModeTests: XCTestCase {
         childVC.didMove(toParent: parentVC)
 
         // When: Apply dark mode to parent
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(.dark, to: parentVC)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(.dark, to: parentVC)
 
         // Then: Parent should have dark style
         XCTAssertEqual(parentVC.overrideUserInterfaceStyle, .dark)
@@ -212,8 +212,8 @@ final class AppearanceModeTests: XCTestCase {
         parentVC.addChild(childVC)
 
         // When: Apply different modes to parent and child
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(.light, to: parentVC)
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(.dark, to: childVC)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(.light, to: parentVC)
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(.dark, to: childVC)
 
         // Then: Each should have their respective styles
         XCTAssertEqual(parentVC.overrideUserInterfaceStyle, .light)
@@ -268,7 +268,7 @@ final class AppearanceModeTests: XCTestCase {
         let viewController = UIViewController()
 
         // When: Apply appearance mode from settings
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(
             settings.uiOptions.appearanceMode,
             to: viewController
         )
@@ -286,11 +286,11 @@ final class AppearanceModeTests: XCTestCase {
         let vc2 = UIViewController()
 
         // When: Apply different modes from different settings
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(
             lightSettings.uiOptions.appearanceMode,
             to: vc1
         )
-        CheckoutComponentsPrimerTestable.applyAppearanceMode(
+        PrimerCheckoutPresenterTestable.applyAppearanceMode(
             darkSettings.uiOptions.appearanceMode,
             to: vc2
         )

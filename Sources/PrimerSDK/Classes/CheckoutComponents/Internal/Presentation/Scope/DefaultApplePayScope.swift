@@ -15,9 +15,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   // MARK: - State
 
-  @Published var structuredState: ApplePayFormState
+  @Published var structuredState: PrimerApplePayState
 
-  public var state: AsyncStream<ApplePayFormState> {
+  public var state: AsyncStream<PrimerApplePayState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         // Yield initial state immediately

@@ -377,7 +377,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedState: ApplePayFormState?
+        var receivedState: PrimerApplePayState?
         let task = Task {
             for await state in scope.state {
                 // Wait for the state with the expected buttonStyle
@@ -410,7 +410,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [ApplePayFormState] = []
+        var receivedStates: [PrimerApplePayState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)
@@ -457,7 +457,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [ApplePayFormState] = []
+        var receivedStates: [PrimerApplePayState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)

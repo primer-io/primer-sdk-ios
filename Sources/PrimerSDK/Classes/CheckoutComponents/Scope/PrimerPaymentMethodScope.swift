@@ -8,33 +8,56 @@ import Foundation
 import SwiftUI
 
 /// Base protocol for all payment method scopes, providing common lifecycle and state management.
-/// This protocol enables unified payment method handling with type-safe scope associations.
+///
+/// Every payment method scope follows a consistent lifecycle:
+/// 1. **`start()`** — Initialize the payment flow (load data, set up state).
+/// 2. **User interaction** — The user fills in details or approves the payment.
+/// 3. **`submit()`** — Validate input and trigger tokenization/payment processing.
+/// 4. **`cancel()`** — Terminate the flow at any point (called by navigation helpers).
+///
+/// Observe `state` to react to changes in the payment method's progress:
+/// ```swift
+/// for await currentState in scope.state {
+///     updateUI(for: currentState)
+/// }
+/// ```
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerPaymentMethodScope: AnyObject {
 
   associatedtype State: Equatable
 
-  /// The current state of the payment method scope as an async stream.
+  /// Async stream emitting the payment method's current state whenever it changes.
   var state: AsyncStream<State> { get }
 
   // MARK: - Lifecycle Methods
 
-  /// Called when the payment method is selected and the scope becomes active.
+  /// Initializes the payment flow for this method.
+  ///
+  /// Call once when the scope becomes active (e.g., user selects this payment method).
+  /// Implementations typically load remote configuration, prepare the UI state,
+  /// and emit the first state update on the `state` stream.
   func start()
 
-  /// Called when the user confirms the payment with this method.
+  /// Validates input and begins payment processing.
+  ///
+  /// Call after the user has completed all required input. Implementations validate
+  /// fields, then trigger tokenization and server-side payment creation.
+  /// The state stream reflects progress (e.g., loading indicators, success, or errors).
   func submit()
 
-  /// Called when the user cancels or navigates back.
+  /// Terminates the payment flow and cleans up resources.
+  ///
+  /// Safe to call at any point. After cancellation the scope should not emit further
+  /// state updates. Navigation helpers (`onBack`, `onDismiss`) call this by default.
   func cancel()
 
   // MARK: - Navigation Support
 
-  /// Default implementation calls cancel().
+  /// Navigates back to the previous screen. Default implementation calls `cancel()`.
   func onBack()
 
-  /// Default implementation calls cancel().
+  /// Handles dismissal (e.g., close button tap). Default implementation calls `cancel()`.
   func onDismiss()
 }
 

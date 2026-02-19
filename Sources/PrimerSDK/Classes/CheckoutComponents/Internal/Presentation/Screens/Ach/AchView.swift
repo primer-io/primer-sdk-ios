@@ -185,21 +185,21 @@ struct AchView: View, LogReporter {
     var mandateScreen: AchScreenComponent?
     var submitButton: AchButtonComponent?
 
-    @Published private var mockState: AchState
+    @Published private var mockState: PrimerAchState
 
-    var state: AsyncStream<AchState> {
+    var state: AsyncStream<PrimerAchState> {
       AsyncStream { continuation in
         continuation.yield(mockState)
       }
     }
 
-    init(step: AchState.Step = .userDetailsCollection) {
-      let userDetails = AchState.UserDetails(
+    init(step: PrimerAchState.Step = .userDetailsCollection) {
+      let userDetails = PrimerAchState.UserDetails(
         firstName: "John",
         lastName: "Doe",
         emailAddress: "john.doe@example.com"
       )
-      self.mockState = AchState(
+      self.mockState = PrimerAchState(
         step: step,
         userDetails: userDetails,
         isSubmitEnabled: true

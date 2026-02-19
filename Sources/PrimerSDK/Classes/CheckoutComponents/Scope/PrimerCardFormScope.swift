@@ -53,10 +53,10 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope
-where State == StructuredCardFormState {
+where State == PrimerCardFormState {
 
   /// Async stream of the current card form state including field values, validation, and networks.
-  var state: AsyncStream<StructuredCardFormState> { get }
+  var state: AsyncStream<PrimerCardFormState> { get }
 
   /// The presentation context indicating how the form was navigated to.
   var presentationContext: PresentationContext { get }

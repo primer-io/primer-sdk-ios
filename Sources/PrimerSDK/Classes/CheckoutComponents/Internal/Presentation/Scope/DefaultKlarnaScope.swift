@@ -22,7 +22,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
   public private(set) var paymentView: UIView?
 
-  public var state: AsyncStream<KlarnaState> {
+  public var state: AsyncStream<PrimerKlarnaState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -49,7 +49,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   private let processKlarnaInteractor: ProcessKlarnaPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  @Published private var internalState = KlarnaState()
+  @Published private var internalState = PrimerKlarnaState()
 
   private var klarnaClientToken: String?
 
@@ -99,7 +99,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       return
     }
 
-    internalState = KlarnaState(
+    internalState = PrimerKlarnaState(
       step: .categorySelection,
       categories: internalState.categories,
       selectedCategoryId: categoryId
@@ -117,7 +117,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       return
     }
 
-    internalState = KlarnaState(
+    internalState = PrimerKlarnaState(
       step: .authorizationStarted,
       categories: internalState.categories,
       selectedCategoryId: internalState.selectedCategoryId
@@ -172,13 +172,13 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
   }
 
   private func createSession() async {
-    internalState = KlarnaState(step: .loading)
+    internalState = PrimerKlarnaState(step: .loading)
 
     do {
       let sessionResult = try await processKlarnaInteractor.createSession()
       klarnaClientToken = sessionResult.clientToken
 
-      internalState = KlarnaState(
+      internalState = PrimerKlarnaState(
         step: .categorySelection,
         categories: sessionResult.categories
       )
@@ -213,7 +213,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
       guard internalState.selectedCategoryId == categoryId else { return }
 
       paymentView = view
-      internalState = KlarnaState(
+      internalState = PrimerKlarnaState(
         step: .viewReady,
         categories: internalState.categories,
         selectedCategoryId: internalState.selectedCategoryId
@@ -262,7 +262,7 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
 
       case let .finalizationRequired(authToken):
         authorizationToken = authToken
-        internalState = KlarnaState(
+        internalState = PrimerKlarnaState(
           step: .awaitingFinalization,
           categories: internalState.categories,
           selectedCategoryId: internalState.selectedCategoryId

@@ -1,5 +1,5 @@
 //
-//  ApplePayFormState.swift
+//  PrimerApplePayState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -12,7 +12,7 @@ import PassKit
 /// State model for Apple Pay payment method in CheckoutComponents.
 /// Manages the UI state and configuration for Apple Pay button and payment flow.
 @available(iOS 15.0, *)
-public struct ApplePayFormState: Equatable {
+public struct PrimerApplePayState: Equatable {
 
   // MARK: - Loading States
 
@@ -59,8 +59,8 @@ public struct ApplePayFormState: Equatable {
   // MARK: - Static Factory Methods
 
   /// Default state for Apple Pay
-  public static var `default`: ApplePayFormState {
-    ApplePayFormState()
+  public static var `default`: PrimerApplePayState {
+    PrimerApplePayState()
   }
 
   /// State when Apple Pay is available and ready
@@ -68,8 +68,8 @@ public struct ApplePayFormState: Equatable {
     buttonStyle: PKPaymentButtonStyle = .black,
     buttonType: PKPaymentButtonType = .plain,
     cornerRadius: CGFloat = 8.0
-  ) -> ApplePayFormState {
-    ApplePayFormState(
+  ) -> PrimerApplePayState {
+    PrimerApplePayState(
       isLoading: false,
       isAvailable: true,
       availabilityError: nil,
@@ -80,8 +80,8 @@ public struct ApplePayFormState: Equatable {
   }
 
   /// State when Apple Pay is not available
-  public static func unavailable(error: String) -> ApplePayFormState {
-    ApplePayFormState(
+  public static func unavailable(error: String) -> PrimerApplePayState {
+    PrimerApplePayState(
       isLoading: false,
       isAvailable: false,
       availabilityError: error
@@ -89,8 +89,8 @@ public struct ApplePayFormState: Equatable {
   }
 
   /// State when Apple Pay is loading/processing
-  public static var loading: ApplePayFormState {
-    ApplePayFormState(
+  public static var loading: PrimerApplePayState {
+    PrimerApplePayState(
       isLoading: true,
       isAvailable: true,
       availabilityError: nil

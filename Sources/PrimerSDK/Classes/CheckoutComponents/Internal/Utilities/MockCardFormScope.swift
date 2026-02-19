@@ -31,10 +31,10 @@
 
     public var dismissalMechanism: [DismissalMechanism]
 
-    public var state: AsyncStream<StructuredCardFormState> {
+    public var state: AsyncStream<PrimerCardFormState> {
       AsyncStream { continuation in
         continuation.yield(
-          StructuredCardFormState(
+          PrimerCardFormState(
             data: FormData(),
             isLoading: self.initialIsLoading,
             isValid: self.initialIsValid,
