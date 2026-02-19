@@ -67,7 +67,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   public var screen: CardFormScreenComponent?
   public var cobadgedCardsView:
     ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  public var errorView: ErrorComponent?
+  public var errorScreen: ErrorComponent?
 
   // MARK: - Submit Button Customization
 
@@ -97,7 +97,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   public var cardInputSection: Component?
   public var billingAddressSection: Component?
-  public var submitButtonSection: Component?
+  public var submitButton: Component?
 
   // MARK: - Private Properties
 
@@ -426,7 +426,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   // MARK: - Navigation Methods
 
-  public func onSubmit() {
+  public func submit() {
     Task {
       await submit()
     }
@@ -438,7 +438,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func onCancel() {
+  public func cancel() {
     checkoutScope?.onDismiss()
   }
 

@@ -158,7 +158,7 @@ final class CheckoutCoordinatorTests: XCTestCase {
         XCTAssertEqual(sut.navigationStack.count, 2)
 
         // 6. Success
-        let result = CheckoutPaymentResult(paymentId: TestData.PaymentIds.success, amount: TestData.FormattedAmounts.tenDollars)
+        let result = PaymentResult(paymentId: TestData.PaymentIds.success, status: .success)
         sut.navigate(to: .success(result))
         XCTAssertEqual(sut.currentRoute, .success(result))
     }

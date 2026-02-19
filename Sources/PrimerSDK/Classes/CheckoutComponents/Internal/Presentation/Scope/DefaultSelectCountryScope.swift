@@ -62,7 +62,7 @@ final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogReporter {
     cardFormScope?.updateCountryCode(countryCode)
   }
 
-  public func onCancel() {
+  public func cancel() {
     // No-op: Navigation is handled by the local sheet dismissal in CountryInputField
   }
 

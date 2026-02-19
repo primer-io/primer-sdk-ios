@@ -34,10 +34,6 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? {
-    checkoutScope?.selectedVaultedPaymentMethod
-  }
-
   // MARK: - UI Customization Properties
 
   public var screen: PaymentMethodSelectionScreenComponent?
@@ -184,14 +180,14 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
       .paymentMethodSelection, metadata: .payment(PaymentEvent(paymentMethod: paymentMethodType)))
   }
 
-  public func onCancel() {
+  public func cancel() {
     checkoutScope?.onDismiss()
   }
 
   // MARK: - Vault Payment
 
   public func payWithVaultedPaymentMethod() async {
-    guard let vaultedMethod = selectedVaultedPaymentMethod else {
+    guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
     }
@@ -213,7 +209,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
   }
 
   public func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async {
-    guard let vaultedMethod = selectedVaultedPaymentMethod else {
+    guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else {
       logger.warn(message: "[Vault] No vaulted payment method selected")
       return
     }
@@ -330,7 +326,7 @@ final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSelectionScop
   }
 
   private func getCardNetworkFromSelectedVaultedMethod() -> CardNetwork {
-    guard let vaultedMethod = selectedVaultedPaymentMethod else { return .unknown }
+    guard let vaultedMethod = internalState.selectedVaultedPaymentMethod else { return .unknown }
 
     let network =
       vaultedMethod.paymentInstrumentData.network ?? vaultedMethod.paymentInstrumentData.binData?

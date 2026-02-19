@@ -35,33 +35,6 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     }
   }
 
-  // MARK: - Availability
-
-  public var isAvailable: Bool {
-    structuredState.isAvailable
-  }
-
-  public var availabilityError: String? {
-    structuredState.availabilityError
-  }
-
-  // MARK: - Button Customization
-
-  public var buttonStyle: PKPaymentButtonStyle {
-    get { structuredState.buttonStyle }
-    set { structuredState.buttonStyle = newValue }
-  }
-
-  public var buttonType: PKPaymentButtonType {
-    get { structuredState.buttonType }
-    set { structuredState.buttonType = newValue }
-  }
-
-  public var cornerRadius: CGFloat {
-    get { structuredState.cornerRadius }
-    set { structuredState.cornerRadius = newValue }
-  }
-
   // MARK: - UI Customization
 
   public var screen: ((_ scope: any PrimerApplePayScope) -> any View)?
@@ -148,9 +121,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     checkoutScope?.onDismiss()
   }
 
-  // MARK: - Pay Action
+  // MARK: - Submit Action
 
-  public func pay() {
+  public func submit() {
     guard structuredState.isAvailable else { return }
     guard !structuredState.isLoading else { return }
 

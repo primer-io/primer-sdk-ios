@@ -83,7 +83,7 @@ struct ApplePayScreen: View {
 
   @ViewBuilder
   private var content: some View {
-    if scope.isAvailable {
+    if scope.structuredState.isAvailable {
       availableContent
     } else {
       unavailableContent
@@ -132,11 +132,11 @@ struct ApplePayScreen: View {
       if let customButton = scope.applePayButton {
         AnyView(
           customButton {
-            scope.pay()
+            scope.submit()
           })
       } else {
         scope.PrimerApplePayButton {
-          scope.pay()
+          scope.submit()
         }
       }
     }
@@ -175,7 +175,7 @@ struct ApplePayScreen: View {
       Text("Apple Pay Unavailable")
         .font(.headline)
 
-      if let error = scope.availabilityError {
+      if let error = scope.structuredState.availabilityError {
         Text(error)
           .font(.body)
           .foregroundColor(.secondary)

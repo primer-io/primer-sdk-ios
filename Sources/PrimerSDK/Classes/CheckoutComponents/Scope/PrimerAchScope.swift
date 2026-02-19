@@ -44,12 +44,6 @@ public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAc
   /// Async stream of ACH payment state including current step, user details, and validation.
   var state: AsyncStream<PrimerAchState> { get }
 
-  /// How this scope was presented (determines back vs cancel button).
-  var presentationContext: PresentationContext { get }
-
-  /// Available dismissal mechanisms (close button, gestures).
-  var dismissalMechanism: [DismissalMechanism] { get }
-
   /// The bank collector view controller provided by Stripe SDK.
   /// Present this when `state.step` is `.bankAccountCollection`.
   var bankCollectorViewController: UIViewController? { get }
@@ -75,14 +69,6 @@ public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAc
 
   /// Declines the ACH mandate, cancelling the payment flow.
   func declineMandate()
-
-  // MARK: - Navigation Methods
-
-  /// Navigates back to the previous step or screen.
-  func onBack()
-
-  /// Cancels the ACH flow and dismisses checkout.
-  func onCancel()
 
   // MARK: - Screen-Level Customization
 

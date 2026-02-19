@@ -41,12 +41,6 @@ public protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == Prime
   /// Async stream of Klarna payment state including current step and available categories.
   var state: AsyncStream<PrimerKlarnaState> { get }
 
-  /// How this scope was presented (determines back vs cancel button).
-  var presentationContext: PresentationContext { get }
-
-  /// Available dismissal mechanisms (close button, gestures).
-  var dismissalMechanism: [DismissalMechanism] { get }
-
   /// The Klarna SDK payment view. Display this when `state.step` is `.viewReady`.
   var paymentView: UIView? { get }
 
@@ -61,14 +55,6 @@ public protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == Prime
 
   /// Finalizes the Klarna payment. Call when `state.step` is `.awaitingFinalization`.
   func finalizePayment()
-
-  // MARK: - Navigation Methods
-
-  /// Navigates back to the previous step or screen.
-  func onBack()
-
-  /// Cancels the Klarna flow and dismisses checkout.
-  func onCancel()
 
   // MARK: - Screen-Level Customization
 

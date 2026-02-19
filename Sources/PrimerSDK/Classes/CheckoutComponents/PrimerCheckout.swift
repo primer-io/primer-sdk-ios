@@ -254,7 +254,7 @@ struct InternalCheckout: View, LogReporter {
 
   @ViewBuilder
   private var loadingContent: some View {
-    if let customLoading = checkoutScope?.loading {
+    if let customLoading = checkoutScope?.loadingScreen {
       AnyView(customLoading())
     } else {
       DefaultLoadingScreen()

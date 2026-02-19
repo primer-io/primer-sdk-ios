@@ -85,7 +85,7 @@ struct KlarnaView: View, LogReporter {
       if scope.dismissalMechanism.contains(.closeButton) {
         Button(
           CheckoutComponentsStrings.cancelButton,
-          action: scope.onCancel
+          action: scope.cancel
         )
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibility(
@@ -394,6 +394,5 @@ struct KlarnaView: View, LogReporter {
     func authorizePayment() {}
     func finalizePayment() {}
     func onBack() {}
-    func onCancel() {}
   }
 #endif

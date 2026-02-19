@@ -23,12 +23,6 @@ public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == Prime
   /// The current state of the PayPal payment flow as an async stream.
   var state: AsyncStream<PrimerPayPalState> { get }
 
-  /// The presentation context determining navigation behavior (back button vs cancel button).
-  var presentationContext: PresentationContext { get }
-
-  /// The dismissal mechanisms available for this scope.
-  var dismissalMechanism: [DismissalMechanism] { get }
-
   // MARK: - Payment Method Lifecycle
 
   /// Called when the payment method is selected and the scope becomes active.
@@ -39,14 +33,6 @@ public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == Prime
 
   /// Cancels the PayPal payment flow.
   func cancel()
-
-  // MARK: - Navigation Methods
-
-  /// Called when user taps back button.
-  func onBack()
-
-  /// Called when user taps cancel/dismiss button.
-  func onCancel()
 
   // MARK: - Screen-Level Customization
 

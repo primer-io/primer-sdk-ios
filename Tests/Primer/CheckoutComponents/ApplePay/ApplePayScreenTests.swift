@@ -118,7 +118,7 @@ final class ApplePayScreenTests: XCTestCase {
         let screen = ApplePayScreen(scope: scope)
 
         // Then
-        XCTAssertTrue(scope.isAvailable)
+        XCTAssertTrue(scope.structuredState.isAvailable)
         XCTAssertNotNil(screen)
     }
 
@@ -132,7 +132,7 @@ final class ApplePayScreenTests: XCTestCase {
         let screen = ApplePayScreen(scope: scope)
 
         // Then
-        XCTAssertFalse(scope.isAvailable)
+        XCTAssertFalse(scope.structuredState.isAvailable)
         XCTAssertNotNil(screen)
     }
 
@@ -180,7 +180,7 @@ final class ApplePayScreenTests: XCTestCase {
         let screen = ApplePayScreen(scope: scope)
 
         // Then
-        XCTAssertNotNil(scope.availabilityError)
+        XCTAssertNotNil(scope.structuredState.availabilityError)
         XCTAssertNotNil(screen)
     }
 
@@ -199,8 +199,8 @@ final class ApplePayScreenTests: XCTestCase {
         let screen = ApplePayScreen(scope: scope)
 
         // Then
-        XCTAssertNotNil(scope.availabilityError)
-        XCTAssertTrue(scope.availabilityError?.contains("Custom error message") ?? false)
+        XCTAssertNotNil(scope.structuredState.availabilityError)
+        XCTAssertTrue(scope.structuredState.availabilityError?.contains("Custom error message") ?? false)
         XCTAssertNotNil(screen)
     }
 

@@ -31,7 +31,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 
   /// Custom loading screen shown during payment processing.
   /// Default implementation shows a centered loading indicator with "Loading" text.
-  var loading: Component? { get set }
+  var loadingScreen: Component? { get set }
 
   // Note: Success screen removed - CheckoutComponents dismisses immediately on success
   // The delegate handles presenting the result screen via PrimerResultViewController
