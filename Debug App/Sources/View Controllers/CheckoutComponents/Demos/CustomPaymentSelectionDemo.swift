@@ -97,7 +97,7 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
                     }
 
                     // Custom loading screen during payment processing (matches Android's checkout.loading)
-                    checkoutScope.loading = {
+                    checkoutScope.loadingScreen = {
                         AnyView(CustomProcessingOverlay())
                     }
                 },
@@ -329,7 +329,7 @@ private struct CustomPaymentSelectionContent: View {
     private var headerView: some View {
         HStack {
             Button(action: {
-                scope.onCancel()
+                scope.cancel()
             }) {
                 Image(systemName: "chevron.left")
                     .font(.title3)
@@ -770,7 +770,7 @@ private struct CustomPaymentSelectionContent: View {
             scope.onPaymentMethodSelected(paymentMethod: method)
         case .card:
             // Submit the card form
-            cardFormScope?.onSubmit()
+            cardFormScope?.submit()
         case .none:
             isPaymentInProgress = false
         }

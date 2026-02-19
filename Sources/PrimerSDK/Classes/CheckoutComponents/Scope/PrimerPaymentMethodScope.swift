@@ -30,6 +30,14 @@ public protocol PrimerPaymentMethodScope: AnyObject {
   /// Async stream emitting the payment method's current state whenever it changes.
   var state: AsyncStream<State> { get }
 
+  // MARK: - Presentation
+
+  /// How this scope was presented (determines back vs cancel button).
+  var presentationContext: PresentationContext { get }
+
+  /// Available dismissal mechanisms (close button, gestures).
+  var dismissalMechanism: [DismissalMechanism] { get }
+
   // MARK: - Lifecycle Methods
 
   /// Initializes the payment flow for this method.
@@ -65,6 +73,10 @@ public protocol PrimerPaymentMethodScope: AnyObject {
 
 @available(iOS 15.0, *)
 extension PrimerPaymentMethodScope {
+
+  public var presentationContext: PresentationContext { .fromPaymentSelection }
+
+  public var dismissalMechanism: [DismissalMechanism] { [] }
 
   public func onBack() {
     cancel()

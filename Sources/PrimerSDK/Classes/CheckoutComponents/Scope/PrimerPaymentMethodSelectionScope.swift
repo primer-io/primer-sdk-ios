@@ -17,16 +17,13 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
   /// Controls how users can dismiss the checkout modal.
   var dismissalMechanism: [DismissalMechanism] { get }
 
-  /// The currently selected vaulted payment method, if any.
-  var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
-
   // MARK: - Navigation Methods
 
   /// Called when a payment method is selected by the user.
   /// - Parameter paymentMethod: The selected payment method.
   func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
 
-  func onCancel()
+  func cancel()
 
   // MARK: - Vault Payment Methods
 

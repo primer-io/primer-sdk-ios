@@ -87,6 +87,8 @@ public protocol PrimerPaymentMethodScope: AnyObject {
   associatedtype State: Equatable
 
   var state: AsyncStream<State> { get }
+  var presentationContext: PresentationContext { get }   // default: .fromPaymentSelection
+  var dismissalMechanism: [DismissalMechanism] { get }  // default: []
 
   func start()     // Initialize payment flow
   func submit()    // Validate and process payment
@@ -116,7 +118,7 @@ public protocol PrimerCheckoutScope: AnyObject {
   // Screen customization
   var container: ContainerComponent? { get set }
   var splashScreen: Component? { get set }
-  var loading: Component? { get set }
+  var loadingScreen: Component? { get set }
   var errorScreen: ErrorComponent? { get set }
 }
 ```
@@ -130,10 +132,9 @@ Scope for the payment method selection screen.
 public protocol PrimerPaymentMethodSelectionScope: AnyObject {
   var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
   var dismissalMechanism: [DismissalMechanism] { get }
-  var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? { get }
 
   func onPaymentMethodSelected(paymentMethod: CheckoutPaymentMethod)
-  func onCancel()
+  func cancel()
   func payWithVaultedPaymentMethod() async
   func payWithVaultedPaymentMethodAndCvv(_ cvv: String) async
   func updateCvvInput(_ cvv: String)
@@ -159,8 +160,6 @@ Comprehensive card form with field-level customization.
 ```swift
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == PrimerCardFormState {
-  var presentationContext: PresentationContext { get }
-  var dismissalMechanism: [DismissalMechanism] { get }
   var cardFormUIOptions: PrimerCardFormUIOptions? { get }
   var selectCountry: PrimerSelectCountryScope { get }
 
@@ -193,10 +192,6 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
   func getFieldError(_ fieldType: PrimerInputElementType) -> String?
   func getFormConfiguration() -> CardFormConfiguration
 
-  func onSubmit()
-  func onBack()
-  func onCancel()
-
   // Field configuration (InputFieldConfig)
   var cardNumberConfig: InputFieldConfig? { get set }
   var expiryDateConfig: InputFieldConfig? { get set }
@@ -220,9 +215,9 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
   var screen: CardFormScreenComponent? { get set }
   var cardInputSection: Component? { get set }
   var billingAddressSection: Component? { get set }
-  var submitButtonSection: Component? { get set }
+  var submitButton: Component? { get set }
   var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)? { get set }
-  var errorView: ErrorComponent? { get set }
+  var errorScreen: ErrorComponent? { get set }
   var submitButtonText: String? { get set }
   var showSubmitLoadingIndicator: Bool { get set }
 
@@ -252,13 +247,8 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
 ```swift
 @MainActor
 public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == PrimerApplePayState {
-  var isAvailable: Bool { get }
-  var availabilityError: String? { get }
-  var buttonStyle: PKPaymentButtonStyle { get }
-  var buttonType: PKPaymentButtonType { get }
-  var cornerRadius: CGFloat { get }
+  var state: AsyncStream<PrimerApplePayState> { get }
 
-  func pay()
   func PrimerApplePayButton(action: @escaping () -> Void) -> AnyView
 
   var screen: ((_ scope: any PrimerApplePayScope) -> any View)? { get set }
@@ -271,12 +261,6 @@ public protocol PrimerApplePayScope: PrimerPaymentMethodScope where State == Pri
 ```swift
 @MainActor
 public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
-  var presentationContext: PresentationContext { get }
-  var dismissalMechanism: [DismissalMechanism] { get }
-
-  func onBack()
-  func onCancel()
-
   var screen: PayPalScreenComponent? { get set }
   var payButton: PayPalButtonComponent? { get set }
   var submitButtonText: String? { get set }
@@ -290,15 +274,11 @@ Multi-step flow: category selection -> authorization -> finalization.
 ```swift
 @MainActor
 public protocol PrimerKlarnaScope: PrimerPaymentMethodScope where State == PrimerKlarnaState {
-  var presentationContext: PresentationContext { get }
-  var dismissalMechanism: [DismissalMechanism] { get }
   var paymentView: UIView? { get }
 
   func selectPaymentCategory(_ categoryId: String)
   func authorizePayment()
   func finalizePayment()
-  func onBack()
-  func onCancel()
 
   var screen: KlarnaScreenComponent? { get set }
   var authorizeButton: KlarnaButtonComponent? { get set }
@@ -313,8 +293,6 @@ Multi-step flow: user details -> bank collection -> mandate acceptance.
 ```swift
 @MainActor
 public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAchState {
-  var presentationContext: PresentationContext { get }
-  var dismissalMechanism: [DismissalMechanism] { get }
   var bankCollectorViewController: UIViewController? { get }
 
   func updateFirstName(_ value: String)
@@ -323,8 +301,6 @@ public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAc
   func submitUserDetails()
   func acceptMandate()
   func declineMandate()
-  func onBack()
-  func onCancel()
 
   var screen: AchScreenComponent? { get set }
   var userDetailsScreen: AchScreenComponent? { get set }
@@ -341,7 +317,7 @@ public protocol PrimerSelectCountryScope {
   var state: AsyncStream<PrimerSelectCountryState> { get }
 
   func onCountrySelected(countryCode: String, countryName: String)
-  func onCancel()
+  func cancel()
   func onSearch(query: String)
 
   var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
@@ -457,7 +433,7 @@ public struct PrimerKlarnaState: Equatable {
 
 ```swift
 public struct PrimerPayPalState: Equatable {
-  public enum Status: Equatable {
+  public enum Step: Equatable {
     case idle
     case loading
     case redirecting
@@ -466,7 +442,7 @@ public struct PrimerPayPalState: Equatable {
     case failure(String)
   }
 
-  var status: Status
+  var step: Step
   var paymentMethod: CheckoutPaymentMethod?
   var surchargeAmount: String?
 }

@@ -667,10 +667,10 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_onCancel_shouldNotCrash() {
+    func test_cancel_shouldNotCrash_viaCancel() {
         let scope = createScope()
         // Should not crash
-        scope.onCancel()
+        scope.cancel()
     }
 
     @MainActor

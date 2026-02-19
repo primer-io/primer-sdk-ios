@@ -42,7 +42,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
       Spacer()
 
       if scope.dismissalMechanism.contains(.closeButton) {
-        Button(CheckoutComponentsStrings.cancelButton, action: scope.onCancel)
+        Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }

@@ -66,7 +66,7 @@ struct PayPalView: View, LogReporter {
           Button(
             CheckoutComponentsStrings.cancelButton,
             action: {
-              scope.onCancel()
+              scope.cancel()
             }
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -149,7 +149,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var submitButtonContent: some View {
-    let isLoading = payPalState.status == .loading || payPalState.status == .redirecting
+    let isLoading = payPalState.step == .loading || payPalState.step == .redirecting
 
     return HStack {
       if isLoading {
@@ -182,7 +182,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var submitButtonAccessibilityLabel: String {
-    let isLoading = payPalState.status == .loading || payPalState.status == .redirecting
+    let isLoading = payPalState.step == .loading || payPalState.step == .redirecting
     if isLoading {
       return CheckoutComponentsStrings.a11ySubmitButtonLoading
     }
@@ -196,7 +196,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var isButtonDisabled: Bool {
-    payPalState.status == .loading || payPalState.status == .redirecting
+    payPalState.step == .loading || payPalState.step == .redirecting
   }
 
   private func submitAction() {
@@ -234,7 +234,7 @@ struct PayPalView: View, LogReporter {
 
   @available(iOS 15.0, *)
   #Preview("PayPal - Loading") {
-    PayPalView(scope: MockPayPalScope(status: .loading))
+    PayPalView(scope: MockPayPalScope(step: .loading))
       .environment(\.designTokens, MockDesignTokens.light)
   }
 
@@ -255,17 +255,16 @@ struct PayPalView: View, LogReporter {
       }
     }
 
-    init(status: PrimerPayPalState.Status = .idle) {
-      self.mockState = PrimerPayPalState(status: status)
+    init(step: PrimerPayPalState.Step = .idle) {
+      self.mockState = PrimerPayPalState(step: step)
     }
 
     func start() {}
     func submit() {
-      mockState.status = .loading
+      mockState.step = .loading
     }
 
     func cancel() {}
     func onBack() {}
-    func onCancel() {}
   }
 #endif

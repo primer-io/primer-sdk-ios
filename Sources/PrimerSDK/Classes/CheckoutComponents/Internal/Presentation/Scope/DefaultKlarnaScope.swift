@@ -150,14 +150,6 @@ public final class DefaultKlarnaScope: PrimerKlarnaScope, ObservableObject, LogR
     checkoutScope.checkoutNavigator.navigateBack()
   }
 
-  public func onCancel() {
-    guard let checkoutScope else {
-      logger.warn(message: "Klarna checkout scope was deallocated during cancel")
-      return
-    }
-    checkoutScope.onDismiss()
-  }
-
   // MARK: - Private Flow Methods
 
   private func handleError(_ error: Error, context: String) {

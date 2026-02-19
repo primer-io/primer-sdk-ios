@@ -8,7 +8,7 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct SuccessScreen: View {
-  let result: CheckoutPaymentResult
+  let result: PaymentResult
   let onDismiss: (() -> Void)?
 
   @Environment(\.designTokens) private var tokens
@@ -16,7 +16,7 @@ struct SuccessScreen: View {
   @State private var dismissTimer: Timer?
   @State private var iconScale: CGFloat = 0.3
 
-  init(result: CheckoutPaymentResult, onDismiss: (() -> Void)? = nil) {
+  init(result: PaymentResult, onDismiss: (() -> Void)? = nil) {
     self.result = result
     self.onDismiss = onDismiss
   }

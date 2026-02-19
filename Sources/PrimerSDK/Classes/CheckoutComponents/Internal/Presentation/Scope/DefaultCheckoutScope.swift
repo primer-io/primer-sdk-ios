@@ -19,7 +19,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)  // Delete confirmation
     case paymentMethod(String)  // Dynamic payment method with type identifier
     case processing  // Payment processing in progress
-    case success(CheckoutPaymentResult)
+    case success(PaymentResult)
     case failure(PrimerError)
     case dismissed
 
@@ -85,8 +85,8 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   public var container: ContainerComponent?
   public var splashScreen: Component?
-  public var loading: Component?
-  public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
+  public var loadingScreen: Component?
+  public var successScreen: ((_ result: PaymentResult) -> AnyView)?
   public var errorScreen: ErrorComponent?
   public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
@@ -663,12 +663,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
 
   func handlePaymentSuccess(_ result: PaymentResult) {
     updateState(.success(result))
-
-    let checkoutResult = CheckoutPaymentResult(
-      paymentId: result.paymentId,
-      amount: result.amount?.description ?? "N/A"
-    )
-    updateNavigationState(.success(checkoutResult))
+    updateNavigationState(.success(result))
   }
 
   func handlePaymentError(_ error: PrimerError) {

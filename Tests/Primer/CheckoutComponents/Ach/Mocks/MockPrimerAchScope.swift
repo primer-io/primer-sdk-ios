@@ -42,7 +42,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     private(set) var acceptMandateCallCount = 0
     private(set) var declineMandateCallCount = 0
     private(set) var onBackCallCount = 0
-    private(set) var onCancelCallCount = 0
 
     // MARK: - Captured Parameters
 
@@ -146,10 +145,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         onBackCallCount += 1
     }
 
-    func onCancel() {
-        onCancelCallCount += 1
-    }
-
     // MARK: - Test Helpers
 
     func reset() {
@@ -163,7 +158,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         acceptMandateCallCount = 0
         declineMandateCallCount = 0
         onBackCallCount = 0
-        onCancelCallCount = 0
 
         lastFirstName = nil
         lastLastName = nil

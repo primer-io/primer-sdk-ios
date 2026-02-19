@@ -181,14 +181,6 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
     checkoutScope.checkoutNavigator.navigateBack()
   }
 
-  public func onCancel() {
-    guard let checkoutScope else {
-      logger.warn(message: "ACH checkout scope was deallocated during cancel")
-      return
-    }
-    checkoutScope.onDismiss()
-  }
-
   // MARK: - Private Flow Methods
 
   private func loadInitialUserDetails() async {

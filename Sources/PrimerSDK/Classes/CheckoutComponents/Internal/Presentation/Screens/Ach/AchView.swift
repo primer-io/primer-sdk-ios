@@ -86,7 +86,7 @@ struct AchView: View, LogReporter {
       if scope.dismissalMechanism.contains(.closeButton) {
         Button(
           CheckoutComponentsStrings.cancelButton,
-          action: scope.onCancel
+          action: scope.cancel
         )
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibility(
@@ -216,6 +216,5 @@ struct AchView: View, LogReporter {
     func acceptMandate() {}
     func declineMandate() {}
     func onBack() {}
-    func onCancel() {}
   }
 #endif

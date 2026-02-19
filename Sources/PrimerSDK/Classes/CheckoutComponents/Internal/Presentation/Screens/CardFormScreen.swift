@@ -72,7 +72,7 @@ struct CardFormScreen: View, LogReporter {
           Button(
             CheckoutComponentsStrings.cancelButton,
             action: {
-              scope.onCancel()
+              scope.cancel()
             }
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -200,7 +200,7 @@ struct CardFormScreen: View, LogReporter {
   @ViewBuilder
   private var submitButtonSection: some View {
     // Check scope configuration for full button replacement
-    if let customContent = scope.submitButtonSection {
+    if let customContent = scope.submitButton {
       AnyView(customContent())
         .onTapGesture {
           if cardFormState.isValid, !cardFormState.isLoading {
