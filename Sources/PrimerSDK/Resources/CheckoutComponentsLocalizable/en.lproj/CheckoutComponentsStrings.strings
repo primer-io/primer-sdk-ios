@@ -225,3 +225,13 @@
 "accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
 "accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
 "accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+
+/* Web Redirect */
+"primer_web_redirect_button_continue" = "Continue with %@";
+"primer_web_redirect_description" = "You will be redirected to complete your payment";
+"accessibility_web_redirect_submit_button" = "Pay with %@";
+"accessibility_web_redirect_loading" = "Processing payment";
+"accessibility_web_redirect_redirecting" = "Opening payment page";
+"accessibility_web_redirect_polling" = "Waiting for payment confirmation";
+"accessibility_web_redirect_success" = "Payment successful";
+"accessibility_web_redirect_failure" = "Payment failed: %@";

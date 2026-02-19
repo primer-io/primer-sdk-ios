@@ -46,6 +46,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let processWebRedirectInteractor: ProcessWebRedirectPaymentInteractor
+    private let accessibilityService: AccessibilityAnnouncementService?
     private let repository: WebRedirectRepository?
 
     @Published private var internalState: WebRedirectState
@@ -57,6 +58,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         checkoutScope: DefaultCheckoutScope,
         presentationContext: PresentationContext = .fromPaymentSelection,
         processWebRedirectInteractor: ProcessWebRedirectPaymentInteractor,
+        accessibilityService: AccessibilityAnnouncementService? = nil,
         repository: WebRedirectRepository? = nil,
         paymentMethod: CheckoutPaymentMethod? = nil,
         surchargeAmount: String? = nil
@@ -65,6 +67,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         self.checkoutScope = checkoutScope
         self.presentationContext = presentationContext
         self.processWebRedirectInteractor = processWebRedirectInteractor
+        self.accessibilityService = accessibilityService
         self.repository = repository
         self.internalState = WebRedirectState(
             status: .idle,
@@ -109,13 +112,16 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
     private func performPayment() async {
         // Capture strong reference to checkoutScope before Safari opens
         // Safari redirect causes SwiftUI views to go off-screen, releasing weak references
-        guard let checkoutScope = checkoutScope else { return }
+        guard let checkoutScope else { return }
 
         internalState.status = .loading
         checkoutScope.startProcessing()
 
+        accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectLoading)
+
         do {
             internalState.status = .redirecting
+            accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectRedirecting)
 
             let result = try await processWebRedirectInteractor.execute(paymentMethodType: paymentMethodType)
 
@@ -123,8 +129,10 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
             checkoutScope.startProcessing()
 
             internalState.status = .polling
+            accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectPolling)
 
             internalState.status = .success
+            accessibilityService?.announceStateChange(CheckoutComponentsStrings.a11yWebRedirectSuccess)
 
             checkoutScope.handlePaymentSuccess(result)
 
@@ -134,6 +142,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
 
             let errorMessage = extractUserFriendlyErrorMessage(from: error)
             internalState.status = .failure(errorMessage)
+            accessibilityService?.announceError(CheckoutComponentsStrings.a11yWebRedirectFailure(errorMessage))
 
             let primerError = error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
             checkoutScope.handlePaymentError(primerError)
