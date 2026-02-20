@@ -172,7 +172,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     private func configureBlikField() {
         let field = FormFieldState.blikOtpField()
         internalState.fields = [field]
-        internalState.pendingMessage = "Complete your payment in Blik app"
+        internalState.pendingMessage = CheckoutComponentsStrings.formRedirectBlikPendingMessage
     }
 
     private func configureMBWayField() {
@@ -191,7 +191,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         )
 
         internalState.fields = [field]
-        internalState.pendingMessage = "Complete your payment in the MB WAY app"
+        internalState.pendingMessage = CheckoutComponentsStrings.formRedirectMBWayPendingMessage
     }
 
     private func filterInput(_ input: String, for fieldType: FormFieldState.FieldType) -> String {

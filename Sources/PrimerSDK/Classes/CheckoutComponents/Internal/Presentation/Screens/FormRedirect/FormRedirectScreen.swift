@@ -32,9 +32,9 @@ struct FormRedirectScreen: View {
     private var defaultSubmitButtonText: String {
         switch scope.paymentMethodType {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
-            "Pay with BLIK"
+            CheckoutComponentsStrings.payWithBlik
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
-            "Pay with MB WAY"
+            CheckoutComponentsStrings.payWithMBWay
         default:
             CheckoutComponentsStrings.payButton
         }
@@ -61,6 +61,7 @@ struct FormRedirectScreen: View {
             }
         }
         .background(CheckoutColors.screenBackground(tokens: tokens))
+        .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.screen)
         .onAppear {
             scope.start()
         }
@@ -149,6 +150,15 @@ struct FormRedirectScreen: View {
             )
         }
         .disabled(!currentState.isSubmitEnabled || currentState.isLoading)
+        .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.submitButton)
+        .accessibility(
+            config: AccessibilityConfiguration(
+                identifier: AccessibilityIdentifiers.FormRedirect.submitButton,
+                label: CheckoutComponentsStrings.a11ySubmitButtonLabel,
+                hint: currentState.isSubmitEnabled ? nil : CheckoutComponentsStrings.a11ySubmitButtonHint,
+                traits: [.isButton]
+            )
+        )
     }
 }
 
@@ -190,6 +200,7 @@ private struct FormFieldView: View {
                 Text(prefix)
                     .font(PrimerFont.bodyLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+                    .accessibilityIdentifier(AccessibilityIdentifiers.FormRedirect.phonePrefix)
             }
 
             TextField(field.placeholder, text: Binding(
@@ -201,6 +212,15 @@ private struct FormFieldView: View {
             .textContentType(field.fieldType.textContentType)
             .focused($isFocused)
             .onSubmit { onSubmit() }
+            .accessibilityIdentifier(accessibilityIdentifier)
+            .accessibility(
+                config: AccessibilityConfiguration(
+                    identifier: accessibilityIdentifier,
+                    label: accessibilityLabel,
+                    hint: accessibilityHint,
+                    traits: []
+                )
+            )
         }
         .padding(.horizontal, PrimerSpacing.medium(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
@@ -224,6 +244,32 @@ private struct FormFieldView: View {
         }
     }
 
+    private var accessibilityIdentifier: String {
+        switch field.fieldType {
+        case .otpCode:
+            AccessibilityIdentifiers.FormRedirect.otpField
+        case .phoneNumber:
+            AccessibilityIdentifiers.FormRedirect.phoneField
+        }
+    }
+
+    private var accessibilityLabel: String {
+        switch field.fieldType {
+        case .otpCode:
+            CheckoutComponentsStrings.a11yFormRedirectOtpLabel
+        case .phoneNumber:
+            CheckoutComponentsStrings.a11yFormRedirectPhoneLabel
+        }
+    }
+
+    private var accessibilityHint: String {
+        switch field.fieldType {
+        case .otpCode:
+            CheckoutComponentsStrings.a11yFormRedirectOtpHint
+        case .phoneNumber:
+            CheckoutComponentsStrings.a11yFormRedirectPhoneHint
+        }
+    }
 }
 
 // MARK: - Keyboard Type Extension

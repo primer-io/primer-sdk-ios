@@ -89,7 +89,7 @@ final class ErrorMessageResolver {
     case "checkout_components_phone_number_required":
       return CheckoutComponentsStrings.enterValidPhoneNumber
     case "checkout_components_otp_code_required":
-      return "OTP code is required"
+      return CheckoutComponentsStrings.otpCodeRequired
     case "checkout_components_retail_outlet_required":
       return "Retail outlet is required"
     default:
@@ -130,7 +130,7 @@ final class ErrorMessageResolver {
     case "checkout_components_phone_number_invalid":
       return CheckoutComponentsStrings.enterValidPhoneNumber
     case "checkout_components_otp_code_invalid":
-      return "Enter a valid 6-digit code"
+      return CheckoutComponentsStrings.otpCodeInvalid
     case "checkout_components_retail_outlet_invalid":
       return "Invalid retail outlet"
     default:
