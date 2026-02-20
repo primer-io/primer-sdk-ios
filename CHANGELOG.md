@@ -1,3 +1,19 @@
+## 2.45.0 (2026-02-20)
+
+### Feat
+
+- Add idempotency key support for Drop-In and Headless flows (#1525)
+
+### Fix
+
+- Resolve main thread warnings in PayPal flow (#1530)
+- Add optional RetryConfig when polling (#1524)
+- Submit/action buttons ignore theme corner radius configuration (#1522)
+
+### Refactor
+
+- Refactor RetryHandler (#1521)
+
 ## 2.44.1 (2026-01-27)
 
 ### Fix
