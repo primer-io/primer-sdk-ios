@@ -27,13 +27,12 @@ extension PrimerBDCEngine {
     func initialize(schema: String, state: String) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
-        setObject("TODO:", forKey: "__screenId") // Not ready yet
         
         return """
         (async () => {
             try {
-                const processor = await StateProcessor.createStateProcessor(__schema,  __screenId);
-                const result = await processor.triggerInitialWorkflows(JSON.parse(__state));
+                const processor = await StateProcessor.createStateProcessor(__schema);
+                const result = await processor.initialize(JSON.parse(__state));
                 onInitializeResult(JSON.stringify(result));
             } catch (e) {
                 onInitializeResult(JSON.stringify({ error: e.toString() }));
@@ -42,30 +41,16 @@ extension PrimerBDCEngine {
         """
     }
     
-    func eventsScript(
-        schema: String,
-        screenId: String,
-        state: String,
-        event: Event
-    ) -> String {
+    func eventScript(schema: String, state: String, event: String) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
-        setObject(screenId, forKey: "__screenId")
-        
-        setObject(event.eventType, forKey: "__eventType")
-        setObject(event.id, forKey: "__eventId" )
-        setObject(event.value ?? JSValue(undefinedIn: context), forKey: "__eventValue")
+        setObject(event, forKey: "__event")
         
         return """
         (async () => {
             try {
-                const dict = {
-                    type: __eventType,
-                    id: __eventId,
-                    ...(__eventValue === undefined ? {} : { value: __eventValue })
-                };
-                const processor = await StateProcessor.createStateProcessor(__schema, __screenId);
-                const result = await processor.applyEvent(JSON.parse(__state), dict);
+                const processor = await StateProcessor.createStateProcessor(__schema);
+                const result = await processor.applyEvent(JSON.parse(__state), JSON.parse(__event));
                 onProcessFieldResult(JSON.stringify(result));
             } catch (e) {
                 onProcessFieldResult(JSON.stringify({ error: e.toString() }));
@@ -74,27 +59,22 @@ extension PrimerBDCEngine {
         """
     }
     
-    func actionsScript(
+    func resultScript(
         schema: String,
-        screenId: String,
         state: String,
-        workflowId: String,
-        stepId: String,
-        response: String?
+        outcome: String,
+        data: String?
     ) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
-        setObject(screenId, forKey: "__screenId")
-        
-        setObject(workflowId, forKey: "__workflowId")
-        setObject(stepId, forKey: "__stepId")
-        setObject(response, forKey: "__response")
+        setObject(outcome, forKey: "__outcome")
+        setObject(data, forKey: "__data")
         
         return """
         (async () => {
             try {
-                const processor = await StateProcessor.createStateProcessor(__schema, __screenId);
-                const result = await processor.applyWorkflowStepResponse(JSON.parse(__state), __workflowId, __stepId, __response);
+                const processor = await StateProcessor.createStateProcessor(__schema);
+                const result = await processor.applyResult(JSON.parse(__state), __outcome, __data);
                 onExecuteActionResult(JSON.stringify(result));
             } catch (e) {
                 onExecuteActionResult(JSON.stringify({ error: e.toString() }));

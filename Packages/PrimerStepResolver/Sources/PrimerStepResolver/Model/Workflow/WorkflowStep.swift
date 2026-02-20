@@ -9,10 +9,8 @@ import PrimerFoundation
 
 public struct WorkflowStep: Decodable {
     public let type: WorkflowType
-    public let stepId: String
     
     private enum StepCodingKeys: String, CodingKey {
-        case eventType
         case params
         case properties
         case schema
@@ -22,14 +20,12 @@ public struct WorkflowStep: Decodable {
     
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: StepCodingKeys.self)
-        stepId = try container.decode(String.self, forKey: .stepId)
         let params = try container.decode(CodableValue.self, forKey: .params)
     
         switch try container.decode(StepDomain.self, forKey: .type) {
-        case .analyticsLog: type = .analytics(params)
-        case .httpRequest: type = .httpCall(params)
-        case .urlOpen: type = .urlOpen(params)
-        case .uiRender: type = .uiRender
+        case .platformLog: type = .log(params: params)
+        case .httpRequest: type = .httpCall(params: params)
+        case .urlOpen: type = .urlOpen(params: params)
         }
     }
 }

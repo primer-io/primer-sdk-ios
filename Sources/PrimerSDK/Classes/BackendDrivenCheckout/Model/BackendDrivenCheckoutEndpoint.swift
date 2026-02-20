@@ -7,15 +7,22 @@
 import Foundation
 
 enum BackendDrivenCheckoutEndpoint {
+    case manifest
     case pay(paymentMethod: PrimerPaymentMethod)
     case expandClientSession
 }
 
 extension BackendDrivenCheckoutEndpoint: Endpoint {
-    var baseURL: String? { PrimerAPIConfiguration.current?.pciUrl }
+    var baseURL: String? {
+        switch self {
+        case .expandClientSession, .pay: PrimerAPIConfiguration.current?.pciUrl
+        case .manifest: "https://sdk.dev.primer.io/"
+        }
+    }
     
     var path: String {
         switch self {
+        case .manifest: "state-processor/pr-3/signed_manifest.json"
         case .pay: "client-session/\(PrimerAPIConfigurationModule.clientSessionId):pay"
         case .expandClientSession: "client-session/\(PrimerAPIConfigurationModule.clientSessionId)"
         }
@@ -23,6 +30,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var method: HTTPMethod {
         switch self {
+        case .manifest: .get
         case .pay: .post
         case .expandClientSession: .get
         }
@@ -41,6 +49,7 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var queryParameters: [String : String]? {
         switch self {
+        case .manifest: nil
         case .pay: nil
         case .expandClientSession: ["expand" : "clientInstruction"]
         }
@@ -48,19 +57,21 @@ extension BackendDrivenCheckoutEndpoint: Endpoint {
     
     var body: Data? {
         switch self {
-        case .expandClientSession:
-            return nil
+        case .manifest: return nil
+        case .expandClientSession: return nil
         case .pay:
             guard let paymentMethod else { return nil }
             return try? PayBody(
                 paymentMethodConfigId: paymentMethod.id,
-                processorMerchantAccountId: paymentMethod.merchantOptions.merchantAccountId
+                processorMerchantAccountId: paymentMethod.merchantOptions.merchantAccountId,
+                paymentMethodType: paymentMethod.type
             ).data()
         }
     }
     
     var paymentMethod: PrimerPaymentMethod? {
         switch self {
+        case .manifest: nil
         case .expandClientSession: nil
         case let .pay(paymentMethod): PrimerAPIConfigurationModule.paymentMethods?.first(where: { $0.type == paymentMethod.type })
         }

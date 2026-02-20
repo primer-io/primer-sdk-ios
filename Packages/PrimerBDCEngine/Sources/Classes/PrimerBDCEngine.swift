@@ -4,12 +4,14 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import CryptoKit
 import JavaScriptCore
 import PrimerFoundation
 import PrimerStepResolver
 
 private enum EngineError: Error {
     case jsonToDataFailed
+    case sha256Mismatch
 }
 
 @MainActor
@@ -21,6 +23,7 @@ public final class PrimerBDCEngine: NSObject {
     private typealias JSStringBlock = @convention(block) (String) -> Void
     private typealias JSVoidBlock = @convention(block) () -> Void
     
+    private let manifest: Manifest
     private let encoder = JSONEncoder()
     private var isReady = false
     private var loadingContinuations: [CheckedContinuation<Void, Never>] = []
@@ -29,7 +32,8 @@ public final class PrimerBDCEngine: NSObject {
     private var evaluateTreeContinuation: Continuation?
     private var executeActionContinuation: Continuation?
     
-    override public init() {
+    public init(manifest: Manifest) {
+        self.manifest = manifest
         context = JSContext()!
         super.init()
         setupContext()
@@ -44,35 +48,20 @@ public extension PrimerBDCEngine {
         return try await runScript(script, continuationPath: \.initializeContinuation)
     }
     
-    func applyEvent<State: Encodable>(
-        _ event: Event,
-        schema: String,
-        screenId: String = "first",
-        state: [String: State]
-    ) async throws -> [String: Any]  {
+    func applyEvent<State: Encodable>(_ event: CodableValue, schema: String, state: State) async throws -> [String: Any]  {
         await checkIfReady()
-        let script = eventsScript(schema: schema, screenId: screenId, state: try state.literal(encoder), event: event)
+        let script = eventScript(schema: schema, state: try state.literal(encoder), event: try event.jsonString)
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     
-    func applyWorkflowStepResponse<State: Encodable>(
-        schema: String,
-        state: State,
-        workflowId: String,
-		screenId: String = "first",
-        stepId: String,
-        response: Data?
-	) async throws  -> [String: Any] {
+    func applyResult<State: Encodable>(schema: String, state: State, outcome: String, data: Data?) async throws  -> [String: Any] {
 		await checkIfReady()
-		let state = try state.literal(encoder)
-		let script = actionsScript(
-			schema: schema,
-			screenId: screenId,
-			state: state,
-			workflowId: workflowId,
-			stepId: stepId,
-            response: response.flatMap { String(data: $0, encoding: .utf8) }
-		)
+        let script = resultScript(
+            schema: schema,
+            state: try state.literal(encoder),
+            outcome: outcome,
+            data: data.flatMap { String(data: $0, encoding: .utf8) }
+        )
         return try await runScript(script, continuationPath: \.executeActionContinuation)
     }
 }
@@ -111,10 +100,10 @@ private extension PrimerBDCEngine {
     }
     
     func setupEngine() async throws  {
-        try await evaluate { try await fetch(jsURL) }
-        try await evaluate { try await fetch(stateProcessorURL) }
+        try await evaluate { try await fetch(manifest.celWrapperJSURLContainer.url, sha256: manifest.celWrapperJSURLContainer.sha256) }
+        try await evaluate { try await fetch(manifest.stateProcessorContainer.url, sha256: manifest.stateProcessorContainer.sha256) }
         
-        let wasmData = try await fetch(wasmURL)
+        let wasmData = try await fetch(manifest.celWrapperWASMURLContainer.br, sha256: manifest.celWrapperWASMURLContainer.sha256)
         let byteArray = [UInt8](wasmData)
         let jsByteArray = JSValue(object: byteArray, in: context)!
         
@@ -122,9 +111,12 @@ private extension PrimerBDCEngine {
         context.evaluateScript(instantiate)
     }
     
-    func fetch(_ urlString: String) async throws -> Data {
+    func fetch(_ urlString: String, sha256: String) async throws -> Data {
         let url = URL(string: urlString)!
         let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url))
+        let digest = SHA256.hash(data: data)
+        let computedSHA256 = Data(digest).base64EncodedString()
+        guard computedSHA256 == sha256 else { throw EngineError.sha256Mismatch }
         return data
     }
     
@@ -162,8 +154,4 @@ private extension Encodable {
     func literal(_ encoder: JSONEncoder) throws -> String {
         String(data: try encoder.encode(self), encoding: .utf8)!
     }
-}
-
-private extension Int {
-    var MB: Int { self * 1024 * 1024 }
 }

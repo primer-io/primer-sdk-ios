@@ -9,36 +9,23 @@ import PrimerStepResolver
 
 @MainActor
 final class URLOpenHandler {
-    weak var delegate: URLOpenDelegate?
     
-    private let registry: PrimerStepResolverRegistry
+    var onClose: (() async throws -> Void)?
+    var onComplete: (() async throws -> Void)?
+    
     private let harness: SFSafariViewControllerHarness
     
-    init(registry: PrimerStepResolverRegistry) {
-        self.registry = registry
+    init() {
         self.harness = SFSafariViewControllerHarness()
-        Task { await registry.register(harness, forStepType: .urlOpen) }
         harness.delegate = self
     }
     
     func resolve(_ data: CodableValue) async throws -> CodableValue? {
-        let resolver = try await registry.resolver(for: .urlOpen)
-        return try await resolver.resolve(data)
+        try await harness.resolve(data)
     }
 }
 
-extension URLOpenHandler: @MainActor SFSafariViewControllerHarnessDelegate {
-    func safariViewControllerHarnessDidCancel() {
-        delegate?.urlOpenDidCancel()
-    }
-    
-    func safariViewControllerHarnessDidComplete() {
-        delegate?.urlOpenDidComplete()
-    }
-}
-
-protocol URLOpenDelegate: AnyObject {
-    func urlOpenDidComplete()
-    func urlOpenDidFail(with error: Error)
-    func urlOpenDidCancel()
+extension URLOpenHandler: SFSafariViewControllerHarnessDelegate {
+    func safariViewControllerHarnessDidCancel() async throws { try await onClose?() }
+    func safariViewControllerHarnessDidComplete() async throws { try await onComplete?() }
 }

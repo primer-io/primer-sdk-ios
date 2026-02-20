@@ -7,7 +7,6 @@
 import PrimerFoundation
 import PrimerStepResolver
 
-@MainActor
 final class AnalyticsHandler {
     private let registry: PrimerStepResolverRegistry
     
@@ -16,7 +15,7 @@ final class AnalyticsHandler {
     }
     
     func resolve(_ step: CodableValue) async throws -> CodableValue? {
-        let resolver = try await registry.resolver(for: .analyticsLog)
+        let resolver = try await registry.resolver(for: .platformLog)
         return try await resolver.resolve(step)
     }
 }

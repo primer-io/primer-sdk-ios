@@ -8,7 +8,6 @@ import Foundation
 import PrimerFoundation
 import PrimerStepResolver
 
-@MainActor
 final class HTTPInteractionStepHandler {    
     private let registry: PrimerStepResolverRegistry
     
@@ -16,8 +15,8 @@ final class HTTPInteractionStepHandler {
         self.registry = registry
     }
     
-    func resolve(_ data: CodableValue) async throws -> CodableValue? {
+    func resolve(_ step: CodableValue) async throws -> CodableValue? {
         let resolver = try await registry.resolver(for: .httpRequest)
-        return try await resolver.resolve(data)
+        return try await resolver.resolve(step)
     }
 }
