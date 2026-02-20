@@ -241,6 +241,12 @@ extension ComposableContainer {
           formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
         )
       }
+
+    try? await container.register(QRCodeRepository.self)
+      .asTransient()
+      .with { _ in
+        QRCodeRepositoryImpl()
+      }
   }
 
   fileprivate func registerLogging() async {
