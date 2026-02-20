@@ -12,7 +12,7 @@ public struct WorkflowStep: Decodable {
     public let stepId: String
     
     private enum StepCodingKeys: String, CodingKey {
-        case eventType
+        case events
         case params
         case properties
         case schema
@@ -28,7 +28,7 @@ public struct WorkflowStep: Decodable {
         switch try container.decode(StepDomain.self, forKey: .type) {
         case .analyticsLog: type = .analytics(params)
         case .httpRequest: type = .httpCall(params)
-        case .urlOpen: type = .urlOpen(params)
+        case .urlOpen: type = .urlOpen(params: params, eventContainer: try container.decode(EventContainer.self, forKey: .events))
         case .uiRender: type = .uiRender
         }
     }

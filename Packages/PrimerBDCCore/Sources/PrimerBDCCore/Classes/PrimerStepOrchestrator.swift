@@ -10,7 +10,7 @@ import PrimerFoundation
 import PrimerStepResolver
 
 @MainActor
-public final class PrimerStepOrchestrator: ObservableObject {
+public final class PrimerStepOrchestrator {
     private let logger = Logger()
     
     private let analyticsHandler: AnalyticsHandler
@@ -26,11 +26,9 @@ public final class PrimerStepOrchestrator: ObservableObject {
         self.engine = PrimerBDCEngine()
         
         analyticsHandler = AnalyticsHandler(registry: registry)
-        urlOpenHandler = URLOpenHandler(registry: registry)
+        urlOpenHandler = URLOpenHandler()
         httpHandler = HTTPInteractionStepHandler(registry: registry)
         sdkHandler = UIRenderStepHandler(registry: registry, engine: engine)
-        
-        urlOpenHandler.delegate = self
         sdkHandler.delegate = self
     }
     
@@ -61,15 +59,19 @@ public final class PrimerStepOrchestrator: ObservableObject {
         case let .httpCall(value):
             logger.info("Received instruction; executing http step")
             response = try await httpHandler.resolve(value)
-        case let .urlOpen(value):
+        case let .urlOpen(value, events):
             logger.info("Received instruction; executing web view step")
-            response = try await urlOpenHandler.resolve(value)
+            response = try await urlOpenHandler.resolve(
+                value,
+                onClose: { [weak self] in try await self?.applyOpenBrowserEvent(event: events.onClose) },
+                onComplete: { [weak self] in try await self?.applyOpenBrowserEvent(event: events.onComplete) }
+            )
         case .uiRender:
             logger.info("Received instruction; executing rendering UI step")
             response = try await resolveUIRender(from: result)
         }
-        
-        let result = try await engine.applyWorkflowStepResponse(
+                
+        let workflowResult = try await engine.applyWorkflowStepResponse(
             schema: rawSchema,
             state: state,
             workflowId: workflowId,
@@ -77,12 +79,12 @@ public final class PrimerStepOrchestrator: ObservableObject {
             response: response?.casted(to: Data.self)
         )
         
-        try await decodeResult(result)
+        try await decodeResult(workflowResult)
     }
     
     private func resolveUIRender(from result: AnyDict) async throws -> CodableValue? {
         guard let processedUI = result["processedUI"] as? AnyDict else { throw CastError.typeMismatch(value: result, type: AnyDict.self) }
-        guard let ui = try processedUI.jsonString() else { return nil }
+        guard let ui = try processedUI.jsonString() else { return nil } // No UI returned, carry on
         return try await sdkHandler.resolve(ui: ui, rawSchema: rawSchema, state: state)
     }
 }
@@ -93,16 +95,9 @@ extension PrimerStepOrchestrator: @MainActor UIRenderStepHandlerDelegate {
     }
 }
 
-extension PrimerStepOrchestrator: @MainActor URLOpenDelegate {
-    func urlOpenDidComplete() { applyOpenBrowserEvent(event: "completed") }
-    func urlOpenDidCancel() { applyOpenBrowserEvent(event: "cancelled") }
-    func urlOpenDidFail(with error: any Error) { /*TODO: Not implemented yet*/ }
-    
-    private func applyOpenBrowserEvent(event: String) {
-        Task {
-            let id = Event.custom(id: "openBrowser", value: event)
-            let result = try await engine.applyEvent(id, schema: rawSchema, state: state)
-            try await decodeResult(result)
-        }
+extension PrimerStepOrchestrator {
+    private func applyOpenBrowserEvent(event: CodableValue) async throws {
+        let result = try await engine.applyEvent(event, schema: rawSchema, state: state)
+        try await decodeResult(result)
     }
 }

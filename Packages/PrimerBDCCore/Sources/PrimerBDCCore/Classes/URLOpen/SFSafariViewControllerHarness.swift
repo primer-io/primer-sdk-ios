@@ -8,8 +8,13 @@ import PrimerFoundation
 import PrimerStepResolver
 import SafariServices
 
+protocol SFSafariViewControllerHarnessDelegate: AnyObject {
+    func safariViewControllerHarnessDidCancel() async throws
+    func safariViewControllerHarnessDidComplete() async throws
+}
+    
 @MainActor
-final class SFSafariViewControllerHarness: NSObject, StepResolver, @MainActor SFSafariViewControllerDelegate {
+final class SFSafariViewControllerHarness: NSObject, StepResolver {
     
     weak var delegate: SFSafariViewControllerHarnessDelegate?
     
@@ -27,6 +32,7 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver, @MainActor SF
     
     func resolve(_ step: CodableValue) async throws -> CodableValue? {
         let browserStep = try step.casted(to: URLOpenParams.self)
+ 
         guard let url = URL(string: browserStep.url) else {
             logger.error("Could not create URL from \(browserStep.url)")
             return nil
@@ -53,12 +59,25 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver, @MainActor SF
     @objc private func handleNotification(_ notification: Notification) {
         switch notification.name {
         case .receivedUrlSchemeCancellation:
-            delegate?.safariViewControllerHarnessDidCancel()
+            handleCancel()
         case .receivedUrlSchemeRedirect:
             safariViewController?.dismiss(animated: true)
-            delegate?.safariViewControllerHarnessDidComplete()
-            
+            handleComplete()
         default: break
+        }
+    }
+    
+    private func handleCancel() {
+        Task { [weak self] in
+            do { try await self?.delegate?.safariViewControllerHarnessDidCancel() }
+            catch { self?.logger.error("SafariVC failed to cancel: \(error)") }
+        }
+    }
+    
+    private func handleComplete() {
+        Task { [weak self] in
+            do { try await self?.delegate?.safariViewControllerHarnessDidComplete() }
+            catch { self?.logger.error("Safari VC Failed to complete: \(error)") }
         }
     }
     
@@ -79,16 +98,12 @@ final class SFSafariViewControllerHarness: NSObject, StepResolver, @MainActor SF
         topVC.present(safariVC, animated: true)
         safariViewController = safariVC
     }
-    
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        delegate?.safariViewControllerHarnessDidCancel()
-    }
-    
 }
 
-protocol SFSafariViewControllerHarnessDelegate: AnyObject {
-    func safariViewControllerHarnessDidCancel()
-    func safariViewControllerHarnessDidComplete()
+extension SFSafariViewControllerHarness: SFSafariViewControllerDelegate {
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        handleCancel()
+    }
 }
 
 private struct URLOpenParams: Decodable {

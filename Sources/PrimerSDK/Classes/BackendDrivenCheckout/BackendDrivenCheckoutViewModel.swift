@@ -7,7 +7,10 @@
 import Foundation
 import PrimerBDCCore
 
+@MainActor
 final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
+    
+    private let orchestrator = PrimerStepOrchestrator()
     
     override func start() {
         Task {
@@ -35,7 +38,6 @@ final class BackendDrivenCheckoutViewModel: PaymentMethodTokenizationViewModel {
             let initialState = payload?.parameters else {
             fatalError("[SDK] No raw schema found in response")
         }
-        let orchestrator = PrimerStepOrchestrator()
         try await orchestrator.start(rawSchema: rawSchema, initialState: initialState)
     }
     

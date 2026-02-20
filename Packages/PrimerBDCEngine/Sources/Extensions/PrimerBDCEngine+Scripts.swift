@@ -46,26 +46,18 @@ extension PrimerBDCEngine {
         schema: String,
         screenId: String,
         state: String,
-        event: Event
+        event: String
     ) -> String {
         setObject(schema, forKey: "__schema")
         setObject(state, forKey: "__state")
         setObject(screenId, forKey: "__screenId")
-        
-        setObject(event.eventType, forKey: "__eventType")
-        setObject(event.id, forKey: "__eventId" )
-        setObject(event.value ?? JSValue(undefinedIn: context), forKey: "__eventValue")
+        setObject(event, forKey: "__event")
         
         return """
         (async () => {
             try {
-                const dict = {
-                    type: __eventType,
-                    id: __eventId,
-                    ...(__eventValue === undefined ? {} : { value: __eventValue })
-                };
                 const processor = await StateProcessor.createStateProcessor(__schema, __screenId);
-                const result = await processor.applyEvent(JSON.parse(__state), dict);
+                const result = await processor.applyEvent(JSON.parse(__state), JSON.parse(__event));
                 onProcessFieldResult(JSON.stringify(result));
             } catch (e) {
                 onProcessFieldResult(JSON.stringify({ error: e.toString() }));

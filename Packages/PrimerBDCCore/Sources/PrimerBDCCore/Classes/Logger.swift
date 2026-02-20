@@ -6,16 +6,16 @@
 
 import OSLog
 
-final class Logger: Sendable {
+final class Logger {
     func info(_ message: String) {
         guard #available(iOS 14, *) else { return print(message) }
-        let logger = os.Logger(subsystem: "PrimerBDC", category: "Orchestrator")
+        let logger = os.Logger(subsystem: "PrimerBDC", category: "Core")
         logger.info("\(message)")
     }
     
     func error(_ message: String) {
         guard #available(iOS 14, *) else { return print(message) }
-        let logger = os.Logger(subsystem: "PrimerBDC", category: "Orchestrator")
+        let logger = os.Logger(subsystem: "PrimerBDC", category: "Core")
         logger.error("\(message)")
     }
 }

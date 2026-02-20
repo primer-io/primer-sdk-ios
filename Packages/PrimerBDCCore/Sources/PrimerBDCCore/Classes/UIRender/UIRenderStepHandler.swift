@@ -9,30 +9,29 @@ import PrimerBDCEngine
 import PrimerFoundation
 import PrimerStepResolver
 
+protocol UIRenderStepHandlerDelegate: @MainActor AnyObject {
+    func applyEventDidComplete(with result: AnyDict) async throws
+}
+
 @MainActor
-final class UIRenderStepHandler: StepResolver {
+final class UIRenderStepHandler {
     weak var delegate: UIRenderStepHandlerDelegate?
+    
     private typealias WorkflowStepHandler = (any SDKWorkflowStepHandler)
+    
     private let registry: PrimerStepResolverRegistry
     private let engine: PrimerBDCEngine
     private var state: CodableState = [:]
-    private var workflowStepHandler: WorkflowStepHandler!
+    private var workflowStepHandler: WorkflowStepHandler?
     
     init(registry: PrimerStepResolverRegistry, engine: PrimerBDCEngine) {
         self.registry = registry
         self.engine = engine
     }
     
-    public func resolve(_ step: CodableValue) async throws -> CodableValue? {
-        let workflowStep = try step.casted(to: AnyUIRenderWorkflowStep.self)
-        return switch workflowStep.type {
-        case .navigate: try await workflowStepHandler.resolve(step)
-        }
-    }
-    
     func resolve(ui: String, rawSchema: String, state: CodableState) async throws -> CodableValue? {
-        let handler = try await registry.resolver(for: .uiRender) as! WorkflowStepHandler
-        handler.initialScreenID = "initialScreenID" //TODO: Not necessary at this point
+        let handler = try await registry.resolver(for: .uiRender)
+        guard let handler = handler as? WorkflowStepHandler else { throw Error.unexpectedResolver }
         handler.state = state
         handler.callback = { [weak self] callback in try await self?.handleCallback(callback, schema: rawSchema) }
         self.workflowStepHandler = handler
@@ -40,37 +39,31 @@ final class UIRenderStepHandler: StepResolver {
         return nil
     }
     
-    private func handleCallback(_ callback: SDKWorkflowCallback, schema: String) async throws {
-        switch callback {
-        case let .left(applyEvent):
-            try await self.applyEvent(applyEvent, schema: schema, initialScreenID: "first") //TODO:
-        case .right:
-            break //TODO: Not necessary at this point
-        }
+    private func handleCallback(_ callback: ApplyEventCallback, schema: String) async throws {
+        try await self.applyEvent(callback, schema: schema)
     }
     
-    private func applyEvent(_ callback: ApplyEventCallback, schema: String, initialScreenID: String) async throws {
+    private func applyEvent(_ callback: ApplyEventCallback, schema: String) async throws {
         let event = callback.event
         let screenId = callback.screenId
         let result = try await engine.applyEvent(event, schema: schema, screenId: screenId, state: callback.state)
-        workflowStepHandler?.state = try CodableState(result["newState"] as! AnyDict)
-        workflowStepHandler?.updateUITree?(result["processedUI"] as! AnyDict)
+        
+        guard let newState = result["newState"] as? AnyDict else {
+            throw CastError.typeMismatch(value: result["newState"], type: AnyDict.self)
+        }
+        guard let ui = result["processedUI"] as? AnyDict else {
+            throw CastError.typeMismatch(value: result["processedUI"], type: AnyDict.self)
+        }
+        
+        workflowStepHandler?.state = try CodableState(newState)
+        workflowStepHandler?.updateUITree?(ui)
+        
         try await delegate?.applyEventDidComplete(with: result)
     }
 }
 
-protocol UIRenderStepHandlerDelegate: AnyObject {
-    @MainActor func applyEventDidComplete(with result: AnyDict) async throws
-}
-
-private enum UIRenderWorkflowType: String, Decodable {
-    case navigate
-}
-
-private struct AnyUIRenderWorkflowStep: UIRenderWorkflowStep {
-    let type: UIRenderWorkflowType
-}
-
-private protocol UIRenderWorkflowStep: Decodable {
-    var type: UIRenderWorkflowType { get }
+private extension UIRenderStepHandler {
+    private enum Error: Swift.Error {
+        case unexpectedResolver
+    }
 }
