@@ -12,16 +12,24 @@ struct ClientSessionInstructionResponse: Decodable {
 
 struct ClientInstructionDataResponse: Decodable {
     let type: ClientInstructionType
-    let payload: Payload?
 }
 
-struct Payload: Decodable {
+enum ClientInstructionType: Decodable {
+    case wait(ClientInstructionWaitResponse)
+    case execute(ClientInstructionExecuteResponse)
+    case end(ClientInstructionEndResponse)
+}
+
+struct ClientInstructionWaitResponse: Decodable {
+    let pollDelayMilliseconds: Int?
+}
+
+struct ClientInstructionExecuteResponse: Decodable {
+    let pollDelayMilliseconds: Int?
     let schema: CodableValue
     let parameters: CodableValue
 }
 
-enum ClientInstructionType: String, Decodable {
-    case wait = "WAIT"
-    case execute = "EXECUTE"
-    case end = "END"
+struct ClientInstructionEndResponse: Decodable {
+    let payload: PrimerCheckoutData
 }

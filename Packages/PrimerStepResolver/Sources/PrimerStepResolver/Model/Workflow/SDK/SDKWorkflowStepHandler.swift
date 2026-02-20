@@ -8,7 +8,7 @@ import Foundation
 import PrimerFoundation
 
 public protocol SDKWorkflowStepHandler: ObservableObject, StepResolver {
-    var callback: ((SDKWorkflowCallback) async throws -> Void)? { get set }
+    var callback: ((ApplyEventCallback) async throws -> Void)? { get set }
     var updateUITree: ((AnyDict) -> Void)? { get }
     var state: CodableState { get set }
     var initialScreenID: String? { get set }

@@ -7,7 +7,6 @@
 import PrimerFoundation
 import PrimerStepResolver
 
-@MainActor
 final class AnalyticsHandler {
     private let registry: PrimerStepResolverRegistry
     

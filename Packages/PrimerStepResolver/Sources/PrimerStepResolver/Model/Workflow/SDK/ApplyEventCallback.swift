@@ -7,11 +7,11 @@
 import PrimerFoundation
 
 public struct ApplyEventCallback {
-    public let event: Event
+    public let event: CodableValue
     public let screenId: String
     public let state: CodableState
     
-    public init(event: Event, screenId: String, state: CodableState) {
+    public init(event: CodableValue, screenId: String, state: CodableState) {
         self.event = event
         self.screenId = screenId
         self.state = state

@@ -45,13 +45,18 @@ public extension PrimerBDCEngine {
     }
     
     func applyEvent<State: Encodable>(
-        _ event: Event,
+        _ event: CodableValue,
         schema: String,
         screenId: String = "first",
         state: [String: State]
     ) async throws -> [String: Any]  {
         await checkIfReady()
-        let script = eventsScript(schema: schema, screenId: screenId, state: try state.literal(encoder), event: event)
+        let script = eventsScript(
+            schema: schema,
+            screenId: screenId,
+            state: try state.literal(encoder),
+            event: try event.jsonString
+        )
         return try await runScript(script, continuationPath: \.applyEventContination)
     }
     

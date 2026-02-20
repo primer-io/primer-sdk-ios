@@ -9,6 +9,5 @@ import PrimerFoundation
 public enum WorkflowType {
     case analytics(CodableValue)
     case httpCall(CodableValue)
-    case urlOpen(CodableValue)
-    case uiRender
+    case urlOpen(params: CodableValue, eventContainer: EventContainer)
 }

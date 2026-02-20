@@ -6,7 +6,6 @@
 
 public enum StepDomain: String, Decodable {
     case httpRequest = "http.request"
-    case uiRender = "ui.render"
     case urlOpen = "url.open"
     case analyticsLog = "analytics.log"
 }
