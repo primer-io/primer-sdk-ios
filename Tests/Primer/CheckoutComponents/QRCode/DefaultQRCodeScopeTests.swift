@@ -150,7 +150,8 @@ final class DefaultQRCodeScopeTests: XCTestCase {
         return DefaultQRCodeScope(
             checkoutScope: checkoutScope,
             presentationContext: presentationContext,
-            interactor: mockInteractor
+            interactor: mockInteractor,
+            paymentMethodType: "XENDIT_OVO"
         )
     }
 }
