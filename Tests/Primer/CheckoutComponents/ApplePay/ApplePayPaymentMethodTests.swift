@@ -231,7 +231,7 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
     var onBeforePaymentCreate: BeforePaymentCreateHandler?
     var container: ContainerComponent?
     var splashScreen: Component?
-    var loading: Component?
+    var loadingScreen: Component?
     var errorScreen: ErrorComponent?
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         fatalError("Not implemented")

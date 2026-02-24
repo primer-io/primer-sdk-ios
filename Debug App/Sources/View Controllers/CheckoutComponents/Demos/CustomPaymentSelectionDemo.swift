@@ -89,16 +89,16 @@ struct CustomPaymentSelectionDemo: View, CheckoutComponentsDemo {
                     // Override the payment method selection screen with custom content
                     // Pass checkoutScope as a parameter to access card form and checkout state
                     checkoutScope.paymentMethodSelection.screen = { selectionScope in
-                        AnyView(CustomPaymentSelectionContent(
+                        CustomPaymentSelectionContent(
                             scope: selectionScope,
                             checkoutScope: checkoutScope,
                             onDismiss: { dismiss() }
-                        ))
+                        )
                     }
 
                     // Custom loading screen during payment processing (matches Android's checkout.loading)
-                    checkoutScope.loading = {
-                        AnyView(CustomProcessingOverlay())
+                    checkoutScope.loadingScreen = {
+                        CustomProcessingOverlay()
                     }
                 },
                 onCompletion: { _ in dismiss() }
@@ -210,7 +210,7 @@ private struct CustomPaymentSelectionContent: View {
     let onDismiss: () -> Void
 
     @State private var selectionState = PrimerPaymentMethodSelectionState()
-    @State private var cardState: StructuredCardFormState?
+    @State private var cardState: PrimerCardFormState?
     @State private var selectedOption: SelectedPaymentOption = .none
     @State private var selectedBillingCountry: String? = "RS" // Default to Serbia for demo
     @State private var showPromoCodeModal = false
@@ -329,7 +329,7 @@ private struct CustomPaymentSelectionContent: View {
     private var headerView: some View {
         HStack {
             Button(action: {
-                scope.onCancel()
+                scope.cancel()
             }) {
                 Image(systemName: "chevron.left")
                     .font(.title3)
@@ -770,7 +770,7 @@ private struct CustomPaymentSelectionContent: View {
             scope.onPaymentMethodSelected(paymentMethod: method)
         case .card:
             // Submit the card form
-            cardFormScope?.onSubmit()
+            cardFormScope?.submit()
         case .none:
             isPaymentInProgress = false
         }

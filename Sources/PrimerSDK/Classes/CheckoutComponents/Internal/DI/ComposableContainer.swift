@@ -152,6 +152,14 @@ extension ComposableContainer {
         )
       }
 
+    try? await container.register(ProcessWebRedirectPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessWebRedirectPaymentInteractorImpl(
+          repository: try await resolver.resolve(WebRedirectRepository.self)
+        )
+      }
+
     try? await container.register(ProcessApplePayPaymentInteractor.self)
       .asTransient()
       .with { _ in
@@ -211,6 +219,33 @@ extension ComposableContainer {
       .asTransient()
       .with { _ in
         AchRepositoryImpl()
+      }
+
+    try? await container.register(WebRedirectRepository.self)
+      .asTransient()
+      .with { _ in
+        WebRedirectRepositoryImpl()
+      }
+
+    // Form Redirect (BLIK, MBWay) dependencies
+    try? await container.register(FormRedirectRepository.self)
+      .asTransient()
+      .with { _ in
+        FormRedirectRepositoryImpl()
+      }
+
+    try? await container.register(ProcessFormRedirectPaymentInteractor.self)
+      .asTransient()
+      .with { resolver in
+        ProcessFormRedirectPaymentInteractorImpl(
+          formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
+        )
+      }
+
+    try? await container.register(QRCodeRepository.self)
+      .asTransient()
+      .with { _ in
+        QRCodeRepositoryImpl()
       }
   }
 

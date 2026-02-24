@@ -225,3 +225,40 @@
 "accessibility_ach_continue_hint" = "Double tap to continue to bank account selection";
 "accessibility_ach_mandate_accept_hint" = "Double tap to accept the authorization and complete payment";
 "accessibility_ach_mandate_decline_hint" = "Double tap to decline and cancel the payment";
+
+/* Web Redirect */
+"primer_web_redirect_button_continue" = "Continue with %@";
+"primer_web_redirect_description" = "You will be redirected to complete your payment";
+"accessibility_web_redirect_submit_button" = "Pay with %@";
+"accessibility_web_redirect_loading" = "Processing payment";
+"accessibility_web_redirect_redirecting" = "Opening payment page";
+"accessibility_web_redirect_polling" = "Waiting for payment confirmation";
+"accessibility_web_redirect_success" = "Payment successful";
+"accessibility_web_redirect_failure" = "Payment failed: %@";
+
+/* Form Redirect */
+"accessibility_form_redirect_otp_hint" = "Enter the 6-digit code from your banking app";
+"accessibility_form_redirect_otp_label" = "6 digit BLIK code, required";
+
+"accessibility_form_redirect_phone_hint" = "Enter your phone number registered with MBWay";
+"accessibility_form_redirect_phone_label" = "Phone number, required";
+
+"primer_form_redirect_blik_otp_helper" = "Open your banking app and generate a BLIK code.";
+"primer_form_redirect_blik_otp_label" = "6 digit code";
+"primer_form_redirect_blik_otp_placeholder" = "000000";
+"primer_form_redirect_blik_pending_message" = "Complete your payment in Blik app";
+"primer_form_redirect_blik_submit_button" = "Pay with BLIK";
+"primer_form_redirect_mbway_pending_message" = "Complete your payment in the MB WAY app";
+"primer_form_redirect_mbway_submit_button" = "Pay with MB WAY";
+"primer_form_redirect_otp_code_invalid" = "Enter a valid 6-digit code";
+"primer_form_redirect_otp_code_required" = "OTP code is required";
+"primer_form_redirect_pending_message" = "Complete your payment in the app";
+"primer_form_redirect_pending_title" = "Complete your payment";
+
+/* QR Code */
+"primer_qr_code_scan_instruction" = "Scan to pay or take a screenshot";
+"primer_qr_code_upload_instruction" = "Upload the screenshot in your banking app";
+"accessibility_qr_code_image" = "QR code for payment";
+"accessibility_qr_code_scan_hint" = "Take a screenshot to save the QR code";
+"accessibility_qr_code_success_icon" = "Payment successful";
+"accessibility_qr_code_failure_icon" = "Payment failed";

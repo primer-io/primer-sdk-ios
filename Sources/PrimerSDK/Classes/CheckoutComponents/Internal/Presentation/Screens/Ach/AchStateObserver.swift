@@ -9,7 +9,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 final class AchStateObserver: ObservableObject {
-  @Published var achState: AchState = .init()
+  @Published var achState: PrimerAchState = .init()
   @Published var showBankCollector: Bool = false
 
   private var stripeFlowCompleted: Bool = false

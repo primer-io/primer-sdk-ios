@@ -13,67 +13,67 @@ final class AchStateTests: XCTestCase {
     // MARK: - Default Initialization Tests
 
     func test_defaultInit_stepIsLoading() {
-        let state = AchState()
+        let state = PrimerAchState()
         XCTAssertEqual(state.step, .loading)
     }
 
     func test_defaultInit_userDetailsIsEmpty() {
-        let state = AchState()
+        let state = PrimerAchState()
         XCTAssertEqual(state.userDetails.firstName, "")
         XCTAssertEqual(state.userDetails.lastName, "")
         XCTAssertEqual(state.userDetails.emailAddress, "")
     }
 
     func test_defaultInit_fieldValidationIsNil() {
-        let state = AchState()
+        let state = PrimerAchState()
         XCTAssertNil(state.fieldValidation)
     }
 
     func test_defaultInit_mandateTextIsNil() {
-        let state = AchState()
+        let state = PrimerAchState()
         XCTAssertNil(state.mandateText)
     }
 
     func test_defaultInit_isSubmitEnabledIsFalse() {
-        let state = AchState()
+        let state = PrimerAchState()
         XCTAssertFalse(state.isSubmitEnabled)
     }
 
     // MARK: - Custom Initialization Tests
 
     func test_customInit_setsStep() {
-        let state = AchState(step: .userDetailsCollection)
+        let state = PrimerAchState(step: .userDetailsCollection)
         XCTAssertEqual(state.step, .userDetailsCollection)
     }
 
     func test_customInit_setsUserDetails() {
         let userDetails = AchTestData.defaultUserDetailsState
-        let state = AchState(userDetails: userDetails)
+        let state = PrimerAchState(userDetails: userDetails)
         XCTAssertEqual(state.userDetails, userDetails)
     }
 
     func test_customInit_setsFieldValidation() {
-        let validation = AchState.FieldValidation(firstNameError: "Invalid")
-        let state = AchState(fieldValidation: validation)
+        let validation = PrimerAchState.FieldValidation(firstNameError: "Invalid")
+        let state = PrimerAchState(fieldValidation: validation)
         XCTAssertEqual(state.fieldValidation, validation)
     }
 
     func test_customInit_setsMandateText() {
-        let state = AchState(mandateText: AchTestData.Constants.mandateText)
+        let state = PrimerAchState(mandateText: AchTestData.Constants.mandateText)
         XCTAssertEqual(state.mandateText, AchTestData.Constants.mandateText)
     }
 
     func test_customInit_setsIsSubmitEnabled() {
-        let state = AchState(isSubmitEnabled: true)
+        let state = PrimerAchState(isSubmitEnabled: true)
         XCTAssertTrue(state.isSubmitEnabled)
     }
 
     func test_customInit_allParameters() {
         let userDetails = AchTestData.defaultUserDetailsState
-        let validation = AchState.FieldValidation(emailError: "Invalid email")
+        let validation = PrimerAchState.FieldValidation(emailError: "Invalid email")
         let mandateText = AchTestData.Constants.mandateText
 
-        let state = AchState(
+        let state = PrimerAchState(
             step: .mandateAcceptance,
             userDetails: userDetails,
             fieldValidation: validation,
@@ -91,42 +91,42 @@ final class AchStateTests: XCTestCase {
     // MARK: - Step Equatable Tests
 
     func test_step_loading_isEquatable() {
-        XCTAssertEqual(AchState.Step.loading, AchState.Step.loading)
+        XCTAssertEqual(PrimerAchState.Step.loading, PrimerAchState.Step.loading)
     }
 
     func test_step_userDetailsCollection_isEquatable() {
-        XCTAssertEqual(AchState.Step.userDetailsCollection, AchState.Step.userDetailsCollection)
+        XCTAssertEqual(PrimerAchState.Step.userDetailsCollection, PrimerAchState.Step.userDetailsCollection)
     }
 
     func test_step_bankAccountCollection_isEquatable() {
-        XCTAssertEqual(AchState.Step.bankAccountCollection, AchState.Step.bankAccountCollection)
+        XCTAssertEqual(PrimerAchState.Step.bankAccountCollection, PrimerAchState.Step.bankAccountCollection)
     }
 
     func test_step_mandateAcceptance_isEquatable() {
-        XCTAssertEqual(AchState.Step.mandateAcceptance, AchState.Step.mandateAcceptance)
+        XCTAssertEqual(PrimerAchState.Step.mandateAcceptance, PrimerAchState.Step.mandateAcceptance)
     }
 
     func test_step_processing_isEquatable() {
-        XCTAssertEqual(AchState.Step.processing, AchState.Step.processing)
+        XCTAssertEqual(PrimerAchState.Step.processing, PrimerAchState.Step.processing)
     }
 
     func test_step_differentSteps_areNotEqual() {
-        XCTAssertNotEqual(AchState.Step.loading, AchState.Step.userDetailsCollection)
-        XCTAssertNotEqual(AchState.Step.bankAccountCollection, AchState.Step.mandateAcceptance)
-        XCTAssertNotEqual(AchState.Step.processing, AchState.Step.loading)
+        XCTAssertNotEqual(PrimerAchState.Step.loading, PrimerAchState.Step.userDetailsCollection)
+        XCTAssertNotEqual(PrimerAchState.Step.bankAccountCollection, PrimerAchState.Step.mandateAcceptance)
+        XCTAssertNotEqual(PrimerAchState.Step.processing, PrimerAchState.Step.loading)
     }
 
     // MARK: - UserDetails Tests
 
     func test_userDetails_defaultInit_allFieldsEmpty() {
-        let userDetails = AchState.UserDetails()
+        let userDetails = PrimerAchState.UserDetails()
         XCTAssertEqual(userDetails.firstName, "")
         XCTAssertEqual(userDetails.lastName, "")
         XCTAssertEqual(userDetails.emailAddress, "")
     }
 
     func test_userDetails_customInit_setsAllFields() {
-        let userDetails = AchState.UserDetails(
+        let userDetails = PrimerAchState.UserDetails(
             firstName: AchTestData.Constants.firstName,
             lastName: AchTestData.Constants.lastName,
             emailAddress: AchTestData.Constants.emailAddress
@@ -137,12 +137,12 @@ final class AchStateTests: XCTestCase {
     }
 
     func test_userDetails_equatable_equalValues() {
-        let userDetails1 = AchState.UserDetails(
+        let userDetails1 = PrimerAchState.UserDetails(
             firstName: "John",
             lastName: "Doe",
             emailAddress: "john@example.com"
         )
-        let userDetails2 = AchState.UserDetails(
+        let userDetails2 = PrimerAchState.UserDetails(
             firstName: "John",
             lastName: "Doe",
             emailAddress: "john@example.com"
@@ -151,34 +151,34 @@ final class AchStateTests: XCTestCase {
     }
 
     func test_userDetails_equatable_differentFirstName() {
-        let userDetails1 = AchState.UserDetails(firstName: "John")
-        let userDetails2 = AchState.UserDetails(firstName: "Jane")
+        let userDetails1 = PrimerAchState.UserDetails(firstName: "John")
+        let userDetails2 = PrimerAchState.UserDetails(firstName: "Jane")
         XCTAssertNotEqual(userDetails1, userDetails2)
     }
 
     func test_userDetails_equatable_differentLastName() {
-        let userDetails1 = AchState.UserDetails(lastName: "Doe")
-        let userDetails2 = AchState.UserDetails(lastName: "Smith")
+        let userDetails1 = PrimerAchState.UserDetails(lastName: "Doe")
+        let userDetails2 = PrimerAchState.UserDetails(lastName: "Smith")
         XCTAssertNotEqual(userDetails1, userDetails2)
     }
 
     func test_userDetails_equatable_differentEmail() {
-        let userDetails1 = AchState.UserDetails(emailAddress: "john@example.com")
-        let userDetails2 = AchState.UserDetails(emailAddress: "jane@example.com")
+        let userDetails1 = PrimerAchState.UserDetails(emailAddress: "john@example.com")
+        let userDetails2 = PrimerAchState.UserDetails(emailAddress: "jane@example.com")
         XCTAssertNotEqual(userDetails1, userDetails2)
     }
 
     // MARK: - FieldValidation Tests
 
     func test_fieldValidation_defaultInit_allErrorsNil() {
-        let validation = AchState.FieldValidation()
+        let validation = PrimerAchState.FieldValidation()
         XCTAssertNil(validation.firstNameError)
         XCTAssertNil(validation.lastNameError)
         XCTAssertNil(validation.emailError)
     }
 
     func test_fieldValidation_customInit_setsAllErrors() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "First name error",
             lastNameError: "Last name error",
             emailError: "Email error"
@@ -189,27 +189,27 @@ final class AchStateTests: XCTestCase {
     }
 
     func test_fieldValidation_hasErrors_noErrors_returnsFalse() {
-        let validation = AchState.FieldValidation()
+        let validation = PrimerAchState.FieldValidation()
         XCTAssertFalse(validation.hasErrors)
     }
 
     func test_fieldValidation_hasErrors_withFirstNameError_returnsTrue() {
-        let validation = AchState.FieldValidation(firstNameError: "Invalid")
+        let validation = PrimerAchState.FieldValidation(firstNameError: "Invalid")
         XCTAssertTrue(validation.hasErrors)
     }
 
     func test_fieldValidation_hasErrors_withLastNameError_returnsTrue() {
-        let validation = AchState.FieldValidation(lastNameError: "Invalid")
+        let validation = PrimerAchState.FieldValidation(lastNameError: "Invalid")
         XCTAssertTrue(validation.hasErrors)
     }
 
     func test_fieldValidation_hasErrors_withEmailError_returnsTrue() {
-        let validation = AchState.FieldValidation(emailError: "Invalid")
+        let validation = PrimerAchState.FieldValidation(emailError: "Invalid")
         XCTAssertTrue(validation.hasErrors)
     }
 
     func test_fieldValidation_hasErrors_withMultipleErrors_returnsTrue() {
-        let validation = AchState.FieldValidation(
+        let validation = PrimerAchState.FieldValidation(
             firstNameError: "Invalid",
             lastNameError: "Invalid",
             emailError: "Invalid"
@@ -218,14 +218,14 @@ final class AchStateTests: XCTestCase {
     }
 
     func test_fieldValidation_equatable_equalValues() {
-        let validation1 = AchState.FieldValidation(firstNameError: "Error")
-        let validation2 = AchState.FieldValidation(firstNameError: "Error")
+        let validation1 = PrimerAchState.FieldValidation(firstNameError: "Error")
+        let validation2 = PrimerAchState.FieldValidation(firstNameError: "Error")
         XCTAssertEqual(validation1, validation2)
     }
 
     func test_fieldValidation_equatable_differentValues() {
-        let validation1 = AchState.FieldValidation(firstNameError: "Error1")
-        let validation2 = AchState.FieldValidation(firstNameError: "Error2")
+        let validation1 = PrimerAchState.FieldValidation(firstNameError: "Error1")
+        let validation2 = PrimerAchState.FieldValidation(firstNameError: "Error2")
         XCTAssertNotEqual(validation1, validation2)
     }
 
@@ -233,13 +233,13 @@ final class AchStateTests: XCTestCase {
 
     func test_state_equalStates_areEqual() {
         let userDetails = AchTestData.defaultUserDetailsState
-        let state1 = AchState(
+        let state1 = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: userDetails,
             mandateText: "mandate",
             isSubmitEnabled: true
         )
-        let state2 = AchState(
+        let state2 = PrimerAchState(
             step: .userDetailsCollection,
             userDetails: userDetails,
             mandateText: "mandate",
@@ -249,32 +249,32 @@ final class AchStateTests: XCTestCase {
     }
 
     func test_state_differentSteps_areNotEqual() {
-        let state1 = AchState(step: .loading)
-        let state2 = AchState(step: .userDetailsCollection)
+        let state1 = PrimerAchState(step: .loading)
+        let state2 = PrimerAchState(step: .userDetailsCollection)
         XCTAssertNotEqual(state1, state2)
     }
 
     func test_state_differentUserDetails_areNotEqual() {
-        let state1 = AchState(userDetails: AchState.UserDetails(firstName: "John"))
-        let state2 = AchState(userDetails: AchState.UserDetails(firstName: "Jane"))
+        let state1 = PrimerAchState(userDetails: PrimerAchState.UserDetails(firstName: "John"))
+        let state2 = PrimerAchState(userDetails: PrimerAchState.UserDetails(firstName: "Jane"))
         XCTAssertNotEqual(state1, state2)
     }
 
     func test_state_differentMandateText_areNotEqual() {
-        let state1 = AchState(mandateText: "mandate1")
-        let state2 = AchState(mandateText: "mandate2")
+        let state1 = PrimerAchState(mandateText: "mandate1")
+        let state2 = PrimerAchState(mandateText: "mandate2")
         XCTAssertNotEqual(state1, state2)
     }
 
     func test_state_differentIsSubmitEnabled_areNotEqual() {
-        let state1 = AchState(isSubmitEnabled: true)
-        let state2 = AchState(isSubmitEnabled: false)
+        let state1 = PrimerAchState(isSubmitEnabled: true)
+        let state2 = PrimerAchState(isSubmitEnabled: false)
         XCTAssertNotEqual(state1, state2)
     }
 
     func test_state_differentFieldValidation_areNotEqual() {
-        let state1 = AchState(fieldValidation: AchState.FieldValidation(firstNameError: "error"))
-        let state2 = AchState(fieldValidation: nil)
+        let state1 = PrimerAchState(fieldValidation: PrimerAchState.FieldValidation(firstNameError: "error"))
+        let state2 = PrimerAchState(fieldValidation: nil)
         XCTAssertNotEqual(state1, state2)
     }
 }

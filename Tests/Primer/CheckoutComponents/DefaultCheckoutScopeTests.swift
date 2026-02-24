@@ -33,11 +33,8 @@ final class NavigationStateEqualityTests: XCTestCase {
         )
     }
 
-    private func createMockPaymentResult(paymentId: String) -> CheckoutPaymentResult {
-        CheckoutPaymentResult(
-            paymentId: paymentId,
-            amount: "10.00"
-        )
+    private func createMockPaymentResult(paymentId: String) -> PaymentResult {
+        PaymentResult(paymentId: paymentId, status: .success)
     }
 
     private func createMockError(message: String) -> PrimerError {

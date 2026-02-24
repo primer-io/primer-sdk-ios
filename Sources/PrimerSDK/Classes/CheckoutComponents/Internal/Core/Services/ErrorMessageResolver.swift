@@ -88,6 +88,8 @@ final class ErrorMessageResolver {
       return CheckoutComponentsStrings.postalCodeErrorRequired
     case "checkout_components_phone_number_required":
       return CheckoutComponentsStrings.enterValidPhoneNumber
+    case "checkout_components_otp_code_required":
+      return CheckoutComponentsStrings.otpCodeRequired
     case "checkout_components_retail_outlet_required":
       return "Retail outlet is required"
     default:
@@ -127,6 +129,8 @@ final class ErrorMessageResolver {
       return CheckoutComponentsStrings.postalCodeErrorInvalid
     case "checkout_components_phone_number_invalid":
       return CheckoutComponentsStrings.enterValidPhoneNumber
+    case "checkout_components_otp_code_invalid":
+      return CheckoutComponentsStrings.otpCodeInvalid
     case "checkout_components_retail_outlet_invalid":
       return "Invalid retail outlet"
     default:
@@ -289,6 +293,8 @@ extension ErrorMessageResolver {
       return "checkout_components_postal_code_required"
     case .phoneNumber:
       return "checkout_components_phone_number_required"
+    case .otpCode:
+      return "checkout_components_otp_code_required"
     case .retailOutlet:
       return "checkout_components_retail_outlet_required"
     default:
@@ -330,6 +336,8 @@ extension ErrorMessageResolver {
       return "checkout_components_postal_code_invalid"
     case .phoneNumber:
       return "checkout_components_phone_number_invalid"
+    case .otpCode:
+      return "checkout_components_otp_code_invalid"
     case .retailOutlet:
       return "checkout_components_retail_outlet_invalid"
     default:

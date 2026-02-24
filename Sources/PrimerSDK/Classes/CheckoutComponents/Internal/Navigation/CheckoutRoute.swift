@@ -40,7 +40,7 @@ enum CheckoutRoute: Hashable, Identifiable {
   case vaultedPaymentMethods
   case deleteVaultedPaymentMethodConfirmation(PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)
   case processing
-  case success(CheckoutPaymentResult)
+  case success(PaymentResult)
   case failure(PrimerError)
   case paymentMethod(String, PresentationContext)
 
@@ -91,15 +91,4 @@ enum CheckoutRoute: Hashable, Identifiable {
       return .replace
     }
   }
-}
-
-// MARK: - Navigation Result Type
-
-/// Represents a successful payment result for navigation purposes.
-/// Contains minimal information needed for routing; full payment details
-/// are available through the SDK's PaymentResult type.
-@available(iOS 15.0, *)
-public struct CheckoutPaymentResult {
-  public let paymentId: String
-  public let amount: String
 }

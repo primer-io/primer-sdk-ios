@@ -46,7 +46,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<StructuredCardFormState> {
+  public var state: AsyncStream<PrimerCardFormState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $structuredState.values {
@@ -67,7 +67,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   public var screen: CardFormScreenComponent?
   public var cobadgedCardsView:
     ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  public var errorView: ErrorComponent?
+  public var errorScreen: ErrorComponent?
 
   // MARK: - Submit Button Customization
 
@@ -97,7 +97,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   public var cardInputSection: Component?
   public var billingAddressSection: Component?
-  public var submitButtonSection: Component?
+  public var submitButton: Component?
 
   // MARK: - Private Properties
 
@@ -112,7 +112,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private var billingAddressSent = false
   private var currentCardData: PrimerCardData?
   private var fieldValidationStates = FieldValidationStates()
-  @Published var structuredState = StructuredCardFormState()
+  @Published var structuredState = PrimerCardFormState()
   private var formConfiguration: CardFormConfiguration = .default
 
   /// Builds billing address fields array based on API configuration
@@ -439,7 +439,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   // MARK: - Navigation Methods
 
-  public func onSubmit() {
+  public func submit() {
     Task {
       await submit()
     }
@@ -451,7 +451,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func onCancel() {
+  public func cancel() {
     checkoutScope?.onDismiss()
   }
 

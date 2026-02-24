@@ -14,8 +14,8 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
 
     // MARK: - State Properties
 
-    @Published private var internalState: AchState
-    private var continuation: AsyncStream<AchState>.Continuation?
+    @Published private var internalState: PrimerAchState
+    private var continuation: AsyncStream<PrimerAchState>.Continuation?
 
     // MARK: - Configurable Properties
 
@@ -42,7 +42,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     private(set) var acceptMandateCallCount = 0
     private(set) var declineMandateCallCount = 0
     private(set) var onBackCallCount = 0
-    private(set) var onCancelCallCount = 0
 
     // MARK: - Captured Parameters
 
@@ -52,7 +51,7 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
 
     // MARK: - Computed Properties
 
-    var state: AsyncStream<AchState> {
+    var state: AsyncStream<PrimerAchState> {
         AsyncStream { continuation in
             // Emit current state immediately
             continuation.yield(internalState)
@@ -69,14 +68,14 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     }
 
     /// Returns the current internal state
-    var currentState: AchState {
+    var currentState: PrimerAchState {
         internalState
     }
 
     // MARK: - Initialization
 
     init(
-        initialState: AchState = AchState(),
+        initialState: PrimerAchState = PrimerAchState(),
         presentationContext: PresentationContext = .fromPaymentSelection,
         dismissalMechanism: [DismissalMechanism] = [.closeButton],
         bankCollectorViewController: UIViewController? = nil
@@ -90,7 +89,7 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
     // MARK: - State Emission
 
     /// Emits a new state to all active observers
-    func emit(_ state: AchState) {
+    func emit(_ state: PrimerAchState) {
         internalState = state
         continuation?.yield(state)
     }
@@ -146,10 +145,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         onBackCallCount += 1
     }
 
-    func onCancel() {
-        onCancelCallCount += 1
-    }
-
     // MARK: - Test Helpers
 
     func reset() {
@@ -163,7 +158,6 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         acceptMandateCallCount = 0
         declineMandateCallCount = 0
         onBackCallCount = 0
-        onCancelCallCount = 0
 
         lastFirstName = nil
         lastLastName = nil
@@ -177,12 +171,12 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
 extension MockPrimerAchScope {
 
     static func withLoadingState() -> MockPrimerAchScope {
-        MockPrimerAchScope(initialState: AchState(step: .loading))
+        MockPrimerAchScope(initialState: PrimerAchState(step: .loading))
     }
 
     static func withUserDetailsState() -> MockPrimerAchScope {
         MockPrimerAchScope(
-            initialState: AchState(
+            initialState: PrimerAchState(
                 step: .userDetailsCollection,
                 userDetails: AchTestData.defaultUserDetailsState,
                 isSubmitEnabled: true
@@ -192,14 +186,14 @@ extension MockPrimerAchScope {
 
     static func withBankCollectionState(viewController: UIViewController? = nil) -> MockPrimerAchScope {
         MockPrimerAchScope(
-            initialState: AchState(step: .bankAccountCollection),
+            initialState: PrimerAchState(step: .bankAccountCollection),
             bankCollectorViewController: viewController ?? UIViewController()
         )
     }
 
     static func withMandateState() -> MockPrimerAchScope {
         MockPrimerAchScope(
-            initialState: AchState(
+            initialState: PrimerAchState(
                 step: .mandateAcceptance,
                 userDetails: AchTestData.defaultUserDetailsState,
                 mandateText: AchTestData.Constants.mandateText,
@@ -209,6 +203,6 @@ extension MockPrimerAchScope {
     }
 
     static func withProcessingState() -> MockPrimerAchScope {
-        MockPrimerAchScope(initialState: AchState(step: .processing))
+        MockPrimerAchScope(initialState: PrimerAchState(step: .processing))
     }
 }

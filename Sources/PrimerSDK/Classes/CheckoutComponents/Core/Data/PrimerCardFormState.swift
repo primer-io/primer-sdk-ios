@@ -1,5 +1,5 @@
 //
-//  StructuredCardFormState.swift
+//  PrimerCardFormState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -148,7 +148,7 @@ public struct PrimerCountry: Equatable, Identifiable {
 
 /// The complete state of the card payment form including field values, validation, and network selection.
 ///
-/// `StructuredCardFormState` provides a comprehensive view of the card form's current state,
+/// `PrimerCardFormState` provides a comprehensive view of the card form's current state,
 /// including:
 /// - Form configuration (which fields are required)
 /// - Current field values
@@ -180,7 +180,7 @@ public struct PrimerCountry: Equatable, Identifiable {
 /// }
 /// ```
 @available(iOS 15.0, *)
-public struct StructuredCardFormState: Equatable {
+public struct PrimerCardFormState: Equatable {
 
   // MARK: - Core Configuration
 

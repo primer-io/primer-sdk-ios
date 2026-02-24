@@ -31,10 +31,10 @@
 
     public var dismissalMechanism: [DismissalMechanism]
 
-    public var state: AsyncStream<StructuredCardFormState> {
+    public var state: AsyncStream<PrimerCardFormState> {
       AsyncStream { continuation in
         continuation.yield(
-          StructuredCardFormState(
+          PrimerCardFormState(
             data: FormData(),
             isLoading: self.initialIsLoading,
             isValid: self.initialIsValid,
@@ -50,7 +50,7 @@
     public var title: String?
     public var screen: CardFormScreenComponent?
     public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
-    public var errorView: ErrorComponent?
+    public var errorScreen: ErrorComponent?
 
     // MARK: - Submit Button Customization
 
@@ -80,7 +80,7 @@
 
     public var cardInputSection: Component?
     public var billingAddressSection: Component?
-    public var submitButtonSection: Component?
+    public var submitButton: Component?
 
     public var selectCountry: PrimerSelectCountryScope {
       fatalError("Not implemented for preview")
@@ -148,16 +148,8 @@
 
     // MARK: - Navigation Methods
 
-    public func onSubmit() {
-      log("onSubmit() called")
-    }
-
     public func onBack() {
       log("onBack() called")
-    }
-
-    public func onCancel() {
-      log("onCancel() called")
     }
 
     public func onDismiss() {

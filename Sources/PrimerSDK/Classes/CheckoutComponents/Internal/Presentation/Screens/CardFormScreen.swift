@@ -18,7 +18,7 @@ struct CardFormScreen: View, LogReporter {
   @Environment(\.bridgeController) private var bridgeController
   @Environment(\.diContainer) private var container
   @Environment(\.sizeCategory) private var sizeCategory  // Observes Dynamic Type changes
-  @State private var cardFormState: StructuredCardFormState = .init()
+  @State private var cardFormState: PrimerCardFormState = .init()
   @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var refreshTrigger = UUID()
   @State private var formConfiguration: CardFormConfiguration = .default
@@ -72,7 +72,7 @@ struct CardFormScreen: View, LogReporter {
           Button(
             CheckoutComponentsStrings.cancelButton,
             action: {
-              scope.onCancel()
+              scope.cancel()
             }
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -200,7 +200,7 @@ struct CardFormScreen: View, LogReporter {
   @ViewBuilder
   private var submitButtonSection: some View {
     // Check scope configuration for full button replacement
-    if let customContent = scope.submitButtonSection {
+    if let customContent = scope.submitButton {
       AnyView(customContent())
         .onTapGesture {
           if cardFormState.isValid, !cardFormState.isLoading {

@@ -98,6 +98,7 @@ struct PrimerComponentHeight {
   static let progressIndicator: CGFloat = 56
   static let emptyStateMinHeight: CGFloat = 200
   static let emptyStateTopPadding: CGFloat = 100
+  static let button: CGFloat = 50
 }
 
 // MARK: - Primer Component Widths
@@ -105,6 +106,15 @@ struct PrimerComponentHeight {
 struct PrimerComponentWidth {
   static let paymentMethodIcon: CGFloat = 32
   static let cvvFieldMax: CGFloat = 120
+}
+
+// MARK: - Primer Icon Sizes
+
+struct PrimerIconSize {
+  static let paymentMethodWidth: CGFloat = 60
+  static let paymentMethodHeight: CGFloat = 40
+  static let paymentMethodLargeWidth: CGFloat = 80
+  static let paymentMethodLargeHeight: CGFloat = 50
 }
 
 // MARK: - Primer Border Widths

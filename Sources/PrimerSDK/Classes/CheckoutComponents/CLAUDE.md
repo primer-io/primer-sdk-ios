@@ -64,7 +64,7 @@ Dynamic payment method registration system:
 ## Entry Points
 
 ### UIKit Integration
-**CheckoutComponentsPrimer** (CheckoutComponentsPrimer.swift:64): Main UIKit entry point
+**PrimerCheckoutPresenter** (PrimerCheckoutPresenter.swift:64): Main UIKit entry point
 - `presentCheckout(clientToken:from:completion:)`: Present default UI
 - `presentCheckout(clientToken:from:primerSettings:primerTheme:scope:completion:)`: Present with scope-based customization
 - Acts as bridge between UIKit and SwiftUI implementation
@@ -73,10 +73,10 @@ Dynamic payment method registration system:
 **PrimerCheckout** view: Direct SwiftUI integration for pure SwiftUI apps
 
 ### Delegation, works only with UIKit Integration
-**CheckoutComponentsDelegate** protocol (CheckoutComponentsPrimer.swift:13):
-- `checkoutComponentsDidCompleteWithSuccess(_:)`: Payment successful
-- `checkoutComponentsDidFailWithError(_:)`: Payment failed
-- `checkoutComponentsDidDismiss()`: Checkout dismissed
+**PrimerCheckoutPresenterDelegate** protocol (PrimerCheckoutPresenter.swift:13):
+- `primerCheckoutPresenterDidCompleteWithSuccess(_:)`: Payment successful
+- `primerCheckoutPresenterDidFailWithError(_:)`: Payment failed
+- `primerCheckoutPresenterDidDismiss()`: Checkout dismissed
 - Optional 3DS lifecycle methods
 
 ## State Management
@@ -88,7 +88,7 @@ PrimerCheckoutState:
 ```
 
 ### Card Form State
-Structured state via `StructuredCardFormState` (Core/Data/StructuredCardFormState.swift):
+Structured state via `PrimerCardFormState` (Core/Data/PrimerCardFormState.swift):
 - Field-level validation with specific error codes
 - Co-badged card network detection and selection
 - Dynamic billing address field configuration
@@ -240,7 +240,7 @@ CheckoutComponents uses a design token system (Internal/Tokens/):
 
 ## Key Files Reference
 
-- Entry: CheckoutComponentsPrimer.swift, PrimerCheckout.swift
+- Entry: PrimerCheckoutPresenter.swift, PrimerCheckout.swift
 - Scope interfaces: Scope/PrimerCheckoutScope.swift, Scope/PrimerCardFormScope.swift
 - Scope implementations: Internal/Presentation/Scope/DefaultCheckoutScope.swift
 - DI setup: Internal/DI/ComposableContainer.swift

@@ -667,10 +667,10 @@ final class DefaultAchScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_onCancel_shouldNotCrash() {
+    func test_cancel_shouldNotCrash_viaCancel() {
         let scope = createScope()
         // Should not crash
-        scope.onCancel()
+        scope.cancel()
     }
 
     @MainActor
@@ -698,7 +698,7 @@ final class DefaultAchScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [AchState] = []
+        var receivedStates: [PrimerAchState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)

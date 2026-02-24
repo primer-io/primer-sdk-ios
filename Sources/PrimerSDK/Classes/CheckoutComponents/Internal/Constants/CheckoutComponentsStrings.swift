@@ -1238,6 +1238,130 @@ enum CheckoutComponentsStrings {
     comment: "VoiceOver hint for Klarna finalize button"
   )
 
+  // MARK: - Form Redirect Strings (BLIK, MBWay)
+
+  static let blikOtpLabel = NSLocalizedString(
+    "primer_form_redirect_blik_otp_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "6 digit code",
+    comment: "BLIK OTP field label"
+  )
+
+  static let blikOtpPlaceholder = NSLocalizedString(
+    "primer_form_redirect_blik_otp_placeholder",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "000000",
+    comment: "BLIK OTP field placeholder"
+  )
+
+  static let blikOtpHelper = NSLocalizedString(
+    "primer_form_redirect_blik_otp_helper",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Open your banking app and generate a BLIK code.",
+    comment: "BLIK OTP field helper text"
+  )
+
+  static let formRedirectPendingTitle = NSLocalizedString(
+    "primer_form_redirect_pending_title",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment",
+    comment: "Form redirect pending screen title"
+  )
+
+  static let formRedirectPendingMessage = NSLocalizedString(
+    "primer_form_redirect_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in the app",
+    comment: "Form redirect pending screen message"
+  )
+
+  static let formRedirectBlikPendingMessage = NSLocalizedString(
+    "primer_form_redirect_blik_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in Blik app",
+    comment: "BLIK pending screen message"
+  )
+
+  static let formRedirectMBWayPendingMessage = NSLocalizedString(
+    "primer_form_redirect_mbway_pending_message",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Complete your payment in the MB WAY app",
+    comment: "MBWay pending screen message"
+  )
+
+  static let otpCodeRequired = NSLocalizedString(
+    "primer_form_redirect_otp_code_required",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "OTP code is required",
+    comment: "OTP code required error message"
+  )
+
+  static let otpCodeInvalid = NSLocalizedString(
+    "primer_form_redirect_otp_code_invalid",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter a valid 6-digit code",
+    comment: "OTP code invalid error message"
+  )
+
+  // MARK: Form Redirect Accessibility Strings
+
+  static let a11yFormRedirectOtpLabel = NSLocalizedString(
+    "accessibility_form_redirect_otp_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "6 digit BLIK code, required",
+    comment: "VoiceOver label for BLIK OTP field"
+  )
+
+  static let a11yFormRedirectOtpHint = NSLocalizedString(
+    "accessibility_form_redirect_otp_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter the 6-digit code from your banking app",
+    comment: "VoiceOver hint for BLIK OTP field"
+  )
+
+  static let a11yFormRedirectPhoneLabel = NSLocalizedString(
+    "accessibility_form_redirect_phone_label",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Phone number, required",
+    comment: "VoiceOver label for MBWay phone number field"
+  )
+
+  static let a11yFormRedirectPhoneHint = NSLocalizedString(
+    "accessibility_form_redirect_phone_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Enter your phone number registered with MBWay",
+    comment: "VoiceOver hint for MBWay phone number field"
+  )
+
+  static let payWithBlik = NSLocalizedString(
+    "primer_form_redirect_blik_submit_button",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with BLIK",
+    comment: "BLIK submit button text"
+  )
+
+  static let payWithMBWay = NSLocalizedString(
+    "primer_form_redirect_mbway_submit_button",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Pay with MB WAY",
+    comment: "MBWay submit button text"
+  )
+
   // MARK: - Accessibility Strings
 
   // VoiceOver labels, hints, and announcements for CheckoutComponents accessibility support
@@ -1784,6 +1908,135 @@ enum CheckoutComponentsStrings {
     bundle: .primerResources,
     value: "Double tap to decline and cancel the payment",
     comment: "VoiceOver hint for ACH mandate decline button"
+  )
+
+  // MARK: - Web Redirect Strings
+
+  static func webRedirectButtonContinue(_ methodName: String) -> String {
+    let format = NSLocalizedString(
+      "primer_web_redirect_button_continue",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "Continue with %@",
+      comment: "Web redirect submit button text with payment method name"
+    )
+    return String(format: format, methodName)
+  }
+
+  static let webRedirectDescription = NSLocalizedString(
+    "primer_web_redirect_description",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "You will be redirected to complete your payment",
+    comment: "Web redirect screen description text"
+  )
+
+  // MARK: - Web Redirect Accessibility
+
+  static func a11yWebRedirectSubmitButton(_ methodName: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_web_redirect_submit_button",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "Pay with %@",
+      comment: "VoiceOver label for web redirect pay button"
+    )
+    return String(format: format, methodName)
+  }
+
+  static let a11yWebRedirectLoading = NSLocalizedString(
+    "accessibility_web_redirect_loading",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Processing payment",
+    comment: "VoiceOver announcement when web redirect payment is processing"
+  )
+
+  static let a11yWebRedirectRedirecting = NSLocalizedString(
+    "accessibility_web_redirect_redirecting",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Opening payment page",
+    comment: "VoiceOver announcement when redirecting to payment provider"
+  )
+
+  static let a11yWebRedirectPolling = NSLocalizedString(
+    "accessibility_web_redirect_polling",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Waiting for payment confirmation",
+    comment: "VoiceOver announcement when polling for payment status"
+  )
+
+  static let a11yWebRedirectSuccess = NSLocalizedString(
+    "accessibility_web_redirect_success",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment successful",
+    comment: "VoiceOver announcement when web redirect payment succeeds"
+  )
+
+  static func a11yWebRedirectFailure(_ message: String) -> String {
+    let format = NSLocalizedString(
+      "accessibility_web_redirect_failure",
+      tableName: tableName,
+      bundle: .primerResources,
+      value: "Payment failed: %@",
+      comment: "VoiceOver announcement when web redirect payment fails"
+    )
+    return String(format: format, message)
+  }
+
+  // MARK: - QR Code Strings
+
+  static let qrCodeScanInstruction = NSLocalizedString(
+    "primer_qr_code_scan_instruction",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Scan to pay or take a screenshot",
+    comment: "QR code scanning instruction text"
+  )
+
+  static let qrCodeUploadInstruction = NSLocalizedString(
+    "primer_qr_code_upload_instruction",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Upload the screenshot in your banking app",
+    comment: "QR code upload instruction text"
+  )
+
+  // MARK: - QR Code Accessibility Strings
+
+  static let a11yQrCodeImage = NSLocalizedString(
+    "accessibility_qr_code_image",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "QR code for payment",
+    comment: "VoiceOver label for QR code image"
+  )
+
+  static let a11yQrCodeScanHint = NSLocalizedString(
+    "accessibility_qr_code_scan_hint",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Take a screenshot to save the QR code",
+    comment: "VoiceOver hint for QR code image"
+  )
+
+  static let a11yQrCodeSuccessIcon = NSLocalizedString(
+    "accessibility_qr_code_success_icon",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment successful",
+    comment: "VoiceOver label for QR code payment success icon"
+  )
+
+  static let a11yQrCodeFailureIcon = NSLocalizedString(
+    "accessibility_qr_code_failure_icon",
+    tableName: tableName,
+    bundle: .primerResources,
+    value: "Payment failed",
+    comment: "VoiceOver label for QR code payment failure icon"
   )
 }
 

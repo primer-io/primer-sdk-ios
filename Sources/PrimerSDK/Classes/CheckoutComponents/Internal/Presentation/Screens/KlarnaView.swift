@@ -11,7 +11,7 @@ struct KlarnaView: View, LogReporter {
   let scope: any PrimerKlarnaScope
 
   @Environment(\.designTokens) private var tokens
-  @State private var klarnaState: KlarnaState = .init()
+  @State private var klarnaState: PrimerKlarnaState = .init()
 
   // MARK: - Layout Constants
 
@@ -85,7 +85,7 @@ struct KlarnaView: View, LogReporter {
       if scope.dismissalMechanism.contains(.closeButton) {
         Button(
           CheckoutComponentsStrings.cancelButton,
-          action: scope.onCancel
+          action: scope.cancel
         )
         .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
         .accessibility(
@@ -357,15 +357,15 @@ struct KlarnaView: View, LogReporter {
     var authorizeButton: KlarnaButtonComponent?
     var finalizeButton: KlarnaButtonComponent?
 
-    @Published private var mockState: KlarnaState
+    @Published private var mockState: PrimerKlarnaState
 
-    var state: AsyncStream<KlarnaState> {
+    var state: AsyncStream<PrimerKlarnaState> {
       AsyncStream { continuation in
         continuation.yield(mockState)
       }
     }
 
-    init(step: KlarnaState.Step = .categorySelection) {
+    init(step: PrimerKlarnaState.Step = .categorySelection) {
       let categories = [
         KlarnaPaymentCategory(
           response: Response.Body.Klarna.SessionCategory(
@@ -378,14 +378,14 @@ struct KlarnaView: View, LogReporter {
             descriptiveAssetUrl: "", standardAssetUrl: ""
           )),
       ]
-      self.mockState = KlarnaState(step: step, categories: categories)
+      self.mockState = PrimerKlarnaState(step: step, categories: categories)
     }
 
     func start() {}
     func submit() {}
     func cancel() {}
     func selectPaymentCategory(_ categoryId: String) {
-      mockState = KlarnaState(
+      mockState = PrimerKlarnaState(
         step: mockState.step,
         categories: mockState.categories,
         selectedCategoryId: categoryId
@@ -394,6 +394,5 @@ struct KlarnaView: View, LogReporter {
     func authorizePayment() {}
     func finalizePayment() {}
     func onBack() {}
-    func onCancel() {}
   }
 #endif

@@ -107,7 +107,7 @@ private final class MockInvalidCheckoutScope: PrimerCheckoutScope {
                                  _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void)?
     var container: ContainerComponent?
     var splashScreen: Component?
-    var loading: Component?
+    var loadingScreen: Component?
     var errorScreen: ErrorComponent?
 
     var state: AsyncStream<PrimerCheckoutState> {

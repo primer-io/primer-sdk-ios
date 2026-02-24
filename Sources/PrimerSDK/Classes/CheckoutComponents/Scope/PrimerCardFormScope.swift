@@ -53,19 +53,13 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: PrimerPaymentMethodScope
-where State == StructuredCardFormState {
+where State == PrimerCardFormState {
 
   /// Async stream of the current card form state including field values, validation, and networks.
-  var state: AsyncStream<StructuredCardFormState> { get }
-
-  /// The presentation context indicating how the form was navigated to.
-  var presentationContext: PresentationContext { get }
+  var state: AsyncStream<PrimerCardFormState> { get }
 
   /// Card form-specific UI options from the SDK settings.
   var cardFormUIOptions: PrimerCardFormUIOptions? { get }
-
-  /// Controls how users can dismiss the card form.
-  var dismissalMechanism: [DismissalMechanism] { get }
 
   // MARK: - Payment Method Lifecycle
 
@@ -80,14 +74,8 @@ where State == StructuredCardFormState {
 
   // MARK: - Navigation Methods
 
-  /// Called when the user taps the submit/pay button.
-  func onSubmit()
-
   /// Called when the user taps the back button.
   func onBack()
-
-  /// Called when the user cancels the card form.
-  func onCancel()
 
   // MARK: - Update Methods
 
@@ -122,7 +110,7 @@ where State == StructuredCardFormState {
   var cobadgedCardsView:
     ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
   { get set }
-  var errorView: ErrorComponent? { get set }
+  var errorScreen: ErrorComponent? { get set }
 
   // MARK: - Submit Button Customization
 
@@ -152,7 +140,7 @@ where State == StructuredCardFormState {
 
   var cardInputSection: Component? { get set }
   var billingAddressSection: Component? { get set }
-  var submitButtonSection: Component? { get set }
+  var submitButton: Component? { get set }
 
   // MARK: - ViewBuilder Methods for SDK Components
 
@@ -199,14 +187,6 @@ extension PrimerCardFormScope {
 
   public func start() {
     // Override if initialization logic needed
-  }
-
-  public func submit() {
-    onSubmit()
-  }
-
-  public func cancel() {
-    onCancel()
   }
 }
 
