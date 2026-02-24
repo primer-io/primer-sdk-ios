@@ -199,6 +199,8 @@ GitHub Actions workflows in `.github/workflows/`:
 ## Active Technologies
 - Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework (001-checkout-components-accessibility)
 - N/A (accessibility metadata stored in memory only) (001-checkout-components-accessibility)
+- Swift 6.0+ + SwiftUI (UI), existing SDK core (tokenization, polling, JWT decoding) (004-checkout-components-qr-code)
+- N/A (no local persistence) (004-checkout-components-qr-code)
 
 ## Localization
 
@@ -238,4 +240,5 @@ Common Armenian Unicode escape sequences:
 - Delays delays delays delays delays delays delays = \u0540\u0561\u0574\u0561\u0571\u0561\u0575\u0576 \u0565\u0574
 
 ## Recent Changes
+- 004-checkout-components-qr-code: Added Swift 6.0+ + SwiftUI (UI), existing SDK core (tokenization, polling, JWT decoding)
 - 001-checkout-components-accessibility: Added Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework

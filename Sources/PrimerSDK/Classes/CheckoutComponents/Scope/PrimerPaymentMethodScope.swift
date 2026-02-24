@@ -148,6 +148,16 @@ class PaymentMethodRegistry: LogReporter {
 
   private init() {}
 
+  func register(
+    forKey key: String,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
+  ) {
+    creators[key] = scopeCreator
+    viewBuilders[key] = viewCreator
+    logger.debug(message: "✅ [PaymentMethodRegistry] Payment method \(key) registered")
+  }
+
   /// Registers a payment method implementation
   /// - Parameter paymentMethodType: The payment method implementation to register
   func register<T: PaymentMethodProtocol>(_ paymentMethodType: T.Type) {
@@ -275,6 +285,17 @@ class PaymentMethodRegistry: LogReporter {
       return nil
     }
     return viewBuilder(checkoutScope)
+  }
+
+  /// Internal registration method for direct creator registration.
+  /// Used by payment methods that need parameterized registration (e.g., WebRedirect APMs).
+  func registerInternal(
+    typeKey: String,
+    scopeCreator: @escaping @MainActor (PrimerCheckoutScope, any ContainerProtocol) throws -> any PrimerPaymentMethodScope,
+    viewCreator: @escaping @MainActor (any PrimerCheckoutScope) -> AnyView?
+  ) {
+    creators[typeKey] = scopeCreator
+    viewBuilders[typeKey] = viewCreator
   }
 
   /// Resets the registry by clearing all registered payment methods.
