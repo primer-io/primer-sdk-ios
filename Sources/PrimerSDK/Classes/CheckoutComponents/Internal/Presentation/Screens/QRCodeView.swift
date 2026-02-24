@@ -66,7 +66,7 @@ struct QRCodeView: View, LogReporter {
         if scope.dismissalMechanism.contains(.closeButton) {
           Button(
             CheckoutComponentsStrings.cancelButton,
-            action: scope.onCancel
+            action: scope.cancel
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .accessibility(

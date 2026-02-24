@@ -106,10 +106,6 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         }
     }
 
-    public func onCancel() {
-        checkoutScope?.onDismiss()
-    }
-
     // MARK: - Private Methods
 
     private func performPayment() async {

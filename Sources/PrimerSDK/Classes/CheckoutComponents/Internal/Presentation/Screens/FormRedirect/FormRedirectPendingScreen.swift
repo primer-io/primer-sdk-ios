@@ -76,7 +76,7 @@ struct FormRedirectPendingScreen: View {
         HStack {
             Spacer()
 
-            Button(action: scope.onCancel) {
+            Button(action: scope.cancel) {
                 Text(CheckoutComponentsStrings.cancelButton)
                     .font(PrimerFont.titleLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))

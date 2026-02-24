@@ -164,10 +164,6 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         }
     }
 
-    public func onCancel() {
-        cancel()
-    }
-
     // MARK: - Private Methods
 
     private func configureFieldsForPaymentMethod() {

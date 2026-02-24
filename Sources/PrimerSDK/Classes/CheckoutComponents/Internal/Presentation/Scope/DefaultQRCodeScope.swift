@@ -87,11 +87,6 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
     }
   }
 
-  public func onCancel() {
-    interactor.cancelPolling()
-    checkoutScope?.onDismiss()
-  }
-
   // MARK: - Private Methods
 
   private func performPayment() async {

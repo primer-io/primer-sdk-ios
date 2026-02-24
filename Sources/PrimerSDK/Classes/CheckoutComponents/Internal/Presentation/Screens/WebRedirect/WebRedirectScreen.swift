@@ -65,7 +65,7 @@ struct WebRedirectScreen: View {
 
                 if scope.dismissalMechanism.contains(.closeButton) {
                     Button(CheckoutComponentsStrings.cancelButton, action: {
-                        scope.onCancel()
+                        scope.cancel()
                     })
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     .accessibility(config: AccessibilityConfiguration(
@@ -281,6 +281,5 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
 
     func cancel() { /* No-op: preview mock */ }
     func onBack() { /* No-op: preview mock */ }
-    func onCancel() { /* No-op: preview mock */ }
 }
 #endif

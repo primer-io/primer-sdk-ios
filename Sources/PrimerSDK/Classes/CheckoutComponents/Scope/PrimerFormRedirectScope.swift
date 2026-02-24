@@ -8,73 +8,76 @@ import SwiftUI
 
 // MARK: - Type Aliases for UI Customization
 
+/// Type alias for form redirect screen customization component.
 @available(iOS 15.0, *)
 public typealias FormRedirectScreenComponent = (any PrimerFormRedirectScope) -> any View
 
+/// Type alias for form redirect button customization component.
 @available(iOS 15.0, *)
 public typealias FormRedirectButtonComponent = (any PrimerFormRedirectScope) -> any View
 
+/// Type alias for form redirect form section customization component.
 @available(iOS 15.0, *)
 public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope) -> any View
 
 // MARK: - Scope Protocol
 
-/// Scope for form-based redirect payment methods (BLIK, MBWay).
-/// Provides state observation, field management, and UI customization for form-based APMs
-/// that require user input before completing payment in an external app.
+/// Scope protocol for form-based redirect payment methods (e.g., BLIK, MBWay).
+///
+/// Provides state observation, field management, and UI customization for payment methods
+/// that require user input (OTP code or phone number) before completing payment
+/// in an external app.
+///
+/// ## State Flow
+/// ```
+/// ready → submitting → awaitingExternalCompletion → success | failure
+/// ```
+///
+/// ## Usage
+/// ```swift
+/// if let formScope = checkoutScope.getPaymentMethodScope(
+///   PrimerFormRedirectScope.self
+/// ) {
+///   // Update a field value
+///   formScope.updateField(.otpCode, value: "123456")
+///
+///   // Observe state
+///   for await state in formScope.state {
+///     if state.isSubmitEnabled {
+///       // User can submit
+///     }
+///   }
+/// }
+/// ```
 @available(iOS 15.0, *)
 @MainActor
 public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == FormRedirectState {
 
-    // MARK: - State
-
+    /// Async stream emitting the current form redirect state whenever it changes.
     var state: AsyncStream<FormRedirectState> { get }
+
+    /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
     var paymentMethodType: String { get }
-    var presentationContext: PresentationContext { get }
-    var dismissalMechanism: [DismissalMechanism] { get }
-
-    // MARK: - Payment Method Lifecycle
-
-    /// Called when the scope becomes active; initializes field configuration.
-    func start()
-
-    /// Initiates the payment flow (tokenization + polling).
-    /// - Precondition: All fields must be valid (`isSubmitEnabled == true`)
-    func submit()
-
-    func cancel()
 
     // MARK: - Field Management
 
+    /// Updates the value of a form field.
+    /// - Parameters:
+    ///   - fieldType: The type of field to update (`.otpCode` or `.phoneNumber`).
+    ///   - value: The new value for the field.
     func updateField(_ fieldType: FormFieldState.FieldType, value: String)
-
-    // MARK: - Navigation Methods
-
-    func onBack()
-    func onCancel()
 
     // MARK: - Screen-Level Customization
 
     /// When set, replaces both form input and pending screens.
     var screen: FormRedirectScreenComponent? { get set }
 
+    /// Custom form section component to replace the default form fields area.
     var formSection: FormRedirectFormSectionComponent? { get set }
+
+    /// Custom button component to replace the submit button.
     var submitButton: FormRedirectButtonComponent? { get set }
 
-    /// Default: payment method specific (e.g., "Pay with BLIK")
+    /// Custom text for the submit button (default: payment method specific, e.g., "Pay with BLIK").
     var submitButtonText: String? { get set }
-}
-
-// MARK: - Default Implementations
-
-@available(iOS 15.0, *)
-extension PrimerFormRedirectScope {
-
-    public func onBack() {
-        cancel()
-    }
-
-    public func onCancel() {
-        cancel()
-    }
 }

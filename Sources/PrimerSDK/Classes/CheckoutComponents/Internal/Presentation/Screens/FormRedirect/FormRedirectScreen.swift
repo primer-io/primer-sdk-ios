@@ -73,7 +73,7 @@ struct FormRedirectScreen: View {
         CheckoutHeaderView(
             showBackButton: scope.presentationContext.shouldShowBackButton,
             onBack: scope.onBack,
-            rightButton: .closeButton(action: scope.onCancel)
+            rightButton: .closeButton(action: scope.cancel)
         )
     }
 

@@ -126,10 +126,10 @@ final class DefaultQRCodeScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_onCancel_cancelsPolling() {
+    func test_cancel_cancelsPolling() {
         let sut = createScope()
 
-        sut.onCancel()
+        sut.cancel()
 
         XCTAssertEqual(mockInteractor.cancelPollingCallCount, 1)
     }
