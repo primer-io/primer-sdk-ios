@@ -11,7 +11,7 @@ cocoapods-session-keepalive:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
-    - curl -s -H "Authorization: Token $COCOAPODS_TRUNK_TOKEN" https://trunk.cocoapods.org/api/v1/sessions > /dev/null
+    - 'curl -s -H "Authorization: Token $COCOAPODS_TRUNK_TOKEN" https://trunk.cocoapods.org/api/v1/sessions > /dev/null'
 
 build-and-release:
   stage: build
