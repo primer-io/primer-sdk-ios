@@ -8,6 +8,7 @@ workflow:
 
 cocoapods-session-keepalive:
   stage: .pre
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
