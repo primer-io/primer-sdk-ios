@@ -1,5 +1,5 @@
 //
-//  FormRedirectState.swift
+//  PrimerFormRedirectState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -13,7 +13,7 @@ import Foundation
 /// Each field has a type (OTP code or phone number), a current value, validation state,
 /// and display metadata (label, placeholder, helper text).
 @available(iOS 15.0, *)
-public struct FormFieldState: Equatable, Identifiable {
+public struct PrimerFormFieldState: Equatable, Identifiable {
 
     /// The type of form field.
     public enum FieldType: String, Equatable, Sendable {
@@ -99,10 +99,10 @@ public struct FormFieldState: Equatable, Identifiable {
 // MARK: - Factory Methods
 
 @available(iOS 15.0, *)
-extension FormFieldState {
+extension PrimerFormFieldState {
 
-    static func blikOtpField() -> FormFieldState {
-        FormFieldState(
+    static func blikOtpField() -> PrimerFormFieldState {
+        PrimerFormFieldState(
             fieldType: .otpCode,
             value: "",
             isValid: false,
@@ -117,8 +117,8 @@ extension FormFieldState {
     /// - Parameters:
     ///   - countryCodePrefix: Display prefix (e.g., "🇵🇹 +351")
     ///   - dialCode: Dial code for session info (e.g., "+351")
-    static func mbwayPhoneField(countryCodePrefix: String, dialCode: String) -> FormFieldState {
-        FormFieldState(
+    static func mbwayPhoneField(countryCodePrefix: String, dialCode: String) -> PrimerFormFieldState {
+        PrimerFormFieldState(
             fieldType: .phoneNumber,
             value: "",
             isValid: false,
@@ -145,7 +145,7 @@ extension FormFieldState {
 /// ready → submitting → awaitingExternalCompletion → success | failure
 /// ```
 @available(iOS 15.0, *)
-public struct FormRedirectState: Equatable {
+public struct PrimerFormRedirectState: Equatable {
 
     /// The current status of the form redirect payment flow.
     public enum Status: Equatable {
@@ -165,7 +165,7 @@ public struct FormRedirectState: Equatable {
     public var status: Status
 
     /// The form fields for this payment method.
-    public var fields: [FormFieldState]
+    public var fields: [PrimerFormFieldState]
 
     /// Whether all fields are valid and the form can be submitted.
     /// Derived from field validity: all fields must be non-empty and valid.
@@ -181,7 +181,7 @@ public struct FormRedirectState: Equatable {
 
     public init(
         status: Status = .ready,
-        fields: [FormFieldState] = [],
+        fields: [PrimerFormFieldState] = [],
         pendingMessage: String? = nil,
         surchargeAmount: String? = nil
     ) {
@@ -195,15 +195,15 @@ public struct FormRedirectState: Equatable {
 // MARK: - Convenience Accessors
 
 @available(iOS 15.0, *)
-extension FormRedirectState {
+extension PrimerFormRedirectState {
 
     /// The OTP code field, if present (used by BLIK).
-    public var otpField: FormFieldState? {
+    public var otpField: PrimerFormFieldState? {
         fields.first { $0.fieldType == .otpCode }
     }
 
     /// The phone number field, if present (used by MBWay).
-    public var phoneField: FormFieldState? {
+    public var phoneField: PrimerFormFieldState? {
         fields.first { $0.fieldType == .phoneNumber }
     }
 

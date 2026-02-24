@@ -21,7 +21,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    public var state: AsyncStream<WebRedirectState> {
+    public var state: AsyncStream<PrimerWebRedirectState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await _ in $internalState.values {
@@ -50,7 +50,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
     private let repository: WebRedirectRepository?
 
-    @Published private var internalState: WebRedirectState
+    @Published private var internalState: PrimerWebRedirectState
 
     // MARK: - Initialization
 
@@ -72,7 +72,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         self.accessibilityService = accessibilityService
         self.analyticsInteractor = analyticsInteractor
         self.repository = repository
-        self.internalState = WebRedirectState(
+        self.internalState = PrimerWebRedirectState(
             status: .idle,
             paymentMethod: paymentMethod,
             surchargeAmount: surchargeAmount

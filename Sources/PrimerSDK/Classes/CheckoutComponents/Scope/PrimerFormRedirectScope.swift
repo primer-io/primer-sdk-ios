@@ -51,10 +51,10 @@ public typealias FormRedirectFormSectionComponent = (any PrimerFormRedirectScope
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == FormRedirectState {
+public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
 
     /// Async stream emitting the current form redirect state whenever it changes.
-    var state: AsyncStream<FormRedirectState> { get }
+    var state: AsyncStream<PrimerFormRedirectState> { get }
 
     /// The payment method type identifier (e.g., "ADYEN_BLIK", "ADYEN_MBWAY").
     var paymentMethodType: String { get }
@@ -65,7 +65,7 @@ public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State ==
     /// - Parameters:
     ///   - fieldType: The type of field to update (`.otpCode` or `.phoneNumber`).
     ///   - value: The new value for the field.
-    func updateField(_ fieldType: FormFieldState.FieldType, value: String)
+    func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String)
 
     // MARK: - Screen-Level Customization
 

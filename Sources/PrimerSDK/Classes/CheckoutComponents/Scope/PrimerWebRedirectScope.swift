@@ -43,13 +43,13 @@ public typealias WebRedirectButtonComponent = (any PrimerWebRedirectScope) -> an
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == WebRedirectState {
+public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
 
     /// The payment method type identifier (e.g., "TWINT").
     var paymentMethodType: String { get }
 
     /// Async stream emitting the current web redirect state whenever it changes.
-    var state: AsyncStream<WebRedirectState> { get }
+    var state: AsyncStream<PrimerWebRedirectState> { get }
 
     // MARK: - Screen-Level Customization
 

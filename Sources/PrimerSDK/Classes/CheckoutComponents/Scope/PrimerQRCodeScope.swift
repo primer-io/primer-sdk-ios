@@ -35,10 +35,10 @@ public typealias QRCodeScreenComponent = (any PrimerQRCodeScope) -> any View
 /// ```
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == QRCodeState {
+public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == PrimerQRCodeState {
 
   /// Async stream emitting the current QR code state whenever it changes.
-  var state: AsyncStream<QRCodeState> { get }
+  var state: AsyncStream<PrimerQRCodeState> { get }
 
   /// Custom screen component to replace the entire QR code screen.
   var screen: QRCodeScreenComponent? { get set }

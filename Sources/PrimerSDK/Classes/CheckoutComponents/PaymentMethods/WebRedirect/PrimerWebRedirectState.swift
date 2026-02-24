@@ -1,5 +1,5 @@
 //
-//  WebRedirectState.swift
+//  PrimerWebRedirectState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -15,7 +15,7 @@ import Foundation
 /// idle → loading → redirecting → polling → success | failure
 /// ```
 @available(iOS 15.0, *)
-public struct WebRedirectState: Equatable {
+public struct PrimerWebRedirectState: Equatable {
 
     /// The current status of the web redirect payment flow.
     public enum Status: Equatable {

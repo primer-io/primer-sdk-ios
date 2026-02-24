@@ -79,7 +79,7 @@ enum FormRedirectPaymentMethodHelper {
 private struct FormRedirectContainerView: View {
 
     @ObservedObject var scope: DefaultFormRedirectScope
-    @State private var currentState: FormRedirectState = FormRedirectState()
+    @State private var currentState: PrimerFormRedirectState = PrimerFormRedirectState()
 
     var body: some View {
         Group {

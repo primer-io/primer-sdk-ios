@@ -319,9 +319,9 @@ idle -> loading -> redirecting -> polling -> success | failure
 
 ```swift
 @MainActor
-public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == WebRedirectState {
+public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
   var paymentMethodType: String { get }
-  var state: AsyncStream<WebRedirectState> { get }
+  var state: AsyncStream<PrimerWebRedirectState> { get }
 
   // Customization
   var screen: WebRedirectScreenComponent? { get set }
@@ -340,11 +340,11 @@ ready -> submitting -> awaitingExternalCompletion -> success | failure
 
 ```swift
 @MainActor
-public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == FormRedirectState {
-  var state: AsyncStream<FormRedirectState> { get }
+public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
+  var state: AsyncStream<PrimerFormRedirectState> { get }
   var paymentMethodType: String { get }
 
-  func updateField(_ fieldType: FormFieldState.FieldType, value: String)
+  func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String)
 
   // Customization
   var screen: FormRedirectScreenComponent? { get set }        // Replaces both form and pending screens
@@ -364,8 +364,8 @@ loading -> displaying -> success | failure
 
 ```swift
 @MainActor
-public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == QRCodeState {
-  var state: AsyncStream<QRCodeState> { get }
+public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == PrimerQRCodeState {
+  var state: AsyncStream<PrimerQRCodeState> { get }
   var screen: QRCodeScreenComponent? { get set }
 }
 ```
@@ -546,14 +546,14 @@ public struct PrimerAchState: Equatable {
 }
 ```
 
-### WebRedirectState
+### PrimerWebRedirectState
 
 ```
 idle -> loading -> redirecting -> polling -> success | failure
 ```
 
 ```swift
-public struct WebRedirectState: Equatable {
+public struct PrimerWebRedirectState: Equatable {
   public enum Status: Equatable {
     case idle
     case loading
@@ -569,14 +569,14 @@ public struct WebRedirectState: Equatable {
 }
 ```
 
-### FormRedirectState
+### PrimerFormRedirectState
 
 ```
 ready -> submitting -> awaitingExternalCompletion -> success | failure
 ```
 
 ```swift
-public struct FormRedirectState: Equatable {
+public struct PrimerFormRedirectState: Equatable {
   public enum Status: Equatable {
     case ready
     case submitting
@@ -586,23 +586,23 @@ public struct FormRedirectState: Equatable {
   }
 
   var status: Status
-  var fields: [FormFieldState]
+  var fields: [PrimerFormFieldState]
   var isSubmitEnabled: Bool        // Computed: all fields non-empty and valid
   var pendingMessage: String?
   var surchargeAmount: String?
 
   // Convenience accessors
-  var otpField: FormFieldState?    // First field with .otpCode type
-  var phoneField: FormFieldState?  // First field with .phoneNumber type
+  var otpField: PrimerFormFieldState?    // First field with .otpCode type
+  var phoneField: PrimerFormFieldState?  // First field with .phoneNumber type
   var isLoading: Bool              // status == .submitting
   var isTerminal: Bool             // success or failure
 }
 ```
 
-### FormFieldState
+### PrimerFormFieldState
 
 ```swift
-public struct FormFieldState: Equatable, Identifiable {
+public struct PrimerFormFieldState: Equatable, Identifiable {
   public enum FieldType: String, Equatable, Sendable {
     case otpCode       // BLIK 6-digit code
     case phoneNumber   // MBWay phone number
@@ -629,14 +629,14 @@ public struct FormFieldState: Equatable, Identifiable {
 }
 ```
 
-### QRCodeState
+### PrimerQRCodeState
 
 ```
 loading -> displaying -> success | failure
 ```
 
 ```swift
-public struct QRCodeState: Equatable {
+public struct PrimerQRCodeState: Equatable {
   public enum Status: Equatable {
     case loading
     case displaying

@@ -29,7 +29,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         checkoutScope?.dismissalMechanism ?? []
     }
 
-    public var state: AsyncStream<FormRedirectState> {
+    public var state: AsyncStream<PrimerFormRedirectState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await _ in $internalState.values {
@@ -58,7 +58,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     private let validationService: ValidationService
     private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-    @Published private var internalState = FormRedirectState()
+    @Published private var internalState = PrimerFormRedirectState()
 
     private var paymentTask: Task<Void, Never>?
     private var hasStarted = false
@@ -131,7 +131,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
 
     // MARK: - Field Management
 
-    public func updateField(_ fieldType: FormFieldState.FieldType, value: String) {
+    public func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String) {
         guard let index = internalState.fields.firstIndex(where: { $0.fieldType == fieldType }) else {
             logger.warn(message: "Field type \(fieldType) not found in state")
             return
@@ -182,7 +182,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
     }
 
     private func configureBlikField() {
-        let field = FormFieldState.blikOtpField()
+        let field = PrimerFormFieldState.blikOtpField()
         internalState.fields = [field]
         internalState.pendingMessage = CheckoutComponentsStrings.formRedirectBlikPendingMessage
     }
@@ -197,7 +197,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         let dialCode = phoneData?.dialCode ?? Constants.defaultDialCode
         let flag = countryCode?.flag ?? Constants.defaultCountryFlag
 
-        let field = FormFieldState.mbwayPhoneField(
+        let field = PrimerFormFieldState.mbwayPhoneField(
             countryCodePrefix: "\(flag) \(dialCode)",
             dialCode: dialCode
         )
@@ -206,7 +206,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         internalState.pendingMessage = CheckoutComponentsStrings.formRedirectMBWayPendingMessage
     }
 
-    private func filterInput(_ input: String, for fieldType: FormFieldState.FieldType) -> String {
+    private func filterInput(_ input: String, for fieldType: PrimerFormFieldState.FieldType) -> String {
         let numericOnly = input.filter(\.isNumber)
 
         switch fieldType {
@@ -218,7 +218,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         }
     }
 
-    private func validateField(_ value: String, for fieldType: FormFieldState.FieldType) -> (isValid: Bool, error: String?) {
+    private func validateField(_ value: String, for fieldType: PrimerFormFieldState.FieldType) -> (isValid: Bool, error: String?) {
         guard !value.isEmpty else {
             return (false, nil)
         }

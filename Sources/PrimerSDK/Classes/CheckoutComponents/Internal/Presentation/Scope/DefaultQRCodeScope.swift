@@ -20,7 +20,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<QRCodeState> {
+  public var state: AsyncStream<PrimerQRCodeState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -42,7 +42,7 @@ public final class DefaultQRCodeScope: PrimerQRCodeScope, ObservableObject, LogR
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
   private let paymentMethodType: String
 
-  @Published private var internalState = QRCodeState()
+  @Published private var internalState = PrimerQRCodeState()
 
   // MARK: - Initialization
 

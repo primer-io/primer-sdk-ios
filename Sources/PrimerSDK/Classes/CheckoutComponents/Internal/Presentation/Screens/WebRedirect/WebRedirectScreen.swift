@@ -16,7 +16,7 @@ struct WebRedirectScreen: View {
     let scope: any PrimerWebRedirectScope
 
     @Environment(\.designTokens) private var tokens
-    @State private var webRedirectState = WebRedirectState()
+    @State private var webRedirectState = PrimerWebRedirectState()
 
     var body: some View {
         VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
@@ -243,7 +243,7 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
     var presentationContext: PresentationContext = .fromPaymentSelection
     var dismissalMechanism: [DismissalMechanism] = [.closeButton]
 
-    var state: AsyncStream<WebRedirectState> {
+    var state: AsyncStream<PrimerWebRedirectState> {
         AsyncStream { continuation in
             continuation.yield(mockState)
         }
@@ -257,17 +257,17 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
 
     // MARK: - Private Properties
 
-    @Published private var mockState: WebRedirectState
+    @Published private var mockState: PrimerWebRedirectState
 
     // MARK: - Initialization
 
-    init(status: WebRedirectState.Status = .idle) {
+    init(status: PrimerWebRedirectState.Status = .idle) {
         let mockPaymentMethod = CheckoutPaymentMethod(
             id: "mock-sofort",
             type: "ADYEN_SOFORT",
             name: "Sofort"
         )
-        self.mockState = WebRedirectState(
+        self.mockState = PrimerWebRedirectState(
             status: status,
             paymentMethod: mockPaymentMethod,
             surchargeAmount: "+ €0.50"
