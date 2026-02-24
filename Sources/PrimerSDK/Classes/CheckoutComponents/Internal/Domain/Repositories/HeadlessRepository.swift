@@ -24,6 +24,8 @@ protocol HeadlessRepository {
 
   func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
 
+  func getBinDataStream() -> AsyncStream<PrimerBinData>
+
   func updateCardNumberInRawDataManager(_ cardNumber: String) async
 
   func selectCardNetwork(_ cardNetwork: CardNetwork) async

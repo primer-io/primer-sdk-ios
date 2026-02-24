@@ -166,6 +166,10 @@ private actor SpyHeadlessRepository: HeadlessRepository {
         AsyncStream { _ in }
     }
 
+    nonisolated func getBinDataStream() -> AsyncStream<PrimerBinData> {
+        AsyncStream { _ in }
+    }
+
     func updateCardNumberInRawDataManager(_ cardNumber: String) async {}
 
     func selectCardNetwork(_ cardNetwork: CardNetwork) async {}
