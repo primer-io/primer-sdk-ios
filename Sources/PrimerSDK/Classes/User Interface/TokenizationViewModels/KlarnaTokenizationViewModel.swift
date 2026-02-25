@@ -11,6 +11,7 @@
 
 import Foundation
 import PrimerCore
+import PrimerFoundation
 import UIKit
 
 #if canImport(PrimerKlarnaSDK)

@@ -10,32 +10,36 @@ import XCTest
 
 class EncodingDecodingTests: XCTestCase {
 
-    let event = Analytics.Event.message(
-        message: "This is a test message",
-        messageType: .error,
-        severity: .error,
-        context: [
-            "bool": true,
-            "int": 123,
-            "double": 1.123,
-            "string": "This is a string",
-            "dict": [
-                "string": "This is another string"
-            ],
-            "array": [
-                false,
-                321,
-                3.321,
-                "This is a string in an array"
+    var event: Analytics.Event {
+        .message(
+            message: "This is a test message",
+            messageType: .error,
+            severity: .error,
+            context: [
+                "bool": true,
+                "int": 123,
+                "double": 1.123,
+                "string": "This is a string",
+                "dict": [
+                    "string": "This is another string"
+                ],
+                "array": [
+                    false,
+                    321,
+                    3.321,
+                    "This is a string in an array"
+                ]
             ]
-        ]
-    )
+        )
+    }
 
-    let eventWithoutContext = Analytics.Event.message(
-        message: "This is a test message",
-        messageType: .error,
-        severity: .error
-    )
+    var eventWithoutContext: Analytics.Event {
+        .message(
+            message: "This is a test message",
+            messageType: .error,
+            severity: .error
+        )
+    }
 
     func testEncodingEventContext() throws {
         let data = try JSONEncoder().encode(event)

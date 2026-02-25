@@ -1,9 +1,10 @@
 //
 //  PrimerSearchTextField.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
@@ -17,7 +18,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     private var _delegate: UITextFieldDelegate?
     override var delegate: UITextFieldDelegate? {
         get {
-            return _delegate
+            _delegate
         }
         set {
             _delegate = newValue
@@ -79,7 +80,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return self.textRect(forBounds: bounds)
+        self.textRect(forBounds: bounds)
     }
 
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {

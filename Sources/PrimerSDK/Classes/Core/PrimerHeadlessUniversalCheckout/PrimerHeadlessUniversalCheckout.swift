@@ -9,6 +9,7 @@
 // swiftlint:disable file_length
 
 import PrimerCore
+import PrimerFoundation
 import PrimerNetworking
 import UIKit
 
