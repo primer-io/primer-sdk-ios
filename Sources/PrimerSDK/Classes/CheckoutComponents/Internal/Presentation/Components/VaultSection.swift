@@ -40,7 +40,7 @@ struct VaultSection: View {
         HStack(spacing: PrimerSpacing.xsmall(tokens: tokens)) {
           Text(CheckoutComponentsStrings.showAll)
             .font(PrimerFont.titleLarge(tokens: tokens))
-          Image(systemName: RTLIcon.forwardChevron)
+          Image(systemName: "chevron.down")
             .font(PrimerFont.caption(tokens: tokens))
         }
         .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))

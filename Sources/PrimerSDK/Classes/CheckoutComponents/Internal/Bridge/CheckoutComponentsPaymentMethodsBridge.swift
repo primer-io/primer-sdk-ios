@@ -50,7 +50,13 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
       // Extract network surcharges for card payment methods
       let networkSurcharges = extractNetworkSurcharges(for: type)
 
-      let backgroundColor = primerMethod.displayMetadata?.button.backgroundColor?.uiColor
+      let displayButton = primerMethod.displayMetadata?.button
+      let backgroundColor = displayButton?.backgroundColor?.uiColor
+      let textColor = displayButton?.textColor?.uiColor
+      let borderColor = displayButton?.borderColor?.uiColor
+      let borderWidth = displayButton?.borderWidth?.resolvedValue
+      let cornerRadius = displayButton?.cornerRadius.map(CGFloat.init)
+      let buttonText = displayButton?.text
 
       return InternalPaymentMethod(
         id: type,
@@ -58,14 +64,19 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
         name: primerMethod.name,
         icon: primerMethod.logo,
         configId: primerMethod.processorConfigId,
-        isEnabled: true,  // Assume enabled if in configuration
-        supportedCurrencies: nil,  // Could be extracted if available
+        isEnabled: true,
+        supportedCurrencies: nil,
         requiredInputElements: getRequiredInputElements(for: type),
-        metadata: nil,  // Could be extracted from displayMetadata
-        surcharge: primerMethod.surcharge,  // Direct from PrimerPaymentMethod
-        hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,  // Direct from PrimerPaymentMethod
-        networkSurcharges: networkSurcharges,  // Extract from client session
-        backgroundColor: backgroundColor  // Dynamic color from server
+        metadata: nil,
+        surcharge: primerMethod.surcharge,
+        hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,
+        networkSurcharges: networkSurcharges,
+        backgroundColor: backgroundColor,
+        buttonText: buttonText,
+        textColor: textColor,
+        borderColor: borderColor,
+        borderWidth: borderWidth,
+        cornerRadius: cornerRadius
       )
     }
 
@@ -173,46 +184,24 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
   }
 
   private func filterPaymentMethodsBySupport(_ paymentMethods: [PrimerPaymentMethod]) async
-    -> [PrimerPaymentMethod]
-  {
-    if #available(iOS 15.0, *) {
-      // TODO: Enable registry-based filtering once more payment methods are implemented
-      // For now, showing all payment methods from configuration to allow development and testing
-      logger.debug(
-        message:
-          "🔍 [PaymentMethodsBridge] Showing all \(paymentMethods.count) payment methods from configuration"
-      )
-      return paymentMethods
+    -> [PrimerPaymentMethod] {
+      let registeredTypes = Set(await PaymentMethodRegistry.shared.registeredTypes)
 
-      /* Uncomment when ready to filter by registered payment methods only:
-       let registeredTypesArray = await PaymentMethodRegistry.shared.registeredTypes
-       let registeredTypes = Set(registeredTypesArray)
-      
-       logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
-      
-       let filtered = paymentMethods.filter { method in
-       let isRegistered = registeredTypes.contains(method.type)
-       if !isRegistered {
-       logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
-       }
-       return isRegistered
-       }
-      
-       logger.debug(message: "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types")
-      
-       for method in filtered {
-       logger.debug(message: "✅ [PaymentMethodsBridge] Keeping registered payment method: \(method.type)")
-       }
-      
-       return filtered
-       */
-    } else {
-      // For iOS < 15.0, CheckoutComponents is not available, return empty array
+      logger.debug(message: "🔍 [PaymentMethodsBridge] Registered payment method types: \(registeredTypes)")
+
+      let filtered = paymentMethods.filter { method in
+        let isRegistered = registeredTypes.contains(method.type)
+        if !isRegistered {
+          logger.debug(message: "🚫 [PaymentMethodsBridge] Filtering out unregistered payment method: \(method.type)")
+        }
+        return isRegistered
+      }
+
       logger.debug(
         message:
-          "🔍 [PaymentMethodsBridge] iOS < 15.0, CheckoutComponents not available, returning empty array"
+          "🔍 [PaymentMethodsBridge] Filtered \(paymentMethods.count) payment methods to \(filtered.count) registered types"
       )
-      return []
-    }
+
+      return filtered
   }
 }
