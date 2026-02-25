@@ -1,21 +1,21 @@
 //
 //  PrimerTheme+Colors.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-internal enum ColorState {
+public enum ColorState {
     case enabled, disabled, selected
 }
 
-internal struct StatefulColor {
+public struct StatefulColor {
     private let enabled: UIColor
     private let disabled: UIColor
     private let selected: UIColor
 
-    init(
+    public init(
         _ enabled: UIColor,
         disabled: UIColor? = nil,
         selected: UIColor? = nil
@@ -25,7 +25,7 @@ internal struct StatefulColor {
         self.selected = selected ?? enabled
     }
 
-    func color(for state: ColorState) -> UIColor {
+    public func color(for state: ColorState) -> UIColor {
         switch state {
         case .enabled:
             return enabled
@@ -37,11 +37,11 @@ internal struct StatefulColor {
     }
 }
 
-final class ColorSwatch {
-    let primary: UIColor
-    let error: UIColor
+public final class ColorSwatch {
+    public let primary: UIColor
+    public let error: UIColor
 
-    internal init(primary: UIColor, error: UIColor) {
+    public init(primary: UIColor, error: UIColor) {
         self.primary = primary
         self.error = error
     }

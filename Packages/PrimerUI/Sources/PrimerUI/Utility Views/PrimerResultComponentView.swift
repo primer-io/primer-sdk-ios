@@ -1,18 +1,31 @@
 //
 //  PrimerResultComponentView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-final class PrimerResultComponentView: PrimerView {
+public final class PrimerResultComponentView: PrimerView {
 
-    private(set) internal var verticalStackView = UIStackView()
-    private(set) internal var imageView: UIImageView?
-    private(set) internal var message: String?
-    private(set) internal var loadingIndicator: UIActivityIndicatorView?
+    private(set) var verticalStackView = UIStackView()
+    private(set) var imageView: UIImageView?
+    private(set) var message: String?
+    private(set) var loadingIndicator: UIActivityIndicatorView?
 
+    public convenience init(
+        frame: CGRect = .zero,
+        imageView: UIImageView? = nil,
+        message: String? = nil,
+        loadingIndicator: UIActivityIndicatorView? = nil
+    ) {
+        self.init(frame: frame)
+        self.imageView = imageView
+        self.message = message
+        self.loadingIndicator = loadingIndicator
+        self.initialize()
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initialize()
@@ -55,14 +68,6 @@ final class PrimerResultComponentView: PrimerView {
         if let loadingIndicator = loadingIndicator {
             verticalStackView.addArrangedSubview(loadingIndicator)
         }
-    }
-
-    convenience init(frame: CGRect = .zero, imageView: UIImageView? = nil, message: String? = nil, loadingIndicator: UIActivityIndicatorView? = nil) {
-        self.init(frame: frame)
-        self.imageView = imageView
-        self.message = message
-        self.loadingIndicator = loadingIndicator
-        self.initialize()
     }
 
 }

@@ -1,14 +1,14 @@
 //
 //  PrimerImageView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-final class PrimerImageView: UIImageView {}
+public final class PrimerImageView: UIImageView {}
 
-extension PrimerImageView {
+public extension PrimerImageView {
 
     convenience init(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         self.init()
