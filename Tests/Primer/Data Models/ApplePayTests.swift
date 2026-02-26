@@ -6,6 +6,7 @@
 
 import PassKit
 import PrimerCore
+import PrimerFoundation
 @testable import PrimerSDK
 import XCTest
 
