@@ -137,6 +137,7 @@ extension KlarnaTokenizationComponentTests {
     }
 
     private func restartPrimerConfiguration() {
+        _ = PrimerInternal.shared
         AppState.current.clientToken = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
