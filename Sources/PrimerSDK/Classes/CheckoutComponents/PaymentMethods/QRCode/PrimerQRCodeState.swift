@@ -30,13 +30,13 @@ public struct PrimerQRCodeState: Equatable {
   }
 
   /// Current payment status.
-  public var status: Status
+  public internal(set) var status: Status
 
   /// The payment method details, if available.
-  public var paymentMethod: CheckoutPaymentMethod?
+  public internal(set) var paymentMethod: CheckoutPaymentMethod?
 
   /// The QR code image data (PNG format) to display. Available when status is `.displaying`.
-  public var qrCodeImageData: Data?
+  public internal(set) var qrCodeImageData: Data?
 
   public init(
     status: Status = .loading,

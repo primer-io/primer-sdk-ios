@@ -40,13 +40,13 @@ public struct PrimerFormFieldState: Equatable, Identifiable {
     public let fieldType: FieldType
 
     /// The current text value entered by the user.
-    public var value: String
+    public internal(set) var value: String
 
     /// Whether the current value passes validation.
-    public var isValid: Bool
+    public internal(set) var isValid: Bool
 
     /// Validation error message, if the field is invalid.
-    public var errorMessage: String?
+    public internal(set) var errorMessage: String?
 
     /// Placeholder text (e.g., "000000").
     public let placeholder: String
@@ -64,10 +64,10 @@ public struct PrimerFormFieldState: Equatable, Identifiable {
     public let maxLength: Int?
 
     /// Display prefix for phone fields (e.g., "🇵🇹 +351").
-    public var countryCodePrefix: String?
+    public internal(set) var countryCodePrefix: String?
 
     /// Dial code for session info (e.g., "+351").
-    public var dialCode: String?
+    public internal(set) var dialCode: String?
 
     public init(
         fieldType: FieldType,
@@ -162,10 +162,10 @@ public struct PrimerFormRedirectState: Equatable {
     }
 
     /// Current payment status.
-    public var status: Status
+    public internal(set) var status: Status
 
     /// The form fields for this payment method.
-    public var fields: [PrimerFormFieldState]
+    public internal(set) var fields: [PrimerFormFieldState]
 
     /// Whether all fields are valid and the form can be submitted.
     /// Derived from field validity: all fields must be non-empty and valid.
@@ -174,10 +174,10 @@ public struct PrimerFormRedirectState: Equatable {
     }
 
     /// Message to display while awaiting external completion (e.g., "Confirm payment in your banking app").
-    public var pendingMessage: String?
+    public internal(set) var pendingMessage: String?
 
     /// Formatted surcharge amount for this payment method, if applicable.
-    public var surchargeAmount: String?
+    public internal(set) var surchargeAmount: String?
 
     public init(
         status: Status = .ready,
