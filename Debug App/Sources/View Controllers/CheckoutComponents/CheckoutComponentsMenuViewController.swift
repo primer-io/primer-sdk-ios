@@ -119,7 +119,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
                     do {
                         let clientToken = try await NetworkingUtils.requestClientSession(
                             body: ccSession,
-                            apiVersion: self.apiVersion
+                            apiVersion: apiVersion
                         )
                         await MainActor.run {
                             self.presentUIKitIntegration(with: clientToken)
@@ -173,7 +173,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
             let examplesView = CheckoutComponentsExamplesView(
                 settings: settings,
-                apiVersion: self.apiVersion,
+                apiVersion: apiVersion,
                 clientSession: clientSession,
                 clientToken: resolvedClientToken
             )
