@@ -1,19 +1,20 @@
 //
 //  PrimerContainerViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerUI
 import UIKit
 
 /// PrimerContainerViewController gets a view controller as input. The input view controller must use autolayout.
 /// It then sets this view controller as its child, wraps it within a scrollview and sets the constraints needed.
 final class PrimerContainerViewController: PrimerViewController {
 
-    internal var scrollView = UIScrollView()
-    internal var childView = PrimerView()
-    internal var childViewController: UIViewController
-    internal var mockedNavigationBar = PrimerNavigationBar()
+    var scrollView = UIScrollView()
+    var childView = PrimerView()
+    var childViewController: UIViewController
+    var mockedNavigationBar = PrimerNavigationBar()
 
     init(childViewController: UIViewController) {
         self.childViewController = childViewController
@@ -89,7 +90,7 @@ final class PrimerContainerViewController: PrimerViewController {
 
 extension PrimerContainerViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y == 0 && scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
+        if scrollView.contentOffset.y == 0, scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
             PrimerInternal.shared.dismiss()
         }
     }

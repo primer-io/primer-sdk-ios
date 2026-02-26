@@ -10,6 +10,7 @@
 // swiftlint:disable type_body_length
 
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 class PrimerRootViewController: PrimerViewController {

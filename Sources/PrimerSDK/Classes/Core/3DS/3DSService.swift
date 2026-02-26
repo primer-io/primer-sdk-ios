@@ -13,6 +13,7 @@ import Foundation
 import PrimerCore
 import PrimerFoundation
 import PrimerNetworking
+import PrimerUI
 import UIKit
 
 #if canImport(Primer3DS)
