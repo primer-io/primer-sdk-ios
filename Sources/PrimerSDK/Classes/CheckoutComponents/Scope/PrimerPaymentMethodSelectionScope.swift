@@ -186,22 +186,22 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Pre-formatted surcharge string for display (e.g., "+ $0.50").
   public let formattedSurcharge: String?
 
-  /// Custom background color for the payment method button, if specified.
+  /// Custom background color for the payment method button.
   public let backgroundColor: UIColor?
 
   /// Custom button text from display metadata (e.g., "Pay with Klarna").
   public let buttonText: String?
 
-  /// Custom text color for the payment method button, if specified.
+  /// Custom text color for the payment method button.
   public let textColor: UIColor?
 
-  /// Custom border color for the payment method button, if specified.
+  /// Custom border color for the payment method button.
   public let borderColor: UIColor?
 
-  /// Custom border width for the payment method button, if specified.
+  /// Custom border width for the payment method button.
   public let borderWidth: CGFloat?
 
-  /// Custom corner radius for the payment method button, if specified.
+  /// Custom corner radius for the payment method button.
   public let cornerRadius: CGFloat?
 
   public init(
