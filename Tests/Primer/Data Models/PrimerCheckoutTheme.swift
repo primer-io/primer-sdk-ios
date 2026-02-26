@@ -1,12 +1,13 @@
 //
 //  PrimerCheckoutTheme.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
+import PrimerFoundation
 @testable import PrimerSDK
 import UIKit
+import XCTest
 
 private let tropical1 = UIColor(red: 0/255, green: 112/255, blue: 67/255, alpha: 1)
 private let tropical2 = UIColor(red: 255/255, green: 170/255, blue: 176/255, alpha: 1)
