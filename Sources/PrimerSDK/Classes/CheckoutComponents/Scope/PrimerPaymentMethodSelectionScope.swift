@@ -189,21 +189,6 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
   /// Custom background color for the payment method button, if specified.
   public let backgroundColor: UIColor?
 
-  /// Custom button text from display metadata (e.g., "Pay with Klarna").
-  public let buttonText: String?
-
-  /// Custom text color for the payment method button, if specified.
-  public let textColor: UIColor?
-
-  /// Custom border color for the payment method button, if specified.
-  public let borderColor: UIColor?
-
-  /// Custom border width for the payment method button, if specified.
-  public let borderWidth: CGFloat?
-
-  /// Custom corner radius for the payment method button, if specified.
-  public let cornerRadius: CGFloat?
-
   public init(
     id: String,
     type: String,
@@ -213,12 +198,7 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     surcharge: Int? = nil,
     hasUnknownSurcharge: Bool = false,
     formattedSurcharge: String? = nil,
-    backgroundColor: UIColor? = nil,
-    buttonText: String? = nil,
-    textColor: UIColor? = nil,
-    borderColor: UIColor? = nil,
-    borderWidth: CGFloat? = nil,
-    cornerRadius: CGFloat? = nil
+    backgroundColor: UIColor? = nil
   ) {
     self.id = id
     self.type = type
@@ -229,11 +209,6 @@ public struct CheckoutPaymentMethod: Equatable, Identifiable {
     self.hasUnknownSurcharge = hasUnknownSurcharge
     self.formattedSurcharge = formattedSurcharge
     self.backgroundColor = backgroundColor
-    self.buttonText = buttonText
-    self.textColor = textColor
-    self.borderColor = borderColor
-    self.borderWidth = borderWidth
-    self.cornerRadius = cornerRadius
   }
 
   public static func == (lhs: CheckoutPaymentMethod, rhs: CheckoutPaymentMethod) -> Bool {

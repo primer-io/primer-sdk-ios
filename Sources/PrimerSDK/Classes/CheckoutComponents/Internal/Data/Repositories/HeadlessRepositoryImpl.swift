@@ -253,26 +253,19 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     let mappedMethods = primerMethods.map { primerMethod in
       let networkSurcharges = extractNetworkSurcharges(for: primerMethod.type)
 
-      let displayButton = primerMethod.displayMetadata?.button
       return InternalPaymentMethod(
         id: primerMethod.type,
         type: primerMethod.type,
         name: primerMethod.name,
         icon: primerMethod.logo,
         configId: primerMethod.processorConfigId,
-        isEnabled: true,
-        supportedCurrencies: nil,
+        isEnabled: true,  // From payment method availability
+        supportedCurrencies: nil,  // Could be extracted from primerMethod if available
         requiredInputElements: getRequiredInputElements(for: primerMethod.type),
-        metadata: nil,
-        surcharge: primerMethod.surcharge,
-        hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,
-        networkSurcharges: networkSurcharges,
-        backgroundColor: displayButton?.backgroundColor?.uiColor,
-        buttonText: displayButton?.text,
-        textColor: displayButton?.textColor?.uiColor,
-        borderColor: displayButton?.borderColor?.uiColor,
-        borderWidth: displayButton?.borderWidth?.resolvedValue,
-        cornerRadius: displayButton?.cornerRadius.map(CGFloat.init)
+        metadata: nil,  // Could be extracted from primerMethod.displayMetadata
+        surcharge: primerMethod.surcharge,  // Direct from PrimerPaymentMethod
+        hasUnknownSurcharge: primerMethod.hasUnknownSurcharge,  // Direct from PrimerPaymentMethod
+        networkSurcharges: networkSurcharges  // Extract from client session
       )
     }
 

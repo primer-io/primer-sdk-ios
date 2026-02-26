@@ -43,7 +43,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
 
       if scope.dismissalMechanism.contains(.closeButton) {
         Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
-          .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+          .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
       }
     }
     .padding(.horizontal, PrimerSpacing.large(tokens: tokens))

@@ -20,59 +20,25 @@ struct PaymentMethodButton: View {
       AnyView(customItem(method))
         .onTapGesture { onSelect() }
     } else {
-      let radius = method.cornerRadius ?? PrimerRadius.medium(tokens: tokens)
       Button(action: onSelect) {
         HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
           icon
-          if let text = method.buttonText ?? method.name as String? {
-            Text(text)
-              .font(PrimerFont.bodyLarge(tokens: tokens))
-              .foregroundColor(
-                method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
-          }
+          Text(method.name)
+            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
+        .background(
+          RoundedRectangle(cornerRadius: PrimerRadius.medium(tokens: tokens))
+            .fill(
+              method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
+        )
       }
       .buttonStyle(PaymentMethodButtonStyle())
-      .background(
-        RoundedRectangle(cornerRadius: radius)
-          .fill(
-            method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: radius)
-          .strokeBorder(
-            borderColor(for: method),
-            lineWidth: borderWidth(for: method))
-      )
     }
-  }
-
-  private var hasVisibleBackground: Bool {
-    guard let bg = method.backgroundColor else { return false }
-    var white: CGFloat = 0
-    var alpha: CGFloat = 0
-    bg.getWhite(&white, alpha: &alpha)
-    return alpha > 0.1 && white < 0.95
-  }
-
-  private func borderColor(for method: CheckoutPaymentMethod) -> Color {
-    if let color = method.borderColor, color != .clear {
-      return Color(color)
-    }
-    guard !hasVisibleBackground else { return .clear }
-    return CheckoutColors.borderDefault(tokens: tokens)
-  }
-
-  private func borderWidth(for method: CheckoutPaymentMethod) -> CGFloat {
-    if let width = method.borderWidth, width > 0 {
-      return width
-    }
-    guard !hasVisibleBackground else { return 0 }
-    return PrimerBorderWidth.standard
   }
 
   @ViewBuilder

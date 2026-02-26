@@ -34,12 +34,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       surcharge: internalMethod.surcharge,
       hasUnknownSurcharge: internalMethod.hasUnknownSurcharge,
       formattedSurcharge: formattedSurcharge,
-      backgroundColor: internalMethod.backgroundColor,
-      buttonText: internalMethod.buttonText,
-      textColor: internalMethod.textColor,
-      borderColor: internalMethod.borderColor,
-      borderWidth: internalMethod.borderWidth,
-      cornerRadius: internalMethod.cornerRadius
+      backgroundColor: internalMethod.backgroundColor
     )
   }
 

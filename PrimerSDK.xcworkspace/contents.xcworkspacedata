@@ -802,7 +802,7 @@
                      location = "group:PrimerAchScope.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:PrimerCheckoutTheme.swift">
+                     location = "group:CheckoutComponentsTheme.swift">
                   </FileRef>
                </Group>
                <Group
