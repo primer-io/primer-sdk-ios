@@ -38,6 +38,9 @@ function_parameter_count:
   warning: 6
   error: 8
 
+empty_count:
+  severity: warning
+
 included:
   - ../Sources
 

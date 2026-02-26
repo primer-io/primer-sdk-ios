@@ -2,6 +2,7 @@
 paths:
   - "Sources/**/*.swift"
   - "Tests/**/*.swift"
+  - "Debug App/**/*.swift"
 ---
 
 # Swift Coding Style
