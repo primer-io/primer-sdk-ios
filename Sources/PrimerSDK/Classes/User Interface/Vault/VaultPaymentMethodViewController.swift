@@ -1,11 +1,12 @@
 //
 //  VaultPaymentMethodViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable function_body_length
 
+import PrimerFoundation
 import UIKit
 
 final class VaultedPaymentInstrumentCell: UITableViewCell {
@@ -240,11 +241,11 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
 extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        1
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 64.0
+        64.0
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
