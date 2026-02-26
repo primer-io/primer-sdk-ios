@@ -1,48 +1,49 @@
 Pod::Spec.new do |s|
-    s.name         = "PrimerSDK"
-    s.version      = "2.45.0"
-    s.summary      = "Official iOS SDK for Primer"
-    s.description  = <<-DESC
-    This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
+	s.name         = "PrimerSDK"
+	s.version      = "2.45.0"
+	s.summary      = "Official iOS SDK for Primer"
+	s.description  = <<-DESC
+	This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
     DESC
     s.homepage     = "https://www.primer.io"
-    s.license      = { :type => "MIT", :file => "LICENSE" }
-    s.author       = { "Primer" => "mobile@primer.io" }
-    # TODO: AFTER PUSHING TO COCOAPODS, CHANGE THIS TO USE VERSION CONSTRAINT (e.g., '~> 1.0.0')
-    s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
+	s.license      = { :type => "MIT", :file => "LICENSE" }
+	s.author       = { "Primer" => "mobile@primer.io" }
+	# TODO: AFTER PUSHING TO COCOAPODS, CHANGE THIS TO USE VERSION CONSTRAINT (e.g., '~> 1.0.0')
+	s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
-    s.swift_version = '5'
-    s.ios.deployment_target = '13.0'
+	s.swift_version = '5'
+	s.ios.deployment_target = '13.0'
 
-    s.default_subspec = "Core"
-    s.ios.frameworks  = "Foundation", "UIKit"
+	s.default_subspec = "Core"
+	s.ios.frameworks  = "Foundation", "UIKit"
 
-    s.subspec "Core" do |ss|
-        ss.dependency 'PrimerFoundation'
+	s.subspec "Core" do |ss|
+		ss.dependency 'PrimerFoundation'
 		ss.dependency 'PrimerCore'
 		ss.dependency 'PrimerNetworking'
-        ss.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
-        ss.ios.resource_bundles = {
-            "PrimerResources" => [
-                "Sources/PrimerSDK/Resources/*.xcassets",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
-                "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
-                "Sources/PrimerSDK/Resources/Nibs/*",
-                "Sources/PrimerSDK/Resources/JSONs/**/*.json"
-            ]
-        }
-        ss.ios.pod_target_xcconfig = {
-            "FRAMEWORK_SEARCH_PATHS" => [
-                "$(inherited)",
-                "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK",
-                "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK",
-                "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerStripeSDK"
-            ],
-            "SWIFT_ENABLE_EXPLICIT_MODULES" => "NO"
-        }
-    end
+		ss.dependency 'PrimerUI'
+		ss.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
+		ss.ios.resource_bundles = {
+			"PrimerResources" => [
+				"Sources/PrimerSDK/Resources/*.xcassets",
+				"Sources/PrimerSDK/Resources/Localizable/**/*.strings",
+				"Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
+				"Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
+				"Sources/PrimerSDK/Resources/Nibs/*",
+				"Sources/PrimerSDK/Resources/JSONs/**/*.json"
+			]
+		}
+		ss.ios.pod_target_xcconfig = {
+			"FRAMEWORK_SEARCH_PATHS" => [
+				"$(inherited)",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerStripeSDK"
+			],
+			"SWIFT_ENABLE_EXPLICIT_MODULES" => "NO"
+		}
+	end
 end
