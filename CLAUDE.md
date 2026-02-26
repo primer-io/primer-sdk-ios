@@ -115,6 +115,27 @@ Sources/PrimerSDK/Classes/
 - Automatic handling for supported payment methods
 - Environment-based configuration (non-production uses test certificates)
 
+### Error Handling
+Three error types, all conforming to `PrimerErrorProtocol` (`errorId`, `diagnosticsId`, `exposedError`):
+- **`PrimerError`** (`public enum`, ~40 cases) — merchant-facing errors
+- **`PrimerValidationError`** (`public enum`) — field validation errors (card number, CVV, expiry)
+- **`InternalError`** (internal) — network/decode errors, never exposed directly. `exposedError` wraps into `PrimerError.unknown` in release builds
+
+Patterns:
+- **`async throws`** throughout — no `Result` types
+- **`handled(error:)` / `handled(primerError:)`** — free functions that log via `ErrorHandler` and return the error for rethrowing
+- **`error.normalizedForSDK`** (`ErrorExtension.swift`) — boundary normalization before surfacing to merchants
+- **Delegate delivery**: `PrimerDelegateProxy` calls `error.exposedError` before dispatching to merchant callbacks
+
+Key files: `Sources/.../Error Handler/PrimerError.swift`, `PrimerInternalError.swift`, `ErrorExtension.swift`
+
+### Public API Conventions
+- **`public`** for merchant-facing API, **no modifier** for internal (never write `internal`)
+- Drop-In delegates are `@objc public protocol` (ObjC interop)
+- CheckoutComponents scopes are `public protocol` with `@available(iOS 15.0, *)`
+- No `@_spi` usage in the codebase
+- Adding or changing `public` API signatures requires careful review — these are breaking changes for merchants
+
 ## Accessibility Integration (CheckoutComponents)
 
 CheckoutComponents has comprehensive WCAG 2.1 Level AA accessibility support (VoiceOver, Dynamic Type, keyboard navigation, automated testing). All features are automatically applied.
@@ -163,6 +184,33 @@ TextField("Card Number", text: $cardNumber)
 Located in `Debug App/` directory:
 - Two Xcode projects: `Primer.io Debug App.xcodeproj` (CocoaPods) and `Primer.io Debug App SPM.xcodeproj` (SPM)
 - Use for manual testing of SDK features
+
+## Testing Patterns
+
+### Naming Conventions
+- Test files: `{Subject}Tests.swift`, mocks: `Mock{Protocol}.swift`, fixtures: `{Domain}TestData.swift`
+- Test methods: `test_{context}_{condition}_result` (snake_case)
+- Tests are `final class`, `@MainActor` when needed, `async throws`
+
+### Mock Approach
+Protocol-based mocking, no framework. Every mock has:
+- Configurable return values and error injection
+- `private(set) var ...CallCount` for call tracking
+- Captured parameters for argument verification
+- `reset()` method and static factory methods for common states
+
+### Test Structure
+- `sut` naming for system under test
+- `// Given / When / Then` comment structure
+- `setUp()` creates mocks + sut, `tearDown()` nils them
+
+### Shared Utilities
+- `SDKSessionHelper` — bootstraps global state for tests (`Tests/Utilities/Test Utilities/`)
+- `XCTestCase+Async` — `collect()`, `awaitFirst()`, `awaitValue()`, `withTimeout()` for AsyncStream testing
+- `JWTFactory` — generates valid JWT tokens for tests
+- `ContainerTestHelpers` — pre-wired DI container with mocks for CheckoutComponents
+- `TestData` + extensions — shared test constants (`Tests/Primer/CheckoutComponents/TestSupport/TestData*.swift`)
+- `TestError` enum — shared error type for test assertions
 
 ## Building and Testing
 
@@ -223,6 +271,13 @@ GitHub Actions workflows in `.github/workflows/`:
 - Update `CHANGELOG.md`
 - Tag release in git
 
+## Commit & PR Conventions
+
+- **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:` prefixes
+- Sentence-case, imperative mood: `fix: Add retry logic for polling` (not `Fixed` or `Adds`)
+- PR template (`.github/pull_request_template.md`) requires Jira ticket (`CHKT-XXXX`)
+- Never sign as author or co-author in commit messages, PR descriptions, or any other output
+
 ## Important Notes
 
 - **Minimum iOS version**: 13.0 (main SDK), 15.0 (CheckoutComponents)
@@ -231,49 +286,7 @@ GitHub Actions workflows in `.github/workflows/`:
 - **Default test simulator**: iPhone 16 with iOS 18.4
 - CheckoutComponents provides exact Android API parity for cross-platform consistency
 
-## Active Technologies
-- Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework (001-checkout-components-accessibility)
-- N/A (accessibility metadata stored in memory only) (001-checkout-components-accessibility)
-- Swift 6.0+ + SwiftUI (UI), existing SDK core (tokenization, polling, JWT decoding) (004-checkout-components-qr-code)
-- N/A (no local persistence) (004-checkout-components-qr-code)
-
 ## Localization
 
-### CheckoutComponents Translations
-Localization files are located at: `Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings`
-
-### Armenian (hy) Translation Note
-When translating strings to Armenian, do NOT write Armenian characters directly in the code/tool output as they may get corrupted. Instead, use a Python script with Unicode escape sequences:
-
-```python
-python3 << 'PYEOF'
-# Armenian translations using Unicode escape sequences
-translations = {
-    "primer_ach_title": "\u0532\u0561\u0576\u056f\u0561\u0575\u056b\u0576 \u0570\u0561\u0577\u056b\u057e",  # Բdelays delays delays delays delays delays delays delays
-    "primer_ach_button_continue": "\u0547\u0561\u0580\u0578\u0582\u0576\u0561\u056f\u0565\u056c",  # Delays delays delays delays delays
-    # ... add more translations
-}
-
-import re
-file_path = 'Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/hy.lproj/CheckoutComponentsStrings.strings'
-with open(file_path, 'r', encoding='utf-8') as f:
-    content = f.read()
-
-for key, value in translations.items():
-    content = re.sub(f'"{key}" = "[^"]*";', f'"{key}" = "{value}";', content)
-
-with open(file_path, 'w', encoding='utf-8') as f:
-    f.write(content)
-PYEOF
-```
-
-Common Armenian Unicode escape sequences:
-- Բdelays delays delays delays delays delays delays delays = \u0532\u0561\u0576\u056f\u0561\u0575\u056b\u0576 \u0570\u0561\u0577\u056b\u057e
-- Delays delays delays delays delays = \u0547\u0561\u0580\u0578\u0582\u0576\u0561\u056f\u0565\u056c
-- Delays delays delays = \u0549\u0565\u0572\u0561\u0580\u056f\u0565\u056c
-- Delays delays delays delays delays delays delays delays delays delays = \u0539\u0578\u0582\u0575\u056c\u0561\u057f\u057e\u0578\u0582\u0569\u0575\u0578\u0582\u0576
-- Delays delays delays delays delays delays delays = \u0540\u0561\u0574\u0561\u0571\u0561\u0575\u0576 \u0565\u0574
-
-## Recent Changes
-- 004-checkout-components-qr-code: Added Swift 6.0+ + SwiftUI (UI), existing SDK core (tokenization, polling, JWT decoding)
-- 001-checkout-components-accessibility: Added Swift 6.0+, Xcode 15+ + SwiftUI, UIKit (UIAccessibility APIs), existing CheckoutComponents DI framework
+CheckoutComponents localization files: `Sources/PrimerSDK/Resources/CheckoutComponentsLocalizable/{LANG}.lproj/CheckoutComponentsStrings.strings`
+Language-specific translation notes (e.g., Armenian Unicode handling) are in `.claude/rules/localization.md` — auto-loaded when working with `*.strings` files.
