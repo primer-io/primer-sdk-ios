@@ -7,6 +7,7 @@
 import Foundation
 import PassKit
 import PrimerCore
+import PrimerFoundation
 
 // MARK: - PRIMER SETTINGS
 
