@@ -34,13 +34,13 @@ public struct PrimerWebRedirectState: Equatable {
     }
 
     /// Current payment status.
-    public var status: Status
+    public internal(set) var status: Status
 
     /// The payment method details, if available.
-    public var paymentMethod: CheckoutPaymentMethod?
+    public internal(set) var paymentMethod: CheckoutPaymentMethod?
 
     /// Formatted surcharge amount for this payment method, if applicable.
-    public var surchargeAmount: String?
+    public internal(set) var surchargeAmount: String?
 
     public init(
         status: Status = .idle,
