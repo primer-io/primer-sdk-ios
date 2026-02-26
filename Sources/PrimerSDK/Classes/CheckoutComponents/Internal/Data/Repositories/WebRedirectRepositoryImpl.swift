@@ -41,7 +41,7 @@ final class WebRedirectRepositoryImpl: WebRedirectRepository, LogReporter {
         self.tokenizationService = tokenizationService
         self.webAuthService = webAuthService
         // Default to generic type, will be updated per payment
-        self.createPaymentService = createPaymentServiceFactory("WEB_REDIRECT")
+        createPaymentService = createPaymentServiceFactory("WEB_REDIRECT")
     }
 
     // Internal init for dependency injection with specific payment service

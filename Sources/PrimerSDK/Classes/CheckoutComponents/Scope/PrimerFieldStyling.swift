@@ -115,7 +115,7 @@ public struct PrimerFieldStyling {
   // MARK: - Internal Helpers
 
   func resolvedFont(tokens: DesignTokens?) -> Font {
-    if let fontName = fontName {
+    if let fontName {
       let uiFont = PrimerFont.uiFont(family: fontName, weight: fontWeight, size: fontSize)
       return Font(uiFont)
     }

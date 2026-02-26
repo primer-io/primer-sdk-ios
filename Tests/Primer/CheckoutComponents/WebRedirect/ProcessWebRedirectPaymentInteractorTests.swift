@@ -22,7 +22,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         mockDeeplinkProvider = MockDeeplinkAbilityProvider()
         sut = ProcessWebRedirectPaymentInteractorImpl(
             repository: mockRepository,
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions },
+            clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             deeplinkAbilityProvider: mockDeeplinkProvider
         )
     }
@@ -104,7 +104,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         let deeplinkProvider = MockDeeplinkAbilityProvider(isDeeplinkAvailable: true)
         let vippsSut = ProcessWebRedirectPaymentInteractorImpl(
             repository: mockRepository,
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions },
+            clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             deeplinkAbilityProvider: deeplinkProvider
         )
         let paymentMethodType = PrimerPaymentMethodType.adyenVipps.rawValue
@@ -122,7 +122,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         let deeplinkProvider = MockDeeplinkAbilityProvider(isDeeplinkAvailable: false)
         let vippsSut = ProcessWebRedirectPaymentInteractorImpl(
             repository: mockRepository,
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions },
+            clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             deeplinkAbilityProvider: deeplinkProvider
         )
         let paymentMethodType = PrimerPaymentMethodType.adyenVipps.rawValue
@@ -140,7 +140,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         let deeplinkProvider = MockDeeplinkAbilityProvider(isDeeplinkAvailable: false)
         let nonVippsSut = ProcessWebRedirectPaymentInteractorImpl(
             repository: mockRepository,
-            clientSessionActionsFactory: { [unowned self] in self.mockClientSessionActions },
+            clientSessionActionsFactory: { [unowned self] in mockClientSessionActions },
             deeplinkAbilityProvider: deeplinkProvider
         )
         let paymentMethodType = "ADYEN_IDEAL"
@@ -167,7 +167,7 @@ final class ProcessWebRedirectPaymentInteractorTests: XCTestCase {
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
         let abortMessage = "Payment aborted by merchant"
-        let expectation = self.expectation(description: "willCreatePaymentWithData called")
+        let expectation = expectation(description: "willCreatePaymentWithData called")
 
         delegate.onWillCreatePaymentWithData = { data, decisionHandler in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_SOFORT")

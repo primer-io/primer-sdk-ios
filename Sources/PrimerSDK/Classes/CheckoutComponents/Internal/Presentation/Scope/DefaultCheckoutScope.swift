@@ -26,28 +26,28 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
       switch (lhs, rhs) {
       case (.loading, .loading):
-        return true
+        true
       case (.paymentMethodSelection, .paymentMethodSelection):
-        return true
+        true
       case (.vaultedPaymentMethods, .vaultedPaymentMethods):
-        return true
+        true
       case let (
         .deleteVaultedPaymentMethodConfirmation(lhsMethod),
         .deleteVaultedPaymentMethodConfirmation(rhsMethod)
       ):
-        return lhsMethod.id == rhsMethod.id
+        lhsMethod.id == rhsMethod.id
       case (.processing, .processing):
-        return true
+        true
       case (.dismissed, .dismissed):
-        return true
+        true
       case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-        return lhsType == rhsType
+        lhsType == rhsType
       case let (.success(lhsResult), .success(rhsResult)):
-        return lhsResult.paymentId == rhsResult.paymentId
+        lhsResult.paymentId == rhsResult.paymentId
       case let (.failure(lhsError), .failure(rhsError)):
-        return lhsError.localizedDescription == rhsError.localizedDescription
+        lhsError.localizedDescription == rhsError.localizedDescription
       default:
-        return false
+        false
       }
     }
   }
@@ -430,7 +430,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       selectedPaymentMethodName = nil
     }
 
-    if let message = message {
+    if let message {
       service.announceScreenChange(message)
       logger.debug(message: "[A11Y] Screen change announcement: \(message)")
     }
@@ -482,18 +482,18 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       (.paymentMethodSelection, .paymentMethodSelection),
       (.vaultedPaymentMethods, .vaultedPaymentMethods),
       (.processing, .processing):
-      return true
+      true
     case let (
       .deleteVaultedPaymentMethodConfirmation(lhsMethod),
       .deleteVaultedPaymentMethodConfirmation(rhsMethod)
     ):
-      return lhsMethod.id == rhsMethod.id
+      lhsMethod.id == rhsMethod.id
     case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-      return lhsType == rhsType
+      lhsType == rhsType
     case let (.failure(lhsError), .failure(rhsError)):
-      return lhsError.localizedDescription == rhsError.localizedDescription
+      lhsError.localizedDescription == rhsError.localizedDescription
     default:
-      return false
+      false
     }
   }
 

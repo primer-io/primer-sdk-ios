@@ -661,7 +661,7 @@ final class CardValidationServiceTests: XCTestCase {
             self?.sut?.validateCardNetworks(withCardNumber: string)
         }
 
-        if let altCardFragment = altCardFragment {
+        if let altCardFragment {
             typer.type(cardFragment) {
                 typer.delete(cardFragment) {
                     typer.type(altCardFragment)
@@ -695,7 +695,7 @@ final class CardValidationServiceTests: XCTestCase {
         _ selectableNetworks: [PrimerCardNetwork]?,
         expectedNetworks: [(displayName: String, rawValue: String)]
     ) {
-        guard let selectableNetworks = selectableNetworks else {
+        guard let selectableNetworks else {
             XCTFail("Expected selectable networks but got nil")
             return
         }

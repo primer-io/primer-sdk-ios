@@ -72,7 +72,7 @@ public final class DefaultWebRedirectScope: PrimerWebRedirectScope, ObservableOb
         self.accessibilityService = accessibilityService
         self.analyticsInteractor = analyticsInteractor
         self.repository = repository
-        self.internalState = WebRedirectState(
+        internalState = WebRedirectState(
             status: .idle,
             paymentMethod: paymentMethod,
             surchargeAmount: surchargeAmount

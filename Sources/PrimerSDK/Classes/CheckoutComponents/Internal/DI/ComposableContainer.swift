@@ -19,7 +19,7 @@ final class ComposableContainer: LogReporter {
     settings: PrimerSettings,
     theme: PrimerCheckoutTheme = PrimerCheckoutTheme()
   ) {
-    self.container = Container()
+    container = Container()
     self.settings = settings
     self.theme = theme
   }

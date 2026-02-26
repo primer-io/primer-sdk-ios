@@ -115,11 +115,11 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
             if #available(iOS 15.0, *) {
                 Task { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     do {
                         let clientToken = try await NetworkingUtils.requestClientSession(
                             body: ccSession,
-                            apiVersion: self.apiVersion
+                            apiVersion: apiVersion
                         )
                         await MainActor.run {
                             self.presentUIKitIntegration(with: clientToken)
@@ -132,7 +132,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
                 }
             } else {
                 // Fallback for iOS < 15.0
-                Networking.requestClientSession(requestBody: ccSession, apiVersion: self.apiVersion) { [weak self] (clientToken, error) in
+                Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
                     DispatchQueue.main.async {
                         if let error {
                             self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
@@ -162,19 +162,18 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     
     @objc private func swiftUIExamplesTapped() {
         if #available(iOS 15.0, *) {
-            let resolvedClientToken: String?
-            switch renderMode {
+            let resolvedClientToken: String? = switch renderMode {
             case .clientToken:
-                resolvedClientToken = clientToken
+                clientToken
             case .deepLink:
-                resolvedClientToken = deepLinkClientToken
+                deepLinkClientToken
             case .createClientSession, .testScenario:
-                resolvedClientToken = nil
+                nil
             }
 
             let examplesView = CheckoutComponentsExamplesView(
                 settings: settings,
-                apiVersion: self.apiVersion,
+                apiVersion: apiVersion,
                 clientSession: clientSession,
                 clientToken: resolvedClientToken
             )

@@ -112,13 +112,13 @@
       dismissalMechanism: [DismissalMechanism] = [],
       enableLogging: Bool = true
     ) {
-      self.initialIsLoading = isLoading
-      self.initialIsValid = isValid
-      self.initialSelectedNetwork = selectedNetwork
-      self.initialAvailableNetworks = availableNetworks
-      self.initialSurchargeAmount = surchargeAmount
+      initialIsLoading = isLoading
+      initialIsValid = isValid
+      initialSelectedNetwork = selectedNetwork
+      initialAvailableNetworks = availableNetworks
+      initialSurchargeAmount = surchargeAmount
       self.presentationContext = presentationContext
-      self.configuration = formConfiguration
+      configuration = formConfiguration
       self.cardFormUIOptions = cardFormUIOptions
       self.dismissalMechanism = dismissalMechanism
       self.enableLogging = enableLogging

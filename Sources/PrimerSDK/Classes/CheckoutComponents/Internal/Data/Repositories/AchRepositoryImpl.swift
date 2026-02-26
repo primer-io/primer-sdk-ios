@@ -133,7 +133,7 @@ final class AchRepositoryImpl: AchRepository, LogReporter {
 
     let urlScheme = try settings.paymentMethodOptions.validUrlForUrlScheme().absoluteString
 
-    self.bankCollectorDelegate = delegate
+    bankCollectorDelegate = delegate
 
     let fullName = "\(firstName) \(lastName)"
     let stripeParams = PrimerStripeParams(

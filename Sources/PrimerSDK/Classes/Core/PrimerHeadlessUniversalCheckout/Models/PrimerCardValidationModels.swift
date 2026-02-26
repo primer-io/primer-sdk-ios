@@ -97,7 +97,7 @@ public final class PrimerCardNetwork: NSObject {
     }
 
     convenience init?(network: CardNetwork?) {
-        guard let network = network else { return nil }
+        guard let network else { return nil }
         self.init(network: network)
     }
 
@@ -136,7 +136,7 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
          autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
         self.source = source
 
-        if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
+        if source == .remote, let selectableCardNetworks, !selectableCardNetworks.isEmpty {
             self.selectableCardNetworks = PrimerCardNetworksMetadata(
                 items: selectableCardNetworks,
                 preferred: selectableCardNetworks.first

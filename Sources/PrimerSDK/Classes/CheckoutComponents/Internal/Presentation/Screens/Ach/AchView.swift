@@ -22,7 +22,7 @@ struct AchView: View, LogReporter {
 
   init(scope: any PrimerAchScope) {
     self.scope = scope
-    self._observer = StateObject(wrappedValue: AchStateObserver(scope: scope))
+    _observer = StateObject(wrappedValue: AchStateObserver(scope: scope))
   }
 
   var body: some View {
@@ -199,7 +199,7 @@ struct AchView: View, LogReporter {
         lastName: "Doe",
         emailAddress: "john.doe@example.com"
       )
-      self.mockState = PrimerAchState(
+      mockState = PrimerAchState(
         step: step,
         userDetails: userDetails,
         isSubmitEnabled: true

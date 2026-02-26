@@ -356,7 +356,7 @@ public final class DefaultAchScope: PrimerAchScope, ObservableObject, LogReporte
       return
     }
 
-    guard let stripeData = self.stripeData else {
+    guard let stripeData else {
       handleError(
         PrimerError.invalidClientToken(reason: "Stripe data not available for payment completion"),
         context: "payment completion"

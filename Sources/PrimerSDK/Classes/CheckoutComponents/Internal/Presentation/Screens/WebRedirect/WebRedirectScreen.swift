@@ -267,7 +267,7 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
             type: "ADYEN_SOFORT",
             name: "Sofort"
         )
-        self.mockState = WebRedirectState(
+        mockState = WebRedirectState(
             status: status,
             paymentMethod: mockPaymentMethod,
             surchargeAmount: "+ €0.50"

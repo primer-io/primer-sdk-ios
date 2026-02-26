@@ -41,11 +41,11 @@ struct NameInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
-    self.initialValue = ""
+    initialValue = ""
     self.scope = scope
     self.styling = styling
-    self.onNameChange = nil
-    self.onValidationChange = nil
+    onNameChange = nil
+    onValidationChange = nil
   }
 
   init(
@@ -61,7 +61,7 @@ struct NameInputField: View, LogReporter {
     self.placeholder = placeholder
     self.inputType = inputType
     self.initialValue = initialValue
-    self.scope = nil
+    scope = nil
     self.styling = styling
     self.onNameChange = onNameChange
     self.onValidationChange = onValidationChange
@@ -78,7 +78,7 @@ struct NameInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         NameTextField(
           name: $name,
           isValid: $isValid,
@@ -111,7 +111,7 @@ struct NameInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for NameInputField")
       return
     }

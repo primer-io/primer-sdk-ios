@@ -154,15 +154,15 @@ public enum PrimerCheckoutState: Equatable {
     switch (lhs, rhs) {
     case (.initializing, .initializing),
       (.dismissed, .dismissed):
-      return true
+      true
     case let (.ready(lhsAmount, lhsCurrency), .ready(rhsAmount, rhsCurrency)):
-      return lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
+      lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
     case let (.success(lhsResult), .success(rhsResult)):
-      return lhsResult.paymentId == rhsResult.paymentId
+      lhsResult.paymentId == rhsResult.paymentId
     case let (.failure(lhsError), .failure(rhsError)):
-      return lhsError.errorId == rhsError.errorId
+      lhsError.errorId == rhsError.errorId
     default:
-      return false
+      false
     }
   }
 }

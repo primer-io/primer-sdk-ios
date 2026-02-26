@@ -20,11 +20,10 @@ enum FormRedirectPaymentMethodHelper {
 
         let availableMethodsCount = checkoutScope.availablePaymentMethods.count
 
-        let paymentMethodContext: PresentationContext
-        if availableMethodsCount > 1 {
-            paymentMethodContext = .fromPaymentSelection
+        let paymentMethodContext: PresentationContext = if availableMethodsCount > 1 {
+            .fromPaymentSelection
         } else {
-            paymentMethodContext = .direct
+            .direct
         }
 
         do {

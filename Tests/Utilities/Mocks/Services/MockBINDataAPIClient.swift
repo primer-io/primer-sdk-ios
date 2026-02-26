@@ -39,7 +39,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
                           bin: String,
                           completion: @escaping ResponseCompletion) -> PrimerSDK.PrimerCancellable? {
         let workItem = DispatchWorkItem { [self] in
-            if let error = error {
+            if let error {
                 completion(.failure(error))
             } else if let result = results[bin] {
                 completion(.success(result))
@@ -60,7 +60,7 @@ final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
     func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
         try await Task.sleep(nanoseconds: 250_000_000) // 0.25 seconds
 
-        if let error = error {
+        if let error {
             throw error
         } else if let result = results[bin] {
             return result

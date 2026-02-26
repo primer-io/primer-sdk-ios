@@ -38,11 +38,11 @@ struct EmailInputField: View, LogReporter {
   ) {
     self.label = label
     self.placeholder = placeholder
-    self.initialValue = ""
+    initialValue = ""
     self.scope = scope
     self.styling = styling
-    self.onEmailChange = nil
-    self.onValidationChange = nil
+    onEmailChange = nil
+    onValidationChange = nil
   }
 
   init(
@@ -56,7 +56,7 @@ struct EmailInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.initialValue = initialValue
-    self.scope = nil
+    scope = nil
     self.styling = styling
     self.onEmailChange = onEmailChange
     self.onValidationChange = onValidationChange
@@ -73,7 +73,7 @@ struct EmailInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         EmailTextField(
           email: $email,
           isValid: $isValid,
@@ -107,7 +107,7 @@ struct EmailInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for EmailInputField")
       return
     }

@@ -45,7 +45,7 @@ enum AccessibilityIdentifiers {
     }
 
     static func paymentMethodItem(_ type: String, uniqueId: String?) -> String {
-      if let uniqueId = uniqueId {
+      if let uniqueId {
         return "checkout_components_payment_selection_\(type)_\(uniqueId)_item"
       }
       return "checkout_components_payment_selection_\(type)_item"

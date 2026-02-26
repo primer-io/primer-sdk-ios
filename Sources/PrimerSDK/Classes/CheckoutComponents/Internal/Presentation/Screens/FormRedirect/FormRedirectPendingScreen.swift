@@ -20,7 +20,7 @@ struct FormRedirectPendingScreen: View {
 
     init(scope: DefaultFormRedirectScope, state: FormRedirectState) {
         self.scope = scope
-        self.currentState = state
+        currentState = state
     }
 
     // MARK: - Body

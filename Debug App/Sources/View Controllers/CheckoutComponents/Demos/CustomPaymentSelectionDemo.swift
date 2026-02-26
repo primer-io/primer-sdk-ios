@@ -148,11 +148,11 @@ private enum SelectedPaymentOption: Equatable {
     static func == (lhs: SelectedPaymentOption, rhs: SelectedPaymentOption) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none), (.card, .card):
-            return true
+            true
         case let (.paymentMethod(lhsMethod), .paymentMethod(rhsMethod)):
-            return lhsMethod.id == rhsMethod.id
+            lhsMethod.id == rhsMethod.id
         default:
-            return false
+            false
         }
     }
 }
@@ -550,13 +550,13 @@ private struct CustomPaymentSelectionContent: View {
     private func iconForPaymentMethod(_ type: String) -> String {
         switch type {
         case "APPLE_PAY":
-            return "applelogo"
+            "applelogo"
         case "PAYPAL":
-            return "p.circle.fill"
+            "p.circle.fill"
         case "GOOGLE_PAY":
-            return "g.circle.fill"
+            "g.circle.fill"
         default:
-            return "creditcard.fill"
+            "creditcard.fill"
         }
     }
 
@@ -597,7 +597,7 @@ private struct CustomPaymentSelectionContent: View {
             .buttonStyle(PlainButtonStyle())
 
             // Always visible card form - using SDK's default card form view
-            if let cardFormScope = cardFormScope {
+            if let cardFormScope {
                 cardFormScope.DefaultCardFormView(
                     styling: PrimerFieldStyling(
                         backgroundColor: DemoColors.cardBackground,
@@ -736,22 +736,22 @@ private struct CustomPaymentSelectionContent: View {
     private var payButtonTitle: String {
         switch selectedOption {
         case let .paymentMethod(method):
-            return "Pay with \(method.name)"
+            "Pay with \(method.name)"
         case .card:
-            return "Pay \(formattedAmount)"
+            "Pay \(formattedAmount)"
         case .none:
-            return "Select payment method"
+            "Select payment method"
         }
     }
 
     private var isPayButtonEnabled: Bool {
         switch selectedOption {
         case .paymentMethod:
-            return true
+            true
         case .card:
-            return cardState?.isValid ?? false
+            cardState?.isValid ?? false
         case .none:
-            return false
+            false
         }
     }
 
@@ -787,18 +787,18 @@ private struct CustomPaymentSelectionContent: View {
         Task {
             for await state in scope.state {
                 await MainActor.run {
-                    self.selectionState = state
+                    selectionState = state
                 }
             }
         }
     }
 
     private func observeCardFormState() {
-        guard let cardFormScope = cardFormScope else { return }
+        guard let cardFormScope else { return }
         Task {
             for await state in cardFormScope.state {
                 await MainActor.run {
-                    self.cardState = state
+                    cardState = state
                     // Auto-select card when user starts typing
                     let hasCardInput = !state.data[.cardNumber].isEmpty ||
                         !state.data[.expiryDate].isEmpty ||
@@ -816,7 +816,7 @@ private struct CustomPaymentSelectionContent: View {
         Task {
             for await state in checkoutScope.state {
                 await MainActor.run {
-                    self.checkoutState = state
+                    checkoutState = state
                 }
             }
         }
