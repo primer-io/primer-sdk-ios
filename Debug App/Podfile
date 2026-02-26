@@ -13,6 +13,7 @@ target 'Debug App' do
   pod 'PrimerCore', :path => '../'
   pod 'PrimerSDK', :path => '../'
   pod 'PrimerNetworking', :path => '../'
+  pod 'PrimerUI', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
