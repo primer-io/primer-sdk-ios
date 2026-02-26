@@ -54,7 +54,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       return CheckoutComponentsStrings.additionalFeeMayApply
     }
 
-    guard let surcharge = surcharge,
+    guard let surcharge,
       surcharge > 0,
       let currency = configurationService.currency
     else {

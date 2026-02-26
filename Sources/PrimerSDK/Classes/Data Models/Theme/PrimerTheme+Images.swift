@@ -168,7 +168,7 @@ extension PrimerTheme {
 extension String {
     /// Convert hex string to UIColor
     func hexToUIColor() -> UIColor? {
-        var hexString = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        var hexString = trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Remove # prefix if present
         if hexString.hasPrefix("#") {

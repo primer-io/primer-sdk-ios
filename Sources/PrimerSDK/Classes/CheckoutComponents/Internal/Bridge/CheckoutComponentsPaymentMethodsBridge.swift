@@ -177,9 +177,9 @@ class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteractor, LogRe
   private func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
     switch paymentMethodType {
     case PrimerPaymentMethodType.paymentCard.rawValue:
-      return [.cardNumber, .cvv, .expiryDate, .cardholderName]
+      [.cardNumber, .cvv, .expiryDate, .cardholderName]
     default:
-      return []
+      []
     }
   }
 
