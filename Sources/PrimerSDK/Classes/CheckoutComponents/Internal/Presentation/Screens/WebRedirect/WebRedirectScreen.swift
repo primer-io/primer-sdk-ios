@@ -64,9 +64,7 @@ struct WebRedirectScreen: View {
                 Spacer()
 
                 if scope.dismissalMechanism.contains(.closeButton) {
-                    Button(CheckoutComponentsStrings.cancelButton, action: {
-                        scope.cancel()
-                    })
+                    Button(CheckoutComponentsStrings.cancelButton, action: scope.cancel)
                     .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
                     .accessibility(config: AccessibilityConfiguration(
                         identifier: AccessibilityIdentifiers.WebRedirect.cancelButton,
@@ -267,7 +265,7 @@ private final class MockWebRedirectScope: PrimerWebRedirectScope, ObservableObje
             type: "ADYEN_SOFORT",
             name: "Sofort"
         )
-        self.mockState = PrimerWebRedirectState(
+        mockState = PrimerWebRedirectState(
             status: status,
             paymentMethod: mockPaymentMethod,
             surchargeAmount: "+ €0.50"
