@@ -7,6 +7,9 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
+import PrimerFoundation
+import UIKit
+
 protocol UserInterfaceModuleProtocol {
 
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
@@ -22,8 +25,6 @@ protocol UserInterfaceModuleProtocol {
     @MainActor
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
 }
-
-import UIKit
 
 final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 

@@ -1,19 +1,20 @@
 //
 //  PrimerLoadingViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 /// PrimerLoadingViewController is a loading view controller, with variable height.
 final class PrimerLoadingViewController: PrimerViewController {
 
     private var height: CGFloat
-    private(set) internal var imageView: UIImageView?
-    private(set) internal var message: String?
-    private(set) internal var activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()
-    private(set) internal var resultView: PrimerResultComponentView!
+    private(set) var imageView: UIImageView?
+    private(set) var message: String?
+    private(set) var activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()
+    private(set) var resultView: PrimerResultComponentView!
 
     init(height: CGFloat, imageView: UIImageView?, message: String?) {
         self.height = height

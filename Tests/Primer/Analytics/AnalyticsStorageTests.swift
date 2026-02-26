@@ -13,14 +13,15 @@ final class AnalyticsStorageTests: XCTestCase {
     var storage: Analytics.Storage!
 
     let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
-
-    let events = [
-        Analytics.Event.message(message: "Test #1", messageType: .other, severity: .info),
-        Analytics.Event.message(message: "Test #2", messageType: .other, severity: .info),
-        Analytics.Event.message(message: "Test #3", messageType: .other, severity: .info)
-    ]
+        
+    private var events: [Analytics.Event]!
 
     override func setUpWithError() throws {
+        events =  [
+            .message(message: "Test #1", messageType: .other, severity: .info),
+            .message(message: "Test #2", messageType: .other, severity: .info),
+            .message(message: "Test #3", messageType: .other, severity: .info)
+        ]   
         storage = Analytics.DefaultStorage(fileURL: url)
     }
 

@@ -16,7 +16,7 @@ final class ACHMandateViewControllerTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-
+        _ = PrimerInternal.shared
         mockDelegate = MockACHMandateViewController()
         mandateData = PrimerStripeOptions.MandateData.fullMandate(text: "test-mandate-text")
         sut = ACHMandateViewController(delegate: mockDelegate, mandateData: mandateData)

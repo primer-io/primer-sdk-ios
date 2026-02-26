@@ -44,6 +44,10 @@ final class PrimerInternal: LogReporter {
     }
 
     fileprivate init() {
+        DependencyContainer.register(AppState() as AppStateProtocol)
+        DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
+        DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onAppStateChange),
                                                name: UIApplication.willTerminateNotification, object: nil)
