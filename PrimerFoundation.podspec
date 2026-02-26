@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
     DESC
     s.homepage     = "https://www.primer.io"
     s.license      = { :type => "MIT", :file => "LICENSE" }
-    s.author       = { "Primer" => "dx@primer.io" }
+    s.author       = { "Primer" => "mobile@primer.io" }
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "PrimerFoundation/#{s.version}" }
 
     s.swift_version = '5'

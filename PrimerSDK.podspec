@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
     DESC
     s.homepage     = "https://www.primer.io"
     s.license      = { :type => "MIT", :file => "LICENSE" }
-    s.author       = { "Primer" => "dx@primer.io" }
+    s.author       = { "Primer" => "mobile@primer.io" }
     # TODO: AFTER PUSHING TO COCOAPODS, CHANGE THIS TO USE VERSION CONSTRAINT (e.g., '~> 1.0.0')
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
