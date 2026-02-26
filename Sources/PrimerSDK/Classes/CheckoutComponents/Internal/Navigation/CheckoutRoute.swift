@@ -16,9 +16,9 @@ public enum PresentationContext {
   var shouldShowBackButton: Bool {
     switch self {
     case .direct:
-      return false
+      false
     case .fromPaymentSelection:
-      return true
+      true
     }
   }
 }
@@ -46,17 +46,17 @@ enum CheckoutRoute: Hashable, Identifiable {
 
   var id: String {
     switch self {
-    case .splash: return "splash"
-    case .loading: return "loading"
-    case .paymentMethodSelection: return "payment-method-selection"
-    case .vaultedPaymentMethods: return "vaulted-payment-methods"
+    case .splash: "splash"
+    case .loading: "loading"
+    case .paymentMethodSelection: "payment-method-selection"
+    case .vaultedPaymentMethods: "vaulted-payment-methods"
     case let .deleteVaultedPaymentMethodConfirmation(method):
-      return "delete-vaulted-payment-method-confirmation-\(method.id)"
-    case .processing: return "processing"
+      "delete-vaulted-payment-method-confirmation-\(method.id)"
+    case .processing: "processing"
     case let .paymentMethod(type, context):
-      return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
-    case .success: return "success"
-    case .failure: return "failure"
+      "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
+    case .success: "success"
+    case .failure: "failure"
     }
   }
 
@@ -74,21 +74,21 @@ enum CheckoutRoute: Hashable, Identifiable {
   var navigationBehavior: NavigationBehavior {
     switch self {
     case .splash:
-      return .reset
+      .reset
     case .loading:
-      return .replace
+      .replace
     case .paymentMethodSelection:
-      return .reset
+      .reset
     case .vaultedPaymentMethods:
-      return .push
+      .push
     case .deleteVaultedPaymentMethodConfirmation:
-      return .push
+      .push
     case .paymentMethod:
-      return .push
+      .push
     case .processing:
-      return .replace
+      .replace
     case .success, .failure:
-      return .replace
+      .replace
     }
   }
 }

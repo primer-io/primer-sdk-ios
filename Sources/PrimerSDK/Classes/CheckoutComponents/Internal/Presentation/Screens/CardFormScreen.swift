@@ -264,7 +264,7 @@ struct CardFormScreen: View, LogReporter {
     let merchantAmount = configurationService?.apiConfiguration?.clientSession?.order?
       .merchantAmount
 
-    if let merchantAmount = merchantAmount,
+    if let merchantAmount,
       let surchargeRaw = cardFormState.surchargeAmountRaw,
       cardFormState.selectedNetwork != nil
     {
@@ -297,7 +297,7 @@ struct CardFormScreen: View, LogReporter {
     let merchantAmount = configurationService?.apiConfiguration?.clientSession?.order?
       .merchantAmount
 
-    if let merchantAmount = merchantAmount,
+    if let merchantAmount,
       let surchargeRaw = cardFormState.surchargeAmountRaw,
       cardFormState.selectedNetwork != nil
     {

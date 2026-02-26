@@ -91,7 +91,7 @@ public final class DefaultFormRedirectScope: PrimerFormRedirectScope, Observable
         analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol? = nil
     ) {
         self.paymentMethodType = paymentMethodType
-        self.checkoutScope = nil
+        checkoutScope = nil
         self.presentationContext = presentationContext
         self.processPaymentInteractor = processPaymentInteractor
         self.validationService = validationService

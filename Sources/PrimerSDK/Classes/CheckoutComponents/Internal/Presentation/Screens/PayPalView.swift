@@ -256,7 +256,7 @@ struct PayPalView: View, LogReporter {
     }
 
     init(step: PrimerPayPalState.Step = .idle) {
-      self.mockState = PrimerPayPalState(step: step)
+      mockState = PrimerPayPalState(step: step)
     }
 
     func start() {}

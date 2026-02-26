@@ -66,9 +66,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     let isPresentable = applePayPresentationManager.isPresentable
     let availabilityError = applePayPresentationManager.errorForDisplay
     if isPresentable {
-      self.structuredState = .available()
+      structuredState = .available()
     } else {
-      self.structuredState = .unavailable(error: availabilityError.localizedDescription)
+      structuredState = .unavailable(error: availabilityError.localizedDescription)
     }
 
     Task {
@@ -152,7 +152,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
       // Create coordinator and present Apple Pay
       let coordinator = ApplePayAuthorizationCoordinator()
-      self.authorizationCoordinator = coordinator
+      authorizationCoordinator = coordinator
 
       // Present and await authorization
       let payment = try await coordinator.authorize(
@@ -169,7 +169,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         }
       }
 
-      guard let interactor = interactor else {
+      guard let interactor else {
         throw PrimerError.invalidArchitecture(
           description: "ProcessApplePayPaymentInteractor not initialized",
           recoverSuggestion: "Ensure proper SDK initialization"
@@ -194,7 +194,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   private func handlePaymentSuccess(_ result: PaymentResult) async {
     structuredState.isLoading = false
 
-    guard let checkoutScope = checkoutScope else { return }
+    guard let checkoutScope else { return }
     checkoutScope.handlePaymentSuccess(result)
   }
 
@@ -204,7 +204,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     let primerError =
       error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
 
-    guard let checkoutScope = checkoutScope else { return }
+    guard let checkoutScope else { return }
     checkoutScope.handlePaymentError(primerError)
   }
 

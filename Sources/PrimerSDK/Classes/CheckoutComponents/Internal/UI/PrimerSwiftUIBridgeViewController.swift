@@ -49,10 +49,10 @@ final class PrimerSwiftUIBridgeViewController: PrimerViewController {
   // MARK: - Initialization
 
   init<Content: View>(swiftUIView: Content) {
-    self.hostingController = UIHostingController(rootView: AnyView(swiftUIView))
+    hostingController = UIHostingController(rootView: AnyView(swiftUIView))
     super.init()
 
-    self.hostingController.rootView = AnyView(
+    hostingController.rootView = AnyView(
       swiftUIView.environment(\.bridgeController, self)
     )
 

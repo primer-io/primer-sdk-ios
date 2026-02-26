@@ -38,9 +38,9 @@ enum PrimerAPI: Endpoint, Equatable {
              (.validateClientToken, .validateClientToken),
              (.getNolSdkSecret, .getNolSdkSecret),
              (.getPhoneMetadata, .getPhoneMetadata):
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -276,59 +276,59 @@ extension PrimerAPI {
     var path: String {
         switch self {
         case let .deleteVaultedPaymentMethod(_, id):
-            return "/payment-instruments/\(id)/vault"
+            "/payment-instruments/\(id)/vault"
         case .fetchConfiguration:
-            return ""
+            ""
         case .fetchVaultedPaymentMethods:
-            return "/payment-instruments"
+            "/payment-instruments"
         case let .exchangePaymentMethodToken(_, paymentMethodId, _):
-            return "/payment-instruments/\(paymentMethodId)/exchange"
+            "/payment-instruments/\(paymentMethodId)/exchange"
         case .createPayPalOrderSession:
-            return "/paypal/orders/create"
+            "/paypal/orders/create"
         case .createPayPalBillingAgreementSession:
-            return "/paypal/billing-agreements/create-agreement"
+            "/paypal/billing-agreements/create-agreement"
         case .confirmPayPalBillingAgreement:
-            return "/paypal/billing-agreements/confirm-agreement"
+            "/paypal/billing-agreements/confirm-agreement"
         case .createKlarnaPaymentSession:
-            return "/klarna/payment-sessions"
+            "/klarna/payment-sessions"
         case .createKlarnaCustomerToken:
-            return "/klarna/customer-tokens"
+            "/klarna/customer-tokens"
         case .finalizeKlarnaPaymentSession:
-            return "/klarna/payment-sessions/finalize"
+            "/klarna/payment-sessions/finalize"
         case .tokenizePaymentMethod:
-            return "/payment-instruments"
+            "/payment-instruments"
         case let .begin3DSRemoteAuth(_, paymentMethodToken, _):
-            return "/3ds/\(paymentMethodToken.token ?? "")/auth"
+            "/3ds/\(paymentMethodToken.token ?? "")/auth"
         case let .continue3DSRemoteAuth(_, threeDSTokenId, _):
-            return "/3ds/\(threeDSTokenId)/continue"
+            "/3ds/\(threeDSTokenId)/continue"
         case .listAdyenBanks:
-            return "/adyen/checkout"
+            "/adyen/checkout"
         case let .listRetailOutlets(_, paymentMethodId):
-            return "/payment-method-options/\(paymentMethodId)/retail-outlets"
+            "/payment-method-options/\(paymentMethodId)/retail-outlets"
         case .requestPrimerConfigurationWithActions:
-            return "/client-session/actions"
+            "/client-session/actions"
         case .poll:
-            return ""
+            ""
         case .sendAnalyticsEvents:
-            return ""
+            ""
         case .fetchPayPalExternalPayerInfo:
-            return "/paypal/orders"
+            "/paypal/orders"
         case .validateClientToken:
-            return "/client-token/validate"
+            "/client-token/validate"
         case .createPayment:
-            return "/payments"
+            "/payments"
         case let .resumePayment(_, paymentId, _):
-            return "/payments/\(paymentId)/resume"
+            "/payments/\(paymentId)/resume"
         case .testFinalizePolling:
-            return "/finalize-polling"
+            "/finalize-polling"
         case let .listCardNetworks(_, bin):
-            return "/v1/bin-data/\(bin)"
+            "/v1/bin-data/\(bin)"
         case .getNolSdkSecret:
-            return "/nol-pay/sdk-secrets"
+            "/nol-pay/sdk-secrets"
         case .redirect, .completePayment:
-            return ""
+            ""
         case let .getPhoneMetadata(_, request):
-            return "/phone-number-lookups/\(request.phoneNumber)"
+            "/phone-number-lookups/\(request.phoneNumber)"
         }
     }
 
@@ -337,14 +337,14 @@ extension PrimerAPI {
     var method: HTTPMethod {
         switch self {
         case .deleteVaultedPaymentMethod:
-            return .delete
+            .delete
         case .redirect,
              .fetchConfiguration,
              .fetchVaultedPaymentMethods,
              .listRetailOutlets,
              .listCardNetworks,
              .getPhoneMetadata:
-            return .get
+            .get
         case .createPayPalOrderSession,
              .createPayPalBillingAgreementSession,
              .confirmPayPalBillingAgreement,
@@ -365,9 +365,9 @@ extension PrimerAPI {
              .testFinalizePolling,
              .getNolSdkSecret,
              .completePayment:
-            return .post
+            .post
         case .poll:
-            return .get
+            .get
         }
     }
 
@@ -376,9 +376,9 @@ extension PrimerAPI {
     var queryParameters: [String: String]? {
         switch self {
         case let .fetchConfiguration(_, requestParameters):
-            return requestParameters?.toDictionary()
+            requestParameters?.toDictionary()
         default:
-            return nil
+            nil
         }
     }
 
@@ -459,7 +459,7 @@ extension PrimerAPI {
              .validateClientToken,
              .listCardNetworks,
              .getPhoneMetadata:
-            return 15
+            15
 
         // 60-second endpoints
         case .createPayPalOrderSession,
@@ -477,12 +477,12 @@ extension PrimerAPI {
              .createPayment,
              .resumePayment,
              .completePayment:
-            return 60
+            60
 
         // No explicit timeout
         case .poll,
              .sendAnalyticsEvents:
-            return nil
+            nil
         }
     }
 

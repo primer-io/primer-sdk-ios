@@ -366,9 +366,9 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   func getRequiredInputElements(for paymentMethodType: String) -> [PrimerInputElementType] {
     switch paymentMethodType {
     case PrimerPaymentMethodType.paymentCard.rawValue:
-      return [.cardNumber, .cvv, .expiryDate, .cardholderName]
+      [.cardNumber, .cvv, .expiryDate, .cardholderName]
     default:
-      return []
+      []
     }
   }
 
@@ -491,7 +491,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     // to avoid race condition where the property hasn't been updated yet
     if validationResult {
       updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
-        guard let self = self else { return }
+        guard let self else { return }
 
         if let error {
           // Client session update failed
@@ -532,7 +532,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     validationErrors: [Error]?
   ) {
     // Use the actual validation errors from the delegate if available
-    if let validationErrors = validationErrors, !validationErrors.isEmpty {
+    if let validationErrors, !validationErrors.isEmpty {
       // If there's a single validation error, use it directly
       if validationErrors.count == 1, let error = validationErrors.first {
         continuation.resume(throwing: error)
@@ -561,7 +561,7 @@ final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
   }
 
   func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
-    self.networkDetectionStream
+    networkDetectionStream
   }
 
   func getBinDataStream() -> AsyncStream<PrimerBinData> {
@@ -876,18 +876,17 @@ extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerD
     }
 
     // Extract networks following traditional SDK pattern
-    var primerNetworks: [PrimerCardNetwork]
-    if metadataModel.source == .remote,
+    var primerNetworks: [PrimerCardNetwork] = if metadataModel.source == .remote,
       let selectable = metadataModel.selectableCardNetworks?.items,
       !selectable.isEmpty
     {
-      primerNetworks = selectable
+      selectable
     } else if let preferred = metadataModel.detectedCardNetworks.preferred {
-      primerNetworks = [preferred]
+      [preferred]
     } else if let first = metadataModel.detectedCardNetworks.items.first {
-      primerNetworks = [first]
+      [first]
     } else {
-      primerNetworks = []
+      []
     }
 
     let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }

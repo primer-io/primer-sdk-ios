@@ -80,7 +80,7 @@ final class MockPrimerAchScope: PrimerAchScope, ObservableObject {
         dismissalMechanism: [DismissalMechanism] = [.closeButton],
         bankCollectorViewController: UIViewController? = nil
     ) {
-        self.internalState = initialState
+        internalState = initialState
         self.presentationContext = presentationContext
         self.dismissalMechanism = dismissalMechanism
         self.bankCollectorViewController = bankCollectorViewController

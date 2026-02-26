@@ -20,7 +20,7 @@ struct FormRedirectScreen: View {
 
     init(scope: DefaultFormRedirectScope, state: PrimerFormRedirectState) {
         self.scope = scope
-        self.currentState = state
+        currentState = state
     }
 
     // MARK: - Computed Properties

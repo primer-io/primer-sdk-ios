@@ -2,6 +2,17 @@ disabled_rules:
     - superfluous_disable_command
     - type_body_length
 
+opt_in_rules:
+    - shorthand_optional_binding
+    - implicit_return
+    - empty_count
+    - direct_return
+    - redundant_type_annotation
+    - final_test_case
+    - contains_over_filter_count
+    - first_where
+    - redundant_self_in_closure
+
 line_length:
   warning: 150
   ignores_function_declarations: true
@@ -26,6 +37,9 @@ cyclomatic_complexity:
 function_parameter_count:
   warning: 6
   error: 8
+
+empty_count:
+  severity: warning
 
 included:
   - ../Sources

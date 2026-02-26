@@ -378,7 +378,7 @@ struct KlarnaView: View, LogReporter {
             descriptiveAssetUrl: "", standardAssetUrl: ""
           )),
       ]
-      self.mockState = PrimerKlarnaState(step: step, categories: categories)
+      mockState = PrimerKlarnaState(step: step, categories: categories)
     }
 
     func start() {}

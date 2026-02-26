@@ -642,7 +642,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         retryConfig: RetryConfig? = nil,
         completion: @escaping PrimerSDK.APICompletion<PrimerSDK.PollingResponse>
     ) {
-        guard let pollingResults = pollingResults,
+        guard let pollingResults,
               !pollingResults.isEmpty
         else {
             XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")
@@ -677,7 +677,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken?,
         url: String
     ) async throws -> PollingResponse {
-        guard let pollingResults = pollingResults,
+        guard let pollingResults,
               !pollingResults.isEmpty
         else {
             XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")

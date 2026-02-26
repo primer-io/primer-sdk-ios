@@ -137,9 +137,9 @@ final class QRCodeRepositoryImpl: QRCodeRepository, LogReporter {
 
   private func convertQRCodeToImageData(_ qrCodeString: String) async throws -> Data {
     if qrCodeString.isHttpOrHttpsURL, let url = URL(string: qrCodeString) {
-      return try await fetchImageData(from: url)
+      try await fetchImageData(from: url)
     } else {
-      return try decodeBase64ImageData(qrCodeString)
+      try decodeBase64ImageData(qrCodeString)
     }
   }
 
