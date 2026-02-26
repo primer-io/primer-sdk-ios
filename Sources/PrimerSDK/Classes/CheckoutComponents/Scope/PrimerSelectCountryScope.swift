@@ -22,7 +22,7 @@ public protocol PrimerSelectCountryScope: AnyObject {
   ///   - countryName: The localized country name.
   func onCountrySelected(countryCode: String, countryName: String)
 
-  func onCancel()
+  func cancel()
 
   /// Updates the search query to filter countries.
   /// - Parameter query: The search text entered by the user.

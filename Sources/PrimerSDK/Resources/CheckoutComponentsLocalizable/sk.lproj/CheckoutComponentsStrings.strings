@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Platobný formulár Klarna";
 "accessibility_klarna_authorize_hint" = "Dvojitým klepnutím pokračujte s Klarna";
 "accessibility_klarna_finalize_hint" = "Dvojitým klepnutím dokončite platbu";
+
+/* ACH */
+"primer_ach_title" = "Bankový účet";
+"primer_ach_pay_with_title" = "Platiť cez ACH";
+"primer_ach_user_details_title" = "Zadajte svoje údaje na pripojenie bankového účtu";
+"primer_ach_personal_details_subtitle" = "Vaše osobné údaje";
+"primer_ach_email_disclaimer" = "Toto použijeme len na to, aby sme vás informovali o vašej platbe";
+"primer_ach_button_continue" = "Pokračovať";
+"primer_ach_mandate_title" = "Autorizácia";
+"primer_ach_mandate_button_accept" = "Súhlasím";
+"primer_ach_mandate_button_decline" = "Zrušiť";
+"primer_ach_mandate_template" = "Kliknutím na \"Súhlasím\" oprávňujete %1$@ na inkaso z vyššie uvedeného bankového účtu akejkoľvek dlžnej sumy za poplatky vzniknuté v súvislosti s používaním služieb %1$@ a/alebo nákupom produktov od %1$@, v súlade s webovou stránkou a podmienkami %1$@, až kým nebude toto oprávnenie odvolané. Toto oprávnenie môžete kedykoľvek zmeniť alebo zrušiť oznámením %1$@ s 30 (tridsať) dňovou výpovednou lehotou.";
+"accessibility_ach_continue_hint" = "Dvojitým klepnutím pokračujte k výberu bankového účtu";
+"accessibility_ach_mandate_accept_hint" = "Dvojitým klepnutím prijmite autorizáciu a dokončite platbu";
+"accessibility_ach_mandate_decline_hint" = "Dvojitým klepnutím odmietnite a zrušte platbu";

@@ -46,21 +46,47 @@ public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 /// ```
 @objc
 public final class PrimerCardNetwork: NSObject {
-    /// Human-readable name for the card network (e.g., "Visa", "Mastercard").
     public let displayName: String
-
-    /// The underlying card network identifier.
     public let network: CardNetwork
+    public let issuerCountryCode: String?
+    public let issuerName: String?
+    public let accountFundingType: String?
+    public let prepaidReloadableIndicator: String?
+    public let productUsageType: String?
+    public let productCode: String?
+    public let productName: String?
+    public let issuerCurrencyCode: String?
+    public let regionalRestriction: String?
+    public let accountNumberType: String?
 
-    /// Indicates whether the merchant accepts this card network.
-    /// Returns `true` if the network is in the merchant's allowed networks list.
     public var allowed: Bool {
         [CardNetwork].allowedCardNetworks.contains(network)
     }
 
-    init(displayName: String, network: CardNetwork) {
+    init(displayName: String,
+         network: CardNetwork,
+         issuerCountryCode: String? = nil,
+         issuerName: String? = nil,
+         accountFundingType: String? = nil,
+         prepaidReloadableIndicator: String? = nil,
+         productUsageType: String? = nil,
+         productCode: String? = nil,
+         productName: String? = nil,
+         issuerCurrencyCode: String? = nil,
+         regionalRestriction: String? = nil,
+         accountNumberType: String? = nil) {
         self.displayName = displayName
         self.network = network
+        self.issuerCountryCode = issuerCountryCode
+        self.issuerName = issuerName
+        self.accountFundingType = accountFundingType
+        self.prepaidReloadableIndicator = prepaidReloadableIndicator
+        self.productUsageType = productUsageType
+        self.productCode = productCode
+        self.productName = productName
+        self.issuerCurrencyCode = issuerCurrencyCode
+        self.regionalRestriction = regionalRestriction
+        self.accountNumberType = accountNumberType
     }
 
     convenience init(network: CardNetwork) {
@@ -71,7 +97,7 @@ public final class PrimerCardNetwork: NSObject {
     }
 
     convenience init?(network: CardNetwork?) {
-        guard let network = network else { return nil }
+        guard let network else { return nil }
         self.init(network: network)
     }
 
@@ -110,7 +136,7 @@ public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodM
          autoSelectedCardNetwork: PrimerCardNetwork? = nil) {
         self.source = source
 
-        if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
+        if source == .remote, let selectableCardNetworks, !selectableCardNetworks.isEmpty {
             self.selectableCardNetworks = PrimerCardNetworksMetadata(
                 items: selectableCardNetworks,
                 preferred: selectableCardNetworks.first

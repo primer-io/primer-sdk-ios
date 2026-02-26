@@ -339,7 +339,7 @@ struct CardFormScreen: View {
 
 ### ✅ **SDK-Appropriate Architecture**
 - **Isolated Navigation**: No interference with host app's NavigationView
-- **Modal Integration**: Works perfectly in CheckoutComponentsPrimer presentation
+- **Modal Integration**: Works perfectly in PrimerCheckoutPresenter presentation
 - **Clean Boundaries**: Clear separation between SDK and host navigation
 
 ## Conclusion

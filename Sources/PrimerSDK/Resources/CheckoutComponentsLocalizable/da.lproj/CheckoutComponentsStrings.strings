@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna-betalingsformular";
 "accessibility_klarna_authorize_hint" = "Dobbelttryk for at fortsætte med Klarna";
 "accessibility_klarna_finalize_hint" = "Dobbelttryk for at gennemføre betalingen";
+
+/* ACH */
+"primer_ach_title" = "Bankkonto";
+"primer_ach_pay_with_title" = "Betal med ACH";
+"primer_ach_user_details_title" = "Indtast dine oplysninger for at forbinde din bankkonto";
+"primer_ach_personal_details_subtitle" = "Dine personlige oplysninger";
+"primer_ach_email_disclaimer" = "Vi bruger kun dette til at holde dig opdateret om din betaling";
+"primer_ach_button_continue" = "Fortsæt";
+"primer_ach_mandate_title" = "Autorisation";
+"primer_ach_mandate_button_accept" = "Jeg accepterer";
+"primer_ach_mandate_button_decline" = "Annuller";
+"primer_ach_mandate_template" = "Ved at klikke på \"Jeg accepterer\" giver du %1$@ tilladelse til at hæve ethvert skyldigt beløb fra ovenstående bankkonto for gebyrer, der opstår som følge af din brug af %1$@s tjenester og/eller køb af produkter fra %1$@, i henhold til %1$@s hjemmeside og vilkår, indtil denne autorisation tilbagekaldes. Du kan ændre eller annullere denne autorisation når som helst ved at give %1$@ besked med 30 (tredive) dages varsel.";
+"accessibility_ach_continue_hint" = "Dobbelttryk for at fortsætte til valg af bankkonto";
+"accessibility_ach_mandate_accept_hint" = "Dobbelttryk for at acceptere autorisationen og gennemføre betalingen";
+"accessibility_ach_mandate_decline_hint" = "Dobbelttryk for at afvise og annullere betalingen";

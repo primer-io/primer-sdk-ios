@@ -12,6 +12,7 @@ struct EmailInputField: View, LogReporter {
 
   let label: String?
   let placeholder: String
+  let initialValue: String
   let scope: (any PrimerCardFormScope)?
   let onEmailChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
@@ -37,22 +38,25 @@ struct EmailInputField: View, LogReporter {
   ) {
     self.label = label
     self.placeholder = placeholder
+    initialValue = ""
     self.scope = scope
     self.styling = styling
-    self.onEmailChange = nil
-    self.onValidationChange = nil
+    onEmailChange = nil
+    onValidationChange = nil
   }
 
   init(
     label: String?,
     placeholder: String,
+    initialValue: String = "",
     styling: PrimerFieldStyling? = nil,
     onEmailChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
   ) {
     self.label = label
     self.placeholder = placeholder
-    self.scope = nil
+    self.initialValue = initialValue
+    scope = nil
     self.styling = styling
     self.onEmailChange = onEmailChange
     self.onValidationChange = onValidationChange
@@ -69,7 +73,7 @@ struct EmailInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         EmailTextField(
           email: $email,
           isValid: $isValid,
@@ -95,11 +99,15 @@ struct EmailInputField: View, LogReporter {
     }
     .onAppear {
       setupValidationService()
+      if !initialValue.isEmpty, email.isEmpty {
+        email = initialValue
+        onEmailChange?(initialValue)
+      }
     }
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for EmailInputField")
       return
     }

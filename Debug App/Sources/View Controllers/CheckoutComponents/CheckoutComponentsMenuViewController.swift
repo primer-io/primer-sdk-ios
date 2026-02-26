@@ -104,9 +104,9 @@ final class CheckoutComponentsMenuViewController: UIViewController {
         // Use existing checkoutComponentsUIKitButton logic
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
-            let delegate = DebugAppCheckoutComponentsDelegate()
+            let delegate = DebugAppPrimerCheckoutPresenterDelegate()
             checkoutComponentsDelegate = delegate
-            CheckoutComponentsPrimer.shared.delegate = delegate
+            PrimerCheckoutPresenter.shared.delegate = delegate
         }
 
         switch renderMode {
@@ -115,7 +115,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
             if #available(iOS 15.0, *) {
                 Task { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     do {
                         let clientToken = try await NetworkingUtils.requestClientSession(
                             body: ccSession,
@@ -132,7 +132,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
                 }
             } else {
                 // Fallback for iOS < 15.0
-                Networking.requestClientSession(requestBody: ccSession, apiVersion: self.apiVersion) { [weak self] (clientToken, error) in
+                Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
                     DispatchQueue.main.async {
                         if let error {
                             self?.showErrorMessage("Failed to fetch client token: \(error.localizedDescription)")
@@ -162,14 +162,13 @@ final class CheckoutComponentsMenuViewController: UIViewController {
     
     @objc private func swiftUIExamplesTapped() {
         if #available(iOS 15.0, *) {
-            let resolvedClientToken: String?
-            switch renderMode {
+            let resolvedClientToken: String? = switch renderMode {
             case .clientToken:
-                resolvedClientToken = clientToken
+                clientToken
             case .deepLink:
-                resolvedClientToken = deepLinkClientToken
+                deepLinkClientToken
             case .createClientSession, .testScenario:
-                resolvedClientToken = nil
+                nil
             }
 
             let examplesView = CheckoutComponentsExamplesView(
@@ -197,7 +196,7 @@ final class CheckoutComponentsMenuViewController: UIViewController {
 
     private func presentUIKitIntegration(with clientToken: String) {
         if #available(iOS 15.0, *) {
-            CheckoutComponentsPrimer.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)
+            PrimerCheckoutPresenter.presentCheckout(clientToken: clientToken, from: self, primerSettings: settings)
         } else {
             showErrorMessage("CheckoutComponents requires iOS 15.0 or later")
         }

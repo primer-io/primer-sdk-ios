@@ -20,7 +20,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<PayPalState> {
+  public var state: AsyncStream<PrimerPayPalState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $internalState.values {
@@ -47,7 +47,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
   private let processPayPalInteractor: ProcessPayPalPaymentInteractor
   private let analyticsInteractor: CheckoutComponentsAnalyticsInteractorProtocol?
 
-  @Published private var internalState = PayPalState()
+  @Published private var internalState = PrimerPayPalState()
 
   // MARK: - Initialization
 
@@ -67,7 +67,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
 
   public func start() {
     logger.debug(message: "PayPal scope started")
-    internalState.status = .idle
+    internalState.step = .idle
   }
 
   public func submit() {
@@ -89,14 +89,10 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     }
   }
 
-  public func onCancel() {
-    checkoutScope?.onDismiss()
-  }
-
   // MARK: - Private Methods
 
   private func performPayment() async {
-    internalState.status = .loading
+    internalState.step = .loading
     checkoutScope?.startProcessing()
 
     await analyticsInteractor?.trackEvent(
@@ -105,7 +101,7 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
     )
 
     do {
-      internalState.status = .redirecting
+      internalState.step = .redirecting
 
       await analyticsInteractor?.trackEvent(
         .paymentProcessingStarted,
@@ -114,11 +110,11 @@ public final class DefaultPayPalScope: PrimerPayPalScope, ObservableObject, LogR
 
       let result = try await processPayPalInteractor.execute()
 
-      internalState.status = .success
+      internalState.step = .success
       checkoutScope?.handlePaymentSuccess(result)
     } catch {
       logger.error(message: "PayPal payment failed: \(error.localizedDescription)")
-      internalState.status = .failure(error.localizedDescription)
+      internalState.step = .failure(error.localizedDescription)
 
       let primerError =
         error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)

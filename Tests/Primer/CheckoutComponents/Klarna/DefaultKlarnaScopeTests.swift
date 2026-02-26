@@ -105,7 +105,7 @@ final class DefaultKlarnaScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [KlarnaState] = []
+        var receivedStates: [PrimerKlarnaState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)
@@ -286,10 +286,10 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     }
 
     @MainActor
-    func test_onCancel_shouldNotCrash() {
+    func test_cancel_shouldNotCrash_viaCancel() {
         let scope = createScope()
         // Should not crash
-        scope.onCancel()
+        scope.cancel()
     }
 
     @MainActor

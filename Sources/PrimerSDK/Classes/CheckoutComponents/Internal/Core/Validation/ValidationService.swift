@@ -66,7 +66,7 @@ final class ValidationResultCache {
 
     init(result: ValidationResult) {
       self.result = result
-      self.timestamp = Date()
+      timestamp = Date()
     }
 
     /// Check if cache entry is still valid (30 seconds expiration)
@@ -170,14 +170,14 @@ extension DefaultValidationService {
   public func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
     switch type {
     case .cardNumber:
-      guard let value = value else {
+      guard let value else {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .cardNumber)
         return .invalid(error: error)
       }
       return validateCardNumber(value)
 
     case .expiryDate:
-      guard let value = value else {
+      guard let value else {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .expiryDate)
         return .invalid(error: error)
       }
@@ -187,7 +187,7 @@ extension DefaultValidationService {
       return validateExpiry(month: month, year: year)
 
     case .cvv:
-      guard let value = value else {
+      guard let value else {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
         return .invalid(error: error)
       }
@@ -195,7 +195,7 @@ extension DefaultValidationService {
       return validateCVV(value, cardNetwork: CardNetwork.visa)
 
     case .cardholderName:
-      guard let value = value else {
+      guard let value else {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .cardholderName)
         return .invalid(error: error)
       }
@@ -239,17 +239,12 @@ extension DefaultValidationService {
       return rule.validate(value)
 
     case .otp:
-      guard let value = value else {
+      guard let value else {
         let error = ErrorMessageResolver.createRequiredFieldError(for: .otpCode)
         return .invalid(error: error)
       }
-      // Validate OTP is numeric
-      let numericRule = CharacterSetRule(
-        fieldName: "OTP",
-        allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
-        errorCode: "invalid-otp-format"
-      )
-      return numericRule.validate(value)
+      let rule = rulesFactory.createOTPCodeRule()
+      return rule.validate(value)
 
     case .retailer, .all:
       // These types don't need validation

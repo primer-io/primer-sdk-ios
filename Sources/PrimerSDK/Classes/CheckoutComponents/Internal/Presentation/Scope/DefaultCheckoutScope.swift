@@ -19,35 +19,35 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       PrimerHeadlessUniversalCheckout.VaultedPaymentMethod)  // Delete confirmation
     case paymentMethod(String)  // Dynamic payment method with type identifier
     case processing  // Payment processing in progress
-    case success(CheckoutPaymentResult)
+    case success(PaymentResult)
     case failure(PrimerError)
     case dismissed
 
     static func == (lhs: NavigationState, rhs: NavigationState) -> Bool {
       switch (lhs, rhs) {
       case (.loading, .loading):
-        return true
+        true
       case (.paymentMethodSelection, .paymentMethodSelection):
-        return true
+        true
       case (.vaultedPaymentMethods, .vaultedPaymentMethods):
-        return true
+        true
       case let (
         .deleteVaultedPaymentMethodConfirmation(lhsMethod),
         .deleteVaultedPaymentMethodConfirmation(rhsMethod)
       ):
-        return lhsMethod.id == rhsMethod.id
+        lhsMethod.id == rhsMethod.id
       case (.processing, .processing):
-        return true
+        true
       case (.dismissed, .dismissed):
-        return true
+        true
       case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-        return lhsType == rhsType
+        lhsType == rhsType
       case let (.success(lhsResult), .success(rhsResult)):
-        return lhsResult.paymentId == rhsResult.paymentId
+        lhsResult.paymentId == rhsResult.paymentId
       case let (.failure(lhsError), .failure(rhsError)):
-        return lhsError.localizedDescription == rhsError.localizedDescription
+        lhsError.localizedDescription == rhsError.localizedDescription
       default:
-        return false
+        false
       }
     }
   }
@@ -77,12 +77,16 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
+  // MARK: - Payment Callbacks
+
+  public var onBeforePaymentCreate: BeforePaymentCreateHandler?
+
   // MARK: - UI Customization Properties
 
   public var container: ContainerComponent?
   public var splashScreen: Component?
-  public var loading: Component?
-  public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
+  public var loadingScreen: Component?
+  public var successScreen: ((_ result: PaymentResult) -> AnyView)?
   public var errorScreen: ErrorComponent?
   public var paymentMethodSelectionScreen: PaymentMethodSelectionScreenComponent?
 
@@ -203,6 +207,16 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     PayPalPaymentMethod.register()
     ApplePayPaymentMethod.register()
     KlarnaPaymentMethod.register()
+    AchPaymentMethod.register()
+    FormRedirectPaymentMethod.register()
+    QRCodePaymentMethod.registerAll([.xfersPayNow, .rapydPromptPay, .omisePromptPay])
+
+    // Dynamic: register any WEB_REDIRECT APM from API config
+    let webRedirectTypes = PrimerAPIConfigurationModule.apiConfiguration?
+      .paymentMethods?
+      .filter { $0.implementationType == .webRedirect }
+      .map(\.type) ?? []
+    WebRedirectPaymentMethod.register(types: webRedirectTypes)
   }
 
   // MARK: - Setup
@@ -416,7 +430,7 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       selectedPaymentMethodName = nil
     }
 
-    if let message = message {
+    if let message {
       service.announceScreenChange(message)
       logger.debug(message: "[A11Y] Screen change announcement: \(message)")
     }
@@ -468,18 +482,18 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
       (.paymentMethodSelection, .paymentMethodSelection),
       (.vaultedPaymentMethods, .vaultedPaymentMethods),
       (.processing, .processing):
-      return true
+      true
     case let (
       .deleteVaultedPaymentMethodConfirmation(lhsMethod),
       .deleteVaultedPaymentMethodConfirmation(rhsMethod)
     ):
-      return lhsMethod.id == rhsMethod.id
+      lhsMethod.id == rhsMethod.id
     case let (.paymentMethod(lhsType), .paymentMethod(rhsType)):
-      return lhsType == rhsType
+      lhsType == rhsType
     case let (.failure(lhsError), .failure(rhsError)):
-      return lhsError.localizedDescription == rhsError.localizedDescription
+      lhsError.localizedDescription == rhsError.localizedDescription
     default:
-      return false
+      false
     }
   }
 
@@ -628,14 +642,37 @@ final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogRepo
     }
   }
 
+  /// Invokes the onBeforePaymentCreate callback if set, stores the idempotency key, and returns.
+  /// Throws if the merchant aborts payment creation.
+  ///
+  /// - Note: Uses `PrimerInternal.shared.currentIdempotencyKey` singleton for storage because the key
+  ///   must flow to `PrimerAPI.headers` (an enum computed property in the core networking layer).
+  ///   This matches the pattern used in Drop-In and Headless flows. A proper DI solution would require
+  ///   refactoring the networking layer to use injected dependencies instead of the enum pattern.
+  func invokeBeforePaymentCreate(paymentMethodType: String) async throws {
+    guard let callback = onBeforePaymentCreate else { return }
+
+    let decision = await withCheckedContinuation { (continuation: CheckedContinuation<PrimerPaymentCreationDecision, Never>) in
+      let data = PrimerCheckoutPaymentMethodData(
+        type: PrimerCheckoutPaymentMethodType(type: paymentMethodType)
+      )
+      callback(data) { decision in
+        continuation.resume(returning: decision)
+      }
+    }
+
+    switch decision.type {
+    case let .abort(errorMessage):
+      throw PrimerError.merchantError(message: errorMessage ?? "Payment creation aborted")
+    case let .continue(idempotencyKey):
+      // TODO: Refactor to use DI when networking layer is updated to support injected dependencies
+      PrimerInternal.shared.currentIdempotencyKey = idempotencyKey
+    }
+  }
+
   func handlePaymentSuccess(_ result: PaymentResult) {
     updateState(.success(result))
-
-    let checkoutResult = CheckoutPaymentResult(
-      paymentId: result.paymentId,
-      amount: result.amount?.description ?? "N/A"
-    )
-    updateNavigationState(.success(checkoutResult))
+    updateNavigationState(.success(result))
   }
 
   func handlePaymentError(_ error: PrimerError) {

@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Formulari i pagesës Klarna";
 "accessibility_klarna_authorize_hint" = "Prekni dy herë për të vazhduar me Klarna";
 "accessibility_klarna_finalize_hint" = "Prekni dy herë për të përfunduar pagesën";
+
+/* ACH */
+"primer_ach_title" = "Llogari bankare";
+"primer_ach_pay_with_title" = "Paguaj me ACH";
+"primer_ach_user_details_title" = "Fut të dhënat e tua për të lidhur llogarinë bankare";
+"primer_ach_personal_details_subtitle" = "Të dhënat tuaja personale";
+"primer_ach_email_disclaimer" = "Ne do ta përdorim këtë vetëm për t'ju mbajtur të informuar për pagesën tuaj";
+"primer_ach_button_continue" = "Vazhdo";
+"primer_ach_mandate_title" = "Autorizim";
+"primer_ach_mandate_button_accept" = "Pranoj";
+"primer_ach_mandate_button_decline" = "Anulo";
+"primer_ach_mandate_template" = "Duke klikuar \"Pranoj\", ju autorizoni %1$@ të debitojë llogarinë bankare të specifikuar më sipër për çdo shumë të detyruar për tarifa që rrjedhin nga përdorimi juaj i shërbimeve të %1$@ dhe/ose blerja e produkteve nga %1$@, sipas faqes së internetit dhe kushteve të %1$@, derisa ky autorizim të revokohet. Ju mund ta ndryshoni ose anuloni këtë autorizim në çdo kohë duke njoftuar %1$@ me 30 (tridhjetë) ditë njoftim paraprak.";
+"accessibility_ach_continue_hint" = "Prekni dy herë për të vazhduar me zgjedhjen e llogarisë bankare";
+"accessibility_ach_mandate_accept_hint" = "Prekni dy herë për të pranuar autorizimin dhe përfunduar pagesën";
+"accessibility_ach_mandate_decline_hint" = "Prekni dy herë për të refuzuar dhe anuluar pagesën";

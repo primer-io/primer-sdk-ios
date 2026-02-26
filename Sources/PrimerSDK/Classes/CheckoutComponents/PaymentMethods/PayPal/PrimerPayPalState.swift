@@ -1,5 +1,5 @@
 //
-//  PayPalState.swift
+//  PrimerPayPalState.swift
 //
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
@@ -7,12 +7,12 @@
 import Foundation
 
 /// State model for PayPal payment method scope.
-/// Tracks the current status of the PayPal payment flow.
+/// Tracks the current step of the PayPal payment flow.
 @available(iOS 15.0, *)
-public struct PayPalState: Equatable {
+public struct PrimerPayPalState: Equatable {
 
-  /// The current status of the PayPal payment flow.
-  public enum Status: Equatable {
+  /// The current step of the PayPal payment flow.
+  public enum Step: Equatable {
     /// Initial state, ready to start payment
     case idle
     /// Creating PayPal session
@@ -27,8 +27,8 @@ public struct PayPalState: Equatable {
     case failure(String)
   }
 
-  /// Current status of the PayPal flow
-  public var status: Status
+  /// Current step of the PayPal flow
+  public var step: Step
 
   /// The PayPal payment method information
   public var paymentMethod: CheckoutPaymentMethod?
@@ -38,11 +38,11 @@ public struct PayPalState: Equatable {
 
   /// Default initializer
   public init(
-    status: Status = .idle,
+    step: Step = .idle,
     paymentMethod: CheckoutPaymentMethod? = nil,
     surchargeAmount: String? = nil
   ) {
-    self.status = status
+    self.step = step
     self.paymentMethod = paymentMethod
     self.surchargeAmount = surchargeAmount
   }

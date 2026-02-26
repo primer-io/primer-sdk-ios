@@ -15,9 +15,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
   // MARK: - State
 
-  @Published var structuredState: ApplePayFormState
+  @Published var structuredState: PrimerApplePayState
 
-  public var state: AsyncStream<ApplePayFormState> {
+  public var state: AsyncStream<PrimerApplePayState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         // Yield initial state immediately
@@ -33,33 +33,6 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         task.cancel()
       }
     }
-  }
-
-  // MARK: - Availability
-
-  public var isAvailable: Bool {
-    structuredState.isAvailable
-  }
-
-  public var availabilityError: String? {
-    structuredState.availabilityError
-  }
-
-  // MARK: - Button Customization
-
-  public var buttonStyle: PKPaymentButtonStyle {
-    get { structuredState.buttonStyle }
-    set { structuredState.buttonStyle = newValue }
-  }
-
-  public var buttonType: PKPaymentButtonType {
-    get { structuredState.buttonType }
-    set { structuredState.buttonType = newValue }
-  }
-
-  public var cornerRadius: CGFloat {
-    get { structuredState.cornerRadius }
-    set { structuredState.cornerRadius = newValue }
   }
 
   // MARK: - UI Customization
@@ -93,9 +66,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     let isPresentable = applePayPresentationManager.isPresentable
     let availabilityError = applePayPresentationManager.errorForDisplay
     if isPresentable {
-      self.structuredState = .available()
+      structuredState = .available()
     } else {
-      self.structuredState = .unavailable(error: availabilityError.localizedDescription)
+      structuredState = .unavailable(error: availabilityError.localizedDescription)
     }
 
     Task {
@@ -148,9 +121,9 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     checkoutScope?.onDismiss()
   }
 
-  // MARK: - Pay Action
+  // MARK: - Submit Action
 
-  public func pay() {
+  public func submit() {
     guard structuredState.isAvailable else { return }
     guard !structuredState.isLoading else { return }
 
@@ -163,6 +136,10 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     structuredState.isLoading = true
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue
+      )
+
       // Select payment method
       let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
       try await clientSessionActionsModule.selectPaymentMethodIfNeeded(
@@ -175,7 +152,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
 
       // Create coordinator and present Apple Pay
       let coordinator = ApplePayAuthorizationCoordinator()
-      self.authorizationCoordinator = coordinator
+      authorizationCoordinator = coordinator
 
       // Present and await authorization
       let payment = try await coordinator.authorize(
@@ -192,7 +169,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
         }
       }
 
-      guard let interactor = interactor else {
+      guard let interactor else {
         throw PrimerError.invalidArchitecture(
           description: "ProcessApplePayPaymentInteractor not initialized",
           recoverSuggestion: "Ensure proper SDK initialization"
@@ -217,7 +194,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
   private func handlePaymentSuccess(_ result: PaymentResult) async {
     structuredState.isLoading = false
 
-    guard let checkoutScope = checkoutScope else { return }
+    guard let checkoutScope else { return }
     checkoutScope.handlePaymentSuccess(result)
   }
 
@@ -227,7 +204,7 @@ public final class DefaultApplePayScope: PrimerApplePayScope, ObservableObject {
     let primerError =
       error as? PrimerError ?? PrimerError.unknown(message: error.localizedDescription)
 
-    guard let checkoutScope = checkoutScope else { return }
+    guard let checkoutScope else { return }
     checkoutScope.handlePaymentError(primerError)
   }
 

@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Klarna mokėjimo forma";
 "accessibility_klarna_authorize_hint" = "Bakstelėkite du kartus, kad tęstumėte su Klarna";
 "accessibility_klarna_finalize_hint" = "Bakstelėkite du kartus, kad užbaigtumėte mokėjimą";
+
+/* ACH */
+"primer_ach_title" = "Banko sąskaita";
+"primer_ach_pay_with_title" = "Mokėti per ACH";
+"primer_ach_user_details_title" = "Įveskite savo duomenis, kad prijungtumėte banko sąskaitą";
+"primer_ach_personal_details_subtitle" = "Jūsų asmeniniai duomenys";
+"primer_ach_email_disclaimer" = "Tai naudosime tik tam, kad informuotume jus apie jūsų mokėjimą";
+"primer_ach_button_continue" = "Tęsti";
+"primer_ach_mandate_title" = "Autorizacija";
+"primer_ach_mandate_button_accept" = "Sutinku";
+"primer_ach_mandate_button_decline" = "Atšaukti";
+"primer_ach_mandate_template" = "Spustelėdami \"Sutinku\", jūs įgaliojate %1$@ nurašyti iš aukščiau nurodytos banko sąskaitos bet kokią sumą, skirtą mokesčiams, atsirandantiems dėl %1$@ paslaugų naudojimo ir/ar produktų įsigijimo iš %1$@, pagal %1$@ svetainę ir sąlygas, kol šis įgaliojimas bus atšauktas. Šį įgaliojimą galite pakeisti arba atšaukti bet kuriuo metu, pranešdami %1$@ prieš 30 (trisdešimt) dienų.";
+"accessibility_ach_continue_hint" = "Bakstelėkite du kartus, kad tęstumėte banko sąskaitos pasirinkimą";
+"accessibility_ach_mandate_accept_hint" = "Bakstelėkite du kartus, kad priimtumėte autorizaciją ir užbaigtumėte mokėjimą";
+"accessibility_ach_mandate_decline_hint" = "Bakstelėkite du kartus, kad atmestumėte ir atšauktumėte mokėjimą";

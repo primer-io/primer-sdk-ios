@@ -60,13 +60,13 @@ public struct PrimerCheckout: View {
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
-    self.settings = primerSettings
-    self.theme = primerTheme
+    settings = primerSettings
+    theme = primerTheme
     self.scope = scope
     self.onCompletion = onCompletion
-    self._navigator = StateObject(wrappedValue: CheckoutNavigator())
-    self.presentationContext = .fromPaymentSelection
-    self.integrationType = .swiftUI
+    _navigator = StateObject(wrappedValue: CheckoutNavigator())
+    presentationContext = .fromPaymentSelection
+    integrationType = .swiftUI
   }
 
   init(
@@ -81,11 +81,11 @@ public struct PrimerCheckout: View {
     onCompletion: ((PrimerCheckoutState) -> Void)? = nil
   ) {
     self.clientToken = clientToken
-    self.settings = primerSettings
-    self.theme = primerTheme
+    settings = primerSettings
+    theme = primerTheme
     self.scope = scope
     self.onCompletion = onCompletion
-    self._navigator = StateObject(wrappedValue: navigator)
+    _navigator = StateObject(wrappedValue: navigator)
     self.presentationContext = presentationContext
     self.integrationType = integrationType
   }
@@ -159,7 +159,7 @@ struct InternalCheckout: View, LogReporter {
     self.integrationType = integrationType
     self.onCompletion = onCompletion
 
-    self.sdkInitializer = CheckoutSDKInitializer(
+    sdkInitializer = CheckoutSDKInitializer(
       clientToken: clientToken,
       primerSettings: settings,
       primerTheme: theme,
@@ -254,7 +254,7 @@ struct InternalCheckout: View, LogReporter {
 
   @ViewBuilder
   private var loadingContent: some View {
-    if let customLoading = checkoutScope?.loading {
+    if let customLoading = checkoutScope?.loadingScreen {
       AnyView(customLoading())
     } else {
       DefaultLoadingScreen()
@@ -315,9 +315,9 @@ extension View {
     case .system:
       self
     case .light:
-      self.preferredColorScheme(.light)
+      preferredColorScheme(.light)
     case .dark:
-      self.preferredColorScheme(.dark)
+      preferredColorScheme(.dark)
     }
   }
 }

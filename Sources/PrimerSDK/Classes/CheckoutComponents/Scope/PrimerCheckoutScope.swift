@@ -6,6 +6,12 @@
 
 import SwiftUI
 
+/// Closure type for the `onBeforePaymentCreate` callback.
+/// Provides payment method data and a decision handler to continue or abort payment creation.
+@available(iOS 15.0, *)
+public typealias BeforePaymentCreateHandler = (_ data: PrimerCheckoutPaymentMethodData,
+                                               _ decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) -> Void
+
 /// The main scope interface for PrimerCheckout, providing lifecycle control and customizable UI components.
 @available(iOS 15.0, *)
 @MainActor
@@ -25,7 +31,7 @@ public protocol PrimerCheckoutScope: AnyObject {
 
   /// Custom loading screen shown during payment processing.
   /// Default implementation shows a centered loading indicator with "Loading" text.
-  var loading: Component? { get set }
+  var loadingScreen: Component? { get set }
 
   // Note: Success screen removed - CheckoutComponents dismisses immediately on success
   // The delegate handles presenting the result screen via PrimerResultViewController
@@ -76,6 +82,12 @@ public protocol PrimerCheckoutScope: AnyObject {
   // MARK: - Payment Method Screen Customization
   // Removed: setPaymentMethodScreen and getPaymentMethodScreen methods
   // Use PaymentMethodProtocol.content() for custom UI with ViewBuilder pattern
+
+  // MARK: - Payment Callbacks
+
+  /// Called before a payment is created. Use the decision handler to provide an idempotency key
+  /// or abort payment creation. If not set, payments proceed without an idempotency key.
+  var onBeforePaymentCreate: BeforePaymentCreateHandler? { get set }
 
   // MARK: - Payment Settings
 
@@ -142,15 +154,15 @@ public enum PrimerCheckoutState: Equatable {
     switch (lhs, rhs) {
     case (.initializing, .initializing),
       (.dismissed, .dismissed):
-      return true
+      true
     case let (.ready(lhsAmount, lhsCurrency), .ready(rhsAmount, rhsCurrency)):
-      return lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
+      lhsAmount == rhsAmount && lhsCurrency == rhsCurrency
     case let (.success(lhsResult), .success(rhsResult)):
-      return lhsResult.paymentId == rhsResult.paymentId
+      lhsResult.paymentId == rhsResult.paymentId
     case let (.failure(lhsError), .failure(rhsError)):
-      return lhsError.errorId == rhsError.errorId
+      lhsError.errorId == rhsError.errorId
     default:
-      return false
+      false
     }
   }
 }

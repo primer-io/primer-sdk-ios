@@ -13,6 +13,7 @@ struct NameInputField: View, LogReporter {
   let label: String?
   let placeholder: String
   let inputType: PrimerInputElementType
+  let initialValue: String
   let scope: (any PrimerCardFormScope)?
   let onNameChange: ((String) -> Void)?
   let onValidationChange: ((Bool) -> Void)?
@@ -40,16 +41,18 @@ struct NameInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
+    initialValue = ""
     self.scope = scope
     self.styling = styling
-    self.onNameChange = nil
-    self.onValidationChange = nil
+    onNameChange = nil
+    onValidationChange = nil
   }
 
   init(
     label: String?,
     placeholder: String,
     inputType: PrimerInputElementType,
+    initialValue: String = "",
     styling: PrimerFieldStyling? = nil,
     onNameChange: ((String) -> Void)? = nil,
     onValidationChange: ((Bool) -> Void)? = nil
@@ -57,7 +60,8 @@ struct NameInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.inputType = inputType
-    self.scope = nil
+    self.initialValue = initialValue
+    scope = nil
     self.styling = styling
     self.onNameChange = onNameChange
     self.onValidationChange = onValidationChange
@@ -74,7 +78,7 @@ struct NameInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         NameTextField(
           name: $name,
           isValid: $isValid,
@@ -99,11 +103,15 @@ struct NameInputField: View, LogReporter {
     }
     .onAppear {
       setupValidationService()
+      if !initialValue.isEmpty, name.isEmpty {
+        name = initialValue
+        onNameChange?(initialValue)
+      }
     }
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for NameInputField")
       return
     }

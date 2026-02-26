@@ -162,7 +162,7 @@ struct CheckoutScopeObserver: View, LogReporter {
 
     case .processing:
       // Show loading screen during payment processing
-      if let customLoading = scope.loading {
+      if let customLoading = scope.loadingScreen {
         return AnyView(customLoading())
       } else {
         return AnyView(DefaultLoadingScreen())

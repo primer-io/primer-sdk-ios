@@ -29,7 +29,7 @@ import SwiftUI
 /// are handled by the SDK's default behavior.
 @available(iOS 15.0, *)
 public struct CardFormProvider<Content: View>: View, LogReporter {
-  private let onSuccess: ((CheckoutPaymentResult) -> Void)?
+  private let onSuccess: ((PaymentResult) -> Void)?
   private let onError: ((String) -> Void)?
   private let onCancel: (() -> Void)?
   private let content: (any PrimerCardFormScope) -> Content
@@ -43,7 +43,7 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
   ///   - onCancel: Called when user cancels the form
   ///   - content: ViewBuilder that receives the card form scope
   public init(
-    onSuccess: ((CheckoutPaymentResult) -> Void)? = nil,
+    onSuccess: ((PaymentResult) -> Void)? = nil,
     onError: ((String) -> Void)? = nil,
     onCancel: (() -> Void)? = nil,
     @ViewBuilder content: @escaping (any PrimerCardFormScope) -> Content
@@ -87,11 +87,7 @@ public struct CardFormProvider<Content: View>: View, LogReporter {
   private func handleStateChange(_ state: PrimerCheckoutState) {
     switch state {
     case let .success(result):
-      if let onSuccess {
-        // Convert PaymentResult to CheckoutPaymentResult
-        let amountString = result.amount.map { String($0) } ?? ""
-        onSuccess(CheckoutPaymentResult(paymentId: result.paymentId, amount: amountString))
-      }
+      onSuccess?(result)
 
     case let .failure(error):
       onError?(error.localizedDescription)

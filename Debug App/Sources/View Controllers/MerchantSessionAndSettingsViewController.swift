@@ -150,10 +150,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
-            self.clientSession.order?.lineItems ?? []
+            clientSession.order?.lineItems ?? []
         }
         set {
-            self.clientSession.order?.lineItems = newValue
+            clientSession.order?.lineItems = newValue
         }
     }
 
@@ -185,9 +185,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     private var deepLinkClientToken: String?
 
     func setAccessibilityIds() {
-        self.view.accessibilityIdentifier = "Background View"
-        self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
-        self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
+        view.accessibilityIdentifier = "Background View"
+        testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
+        clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
     }
 
     // MARK: - VIEW LIFE-CYCLE
@@ -195,7 +195,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setAccessibilityIds()
+        setAccessibilityIds()
         testScenarioPicker.dataSource = self
         testScenarioPicker.delegate = self
         testScenarioTextField.inputView = testScenarioPicker
@@ -221,7 +221,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             environmentSegmentedControl.selectedSegmentIndex = 1
         }
 
-        self.apiKeyTextField.text = customDefinedApiKey
+        apiKeyTextField.text = customDefinedApiKey
 
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)
@@ -252,14 +252,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     private func handleAppetizeIfNeeded(_ configProvider: AppLinkConfigProvider) {
         if let settings = configProvider.fetchConfig() {
-            self.deepLinkSettings = settings
-            self.dlSettingsDisplay.text = prettyPrint(settings)
+            deepLinkSettings = settings
+            dlSettingsDisplay.text = prettyPrint(settings)
         }
         if let clientToken = configProvider.fetchClientToken() {
-            self.deepLinkClientToken = clientToken
+            deepLinkClientToken = clientToken
             clientTokenTextField.text = clientToken
-            self.dlClientTokenDisplay.text = clientToken
-            self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
+            dlClientTokenDisplay.text = clientToken
+            testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
             setRenderMode(.deepLink)
         }
     }
@@ -760,7 +760,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     func configureTestScenario() {
-        guard let selectedTestScenario = selectedTestScenario else {
+        guard let selectedTestScenario else {
             let alert = UIAlertController(
                 title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -776,7 +776,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             threeDS: nil)
 
         if testResultSegmentedControl.selectedSegmentIndex == 1 {
-            guard let selectedTestFlow = selectedTestFlow else {
+            guard let selectedTestFlow else {
                 let alert = UIAlertController(
                     title: "Error", message: "Please choose failure flow in the Failure Parameters",
                     preferredStyle: .alert)
@@ -794,7 +794,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             testParams.result = .failure(failure: failure)
 
         } else if case .testNative3DS = selectedTestScenario {
-            guard let selectedTest3DSScenario = selectedTest3DSScenario else {
+            guard let selectedTest3DSScenario else {
                 let alert = UIAlertController(
                     title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -828,7 +828,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
 
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantDropInUIViewController.instantiate(
                     settings: settings, clientSession: nil, clientToken: clientToken)
                 navigationController?.pushViewController(vc, animated: true)
@@ -859,7 +859,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                     settings: settings,
                     clientSession: nil,
@@ -882,9 +882,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             return mechanisms
         }()
 
-        var uiOptions: PrimerUIOptions?
-        if dropIn {
-            uiOptions = PrimerUIOptions(
+        var uiOptions: PrimerUIOptions? = if dropIn {
+            PrimerUIOptions(
                 isInitScreenEnabled: !disableInitScreenSwitch.isOn,
                 isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
@@ -894,7 +893,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
         } else {
             // CheckoutComponents: Also apply dismissalMechanism and other relevant settings
-            uiOptions = PrimerUIOptions(
+            PrimerUIOptions(
                 isInitScreenEnabled: !disableInitScreenSwitch.isOn,
                 isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
@@ -942,9 +941,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func clearAppLinkButtonTapped(_ sender: Any) {
-        self.deepLinkClientToken = nil
-        self.deepLinkSettings = nil
-        self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
+        deepLinkClientToken = nil
+        deepLinkSettings = nil
+        testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
         setRenderMode(.createClientSession)
         dlSettingsDisplay.text = ""
         dlClientTokenDisplay.text = ""
@@ -1112,9 +1111,9 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
 
 /// Debug App delegate for CheckoutComponents that logs results and shows alerts
 @available(iOS 15.0, *)
-class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+class DebugAppPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
     
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         print("✅ [Debug App] CheckoutComponents payment completed successfully! Payment ID: \(result.paymentId)")
         
         DispatchQueue.main.async {
@@ -1151,7 +1150,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 let successData = PrimerCheckoutData(payment: successPayment)
                 
                 // Create realistic logs for CheckoutComponents success
-                var logs = ["checkoutComponentsDidCompleteWithSuccess"]
+                var logs = ["primerCheckoutPresenterDidCompleteWithSuccess"]
                 logs.append("Payment ID: \(result.paymentId)")
                 logs.append("Status: \(result.status)")
                 if let token = result.token {
@@ -1183,7 +1182,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         }
     }
     
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
         
         DispatchQueue.main.async {
@@ -1219,7 +1218,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 let failureData = PrimerCheckoutData(payment: failurePayment)
                 
                 // Create realistic logs for CheckoutComponents failure (matching Drop-in pattern)
-                var logs = ["checkoutComponentsDidFailWithError"]
+                var logs = ["primerCheckoutPresenterDidFailWithError"]
                 logs.append("Error ID: \(error.errorId)")
                 logs.append("Diagnostics ID: \(error.diagnosticsId)")
                 logs.append("Description: \(error.localizedDescription)")
@@ -1246,7 +1245,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         }
     }
     
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         print("🚪 [Debug App] CheckoutComponents was dismissed by user")
         
         DispatchQueue.main.async {
@@ -1268,9 +1267,9 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
     
     // MARK: - 3DS Delegate Methods
 
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
         print("🔐 [Debug App] CheckoutComponents will present 3DS challenge")
-        print("🔐 [Debug App] Payment method type: \(paymentMethodTokenData.paymentMethodType)")
+        print("🔐 [Debug App] Payment method type: \(String(describing: paymentMethodTokenData.paymentMethodType))")
         if let token = paymentMethodTokenData.token {
             print("🔐 [Debug App] Token: \(token)")
         }
@@ -1278,19 +1277,19 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         print("🔐 [Debug App] 3DS will be handled during payment creation if required")
     }
 
-    func checkoutComponentsDidDismiss3DSChallenge() {
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
         print("🔐 [Debug App] CheckoutComponents 3DS challenge was dismissed")
     }
 
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
         if success {
             print("🔐✅ [Debug App] CheckoutComponents 3DS challenge completed successfully")
-            if let resumeToken = resumeToken {
+            if let resumeToken {
                 print("🔐✅ [Debug App] Resume token: \(resumeToken)")
             }
         } else {
             print("🔐❌ [Debug App] CheckoutComponents 3DS challenge failed")
-            if let error = error {
+            if let error {
                 print("🔐❌ [Debug App] 3DS Error: \(error.localizedDescription)")
             }
         }
@@ -1304,9 +1303,9 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 let title = success ? "3DS Success" : "3DS Failed"
                 var message = success ? "3DS authentication completed successfully" : "3DS authentication failed"
                 
-                if success, let resumeToken = resumeToken {
+                if success, let resumeToken {
                     message += "\nResume token: \(String(resumeToken.prefix(20)))..."
-                } else if !success, let error = error {
+                } else if !success, let error {
                     message += "\nError: \(error.localizedDescription)"
                 }
                 
@@ -1320,7 +1319,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
     }
 
     private static func findTopViewController(from viewController: UIViewController?) -> UIViewController? {
-        guard let viewController = viewController else { return nil }
+        guard let viewController else { return nil }
         
         if let presented = viewController.presentedViewController {
             return findTopViewController(from: presented)
@@ -1342,7 +1341,7 @@ class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
 
 /// Inline test delegate for CheckoutComponents results
 @available(iOS 15.0, *)
-private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+private class InlineTestPrimerCheckoutPresenterDelegate: PrimerCheckoutPresenterDelegate {
     
     enum TestResult {
         case success(String)
@@ -1355,29 +1354,29 @@ private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         self.onResult = onResult
     }
     
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         onResult(.success("Payment completed successfully! ✅ Payment ID: \(result.paymentId)"))
     }
     
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         onResult(.failure("Payment failed: \(error.errorId) - \(error.localizedDescription)"))
     }
     
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         onResult(.success("Checkout was dismissed by user"))
     }
 
     // MARK: - 3DS Delegate Methods
 
-    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    func primerCheckoutPresenterWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
         print("🔐 [Inline Test] CheckoutComponents will present 3DS challenge")
     }
 
-    func checkoutComponentsDidDismiss3DSChallenge() {
+    func primerCheckoutPresenterDidDismiss3DSChallenge() {
         print("🔐 [Inline Test] CheckoutComponents 3DS challenge was dismissed")
     }
 
-    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+    func primerCheckoutPresenterDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
         if success {
             print("🔐✅ [Inline Test] CheckoutComponents 3DS challenge completed successfully")
         } else {

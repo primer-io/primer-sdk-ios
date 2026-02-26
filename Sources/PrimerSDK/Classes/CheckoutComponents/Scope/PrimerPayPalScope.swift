@@ -18,16 +18,10 @@ public typealias PayPalButtonComponent = (any PrimerPayPalScope) -> any View
 /// Provides state observation and UI customization for redirect-based PayPal payments.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PayPalState {
+public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PrimerPayPalState {
 
   /// The current state of the PayPal payment flow as an async stream.
-  var state: AsyncStream<PayPalState> { get }
-
-  /// The presentation context determining navigation behavior (back button vs cancel button).
-  var presentationContext: PresentationContext { get }
-
-  /// The dismissal mechanisms available for this scope.
-  var dismissalMechanism: [DismissalMechanism] { get }
+  var state: AsyncStream<PrimerPayPalState> { get }
 
   // MARK: - Payment Method Lifecycle
 
@@ -39,14 +33,6 @@ public protocol PrimerPayPalScope: PrimerPaymentMethodScope where State == PayPa
 
   /// Cancels the PayPal payment flow.
   func cancel()
-
-  // MARK: - Navigation Methods
-
-  /// Called when user taps back button.
-  func onBack()
-
-  /// Called when user taps cancel/dismiss button.
-  func onCancel()
 
   // MARK: - Screen-Level Customization
 

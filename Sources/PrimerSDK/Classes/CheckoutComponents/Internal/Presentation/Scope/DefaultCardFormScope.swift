@@ -46,7 +46,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     checkoutScope?.dismissalMechanism ?? []
   }
 
-  public var state: AsyncStream<StructuredCardFormState> {
+  public var state: AsyncStream<PrimerCardFormState> {
     AsyncStream { continuation in
       let task = Task { @MainActor in
         for await _ in $structuredState.values {
@@ -67,7 +67,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   public var screen: CardFormScreenComponent?
   public var cobadgedCardsView:
     ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
-  public var errorView: ErrorComponent?
+  public var errorScreen: ErrorComponent?
 
   // MARK: - Submit Button Customization
 
@@ -97,7 +97,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   public var cardInputSection: Component?
   public var billingAddressSection: Component?
-  public var submitButtonSection: Component?
+  public var submitButton: Component?
 
   // MARK: - Private Properties
 
@@ -112,7 +112,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   private var billingAddressSent = false
   private var currentCardData: PrimerCardData?
   private var fieldValidationStates = FieldValidationStates()
-  @Published var structuredState = StructuredCardFormState()
+  @Published var structuredState = PrimerCardFormState()
   private var formConfiguration: CardFormConfiguration = .default
 
   /// Builds billing address fields array based on API configuration
@@ -196,6 +196,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
     if cardNetworkDetectionInteractor != nil {
       setupNetworkDetectionStream()
+      setupBinDataStream()
     }
   }
 
@@ -238,6 +239,18 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
             self.structuredState.selectedNetwork = nil
             self.updateSurchargeAmount(for: nil)
           }
+        }
+      }
+    }
+  }
+
+  private func setupBinDataStream() {
+    guard let cardNetworkDetectionInteractor else { return }
+
+    Task { [self] in
+      for await binData in cardNetworkDetectionInteractor.binDataStream {
+        await MainActor.run {
+          structuredState.binData = binData
         }
       }
     }
@@ -426,7 +439,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
 
   // MARK: - Navigation Methods
 
-  public func onSubmit() {
+  public func submit() {
     Task {
       await submit()
     }
@@ -438,7 +451,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  public func onCancel() {
+  public func cancel() {
     checkoutScope?.onDismiss()
   }
 
@@ -523,6 +536,9 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
       metadata: .payment(PaymentEvent(paymentMethod: PrimerPaymentMethodType.paymentCard.rawValue)))
 
     do {
+      try await checkoutScope?.invokeBeforePaymentCreate(
+        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue
+      )
       try await sendBillingAddressIfNeeded()
       let cardData = try await prepareCardPaymentData()
 

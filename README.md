@@ -118,7 +118,7 @@ struct PaymentView: View {
 
 ### 🔄 UIKit Integration (Wrapper)
 
-For UIKit apps, use `CheckoutComponentsPrimer` to present the checkout:
+For UIKit apps, use `PrimerCheckoutPresenter` to present the checkout:
 
 ```swift
 import PrimerSDK
@@ -129,30 +129,30 @@ class MyViewController: UIViewController {
         super.viewDidLoad()
 
         // Set the delegate to receive checkout events
-        CheckoutComponentsPrimer.shared.delegate = self
+        PrimerCheckoutPresenter.shared.delegate = self
     }
 
     func startCheckout() {
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
+        PrimerCheckoutPresenter.presentCheckout(
+            clientToken: clientToken,
             from: self
         )
     }
 }
 
-extension MyViewController: CheckoutComponentsDelegate {
+extension MyViewController: PrimerCheckoutPresenterDelegate {
 
-    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+    func primerCheckoutPresenterDidCompleteWithSuccess(_ result: PaymentResult) {
         // Payment completed successfully
         print("Payment ID: \(result.paymentId)")
     }
 
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError) {
         // Handle payment failure
         print("Payment failed: \(error)")
     }
 
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         // Checkout was dismissed without completion
     }
 }

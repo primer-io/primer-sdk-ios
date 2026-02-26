@@ -210,3 +210,18 @@
 "accessibility_klarna_payment_view" = "Форма оплаты Klarna";
 "accessibility_klarna_authorize_hint" = "Нажмите дважды, чтобы продолжить с Klarna";
 "accessibility_klarna_finalize_hint" = "Нажмите дважды, чтобы завершить оплату";
+
+/* ACH */
+"primer_ach_title" = "Банковский счёт";
+"primer_ach_pay_with_title" = "Оплата через ACH";
+"primer_ach_user_details_title" = "Введите свои данные для подключения банковского счёта";
+"primer_ach_personal_details_subtitle" = "Ваши личные данные";
+"primer_ach_email_disclaimer" = "Мы будем использовать это только для информирования вас о вашем платеже";
+"primer_ach_button_continue" = "Продолжить";
+"primer_ach_mandate_title" = "Авторизация";
+"primer_ach_mandate_button_accept" = "Я согласен";
+"primer_ach_mandate_button_decline" = "Отмена";
+"primer_ach_mandate_template" = "Нажимая \"Я согласен\", вы разрешаете %1$@ списывать с указанного выше банковского счёта любую сумму задолженности за платежи, возникающие в связи с использованием услуг %1$@ и/или покупкой продуктов у %1$@, в соответствии с веб-сайтом и условиями %1$@, до отзыва данного разрешения. Вы можете изменить или отменить это разрешение в любое время, уведомив %1$@ за 30 (тридцать) дней.";
+"accessibility_ach_continue_hint" = "Нажмите дважды, чтобы продолжить к выбору банковского счёта";
+"accessibility_ach_mandate_accept_hint" = "Нажмите дважды, чтобы принять авторизацию и завершить оплату";
+"accessibility_ach_mandate_decline_hint" = "Нажмите дважды, чтобы отклонить и отменить оплату";

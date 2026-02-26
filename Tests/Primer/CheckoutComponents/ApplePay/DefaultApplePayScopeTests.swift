@@ -39,8 +39,8 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertTrue(scope.isAvailable)
-        XCTAssertNil(scope.availabilityError)
+        XCTAssertTrue(scope.structuredState.isAvailable)
+        XCTAssertNil(scope.structuredState.availabilityError)
     }
 
     @MainActor
@@ -55,8 +55,8 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertFalse(scope.isAvailable)
-        XCTAssertNotNil(scope.availabilityError)
+        XCTAssertFalse(scope.structuredState.isAvailable)
+        XCTAssertNotNil(scope.structuredState.availabilityError)
     }
 
     @MainActor
@@ -85,7 +85,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertEqual(scope.buttonStyle, .black)
+        XCTAssertEqual(scope.structuredState.buttonStyle, .black)
     }
 
     @MainActor
@@ -94,10 +94,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        scope.buttonStyle = .white
+        scope.structuredState.buttonStyle = .white
 
         // Then
-        XCTAssertEqual(scope.buttonStyle, .white)
+        XCTAssertEqual(scope.structuredState.buttonStyle, .white)
     }
 
     @MainActor
@@ -106,7 +106,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertEqual(scope.buttonType, .plain)
+        XCTAssertEqual(scope.structuredState.buttonType, .plain)
     }
 
     @MainActor
@@ -115,10 +115,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        scope.buttonType = .buy
+        scope.structuredState.buttonType = .buy
 
         // Then
-        XCTAssertEqual(scope.buttonType, .buy)
+        XCTAssertEqual(scope.structuredState.buttonType, .buy)
     }
 
     @MainActor
@@ -127,7 +127,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertEqual(scope.cornerRadius, 8.0)
+        XCTAssertEqual(scope.structuredState.cornerRadius, 8.0)
     }
 
     @MainActor
@@ -136,10 +136,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        scope.cornerRadius = 16.0
+        scope.structuredState.cornerRadius = 16.0
 
         // Then
-        XCTAssertEqual(scope.cornerRadius, 16.0)
+        XCTAssertEqual(scope.structuredState.cornerRadius, 16.0)
     }
 
     // MARK: - Start Tests
@@ -154,8 +154,8 @@ final class DefaultApplePayScopeTests: XCTestCase {
         scope.start()
 
         // Then
-        XCTAssertTrue(scope.isAvailable)
-        XCTAssertNil(scope.availabilityError)
+        XCTAssertTrue(scope.structuredState.isAvailable)
+        XCTAssertNil(scope.structuredState.availabilityError)
     }
 
     @MainActor
@@ -168,8 +168,8 @@ final class DefaultApplePayScopeTests: XCTestCase {
         scope.start()
 
         // Then
-        XCTAssertFalse(scope.isAvailable)
-        XCTAssertNotNil(scope.availabilityError)
+        XCTAssertFalse(scope.structuredState.isAvailable)
+        XCTAssertNotNil(scope.structuredState.availabilityError)
     }
 
     @MainActor
@@ -177,23 +177,23 @@ final class DefaultApplePayScopeTests: XCTestCase {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
-        scope.buttonStyle = .white
-        scope.buttonType = .buy
-        scope.cornerRadius = 20.0
+        scope.structuredState.buttonStyle = .white
+        scope.structuredState.buttonType = .buy
+        scope.structuredState.cornerRadius = 20.0
 
         // When
         scope.start()
 
         // Then - customization should be preserved
-        XCTAssertEqual(scope.buttonStyle, .white)
-        XCTAssertEqual(scope.buttonType, .buy)
-        XCTAssertEqual(scope.cornerRadius, 20.0)
+        XCTAssertEqual(scope.structuredState.buttonStyle, .white)
+        XCTAssertEqual(scope.structuredState.buttonType, .buy)
+        XCTAssertEqual(scope.structuredState.cornerRadius, 20.0)
     }
 
-    // MARK: - Pay Guards Tests
+    // MARK: - Submit Guards Tests
 
     @MainActor
-    func test_pay_whenUnavailable_doesNotTriggerPresentation() async {
+    func test_submit_whenUnavailable_doesNotTriggerPresentation() async {
         // Given
         mockPresentationManager.isPresentable = false
         let scope = createScope()
@@ -204,7 +204,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         }
 
         // When
-        scope.pay()
+        scope.submit()
 
         // Wait briefly for any async operations
         try? await Task.sleep(nanoseconds: 100_000_000)
@@ -265,10 +265,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         scope.onDismiss()
     }
 
-    // MARK: - Pay Tests
+    // MARK: - Submit Tests
 
     @MainActor
-    func test_pay_whenAlreadyLoading_doesNotTriggerPayment() async {
+    func test_submit_whenAlreadyLoading_doesNotTriggerPayment() async {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
@@ -281,7 +281,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         }
 
         // When
-        scope.pay()
+        scope.submit()
 
         // Wait briefly for any async operations
         try? await Task.sleep(nanoseconds: 100_000_000)
@@ -310,18 +310,18 @@ final class DefaultApplePayScopeTests: XCTestCase {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
-        scope.buttonStyle = .white
-        scope.buttonType = .buy
-        scope.cornerRadius = 12.0
+        scope.structuredState.buttonStyle = .white
+        scope.structuredState.buttonType = .buy
+        scope.structuredState.cornerRadius = 12.0
 
         // When
         let button = scope.PrimerApplePayButton { }
 
         // Then - button is created with the configured style
         XCTAssertNotNil(button)
-        XCTAssertEqual(scope.buttonStyle, .white)
-        XCTAssertEqual(scope.buttonType, .buy)
-        XCTAssertEqual(scope.cornerRadius, 12.0)
+        XCTAssertEqual(scope.structuredState.buttonStyle, .white)
+        XCTAssertEqual(scope.structuredState.buttonType, .buy)
+        XCTAssertEqual(scope.structuredState.cornerRadius, 12.0)
     }
 
     // MARK: - UI Customization Tests
@@ -377,7 +377,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedState: ApplePayFormState?
+        var receivedState: PrimerApplePayState?
         let task = Task {
             for await state in scope.state {
                 // Wait for the state with the expected buttonStyle
@@ -392,7 +392,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // Trigger a state update
-        scope.buttonStyle = .white
+        scope.structuredState.buttonStyle = .white
 
         // Wait briefly for async stream
         try? await Task.sleep(nanoseconds: 100_000_000)
@@ -410,7 +410,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [ApplePayFormState] = []
+        var receivedStates: [PrimerApplePayState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)
@@ -457,7 +457,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        var receivedStates: [ApplePayFormState] = []
+        var receivedStates: [PrimerApplePayState] = []
         let task = Task {
             for await state in scope.state {
                 receivedStates.append(state)
@@ -469,9 +469,9 @@ final class DefaultApplePayScopeTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 50_000_000)
 
         // Trigger multiple state updates
-        scope.buttonStyle = .white
+        scope.structuredState.buttonStyle = .white
         try? await Task.sleep(nanoseconds: 50_000_000)
-        scope.buttonType = .buy
+        scope.structuredState.buttonType = .buy
 
         // Wait for emissions
         try? await Task.sleep(nanoseconds: 100_000_000)
@@ -553,10 +553,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        scope.buttonStyle = .whiteOutline
+        scope.structuredState.buttonStyle = .whiteOutline
 
-        // Then - both accessors should return same value
-        XCTAssertEqual(scope.buttonStyle, scope.structuredState.buttonStyle)
+        // Then
+        XCTAssertEqual(scope.structuredState.buttonStyle, .whiteOutline)
     }
 
     @MainActor
@@ -565,10 +565,10 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // When
-        scope.cornerRadius = 24.0
+        scope.structuredState.cornerRadius = 24.0
 
-        // Then - both accessors should return same value
-        XCTAssertEqual(scope.cornerRadius, scope.structuredState.cornerRadius)
+        // Then
+        XCTAssertEqual(scope.structuredState.cornerRadius, 24.0)
     }
 
     // MARK: - Availability Error Tests
@@ -582,7 +582,7 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertNil(scope.availabilityError)
+        XCTAssertNil(scope.structuredState.availabilityError)
     }
 
     @MainActor
@@ -599,24 +599,23 @@ final class DefaultApplePayScopeTests: XCTestCase {
         let scope = createScope()
 
         // Then
-        XCTAssertNotNil(scope.availabilityError)
-        XCTAssertTrue(scope.availabilityError?.contains("Test error message") ?? false)
+        XCTAssertNotNil(scope.structuredState.availabilityError)
+        XCTAssertTrue(scope.structuredState.availabilityError?.contains("Test error message") ?? false)
     }
 
     // MARK: - Submit Method Tests (PrimerApplePayScope Protocol)
 
     @MainActor
-    func test_submit_whenAvailable_callsPay() {
+    func test_submit_whenAvailable_callsSubmit() {
         // Given
         mockPresentationManager.isPresentable = true
         let scope = createScope()
 
-        // When/Then - submit() should be callable and trigger pay()
-        // This tests the protocol default implementation
+        // When/Then - submit() should be callable
         scope.submit()
 
         // Verify scope is in expected state after submit
-        XCTAssertTrue(scope.isAvailable)
+        XCTAssertTrue(scope.structuredState.isAvailable)
     }
 
     @MainActor
@@ -625,11 +624,11 @@ final class DefaultApplePayScopeTests: XCTestCase {
         mockPresentationManager.isPresentable = false
         let scope = createScope()
 
-        // When - submit() calls pay() which guards on isAvailable
+        // When - submit() guards on isAvailable
         scope.submit()
 
         // Then - should return early without crashing
-        XCTAssertFalse(scope.isAvailable)
+        XCTAssertFalse(scope.structuredState.isAvailable)
         XCTAssertFalse(scope.structuredState.isLoading)
     }
 

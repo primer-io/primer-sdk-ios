@@ -31,10 +31,10 @@
 
     public var dismissalMechanism: [DismissalMechanism]
 
-    public var state: AsyncStream<StructuredCardFormState> {
+    public var state: AsyncStream<PrimerCardFormState> {
       AsyncStream { continuation in
         continuation.yield(
-          StructuredCardFormState(
+          PrimerCardFormState(
             data: FormData(),
             isLoading: self.initialIsLoading,
             isValid: self.initialIsValid,
@@ -50,7 +50,7 @@
     public var title: String?
     public var screen: CardFormScreenComponent?
     public var cobadgedCardsView: (([String], @escaping (String) -> Void) -> any View)?
-    public var errorView: ErrorComponent?
+    public var errorScreen: ErrorComponent?
 
     // MARK: - Submit Button Customization
 
@@ -80,7 +80,7 @@
 
     public var cardInputSection: Component?
     public var billingAddressSection: Component?
-    public var submitButtonSection: Component?
+    public var submitButton: Component?
 
     public var selectCountry: PrimerSelectCountryScope {
       fatalError("Not implemented for preview")
@@ -112,13 +112,13 @@
       dismissalMechanism: [DismissalMechanism] = [],
       enableLogging: Bool = true
     ) {
-      self.initialIsLoading = isLoading
-      self.initialIsValid = isValid
-      self.initialSelectedNetwork = selectedNetwork
-      self.initialAvailableNetworks = availableNetworks
-      self.initialSurchargeAmount = surchargeAmount
+      initialIsLoading = isLoading
+      initialIsValid = isValid
+      initialSelectedNetwork = selectedNetwork
+      initialAvailableNetworks = availableNetworks
+      initialSurchargeAmount = surchargeAmount
       self.presentationContext = presentationContext
-      self.configuration = formConfiguration
+      configuration = formConfiguration
       self.cardFormUIOptions = cardFormUIOptions
       self.dismissalMechanism = dismissalMechanism
       self.enableLogging = enableLogging
@@ -148,16 +148,8 @@
 
     // MARK: - Navigation Methods
 
-    public func onSubmit() {
-      log("onSubmit() called")
-    }
-
     public func onBack() {
       log("onBack() called")
-    }
-
-    public func onCancel() {
-      log("onCancel() called")
     }
 
     public func onDismiss() {

@@ -13,7 +13,7 @@ struct PayPalView: View, LogReporter {
   let scope: any PrimerPayPalScope
 
   @Environment(\.designTokens) private var tokens
-  @State private var payPalState: PayPalState = .init()
+  @State private var payPalState: PrimerPayPalState = .init()
 
   var body: some View {
     VStack(spacing: PrimerSpacing.xxlarge(tokens: tokens)) {
@@ -66,7 +66,7 @@ struct PayPalView: View, LogReporter {
           Button(
             CheckoutComponentsStrings.cancelButton,
             action: {
-              scope.onCancel()
+              scope.cancel()
             }
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
@@ -149,7 +149,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var submitButtonContent: some View {
-    let isLoading = payPalState.status == .loading || payPalState.status == .redirecting
+    let isLoading = payPalState.step == .loading || payPalState.step == .redirecting
 
     return HStack {
       if isLoading {
@@ -182,7 +182,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var submitButtonAccessibilityLabel: String {
-    let isLoading = payPalState.status == .loading || payPalState.status == .redirecting
+    let isLoading = payPalState.step == .loading || payPalState.step == .redirecting
     if isLoading {
       return CheckoutComponentsStrings.a11ySubmitButtonLoading
     }
@@ -196,7 +196,7 @@ struct PayPalView: View, LogReporter {
   }
 
   private var isButtonDisabled: Bool {
-    payPalState.status == .loading || payPalState.status == .redirecting
+    payPalState.step == .loading || payPalState.step == .redirecting
   }
 
   private func submitAction() {
@@ -234,7 +234,7 @@ struct PayPalView: View, LogReporter {
 
   @available(iOS 15.0, *)
   #Preview("PayPal - Loading") {
-    PayPalView(scope: MockPayPalScope(status: .loading))
+    PayPalView(scope: MockPayPalScope(step: .loading))
       .environment(\.designTokens, MockDesignTokens.light)
   }
 
@@ -247,25 +247,24 @@ struct PayPalView: View, LogReporter {
     var payButton: PayPalButtonComponent?
     var submitButtonText: String?
 
-    @Published private var mockState: PayPalState
+    @Published private var mockState: PrimerPayPalState
 
-    var state: AsyncStream<PayPalState> {
+    var state: AsyncStream<PrimerPayPalState> {
       AsyncStream { continuation in
         continuation.yield(mockState)
       }
     }
 
-    init(status: PayPalState.Status = .idle) {
-      self.mockState = PayPalState(status: status)
+    init(step: PrimerPayPalState.Step = .idle) {
+      mockState = PrimerPayPalState(step: step)
     }
 
     func start() {}
     func submit() {
-      mockState.status = .loading
+      mockState.step = .loading
     }
 
     func cancel() {}
     func onBack() {}
-    func onCancel() {}
   }
 #endif

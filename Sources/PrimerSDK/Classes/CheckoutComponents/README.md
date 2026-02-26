@@ -43,7 +43,7 @@ let settings = PrimerSettings(
 )
 
 // Present default checkout UI
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     with: clientToken,
     from: viewController,
     primerSettings: settings
@@ -52,7 +52,7 @@ CheckoutComponentsPrimer.presentCheckout(
 }
 
 // Present with custom UI via scope configuration
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     clientToken: clientToken,
     from: viewController,
     primerSettings: settings,
@@ -66,13 +66,13 @@ CheckoutComponentsPrimer.presentCheckout(
 )
 
 // Present card form directly
-CheckoutComponentsPrimer.presentCardForm(
+PrimerCheckoutPresenter.presentCardForm(
     with: clientToken,
     from: viewController
 )
 
 // Set delegate for callbacks
-CheckoutComponentsPrimer.delegate = self
+PrimerCheckoutPresenter.delegate = self
 ```
 
 ### SwiftUI Integration
@@ -83,8 +83,19 @@ import PrimerSDK
 
 struct ContentView: View {
     var body: some View {
-        // Use the checkout scope directly in your SwiftUI view
-        CheckoutView(clientToken: "your_client_token")
+        PrimerCheckout(
+            clientToken: "your_client_token",
+            primerSettings: PrimerSettings(),
+            scope: { checkoutScope in
+                // Customize screens using scope properties
+                checkoutScope.paymentMethodSelection.screen = { selectionScope in
+                    AnyView(CustomPaymentSelectionView(scope: selectionScope))
+                }
+            },
+            onCompletion: { result in
+                // Handle checkout result
+            }
+        )
     }
 }
 ```
@@ -100,7 +111,7 @@ customTheme.colorScheme.primaryColor = .purple
 customTheme.cornerRadius = 12
 
 // UIKit: Pass theme separately from settings
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     with: clientToken,
     from: self,
     primerSettings: PrimerSettings(),
@@ -118,7 +129,7 @@ PrimerCheckout(
 let settings = PrimerSettings()
 settings.uiOptions.theme = defaultTheme
 
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     with: clientToken,
     from: self,
     primerSettings: settings,
@@ -200,7 +211,7 @@ InputFieldConfig(
 Replace screens using scope-based `.screen` properties:
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     clientToken: clientToken,
     from: viewController,
     primerSettings: settings,
@@ -519,16 +530,16 @@ Task {
 
 ## Error Handling
 
-CheckoutComponents uses the CheckoutComponentsDelegate protocol:
+CheckoutComponents uses the PrimerCheckoutPresenterDelegate protocol:
 
 ```swift
-extension ViewController: CheckoutComponentsDelegate {
-    func checkoutComponentsDidCompletePayment(with data: PrimerCheckoutData) {
+extension ViewController: PrimerCheckoutPresenterDelegate {
+    func primerCheckoutPresenterDidCompletePayment(with data: PrimerCheckoutData) {
         print("Payment successful: \(data.payment.id)")
         // Handle successful payment
     }
     
-    func checkoutComponentsDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
+    func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
         switch error.errorCode {
         case .paymentFailed:
             // Allow retry
@@ -542,30 +553,30 @@ extension ViewController: CheckoutComponentsDelegate {
         }
     }
     
-    func checkoutComponentsDidDismiss() {
+    func primerCheckoutPresenterDidDismiss() {
         print("Checkout dismissed")
     }
     
     // 3DS handling
-    func checkoutComponentsWillPresent3DS() {
+    func primerCheckoutPresenterWillPresent3DS() {
         print("3DS challenge will be presented")
     }
     
-    func checkoutComponentsDidPresent3DS() {
+    func primerCheckoutPresenterDidPresent3DS() {
         print("3DS challenge presented")
     }
     
-    func checkoutComponentsWillDismiss3DS() {
+    func primerCheckoutPresenterWillDismiss3DS() {
         print("3DS challenge will be dismissed")
     }
     
-    func checkoutComponentsDidComplete3DS(with result: ThreeDSResult) {
+    func primerCheckoutPresenterDidComplete3DS(with result: ThreeDSResult) {
         print("3DS completed: \(result)")
     }
 }
 
 // Set the delegate
-CheckoutComponentsPrimer.delegate = self
+PrimerCheckoutPresenter.delegate = self
 ```
 
 ## Advanced Features
@@ -576,12 +587,12 @@ CheckoutComponentsPrimer.delegate = self
 
 ```swift
 // Implement delegate methods for 3DS lifecycle
-extension ViewController: CheckoutComponentsDelegate {
-    func checkoutComponentsWillPresent3DS() {
+extension ViewController: PrimerCheckoutPresenterDelegate {
+    func primerCheckoutPresenterWillPresent3DS() {
         // Prepare UI for 3DS presentation
     }
     
-    func checkoutComponentsDidComplete3DS(with result: ThreeDSResult) {
+    func primerCheckoutPresenterDidComplete3DS(with result: ThreeDSResult) {
         switch result {
         case .success:
             print("3DS authentication successful")
@@ -604,7 +615,7 @@ let updatedSettings = PrimerSettings()
 updatedSettings.uiOptions.theme = darkModeTheme
 updatedSettings.uiOptions.isSuccessScreenEnabled = false
 
-await CheckoutComponentsPrimer.updateSettings(updatedSettings)
+await PrimerCheckoutPresenter.updateSettings(updatedSettings)
 ```
 
 **When to use dynamic updates:**
@@ -628,7 +639,7 @@ await CheckoutComponentsPrimer.updateSettings(updatedSettings)
 // ✅ Recommended: Set settings at initialization
 let settings = PrimerSettings()
 settings.uiOptions.theme = customTheme
-CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, settings: settings)
+PrimerCheckoutPresenter.presentCheckout(with: clientToken, from: self, settings: settings)
 
 // ❌ Avoid unless necessary: Updating settings mid-session
 // Only use when you have a specific requirement to change settings after checkout has started
@@ -640,7 +651,7 @@ CheckoutComponents supports smart navigation based on presentation context:
 
 ```swift
 // Direct presentation
-CheckoutComponentsPrimer.presentCardForm(
+PrimerCheckoutPresenter.presentCardForm(
     with: clientToken,
     from: viewController
 )
@@ -714,8 +725,8 @@ cardScope.state.detectedCardNetworks.forEach { network in
 
 ```swift
 // Simplest integration - default UI
-CheckoutComponentsPrimer.delegate = self
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.delegate = self
+PrimerCheckoutPresenter.presentCheckout(
     with: clientToken,
     from: viewController
 )
@@ -724,7 +735,7 @@ CheckoutComponentsPrimer.presentCheckout(
 ### Custom Card Form
 
 ```swift
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     clientToken: clientToken,
     from: viewController,
     primerSettings: settings,
@@ -796,7 +807,7 @@ struct CustomPaymentSelectionView: View {
 }
 
 // Present with scope-based customization
-CheckoutComponentsPrimer.presentCheckout(
+PrimerCheckoutPresenter.presentCheckout(
     clientToken: clientToken,
     from: viewController,
     primerSettings: settings,
@@ -823,9 +834,9 @@ CheckoutComponentsPrimer.presentCheckout(
    }
    ```
 
-2. **Error Handling**: Implement CheckoutComponentsDelegate for comprehensive error handling
+2. **Error Handling**: Implement PrimerCheckoutPresenterDelegate for comprehensive error handling
    ```swift
-   func checkoutComponentsDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
+   func primerCheckoutPresenterDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?) -> PrimerErrorDecision {
        // Return .retry for recoverable errors
        // Return .fail() for terminal errors
    }
@@ -864,12 +875,15 @@ For teams migrating from other Primer checkout solutions:
 
 ## API Reference
 
-For detailed API documentation, see:
-- [CheckoutComponentsPrimer](CheckoutComponentsPrimer.swift)
+For the full API reference, see [API_REFERENCE.md](API_REFERENCE.md).
+
+Key source files:
+- [PrimerCheckoutPresenter](PrimerCheckoutPresenter.swift) — UIKit entry point
+- [PrimerCheckout](PrimerCheckout.swift) — SwiftUI entry point
 - [PrimerCheckoutScope](Scope/PrimerCheckoutScope.swift)
 - [PrimerCardFormScope](Scope/PrimerCardFormScope.swift)
 - [PrimerPaymentMethodSelectionScope](Scope/PrimerPaymentMethodSelectionScope.swift)
-- [StructuredCardFormState](State/StructuredCardFormState.swift)
+- [PrimerCardFormState](Core/Data/PrimerCardFormState.swift)
 
 ## Support
 

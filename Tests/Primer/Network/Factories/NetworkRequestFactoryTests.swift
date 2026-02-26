@@ -1,11 +1,11 @@
 //
 //  NetworkRequestFactoryTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class NetworkRequestFactoryTests: XCTestCase {
 
@@ -22,7 +22,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         if isPost {
             headers["Content-Type"] = "application/json"
         }
-        if let jwt = jwt {
+        if let jwt {
             headers["Primer-Client-Token"] = jwt
         }
         return headers
@@ -75,7 +75,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertEqual(request.url?.absoluteString, "bindata_url/v1/bin-data/1234/networks")
+        XCTAssertEqual(request.url?.absoluteString, "bindata_url/v1/bin-data/1234")
         XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(jwt: "bla"))
     }
 
@@ -102,7 +102,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
                 return
             }
             switch error {
-            case .invalidUrl(let url, _):
+            case let .invalidUrl(url, _):
                 XCTAssertTrue(url?.hasPrefix("Unknown Host") ?? false)
             default:
                 XCTFail()
