@@ -167,12 +167,6 @@ public struct PrimerFormRedirectState: Equatable {
     /// The form fields for this payment method.
     public internal(set) var fields: [PrimerFormFieldState]
 
-    /// Whether all fields are valid and the form can be submitted.
-    /// Derived from field validity: all fields must be non-empty and valid.
-    public var isSubmitEnabled: Bool {
-        !fields.isEmpty && fields.allSatisfy(\.isValid)
-    }
-
     /// Message to display while awaiting external completion (e.g., "Confirm payment in your banking app").
     public internal(set) var pendingMessage: String?
 
@@ -196,6 +190,12 @@ public struct PrimerFormRedirectState: Equatable {
 
 @available(iOS 15.0, *)
 extension PrimerFormRedirectState {
+
+    /// Whether all fields are valid and the form can be submitted.
+    /// Derived from field validity: all fields must be non-empty and valid.
+    public var isSubmitEnabled: Bool {
+        !fields.isEmpty && fields.allSatisfy(\.isValid)
+    }
 
     /// The OTP code field, if present (used by BLIK).
     public var otpField: PrimerFormFieldState? {
