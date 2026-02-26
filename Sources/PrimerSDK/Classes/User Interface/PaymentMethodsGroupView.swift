@@ -1,9 +1,10 @@
 //
 //  PaymentMethodsGroupView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+import PrimerFoundation
 import UIKit
 
 protocol PaymentMethodsGroupViewDelegate: AnyObject {
@@ -12,11 +13,11 @@ protocol PaymentMethodsGroupViewDelegate: AnyObject {
 
 final class PaymentMethodsGroupView: PrimerView {
 
-    internal private(set) var title: String?
-    internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
+    private(set) var title: String?
+    private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
     private var verticalStackView: UIStackView = UIStackView()
-    internal var delegate: PaymentMethodsGroupViewDelegate?
-    internal var titleLabel: UILabel?
+    var delegate: PaymentMethodsGroupViewDelegate?
+    var titleLabel: UILabel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
