@@ -7,6 +7,7 @@
 // swiftlint:disable function_body_length
 
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 final class VaultedPaymentInstrumentCell: UITableViewCell {
