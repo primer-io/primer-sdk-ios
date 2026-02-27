@@ -24,12 +24,10 @@ struct PaymentMethodButton: View {
       Button(action: onSelect) {
         HStack(spacing: PrimerSpacing.large(tokens: tokens)) {
           icon
-          if let text = method.buttonText ?? method.name as String? {
-            Text(text)
-              .font(PrimerFont.bodyLarge(tokens: tokens))
-              .foregroundColor(
-                method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
-          }
+          Text(method.buttonText ?? method.name)
+            .font(PrimerFont.bodyLarge(tokens: tokens))
+            .foregroundColor(
+              method.textColor.map(Color.init) ?? CheckoutColors.textPrimary(tokens: tokens))
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
