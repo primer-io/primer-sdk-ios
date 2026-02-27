@@ -9,7 +9,6 @@ paths:
 - Scope-based API: `PrimerCheckoutScope`, `PrimerCardFormScope`, `PrimerPaymentMethodSelectionScope`
 - Dependency injection via `ComposableContainer` — register/resolve pattern with retention policies
 - AsyncStream state observation for reactive updates
-- Exact Android API parity for cross-platform consistency
 
 ## Key Directories
 ```
