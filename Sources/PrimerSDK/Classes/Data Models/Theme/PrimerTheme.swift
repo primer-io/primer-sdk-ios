@@ -7,16 +7,6 @@
 import PrimerUI
 import UIKit
 
-protocol PrimerThemeProtocol {
-    var colors: ColorSwatch { get }
-    var blurView: ViewTheme { get }
-    var view: ViewTheme { get }
-    var text: TextStyle { get }
-    var paymentMethodButton: ButtonTheme { get }
-    var mainButton: ButtonTheme { get }
-    var input: InputTheme { get }
-}
-
 /**
  Struct that customizes Primer's drop-in User Interface
 
@@ -47,15 +37,15 @@ public final class PrimerTheme: PrimerThemeProtocol {
 
     private let data: PrimerThemeData
 
-    lazy var colors: ColorSwatch = ColorSwatch(
+    public lazy var colors: ColorSwatch = ColorSwatch(
         primary: data.colors.primary,
         error: data.colors.error
     )
 
-    lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
-    lazy var view = data.view.theme(for: .main, with: data)
+    public lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
+    public lazy var view = data.view.theme(for: .main, with: data)
 
-    lazy var text = TextStyle(
+    public lazy var text = TextStyle(
         body: data.text.theme(for: .body, with: data),
         title: data.text.theme(for: .title, with: data),
         subtitle: data.text.theme(for: .subtitle, with: data),
@@ -64,11 +54,11 @@ public final class PrimerTheme: PrimerThemeProtocol {
         error: data.text.theme(for: .error, with: data)
     )
 
-    lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
+    public lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
 
-    lazy var mainButton = data.buttons.theme(for: .main, with: data)
+    public lazy var mainButton = data.buttons.theme(for: .main, with: data)
 
-    lazy var input = data.input.theme(with: data)
+    public lazy var input = data.input.theme(with: data)
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
         self.data = data

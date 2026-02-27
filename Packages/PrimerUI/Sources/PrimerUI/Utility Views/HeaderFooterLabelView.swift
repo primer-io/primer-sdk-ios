@@ -1,19 +1,19 @@
 //
 //  HeaderFooterLabelView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-final class HeaderFooterLabelView: UITableViewHeaderFooterView {
+public final class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
     private let label = UILabel(frame: .zero)
     private let labelNumberOfLines = 0
     private let systemFontSize: CGFloat = 16
     private let padding: CGFloat = 16
 
-    override init(reuseIdentifier: String?) {
+    override public init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
         let containerView = UIView(frame: .zero)
@@ -37,7 +37,7 @@ final class HeaderFooterLabelView: UITableViewHeaderFooterView {
     }
 }
 
-extension HeaderFooterLabelView {
+public extension HeaderFooterLabelView {
 
     func configure(text: String) {
         label.text = text
