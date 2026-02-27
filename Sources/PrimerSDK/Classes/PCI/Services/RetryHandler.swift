@@ -69,7 +69,7 @@ final class RetryHandler: LogReporter {
         if let error, retryConfig.retryNetworkErrors, error.isNetworkError {
             attemptRetry(statusCode: error.nsErrorCode, error: error)
         } else {
-            completion(.failure(InternalError.invalidResponse()))
+            completion(.failure(InternalError.missingHTTPResponse(underlyingError: error)))
         }
     }
 
