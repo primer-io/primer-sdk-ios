@@ -10,7 +10,7 @@ Write unit tests for: $ARGUMENTS
 ## Workflow
 
 1. **Read the source**: Understand the class/file to test — its public API, dependencies, and edge cases
-2. **Check existing tests**: Look for existing tests in `Tests/` that cover related functionality
+2. **Find similar tests**: Search `Tests/` for existing tests that cover related functionality. Use the most similar test file as a structural template
 3. **Follow project patterns** (see `.claude/rules/testing.md`):
    - File name: `{Subject}Tests.swift`
    - Test class: `final class {Subject}Tests: XCTestCase`
@@ -38,4 +38,3 @@ Write unit tests for: $ARGUMENTS
      -only-testing:"Tests/{TestClassName}" \
      test
    ```
-7. **Run code quality**: SwiftFormat + SwiftLint on new test files

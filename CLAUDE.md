@@ -23,7 +23,10 @@ swiftlint lint --fix --config "Debug App/.swiftlint.yml"
 swiftlint lint --config "Debug App/.swiftlint.yml"
 ```
 
-**IMPORTANT: Always run both tools on modified files before committing.**
+Hooks auto-run SwiftFormat + SwiftLint --fix on every file edit. Before committing, verify no warnings remain:
+```bash
+swiftlint lint --config "Debug App/.swiftlint.yml"
+```
 
 ## Swift Coding Style
 
