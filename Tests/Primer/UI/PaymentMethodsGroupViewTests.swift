@@ -7,6 +7,7 @@
 import PrimerFoundation
 import PrimerNetworking
 @testable import PrimerSDK
+import PrimerUI
 import XCTest
 
 final class PaymentMethodsGroupViewTests: XCTestCase {
