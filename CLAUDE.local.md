@@ -5,5 +5,5 @@
 - Check available: `xcrun simctl list devices available`
 
 ## Workflow
-- After switching branches: `cd "Debug App" && pod install && cd ..`
+- After switching branches: `cd "Debug App" && pod install && cd ..` then go back to the root of the project
 - Preferred test plan: `UnitTestsTestPlan`
