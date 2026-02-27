@@ -6,7 +6,9 @@
 
 import PrimerCore
 import PrimerFoundation
+import PrimerFoundation
 import PrimerNetworking
+import PrimerUI
 import UIKit
 
 // swiftlint:disable:next type_name

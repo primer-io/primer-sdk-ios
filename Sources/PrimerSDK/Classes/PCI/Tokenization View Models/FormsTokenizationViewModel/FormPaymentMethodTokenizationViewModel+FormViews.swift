@@ -6,6 +6,7 @@
 
 // swiftlint:disable file_length
 
+import PrimerUI
 import UIKit
 
 extension FormPaymentMethodTokenizationViewModel {
