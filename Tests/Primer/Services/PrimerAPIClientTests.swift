@@ -1,7 +1,7 @@
 //
 //  PrimerAPIClientTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -32,9 +32,9 @@ final class PrimerAPIClientTests: XCTestCase {
             url: URL(string: "https://random.url")!
         ) { result in
             switch result {
-            case .success(let flag):
+            case let .success(flag):
                 XCTAssertTrue(flag)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -73,9 +73,9 @@ final class PrimerAPIClientTests: XCTestCase {
             url: url
         ) { result in
             switch result {
-            case .success(let flag):
+            case let .success(flag):
                 XCTFail("Expected failure, but got success with flag: \(flag)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -119,9 +119,9 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.fetchVaultedPaymentMethods(clientToken: Mocks.decodedJWTToken) { result in
             switch result {
-            case .success(let paymentMethods):
+            case let .success(paymentMethods):
                 XCTAssertEqual(paymentMethods.data.count, 0)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -154,9 +154,9 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.fetchVaultedPaymentMethods(clientToken: Mocks.decodedJWTToken) { result in
             switch result {
-            case .success(let paymentMethods):
+            case let .success(paymentMethods):
                 XCTFail("Expected failure, but got success with payment methods: \(paymentMethods)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -200,9 +200,9 @@ final class PrimerAPIClientTests: XCTestCase {
             vaultedPaymentMethodAdditionalData: nil
         ) { result in
             switch result {
-            case .success(let paymentMethod):
+            case let .success(paymentMethod):
                 XCTAssertEqual(paymentMethod.id, mockedResult.id)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -243,9 +243,9 @@ final class PrimerAPIClientTests: XCTestCase {
             vaultedPaymentMethodAdditionalData: nil
         ) { result in
             switch result {
-            case .success(let paymentMethod):
+            case let .success(paymentMethod):
                 XCTFail("Expected failure, but got success with payment method: \(paymentMethod)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -293,7 +293,7 @@ final class PrimerAPIClientTests: XCTestCase {
             switch result {
             case .success:
                 XCTAssertTrue(true)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -333,7 +333,7 @@ final class PrimerAPIClientTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure, but got success")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -383,12 +383,12 @@ final class PrimerAPIClientTests: XCTestCase {
         ) { result, headers in
             XCTAssertEqual(headers?["TEST"], "HEADER")
             switch result {
-            case .success(let configuration):
+            case let .success(configuration):
                 XCTAssertEqual(configuration.coreUrl, mockedResult.coreUrl)
                 XCTAssertEqual(configuration.pciUrl, mockedResult.pciUrl)
                 XCTAssertEqual(configuration.binDataUrl, mockedResult.binDataUrl)
                 XCTAssertEqual(configuration.assetsUrl, mockedResult.assetsUrl)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -435,9 +435,9 @@ final class PrimerAPIClientTests: XCTestCase {
         ) { result, headers in
             XCTAssertNil(headers, "Expected headers to be nil on failure")
             switch result {
-            case .success(let configuration):
+            case let .success(configuration):
                 XCTFail("Expected failure, but got success with configuration: \(configuration)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -489,10 +489,10 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let orderSession):
+            case let .success(orderSession):
                 XCTAssertEqual(orderSession.orderId, mockedResult.orderId)
                 XCTAssertEqual(orderSession.approvalUrl, mockedResult.approvalUrl)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -544,9 +544,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let orderSession):
+            case let .success(orderSession):
                 XCTFail("Expected failure, but got success with order session: \(orderSession)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -602,10 +602,10 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let agreementSession):
+            case let .success(agreementSession):
                 XCTAssertEqual(agreementSession.tokenId, mockedResult.tokenId)
                 XCTAssertEqual(agreementSession.approvalUrl, mockedResult.approvalUrl)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -653,9 +653,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let agreementSession):
+            case let .success(agreementSession):
                 XCTFail("Expected failure, but got success with agreement session: \(agreementSession)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -708,7 +708,7 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let confirmation):
+            case let .success(confirmation):
                 XCTAssertEqual(confirmation.billingAgreementId, mockedResult.billingAgreementId)
                 XCTAssertEqual(confirmation.externalPayerInfo.externalPayerId, mockedResult.externalPayerInfo.externalPayerId)
                 XCTAssertEqual(confirmation.externalPayerInfo.email, mockedResult.externalPayerInfo.email)
@@ -716,7 +716,7 @@ final class PrimerAPIClientTests: XCTestCase {
                 XCTAssertEqual(confirmation.externalPayerInfo.lastName, mockedResult.externalPayerInfo.lastName)
                 XCTAssertEqual(confirmation.shippingAddress?.firstName, mockedResult.shippingAddress?.firstName)
                 XCTAssertEqual(confirmation.shippingAddress?.lastName, mockedResult.shippingAddress?.lastName)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -767,9 +767,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let confirmation):
+            case let .success(confirmation):
                 XCTFail("Expected failure, but got success with confirmation: \(confirmation)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -827,7 +827,7 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let paymentSession):
+            case let .success(paymentSession):
                 XCTAssertEqual(paymentSession.clientToken, mockedResult.clientToken)
                 XCTAssertEqual(paymentSession.sessionId, mockedResult.sessionId)
                 XCTAssertEqual(paymentSession.categories.count, mockedResult.categories.count)
@@ -837,7 +837,7 @@ final class PrimerAPIClientTests: XCTestCase {
                 XCTAssertEqual(paymentSession.categories.first?.standardAssetUrl, mockedResult.categories.first?.standardAssetUrl)
                 XCTAssertEqual(paymentSession.hppSessionId, mockedResult.hppSessionId)
                 XCTAssertEqual(paymentSession.hppRedirectUrl, mockedResult.hppRedirectUrl)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -902,9 +902,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let paymentSession):
+            case let .success(paymentSession):
                 XCTFail("Expected failure, but got success with payment session: \(paymentSession)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -965,10 +965,10 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let customerToken):
+            case let .success(customerToken):
                 XCTAssertEqual(customerToken.customerTokenId, mockedResult.customerTokenId)
                 XCTAssertEqual(customerToken.sessionData.recurringDescription, mockedResult.sessionData.recurringDescription)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1021,9 +1021,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let customerToken):
+            case let .success(customerToken):
                 XCTFail("Expected failure, but got success with customer token: \(customerToken)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1078,10 +1078,10 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let paymentSession):
+            case let .success(paymentSession):
                 XCTAssertEqual(paymentSession.customerTokenId, mockedResult.customerTokenId)
                 XCTAssertEqual(paymentSession.sessionData.recurringDescription, mockedResult.sessionData.recurringDescription)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1128,9 +1128,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let paymentSession):
+            case let .success(paymentSession):
                 XCTFail("Expected failure, but got success with payment session: \(paymentSession)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1182,11 +1182,11 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let banks):
+            case let .success(banks):
                 XCTAssertEqual(banks.result.count, mockedResult.result.count)
                 XCTAssertEqual(banks.result.first?.name, mockedResult.result.first?.name)
                 XCTAssertEqual(banks.result.first?.id, mockedResult.result.first?.id)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1234,9 +1234,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let banks):
+            case let .success(banks):
                 XCTFail("Expected failure, but got success with banks: \(banks)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1285,11 +1285,11 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
         ) { result in
             switch result {
-            case .success(let outlets):
+            case let .success(outlets):
                 XCTAssertEqual(outlets.result.count, mockedResult.result.count)
                 XCTAssertEqual(outlets.result.first?.name, mockedResult.result.first?.name)
                 XCTAssertEqual(outlets.result.first?.id, mockedResult.result.first?.id)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1331,9 +1331,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
         ) { result in
             switch result {
-            case .success(let outlets):
+            case let .success(outlets):
                 XCTFail("Expected failure, but got success with outlets: \(outlets)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1383,11 +1383,11 @@ final class PrimerAPIClientTests: XCTestCase {
             url: "https://random.url"
         ) { result in
             switch result {
-            case .success(let status):
+            case let .success(status):
                 XCTAssertEqual(status.id, mockedResult.id)
                 XCTAssertEqual(status.status, mockedResult.status)
                 XCTAssertEqual(status.source, mockedResult.source)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1433,9 +1433,9 @@ final class PrimerAPIClientTests: XCTestCase {
             url: "https://random.url"
         ) { result in
             switch result {
-            case .success(let status):
+            case let .success(status):
                 XCTFail("Expected failure, but got success with status: \(status)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1487,12 +1487,12 @@ final class PrimerAPIClientTests: XCTestCase {
         ) { result, headers in
             XCTAssertEqual(headers?["TEST"], "HEADER")
             switch result {
-            case .success(let configuration):
+            case let .success(configuration):
                 XCTAssertEqual(configuration.coreUrl, mockedResult.coreUrl)
                 XCTAssertEqual(configuration.pciUrl, mockedResult.pciUrl)
                 XCTAssertEqual(configuration.binDataUrl, mockedResult.binDataUrl)
                 XCTAssertEqual(configuration.assetsUrl, mockedResult.assetsUrl)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1544,9 +1544,9 @@ final class PrimerAPIClientTests: XCTestCase {
         ) { result, headers in
             XCTAssertNil(headers, "Expected headers to be nil on failure")
             switch result {
-            case .success(let configuration):
+            case let .success(configuration):
                 XCTFail("Expected failure, but got success with configuration: \(configuration)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1595,10 +1595,10 @@ final class PrimerAPIClientTests: XCTestCase {
             body: nil
         ) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTAssertEqual(response.id, mockedResult.id)
                 XCTAssertEqual(response.result, mockedResult.result)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1641,9 +1641,9 @@ final class PrimerAPIClientTests: XCTestCase {
             body: nil
         ) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTFail("Expected failure, but got success with response: \(response)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1693,12 +1693,12 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let externalPayerInfo):
+            case let .success(externalPayerInfo):
                 XCTAssertEqual(externalPayerInfo.orderId, mockedResult.orderId)
                 XCTAssertEqual(externalPayerInfo.externalPayerInfo.externalPayerId, mockedResult.externalPayerInfo.externalPayerId)
                 XCTAssertEqual(externalPayerInfo.externalPayerInfo.firstName, mockedResult.externalPayerInfo.firstName)
                 XCTAssertEqual(externalPayerInfo.externalPayerInfo.lastName, mockedResult.externalPayerInfo.lastName)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1747,9 +1747,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let externalPayerInfo):
+            case let .success(externalPayerInfo):
                 XCTFail("Expected failure, but got success with external payer info: \(externalPayerInfo)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1795,9 +1795,9 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.validateClientToken(request: .init(clientToken: "MOCK_CLIENT_TOKEN")) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTAssertNotNil(response)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1830,9 +1830,9 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.validateClientToken(request: .init(clientToken: "MOCK_CLIENT_TOKEN")) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTFail("Expected failure, but got success with response: \(response)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1875,11 +1875,11 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequestBody: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTAssertEqual(payment.id, mockedResult.id)
                 XCTAssertEqual(payment.paymentId, mockedResult.paymentId)
                 XCTAssertEqual(payment.status, mockedResult.status)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -1921,9 +1921,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequestBody: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTFail("Expected failure, but got success with payment: \(payment)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -1970,11 +1970,11 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentResumeRequest: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTAssertEqual(payment.id, mockedResult.id)
                 XCTAssertEqual(payment.paymentId, mockedResult.paymentId)
                 XCTAssertEqual(payment.status, mockedResult.status)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2018,9 +2018,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentResumeRequest: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTFail("Expected failure, but got success with payment: \(payment)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -2068,9 +2068,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTAssertNotNil(payment)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2112,9 +2112,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
         ) { result in
             switch result {
-            case .success(let payment):
+            case let .success(payment):
                 XCTFail("Expected failure, but got success with payment: \(payment)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -2163,7 +2163,7 @@ final class PrimerAPIClientTests: XCTestCase {
             switch result {
             case .success:
                 XCTAssertTrue(true)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2204,7 +2204,7 @@ final class PrimerAPIClientTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure, but got success")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -2241,8 +2241,8 @@ final class PrimerAPIClientTests: XCTestCase {
     func test_listCardNetworks_shouldSuccess_whenValidResponse_completion() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")
-        let mockedResult = MockPrimerAPIClient.Samples.mockBinNetworks
-        networkService.mockedResult = mockedResult
+        let mockedBinData = MockPrimerAPIClient.Samples.mockBinData
+        networkService.mockedResult = mockedBinData
 
         // When
         _ = sut.listCardNetworks(
@@ -2250,10 +2250,10 @@ final class PrimerAPIClientTests: XCTestCase {
             bin: "MOCK_BIN"
         ) { result in
             switch result {
-            case .success(let cardNetworks):
-                XCTAssertEqual(cardNetworks.networks.count, mockedResult.networks.count)
-                XCTAssertEqual(cardNetworks.networks.first?.value, mockedResult.networks.first?.value)
-            case .failure(let error):
+            case let .success(cardNetworks):
+                XCTAssertEqual(cardNetworks.networks.count, mockedBinData.binData.count)
+                XCTAssertEqual(cardNetworks.networks.first?.value, mockedBinData.binData.first?.network)
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2265,8 +2265,8 @@ final class PrimerAPIClientTests: XCTestCase {
 
     func test_listCardNetworks_shouldSuccess_whenValidResponse_async() async throws {
         // Given
-        let mockedResult = MockPrimerAPIClient.Samples.mockBinNetworks
-        networkService.mockedResult = mockedResult
+        let mockedBinData = MockPrimerAPIClient.Samples.mockBinData
+        networkService.mockedResult = mockedBinData
 
         do {
             // When
@@ -2276,8 +2276,8 @@ final class PrimerAPIClientTests: XCTestCase {
             )
 
             // Then
-            XCTAssertEqual(cardNetworks.networks.count, mockedResult.networks.count)
-            XCTAssertEqual(cardNetworks.networks.first?.value, mockedResult.networks.first?.value)
+            XCTAssertEqual(cardNetworks.networks.count, mockedBinData.binData.count)
+            XCTAssertEqual(cardNetworks.networks.first?.value, mockedBinData.binData.first?.network)
         } catch {
             XCTFail("Expected success, but got failure with error: \(error)")
         }
@@ -2294,9 +2294,9 @@ final class PrimerAPIClientTests: XCTestCase {
             bin: "MOCK_BIN"
         ) { result in
             switch result {
-            case .success(let cardNetworks):
+            case let .success(cardNetworks):
                 XCTFail("Expected failure, but got success with card networks: \(cardNetworks)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -2347,9 +2347,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let nolSdkSecret):
+            case let .success(nolSdkSecret):
                 XCTAssertEqual(nolSdkSecret.sdkSecret, mockedResult.sdkSecret)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2399,9 +2399,9 @@ final class PrimerAPIClientTests: XCTestCase {
             )
         ) { result in
             switch result {
-            case .success(let nolSdkSecret):
+            case let .success(nolSdkSecret):
                 XCTFail("Expected failure, but got success with nol SDK secret: \(nolSdkSecret)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
@@ -2452,11 +2452,11 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequestBody: .init(phoneNumber: "+123")
         ) { result in
             switch result {
-            case .success(let phoneMetadata):
+            case let .success(phoneMetadata):
                 XCTAssertEqual(phoneMetadata.isValid, mockedResult.isValid)
                 XCTAssertEqual(phoneMetadata.countryCode, mockedResult.countryCode)
                 XCTAssertEqual(phoneMetadata.nationalNumber, mockedResult.nationalNumber)
-            case .failure(let error):
+            case let .failure(error):
                 XCTFail("Expected success, but got failure with error: \(error)")
             }
             expectation.fulfill()
@@ -2498,9 +2498,9 @@ final class PrimerAPIClientTests: XCTestCase {
             paymentRequestBody: .init(phoneNumber: "+123")
         ) { result in
             switch result {
-            case .success(let phoneMetadata):
+            case let .success(phoneMetadata):
                 XCTFail("Expected failure, but got success with phone metadata: \(phoneMetadata)")
-            case .failure(let error):
+            case let .failure(error):
                 if let primerError = error as? PrimerError, case .unknown = primerError {
                     XCTAssert(true)
                 } else {
