@@ -322,7 +322,7 @@ extension PrimerAPI {
         case .testFinalizePolling:
             return "/finalize-polling"
         case let .listCardNetworks(_, bin):
-            return "/v1/bin-data/\(bin)/networks"
+            return "/v1/bin-data/\(bin)"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
         case .redirect, .completePayment:

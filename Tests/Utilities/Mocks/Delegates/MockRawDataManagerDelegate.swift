@@ -1,7 +1,7 @@
 //
 //  MockRawDataManagerDelegate.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -9,7 +9,7 @@ import Foundation
 
 typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
 
-class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+final class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     // MARK: metadataDidChange
 
@@ -54,5 +54,17 @@ class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerD
         onMetadataForCardValidationState?(rawDataManager,
                                           metadata as! PrimerCardNumberEntryMetadata,
                                           state as! PrimerCardNumberEntryState)
+    }
+
+    // MARK: didReceiveBinData
+
+    var onBinDataReceived: ((RawDataManager, PrimerBinData) -> Void)?
+
+    var onBinDataReceivedCount = 0
+
+    func primerRawDataManager(_ rawDataManager: RawDataManager,
+                              didReceiveBinData binData: PrimerBinData) {
+        onBinDataReceivedCount += 1
+        onBinDataReceived?(rawDataManager, binData)
     }
 }
