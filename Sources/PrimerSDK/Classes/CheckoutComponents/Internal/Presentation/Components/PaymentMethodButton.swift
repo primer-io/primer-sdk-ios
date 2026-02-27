@@ -35,19 +35,19 @@ struct PaymentMethodButton: View {
         .padding(.horizontal, PrimerSpacing.large(tokens: tokens))
         .padding(.vertical, PrimerSpacing.medium(tokens: tokens))
         .frame(minHeight: PrimerComponentHeight.paymentMethodCard)
+        .background(
+          RoundedRectangle(cornerRadius: radius)
+            .fill(
+              method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
+        )
+        .overlay(
+          RoundedRectangle(cornerRadius: radius)
+            .strokeBorder(
+              borderColor(for: method),
+              lineWidth: borderWidth(for: method))
+        )
       }
       .buttonStyle(PaymentMethodButtonStyle())
-      .background(
-        RoundedRectangle(cornerRadius: radius)
-          .fill(
-            method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: radius)
-          .strokeBorder(
-            borderColor(for: method),
-            lineWidth: borderWidth(for: method))
-      )
     }
   }
 
