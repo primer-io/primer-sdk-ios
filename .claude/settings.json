@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'INPUT=$(cat); FILE=$(echo \"$INPUT\" | jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *.swift ]]; then swiftformat \"$FILE\" --config BuildTools/.swiftformat 2>/dev/null; swiftlint lint --fix --config \"Debug App/.swiftlint.yml\" --path \"$FILE\" 2>/dev/null; fi'"
+          }
+        ]
+      }
+    ]
+  }
+}
