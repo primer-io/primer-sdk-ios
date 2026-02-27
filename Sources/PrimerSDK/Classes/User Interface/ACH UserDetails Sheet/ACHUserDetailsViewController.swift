@@ -6,6 +6,7 @@
 
 import Combine
 import PrimerFoundation
+import PrimerUI
 import SwiftUI
 import UIKit
 

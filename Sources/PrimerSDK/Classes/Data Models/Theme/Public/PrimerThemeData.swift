@@ -1,8 +1,10 @@
 //
 //  PrimerThemeData.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+import PrimerUI
 
 // swiftlint:disable type_body_length
 import UIKit
@@ -46,7 +48,7 @@ public final class PrimerThemeData {
             self.paymentMethod = paymentMethod
         }
 
-        internal func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
+        func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
             switch type {
             case .main:
                 let button = main
@@ -142,7 +144,7 @@ public final class PrimerThemeData {
             self.safeMargin = safeMargin
         }
 
-        internal func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
+        func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
             switch viewType {
             case .blurredBackground:
                 return ViewTheme(
@@ -184,7 +186,7 @@ public final class PrimerThemeData {
             self.error = error
         }
 
-        internal func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
+        func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
             switch type {
             case .body:
                 return TextTheme(
@@ -267,7 +269,7 @@ public final class PrimerThemeData {
             self.cornerRadius = cornerRadius
         }
 
-        internal func theme(with data: PrimerThemeData) -> InputTheme {
+        func theme(with data: PrimerThemeData) -> InputTheme {
             InputTheme(
                 color: backgroundColor ?? data.colors.light,
                 cornerRadius: cornerRadius ?? PrimerDimensions.Component.cornerRadius,

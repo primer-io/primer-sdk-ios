@@ -18,7 +18,8 @@ let package = Package(
         .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.4.1"),
         .package(path: "Packages/PrimerFoundation"),
         .package(path: "Packages/PrimerCore"),
-        .package(path: "Packages/PrimerNetworking")
+        .package(path: "Packages/PrimerNetworking"),
+        .package(path: "Packages/PrimerUI")
     ],
     targets: [
         .target(
@@ -27,7 +28,8 @@ let package = Package(
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
                 .product(name: "PrimerFoundation", package: "PrimerFoundation"),
                 .product(name: "PrimerCore", package: "PrimerCore"),
-                .product(name: "PrimerNetworking", package: "PrimerNetworking")
+                .product(name: "PrimerNetworking", package: "PrimerNetworking"),
+                .product(name: "PrimerUI", package: "PrimerUI")
             ],
             path: "Sources/PrimerSDK",
             resources: [
