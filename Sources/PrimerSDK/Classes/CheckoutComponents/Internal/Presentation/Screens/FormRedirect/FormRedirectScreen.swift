@@ -12,13 +12,13 @@ struct FormRedirectScreen: View {
     // MARK: - Properties
 
     @ObservedObject private var scope: DefaultFormRedirectScope
-    private let currentState: FormRedirectState
+    private let currentState: PrimerFormRedirectState
 
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    init(scope: DefaultFormRedirectScope, state: FormRedirectState) {
+    init(scope: DefaultFormRedirectScope, state: PrimerFormRedirectState) {
         self.scope = scope
         currentState = state
     }
@@ -73,7 +73,7 @@ struct FormRedirectScreen: View {
         CheckoutHeaderView(
             showBackButton: scope.presentationContext.shouldShowBackButton,
             onBack: scope.onBack,
-            rightButton: .closeButton(action: scope.onCancel)
+            rightButton: .closeButton(action: scope.cancel)
         )
     }
 
@@ -167,7 +167,7 @@ struct FormRedirectScreen: View {
 @available(iOS 15.0, *)
 private struct FormFieldView: View {
 
-    let field: FormFieldState
+    let field: PrimerFormFieldState
     let onValueChanged: (String) -> Void
     let onSubmit: () -> Void
 
@@ -275,7 +275,7 @@ private struct FormFieldView: View {
 // MARK: - Keyboard Type Extension
 
 @available(iOS 15.0, *)
-private extension FormFieldState.KeyboardType {
+private extension PrimerFormFieldState.KeyboardType {
     var uiKeyboardType: UIKeyboardType {
         switch self {
         case .numberPad:
@@ -291,7 +291,7 @@ private extension FormFieldState.KeyboardType {
 // MARK: - Text Content Type Extension
 
 @available(iOS 15.0, *)
-private extension FormFieldState.FieldType {
+private extension PrimerFormFieldState.FieldType {
     var textContentType: UITextContentType? {
         switch self {
         case .otpCode:

@@ -407,8 +407,8 @@ final class DefaultFormRedirectScopeTests: XCTestCase {
     }
 
     @MainActor
-    private func collectFirstState(from scope: DefaultFormRedirectScope) async -> FormRedirectState? {
-        var collectedState: FormRedirectState?
+    private func collectFirstState(from scope: DefaultFormRedirectScope) async -> PrimerFormRedirectState? {
+        var collectedState: PrimerFormRedirectState?
         let task = Task {
             for await state in scope.state {
                 collectedState = state

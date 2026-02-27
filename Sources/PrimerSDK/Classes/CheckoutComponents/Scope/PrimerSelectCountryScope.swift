@@ -47,11 +47,11 @@ public protocol PrimerSelectCountryScope: AnyObject {
 
 @available(iOS 15.0, *)
 public struct PrimerSelectCountryState: Equatable {
-  public var countries: [PrimerCountry] = []
-  public var filteredCountries: [PrimerCountry] = []
-  public var searchQuery: String = ""
-  public var isLoading: Bool = false
-  public var selectedCountry: PrimerCountry?
+  public internal(set) var countries: [PrimerCountry] = []
+  public internal(set) var filteredCountries: [PrimerCountry] = []
+  public internal(set) var searchQuery: String = ""
+  public internal(set) var isLoading: Bool = false
+  public internal(set) var selectedCountry: PrimerCountry?
 
   public init(
     countries: [PrimerCountry] = [],
