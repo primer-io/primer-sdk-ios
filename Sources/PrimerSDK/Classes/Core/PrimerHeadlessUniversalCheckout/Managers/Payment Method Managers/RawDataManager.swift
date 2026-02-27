@@ -30,6 +30,9 @@ public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState state: PrimerValidationState)
+
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveBinData binData: PrimerBinData)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {

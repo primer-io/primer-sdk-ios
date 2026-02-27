@@ -33,6 +33,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var resumePaymentResult: (Response.Body.Payment?, Error?)?
     var testFinalizePollingResult: (Void?, Error?)?
     var listCardNetworksResult: (Response.Body.Bin.Networks?, Error?)?
+    var fetchBinDataResult: (Response.Body.Bin.Data?, Error?)?
     private var currentPollingIteration: Int = 0
     var fetchNolSdkSecretResult: (() -> Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>)?
     var getPhoneMetadataResult: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>?
@@ -926,6 +927,20 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         if let errorResult = result.1 { throw errorResult }
         if let successResult = result.0 { return successResult }
         XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
+        throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+    }
+
+    func fetchBinData(clientToken: DecodedJWTToken, bin: String) async throws -> Response.Body.Bin.Data {
+        guard let result = fetchBinDataResult else {
+            XCTFail("Set 'fetchBinDataResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 { throw errorResult }
+        if let successResult = result.0 { return successResult }
+        XCTFail("Set 'fetchBinDataResult' on your MockPrimerAPIClient")
         throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
     }
 

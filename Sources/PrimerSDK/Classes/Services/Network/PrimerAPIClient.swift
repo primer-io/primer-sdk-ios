@@ -512,13 +512,28 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
                           bin: String,
                           completion: @escaping APICompletion<Response.Body.Bin.Networks>) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        return execute(endpoint, completion: completion)
+        return execute(endpoint) { (result: Result<Response.Body.Bin.Data, Error>) in
+            completion(result.map { Response.Body.Bin.Networks(from: $0) })
+        }
     }
 
     func listCardNetworks(
         clientToken: DecodedJWTToken,
         bin: String
     ) async throws -> Response.Body.Bin.Networks {
+        let binData: Response.Body.Bin.Data = try await networkService.request(
+            .listCardNetworks(
+                clientToken: clientToken,
+                bin: bin
+            )
+        )
+        return Response.Body.Bin.Networks(from: binData)
+    }
+
+    func fetchBinData(
+        clientToken: DecodedJWTToken,
+        bin: String
+    ) async throws -> Response.Body.Bin.Data {
         try await networkService.request(
             .listCardNetworks(
                 clientToken: clientToken,
