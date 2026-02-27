@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerUI
 import UIKit
 
 final class Mock3DSService: ThreeDSServiceProtocol {
