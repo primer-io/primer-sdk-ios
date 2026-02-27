@@ -58,6 +58,10 @@ xcodebuild -workspace PrimerSDK.xcworkspace \
 
 Use `xcrun simctl list devices available` to find simulators. iOS version may vary by Xcode version.
 
+## UI Verification
+
+The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator tools. For UI changes, build the Debug App, then use MCP tools to boot the simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to the affected screen, and take screenshots to verify visually.
+
 ## Commit & PR Conventions
 
 - **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:`, `docs:`, `test:`, `perf:`

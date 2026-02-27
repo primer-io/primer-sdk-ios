@@ -19,13 +19,17 @@ Create a pull request for the current branch. Jira ticket: $ARGUMENTS
 2. **Review changes**: `git diff` to verify all changes are intentional
 3. **Stage and commit** any remaining changes (conventional commit format)
 4. **Push** the branch: `git push -u origin HEAD`
-5. **Read the PR template**: Read `.github/pull_request_template.md`
-6. **Create the PR** using `gh pr create`:
+5. **Capture screenshots** (if the PR includes UI changes):
+   - Build the Debug App
+   - Use ios-simulator MCP tools to boot simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to affected screens, and take screenshots
+   - Save screenshots to include in the PR body
+6. **Read the PR template**: Read `.github/pull_request_template.md`
+7. **Create the PR** using `gh pr create`:
    - Title: short (<70 chars), conventional commit style
    - Body: fill in each section of the PR template:
      - **Description**: Jira ticket reference (`CHKT-XXXX`) + summary of changes + any breaking changes
      - **Manual Testing**: steps to verify the changes, or remove section if N/A
-     - **Screenshots**: include if UI changes, or remove section if N/A
+     - **Screenshots**: embed simulator screenshots captured in step 5, or remove section if no UI changes
      - **Contributor Checklist**: check applicable items
    - Base branch: Determine by checking `git log --oneline --graph` to find the branch this was created from. If unclear, ask the user. Common bases: `master`, `feature/checkout-components`
    - **Never** include Co-Authored-By or signed-off-by lines

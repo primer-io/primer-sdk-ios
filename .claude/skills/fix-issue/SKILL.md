@@ -28,4 +28,8 @@ Fix the issue: $ARGUMENTS
      -only-testing:"Tests/{TestClassName}" \
      test
    ```
-9. **Commit**: Use conventional commit format (`fix: Description of fix`)
+9. **Verify UI changes** (if the fix involves UI):
+   - Build the Debug App
+   - Use ios-simulator MCP tools to boot simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to the affected screen, and take a screenshot
+   - Verify the fix visually
+10. **Commit**: Use conventional commit format (`fix: Description of fix`)
