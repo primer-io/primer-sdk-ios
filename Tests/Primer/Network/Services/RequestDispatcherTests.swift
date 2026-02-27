@@ -1,11 +1,11 @@
 //
 //  RequestDispatcherTests.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class StubURLSessionDataTask: URLSessionDataTask {
     override func resume() {}
@@ -56,7 +56,7 @@ final class RequestDispatcherTests: XCTestCase {
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
                 XCTAssertEqual(response.metadata.statusCode, 200)
                 XCTAssertEqual(response.data, self.session.data)
@@ -82,7 +82,7 @@ final class RequestDispatcherTests: XCTestCase {
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
                 XCTAssertEqual(response.metadata.statusCode, 500)
                 XCTAssertEqual(response.data, self.session.data)
@@ -101,15 +101,20 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown()
+        session.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost)
 
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
             switch result {
             case .success:
                 XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error.localizedDescription.hasPrefix("[invalid-response] Invalid response received. Expected HTTP response."))
+            case let .failure(error):
+                switch error as? InternalError {
+                case let .missingHTTPResponse(underlyingError, _):
+                    XCTAssertNotNil(underlyingError)
+                    XCTAssert(error.localizedDescription.contains(NSURLErrorNetworkConnectionLost.description))
+                default: XCTFail()
+                }
                 expectation.fulfill()
             }
         }
@@ -153,13 +158,18 @@ final class RequestDispatcherTests: XCTestCase {
         let urlString = "https://a_url"
         let url = URL(string: urlString)!
 
-        session.error = PrimerError.unknown()
+        session.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost)
 
         let request = URLRequest(url: url)
         do {
             _ = try await dispatcher.dispatch(request: request)
-        } catch {
-            XCTAssertTrue(error.localizedDescription.hasPrefix("[invalid-response] Invalid response received. Expected HTTP response."))
+        } catch let error as InternalError {
+            switch error {
+            case let .missingHTTPResponse(underlyingError, _):
+                XCTAssertNotNil(underlyingError)
+                XCTAssert(error.localizedDescription.contains(NSURLErrorNetworkConnectionLost.description))
+            default: XCTFail()
+            }
         }
     }
 
@@ -226,7 +236,7 @@ final class RequestDispatcherTests: XCTestCase {
 
         _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
             switch result {
-            case .success(let response):
+            case let .success(response):
                 XCTAssertEqual(response.metadata.statusCode, 200)
                 XCTAssertEqual(response.data, self.session.data)
                 expectation.fulfill()
