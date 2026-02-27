@@ -86,6 +86,13 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         return mutableRequiredInputElementTypes
     }
 
+    static func preferredNetwork(from cardNetwork: CardNetwork?) -> String? {
+        guard PrimerInternal.shared.sdkIntegrationType == .headless else {
+            return cardNetwork?.rawValue
+        }
+        return cardNetwork?.allowsUserSelection == true ? cardNetwork?.rawValue : nil
+    }
+
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
     }
@@ -134,13 +141,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 preferredNetwork: Self.preferredNetwork(from: rawData.cardNetwork)
             )
         )
-    }
-
-    static func preferredNetwork(from cardNetwork: CardNetwork?) -> String? {
-        guard PrimerInternal.shared.sdkIntegrationType == .headless else {
-            return cardNetwork?.rawValue
-        }
-        return cardNetwork?.allowsUserSelection == true ? cardNetwork?.rawValue : nil
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {

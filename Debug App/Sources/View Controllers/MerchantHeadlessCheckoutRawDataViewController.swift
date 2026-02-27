@@ -298,23 +298,24 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
-        DispatchQueue.main.async {
-            self.cardsStackView.removeAllArrangedSubviews()
-            self.selectedCardNetwork = nil
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            cardsStackView.removeAllArrangedSubviews()
+            selectedCardNetwork = nil
 
             if metadata.autoSelectedCardNetwork != nil {
                 // EFTPOS co-badge: show all detected networks at full opacity, non-interactive
-                self.cardBadgesInteractive = false
-                self.rawCardData.cardNetwork = nil
-                self.addCardBadges(for: metadata.detectedCardNetworks.items)
+                cardBadgesInteractive = false
+                rawCardData.cardNetwork = nil
+                addCardBadges(for: metadata.detectedCardNetworks.items)
             } else if let selectableNetworks = metadata.selectableCardNetworks {
                 // Selectable co-badge: first badge visually selected, but cardNetwork nil until user taps
-                self.cardBadgesInteractive = true
-                self.selectedCardNetwork = selectableNetworks.items.first
-                self.rawCardData.cardNetwork = nil
-                self.addCardBadges(for: selectableNetworks.items)
+                cardBadgesInteractive = true
+                selectedCardNetwork = selectableNetworks.items.first
+                rawCardData.cardNetwork = nil
+                addCardBadges(for: selectableNetworks.items)
                 for (index, network) in selectableNetworks.items.enumerated() {
-                    guard let imageView = self.cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
+                    guard let imageView = cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
                     imageView.isUserInteractionEnabled = true
                     let tapGestureRecognizer = TapGestureRecognizer {
                         self.selectedCardNetwork = network
@@ -325,18 +326,18 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
                 }
             } else {
                 // Single network / fallback
-                self.cardBadgesInteractive = false
-                self.rawCardData.cardNetwork = nil
-                self.addCardBadges(for: metadata.detectedCardNetworks.items)
+                cardBadgesInteractive = false
+                rawCardData.cardNetwork = nil
+                addCardBadges(for: metadata.detectedCardNetworks.items)
             }
 
             let emptyView = UIView()
             emptyView.translatesAutoresizingMaskIntoConstraints = false
             emptyView.heightAnchor.constraint(equalToConstant: 1).isActive = true
             emptyView.widthAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
-            self.cardsStackView.addArrangedSubview(emptyView)
+            cardsStackView.addArrangedSubview(emptyView)
 
-            self.updateCardImages()
+            updateCardImages()
         }
     }
 
@@ -351,8 +352,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
             imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
             imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
-                                             multiplier: width / height).isActive = true
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: width / height).isActive = true
             imageView.setContentHuggingPriority(.required, for: .horizontal)
             imageView.accessibilityIdentifier = network.displayName
 
