@@ -4,14 +4,11 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable file_length
-// swiftlint:disable identifier_name
-
 import Foundation
 import SwiftUI
 
 /// Validation state tracking for individual fields
-private struct FieldValidationStates: Equatable {
+struct FieldValidationStates: Equatable {
   // Card fields - start as false and become true when validation passes
   var cardNumber: Bool = false
   var cvv: Bool = false
@@ -111,7 +108,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
   // Track if billing address has been sent to avoid duplicate requests
   private var billingAddressSent = false
   private var currentCardData: PrimerCardData?
-  private var fieldValidationStates = FieldValidationStates()
+  var fieldValidationStates = FieldValidationStates()
   @Published var structuredState = PrimerCardFormState()
   private var formConfiguration: CardFormConfiguration = .default
 
@@ -200,7 +197,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  private func getCardNetworkForCvv() -> CardNetwork {
+  func getCardNetworkForCvv() -> CardNetwork {
     if let selectedNetwork = structuredState.selectedNetwork {
       selectedNetwork.network
     } else {
@@ -208,7 +205,7 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  private func updateFieldValidationState() {
+  func updateFieldValidationState() {
     updateValidationState(
       cardNumber: fieldValidationStates.cardNumber,
       cvv: fieldValidationStates.cvv,
@@ -681,78 +678,6 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  // MARK: - Individual Field Validation Methods
-
-  public func updateCardNumberValidationState(_ isValid: Bool) {
-    fieldValidationStates.cardNumber = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateCvvValidationState(_ isValid: Bool) {
-    fieldValidationStates.cvv = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateExpiryValidationState(_ isValid: Bool) {
-    fieldValidationStates.expiry = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateCardholderNameValidationState(_ isValid: Bool) {
-    fieldValidationStates.cardholderName = isValid
-    updateFieldValidationState()
-  }
-
-  public func updatePostalCodeValidationState(_ isValid: Bool) {
-    fieldValidationStates.postalCode = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateCityValidationState(_ isValid: Bool) {
-    fieldValidationStates.city = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateStateValidationState(_ isValid: Bool) {
-    fieldValidationStates.state = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateAddressLine1ValidationState(_ isValid: Bool) {
-    fieldValidationStates.addressLine1 = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateAddressLine2ValidationState(_ isValid: Bool) {
-    fieldValidationStates.addressLine2 = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateFirstNameValidationState(_ isValid: Bool) {
-    fieldValidationStates.firstName = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateLastNameValidationState(_ isValid: Bool) {
-    fieldValidationStates.lastName = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateEmailValidationState(_ isValid: Bool) {
-    fieldValidationStates.email = isValid
-    updateFieldValidationState()
-  }
-
-  public func updatePhoneNumberValidationState(_ isValid: Bool) {
-    fieldValidationStates.phoneNumber = isValid
-    updateFieldValidationState()
-  }
-
-  public func updateCountryCodeValidationState(_ isValid: Bool) {
-    fieldValidationStates.countryCode = isValid
-    updateFieldValidationState()
-  }
-
   // MARK: - Structured State Implementation
 
   public func getFieldValue(_ fieldType: PrimerInputElementType) -> String {
@@ -825,180 +750,4 @@ public final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject, 
     }
   }
 
-  // MARK: - ViewBuilder Method Implementations
-
-  public func PrimerCardNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    CardNumberInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.cardNumberPlaceholder,
-      scope: self,
-      selectedNetwork: structuredState.selectedNetwork?.network,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerExpiryDateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    ExpiryDateInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.expiryDateAlternativePlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerCvvField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    CVVInputField(
-      label: label,
-      placeholder: getCardNetworkForCvv() == .amex
-        ? CheckoutComponentsStrings.cvvAmexPlaceholder
-        : CheckoutComponentsStrings.cvvStandardPlaceholder,
-      scope: self,
-      cardNetwork: structuredState.selectedNetwork?.network ?? getCardNetworkForCvv(),
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerCardholderNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    CardholderNameInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.fullNamePlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerCountryField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    CountryInputFieldWrapper(
-      scope: self,
-      label: label,
-      placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-      styling: styling,
-      onValidationChange: nil,
-      onOpenCountrySelector: nil
-    ).asAny()
-  }
-
-  public func PrimerPostalCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    PostalCodeInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.postalCodePlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerCityField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    CityInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.cityPlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerStateField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    StateInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.statePlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerAddressLine1Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    AddressLineInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
-      isRequired: true,
-      inputType: .addressLine1,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerAddressLine2Field(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    AddressLineInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
-      isRequired: false,
-      inputType: .addressLine2,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerFirstNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    NameInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
-      inputType: .firstName,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerLastNameField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    NameInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
-      inputType: .lastName,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerEmailField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    EmailInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.emailPlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerPhoneNumberField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    NameInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
-      inputType: .phoneNumber,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerRetailOutletField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    NameInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.retailOutletPlaceholder,
-      inputType: .retailer,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  public func PrimerOtpCodeField(label: String?, styling: PrimerFieldStyling?) -> AnyView {
-    OTPCodeInputField(
-      label: label,
-      placeholder: CheckoutComponentsStrings.otpCodePlaceholder,
-      scope: self,
-      styling: styling
-    ).asAny()
-  }
-
-  // MARK: - Default Card Form View
-
-  /// Returns a complete card form view with all card and billing address fields.
-  /// This provides an embeddable card form for custom payment selection screens.
-  /// - Parameter styling: Optional styling configuration for fields. Default: nil (uses SDK default styling)
-  /// - Returns: A view containing all card form fields based on current configuration.
-  public func DefaultCardFormView(styling: PrimerFieldStyling?) -> AnyView {
-    CardFormFieldsView(scope: self, styling: styling).asAny()
-  }
 }
-
-extension View {
-  fileprivate func asAny() -> AnyView { AnyView(self) }
-}
-
-// swiftlint:enable identifier_name
-// swiftlint:enable file_length
