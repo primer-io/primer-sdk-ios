@@ -48,6 +48,12 @@ final class PrimerInternal: LogReporter {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(onAppStateChange),
                                                name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppDidEnterBackground),
+                                               name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppWillEnterForeground),
+                                               name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
@@ -85,6 +91,19 @@ final class PrimerInternal: LogReporter {
     @objc
     private func onAppStateChange() {
         Analytics.Service.drain()
+    }
+
+    @objc
+    private func onAppDidEnterBackground() {
+        guard checkoutSessionIsActive() else { return }
+        Analytics.Service.fire(event: .appLifecycle(.backgrounded))
+        Analytics.Service.drain()
+    }
+
+    @objc
+    private func onAppWillEnterForeground() {
+        guard checkoutSessionIsActive() else { return }
+        Analytics.Service.fire(event: .appLifecycle(.foregrounded))
     }
 
     // MARK: - CONFIGURATION

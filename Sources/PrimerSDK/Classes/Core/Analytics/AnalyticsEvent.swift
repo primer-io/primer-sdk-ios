@@ -1,7 +1,7 @@
 //
 //  AnalyticsEvent.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -11,7 +11,7 @@ extension Analytics {
     struct Event: Codable, Equatable {
 
         static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
-            return lhs.localId == rhs.localId
+            lhs.localId == rhs.localId
         }
 
         let analyticsUrl: String?
@@ -116,6 +116,8 @@ extension Analytics {
                 try? container.encode(networkConnectivityEventProperties, forKey: .properties)
             } else if let sdkEventProperties = properties as? SDKEventProperties {
                 try? container.encode(sdkEventProperties, forKey: .properties)
+            } else if let appLifecycleEventProperties = properties as? AppLifecycleEventProperties {
+                try? container.encode(appLifecycleEventProperties, forKey: .properties)
             } else if let timerEventProperties = properties as? TimerEventProperties {
                 try? container.encode(timerEventProperties, forKey: .properties)
             } else if let uiEventProperties = properties as? UIEventProperties {
@@ -167,6 +169,8 @@ extension Analytics {
                 self.properties = networkConnectivityEventProperties
             } else if let sdkEventProperties = (try? container.decode(SDKEventProperties?.self, forKey: .properties)) {
                 self.properties = sdkEventProperties
+            } else if let appLifecycleEventProperties = (try? container.decode(AppLifecycleEventProperties?.self, forKey: .properties)) {
+                self.properties = appLifecycleEventProperties
             } else if let timerEventProperties = (try? container.decode(TimerEventProperties?.self, forKey: .properties)) {
                 self.properties = timerEventProperties
             } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
@@ -188,6 +192,7 @@ extension Analytics.Event {
         case networkConnectivity            = "NETWORK_CONNECTIVITY_EVENT"
         case sdkEvent                       = "SDK_FUNCTION_EVENT"
         case timerEvent                     = "TIMER_EVENT"
+        case appLifecycle                   = "APP_LIFECYCLE_EVENT"
         case paymentMethodImageLoading      = "PM_IMAGE_LOADING_DURATION"
         case paymentMethodAllImagesLoading  = "PM_ALL_IMAGES_LOADING_DURATION"
     }
@@ -490,6 +495,26 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
     }
 }
 
+struct AppLifecycleEventProperties: AnalyticsEventProperties {
+
+    enum LifecycleType: String, Codable {
+        case backgrounded = "APP_DID_ENTER_BACKGROUND"
+        case foregrounded = "APP_WILL_ENTER_FOREGROUND"
+    }
+
+    let lifecycleType: LifecycleType
+    var params: [String: AnyCodable]?
+
+    fileprivate init(lifecycleType: LifecycleType) {
+        self.lifecycleType = lifecycleType
+        let sdkProperties = SDKProperties()
+        let dict = try? sdkProperties.asDictionary()
+        let data = try? JSONSerialization.data(withJSONObject: dict as Any, options: .fragmentsAllowed)
+        data.map { params = try? JSONDecoder().decode([String: AnyCodable].self, from: $0) }
+    }
+    
+}
+
 struct SDKEventProperties: AnalyticsEventProperties {
 
     var name: String
@@ -754,7 +779,7 @@ struct SDKProperties: Codable {
 extension Analytics.Event {
 
     static func sdk(name: String, params: [String: String]?) -> Self {
-        return .init(
+        .init(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: name,
@@ -768,7 +793,7 @@ extension Analytics.Event {
                         severity: Property.Severity,
                         diagnosticsId: String? = nil,
                         context: [String: Any]? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .message,
             properties: MessageEventProperties(
                 message: message,
@@ -787,7 +812,7 @@ extension Analytics.Event {
                    objectId: Property.ObjectId?,
                    objectClass: String?,
                    place: Property.Place) -> Self {
-        return .init(
+        .init(
             eventType: .ui,
             properties: UIEventProperties(
                 action: action,
@@ -807,7 +832,7 @@ extension Analytics.Event {
                             errorBody: String?,
                             responseCode: Int?,
                             duration: TimeInterval? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .networkCall,
             properties: NetworkCallEventProperties(
                 callType: callType,
@@ -822,9 +847,16 @@ extension Analytics.Event {
     }
 
     static func networkConnectivity(networkType: Connectivity.NetworkType = Connectivity.networkType) -> Self {
-        return .init(
+        .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
+        )
+    }
+
+    static func appLifecycle(_ lifecycleType: AppLifecycleEventProperties.LifecycleType) -> Self {
+        Analytics.Event(
+            eventType: .appLifecycle,
+            properties: AppLifecycleEventProperties(lifecycleType: lifecycleType)
         )
     }
 
@@ -832,7 +864,7 @@ extension Analytics.Event {
                       id: String?,
                       duration: TimeInterval? = nil,
                       context: [String: Any]? = nil) -> Self {
-        return .init(
+        .init(
             eventType: .timerEvent,
             properties: TimerEventProperties(
                 momentType: momentType,
@@ -873,10 +905,9 @@ extension Analytics.Event {
                context: ["source": source.rawValue])
     }
 
-
     static func allImagesLoading(momentType: Property.TimerType,
                                  id: String?) -> Self {
-        return .init(
+        .init(
             eventType: .paymentMethodAllImagesLoading,
             properties: TimerEventProperties(
                 momentType: momentType,
@@ -887,7 +918,7 @@ extension Analytics.Event {
 
     static func imageLoading(momentType: Property.TimerType,
                              id: String?) -> Self {
-        return .init(
+        .init(
             eventType: .paymentMethodImageLoading,
             properties: TimerEventProperties(
                 momentType: momentType,
