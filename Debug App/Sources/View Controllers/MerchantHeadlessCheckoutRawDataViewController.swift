@@ -1,7 +1,7 @@
 //
 //  MerchantHeadlessCheckoutRawDataViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerSDK
@@ -17,7 +17,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
-    var selectedCardIndex: Int = 0
+    var selectedCardNetwork: PrimerCardNetwork?
+    var cardBadgesInteractive = false
 
     var stackView: UIStackView!
     var paymentMethodType: String!
@@ -248,7 +249,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: newText.count == 0 ? nil : newText,
+                cardholderName: newText.isEmpty ? nil : newText,
                 cardNetwork: self.rawCardData.cardNetwork)
         }
 
@@ -294,38 +295,39 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             return
         }
 
-        let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
+        let printableNetworks = metadata.detectedCardNetworks.items.map(\.network.rawValue).joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
+            self.selectedCardNetwork = nil
 
-            (metadata.selectableCardNetworks ?? metadata.detectedCardNetworks).items.enumerated().forEach { (index, detectedNetwork) in
-                let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: detectedNetwork.network)
-                let imageView = UIImageView(image: image?.cardImage)
-                imageView.isUserInteractionEnabled = true
-                imageView.translatesAutoresizingMaskIntoConstraints = false
-
-                let width: CGFloat = 112
-                let height: CGFloat = 80
-
-                imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
-                imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
-                imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
-                                                 multiplier: width / height).isActive = true
-                imageView.setContentHuggingPriority(.required, for: .horizontal)
-                imageView.accessibilityIdentifier = detectedNetwork.displayName
-
-                self.cardsStackView.addArrangedSubview(imageView)
-
-                let tapGestureRecognizer = TapGestureRecognizer {
-                    self.selectedCardIndex = index
-                    if self.selectedCardIndex < metadata.detectedCardNetworks.items.count {
-                        self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
+            if metadata.autoSelectedCardNetwork != nil {
+                // EFTPOS co-badge: show all detected networks at full opacity, non-interactive
+                self.cardBadgesInteractive = false
+                self.rawCardData.cardNetwork = nil
+                self.addCardBadges(for: metadata.detectedCardNetworks.items)
+            } else if let selectableNetworks = metadata.selectableCardNetworks {
+                // Selectable co-badge: first badge visually selected, but cardNetwork nil until user taps
+                self.cardBadgesInteractive = true
+                self.selectedCardNetwork = selectableNetworks.items.first
+                self.rawCardData.cardNetwork = nil
+                self.addCardBadges(for: selectableNetworks.items)
+                for (index, network) in selectableNetworks.items.enumerated() {
+                    guard let imageView = self.cardsStackView.arrangedSubviews[safe: index] as? UIImageView else { continue }
+                    imageView.isUserInteractionEnabled = true
+                    let tapGestureRecognizer = TapGestureRecognizer {
+                        self.selectedCardNetwork = network
+                        self.rawCardData.cardNetwork = network.network
+                        self.updateCardImages()
                     }
-                    self.updateCardImages()
+                    imageView.addGestureRecognizer(tapGestureRecognizer)
                 }
-                imageView.addGestureRecognizer(tapGestureRecognizer)
+            } else {
+                // Single network / fallback
+                self.cardBadgesInteractive = false
+                self.rawCardData.cardNetwork = nil
+                self.addCardBadges(for: metadata.detectedCardNetworks.items)
             }
 
             let emptyView = UIView()
@@ -335,15 +337,34 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             self.cardsStackView.addArrangedSubview(emptyView)
 
             self.updateCardImages()
+        }
+    }
 
-			self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[safe: self.selectedCardIndex]?.network
+    private func addCardBadges(for networks: [PrimerCardNetwork]) {
+        for network in networks {
+            let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: network.network)
+            let imageView = UIImageView(image: image?.cardImage)
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+
+            let width: CGFloat = 112
+            let height: CGFloat = 80
+
+            imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
+            imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
+                                             multiplier: width / height).isActive = true
+            imageView.setContentHuggingPriority(.required, for: .horizontal)
+            imageView.accessibilityIdentifier = network.displayName
+
+            cardsStackView.addArrangedSubview(imageView)
         }
     }
 
     private func updateCardImages() {
-        cardsStackView.arrangedSubviews.filter { $0 is UIImageView }.enumerated().forEach { (index, imageView) in
-            imageView.layer.opacity = (index == self.selectedCardIndex) ? 1 : 0.5
-            imageView.isUserInteractionEnabled = true
+        guard cardBadgesInteractive else { return }
+        for imageView in cardsStackView.arrangedSubviews.compactMap({ $0 as? UIImageView }) {
+            let isSelected = imageView.accessibilityIdentifier == selectedCardNetwork?.displayName
+            imageView.layer.opacity = isSelected ? 1 : 0.5
         }
     }
 }

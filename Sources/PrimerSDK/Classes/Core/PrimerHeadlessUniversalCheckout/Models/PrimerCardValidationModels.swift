@@ -1,7 +1,7 @@
 //
 //  PrimerCardValidationModels.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -35,6 +35,10 @@ public final class PrimerCardNetwork: NSObject {
 
     public var allowed: Bool {
         [CardNetwork].allowedCardNetworks.contains(network)
+    }
+
+    public var allowsUserSelection: Bool {
+        network.allowsUserSelection
     }
 
     init(displayName: String, network: CardNetwork) {
