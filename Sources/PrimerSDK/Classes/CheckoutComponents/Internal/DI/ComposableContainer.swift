@@ -53,138 +53,214 @@ final class ComposableContainer: LogReporter {
 extension ComposableContainer {
 
   fileprivate func registerInfrastructure() async {
-    try? await container.register(PrimerSettings.self)
-      .asSingleton()
-      .with { _ in self.settings }
+    do {
+      try await container.register(PrimerSettings.self)
+        .asSingleton()
+        .with { _ in self.settings }
+    } catch {
+      logger.error(message: "Failed to register PrimerSettings: \(error)")
+    }
 
-    try? await container.register(PrimerCheckoutTheme.self)
-      .asSingleton()
-      .with { _ in self.theme }
+    do {
+      try await container.register(PrimerCheckoutTheme.self)
+        .asSingleton()
+        .with { _ in self.theme }
+    } catch {
+      logger.error(message: "Failed to register PrimerCheckoutTheme: \(error)")
+    }
 
-    try? await container.register(DesignTokensManager.self)
-      .asSingleton()
-      .with { _ in DesignTokensManager() }
+    do {
+      try await container.register(DesignTokensManager.self)
+        .asSingleton()
+        .with { _ in DesignTokensManager() }
+    } catch {
+      logger.error(message: "Failed to register DesignTokensManager: \(error)")
+    }
 
-    try? await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
-      .asSingleton()
-      .with { _ in
-        AnalyticsEventService.create(
-          environmentProvider: AnalyticsEnvironmentProvider()
-        )
-      }
+    do {
+      try await container.register(CheckoutComponentsAnalyticsServiceProtocol.self)
+        .asSingleton()
+        .with { _ in
+          AnalyticsEventService.create(
+            environmentProvider: AnalyticsEnvironmentProvider()
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register CheckoutComponentsAnalyticsServiceProtocol: \(error)")
+    }
 
-    try? await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
-      .asSingleton()
-      .with { resolver in
-        DefaultAnalyticsInteractor(
-          eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
-        )
-      }
+    do {
+      try await container.register(CheckoutComponentsAnalyticsInteractorProtocol.self)
+        .asSingleton()
+        .with { resolver in
+          DefaultAnalyticsInteractor(
+            eventService: try await resolver.resolve(CheckoutComponentsAnalyticsServiceProtocol.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register CheckoutComponentsAnalyticsInteractorProtocol: \(error)")
+    }
 
-    try? await container.register(AccessibilityAnnouncementService.self)
-      .asSingleton()
-      .with { _ in DefaultAccessibilityAnnouncementService() }
+    do {
+      try await container.register(AccessibilityAnnouncementService.self)
+        .asSingleton()
+        .with { _ in DefaultAccessibilityAnnouncementService() }
+    } catch {
+      logger.error(message: "Failed to register AccessibilityAnnouncementService: \(error)")
+    }
 
-    try? await container.register(ConfigurationService.self)
-      .asSingleton()
-      .with { _ in DefaultConfigurationService() }
+    do {
+      try await container.register(ConfigurationService.self)
+        .asSingleton()
+        .with { _ in DefaultConfigurationService() }
+    } catch {
+      logger.error(message: "Failed to register ConfigurationService: \(error)")
+    }
   }
 
   fileprivate func registerValidation() async {
-    try? await container.register(RulesFactory.self)
-      .asSingleton()
-      .with { _ in DefaultRulesFactory() }
+    do {
+      try await container.register(RulesFactory.self)
+        .asSingleton()
+        .with { _ in DefaultRulesFactory() }
+    } catch {
+      logger.error(message: "Failed to register RulesFactory: \(error)")
+    }
 
-    try? await container.register(ValidationService.self)
-      .asSingleton()
-      .with { resolver in
-        let factory = try await resolver.resolve(RulesFactory.self)
-        return DefaultValidationService(rulesFactory: factory)
-      }
+    do {
+      try await container.register(ValidationService.self)
+        .asSingleton()
+        .with { resolver in
+          let factory = try await resolver.resolve(RulesFactory.self)
+          return DefaultValidationService(rulesFactory: factory)
+        }
+    } catch {
+      logger.error(message: "Failed to register ValidationService: \(error)")
+    }
   }
 
   fileprivate func registerDomain() async {
-    try? await container.register(GetPaymentMethodsInteractor.self)
-      .asTransient()
-      .with { resolver in
-        GetPaymentMethodsInteractorImpl(
-          repository: try await resolver.resolve(HeadlessRepository.self)
-        )
-      }
+    do {
+      try await container.register(GetPaymentMethodsInteractor.self)
+        .asTransient()
+        .with { resolver in
+          GetPaymentMethodsInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register GetPaymentMethodsInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessCardPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessCardPaymentInteractorImpl(
-          repository: try await resolver.resolve(HeadlessRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessCardPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessCardPaymentInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessCardPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(ValidateInputInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ValidateInputInteractorImpl(
-          validationService: try await resolver.resolve(ValidationService.self)
-        )
-      }
+    do {
+      try await container.register(ValidateInputInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ValidateInputInteractorImpl(
+            validationService: try await resolver.resolve(ValidationService.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ValidateInputInteractor: \(error)")
+    }
 
-    try? await container.register(CardNetworkDetectionInteractor.self)
-      .asTransient()
-      .with { resolver in
-        CardNetworkDetectionInteractorImpl(
-          repository: try await resolver.resolve(HeadlessRepository.self)
-        )
-      }
+    do {
+      try await container.register(CardNetworkDetectionInteractor.self)
+        .asTransient()
+        .with { resolver in
+          CardNetworkDetectionInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register CardNetworkDetectionInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessPayPalPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessPayPalPaymentInteractorImpl(
-          repository: try await resolver.resolve(PayPalRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessPayPalPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessPayPalPaymentInteractorImpl(
+            repository: try await resolver.resolve(PayPalRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessPayPalPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessKlarnaPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessKlarnaPaymentInteractorImpl(
-          repository: try await resolver.resolve(KlarnaRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessKlarnaPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessKlarnaPaymentInteractorImpl(
+            repository: try await resolver.resolve(KlarnaRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessKlarnaPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessWebRedirectPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessWebRedirectPaymentInteractorImpl(
-          repository: try await resolver.resolve(WebRedirectRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessWebRedirectPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessWebRedirectPaymentInteractorImpl(
+            repository: try await resolver.resolve(WebRedirectRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessWebRedirectPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessApplePayPaymentInteractor.self)
-      .asTransient()
-      .with { _ in
-        ProcessApplePayPaymentInteractorImpl(
-          tokenizationService: TokenizationService(),
-          createPaymentService: CreateResumePaymentService(
-            paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
-        )
-      }
+    do {
+      try await container.register(ProcessApplePayPaymentInteractor.self)
+        .asTransient()
+        .with { _ in
+          ProcessApplePayPaymentInteractorImpl(
+            tokenizationService: TokenizationService(),
+            createPaymentService: CreateResumePaymentService(
+              paymentMethodType: PrimerPaymentMethodType.applePay.rawValue)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessApplePayPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(SubmitVaultedPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        SubmitVaultedPaymentInteractorImpl(
-          repository: try await resolver.resolve(HeadlessRepository.self)
-        )
-      }
+    do {
+      try await container.register(SubmitVaultedPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          SubmitVaultedPaymentInteractorImpl(
+            repository: try await resolver.resolve(HeadlessRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register SubmitVaultedPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(ProcessAchPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessAchPaymentInteractorImpl(
-          repository: try await resolver.resolve(AchRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessAchPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessAchPaymentInteractorImpl(
+            repository: try await resolver.resolve(AchRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessAchPaymentInteractor: \(error)")
+    }
   }
 
   fileprivate func registerData() async {
@@ -192,85 +268,137 @@ extension ComposableContainer {
     // This prevents stale state (e.g., cached card networks, validation handlers) from leaking
     // between checkout sessions when the user dismisses and re-presents the checkout UI.
     // Note: VaultManager is lazily initialized within HeadlessRepositoryImpl for vault payments.
-    try? await container.register(HeadlessRepository.self)
-      .asTransient()
-      .with { _ in HeadlessRepositoryImpl() }
+    do {
+      try await container.register(HeadlessRepository.self)
+        .asTransient()
+        .with { _ in HeadlessRepositoryImpl() }
+    } catch {
+      logger.error(message: "Failed to register HeadlessRepository: \(error)")
+    }
 
-    try? await container.register(PaymentMethodMapper.self)
-      .asSingleton()
-      .with { container in
-        let configService = try await container.resolve(ConfigurationService.self)
-        return PaymentMethodMapperImpl(configurationService: configService)
-      }
+    do {
+      try await container.register(PaymentMethodMapper.self)
+        .asSingleton()
+        .with { container in
+          let configService = try await container.resolve(ConfigurationService.self)
+          return PaymentMethodMapperImpl(configurationService: configService)
+        }
+    } catch {
+      logger.error(message: "Failed to register PaymentMethodMapper: \(error)")
+    }
 
-    try? await container.register(PayPalRepository.self)
-      .asTransient()
-      .with { _ in
-        PayPalRepositoryImpl()
-      }
+    do {
+      try await container.register(PayPalRepository.self)
+        .asTransient()
+        .with { _ in
+          PayPalRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register PayPalRepository: \(error)")
+    }
 
-    try? await container.register(KlarnaRepository.self)
-      .asTransient()
-      .with { _ in
-        KlarnaRepositoryImpl()
-      }
+    do {
+      try await container.register(KlarnaRepository.self)
+        .asTransient()
+        .with { _ in
+          KlarnaRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register KlarnaRepository: \(error)")
+    }
 
-    try? await container.register(AchRepository.self)
-      .asTransient()
-      .with { _ in
-        AchRepositoryImpl()
-      }
+    do {
+      try await container.register(AchRepository.self)
+        .asTransient()
+        .with { _ in
+          AchRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register AchRepository: \(error)")
+    }
 
-    try? await container.register(WebRedirectRepository.self)
-      .asTransient()
-      .with { _ in
-        WebRedirectRepositoryImpl()
-      }
+    do {
+      try await container.register(WebRedirectRepository.self)
+        .asTransient()
+        .with { _ in
+          WebRedirectRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register WebRedirectRepository: \(error)")
+    }
 
     // Form Redirect (BLIK, MBWay) dependencies
-    try? await container.register(FormRedirectRepository.self)
-      .asTransient()
-      .with { _ in
-        FormRedirectRepositoryImpl()
-      }
+    do {
+      try await container.register(FormRedirectRepository.self)
+        .asTransient()
+        .with { _ in
+          FormRedirectRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register FormRedirectRepository: \(error)")
+    }
 
-    try? await container.register(ProcessFormRedirectPaymentInteractor.self)
-      .asTransient()
-      .with { resolver in
-        ProcessFormRedirectPaymentInteractorImpl(
-          formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
-        )
-      }
+    do {
+      try await container.register(ProcessFormRedirectPaymentInteractor.self)
+        .asTransient()
+        .with { resolver in
+          ProcessFormRedirectPaymentInteractorImpl(
+            formRedirectRepository: try await resolver.resolve(FormRedirectRepository.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register ProcessFormRedirectPaymentInteractor: \(error)")
+    }
 
-    try? await container.register(QRCodeRepository.self)
-      .asTransient()
-      .with { _ in
-        QRCodeRepositoryImpl()
-      }
+    do {
+      try await container.register(QRCodeRepository.self)
+        .asTransient()
+        .with { _ in
+          QRCodeRepositoryImpl()
+        }
+    } catch {
+      logger.error(message: "Failed to register QRCodeRepository: \(error)")
+    }
   }
 
   fileprivate func registerLogging() async {
-    try? await container.register(LogNetworkClient.self)
-      .asSingleton()
-      .with { _ in LogNetworkClient() }
+    do {
+      try await container.register(LogNetworkClient.self)
+        .asSingleton()
+        .with { _ in LogNetworkClient() }
+    } catch {
+      logger.error(message: "Failed to register LogNetworkClient: \(error)")
+    }
 
-    try? await container.register(SensitiveDataMasker.self)
-      .asSingleton()
-      .with { _ in SensitiveDataMasker() }
+    do {
+      try await container.register(SensitiveDataMasker.self)
+        .asSingleton()
+        .with { _ in SensitiveDataMasker() }
+    } catch {
+      logger.error(message: "Failed to register SensitiveDataMasker: \(error)")
+    }
 
-    try? await container.register(LogPayloadBuilding.self)
-      .asSingleton()
-      .with { _ in LogPayloadBuilder() }
+    do {
+      try await container.register(LogPayloadBuilding.self)
+        .asSingleton()
+        .with { _ in LogPayloadBuilder() }
+    } catch {
+      logger.error(message: "Failed to register LogPayloadBuilding: \(error)")
+    }
 
-    try? await container.register(LoggingService.self)
-      .asSingleton()
-      .with { resolver in
-        LoggingService(
-          networkClient: try await resolver.resolve(LogNetworkClient.self),
-          payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self),
-          masker: try await resolver.resolve(SensitiveDataMasker.self)
-        )
-      }
+    do {
+      try await container.register(LoggingService.self)
+        .asSingleton()
+        .with { resolver in
+          LoggingService(
+            networkClient: try await resolver.resolve(LogNetworkClient.self),
+            payloadBuilder: try await resolver.resolve(LogPayloadBuilding.self),
+            masker: try await resolver.resolve(SensitiveDataMasker.self)
+          )
+        }
+    } catch {
+      logger.error(message: "Failed to register LoggingService: \(error)")
+    }
   }
 
   #if DEBUG

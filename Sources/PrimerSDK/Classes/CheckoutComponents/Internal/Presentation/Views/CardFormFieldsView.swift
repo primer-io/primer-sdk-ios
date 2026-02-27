@@ -27,6 +27,7 @@ struct CardFormFieldsView: View {
   @State private var cardFormState: PrimerCardFormState = .init()
   @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var formConfiguration: CardFormConfiguration = .default
+  @State private var observationTask: Task<Void, Never>?
   @FocusState private var focusedField: PrimerInputElementType?
 
   var body: some View {
@@ -37,6 +38,10 @@ struct CardFormFieldsView: View {
     .onAppear {
       formConfiguration = scope.getFormConfiguration()
       observeState()
+    }
+    .onDisappear {
+      observationTask?.cancel()
+      observationTask = nil
     }
   }
 
@@ -319,7 +324,8 @@ struct CardFormFieldsView: View {
   // MARK: - State Observation
 
   private func observeState() {
-    Task {
+    observationTask?.cancel()
+    observationTask = Task {
       await MainActor.run {
         formConfiguration = scope.getFormConfiguration()
       }

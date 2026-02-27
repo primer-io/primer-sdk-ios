@@ -293,8 +293,8 @@ struct InternalCheckout: View, LogReporter {
       checkoutScope = result.checkoutScope
 
       // Apply scope configuration if provided
-      if let scope {
-        scope(checkoutScope!)
+      if let scope, let checkoutScope {
+        scope(checkoutScope)
       }
 
       initializationState = .initialized
