@@ -34,7 +34,12 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       surcharge: internalMethod.surcharge,
       hasUnknownSurcharge: internalMethod.hasUnknownSurcharge,
       formattedSurcharge: formattedSurcharge,
-      backgroundColor: internalMethod.backgroundColor
+      backgroundColor: internalMethod.backgroundColor,
+      buttonText: internalMethod.buttonText,
+      textColor: internalMethod.textColor,
+      borderColor: internalMethod.borderColor,
+      borderWidth: internalMethod.borderWidth,
+      cornerRadius: internalMethod.cornerRadius
     )
   }
 
@@ -49,7 +54,7 @@ final class PaymentMethodMapperImpl: PaymentMethodMapper {
       return CheckoutComponentsStrings.additionalFeeMayApply
     }
 
-    guard let surcharge = surcharge,
+    guard let surcharge,
       surcharge > 0,
       let currency = configurationService.currency
     else {

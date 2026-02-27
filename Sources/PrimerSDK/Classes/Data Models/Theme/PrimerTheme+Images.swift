@@ -148,6 +148,12 @@ extension PrimerTheme {
             dark = (try? container.decode(CGFloat?.self, forKey: .dark)) ?? nil
         }
 
+        /// Resolve to a CGFloat based on current appearance mode
+        var resolvedValue: CGFloat? {
+            let isDarkMode = UIScreen.isDarkModeEnabled
+            return isDarkMode ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
+        }
+
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(colored, forKey: .colored)
@@ -162,7 +168,7 @@ extension PrimerTheme {
 extension String {
     /// Convert hex string to UIColor
     func hexToUIColor() -> UIColor? {
-        var hexString = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        var hexString = trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Remove # prefix if present
         if hexString.hasPrefix("#") {

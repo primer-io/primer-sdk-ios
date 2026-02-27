@@ -24,6 +24,11 @@ struct InternalPaymentMethod: Equatable {
   let hasUnknownSurcharge: Bool  // "Fee may apply" flag
   let networkSurcharges: [String: Int]?  // Card network-specific surcharges
   let backgroundColor: UIColor?  // Dynamic background color from server
+  let buttonText: String?  // Custom button text from displayMetadata
+  let textColor: UIColor?  // Theme-aware text color from displayMetadata
+  let borderColor: UIColor?  // Theme-aware border color from displayMetadata
+  let borderWidth: CGFloat?  // Theme-aware border width from displayMetadata
+  let cornerRadius: CGFloat?  // Custom corner radius from displayMetadata
 
   init(
     id: String,
@@ -38,7 +43,12 @@ struct InternalPaymentMethod: Equatable {
     surcharge: Int? = nil,
     hasUnknownSurcharge: Bool = false,
     networkSurcharges: [String: Int]? = nil,
-    backgroundColor: UIColor? = nil
+    backgroundColor: UIColor? = nil,
+    buttonText: String? = nil,
+    textColor: UIColor? = nil,
+    borderColor: UIColor? = nil,
+    borderWidth: CGFloat? = nil,
+    cornerRadius: CGFloat? = nil
   ) {
     self.id = id
     self.type = type
@@ -53,6 +63,11 @@ struct InternalPaymentMethod: Equatable {
     self.hasUnknownSurcharge = hasUnknownSurcharge
     self.networkSurcharges = networkSurcharges
     self.backgroundColor = backgroundColor
+    self.buttonText = buttonText
+    self.textColor = textColor
+    self.borderColor = borderColor
+    self.borderWidth = borderWidth
+    self.cornerRadius = cornerRadius
   }
 
   static func == (lhs: InternalPaymentMethod, rhs: InternalPaymentMethod) -> Bool {

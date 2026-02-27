@@ -182,9 +182,7 @@ class PaymentMethodRegistry: LogReporter {
         message:
           "✅ [PaymentMethodRegistry] Apple Pay registered - requires PrimerSettings.paymentMethodOptions.applePayOptions"
       )
-    } else if typeKey == PrimerPaymentMethodType.klarna.rawValue
-      || typeKey == PrimerPaymentMethodType.primerTestKlarna.rawValue
-    {
+    } else if [PrimerPaymentMethodType.klarna, .primerTestKlarna].map(\.rawValue).contains(typeKey) {
       logger.info(
         message:
           "✅ [PaymentMethodRegistry] Klarna registered - requires PrimerSettings.paymentMethodOptions.klarnaOptions"
