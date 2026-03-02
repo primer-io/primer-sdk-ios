@@ -5,27 +5,11 @@
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import PrimerFoundation
+import PrimerFoundation
 import PrimerUI
 import UIKit
 
-class PrimerFormViewController: PrimerViewController {
-
-    var verticalStackView: UIStackView = UIStackView()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(verticalStackView)
-
-        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-        verticalStackView.alignment = .fill
-        verticalStackView.axis = .vertical
-        verticalStackView.distribution = .fill
-
-        verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
-    }
+extension PrimerFormViewController {
 
     static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol],
                                      on stackView: UIStackView) {
