@@ -8,6 +8,7 @@
 import UIKit
 @_exported @_spi(PrimerInternal) import PrimerCore
 @_exported @_spi(PrimerInternal) import PrimerNetworking
+@_exported @_spi(PrimerInternal) import PrimerUI
 
 // swiftlint:disable identifier_name
 #if DEBUG
