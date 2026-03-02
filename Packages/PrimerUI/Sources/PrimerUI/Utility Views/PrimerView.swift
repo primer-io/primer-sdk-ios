@@ -1,14 +1,14 @@
 //
-//  PrimerViewExtensions.swift
+//  PrimerView.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import UIKit
 
-class PrimerView: UIView {
-    func pin(to superView: UIView) {
+open class PrimerView: UIView {
+    public func pin(to superView: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         topAnchor.constraint(equalTo: superView.topAnchor).isActive = true
         leadingAnchor.constraint(equalTo: superView.leadingAnchor).isActive = true
@@ -16,7 +16,7 @@ class PrimerView: UIView {
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
 
-    func removeSubviews() {
+    public func removeSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
 }
