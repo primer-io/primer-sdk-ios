@@ -85,10 +85,10 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       onValidationChange: ((Bool) -> Void)?
     ) {
       self.validationService = validationService
-      self._addressLine = addressLine
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _addressLine = addressLine
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.isRequired = isRequired
       self.inputType = inputType
       self.scope = scope
@@ -137,7 +137,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
 
       addressLine = newText
 
-      if let scope = scope {
+      if let scope {
         switch inputType {
         case .addressLine1:
           scope.updateAddressLine1(newText)
@@ -158,14 +158,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       }
 
       if let scope = scope as? DefaultCardFormScope {
-        switch inputType {
-        case .addressLine1:
-          scope.updateAddressLine1ValidationState(isValid)
-        case .addressLine2:
-          scope.updateAddressLine2ValidationState(isValid)
-        default:
-          break
-        }
+        scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
       }
 
       return false
@@ -183,14 +176,7 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
         scope?.clearFieldError(inputType)
 
         if let scope = scope as? DefaultCardFormScope {
-          switch inputType {
-          case .addressLine1:
-            scope.updateAddressLine1ValidationState(isValid)
-          case .addressLine2:
-            scope.updateAddressLine2ValidationState(isValid)
-          default:
-            break
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
         }
         return
       }
@@ -199,11 +185,11 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       let elementType: ValidationError.InputElementType = {
         switch inputType {
         case .addressLine1:
-          return .addressLine1
+          .addressLine1
         case .addressLine2:
-          return .addressLine2
+          .addressLine2
         default:
-          return .addressLine1
+          .addressLine1
         }
       }()
 
@@ -216,30 +202,16 @@ struct AddressLineTextField: UIViewRepresentable, LogReporter {
       errorMessage = result.errorMessage
       onValidationChange?(result.isValid)
 
-      if let scope = scope {
+      if let scope {
         if result.isValid {
           scope.clearFieldError(inputType)
           if let scope = scope as? DefaultCardFormScope {
-            switch inputType {
-            case .addressLine1:
-              scope.updateAddressLine1ValidationState(true)
-            case .addressLine2:
-              scope.updateAddressLine2ValidationState(true)
-            default:
-              break
-            }
+            scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
           }
         } else if let message = result.errorMessage {
           scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
           if let scope = scope as? DefaultCardFormScope {
-            switch inputType {
-            case .addressLine1:
-              scope.updateAddressLine1ValidationState(false)
-            case .addressLine2:
-              scope.updateAddressLine2ValidationState(false)
-            default:
-              break
-            }
+            scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
           }
         }
       }

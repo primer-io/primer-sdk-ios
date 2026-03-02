@@ -63,7 +63,7 @@ struct PostalCodeInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         PostalCodeTextField(
           postalCode: $postalCode,
           isValid: $isValid,
@@ -100,7 +100,7 @@ struct PostalCodeInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for PostalCodeInputField")
       return
     }

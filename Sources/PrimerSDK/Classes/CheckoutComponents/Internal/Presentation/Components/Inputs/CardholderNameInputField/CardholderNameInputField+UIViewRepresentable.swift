@@ -71,10 +71,10 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       scope: any PrimerCardFormScope
     ) {
       self.validationService = validationService
-      self._cardholderName = cardholderName
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _cardholderName = cardholderName
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
     }
 
@@ -132,7 +132,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       isValid = newText.count >= 2
 
       if let scope = scope as? DefaultCardFormScope {
-        scope.updateCardholderNameValidationState(isValid)
+        scope.updateValidationState(\.cardholderName, isValid: isValid)
       }
 
       return false
@@ -146,7 +146,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
         isValid = false  // Cardholder name is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCardholderNameValidationState(false)
+          scope.updateValidationState(\.cardholderName, isValid: false)
         }
         return
       }
@@ -162,14 +162,14 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.cardholderName)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCardholderNameValidationState(true)
+          scope.updateValidationState(\.cardholderName, isValid: true)
         }
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cardholderName, message: message, errorCode: result.errorCode)
         }
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCardholderNameValidationState(false)
+          scope.updateValidationState(\.cardholderName, isValid: false)
         }
       }
 

@@ -52,7 +52,7 @@ struct ExpiryDateInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         ExpiryDateTextField(
           expiryDate: $expiryDate,
           month: $month,
@@ -88,7 +88,7 @@ struct ExpiryDateInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for ExpiryDateInputField")
       return
     }

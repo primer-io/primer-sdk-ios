@@ -42,11 +42,11 @@ struct OTPCodeInputField: View, LogReporter {
   ) {
     self.label = label
     self.placeholder = placeholder
-    self.expectedLength = 6
+    expectedLength = 6
     self.scope = scope
     self.styling = styling
-    self.onOTPCodeChange = nil
-    self.onValidationChange = nil
+    onOTPCodeChange = nil
+    onValidationChange = nil
   }
 
   init(
@@ -60,7 +60,7 @@ struct OTPCodeInputField: View, LogReporter {
     self.label = label
     self.placeholder = placeholder
     self.expectedLength = expectedLength
-    self.scope = nil
+    scope = nil
     self.styling = styling
     self.onOTPCodeChange = onOTPCodeChange
     self.onValidationChange = onValidationChange
@@ -94,7 +94,7 @@ struct OTPCodeInputField: View, LogReporter {
         if newValue.count > expectedLength {
           otpCode = String(newValue.prefix(expectedLength))
         } else {
-          if let scope = scope {
+          if let scope {
             scope.updateOtpCode(newValue)
           } else {
             onOTPCodeChange?(newValue)
@@ -109,7 +109,7 @@ struct OTPCodeInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for OTPCodeInputField")
       return
     }
@@ -131,7 +131,7 @@ struct OTPCodeInputField: View, LogReporter {
     errorMessage = result.errorMessage
     onValidationChange?(result.isValid)
 
-    if let scope = scope {
+    if let scope {
       if result.isValid {
         scope.clearFieldError(.otp)
       } else if let message = result.errorMessage {

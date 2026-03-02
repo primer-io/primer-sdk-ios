@@ -131,6 +131,12 @@ extension PrimerTheme {
             case light
         }
 
+        /// Resolve to a CGFloat based on current appearance mode
+        var resolvedValue: CGFloat? {
+            let isDarkMode = UIScreen.isDarkModeEnabled
+            return isDarkMode ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
+        }
+
         init?(
             colored: CGFloat? = 0,
             light: CGFloat? = 0,
@@ -146,12 +152,6 @@ extension PrimerTheme {
             colored = (try? container.decode(CGFloat?.self, forKey: .colored)) ?? nil
             light = (try? container.decode(CGFloat?.self, forKey: .light)) ?? nil
             dark = (try? container.decode(CGFloat?.self, forKey: .dark)) ?? nil
-        }
-
-        /// Resolve to a CGFloat based on current appearance mode
-        var resolvedValue: CGFloat? {
-            let isDarkMode = UIScreen.isDarkModeEnabled
-            return isDarkMode ? (dark ?? colored ?? light) : (colored ?? light ?? dark)
         }
 
         public func encode(to encoder: Encoder) throws {

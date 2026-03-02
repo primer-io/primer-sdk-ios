@@ -122,7 +122,7 @@ struct CountryInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for CountryInputField")
       return
     }
@@ -142,7 +142,7 @@ struct CountryInputField: View, LogReporter {
   @MainActor
   private func updateFromExternalState(with country: PrimerCountry?) {
     // Update directly from the PrimerCountry object from the scope
-    if let country = country, !country.name.isEmpty, !country.code.isEmpty {
+    if let country, !country.name.isEmpty, !country.code.isEmpty {
       countryName = country.name
       countryCode = country.code
       countryFlag = country.flag
@@ -170,7 +170,7 @@ struct CountryInputField: View, LogReporter {
 
   @MainActor
   private func validateCountry() {
-    guard let validationService = validationService else { return }
+    guard let validationService else { return }
 
     let result = validationService.validate(
       input: countryCode,
@@ -182,10 +182,10 @@ struct CountryInputField: View, LogReporter {
 
     if result.isValid {
       clearFieldError()
-      scope.updateCountryCodeValidationState(true)
+      scope.updateValidationState(\.countryCode, isValid: true)
     } else if let message = result.errorMessage {
       setFieldError(message: message, errorCode: result.errorCode)
-      scope.updateCountryCodeValidationState(false)
+      scope.updateValidationState(\.countryCode, isValid: false)
     }
   }
 }

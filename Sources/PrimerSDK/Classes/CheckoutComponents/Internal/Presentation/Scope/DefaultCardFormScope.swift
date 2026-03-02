@@ -7,25 +7,26 @@
 import Foundation
 import SwiftUI
 
-/// Validation state tracking for individual fields
-struct FieldValidationStates: Equatable {
+/// Validation state tracking for individual fields.
+/// Used with `DefaultCardFormScope.updateValidationState(_:isValid:)` via KeyPaths.
+public struct FieldValidationStates: Equatable {
   // Card fields - start as false and become true when validation passes
-  var cardNumber: Bool = false
-  var cvv: Bool = false
-  var expiry: Bool = false
-  var cardholderName: Bool = false
+  public var cardNumber: Bool = false
+  public var cvv: Bool = false
+  public var expiry: Bool = false
+  public var cardholderName: Bool = false
 
   // Billing address fields
-  var postalCode: Bool = false
-  var countryCode: Bool = false
-  var city: Bool = false
-  var state: Bool = false
-  var addressLine1: Bool = false
-  var addressLine2: Bool = false
-  var firstName: Bool = false
-  var lastName: Bool = false
-  var email: Bool = false
-  var phoneNumber: Bool = false
+  public var postalCode: Bool = false
+  public var countryCode: Bool = false
+  public var city: Bool = false
+  public var state: Bool = false
+  public var addressLine1: Bool = false
+  public var addressLine2: Bool = false
+  public var firstName: Bool = false
+  public var lastName: Bool = false
+  public var email: Bool = false
+  public var phoneNumber: Bool = false
 }
 
 @available(iOS 15.0, *)

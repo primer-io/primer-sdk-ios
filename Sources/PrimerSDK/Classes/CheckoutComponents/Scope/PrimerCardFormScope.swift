@@ -255,46 +255,39 @@ extension PrimerCardFormScope {
   }
 }
 
+// MARK: - PrimerInputElementType to FieldValidationStates KeyPath Mapping
+
+private extension PrimerInputElementType {
+  var validationKeyPath: WritableKeyPath<FieldValidationStates, Bool>? {
+    switch self {
+    case .cardNumber: \.cardNumber
+    case .cvv: \.cvv
+    case .expiryDate: \.expiry
+    case .cardholderName: \.cardholderName
+    case .email: \.email
+    case .firstName: \.firstName
+    case .lastName: \.lastName
+    case .addressLine1: \.addressLine1
+    case .addressLine2: \.addressLine2
+    case .city: \.city
+    case .state: \.state
+    case .postalCode: \.postalCode
+    case .countryCode: \.countryCode
+    case .phoneNumber: \.phoneNumber
+    case .retailer, .otp, .unknown, .all: nil
+    }
+  }
+}
+
 // MARK: - Validation State Update Helper
 
 @available(iOS 15.0, *)
 extension PrimerCardFormScope {
 
   func updateValidationStateIfNeeded(for field: PrimerInputElementType, isValid: Bool) {
-    guard let defaultScope = self as? DefaultCardFormScope else { return }
-
-    switch field {
-    case .cardNumber:
-      defaultScope.updateCardNumberValidationState(isValid)
-    case .cvv:
-      defaultScope.updateCvvValidationState(isValid)
-    case .expiryDate:
-      defaultScope.updateExpiryValidationState(isValid)
-    case .cardholderName:
-      defaultScope.updateCardholderNameValidationState(isValid)
-    case .email:
-      defaultScope.updateEmailValidationState(isValid)
-    case .firstName:
-      defaultScope.updateFirstNameValidationState(isValid)
-    case .lastName:
-      defaultScope.updateLastNameValidationState(isValid)
-    case .addressLine1:
-      defaultScope.updateAddressLine1ValidationState(isValid)
-    case .addressLine2:
-      defaultScope.updateAddressLine2ValidationState(isValid)
-    case .city:
-      defaultScope.updateCityValidationState(isValid)
-    case .state:
-      defaultScope.updateStateValidationState(isValid)
-    case .postalCode:
-      defaultScope.updatePostalCodeValidationState(isValid)
-    case .countryCode:
-      defaultScope.updateCountryCodeValidationState(isValid)
-    case .phoneNumber:
-      defaultScope.updatePhoneNumberValidationState(isValid)
-    case .retailer, .otp, .unknown, .all:
-      break  // These fields don't have validation state updates
-    }
+    guard let defaultScope = self as? DefaultCardFormScope,
+          let keyPath = field.validationKeyPath else { return }
+    defaultScope.updateValidationState(keyPath, isValid: isValid)
   }
 }
 

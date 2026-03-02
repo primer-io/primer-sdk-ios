@@ -70,10 +70,10 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       scope: any PrimerCardFormScope
     ) {
       self.validationService = validationService
-      self._city = city
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _city = city
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
     }
 
@@ -123,7 +123,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
       if let scope = scope as? DefaultCardFormScope {
-        scope.updateCityValidationState(isValid)
+        scope.updateValidationState(\.city, isValid: isValid)
       }
 
       return false
@@ -137,7 +137,7 @@ struct CityTextField: UIViewRepresentable, LogReporter {
         isValid = false  // City is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCityValidationState(false)
+          scope.updateValidationState(\.city, isValid: false)
         }
         return
       }
@@ -153,12 +153,12 @@ struct CityTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.city)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCityValidationState(true)
+          scope.updateValidationState(\.city, isValid: true)
         }
       } else if let message = result.errorMessage {
         scope.setFieldError(.city, message: message, errorCode: result.errorCode)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCityValidationState(false)
+          scope.updateValidationState(\.city, isValid: false)
         }
       }
     }

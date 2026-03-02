@@ -70,10 +70,10 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       scope: any PrimerCardFormScope
     ) {
       self.validationService = validationService
-      self._state = state
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _state = state
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
     }
 
@@ -123,7 +123,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
       if let scope = scope as? DefaultCardFormScope {
-        scope.updateStateValidationState(isValid)
+        scope.updateValidationState(\.state, isValid: isValid)
       }
 
       return false
@@ -137,7 +137,7 @@ struct StateTextField: UIViewRepresentable, LogReporter {
         isValid = false  // State is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateStateValidationState(false)
+          scope.updateValidationState(\.state, isValid: false)
         }
         return
       }
@@ -153,12 +153,12 @@ struct StateTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.state)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateStateValidationState(true)
+          scope.updateValidationState(\.state, isValid: true)
         }
       } else if let message = result.errorMessage {
         scope.setFieldError(.state, message: message, errorCode: result.errorCode)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateStateValidationState(false)
+          scope.updateValidationState(\.state, isValid: false)
         }
       }
     }
