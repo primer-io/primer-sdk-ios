@@ -30,7 +30,7 @@ final class PrimerContainerViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.accessibilityIdentifier = "checkout_sheet_content"
+        view.accessibilityIdentifier = "checkout_sheet_content"
         scrollView.accessibilityIdentifier = "primer_container_scroll_view"
 
         view.addSubview(mockedNavigationBar)
@@ -71,16 +71,16 @@ final class PrimerContainerViewController: PrimerViewController {
 
     func layoutContainerViewControllerIfNeeded(block: (() -> Void)?) {
         // This is very important, we need to disable any height constraints before layout.
-        self.childViewHeightConstraint?.isActive = false
-        self.childViewHeightConstraint = nil
+        childViewHeightConstraint?.isActive = false
+        childViewHeightConstraint = nil
 
         // Run the code block
         block?()
 
         // This is very important, the view must layout in order to have correct height before reseting the constraints.
-        self.view.layoutIfNeeded()
-        self.childViewHeightConstraint?.isActive = false
-        self.childViewHeightConstraint = nil
+        view.layoutIfNeeded()
+        childViewHeightConstraint?.isActive = false
+        childViewHeightConstraint = nil
         childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
         childViewHeightConstraint?.isActive = true
         PrimerUIManager.primerRootViewController?.resetConstraint(for: childViewController)
@@ -93,15 +93,5 @@ extension PrimerContainerViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y == 0, scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
             PrimerInternal.shared.dismiss()
         }
-    }
-}
-
-extension UIView {
-
-    func pin(view: UIView, leading: CGFloat = 0, top: CGFloat = 0, trailing: CGFloat = 0, bottom: CGFloat = 0) {
-        topAnchor.constraint(equalTo: view.topAnchor, constant: top).isActive = true
-        bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: bottom).isActive = true
-        leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true
-        trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
     }
 }

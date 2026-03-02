@@ -6,13 +6,13 @@
 
 import UIKit
 
-extension UINavigationController {
-
+public extension UINavigationController {
+    
     var canPop: Bool { viewControllers.count > 1 }
 
     func pushViewController(viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         pushViewController(viewController, animated: animated)
-
+        
         if animated, let coordinator = transitionCoordinator {
             coordinator.animate(alongsideTransition: nil) { _ in
                 completion?()
@@ -21,10 +21,10 @@ extension UINavigationController {
             completion?()
         }
     }
-
+    
     func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         popToViewController(viewController, animated: animated)
-
+        
         if animated, let coordinator = transitionCoordinator {
             coordinator.animate(alongsideTransition: nil) { _ in
                 completion?()

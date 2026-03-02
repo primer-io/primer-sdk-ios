@@ -1,22 +1,21 @@
 //
 //  AlertController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-final class AlertController: UIAlertController {
+public final class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
-        var window: UIWindow!
-        if let windowScene = UIApplication.shared.connectedScenes
+        var window: UIWindow! = if let windowScene = UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })
             .first as? UIWindowScene {
-            window = UIWindow(windowScene: windowScene)
+            UIWindow(windowScene: windowScene)
         } else {
             // Not opted-in in UISceneDelegate
-            window = UIWindow(frame: UIScreen.main.bounds)
+            UIWindow(frame: UIScreen.main.bounds)
         }
 
         window.rootViewController = ClearViewController()
@@ -25,7 +24,7 @@ final class AlertController: UIAlertController {
         return window
     }()
 
-    internal func show(animated flag: Bool = true, completion: (() -> Void)? = nil) {
+    public func show(animated flag: Bool = true, completion: (() -> Void)? = nil) {
         if let rootViewController = alertWindow.rootViewController {
             alertWindow.makeKeyAndVisible()
             rootViewController.present(self, animated: flag, completion: completion)
@@ -34,14 +33,14 @@ final class AlertController: UIAlertController {
 
 }
 
-final class ClearViewController: UIViewController {
+public final class ClearViewController: UIViewController {
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
         let statusBarManager = view.window?.windowScene?.statusBarManager
         return statusBarManager?.statusBarStyle ?? .default
     }
 
-    override var prefersStatusBarHidden: Bool {
+    override public var prefersStatusBarHidden: Bool {
         let statusBarManager = view.window?.windowScene?.statusBarManager
         return statusBarManager?.isStatusBarHidden ?? false
     }
