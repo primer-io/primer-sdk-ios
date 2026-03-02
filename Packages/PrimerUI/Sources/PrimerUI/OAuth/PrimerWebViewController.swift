@@ -1,7 +1,7 @@
 //
 //  PrimerWebViewController.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
@@ -10,7 +10,8 @@ import WebKit
 final class PrimerWebViewController: PrimerViewController {
 
     private let webView: WKWebView! = WKWebView()
-    internal private(set) var url: URL
+    private(set) var url: URL
+    private let headers: [String: String]?
     var navigationDelegate: WKNavigationDelegate? {
         didSet {
             webView?.navigationDelegate = navigationDelegate
@@ -21,8 +22,9 @@ final class PrimerWebViewController: PrimerViewController {
         "livedemostore.primer.io"
     ]
 
-    init(with url: URL) {
+    init(with url: URL, headers: [String: String]?) {
         self.url = url
+        self.headers = headers
         super.init()
     }
 
@@ -46,7 +48,7 @@ final class PrimerWebViewController: PrimerViewController {
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 60
-        request.allHTTPHeaderFields = PrimerAPI.headers
+        request.allHTTPHeaderFields = headers
         webView.load(request)
     }
 
