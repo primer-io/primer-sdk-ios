@@ -99,26 +99,16 @@ final class DefaultKlarnaScopeTests: XCTestCase {
     // MARK: - State AsyncStream Tests
 
     @MainActor
-    func test_state_emitsInitialState() async {
+    func test_state_emitsInitialState() async throws {
         // Given
         mockInteractor.sessionResultToReturn = KlarnaTestData.defaultSessionResult
         let scope = createScope()
 
         // When
-        var receivedStates: [PrimerKlarnaState] = []
-        let task = Task {
-            for await state in scope.state {
-                receivedStates.append(state)
-                if receivedStates.count >= 1 { break }
-            }
-        }
-
-        // Wait for initial emission
-        try? await Task.sleep(nanoseconds: 100_000_000)
-        task.cancel()
+        let firstState = try await awaitFirst(scope.state)
 
         // Then
-        XCTAssertFalse(receivedStates.isEmpty)
+        XCTAssertNotNil(firstState)
     }
 
     @MainActor

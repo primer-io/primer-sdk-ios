@@ -4,14 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable cyclomatic_complexity function_body_length
-// TODO: Refactor CheckoutScopeObserver to reduce complexity (currently 21, max 12) and function length (101 lines, max 100)
-//
-//  CheckoutScopeObserver.swift
-//
-//  Copyright © 2025 Primer API Ltd. All rights reserved.
-//  Licensed under the MIT License. See LICENSE file in the project root for full license information.
-
 import SwiftUI
 
 // MARK: - Checkout Scope Observer
@@ -87,155 +79,175 @@ struct CheckoutScopeObserver: View, LogReporter {
   private func getCurrentView() -> AnyView {
     switch scope.navigationState {
     case .loading:
-      // Check if init screen is enabled in settings (UI Options integration)
-      if scope.isInitScreenEnabled {
-        if let customSplash = scope.splashScreen {
-          return AnyView(customSplash())
-        } else {
-          return AnyView(SplashScreen())
-        }
-      } else {
-        // Skip loading screen, show empty view or proceed to next state
-        logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
-        return AnyView(EmptyView())
-      }
-
+      makeLoadingView()
     case .paymentMethodSelection:
-      // Check if the payment method selection scope has a custom screen
-      if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
-        return AnyView(customPaymentMethodSelectionScreen(scope.paymentMethodSelection))
-      }
-      // Then check if the checkout scope has a custom payment selection screen (legacy)
-      else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
-        return AnyView(customPaymentSelection(scope.paymentMethodSelection))
-      } else {
-        return AnyView(
-          PaymentMethodSelectionScreen(
-            scope: scope.paymentMethodSelection
-          ))
-      }
-
+      makePaymentMethodSelectionView()
     case .vaultedPaymentMethods:
-      return AnyView(
-        VaultedPaymentMethodsListScreen(
-          vaultedPaymentMethods: scope.vaultedPaymentMethods,
-          selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
-          onSelect: { method in
-            scope.setSelectedVaultedPaymentMethod(method)
-            if let selectionScope = scope.paymentMethodSelection
-              as? DefaultPaymentMethodSelectionScope
-            {
-              selectionScope.collapsePaymentMethods()
-            }
-            scope.checkoutNavigator.navigateBack()
-          },
-          onBack: {
-            scope.checkoutNavigator.navigateBack()
-          },
-          onDeleteTapped: { method in
-            scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
-          }
-        ))
-
+      makeVaultedPaymentMethodsView()
     case let .deleteVaultedPaymentMethodConfirmation(method):
-      guard let selectionScope = scope.paymentMethodSelection as? DefaultPaymentMethodSelectionScope
-      else {
-        logger.error(
-          message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
-        scope.checkoutNavigator.navigateBack()
-        return AnyView(EmptyView())
-      }
-      return AnyView(
-        DeleteVaultedPaymentMethodConfirmationScreen(
-          vaultedPaymentMethod: method,
-          navigator: scope.checkoutNavigator,
-          scope: selectionScope
-        ))
-
+      makeDeleteConfirmationView(method: method)
     case let .paymentMethod(paymentMethodType):
-      // Handle all payment method types using truly unified dynamic approach
-      return AnyView(
-        PaymentMethodScreen(
-          paymentMethodType: paymentMethodType,
-          checkoutScope: scope
-        ))
-
+      makePaymentMethodView(type: paymentMethodType)
     case .processing:
-      // Show loading screen during payment processing
-      if let customLoading = scope.loadingScreen {
-        return AnyView(customLoading())
-      } else {
-        return AnyView(DefaultLoadingScreen())
-      }
-
+      makeProcessingView()
     case let .success(result):
-      // Check if success screen is enabled in settings (UI Options integration)
-      if scope.isSuccessScreenEnabled {
-        if let customSuccess = scope.successScreen {
-          return AnyView(customSuccess(result))
-        } else {
-          return AnyView(
-            SuccessScreen(result: result) {
-              logger.info(message: "Success screen auto-dismiss, calling completion callback")
-              onCompletion?(scope.currentState)
-            })
-        }
-      } else {
-        // Skip success screen, immediately call completion (UI Options integration)
-        logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
-        return AnyView(
-          EmptyView().onAppear {
-            DispatchQueue.main.async {
-              onCompletion?(scope.currentState)
-            }
-          })
-      }
-
+      makeSuccessView(result: result)
     case let .failure(error):
-      // Check if error screen is enabled in settings (UI Options integration)
-      if scope.isErrorScreenEnabled {
-        if let customError = scope.errorScreen {
-          return AnyView(customError(error.localizedDescription))
-        } else {
-          return AnyView(
-            ErrorScreen(
-              error: error,
-              onRetry: {
-                logger.info(message: "Error screen retry tapped")
-                scope.retryPayment()
-              },
-              onChooseOtherPaymentMethods: {
-                logger.info(message: "Error screen choose other payment method tapped")
-                scope.checkoutNavigator.handleOtherPaymentMethods()
-              }
-            ))
-        }
+      makeFailureView(error: error)
+    case .dismissed:
+      makeDismissedView()
+    }
+  }
+
+  // MARK: - View Factory Methods
+
+  private func makeLoadingView() -> AnyView {
+    if scope.isInitScreenEnabled {
+      if let customSplash = scope.splashScreen {
+        return AnyView(customSplash())
       } else {
-        // Skip error screen, immediately call completion (UI Options integration)
-        logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+        return AnyView(SplashScreen())
+      }
+    } else {
+      logger.debug(message: "⏭️ [CheckoutComponents] Init screen disabled - skipping loading view")
+      return AnyView(EmptyView())
+    }
+  }
+
+  private func makePaymentMethodSelectionView() -> AnyView {
+    if let customPaymentMethodSelectionScreen = scope.paymentMethodSelection.screen {
+      AnyView(customPaymentMethodSelectionScreen(scope.paymentMethodSelection))
+    } else if let customPaymentSelection = scope.paymentMethodSelectionScreen {
+      AnyView(customPaymentSelection(scope.paymentMethodSelection))
+    } else {
+      AnyView(
+        PaymentMethodSelectionScreen(
+          scope: scope.paymentMethodSelection
+        ))
+    }
+  }
+
+  private func makeVaultedPaymentMethodsView() -> AnyView {
+    AnyView(
+      VaultedPaymentMethodsListScreen(
+        vaultedPaymentMethods: scope.vaultedPaymentMethods,
+        selectedVaultedPaymentMethod: scope.selectedVaultedPaymentMethod,
+        onSelect: { method in
+          scope.setSelectedVaultedPaymentMethod(method)
+          if let selectionScope = scope.paymentMethodSelection
+            as? DefaultPaymentMethodSelectionScope
+          {
+            selectionScope.collapsePaymentMethods()
+          }
+          scope.checkoutNavigator.navigateBack()
+        },
+        onBack: {
+          scope.checkoutNavigator.navigateBack()
+        },
+        onDeleteTapped: { method in
+          scope.updateNavigationState(.deleteVaultedPaymentMethodConfirmation(method))
+        }
+      ))
+  }
+
+  private func makeDeleteConfirmationView(
+    method: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod
+  ) -> AnyView {
+    guard let selectionScope = scope.paymentMethodSelection as? DefaultPaymentMethodSelectionScope
+    else {
+      logger.error(
+        message: "Cannot cast paymentMethodSelection to DefaultPaymentMethodSelectionScope")
+      scope.checkoutNavigator.navigateBack()
+      return AnyView(EmptyView())
+    }
+    return AnyView(
+      DeleteVaultedPaymentMethodConfirmationScreen(
+        vaultedPaymentMethod: method,
+        navigator: scope.checkoutNavigator,
+        scope: selectionScope
+      ))
+  }
+
+  private func makePaymentMethodView(type: String) -> AnyView {
+    AnyView(
+      PaymentMethodScreen(
+        paymentMethodType: type,
+        checkoutScope: scope
+      ))
+  }
+
+  private func makeProcessingView() -> AnyView {
+    if let customLoading = scope.loadingScreen {
+      AnyView(customLoading())
+    } else {
+      AnyView(DefaultLoadingScreen())
+    }
+  }
+
+  private func makeSuccessView(result: PaymentResult) -> AnyView {
+    if scope.isSuccessScreenEnabled {
+      if let customSuccess = scope.successScreen {
+        return AnyView(customSuccess(result))
+      } else {
         return AnyView(
-          EmptyView().onAppear {
-            DispatchQueue.main.async {
-              onCompletion?(scope.currentState)
-            }
+          SuccessScreen(result: result) {
+            logger.info(message: "Success screen auto-dismiss, calling completion callback")
+            onCompletion?(scope.currentState)
           })
       }
-
-    case .dismissed:
-      // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
+    } else {
+      logger.debug(message: "⏭️ [CheckoutComponents] Success screen disabled - auto-dismissing")
       return AnyView(
-        VStack {
-          Text(CheckoutComponentsStrings.dismissingMessage)
-            .font(.caption)
-            .foregroundColor(.secondary)
-        }
-        .onAppear {
-          logger.info(message: "Checkout dismissed, calling completion callback")
+        EmptyView().onAppear {
           DispatchQueue.main.async {
-            onCompletion?(.dismissed)
+            onCompletion?(scope.currentState)
           }
         })
     }
+  }
+
+  private func makeFailureView(error: PrimerError) -> AnyView {
+    if scope.isErrorScreenEnabled {
+      if let customError = scope.errorScreen {
+        return AnyView(customError(error.localizedDescription))
+      } else {
+        return AnyView(
+          ErrorScreen(
+            error: error,
+            onRetry: {
+              logger.info(message: "Error screen retry tapped")
+              scope.retryPayment()
+            },
+            onChooseOtherPaymentMethods: {
+              logger.info(message: "Error screen choose other payment method tapped")
+              scope.checkoutNavigator.handleOtherPaymentMethods()
+            }
+          ))
+      }
+    } else {
+      logger.debug(message: "⏭️ [CheckoutComponents] Error screen disabled - auto-dismissing")
+      return AnyView(
+        EmptyView().onAppear {
+          DispatchQueue.main.async {
+            onCompletion?(scope.currentState)
+          }
+        })
+    }
+  }
+
+  private func makeDismissedView() -> AnyView {
+    AnyView(
+      VStack {
+        Text(CheckoutComponentsStrings.dismissingMessage)
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+      .onAppear {
+        logger.info(message: "Checkout dismissed, calling completion callback")
+        DispatchQueue.main.async {
+          onCompletion?(.dismissed)
+        }
+      })
   }
 
   // MARK: - Design Token Management
@@ -260,4 +272,3 @@ struct CheckoutScopeObserver: View, LogReporter {
     }
   }
 }
-// swiftlint:enable cyclomatic_complexity function_body_length

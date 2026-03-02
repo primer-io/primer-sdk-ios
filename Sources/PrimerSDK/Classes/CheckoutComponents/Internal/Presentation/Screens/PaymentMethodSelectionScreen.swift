@@ -16,6 +16,7 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   @Environment(\.diContainer) private var container
   @State private var selectionState: PrimerPaymentMethodSelectionState = .init()
   @State private var configurationService: ConfigurationService?
+  @State private var observationTask: Task<Void, Never>?
 
   var body: some View {
     VStack(spacing: PrimerSpacing.medium(tokens: tokens)) {
@@ -26,6 +27,10 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
     .onAppear {
       resolveConfigurationService()
       observeState()
+    }
+    .onDisappear {
+      observationTask?.cancel()
+      observationTask = nil
     }
   }
 
@@ -120,7 +125,8 @@ struct PaymentMethodSelectionScreen: View, LogReporter {
   }
 
   private func observeState() {
-    Task {
+    observationTask?.cancel()
+    observationTask = Task {
       for await state in await scope.state {
         await MainActor.run {
           selectionState = state

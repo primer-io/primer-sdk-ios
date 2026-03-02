@@ -85,10 +85,10 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       scope: any PrimerCardFormScope
     ) {
       self.validationService = validationService
-      self._postalCode = postalCode
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _postalCode = postalCode
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.countryCode = countryCode
       self.scope = scope
     }
@@ -139,7 +139,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
       if let scope = scope as? DefaultCardFormScope {
-        scope.updatePostalCodeValidationState(isValid)
+        scope.updateValidationState(\.postalCode, isValid: isValid)
       }
 
       return false
@@ -153,7 +153,7 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
         isValid = false  // Postal code is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updatePostalCodeValidationState(false)
+          scope.updateValidationState(\.postalCode, isValid: false)
         }
         return
       }
@@ -169,12 +169,12 @@ struct PostalCodeTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.postalCode)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updatePostalCodeValidationState(true)
+          scope.updateValidationState(\.postalCode, isValid: true)
         }
       } else if let message = result.errorMessage {
         scope.setFieldError(.postalCode, message: message, errorCode: result.errorCode)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updatePostalCodeValidationState(false)
+          scope.updateValidationState(\.postalCode, isValid: false)
         }
       }
     }

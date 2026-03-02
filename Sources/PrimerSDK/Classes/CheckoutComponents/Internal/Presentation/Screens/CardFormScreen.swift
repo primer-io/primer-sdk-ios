@@ -4,9 +4,6 @@
 //  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-// swiftlint:disable file_length
-// TODO: Refactor CardFormScreen to reduce file length (currently 814 lines, max 800)
-
 import SwiftUI
 
 /// Default card form screen for CheckoutComponents with dynamic field rendering
@@ -23,6 +20,7 @@ struct CardFormScreen: View, LogReporter {
   @State private var refreshTrigger = UUID()
   @State private var formConfiguration: CardFormConfiguration = .default
   @State private var configurationService: ConfigurationService?
+  @State private var observationTask: Task<Void, Never>?
   @FocusState private var focusedField: PrimerInputElementType?
 
   var body: some View {
@@ -98,6 +96,10 @@ struct CardFormScreen: View, LogReporter {
     .onAppear {
       resolveConfigurationService()
       observeState()
+    }
+    .onDisappear {
+      observationTask?.cancel()
+      observationTask = nil
     }
   }
 
@@ -334,7 +336,8 @@ struct CardFormScreen: View, LogReporter {
   }
 
   private func observeState() {
-    Task {
+    observationTask?.cancel()
+    observationTask = Task {
       await MainActor.run {
         formConfiguration = scope.getFormConfiguration()
         bridgeController?.invalidateContentSize()
@@ -691,207 +694,3 @@ struct CardFormScreen: View, LogReporter {
     }
   }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-  @available(iOS 15.0, *)
-  #Preview("All Fields - Light") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .visa,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: [
-            .countryCode,
-            .addressLine1,
-            .addressLine2,
-            .city,
-            .state,
-            .postalCode,
-            .firstName,
-            .lastName,
-            .email,
-            .phoneNumber,
-            .otp,
-          ]
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("All Fields - Dark") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .masterCard,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: [
-            .countryCode,
-            .addressLine1,
-            .addressLine2,
-            .city,
-            .state,
-            .postalCode,
-            .firstName,
-            .lastName,
-            .email,
-            .phoneNumber,
-            .otp,
-          ]
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Card Fields Only - Light") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .amex,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Card Fields Only - Dark") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .discover,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Co-badged Cards - Light") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .visa,
-        availableNetworks: [.visa, .masterCard, .discover],
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Co-badged Cards - Dark") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .visa,
-        availableNetworks: [.visa, .masterCard, .discover],
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Loading State") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        isLoading: true,
-        isValid: true,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("Valid State") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        isLoading: false,
-        isValid: true,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv, .cardholderName],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("With Billing Address - Light") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .masterCard,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv],
-          billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("With Billing Address - Dark") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        selectedNetwork: .jcb,
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv],
-          billingFields: [.countryCode, .addressLine1, .city, .state, .postalCode]
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.dark)
-    .environment(\.diContainer, MockDIContainer())
-    .preferredColorScheme(.dark)
-  }
-
-  @available(iOS 15.0, *)
-  #Preview("With Surcharge") {
-    CardFormScreen(
-      scope: MockCardFormScope(
-        isValid: true,
-        selectedNetwork: .visa,
-        surchargeAmount: "+ 1.50€",
-        formConfiguration: CardFormConfiguration(
-          cardFields: [.cardNumber, .expiryDate, .cvv],
-          billingFields: []
-        )
-      )
-    )
-    .environment(\.designTokens, MockDesignTokens.light)
-    .environment(\.diContainer, MockDIContainer())
-  }
-#endif
-// swiftlint:enable file_length

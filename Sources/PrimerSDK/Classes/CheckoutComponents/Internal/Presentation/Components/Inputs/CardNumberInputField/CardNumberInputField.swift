@@ -139,7 +139,7 @@ struct CardNumberInputField: View, LogReporter {
       localSelectedNetwork = displayNetwork
     }
     .onChange(of: selectedNetwork) { newNetwork in
-      if let newNetwork = newNetwork {
+      if let newNetwork {
         localSelectedNetwork = newNetwork
       }
     }

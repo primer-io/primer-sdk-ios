@@ -91,11 +91,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     ) {
       self.scope = scope
       self.validationService = validationService
-      self._cardNumber = cardNumber
-      self._cardNetwork = cardNetwork
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _cardNumber = cardNumber
+      _cardNetwork = cardNetwork
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
     }
 
     @objc func doneButtonTapped() {
@@ -360,8 +360,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       validationTimer?.invalidate()
       validationTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) {
         [weak self] _ in
-        guard let self = self else { return }
-        self.validateCardNumberWhileTyping(number)
+        guard let self else { return }
+        validateCardNumberWhileTyping(number)
       }
     }
 
@@ -369,8 +369,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
       networkDetectionTimer?.invalidate()
       networkDetectionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) {
         [weak self] _ in
-        guard let self = self else { return }
-        self.detectNetworksForCardNumber(number)
+        guard let self else { return }
+        detectNetworksForCardNumber(number)
       }
     }
 

@@ -78,12 +78,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       scope: any PrimerCardFormScope
     ) {
       self.validationService = validationService
-      self._expiryDate = expiryDate
-      self._month = month
-      self._year = year
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _expiryDate = expiryDate
+      _month = month
+      _year = year
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
     }
 
@@ -215,7 +215,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         isValid = false  // Expiry date is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateExpiryValidationState(false)
+          scope.updateValidationState(\.expiry, isValid: false)
         }
         return
       }
@@ -232,7 +232,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             errorCode: "invalid_format")
         }
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateExpiryValidationState(false)
+          scope.updateValidationState(\.expiry, isValid: false)
         }
         return
       }
@@ -256,14 +256,14 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.expiryDate)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateExpiryValidationState(true)
+          scope.updateValidationState(\.expiry, isValid: true)
         }
       } else {
         if showErrors, let message = result.errorMessage {
           scope.setFieldError(.expiryDate, message: message, errorCode: result.errorCode)
         }
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateExpiryValidationState(false)
+          scope.updateValidationState(\.expiry, isValid: false)
         }
       }
     }

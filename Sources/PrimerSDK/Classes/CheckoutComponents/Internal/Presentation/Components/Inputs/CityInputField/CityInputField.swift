@@ -50,7 +50,7 @@ struct CityInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         CityTextField(
           city: $city,
           isValid: $isValid,
@@ -84,7 +84,7 @@ struct CityInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for CityInputField")
       return
     }

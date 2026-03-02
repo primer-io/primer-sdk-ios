@@ -53,7 +53,7 @@ struct CVVInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         CVVTextField(
           cvv: $cvv,
           isValid: $isValid,
@@ -88,7 +88,7 @@ struct CVVInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for CVVInputField")
       return
     }

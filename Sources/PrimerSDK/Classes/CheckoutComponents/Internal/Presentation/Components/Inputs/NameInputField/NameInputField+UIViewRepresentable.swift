@@ -82,10 +82,10 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       onValidationChange: ((Bool) -> Void)?
     ) {
       self.validationService = validationService
-      self._name = name
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _name = name
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.inputType = inputType
       self.scope = scope
       self.onNameChange = onNameChange
@@ -133,7 +133,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
 
       name = newText
 
-      if let scope = scope {
+      if let scope {
         switch inputType {
         case .firstName:
           scope.updateFirstName(newText)
@@ -152,14 +152,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
       if let scope = scope as? DefaultCardFormScope {
-        switch inputType {
-        case .firstName:
-          scope.updateFirstNameValidationState(isValid)
-        case .lastName:
-          scope.updateLastNameValidationState(isValid)
-        default:
-          break
-        }
+        scope.updateValidationStateIfNeeded(for: inputType, isValid: isValid)
       }
 
       return false
@@ -174,14 +167,7 @@ struct NameTextField: UIViewRepresentable, LogReporter {
         errorMessage = nil  // Never show error message for empty fields
         onValidationChange?(false)
         if let scope = scope as? DefaultCardFormScope {
-          switch inputType {
-          case .firstName:
-            scope.updateFirstNameValidationState(false)
-          case .lastName:
-            scope.updateLastNameValidationState(false)
-          default:
-            break
-          }
+          scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
         }
         return
       }
@@ -190,11 +176,11 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       let elementType: ValidationError.InputElementType = {
         switch inputType {
         case .firstName:
-          return .firstName
+          .firstName
         case .lastName:
-          return .lastName
+          .lastName
         default:
-          return .firstName
+          .firstName
         }
       }()
 
@@ -207,30 +193,16 @@ struct NameTextField: UIViewRepresentable, LogReporter {
       errorMessage = result.errorMessage
       onValidationChange?(result.isValid)
 
-      if let scope = scope {
+      if let scope {
         if result.isValid {
           scope.clearFieldError(inputType)
           if let scope = scope as? DefaultCardFormScope {
-            switch inputType {
-            case .firstName:
-              scope.updateFirstNameValidationState(true)
-            case .lastName:
-              scope.updateLastNameValidationState(true)
-            default:
-              break
-            }
+            scope.updateValidationStateIfNeeded(for: inputType, isValid: true)
           }
         } else if let message = result.errorMessage {
           scope.setFieldError(inputType, message: message, errorCode: result.errorCode)
           if let scope = scope as? DefaultCardFormScope {
-            switch inputType {
-            case .firstName:
-              scope.updateFirstNameValidationState(false)
-            case .lastName:
-              scope.updateLastNameValidationState(false)
-            default:
-              break
-            }
+            scope.updateValidationStateIfNeeded(for: inputType, isValid: false)
           }
         }
       }

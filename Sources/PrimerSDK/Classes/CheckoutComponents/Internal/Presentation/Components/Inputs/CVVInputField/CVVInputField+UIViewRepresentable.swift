@@ -79,10 +79,10 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     ) {
       self.validationService = validationService
       self.cardNetwork = cardNetwork
-      self._cvv = cvv
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _cvv = cvv
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
     }
 
@@ -138,7 +138,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
         isValid = false
         errorMessage = nil
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCvvValidationState(false)
+          scope.updateValidationState(\.cvv, isValid: false)
         }
       }
 
@@ -152,7 +152,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
         isValid = false  // CVV is required
         errorMessage = nil  // Never show error message for empty fields
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCvvValidationState(false)
+          scope.updateValidationState(\.cvv, isValid: false)
         }
         return
       }
@@ -167,14 +167,14 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
       if result.isValid {
         scope.clearFieldError(.cvv)
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCvvValidationState(true)
+          scope.updateValidationState(\.cvv, isValid: true)
         }
       } else {
         if let message = result.errorMessage {
           scope.setFieldError(.cvv, message: message, errorCode: result.errorCode)
         }
         if let scope = scope as? DefaultCardFormScope {
-          scope.updateCvvValidationState(false)
+          scope.updateValidationState(\.cvv, isValid: false)
         }
       }
     }

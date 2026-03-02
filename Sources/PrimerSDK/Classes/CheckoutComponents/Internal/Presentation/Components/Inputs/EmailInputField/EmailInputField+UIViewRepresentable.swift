@@ -78,10 +78,10 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       onValidationChange: ((Bool) -> Void)?
     ) {
       self.validationService = validationService
-      self._email = email
-      self._isValid = isValid
-      self._errorMessage = errorMessage
-      self._isFocused = isFocused
+      _email = email
+      _isValid = isValid
+      _errorMessage = errorMessage
+      _isFocused = isFocused
       self.scope = scope
       self.onEmailChange = onEmailChange
       self.onValidationChange = onValidationChange
@@ -127,7 +127,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       let newText = currentText.replacingCharacters(in: textRange, with: string)
 
       email = newText
-      if let scope = scope {
+      if let scope {
         scope.updateEmail(newText)
       } else {
         onEmailChange?(newText)
@@ -138,7 +138,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
         !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
 
       if let scope = scope as? DefaultCardFormScope {
-        scope.updateEmailValidationState(isValid)
+        scope.updateValidationState(\.email, isValid: isValid)
       }
 
       return false
@@ -164,7 +164,7 @@ struct EmailTextField: UIViewRepresentable, LogReporter {
       errorMessage = result.errorMessage
       onValidationChange?(result.isValid)
 
-      if let scope = scope {
+      if let scope {
         if result.isValid {
           scope.clearFieldError(.email)
         } else if let message = result.errorMessage {

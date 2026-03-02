@@ -46,8 +46,8 @@ struct AddressLineInputField: View, LogReporter {
     self.inputType = inputType
     self.scope = scope
     self.styling = styling
-    self.onAddressChange = nil
-    self.onValidationChange = nil
+    onAddressChange = nil
+    onValidationChange = nil
   }
 
   init(
@@ -63,7 +63,7 @@ struct AddressLineInputField: View, LogReporter {
     self.placeholder = placeholder
     self.isRequired = isRequired
     self.inputType = inputType
-    self.scope = nil
+    scope = nil
     self.styling = styling
     self.onAddressChange = onAddressChange
     self.onValidationChange = onValidationChange
@@ -80,7 +80,7 @@ struct AddressLineInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         AddressLineTextField(
           addressLine: $addressLine,
           isValid: $isValid,
@@ -109,7 +109,7 @@ struct AddressLineInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for AddressLineInputField")
       return
     }

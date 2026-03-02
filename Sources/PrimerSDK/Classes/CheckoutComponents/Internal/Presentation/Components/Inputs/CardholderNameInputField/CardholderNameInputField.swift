@@ -85,7 +85,7 @@ struct CardholderNameInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for CardholderNameInputField")
       return
     }

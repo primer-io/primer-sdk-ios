@@ -50,7 +50,7 @@ struct StateInputField: View, LogReporter {
       errorMessage: $errorMessage,
       isFocused: $isFocused
     ) {
-      if let validationService = validationService {
+      if let validationService {
         StateTextField(
           state: $state,
           isValid: $isValid,
@@ -75,7 +75,7 @@ struct StateInputField: View, LogReporter {
   }
 
   private func setupValidationService() {
-    guard let container = container else {
+    guard let container else {
       logger.error(message: "DIContainer not available for StateInputField")
       return
     }
