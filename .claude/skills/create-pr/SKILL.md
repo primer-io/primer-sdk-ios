@@ -20,15 +20,12 @@ Create a pull request for the current branch. Jira ticket: $ARGUMENTS
 3. **Review changes**: `git diff` to verify all changes are intentional
 4. **Stage and commit** any remaining changes (conventional commit format)
 5. **Push** the branch: `git push -u origin HEAD`
-6. **Capture screenshots** (if the PR includes UI changes):
-   - Build the Debug App
-   - Use ios-simulator MCP tools to boot simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to affected screens, and take screenshots
-   - Save screenshots to include in the PR body
+6. **Capture screenshots** (if UI changes): Follow the UI Verification steps in CLAUDE.md to capture screenshots for the PR body
 7. **Read the PR template**: Read `.github/pull_request_template.md`
 8. **Create the PR** using `gh pr create`:
    - Title: short (<70 chars), conventional commit style
    - Body: fill in each section of the PR template:
-     - **Description**: Jira ticket reference (`CHKT-XXXX`) + summary of changes + any breaking changes
+     - **Description**: Jira ticket reference (`ACC-XXXX`) + summary of changes + any breaking changes
      - **Manual Testing**: steps to verify the changes, or remove section if N/A
      - **Screenshots**: embed simulator screenshots captured in step 6, or remove section if no UI changes
      - **Contributor Checklist**: check applicable items

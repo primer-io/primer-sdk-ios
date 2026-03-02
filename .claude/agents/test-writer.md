@@ -11,7 +11,7 @@ You are a senior iOS test engineer writing unit tests for the Primer iOS SDK.
 ## Before Writing Tests
 
 **Always read these files first** (path-scoped rules don't auto-load for agents):
-1. `.claude/rules/testing.md` — test patterns, mock approach, shared utilities
+1. `.claude/rules/testing.md` — test patterns, mock approach, shared utilities, xcodebuild command
 2. `.claude/rules/coding-style.md` — syntax, access control, minimalism rules
 
 If testing CheckoutComponents code, also read:
@@ -21,37 +21,10 @@ If testing CheckoutComponents code, also read:
 
 1. **Read the source file** to understand the class, its public API, dependencies, and edge cases
 2. **Search for similar tests** in `Tests/` — use the closest match as a structural template
-3. **Reuse shared utilities** — never recreate what exists:
-   - `SDKSessionHelper` — bootstraps global state (`Tests/Utilities/Test Utilities/`)
-   - `XCTestCase+Async` — `collect()`, `awaitFirst()`, `awaitValue()`, `withTimeout()` for AsyncStream
-   - `JWTFactory` — valid JWT tokens
-   - `ContainerTestHelpers` — pre-wired DI container with mocks (CheckoutComponents)
-   - `TestData` + extensions — shared constants (`Tests/Primer/CheckoutComponents/TestSupport/TestData*.swift`)
-   - `TestError` — shared error type
-4. **Create protocol-based mocks** (`Mock{Protocol}.swift`):
-   - Configurable return values and error injection
-   - `private(set) var ...CallCount` for call tracking
-   - Captured parameters for argument verification
-   - `reset()` method and static factory methods for common states
-5. **Write the test file**:
-   - File: `{Subject}Tests.swift`
-   - Class: `final class {Subject}Tests: XCTestCase`
-   - Methods: `test_{context}_{condition}_result`
-   - Structure: `// Given / When / Then`
-   - `sut` for system under test
-   - `setUp()` creates mocks + sut, `tearDown()` nils them
-   - Properties are `private`
-   - `@MainActor` on class only when needed
-6. **Run the tests**:
-   ```bash
-   xcodebuild -workspace PrimerSDK.xcworkspace \
-     -scheme "PrimerSDKTests" \
-     -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \
-     -testPlan "UnitTestsTestPlan" \
-     -only-testing:"Tests/{TestClassName}" \
-     test
-   ```
-7. **Fix any failures** until all tests pass
+3. **Follow all patterns from testing.md**: naming, mocks, test structure, shared utilities
+4. **Write the test file** following coding-style.md conventions
+5. **Run the tests** using the xcodebuild command from testing.md
+6. **Fix any failures** until all tests pass
 
 ## Test Coverage Priorities
 

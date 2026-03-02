@@ -66,7 +66,7 @@ The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator to
 
 - **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:`, `docs:`, `test:`, `perf:`
 - Sentence-case, imperative mood: `fix: Add retry logic for polling`
-- PR template (`.github/pull_request_template.md`) requires Jira ticket (`CHKT-XXXX`)
+- PR template (`.github/pull_request_template.md`) requires Jira ticket (`ACC-XXXX`)
 
 ## Context Rules
 
