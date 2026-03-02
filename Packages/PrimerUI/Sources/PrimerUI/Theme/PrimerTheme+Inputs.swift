@@ -1,25 +1,25 @@
 //
 //  PrimerTheme+Inputs.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-enum InputType {
+public enum InputType {
     case underlined
 }
 
-final class InputTheme {
-    let color: UIColor
+public final class InputTheme {
+    public let color: UIColor
     let cornerRadius: CGFloat
-    let border: BorderTheme
-    let text: TextTheme
+    public let border: BorderTheme
+    public let text: TextTheme
     let hintText: TextTheme
     let errortext: TextTheme
     let inputType: InputType
 
-    internal init(
+    public init(
         color: UIColor,
         cornerRadius: CGFloat,
         border: BorderTheme,
