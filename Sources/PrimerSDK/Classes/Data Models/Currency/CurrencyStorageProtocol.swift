@@ -6,6 +6,7 @@
 
 import Foundation
 import PrimerFoundation
+import PrimerResources
 
 private let currencyFileURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("currencies.json")
 
