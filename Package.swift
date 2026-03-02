@@ -19,7 +19,8 @@ let package = Package(
         .package(path: "Packages/PrimerFoundation"),
         .package(path: "Packages/PrimerCore"),
         .package(path: "Packages/PrimerNetworking"),
-        .package(path: "Packages/PrimerUI")
+        .package(path: "Packages/PrimerUI"),
+        .package(path: "Packages/PrimerResources")
     ],
     targets: [
         .target(
@@ -29,12 +30,10 @@ let package = Package(
                 .product(name: "PrimerFoundation", package: "PrimerFoundation"),
                 .product(name: "PrimerCore", package: "PrimerCore"),
                 .product(name: "PrimerNetworking", package: "PrimerNetworking"),
-                .product(name: "PrimerUI", package: "PrimerUI")
+                .product(name: "PrimerUI", package: "PrimerUI"),
+                .product(name: "PrimerResources", package: "PrimerResources")
             ],
-            path: "Sources/PrimerSDK",
-            resources: [
-                .process("Resources")
-            ]
+            path: "Sources/PrimerSDK"
         ),
         .target(
             name: "Debug_App",
