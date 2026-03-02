@@ -1,19 +1,19 @@
 //
 //  PrimerTheme+TextStyles.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-internal enum TextType {
+public enum TextType {
     case body, title, subtitle, amountLabel, system, error
 }
 
-final class TextStyle {
-    let body, title, subtitle, amountLabel, system, error: TextTheme
+public final class TextStyle {
+    public let body, title, subtitle, amountLabel, system, error: TextTheme
 
-    internal init(
+    public init(
         body: TextTheme,
         title: TextTheme,
         subtitle: TextTheme,
@@ -30,11 +30,11 @@ final class TextStyle {
     }
 }
 
-final class TextTheme {
-    let color: UIColor
-    let fontSize: Int
+public final class TextTheme {
+    public let color: UIColor
+    public let fontSize: Int
 
-    internal init(color: UIColor, fontSize: Int) {
+    public init(color: UIColor, fontSize: Int) {
         self.color = color
         self.fontSize = fontSize
     }
