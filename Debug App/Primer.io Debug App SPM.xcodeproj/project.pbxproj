@@ -34,6 +34,7 @@
 		A79D984A2EE700350024B330 /* SimpleCountryPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98392EE700350024B330 /* SimpleCountryPicker.swift */; };
 		A79D984B2EE700350024B330 /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D983C2EE700350024B330 /* CheckoutComponentsMenuViewController.swift */; };
 		A79D984C2EE700350024B330 /* NetworkingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D98382EE700350024B330 /* NetworkingUtils.swift */; };
+		A7B53F0B2F560D7A000E7324 /* ThemeBuilderDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B53F0A2F560D7A000E7324 /* ThemeBuilderDemo.swift */; };
 		A7C561392EF2F08100689089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C561382EF2F08100689089 /* SceneDelegate.swift */; };
 		BA6BF5912E78581C003D8B3D /* Collection+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6BF5902E78581A003D8B3D /* Collection+Extensions.swift */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
@@ -153,6 +154,7 @@
 		A79D983C2EE700350024B330 /* CheckoutComponentsMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutComponentsMenuViewController.swift; sourceTree = "<group>"; };
 		A79D983E2EE700350024B330 /* DemoProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProtocol.swift; sourceTree = "<group>"; };
 		A79D983F2EE700350024B330 /* DemoRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRegistry.swift; sourceTree = "<group>"; };
+		A7B53F0A2F560D7A000E7324 /* ThemeBuilderDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ThemeBuilderDemo.swift; path = "Sources/View Controllers/CheckoutComponents/Demos/ThemeBuilderDemo.swift"; sourceTree = "<group>"; };
 		A7C561382EF2F08100689089 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				A7B53F0A2F560D7A000E7324 /* ThemeBuilderDemo.swift */,
 				F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */,
 				F09978832D0326860058E4B5 /* Metadata.swift */,
 				F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */,
@@ -552,6 +555,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7B53F0B2F560D7A000E7324 /* ThemeBuilderDemo.swift in Sources */,
 				F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */,
 				F09978842D0326860058E4B5 /* Metadata.swift in Sources */,
 				F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */,
