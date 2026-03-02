@@ -24,6 +24,7 @@ let package = Package(
         packageTarget(name: "PrimerBDCCore", dependencies: ["PrimerBDCEngine", "PrimerFoundation", "PrimerStepResolver"]),
         packageTarget(name: "PrimerCore", dependencies: ["PrimerFoundation"]),
         packageTarget(name: "PrimerNetworking", dependencies: ["PrimerFoundation"]),
+        packageTarget(name: "PrimerResources", resources: [.process("PrimerResources/Resources")]),
         .target(
             name: "PrimerSDK",
             dependencies: [
@@ -33,7 +34,8 @@ let package = Package(
                 "PrimerFoundation",
                 "PrimerStepResolver",
                 "PrimerCore",
-                "PrimerNetworking"
+                "PrimerNetworking",
+                "PrimerResources"
             ],
             path: "Sources/PrimerSDK",
             resources: [
@@ -56,8 +58,8 @@ let package = Package(
     swiftLanguageVersions: [.v5]
 )
 
-private func packageTarget(name: String, dependencies: [Target.Dependency] = []) -> Target {
-    .target(name: name, dependencies: dependencies, path: "Modules/\(name)/Sources")
+private func packageTarget(name: String, dependencies: [Target.Dependency] = [], resources: [Resource] = []) -> Target {
+    .target(name: name, dependencies: dependencies, path: "Modules/\(name)/Sources", resources: resources)
 }
 
 private func packageTestTarget(name: String, dependencies: [Target.Dependency]) -> Target {

@@ -24,16 +24,7 @@ Pod::Spec.new do |s|
         ss.dependency "PrimerFoundation", "= #{s.version}"
         ss.dependency "PrimerStepResolver", "= #{s.version}"
         ss.dependency "PrimerNetworking", "= #{s.version}"
-        ss.ios.resource_bundles = {
-            "PrimerResources" => [
-                "Sources/PrimerSDK/Resources/*.xcassets",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
-                "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
-                "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
-                "Sources/PrimerSDK/Resources/Nibs/*",
-                "Sources/PrimerSDK/Resources/JSONs/**/*.json"
-            ]
-        }
+        ss.dependency "PrimerResources", "= #{s.version}"
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
                 "$(inherited)",
