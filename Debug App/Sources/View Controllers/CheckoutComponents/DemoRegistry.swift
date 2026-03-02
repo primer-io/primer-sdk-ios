@@ -16,8 +16,7 @@ enum DemoRegistry {
     /// All registered demo types with their metadata and factory functions
     static let allDemos: [(metadata: DemoMetadata, factory: (DemoConfiguration) -> AnyView)] = [
         (DefaultCheckoutDemo.metadata, { config in AnyView(DefaultCheckoutDemo(configuration: config)) }),
-        (CustomPaymentSelectionDemo.metadata, { config in AnyView(CustomPaymentSelectionDemo(configuration: config)) }),
-        (ThemeBuilderDemo.metadata, { config in AnyView(ThemeBuilderDemo(configuration: config)) })
+        (CustomPaymentSelectionDemo.metadata, { config in AnyView(CustomPaymentSelectionDemo(configuration: config)) })
     ]
 
     /// Get all demo metadata for display in the examples list
