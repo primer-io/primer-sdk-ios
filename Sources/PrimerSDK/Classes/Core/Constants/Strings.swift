@@ -1,7 +1,7 @@
 //
 //  Strings.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 // swiftlint:disable file_length
@@ -10,6 +10,7 @@
 // swiftlint:disable nesting
 
 import Foundation
+import PrimerResources
 
 // MARK: - Strings
 
@@ -511,9 +512,9 @@ extension Strings {
 
         static var mainTitleText: String {
             if PrimerInternal.shared.intent == .vault {
-                return savedPaymentMethodsTitle
+                savedPaymentMethodsTitle
             } else {
-                return availablePaymentMethodsTitle
+                availablePaymentMethodsTitle
             }
         }
 
