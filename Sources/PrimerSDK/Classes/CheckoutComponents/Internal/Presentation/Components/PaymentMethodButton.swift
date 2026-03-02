@@ -46,6 +46,17 @@ struct PaymentMethodButton: View {
         )
       }
       .buttonStyle(PaymentMethodButtonStyle())
+      .background(
+        RoundedRectangle(cornerRadius: radius)
+          .fill(
+            method.backgroundColor.map(Color.init) ?? CheckoutColors.background(tokens: tokens))
+      )
+      .overlay(
+        RoundedRectangle(cornerRadius: radius)
+          .strokeBorder(
+            borderColor(for: method),
+            lineWidth: borderWidth(for: method))
+      )
     }
   }
 
