@@ -6,6 +6,7 @@
 
 import PrimerFoundation
 @testable import PrimerSDK
+import PrimerUI
 import XCTest
 
 final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
