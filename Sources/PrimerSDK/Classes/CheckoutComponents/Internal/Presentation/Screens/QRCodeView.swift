@@ -11,7 +11,7 @@ struct QRCodeView: View, LogReporter {
   let scope: any PrimerQRCodeScope
 
   @Environment(\.designTokens) private var tokens
-  @State private var qrCodeState = QRCodeState()
+  @State private var qrCodeState = PrimerQRCodeState()
 
   private enum Layout {
     static let amountFontSize: CGFloat = 34
@@ -66,7 +66,7 @@ struct QRCodeView: View, LogReporter {
         if scope.dismissalMechanism.contains(.closeButton) {
           Button(
             CheckoutComponentsStrings.cancelButton,
-            action: scope.onCancel
+            action: scope.cancel
           )
           .foregroundColor(CheckoutColors.textSecondary(tokens: tokens))
           .accessibility(

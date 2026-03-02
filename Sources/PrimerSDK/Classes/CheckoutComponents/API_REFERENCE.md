@@ -309,6 +309,67 @@ public protocol PrimerAchScope: PrimerPaymentMethodScope where State == PrimerAc
 }
 ```
 
+### PrimerWebRedirectScope
+
+Web redirect payment methods (e.g., Twint). Redirects user to external page, then polls for result.
+
+```
+idle -> loading -> redirecting -> polling -> success | failure
+```
+
+```swift
+@MainActor
+public protocol PrimerWebRedirectScope: PrimerPaymentMethodScope where State == PrimerWebRedirectState {
+  var paymentMethodType: String { get }
+  var state: AsyncStream<PrimerWebRedirectState> { get }
+
+  // Customization
+  var screen: WebRedirectScreenComponent? { get set }
+  var payButton: WebRedirectButtonComponent? { get set }
+  var submitButtonText: String? { get set }
+}
+```
+
+### PrimerFormRedirectScope
+
+Form-based redirect payment methods (e.g., BLIK OTP code, MBWay phone number). Collects user input then completes payment in external app.
+
+```
+ready -> submitting -> awaitingExternalCompletion -> success | failure
+```
+
+```swift
+@MainActor
+public protocol PrimerFormRedirectScope: PrimerPaymentMethodScope where State == PrimerFormRedirectState {
+  var state: AsyncStream<PrimerFormRedirectState> { get }
+  var paymentMethodType: String { get }
+
+  func updateField(_ fieldType: PrimerFormFieldState.FieldType, value: String)
+
+  // Customization
+  var screen: FormRedirectScreenComponent? { get set }        // Replaces both form and pending screens
+  var formSection: FormRedirectFormSectionComponent? { get set }
+  var submitButton: FormRedirectButtonComponent? { get set }
+  var submitButtonText: String? { get set }
+}
+```
+
+### PrimerQRCodeScope
+
+QR code payment methods (e.g., PromptPay, Xfers). Displays a QR code and polls for completion. No user input needed.
+
+```
+loading -> displaying -> success | failure
+```
+
+```swift
+@MainActor
+public protocol PrimerQRCodeScope: PrimerPaymentMethodScope where State == PrimerQRCodeState {
+  var state: AsyncStream<PrimerQRCodeState> { get }
+  var screen: QRCodeScreenComponent? { get set }
+}
+```
+
 ### PrimerSelectCountryScope
 
 ```swift
@@ -482,6 +543,110 @@ public struct PrimerAchState: Equatable {
   var fieldValidation: FieldValidation?
   var mandateText: String?
   var isSubmitEnabled: Bool
+}
+```
+
+### PrimerWebRedirectState
+
+```
+idle -> loading -> redirecting -> polling -> success | failure
+```
+
+```swift
+public struct PrimerWebRedirectState: Equatable {
+  public enum Status: Equatable {
+    case idle
+    case loading
+    case redirecting
+    case polling
+    case success
+    case failure(String)
+  }
+
+  var status: Status
+  var paymentMethod: CheckoutPaymentMethod?
+  var surchargeAmount: String?
+}
+```
+
+### PrimerFormRedirectState
+
+```
+ready -> submitting -> awaitingExternalCompletion -> success | failure
+```
+
+```swift
+public struct PrimerFormRedirectState: Equatable {
+  public enum Status: Equatable {
+    case ready
+    case submitting
+    case awaitingExternalCompletion
+    case success
+    case failure(String)
+  }
+
+  var status: Status
+  var fields: [PrimerFormFieldState]
+  var isSubmitEnabled: Bool        // Computed: all fields non-empty and valid
+  var pendingMessage: String?
+  var surchargeAmount: String?
+
+  // Convenience accessors
+  var otpField: PrimerFormFieldState?    // First field with .otpCode type
+  var phoneField: PrimerFormFieldState?  // First field with .phoneNumber type
+  var isLoading: Bool              // status == .submitting
+  var isTerminal: Bool             // success or failure
+}
+```
+
+### PrimerFormFieldState
+
+```swift
+public struct PrimerFormFieldState: Equatable, Identifiable {
+  public enum FieldType: String, Equatable, Sendable {
+    case otpCode       // BLIK 6-digit code
+    case phoneNumber   // MBWay phone number
+  }
+
+  public enum KeyboardType: Equatable, Sendable {
+    case numberPad
+    case phonePad
+    case `default`
+  }
+
+  var id: String { fieldType.rawValue }
+  let fieldType: FieldType
+  var value: String
+  var isValid: Bool
+  var errorMessage: String?
+  let placeholder: String
+  let label: String
+  let helperText: String?
+  let keyboardType: KeyboardType
+  let maxLength: Int?              // nil = unlimited
+  var countryCodePrefix: String?   // Display prefix (e.g., "🇵🇹 +351")
+  var dialCode: String?            // Dial code (e.g., "+351")
+}
+```
+
+### PrimerQRCodeState
+
+```
+loading -> displaying -> success | failure
+```
+
+```swift
+public struct PrimerQRCodeState: Equatable {
+  public enum Status: Equatable {
+    case loading
+    case displaying
+    case success
+    case failure(String)
+  }
+
+  var status: Status
+  var paymentMethod: CheckoutPaymentMethod?
+  var qrCodeImageData: Data?       // PNG image data
 }
 ```
 
@@ -668,3 +833,9 @@ Component closures used for UI customization:
 | `PayPalButtonComponent` | `(any PrimerPayPalScope) -> any View` |
 | `AchScreenComponent` | `(any PrimerAchScope) -> any View` |
 | `AchButtonComponent` | `(any PrimerAchScope) -> any View` |
+| `WebRedirectScreenComponent` | `(any PrimerWebRedirectScope) -> any View` |
+| `WebRedirectButtonComponent` | `(any PrimerWebRedirectScope) -> any View` |
+| `FormRedirectScreenComponent` | `(any PrimerFormRedirectScope) -> any View` |
+| `FormRedirectButtonComponent` | `(any PrimerFormRedirectScope) -> any View` |
+| `FormRedirectFormSectionComponent` | `(any PrimerFormRedirectScope) -> any View` |
+| `QRCodeScreenComponent` | `(any PrimerQRCodeScope) -> any View` |

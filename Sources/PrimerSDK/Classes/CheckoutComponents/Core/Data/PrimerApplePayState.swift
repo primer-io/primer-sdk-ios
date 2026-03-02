@@ -17,26 +17,26 @@ public struct PrimerApplePayState: Equatable {
   // MARK: - Loading States
 
   /// Indicates if the Apple Pay flow is currently processing
-  public var isLoading: Bool
+  public internal(set) var isLoading: Bool
 
   // MARK: - Availability
 
   /// Indicates if Apple Pay is available on this device
-  public var isAvailable: Bool
+  public internal(set) var isAvailable: Bool
 
   /// Error message if Apple Pay is not available
-  public var availabilityError: String?
+  public internal(set) var availabilityError: String?
 
   // MARK: - Button Customization
 
   /// The style of the Apple Pay button (.black, .white, .whiteOutline, .automatic)
-  public var buttonStyle: PKPaymentButtonStyle
+  public internal(set) var buttonStyle: PKPaymentButtonStyle
 
   /// The type of the Apple Pay button (.plain, .buy, .setUp, .checkout, etc.)
-  public var buttonType: PKPaymentButtonType
+  public internal(set) var buttonType: PKPaymentButtonType
 
   /// The corner radius of the Apple Pay button
-  public var cornerRadius: CGFloat
+  public internal(set) var cornerRadius: CGFloat
 
   // MARK: - Initialization
 

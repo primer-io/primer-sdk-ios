@@ -28,51 +28,51 @@ enum FormRedirectTestData {
 
     // MARK: - States
 
-    static var readyBlikState: FormRedirectState {
-        var state = FormRedirectState()
+    static var readyBlikState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .ready
         state.fields = [blikField]
         return state
     }
 
-    static var readyMBWayState: FormRedirectState {
-        var state = FormRedirectState()
+    static var readyMBWayState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .ready
         state.fields = [mbwayField]
         return state
     }
 
-    static var validBlikState: FormRedirectState {
-        var state = FormRedirectState()
+    static var validBlikState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .ready
         state.fields = [validBlikField]
         return state
     }
 
-    static var submittingState: FormRedirectState {
-        var state = FormRedirectState()
+    static var submittingState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .submitting
         state.fields = [validBlikField]
         return state
     }
 
-    static var awaitingExternalCompletionState: FormRedirectState {
-        var state = FormRedirectState()
+    static var awaitingExternalCompletionState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .awaitingExternalCompletion
         state.fields = [validBlikField]
         state.pendingMessage = "Complete your payment in the app"
         return state
     }
 
-    static var successState: FormRedirectState {
-        var state = FormRedirectState()
+    static var successState: PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .success
         state.fields = [validBlikField]
         return state
     }
 
-    static func failureState(message: String) -> FormRedirectState {
-        var state = FormRedirectState()
+    static func failureState(message: String) -> PrimerFormRedirectState {
+        var state = PrimerFormRedirectState()
         state.status = .failure(message)
         state.fields = [validBlikField]
         return state
@@ -80,34 +80,34 @@ enum FormRedirectTestData {
 
     // MARK: - Fields
 
-    static var blikField: FormFieldState {
-        FormFieldState.blikOtpField()
+    static var blikField: PrimerFormFieldState {
+        PrimerFormFieldState.blikOtpField()
     }
 
-    static var validBlikField: FormFieldState {
-        var field = FormFieldState.blikOtpField()
+    static var validBlikField: PrimerFormFieldState {
+        var field = PrimerFormFieldState.blikOtpField()
         field.value = Constants.validBlikCode
         field.isValid = true
         return field
     }
 
-    static var invalidBlikField: FormFieldState {
-        var field = FormFieldState.blikOtpField()
+    static var invalidBlikField: PrimerFormFieldState {
+        var field = PrimerFormFieldState.blikOtpField()
         field.value = Constants.invalidBlikCode
         field.isValid = false
         field.errorMessage = "Please enter a valid 6-digit BLIK code"
         return field
     }
 
-    static var mbwayField: FormFieldState {
-        FormFieldState.mbwayPhoneField(
+    static var mbwayField: PrimerFormFieldState {
+        PrimerFormFieldState.mbwayPhoneField(
             countryCodePrefix: Constants.countryCodePrefix,
             dialCode: Constants.dialCode
         )
     }
 
-    static var validMBWayField: FormFieldState {
-        var field = FormFieldState.mbwayPhoneField(
+    static var validMBWayField: PrimerFormFieldState {
+        var field = PrimerFormFieldState.mbwayPhoneField(
             countryCodePrefix: Constants.countryCodePrefix,
             dialCode: Constants.dialCode
         )
@@ -116,8 +116,8 @@ enum FormRedirectTestData {
         return field
     }
 
-    static var invalidMBWayField: FormFieldState {
-        var field = FormFieldState.mbwayPhoneField(
+    static var invalidMBWayField: PrimerFormFieldState {
+        var field = PrimerFormFieldState.mbwayPhoneField(
             countryCodePrefix: Constants.countryCodePrefix,
             dialCode: Constants.dialCode
         )

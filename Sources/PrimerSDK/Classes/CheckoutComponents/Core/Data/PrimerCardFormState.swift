@@ -185,41 +185,41 @@ public struct PrimerCardFormState: Equatable {
   // MARK: - Core Configuration
 
   /// Dynamic field configuration
-  public var configuration: CardFormConfiguration
+  public internal(set) var configuration: CardFormConfiguration
 
   /// Type-safe form data map
-  public var data: FormData
+  public internal(set) var data: FormData
 
   /// Field-specific validation errors
-  public var fieldErrors: [FieldError]
+  public internal(set) var fieldErrors: [FieldError]
 
   // MARK: - Loading and Validation States
 
-  public var isLoading: Bool
+  public internal(set) var isLoading: Bool
 
-  public var isValid: Bool
+  public internal(set) var isValid: Bool
 
   // MARK: - Selection States
 
-  public var selectedCountry: PrimerCountry?
+  public internal(set) var selectedCountry: PrimerCountry?
 
   /// Currently selected card network (for co-badged cards)
-  public var selectedNetwork: PrimerCardNetwork?
+  public internal(set) var selectedNetwork: PrimerCardNetwork?
 
   /// Available card networks detected from card number
-  public var availableNetworks: [PrimerCardNetwork]
+  public internal(set) var availableNetworks: [PrimerCardNetwork]
 
   // MARK: - Additional Information
 
   /// Surcharge amount in smallest currency unit (e.g., cents)
-  public var surchargeAmountRaw: Int?
+  public internal(set) var surchargeAmountRaw: Int?
 
   /// Surcharge amount to display (formatted string)
-  public var surchargeAmount: String?
+  public internal(set) var surchargeAmount: String?
 
   // MARK: - BIN Data
 
-  public var binData: PrimerBinData?
+  public internal(set) var binData: PrimerBinData?
 
   // MARK: - Initialization
 

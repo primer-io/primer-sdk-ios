@@ -8,12 +8,12 @@
 import XCTest
 
 @available(iOS 15.0, *)
-final class FormRedirectStateTests: XCTestCase {
+final class PrimerFormRedirectStateTests: XCTestCase {
 
     // MARK: - isSubmitEnabled Tests
 
     func test_isSubmitEnabled_emptyFields_returnsFalse() {
-        let state = FormRedirectState()
+        let state = PrimerFormRedirectState()
         XCTAssertFalse(state.isSubmitEnabled)
     }
 
@@ -23,19 +23,19 @@ final class FormRedirectStateTests: XCTestCase {
     }
 
     func test_isSubmitEnabled_someFieldsInvalid_returnsFalse() {
-        var state = FormRedirectState()
+        var state = PrimerFormRedirectState()
         state.fields = [FormRedirectTestData.invalidBlikField]
         XCTAssertFalse(state.isSubmitEnabled)
     }
 
     func test_isSubmitEnabled_multipleFieldsAllValid_returnsTrue() {
-        var state = FormRedirectState()
+        var state = PrimerFormRedirectState()
         state.fields = [FormRedirectTestData.validBlikField, FormRedirectTestData.validMBWayField]
         XCTAssertTrue(state.isSubmitEnabled)
     }
 
     func test_isSubmitEnabled_multipleFieldsOneInvalid_returnsFalse() {
-        var state = FormRedirectState()
+        var state = PrimerFormRedirectState()
         state.fields = [FormRedirectTestData.validBlikField, FormRedirectTestData.invalidMBWayField]
         XCTAssertFalse(state.isSubmitEnabled)
     }
@@ -43,7 +43,7 @@ final class FormRedirectStateTests: XCTestCase {
     // MARK: - isTerminal Tests
 
     func test_isTerminal_allStatuses() {
-        let expectations: [(FormRedirectState.Status, Bool)] = [
+        let expectations: [(PrimerFormRedirectState.Status, Bool)] = [
             (.ready, false),
             (.submitting, false),
             (.awaitingExternalCompletion, false),
@@ -52,7 +52,7 @@ final class FormRedirectStateTests: XCTestCase {
         ]
 
         for (status, expected) in expectations {
-            var state = FormRedirectState()
+            var state = PrimerFormRedirectState()
             state.status = status
             XCTAssertEqual(state.isTerminal, expected, "isTerminal for \(status) should be \(expected)")
         }

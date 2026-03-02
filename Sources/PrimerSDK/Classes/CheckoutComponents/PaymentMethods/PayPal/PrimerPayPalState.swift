@@ -28,13 +28,13 @@ public struct PrimerPayPalState: Equatable {
   }
 
   /// Current step of the PayPal flow
-  public var step: Step
+  public internal(set) var step: Step
 
   /// The PayPal payment method information
-  public var paymentMethod: CheckoutPaymentMethod?
+  public internal(set) var paymentMethod: CheckoutPaymentMethod?
 
   /// Formatted surcharge amount if applicable (e.g., "+ $1.50")
-  public var surchargeAmount: String?
+  public internal(set) var surchargeAmount: String?
 
   /// Default initializer
   public init(

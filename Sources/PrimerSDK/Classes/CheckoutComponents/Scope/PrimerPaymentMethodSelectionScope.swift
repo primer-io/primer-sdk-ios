@@ -68,34 +68,34 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
 /// Represents the current state of available payment methods and loading status.
 public struct PrimerPaymentMethodSelectionState: Equatable {
-  public var paymentMethods: [CheckoutPaymentMethod] = []
-  public var isLoading: Bool = false
-  public var selectedPaymentMethod: CheckoutPaymentMethod?
-  public var searchQuery: String = ""
-  public var filteredPaymentMethods: [CheckoutPaymentMethod] = []
-  public var error: String?
-  public var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
-  public var isVaultPaymentLoading: Bool = false
+  public internal(set) var paymentMethods: [CheckoutPaymentMethod] = []
+  public internal(set) var isLoading: Bool = false
+  public internal(set) var selectedPaymentMethod: CheckoutPaymentMethod?
+  public internal(set) var searchQuery: String = ""
+  public internal(set) var filteredPaymentMethods: [CheckoutPaymentMethod] = []
+  public internal(set) var error: String?
+  public internal(set) var selectedVaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod?
+  public internal(set) var isVaultPaymentLoading: Bool = false
 
   // MARK: - CVV Recapture State
 
   /// Indicates whether CVV input is required for the selected vaulted card
-  public var requiresCvvInput: Bool = false
+  public internal(set) var requiresCvvInput: Bool = false
 
   /// The CVV value entered by the user
-  public var cvvInput: String = ""
+  public internal(set) var cvvInput: String = ""
 
   /// CVV validation state
-  public var isCvvValid: Bool = false
+  public internal(set) var isCvvValid: Bool = false
 
   /// CVV validation error message
-  public var cvvError: String?
+  public internal(set) var cvvError: String?
 
   // MARK: - Payment Methods Expansion State
 
   /// Whether the payment methods section is expanded (showing all methods).
   /// Default is true. Set to false when user selects vaulted method or CVV input opens.
-  public var isPaymentMethodsExpanded: Bool = true
+  public internal(set) var isPaymentMethodsExpanded: Bool = true
 
   public init(
     paymentMethods: [CheckoutPaymentMethod] = [],

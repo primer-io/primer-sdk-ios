@@ -12,13 +12,13 @@ struct FormRedirectPendingScreen: View {
     // MARK: - Properties
 
     @ObservedObject private var scope: DefaultFormRedirectScope
-    private let currentState: FormRedirectState
+    private let currentState: PrimerFormRedirectState
 
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Initialization
 
-    init(scope: DefaultFormRedirectScope, state: FormRedirectState) {
+    init(scope: DefaultFormRedirectScope, state: PrimerFormRedirectState) {
         self.scope = scope
         currentState = state
     }
@@ -76,7 +76,7 @@ struct FormRedirectPendingScreen: View {
         HStack {
             Spacer()
 
-            Button(action: scope.onCancel) {
+            Button(action: scope.cancel) {
                 Text(CheckoutComponentsStrings.cancelButton)
                     .font(PrimerFont.titleLarge(tokens: tokens))
                     .foregroundColor(CheckoutColors.textPrimary(tokens: tokens))
