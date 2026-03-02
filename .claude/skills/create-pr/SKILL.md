@@ -16,22 +16,23 @@ Create a pull request for the current branch. Jira ticket: $ARGUMENTS
    git diff --name-only master...HEAD -- '*.swift' | xargs -I {} swiftlint lint --fix --config "Debug App/.swiftlint.yml" --path {}
    swiftlint lint --config "Debug App/.swiftlint.yml"
    ```
-2. **Review changes**: `git diff` to verify all changes are intentional
-3. **Stage and commit** any remaining changes (conventional commit format)
-4. **Push** the branch: `git push -u origin HEAD`
-5. **Capture screenshots** (if the PR includes UI changes):
+2. **Code review**: Use the Agent tool to launch the `swift-reviewer` subagent to review all Swift files changed on this branch (`git diff --name-only master...HEAD -- '*.swift'`). Present the review findings to the user. If CRITICAL or HIGH severity issues are found, stop and ask the user how to proceed before continuing.
+3. **Review changes**: `git diff` to verify all changes are intentional
+4. **Stage and commit** any remaining changes (conventional commit format)
+5. **Push** the branch: `git push -u origin HEAD`
+6. **Capture screenshots** (if the PR includes UI changes):
    - Build the Debug App
    - Use ios-simulator MCP tools to boot simulator, launch the Debug App (bundle ID: `com.primerapi.PrimerSDKExample`), navigate to affected screens, and take screenshots
    - Save screenshots to include in the PR body
-6. **Read the PR template**: Read `.github/pull_request_template.md`
-7. **Create the PR** using `gh pr create`:
+7. **Read the PR template**: Read `.github/pull_request_template.md`
+8. **Create the PR** using `gh pr create`:
    - Title: short (<70 chars), conventional commit style
    - Body: fill in each section of the PR template:
      - **Description**: Jira ticket reference (`CHKT-XXXX`) + summary of changes + any breaking changes
      - **Manual Testing**: steps to verify the changes, or remove section if N/A
-     - **Screenshots**: embed simulator screenshots captured in step 5, or remove section if no UI changes
+     - **Screenshots**: embed simulator screenshots captured in step 6, or remove section if no UI changes
      - **Contributor Checklist**: check applicable items
    - Base branch: Determine by checking `git log --oneline --graph` to find the branch this was created from. If unclear, ask the user. Common bases: `master`, `feature/checkout-components`
    - **Never** include Co-Authored-By or signed-off-by lines
    - If no Jira ticket was provided as argument, ask the user for it
-7. **Return the PR URL**
+9. **Return the PR URL**
