@@ -1,23 +1,23 @@
 //
 //  PrimerTheme+Buttons.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import UIKit
 
-internal enum ButtonType {
+public enum ButtonType {
     case main, paymentMethod
 }
 
-final class ButtonTheme {
-    let colorStates: StatefulColor
-    let cornerRadius: CGFloat
-    let border: BorderTheme
-    let text: TextTheme
-    let iconColor: UIColor
+public final class ButtonTheme {
+    public let colorStates: StatefulColor
+    public let cornerRadius: CGFloat
+    public let border: BorderTheme
+    public let text: TextTheme
+    public let iconColor: UIColor
 
-    internal init(
+    public init(
         colorStates: StatefulColor,
         cornerRadius: CGFloat,
         border: BorderTheme,
@@ -31,7 +31,7 @@ final class ButtonTheme {
         self.iconColor = iconColor
     }
 
-    func color(for state: ColorState) -> UIColor {
+    public func color(for state: ColorState) -> UIColor {
         colorStates.color(for: state)
     }
 }

@@ -15,5 +15,6 @@ Pod::Spec.new do |s|
 
     s.source_files = "Packages/PrimerUI/Sources/PrimerUI/**/*"
     s.ios.frameworks  = "Foundation", "UIKit"
-    
+
+    s.dependency "PrimerFoundation"
 end
