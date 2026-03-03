@@ -21,4 +21,4 @@ Fix the issue: $ARGUMENTS
    ```
 8. **Run tests** for touched/new test classes using the xcodebuild command from CLAUDE.md, with `-only-testing:"Tests/{TestClassName}"` for each class
 9. **Verify UI changes** (if applicable): Follow the UI Verification steps in CLAUDE.md
-10. **Commit**: Use conventional commit format (`fix: Description of fix`)
+10. **Commit**: Use conventional commit format. Aim for ~50 char subject lines (including prefix) and wrap body text at ~72 chars when possible, but prioritize clarity over strict limits. Example: `fix: Add nil check for card validation`

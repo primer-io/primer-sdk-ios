@@ -7,7 +7,7 @@ See @PrimerSDK.podspec for current version.
 ## Code Quality
 
 ### SwiftFormat (CI-enforced, auto-fixes on commit)
-Config: `BuildTools/.swiftformat` (`--swift-version 5.9`). Rules: `isEmpty`, `preferCountWhere`, `redundantExtensionACL`, `modifierOrder`, `consecutiveBlankLines`, `blankLineAfterImports`, `andOperator`, `elseOnSameLine`, `fileHeader`, `hoistPatternLet`, `leadingDelimiters`, `modifiersOnSameLine`, `preferKeyPath`, `redundantInternal`, `redundantReturn`, `sortImports`, `redundantOptionalBinding`, `redundantSelf`, `duplicateImports`, `conditionalAssignment`
+Config: `BuildTools/.swiftformat` (`--swift-version 5.9`).
 
 ```bash
 swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
@@ -15,8 +15,6 @@ swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
 
 ### SwiftLint
 Config: `Debug App/.swiftlint.yml`. Key limits: line 150, file 500/800, function body 60/100, cyclomatic 12/20.
-
-Opt-in rules (CI warnings via Danger): `shorthand_optional_binding`, `implicit_return`, `empty_count`, `direct_return`, `redundant_type_annotation`, `final_test_case`, `contains_over_filter_count`, `first_where`, `redundant_self_in_closure`
 
 ```bash
 swiftlint lint --fix --config "Debug App/.swiftlint.yml"
@@ -65,6 +63,7 @@ The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator to
 ## Commit & PR Conventions
 
 - **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:`, `docs:`, `test:`, `perf:`
+- Aim for ~50 char subject lines and ~72 char body lines, but prioritize clarity over strict limits
 - Sentence-case, imperative mood: `fix: Add retry logic for polling`
 - PR template (`.github/pull_request_template.md`) requires Jira ticket (`ACC-XXXX`)
 
