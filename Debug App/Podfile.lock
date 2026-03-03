@@ -59,6 +59,7 @@ PODS:
   - PrimerStripeSDK (1.0.1)
   - PrimerUI (1.0.0):
     - PrimerFoundation
+    - PrimerResources
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -123,7 +124,7 @@ SPEC CHECKSUMS:
   PrimerResources: 25c664fac34e0aa8d1f228408d954a50d0dc20b2
   PrimerSDK: a3ce4a96b200a233e8bab3eb494122adec0f7538
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
-  PrimerUI: e59d37d8ad737430e9a567047034d759c119aefc
+  PrimerUI: 2870444373cbe88bd74f3bd27cd29dec806545b3
 
 PODFILE CHECKSUM: fe6e5b59e01e7adfddfe29c33ea223a2ecba101d
 

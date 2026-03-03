@@ -7,9 +7,15 @@ let package = Package(
     name: "PrimerUI",
 	platforms: [.iOS(.v13)],
     products: [.library(name: "PrimerUI", targets: ["PrimerUI"])],
-    dependencies: [.package(path: "../PrimerFoundation")],
+    dependencies: [
+        .package(path: "../PrimerFoundation"),
+        .package(path: "../PrimerResources")
+    ],
     targets: [.target(
         name: "PrimerUI",
-        dependencies: [.product(name: "PrimerFoundation", package: "PrimerFoundation")]
+        dependencies: [
+            .product(name: "PrimerFoundation", package: "PrimerFoundation"),
+            .product(name: "PrimerResources", package: "PrimerResources")
+        ]
     )]
 )
