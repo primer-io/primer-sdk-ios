@@ -1,13 +1,14 @@
 //
 //  ApplePayOrderItem.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
 import PassKit
+import PrimerCore
 
-internal struct ApplePayOrderItem: Codable, Equatable {
+struct ApplePayOrderItem: Codable, Equatable {
 
     public let name: String
     public let unitAmount: Int?
@@ -46,7 +47,7 @@ internal struct ApplePayOrderItem: Codable, Equatable {
         taxAmount: Int?,
         isPending: Bool = false
     ) throws {
-        if isPending && unitAmount != nil {
+        if isPending, unitAmount != nil {
             throw handled(
                 primerError: .invalidValue(
                     key: "amount",
@@ -56,7 +57,7 @@ internal struct ApplePayOrderItem: Codable, Equatable {
             )
         }
 
-        if !isPending && unitAmount == nil {
+        if !isPending, unitAmount == nil {
             throw handled(
                 primerError: .invalidValue(
                     key: "amount",
