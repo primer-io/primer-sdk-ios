@@ -1,7 +1,7 @@
 //
 //  PrimerCheckoutVoucherAdditionalInfo.swift
 //
-//  Copyright © 2025 Primer API Ltd. All rights reserved. 
+//  Copyright © 2026 Primer API Ltd. All rights reserved. 
 //  Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Foundation
@@ -35,7 +35,7 @@ import Foundation
         super.init()
     }
 
-    public override func encode(to encoder: Encoder) throws {
+    override public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(expiresAt, forKey: .expiresAt)
         try container.encode(couponCode, forKey: .couponCode)

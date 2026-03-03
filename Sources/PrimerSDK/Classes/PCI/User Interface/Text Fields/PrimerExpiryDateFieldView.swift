@@ -14,7 +14,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
     public internal(set) var expiryMonth: String?
     public internal(set) var expiryYear: String?
 
-    override func xibSetup() {
+    override public func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
         isTextFieldAccessibilityElement = true

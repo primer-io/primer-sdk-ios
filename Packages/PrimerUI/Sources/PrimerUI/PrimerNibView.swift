@@ -7,21 +7,21 @@
 import PrimerResources
 import UIKit
 
-public class PrimerNibView: UIView {
+open class PrimerNibView: UIView {
 
-    var view: UIView!
+    public var view: UIView!
 
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         xibSetup()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         xibSetup()
     }
 
-    func xibSetup() {
+    open func xibSetup() {
         backgroundColor = UIColor.clear
         view = loadNib()
         // use bounds not frame or it'll be offset
@@ -42,7 +42,7 @@ public class PrimerNibView: UIView {
 
     /** Loads instance from nib with the same name. */
 
-    func loadNib() -> UIView? {
+    open func loadNib() -> UIView? {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: className, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as? UIView
