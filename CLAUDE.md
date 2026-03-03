@@ -7,7 +7,7 @@ See @PrimerSDK.podspec for current version.
 ## Code Quality
 
 ### SwiftFormat (CI-enforced, auto-fixes on commit)
-Config: `BuildTools/.swiftformat` (`--swift-version 5.9`). Rules: `isEmpty`, `preferCountWhere`, `redundantExtensionACL`, `modifierOrder`, `consecutiveBlankLines`, `blankLineAfterImports`, `andOperator`, `elseOnSameLine`, `fileHeader`, `hoistPatternLet`, `leadingDelimiters`, `modifiersOnSameLine`, `preferKeyPath`, `redundantInternal`, `redundantReturn`, `sortImports`, `redundantOptionalBinding`, `redundantSelf`, `duplicateImports`, `conditionalAssignment`
+Config: `BuildTools/.swiftformat` (`--swift-version 5.9`).
 
 ```bash
 swiftformat <file1.swift> <file2.swift> --config BuildTools/.swiftformat
@@ -65,6 +65,7 @@ The `ios-simulator` MCP server (configured in `.mcp.json`) provides simulator to
 ## Commit & PR Conventions
 
 - **Conventional Commits**: `fix:`, `feat:`, `chore:`, `refactor:`, `ci:`, `docs:`, `test:`, `perf:`
+- Aim for ~50 char subject lines and ~72 char body lines, but prioritize clarity over strict limits
 - Sentence-case, imperative mood: `fix: Add retry logic for polling`
 - PR template (`.github/pull_request_template.md`) requires Jira ticket (`ACC-XXXX`)
 
