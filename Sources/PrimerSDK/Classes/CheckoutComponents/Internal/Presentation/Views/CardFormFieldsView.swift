@@ -25,7 +25,6 @@ struct CardFormFieldsView: View {
 
   @Environment(\.designTokens) private var tokens
   @State private var cardFormState: PrimerCardFormState = .init()
-  @State private var selectedCardNetwork: CardNetwork = .unknown
   @State private var formConfiguration: CardFormConfiguration = .default
   @FocusState private var focusedField: PrimerInputElementType?
 
@@ -332,19 +331,6 @@ struct CardFormFieldsView: View {
         await MainActor.run {
           cardFormState = state
           formConfiguration = updatedFormConfig
-
-          if let selectedNetwork = state.selectedNetwork {
-            selectedCardNetwork = selectedNetwork.network
-          } else if state.availableNetworks.count == 1,
-            let firstNetwork = state.availableNetworks.first
-          {
-            selectedCardNetwork = firstNetwork.network
-          } else if state.availableNetworks.count > 1,
-            let firstNetwork = state.availableNetworks.first,
-            selectedCardNetwork == .unknown
-          {
-            selectedCardNetwork = firstNetwork.network
-          }
         }
       }
     }
